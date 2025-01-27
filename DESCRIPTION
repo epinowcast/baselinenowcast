@@ -1,0 +1,44 @@
+Package: baselinenowcast
+Title: Baseline nowcast
+Version: 0.0.0.1000
+Authors@R:
+  c(person(given = "Kaitlyn",
+           family = "Johnson",
+           role = c("aut", "cre", "cph"),
+           email = "kaitlyn.johnson@lshtm.ac.uk",
+           comment = c(ORCID = "0000-0001-8011-0012")),
+    person(given = "Sam",
+           family = "Abbott",
+           role = c("aut"),
+           email = "contact@samabbott.co.uk",
+           comment = c(ORCID = "0000-0001-8057-8037")),
+    person(given = "Johannes",
+           family = "Bracher",
+           email = "johannes.bracher@kit.edu",
+           comment = c(ORCID = "0000-0002-3777-1410")),
+    person(given = "Sebastian",
+           family = "Funk",
+           role = c("aut"),
+           email = "sebastian.funk@lshtm.ac.uk",
+           comment = c(ORCID = "0000-0002-2842-3406")))
+Description: Provides functions for nowcasting right-truncated epidemiological
+data, based hevily on the method implemented in 
+https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/code/baseline
+License: MIT + file LICENSE
+URL: https://github.com/epinowcast/baselinenowcast/
+BugReports: https://github.com/epinowcast/baselinenowcast/issues
+Depends:
+    R (>= 4.0.0)
+Suggests:
+    dplyr,
+    ggplot2,
+    rmarkdown,
+    testthat (>= 3.1.9),
+    usethis,
+    withr,
+    knitr,
+    epinowcast
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+VignetteBuilder: knitr

@@ -12,8 +12,9 @@ knitr::opts_chunk$set(
   dpi = 330,
   message = FALSE, warning = FALSE
 )
+
 ```
-# Primary event censored distributions <a href="https://primarycensored.epinowcast.org/"><img src="man/figures/logo.png" align="right" height="139" alt="primarycensored website" /></a>
+# Baseline nowcast 
 
 <!-- badges: start -->
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
@@ -38,16 +39,11 @@ cat(gsub("\n[ ]+", " ", packageDescription("baselinenowcast")$Description))
 ```{r, child="vignettes/chunks/_readme-install-baselinenowcast.Rmd"}
 ```
 
+</details>
 
 ## Resources
 
 We provide a range of other documentation, case studies, and community spaces to ask (and answer!) questions:
-
-<details><summary>Package Website</summary>
-
-The [`baselinenowcast` website](https://baselinenowcast.epinowcast.org/)  will include a function reference and case studies using the package.
-
-</details>
 
 <details><summary>Organisation Website</summary>
 
@@ -80,50 +76,7 @@ If you use `baselinenowcast` in your work, please consider citing it with `citat
 
 ## Contributors
 
+<!-- will add this in later -->
 
 
-
-
-
-
-
-
-
-
-
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-
-All contributions to this project are gratefully acknowledged using the [`allcontributors` package](https://github.com/ropensci/allcontributors) following the [all-contributors](https://allcontributors.org) specification. Contributions of any kind are welcome!
-
-### Code
-
-
-<a href="https://github.com/epinowcast/primarycensored/commits?author=seabbs">seabbs</a>, 
-<a href="https://github.com/epinowcast/primarycensored/commits?author=SamuelBrand1">SamuelBrand1</a>, 
-<a href="https://github.com/epinowcast/primarycensored/commits?author=sbfnk">sbfnk</a>, 
-<a href="https://github.com/epinowcast/primarycensored/commits?author=athowes">athowes</a>
-
-
-
-### Issue Authors
-
-
-<a href="https://github.com/epinowcast/primarycensored/issues?q=is%3Aissue+author%3Azsusswein">zsusswein</a>, 
-<a href="https://github.com/epinowcast/primarycensored/issues?q=is%3Aissue+author%3Ajcblemai">jcblemai</a>, 
-<a href="https://github.com/epinowcast/primarycensored/issues?q=is%3Aissue+author%3Ajamesmbaazam">jamesmbaazam</a>
-
-
-
-### Issue Contributors
-
-
-<a href="https://github.com/epinowcast/primarycensored/issues?q=is%3Aissue+commenter%3Aparksw3">parksw3</a>
-
-
-<!-- markdownlint-enable -->
-<!-- prettier-ignore-end -->
-<!-- ALL-CONTRIBUTORS-LIST:END -->
 

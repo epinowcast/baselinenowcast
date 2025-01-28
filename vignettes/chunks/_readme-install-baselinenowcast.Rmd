@@ -1,0 +1,9 @@
+
+To install the development version from GitHub (warning! this version may contain breaking changes and/or bugs), use the [`pak` package](https://pak.r-lib.org/):
+
+```{r, eval = FALSE}
+pak::pak("epinowcast/baselinenowcast")
+```
+
+
+*Note: You can also use the above approach to install a specific commit if needed, for example, if you want to try out a specific unreleased feature, but not the absolute latest developmental version.*

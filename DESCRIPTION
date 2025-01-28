@@ -22,7 +22,7 @@ Authors@R:
            email = "sebastian.funk@lshtm.ac.uk",
            comment = c(ORCID = "0000-0002-2842-3406")))
 Description: Provides functions for nowcasting right-truncated epidemiological
-  data, based hevily on the method implemented in 
+  data, based heavily on the method implemented in 
   https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/code/baseline
 License: MIT + file LICENSE
 URL: https://github.com/epinowcast/baselinenowcast/

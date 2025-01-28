@@ -149,6 +149,8 @@ triangle_full <- pobs$reporting_triangle[[1]]
 head(triangle_full)
 ```
 
+# Estimate delay
+
 Now that we have the reporting triangle, we are now ready to pass it in to the `baselinenowcast` package to estimate the delay distribution.
 We will tell the function the maximum delay and the number of observations we want to use, though the default will be to use the whole reporting triangle.
 If the reporting triangle is too small for the user-specified delays and number of training observations, the function will throw an error.
@@ -159,4 +161,19 @@ triangle <- triangle_full[, -1]
 delay_df <- estimate_delay(triangle = triangle,
                            max_delay = max_delay,
                            n_history = n_history)
+
+
+```
+
+# Apply delay to generate point nowcast
+
+The next step in our workflow is to take the estimated delay distribution and apply it to the partially observed reporting triangle, generating an estimate of the number of new cases confirmed at each reference date and delay.
+This will generate a point estimate of what we can call the reporting square, which is the complete set of reference dates and delays.
+In this case, we will be applying the delay to the same reporting triangle we used to generate the estimate, but this doesn't always have to be the case.
+The reporting triangle we are applying it to must have the same `max_delay` as the delay estimate.
+
+```{r}
+reporting_square <- apply_delay(triangle_to_nowcast = triangle,
+                                delay_f )
+
 ```

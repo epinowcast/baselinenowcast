@@ -31,35 +31,37 @@
 #'   latest_date = "2021-10-01"
 #' )
 #' pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 21)
-#' triangle_raw<- pobs$reporting_triangle[[1]]
-#' delay_df <- estimate_delay(triangle_raw[, 2:],
-#'                             max_delay = 20,
-#'                             n_history = 30)
+#' triangle_raw <- pobs$reporting_triangle[[1]]
+#' delay_df <- estimate_delay(triangle_raw[, -1],
+#'   max_delay = 20,
+#'   n_history = 30
+#' )
 estimate_delay <- function(triangle,
                            max_delay = ncol(triangle) - 1,
                            n_history = nrow(triangle) - 1) {
   # Filter the triangle down to nrow = n_history + 1, ncol = max_delay
-  rt <- triangle[, 1:(max_delay + 2)] |>
-    dplyr::filter(reference_date >= max(reference_date) - n_history) |>
-    dplyr::select(-reference_date)
+  rt <- triangle[, 1:(max_delay + 2)][reference_date >= max(reference_date) - n_history][, -1] # nolint
 
   n_delays <- ncol(rt)
   n_dates <- nrow(rt)
-  rt <- as.data.table(rt)
   factor <- matrix(nrow = max_delay - 1, ncol = 1)
   expectation <- as.matrix(rt) # Make a matrix so we can add a decimal value
-  for (co in 2:(n_delays)){
+  for (co in 2:(n_delays)) {
     block_top_left <- rt[1:(n_dates - co + 1), 1:(co - 1), drop = FALSE]
     block_top <- rt[1:(n_dates - co + 1), ..co, drop = FALSE]
     factor[co - 1] <- sum(block_top) / max(sum(block_top_left), 1)
     block_bottom_left <- expectation[(n_dates - co + 2):n_dates, 1:(co - 1),
-                                     drop = FALSE]
+      drop = FALSE
+    ]
     expectation[(n_dates - co + 2):n_dates, co] <- factor[co - 1] * rowSums(
-      block_bottom_left)
+      block_bottom_left
+    )
   }
   # Not sure if this is right, as it might be overly weighting the
   # estimate data (but I do think that is the point...)
-  delay_df <- data.frame(delay = 0:max_delay,
-                         pmf = colSums(expectation) / sum(expectation))
+  delay_df <- data.frame(
+    delay = 0:max_delay,
+    pmf = colSums(expectation) / sum(expectation)
+  )
   return(delay_df)
 }

@@ -1,3 +1,3 @@
 test_that("function name is returned", {
-expect_identical(1, 1)
+  expect_identical(1, 1)
 })

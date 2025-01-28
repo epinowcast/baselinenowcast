@@ -12,40 +12,30 @@ on:
   merge_group:
   workflow_dispatch:
 
-name: R-CMD-check
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
 
+name: R-CMD-as-cran-check
+
 jobs:
-  R-CMD-check:
+  R-CMD-as-cran-check:
     if: "! contains(github.event.head_commit.message, '[ci skip]')"
-    runs-on: ${{ matrix.config.os }}
-
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
-
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - {os: ubuntu-latest,   r: 'release'}
-          - {os: ubuntu-latest,   r: 'oldrel-1'}
-          - {os: macOS-latest,   r: 'release'}
-          - {os: windows-latest, r: 'release'}
-
+    runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      R_KEEP_PKG_SOURCE: yes
-      NOT_CRAN: true
+      NOT_CRAN: false
 
     steps:
       - uses: actions/checkout@v4
+
       - uses: r-lib/actions/setup-pandoc@v2
+
       - uses: r-lib/actions/setup-r@v2
         with:
-          r-version: ${{ matrix.config.r }}
+          dependencies: '"hard"'
           use-public-rspm: true
+          extra-repositories: 'https://stan-dev.r-universe.dev'
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:

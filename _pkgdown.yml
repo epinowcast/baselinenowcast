@@ -9,15 +9,6 @@ navbar:
   structure:
     right: [search, github, lightswitch]
   components:
-  
+
 home:
   title: Baseline nowcast for right-truncated epidemiological data
-  
-
-
-
-
-
-    
-
-

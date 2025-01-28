@@ -13,7 +13,7 @@ doi: 10.5281/zenodo.13632839
 identifiers:
 - type: url
   value: https://github.com/epinowcast/baselinenowcast/
-abstract: This package provides R functions to implement nowcasting from 
+abstract: This package provides R functions to implement nowcasting from
   right-truncated epidemiological case data
 authors:
 - name: Kaitlyn Johnson

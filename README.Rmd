@@ -12,9 +12,8 @@ knitr::opts_chunk$set(
   dpi = 330,
   message = FALSE, warning = FALSE
 )
-
 ```
-# Baseline nowcast 
+# Baseline nowcast
 
 <!-- badges: start -->
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
@@ -77,6 +76,3 @@ If you use `baselinenowcast` in your work, please consider citing it with `citat
 ## Contributors
 
 <!-- will add this in later -->
-
-
-

@@ -1,4 +1,5 @@
 library(testthat)
+library(withr)
 library(baselinenowcast)
 
 test_results <- test_check("baselinenowcast")

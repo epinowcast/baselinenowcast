@@ -1,3 +1,4 @@
-test_that("function name is returned", {
-  expect_identical(1, 1)
+test_that("string is returned without brackets", {
+  new_string <- autoescape_brackets("This string has {brackets}")
+  expect_identical(new_string, "This string has brackets")
 })

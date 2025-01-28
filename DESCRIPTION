@@ -32,6 +32,7 @@ Depends:
     R (>= 4.0.0)
 Suggests:
     dplyr,
+    epinowcast,
     bookdown,
     ggplot2,
     spelling,
@@ -44,3 +45,5 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
+Remotes:
+  epinowcast=epinowcast/epinowcast@v0.3.0

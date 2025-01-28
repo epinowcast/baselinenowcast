@@ -20,12 +20,82 @@ vignette: >
 
 # Introduction
 
+Incomplete reporting of epidemiological data at recent times can result in case count data that is right-truncated.
+Right-truncated case counts can be misleading to interpret at face-value, as they will typically show a decline in the number of reported observations in the most recent time points.
+These are the time points where the highest proportion of the data has yet to be observed in the dataset.
 
+The imputation of what will eventually be observed up until the current time is referred to as a nowcast.
 
+A number of methods have been developed to nowcast epidemiological case count data.
+
+The purpose of `baselinenowcast` is to provide a nowcast using the most recent observations and a relatively straightforward multiplicative method for adjusting incomplete reports.
+The goal is to use this method as a baseline for comparing to potentially more complex model-based approaches which may have additional features that are potentially specific to the dataset or problem context.
+
+In the below section, we will describe an example of a nowcasting problem, and demonstrate how to use `baselinenowcast` to estimate a delay distribution from the data and apply that estimate to generate a probabilistic nowcast.
+
+# Packages
+
+As well as the `baselinenowcast` package this vignette also uses `epinowcast`, `ggplot2`, and `dplyr`.
+The installation of `epinowcast` is not required for using the package, however, its pre and post-processing functions provide a lot of the data wrangling needed to set up the nowcasting problem.
+We note that no components of the vignette require installing `CmdStan`, which is a downstream dependency of `epinowcast`.
+We will just be using the `R` components of `epinowcast`, which can be installed using the example lines of code below.
 ```{r setup, message = FALSE}
+# Installing epinowcast
+# install.packages( #nolint
+#  "epinowcast", repos = "https://epinowcast.r-universe.dev" #nolint
+# ) #nolint
 # Load packages
-library(baselinenowcast) # nolint
-library(ggplot2) # nolint
+library(baselinenowcast)
+library(epinowcast)
+library(ggplot2)
+library(dplyr)
 # Set seed for reproducibility
 set.seed(123)
 ```
+
+# Data
+
+Nowcasting of right-truncated case counts involves the estimation of reporting delays for recently reported data.
+For this, we need case counts both by when they were diagnosed (e.g. when someone tests positive; often called "reference date") and by when they were reported (i.e. when administratively recorded via public health surveillance; often called "report date"). The difference between the reference date and the report date is the reporting delay.
+For this quick start, we use daily level data from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence).
+These data represent hospitalisation counts by date of positive test and date of test report in Germany up to October 1, 2021.
+
+# Filtering
+
+We will filter the data to just look at the national-level data, for all age groups.
+We will pretend that we are making a nowcast as of July 1, 2021, therefore we will exclude all reference dates and report dates after that date.
+`germany_covid19_hosp` is provided as package data from `epinowcast
+```{r load-data}
+observed_long <- epinowcast::germany_covid19_hosp |>
+  dplyr::filter(location == "DE", age_group == "00+")
+```
+
+Let's start by plotting all of the values reported on the day of admissions,
+and then compare that to the total admissions observed on each reference date.
+
+```{r make-some-exploratory-plots}
+ggplot() +
+  geom_line(
+    # Plot data only for 0 day delay
+    data = observed_long |>
+      filter(reference_date == report_date),
+    aes(x = reference_date, y = confirm), color = "gray"
+  ) +
+  theme_bw() +
+  xlab("Reference date") +
+  ylab("Confirmed admissions on date of admissions") +
+  ggtitle("Number of cases confirmed on the reference date")
+ggplot() +
+  geom_line(
+    # Plot the data summed across reporting days
+    data = observed_long |>
+      group_by(reference_date) |>
+      summarise(total_confirmed = sum(confirm)),
+    aes(x = reference_date, y = total_confirmed), color = "darkred"
+  ) +
+  theme_bw() +
+  xlab("Reference date") +
+  ylab("Total confirmed admissions") +
+  ggtitle("Total cases by reference date")
+```
+`

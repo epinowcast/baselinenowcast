@@ -33,6 +33,7 @@ Imports:
     spelling (>= 2.3.0)
 Suggests:
     dplyr,
+    bookdown,
     ggplot2,
     spelling,
     rmarkdown,

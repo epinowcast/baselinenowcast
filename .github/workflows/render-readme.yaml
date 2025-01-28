@@ -9,7 +9,6 @@ on:
   push:
     branches:
       - main
-      - add-skeleton-from-primary-censored
 
 jobs:
   render-readme:

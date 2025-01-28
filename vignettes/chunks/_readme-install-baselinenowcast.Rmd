@@ -2,7 +2,7 @@
 To install the development version from GitHub (warning! this version may contain breaking changes and/or bugs), use the [`pak` package](https://pak.r-lib.org/):
 
 ```{r, eval = FALSE}
-pak::pak("epinowcast/baselinenowcast")
+pak::pak(file.path("epinowcast", "baselinenowcast"))
 ```
 
 

@@ -24,8 +24,8 @@ vignette: >
 
 ```{r setup, message = FALSE}
 # Load packages
-library(baselinenowcast)
-library(ggplot2)
+library(baselinenowcast) # nolint
+library(ggplot2) # nolint
 # Set seed for reproducibility
 set.seed(123)
 ```

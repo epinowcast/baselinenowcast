@@ -12,15 +12,15 @@ test_that("estimate_delay function works correctly", {
   # Test 1: Basic functionality
   result <- estimate_delay(triangle)
   expect_is(result, "data.frame")
-  expect_equal(nrow(result), ncol(triangle) - 1)
-  expect_equal(colnames(result), c("delay", "pmf"))
+  expect_identical(nrow(result), ncol(triangle) - 1)
+  expect_identical(colnames(result), c("delay", "pmf"))
   expect_true(all(result$delay == 0:(ncol(triangle) - 2)))
   expect_true(all(result$pmf >= 0 & result$pmf <= 1))
   expect_equal(sum(result$pmf), 1, tolerance = 1e-6)
 
   # Test 2: Custom max_delay
   result_max_delay <- estimate_delay(triangle, max_delay = 3)
-  expect_equal(nrow(result_max_delay), 4)
+  expect_identical(nrow(result_max_delay), 4)
 
   # Test 3: Custom n_history
   result_n_history <- estimate_delay(triangle, n_history = 20)
@@ -40,12 +40,12 @@ test_that("estimate_delay function works correctly", {
   # Test 6: Consistency of results
   result1 <- estimate_delay(triangle)
   result2 <- estimate_delay(triangle)
-  expect_equal(result1, result2)
+  expect_identical(result1, result2)
 
   # Test 7: Handling different input types
   result_df <- estimate_delay(as.data.frame(triangle))
   result_dt <- estimate_delay(data.table::as.data.table(triangle))
-  expect_equal(result_dt, result_df)
+  expect_identical(result_dt, result_df)
 
   # Test 8: Check that the function errors if its not passed a triangle
   triangle_single_day <- triangle[1, ]

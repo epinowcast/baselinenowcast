@@ -47,9 +47,9 @@ test_that("estimate_delay function works correctly", {
   result_dt <- estimate_delay(data.table::as.data.table(triangle))
   expect_equal(result_dt, result_df)
 
-  # Test 8: Check if the function handles edge cases correctly
+  # Test 8: Check that the function errors if its not passed a triangle
   triangle_single_day <- triangle[1, ]
-  expect_warning(estimate_delay(triangle_single_day))
+  expect_error(estimate_delay(triangle_single_day))
 
   # Test 9: Check that function throws error if column names are incorrect
   triangle_renamed <- as.data.frame(triangle)

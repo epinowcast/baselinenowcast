@@ -49,8 +49,9 @@ nat_germany_hosp <- enw_filter_report_dates(
   latest_date = "2021-10-01"
 )
 pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 21)
-triangle_raw<- pobs$reporting_triangle[[1]]
-delay_df <- estimate_delay(triangle_raw[, 2:],
-                            max_delay = 20,
-                            n_history = 30)
+triangle_raw <- pobs$reporting_triangle[[1]]
+delay_df <- estimate_delay(triangle_raw[, -1],
+  max_delay = 20,
+  n_history = 30
+)
 }

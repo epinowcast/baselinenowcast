@@ -30,6 +30,8 @@ URL: https://github.com/epinowcast/baselinenowcast/
 BugReports: https://github.com/epinowcast/baselinenowcast/issues
 Depends:
     R (>= 4.0.0)
+Imports:
+  data.table
 Suggests:
     dplyr,
     epinowcast,

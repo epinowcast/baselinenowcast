@@ -1,5 +1,6 @@
 #' Estimate a delay distribution from a reporting triangle
-#' @description Provides an estimate of the reporting delay as a function
+#' @description
+#' Provides an estimate of the reporting delay as a function
 #' of the delay, based on the reporting triangle and the specified maximum
 #' delay and number of reference date observations to be used in the estimation.
 #' This point estimate of the delay is computed empirically, using an
@@ -39,16 +40,24 @@
 estimate_delay <- function(triangle,
                            max_delay = ncol(triangle) - 1,
                            n_history = nrow(triangle) - 1) {
-  # Filter the triangle down to nrow = n_history + 1, ncol = max_delay
-  rt <- triangle[, 1:(max_delay + 2)][reference_date >= max(reference_date) - n_history][, -1] # nolint
-
+  # User might put in data.frame or a data.table, we will convert to a data.table #nolint
+  # internally to avoid using dplyr in package functions
+  triangle <- data.table::as.data.table(triangle)
+  # Filter the triangle down to nrow = n_history + 1, ncol = max_delay 
+  trunc_triangle <- preprocess_reporting_triangle(triangle, max_delay)[reference_date >= max(reference_date) - n_history] # nolint
+  # Make the date the rowname, so the matrix is just the entries
+  integer_cols <- which(colnames(trunc_triangle) %in% (grep("^\\d+$", names(trunc_df), value = TRUE))) #nolint
+  # the `..` is because its a data.table, we probably don't want to expect this from users. #nolint
+  rt <- as.matrix(trunc_triangle[, ..integer_cols])
+  dates <- as.character(trunc_triangle$reference_date)
+  rownames(matr) <- dates
   n_delays <- ncol(rt)
   n_dates <- nrow(rt)
   factor <- matrix(nrow = max_delay - 1, ncol = 1)
-  expectation <- as.matrix(rt) # Make a matrix so we can add a decimal value
+  expectation <- rt
   for (co in 2:(n_delays)) {
     block_top_left <- rt[1:(n_dates - co + 1), 1:(co - 1), drop = FALSE]
-    block_top <- rt[1:(n_dates - co + 1), ..co, drop = FALSE]
+    block_top <- rt[1:(n_dates - co + 1), co, drop = FALSE]
     factor[co - 1] <- sum(block_top) / max(sum(block_top_left), 1)
     block_bottom_left <- expectation[(n_dates - co + 2):n_dates, 1:(co - 1),
       drop = FALSE

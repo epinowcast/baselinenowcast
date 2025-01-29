@@ -75,4 +75,21 @@ If you use `baselinenowcast` in your work, please consider citing it with `citat
 
 ## Contributors
 
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+All contributions to this project are gratefully acknowledged using the [`allcontributors` package](https://github.com/ropensci/allcontributors) following the [allcontributors](https://allcontributors.org) specification. Contributions of any kind are welcome!
+
+
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson">kaitejohnson</a>, 
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=seabbs">seabbs</a>, 
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=sbfnk">sbfnk</a>
+
+
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
 <!-- will add this in later -->

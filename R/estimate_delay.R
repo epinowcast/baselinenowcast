@@ -23,6 +23,7 @@
 #' and `pmf`, indicating the point estimate of the empirical probability
 #' mass on each delay
 #' @export
+#' @importFrom dplyr filter
 #' @examples
 #' library(epinowcast)
 #' nat_germany_hosp <-
@@ -38,15 +39,13 @@
 #'   n_history = 30
 #' )
 estimate_delay <- function(triangle,
-                           max_delay = ncol(triangle) - 1,
+                           max_delay = ncol(triangle) - 2,
                            n_history = nrow(triangle) - 1) {
-  # User might put in data.frame or a data.table, we will convert to a data.table #nolint
-  # internally to avoid using dplyr in package functions
-  triangle <- data.table::as.data.table(triangle)
   # Filter the triangle down to nrow = n_history + 1, ncol = max_delay
   max_date <- max(triangle$reference_date, na.rm = TRUE) - n_history
   trunc_triangle <- preprocess_reporting_triangle(triangle, max_delay) |>
-    dplyr::filter(reference_date >= max_date) # nolint
+    dplyr::filter(reference_date >= max_date) |>
+    as.data.frame() # nolint
   # Make the date the rowname, so the matrix is just the entries
   integer_cols <- which(colnames(trunc_triangle) %in% (grep("^\\d+$", names(trunc_triangle), value = TRUE))) # nolint
   # the `..` is because its a data.table, we probably don't want to expect this from users. #nolint

@@ -7,9 +7,9 @@
 preprocess_reporting_triangle(triangle, max_delay)
 }
 \arguments{
-\item{triangle}{the reporting triangle as a data.frame, with rows as the reference
-date and columns as the delay, in any units. Assumes that the delays will
-be in the format \code{{delay}} with no suffix for the unit}
+\item{triangle}{the reporting triangle as a data.frame, with rows as the
+reference date and columns as the delay, in any units. Assumes that the
+delays will be in the format \code{{delay}} with no suffix for the unit}
 
 \item{max_delay}{the maximum delay, in the delay units, to filter the
 reporting triangle}

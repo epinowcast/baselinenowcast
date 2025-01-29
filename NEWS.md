@@ -1,3 +1,3 @@
-# baselinenowcast 0.0.0.100
+# baselinenowcast 0.0.0.1000
 
 -   Added package skeleton.

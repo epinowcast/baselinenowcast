@@ -1,6 +1,8 @@
 url: https://baselinenowcast.epinowcast.org/
 template:
+  pacakge: enwtheme
   math-rendering: mathjax
+
 
 development:
   mode: auto

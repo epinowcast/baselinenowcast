@@ -33,7 +33,7 @@ Depends:
 Imports:
   data.table,
   cli,
-  checkmate
+  checkmate,
   dplyr
 Suggests:
     epinowcast,

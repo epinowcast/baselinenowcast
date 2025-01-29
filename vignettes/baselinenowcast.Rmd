@@ -277,8 +277,8 @@ The reporting triangle we are applying it to must have the same `max_delay`
 as the delay estimate.
 
 ```{r}
-reporting_square <- apply_delay(
-  triangle_to_nowcast = triangle,
-  delay_f
-)
+# reporting_square <- apply_delay( #nolint
+#   triangle_to_nowcast = triangle,#nolint
+#   delay_f#nolint
+# )#nolint
 ```

@@ -44,11 +44,13 @@ estimate_delay <- function(triangle,
   # internally to avoid using dplyr in package functions
   triangle <- data.table::as.data.table(triangle)
   # Filter the triangle down to nrow = n_history + 1, ncol = max_delay
-  trunc_triangle <- preprocess_reporting_triangle(triangle, max_delay)[reference_date >= max(reference_date) - n_history] # nolint
+  max_date <- max(triangle$reference_date, na.rm = TRUE) - n_history
+  trunc_triangle <- preprocess_reporting_triangle(triangle, max_delay) |>
+    dplyr::filter(reference_date >= max_date) # nolint
   # Make the date the rowname, so the matrix is just the entries
   integer_cols <- which(colnames(trunc_triangle) %in% (grep("^\\d+$", names(trunc_triangle), value = TRUE))) # nolint
   # the `..` is because its a data.table, we probably don't want to expect this from users. #nolint
-  rt <- as.matrix(trunc_triangle[, ..integer_cols])
+  rt <- as.matrix(trunc_triangle[, integer_cols])
   dates <- as.character(trunc_triangle$reference_date)
   rownames(rt) <- dates
   n_delays <- ncol(rt)

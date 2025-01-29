@@ -12,7 +12,7 @@ test_that("estimate_delay function works correctly", {
   # Test 1: Basic functionality
   result <- estimate_delay(triangle)
   expect_is(result, "data.frame")
-  expect_identical(nrow(result), ncol(triangle) - 1)
+  expect_identical(as.integer(nrow(result)), as.integer(ncol(triangle) - 1))
   expect_identical(colnames(result), c("delay", "pmf"))
   expect_true(all(result$delay == 0:(ncol(triangle) - 2)))
   expect_true(all(result$pmf >= 0 & result$pmf <= 1))
@@ -20,7 +20,7 @@ test_that("estimate_delay function works correctly", {
 
   # Test 2: Custom max_delay
   result_max_delay <- estimate_delay(triangle, max_delay = 3)
-  expect_identical(nrow(result_max_delay), 4)
+  expect_identical(as.integer(nrow(result_max_delay)), as.integer(4))
 
   # Test 3: Custom n_history
   result_n_history <- estimate_delay(triangle, n_history = 20)

@@ -57,5 +57,7 @@ test_that("estimate_delay function works correctly", {
     triangle_renamed,
     c("date", paste0("delay_", 0:4))
   )
-  expect_error(estimate_delay(triangle_renamed))
+  expect_error(estimate_delay(triangle_renamed),
+    regexp = "Names must include the elements"
+  )
 })

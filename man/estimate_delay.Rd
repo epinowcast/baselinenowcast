@@ -7,7 +7,7 @@
 estimate_delay(
   triangle,
   max_delay = ncol(triangle) - 2,
-  n_history = nrow(triangle) - 1
+  n_history = nrow(triangle)
 )
 }
 \arguments{

@@ -41,6 +41,9 @@
 estimate_delay <- function(triangle,
                            max_delay = ncol(triangle) - 2,
                            n_history = nrow(triangle)) {
+  # Check that the input reporting triangle is formatted properly.
+  validate_triangle(triangle)
+
   # Filter the triangle down to nrow = n_history + 1, ncol = max_delay
   max_date <- max(triangle$reference_date, na.rm = TRUE) - n_history
   trunc_triangle <- preprocess_reporting_triangle(triangle, max_delay) |>

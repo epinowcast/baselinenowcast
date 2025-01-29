@@ -34,8 +34,8 @@ Imports:
   data.table,
   cli,
   checkmate
+  dplyr
 Suggests:
-    dplyr,
     epinowcast,
     bookdown,
     ggplot2,

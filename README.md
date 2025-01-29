@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Baseline nowcast
+# Baseline nowcast (in development)
 
 <!-- badges: start -->
 
@@ -10,13 +10,13 @@ stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://
 [![R-CMD-check](https://github.com/epinowcast/baselinenowcast/workflows/R-CMD-check/badge.svg)](https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/epinowcast/baselinenowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epinowcast/baselinenowcast)
-
-[![Universe](https://epinowcast.r-universe.dev/badges/baselinenowcast)](https://epinowcast.r-universe.dev/baselinenowcast)
 [![MIT
 license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/epinowcast/baselinenowcast/blob/master/LICENSE.md/)
 [![GitHub
 contributors](https://img.shields.io/github/contributors/epinowcast/baselinenowcast)](https://github.com/epinowcast/baselinenowcast/graphs/contributors)
 <!-- badges: end -->
+
+<!-- badges to add eventually: [![Universe](https://epinowcast.r-universe.dev/badges/baselinenowcast)](https://epinowcast.r-universe.dev/baselinenowcast) -->
 
 ## Summary
 
@@ -38,10 +38,6 @@ package](https://pak.r-lib.org/):
 ``` r
 pak::pak(file.path("epinowcast", "baselinenowcast"))
 ```
-
-*Note: You can also use the above approach to install a specific commit
-if needed, for example, if you want to try out a specific unreleased
-feature, but not the absolute latest developmental version.*
 
 </details>
 

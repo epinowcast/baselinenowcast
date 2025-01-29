@@ -51,5 +51,5 @@ preprocess_reporting_triangle <- function(triangle, max_delay) {
   for (col in integer_cols) {
     trunc_triangle[[col]] <- as.integer(trunc_triangle[[col]])
   }
-  return(trunc_triangle)
+  return(data.table::as.data.table(trunc_triangle))
 }

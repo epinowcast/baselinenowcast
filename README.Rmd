@@ -13,17 +13,19 @@ knitr::opts_chunk$set(
   message = FALSE, warning = FALSE
 )
 ```
-# Baseline nowcast
+# Baseline nowcast (in development)
+
 
 <!-- badges: start -->
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![R-CMD-check](https://github.com/epinowcast/baselinenowcast/workflows/R-CMD-check/badge.svg)](https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/epinowcast/baselinenowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epinowcast/baselinenowcast)
-
-[![Universe](https://epinowcast.r-universe.dev/badges/baselinenowcast)](https://epinowcast.r-universe.dev/baselinenowcast)
 [![MIT
 license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/epinowcast/baselinenowcast/blob/master/LICENSE.md/)
 [![GitHub contributors](https://img.shields.io/github/contributors/epinowcast/baselinenowcast)](https://github.com/epinowcast/baselinenowcast/graphs/contributors)
 <!-- badges: end -->
+
+<!-- badges to add eventually: [![Universe](https://epinowcast.r-universe.dev/badges/baselinenowcast)](https://epinowcast.r-universe.dev/baselinenowcast) -->
+
 
 ## Summary
 
@@ -83,8 +85,8 @@ If you use `baselinenowcast` in your work, please consider citing it with `citat
 All contributions to this project are gratefully acknowledged using the [`allcontributors` package](https://github.com/ropensci/allcontributors) following the [allcontributors](https://allcontributors.org) specification. Contributions of any kind are welcome!
 
 
-<a href="https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson">kaitejohnson</a>, 
-<a href="https://github.com/epinowcast/baselinenowcast/commits?author=seabbs">seabbs</a>, 
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson">kaitejohnson</a>,
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=seabbs">seabbs</a>,
 <a href="https://github.com/epinowcast/baselinenowcast/commits?author=sbfnk">sbfnk</a>
 
 

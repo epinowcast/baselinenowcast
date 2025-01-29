@@ -4,6 +4,3 @@ To install the development version from GitHub (warning! this version may contai
 ```{r, eval = FALSE}
 pak::pak(file.path("epinowcast", "baselinenowcast"))
 ```
-
-
-*Note: You can also use the above approach to install a specific commit if needed, for example, if you want to try out a specific unreleased feature, but not the absolute latest developmental version.*

@@ -9,9 +9,9 @@
 #' number of columns and with negative values of reporting handled via passing
 #' them to the subsequent days delay.
 #' Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R #nolint
-#' @param triangle the reporting triangle as a data.frame, with rows as the reference
-#' date and columns as the delay, in any units. Assumes that the delays will
-#' be in the format `{delay}` with no suffix for the unit
+#' @param triangle the reporting triangle as a data.frame, with rows as the
+#' reference date and columns as the delay, in any units. Assumes that the
+#' delays will be in the format `{delay}` with no suffix for the unit
 #' @param max_delay the maximum delay, in the delay units, to filter the
 #' reporting triangle
 #' @return trunc_triangle a dataframe in the same format as `triangle`, but
@@ -23,9 +23,9 @@ preprocess_reporting_triangle <- function(triangle, max_delay) {
   cols_subset <- which(colnames(triangle) == max_delay)
   trunc_triangle <- triangle[, 1:cols_subset]
   # columns containing integer names:
-  integer_cols <- which(colnames(trunc_triangle) %in% (grep("^\\d+$", names(trunc_df), value = TRUE))) # nolint
+  integer_cols <- which(colnames(trunc_triangle) %in% (grep("^\\d+$", names(trunc_triangle), value = TRUE))) # nolint
   # Loop over each row
-  for (i in 1:nrow(trunc_triangle)) {
+  for (i in seq_len(nrow(trunc_triangle))) {
     to_subtract <- 0
     row <- trunc_triangle[i, ]
     # Loop over the columns starting from the last column back to max delay

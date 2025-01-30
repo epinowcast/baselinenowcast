@@ -22,7 +22,6 @@
 #' and `pmf`, indicating the point estimate of the empirical probability
 #' mass on each delay
 #' @export
-#' @importFrom dplyr filter
 #' @examples
 #' library(epinowcast)
 #' nat_germany_hosp <-

@@ -49,8 +49,9 @@ nat_germany_hosp <- enw_filter_report_dates(
 )
 pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 21)
 triangle_raw <- pobs$reporting_triangle |>
-  dplyr::select(- `.group`, -reference_date) |>
-  as.matrix() |> unname()
+  dplyr::select(-`.group`, -reference_date) |>
+  as.matrix() |>
+  unname()
 delay_df <- get_delay_estimate(triangle_raw,
   max_delay = 20,
   n_history = 30

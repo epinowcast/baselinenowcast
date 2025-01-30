@@ -34,7 +34,7 @@
 #' )
 #' pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 21)
 #' triangle_raw <- pobs$reporting_triangle[[1]]
-#' delay_df <- estimate_delay(triangle_raw[, -1],
+#' factor <- estimate_delay(triangle_raw[, -1],
 #'   max_delay = 20,
 #'   n_history = 30
 #' )
@@ -59,10 +59,23 @@ estimate_delay <- function(triangle,
   n_dates <- nrow(rt)
   factor <- matrix(nrow = max_delay - 1, ncol = 1)
   expectation <- rt
+  # Try out separating computing the factor theta_d
   for (co in 2:(n_delays)) {
     block_top_left <- rt[1:(n_dates - co + 1), 1:(co - 1), drop = FALSE]
     block_top <- rt[1:(n_dates - co + 1), co, drop = FALSE]
     factor[co - 1] <- sum(block_top) / max(sum(block_top_left), 1)
+  }
+
+  return(factor)
+}
+
+apply_delay <- function(triangle_to_nowcast,
+                        factor) {
+  # Likely need to truncate/validate the triangle to nowcast
+  expectation <- triangle_to_nowcast
+  n_delays <- length(factor) + 1
+  # Apply that factor to the triangle
+  for (co in 2:(n_delays)) {
     block_bottom_left <- expectation[(n_dates - co + 2):n_dates, 1:(co - 1),
       drop = FALSE
     ]
@@ -70,11 +83,6 @@ estimate_delay <- function(triangle,
       block_bottom_left
     )
   }
-  # Not sure if this is right, as it might be overly weighting the
-  # estimate data (but I do think that is the point...)
-  delay_df <- data.frame(
-    delay = 0:max_delay,
-    pmf = colSums(expectation) / sum(expectation)
-  )
-  return(delay_df)
+
+  return(expectation)
 }

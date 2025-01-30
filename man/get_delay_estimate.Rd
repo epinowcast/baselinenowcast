@@ -48,7 +48,7 @@ nat_germany_hosp <- enw_filter_report_dates(
   latest_date = "2021-10-01"
 )
 pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 21)
-triangle_raw <- pobs$reporting_triangle |>
+triangle_raw <- pobs$reporting_triangle[[1]] |>
   dplyr::select(-`.group`, -reference_date) |>
   as.matrix() |>
   unname()

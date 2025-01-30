@@ -70,11 +70,22 @@ estimate_delay <- function(triangle,
       block_bottom_left
     )
   }
-  # Not sure if this is right, as it might be overly weighting the
-  # estimate data (but I do think that is the point...)
+  # I think this should just be estimated using the lower half of the reporting
+  # triangle to get the latest delay estimate?
+  pmf <- vector(length = n_delays)
+  pmf[1] <- expectation[n_dates, 1] / sum(expectation[n_dates, 1:n_delays])
+  for (i in 2:n_delays) {
+    pmf[i] <- sum(expectation[(n_dates - i + 2):n_dates, i]) / sum(expectation[(n_dates - i + 2):n_dates, 1:n_delays])
+  }
+
+  # Or use the whole thing. This might actually be the same...
+  alternate_pmf <- colSums(expectation) / sum(expectation)
+
+
   delay_df <- data.frame(
     delay = 0:max_delay,
-    pmf = colSums(expectation) / sum(expectation)
+    pmf = pmf,
+    atlernate_pmf = alternate_pmf
   )
   return(delay_df)
 }

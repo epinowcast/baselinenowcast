@@ -28,18 +28,15 @@ the most recent time points.
 These are the time points where the highest proportion of the data has yet to
 be observed in the dataset.
 
-The imputation of what will eventually be observed up until the current time is
-referred to as a nowcast.
+The imputation of the cases that will eventually be observed up until the
+current time is referred to as a nowcast.
 
 A number of methods have been developed to nowcast epidemiological case count
 data.
 
-The purpose of `baselinenowcast` is to provide a nowcast using the most recent
-observations and a relatively straightforward multiplicative method for
-adjusting incomplete reports.
-The goal is to use this method as a baseline for comparing to potentially more
-complex model-based approaches which may have additional features that are
-potentially specific to the dataset or problem context.
+The purpose of `baselinenowcast` is to provide a nowcast computed directly from
+the most recent observations to estimate a delay distribution empirically, and
+apply that to the partially observed data to generate a nowcast.
 
 In the below section, we will describe an example of a nowcasting problem, and
 demonstrate how to use `baselinenowcast` to estimate a delay distribution from
@@ -55,7 +52,8 @@ wrangling needed to set up the nowcasting problem.
 We note that no components of the vignette require installing `CmdStan`,
 which is a downstream dependency of `epinowcast`.
 We will just be using the `R` components of `epinowcast`, which can be
-installed using the example lines of code below.
+installed using the example lines of code below, so there is no need to
+additionally install `CmdStan`.
 ```{r setup, message = FALSE}
 # Installing epinowcast
 # install.packages( #nolint
@@ -74,8 +72,8 @@ set.seed(123)
 
 Nowcasting of right-truncated case counts involves the estimation of reporting
 delays for recently reported data.
-For this, we need case counts both by when they were diagnosed (e.g. when
-someone tests positive; often called "reference date") and by when they were
+For this, we need case counts both by when they were diagnosed (often
+called "reference date") and by when they were
 reported (i.e. when administratively recorded via public health surveillance;
 often called "report date"). The difference between the reference date and the
 report date is the reporting delay.
@@ -104,7 +102,7 @@ in the complete dataset.
 # Plotting
 
 The red line shows the cumulative number of confirmed admissions on each report
-date, across all delays
+date, across all delays, using the data available as of July 1, 2021.
 It demonstrates the characteristic behavior of right-truncation.
 This is because we have not yet observed the data that will become available
 for the longer delays at recent time points.
@@ -136,17 +134,18 @@ ggplot() +
   ggtitle("Comparing all admissions by reference date and those with no delay")
 ```
 Here the black line represents the quantity we will evaluate our nowcast
-against,and the red line represents the data we have available to us up until
+against, and the red line represents the data we have available to us up until
 July 1st, 2021.
 
 # Pre-processing
 
 In order to compute a nowcast for this data, we will need to start by creating
 what we call a reporting triangle.
-This is a wide formatted dataframe with one column for the reference date
-and another column for each of the delays, from 0 to the maximum delay.
+This is a wide formatted dataframe where each row represents one of the time
+points being reference and each column represents the delay, starting from 0 up
+until the maximum delay.
 The entries represent the number of new cases assigned to that reference
-date with a particular delay.
+time point with a particular delay.
 The reporting triangle will be used to estimate the delay distribution, or the
 proportion of the final number of cases reported on a particular delay.
 Since this data is both reported and referenced daily, we will use the time
@@ -223,14 +222,15 @@ The `get_delay_estimate()` function expects the following inputs:
   the rows represent the time points and the columns represent the observed
   delays, starting at 0.
   - `max_delay`: an integer indicating the maximum delay to estimate. This must
-  be less than or equal to the number of delays in `triangle`.
+  be less than or equal to the number of rows in `triangle` minus 1, since we
+  assume `triangle` is indexed at 0.
   - `n_history`: an integer indicating the number of observations by reference
-  date to use to fit the delay distribution. This must be less than the number
-  of rows in `triangle`.
-`enw_preoprocess()` returns a `triangle` with the columns `.group` and
+  date to use to fit the delay distribution. This must be less than or equal to
+  the number of rows in `triangle`.
+`enw_preprocess()` returns a `triangle` with the columns `.group` and
 `.reference_date` and delays indicated by the column names. While we will
 eventually write methods that will map from other input formats such as this,
-we will start by demonstrating the functionality on the raw matrix of the
+we will start by demonstrating the functionality on only the matrix of the
 reporting triangle.
 
 ```{r estimate-delay}
@@ -239,7 +239,6 @@ triangle <- triangle_full |>
   as.matrix() |>
   unname()
 head(triangle)
-
 
 delay_df <- get_delay_estimate(
   triangle = triangle,
@@ -275,8 +274,45 @@ The reporting triangle we are applying it to must have the same `max_delay`
 as the delay estimate.
 
 ```{r}
-# reporting_square <- apply_delay( #nolint
+# point_reporting_square <- apply_delay( #nolint
 #   triangle_to_nowcast = triangle,#nolint
-#   delay_f#nolint
+#   delay_df#nolint
 # )#nolint
 ```
+
+# Estimate uncertainty
+
+So far, we've demonstrated how to generate a point estimate of a nowcast.
+We would like to generate a probabilistic nowcasts, which will require
+estimating the empirical error between the expected observations and the
+actual observations when applying the delay distribution.
+This assumes a negative binomial observation model.
+
+*Note, we could probably create objects of different classes for the outputs
+of each of these functions, but I am not sure this is necessary*
+
+```{r}
+# disp_params <- estimate_uncertainty( #nolint
+# triangle_to_nowcast = triangle #nolint
+# delay_pmf = delay_df$pmf #nolint
+# ) #nolint
+```
+
+# Generate probabilistic nowcast
+
+Now that we have estimated the dispersion, we can use the delay distribution,
+the reporting triangle that we want to nowcast, and the dispersion parameters to
+generate a probabilistic nowcast.
+
+```{r}
+# nowcast <- generate_nowcast( #nolint
+# triangle_to_nowcast = triangle, #nolint
+# delay_df = delay_df, #nolint
+# disp_params = disp_params #nolint
+# ) #nolint
+```
+
+In the above, we might want to make sure we include the necessary metadata if
+the user passes it in, so we could write methods that dispatch on objects of
+a particular type so that they spit back out things with dates if those were
+inputted.

@@ -8,10 +8,9 @@
 #' modified from the code originally developed by the Karlsruhe Institute
 #' of Technology RESPINOW German Hospitalization Nowcasting Hub,
 #' Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
-#' @param triangle dataframe of the reporting triangle, with one column for the
-#' reference date and the remaining columns specifying the delay (units not
-#' specified). Values indicate the number of new observations assigned to
-#' the reference date at the specified delay.
+#' @param triangle matrix of the reporting triangle, with rows representing
+#' the time points of reference and columns representing the delays
+#' indexed at 0
 #' @param max_delay integer indicating the maximum delay to estimate, in units
 #' of the delay. The default is to use the whole reporting triangle,
 #'  `ncol(triangle) -1`.
@@ -33,31 +32,30 @@
 #'   latest_date = "2021-10-01"
 #' )
 #' pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 21)
-#' triangle_raw <- pobs$reporting_triangle[[1]]
-#' delay_df <- get_delay_estimate(triangle_raw[, -1],
+#' triangle_raw <- pobs$reporting_triangle |>
+#'   dplyr::select(-`.group`, -reference_date) |>
+#'   as.matrix() |>
+#'   unname()
+#' delay_df <- get_delay_estimate(triangle_raw,
 #'   max_delay = 20,
 #'   n_history = 30
 #' )
 get_delay_estimate <- function(triangle,
-                               max_delay = ncol(triangle) - 2,
+                               max_delay = ncol(triangle) - 1,
                                n_history = nrow(triangle)) {
   # Check that the input reporting triangle is formatted properly.
-  validate_triangle(triangle)
+  validate_triangle(triangle,
+    max_delay = max_delay,
+    n_history = n_history
+  )
 
   # Filter the triangle down to nrow = n_history + 1, ncol = max_delay
-  max_date <- max(triangle$reference_date, na.rm = TRUE) - n_history
-  trunc_triangle <- preprocess_reporting_triangle(triangle, max_delay) |>
-    dplyr::filter(reference_date >= max_date) |>
-    as.data.frame() # nolint
-  # Make the date the rowname, so the matrix is just the entries
-  integer_cols <- which(colnames(trunc_triangle) %in% (grep("^\\d+$", names(trunc_triangle), value = TRUE))) # nolint
-  # the `..` is because its a data.table, we probably don't want to expect this from users. #nolint
-  rt <- as.matrix(trunc_triangle[, integer_cols])
-  dates <- as.character(trunc_triangle$reference_date)
-  rownames(rt) <- dates
+  nr0 <- nrow(triangle)
+  trunc_triangle <- triangle[(nr0 - n_history + 1):nr0, 1:(max_delay + 1)]
+  rt <- handle_neg_vals(trunc_triangle)
   n_delays <- ncol(rt)
   n_dates <- nrow(rt)
-  factor <- matrix(nrow = max_delay - 1, ncol = 1)
+  factor <- vector(length = max_delay - 1)
   expectation <- rt
   for (co in 2:(n_delays)) {
     block_top_left <- rt[1:(n_dates - co + 1), 1:(co - 1), drop = FALSE]
@@ -66,26 +64,18 @@ get_delay_estimate <- function(triangle,
     block_bottom_left <- expectation[(n_dates - co + 2):n_dates, 1:(co - 1),
       drop = FALSE
     ]
+    # We compute the expectation so that we can get the delay estimate
     expectation[(n_dates - co + 2):n_dates, co] <- factor[co - 1] * rowSums(
       block_bottom_left
     )
   }
-  # I think this should just be estimated using the lower half of the reporting
-  # triangle to get the latest delay estimate?
-  pmf <- vector(length = n_delays)
-  pmf[1] <- expectation[n_dates, 1] / sum(expectation[n_dates, 1:n_delays])
-  for (i in 2:n_delays) {
-    pmf[i] <- sum(expectation[(n_dates - i + 2):n_dates, i]) / sum(expectation[(n_dates - i + 2):n_dates, 1:n_delays])
-  }
 
-  # Or use the whole thing. This might actually be the same...
-  alternate_pmf <- colSums(expectation) / sum(expectation)
-
-
+  # Use the completed reporting square to get the point estimate of the delay
+  # distribution
+  pmf <- colSums(expectation) / sum(expectation)
   delay_df <- data.frame(
     delay = 0:max_delay,
-    pmf = pmf,
-    atlernate_pmf = alternate_pmf
+    pmf = pmf
   )
   return(delay_df)
 }

@@ -192,7 +192,7 @@ reporting triangle.
 # observed long above.
 observed_long <- epinowcast::germany_covid19_hosp[location == "DE"][age_group == "00+"] |> # nolint
   enw_filter_report_dates(latest_date = nowcast_date) |>
-  enw_filter_reference_dates(include_days = n_history)
+  enw_filter_reference_dates(include_days = n_history - 1)
 head(observed_long)
 # Get the reporting triangle, adding an additional day because epinowcast
 # we want the max_delay + 1 entries since 0 is a valid delay.
@@ -227,22 +227,21 @@ The `get_delay_estimate()` function expects the following inputs:
   - `n_history`: an integer indicating the number of observations by reference
   date to use to fit the delay distribution. This must be less than the number
   of rows in `triangle`.
-`enw_preoprocess()` returns a `triangle` with an additional column `.group`
-which will not be used in our estimate of the delay distribution, as
-`estimate_delay()` performs the estimate on a single strata only.
-If your data contains multiple groups, we recommend either aggregating across
-groups (for a fully pooled estimate) or estimating the delay individually for
-the strata of your choice (no pooling).
-`baselinenowcast` does not support a hierarchical, or partially pooled,
-estimate of the delay by design.
+`enw_preoprocess()` returns a `triangle` with the columns `.group` and
+`.reference_date` and delays indicated by the column names. While we will
+eventually write methods that will map from other input formats such as this,
+we will start by demonstrating the functionality on the raw matrix of the
+reporting triangle.
+
 ```{r estimate-delay}
 triangle <- triangle_full |>
-  dplyr::select(-`.group`) |> # remove unecessary `.group` column
-  as.data.frame() # baseline nowcast expects dataframe as an input
+  dplyr::select(-`.group`, -reference_date) |> # remove unnecessary columns
+  as.matrix() |>
+  unname()
 head(triangle)
 
 
-delay_df <- estimate_delay(
+delay_df <- get_delay_estimate(
   triangle = triangle,
   max_delay = max_delay,
   n_history = n_history

@@ -4,10 +4,20 @@
 \alias{validate_triangle}
 \title{Validate triangle}
 \usage{
-validate_triangle(triangle)
+validate_triangle(triangle, max_delay, n_history)
 }
 \arguments{
-\item{triangle}{a dataframe formatted as a reporting triangle}
+\item{triangle}{a matrix of values with rows indicating the time points and
+columns indicating the delays}
+
+\item{max_delay}{integer indicating the maximum delay to estimate, in units
+of the delay. The default is to use the whole reporting triangle,
+\code{ncol(triangle) -1}.}
+
+\item{n_history}{integer indicating the number of reference dates to be
+used in the estimate of the reporting delay, always starting from the most
+recent reporting delay. The default is to use the whole reporting triangle,
+so \code{nrow(triangle)-1}}
 }
 \value{
 NULL, invisibly

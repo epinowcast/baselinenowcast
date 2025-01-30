@@ -6,15 +6,14 @@
 \usage{
 get_delay_estimate(
   triangle,
-  max_delay = ncol(triangle) - 2,
+  max_delay = ncol(triangle) - 1,
   n_history = nrow(triangle)
 )
 }
 \arguments{
-\item{triangle}{dataframe of the reporting triangle, with one column for the
-reference date and the remaining columns specifying the delay (units not
-specified). Values indicate the number of new observations assigned to
-the reference date at the specified delay.}
+\item{triangle}{matrix of the reporting triangle, with rows representing
+the time points of reference and columns representing the delays
+indexed at 0}
 
 \item{max_delay}{integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
@@ -49,8 +48,10 @@ nat_germany_hosp <- enw_filter_report_dates(
   latest_date = "2021-10-01"
 )
 pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 21)
-triangle_raw <- pobs$reporting_triangle[[1]]
-delay_df <- get_delay_estimate(triangle_raw[, -1],
+triangle_raw <- pobs$reporting_triangle |>
+  dplyr::select(- `.group`, -reference_date) |>
+  as.matrix() |> unname()
+delay_df <- get_delay_estimate(triangle_raw,
   max_delay = 20,
   n_history = 30
 )

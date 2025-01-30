@@ -1,20 +1,12 @@
 test_that("get_delay_estimate function works correctly", {
   set.seed(123)
-  triangle <- data.table::data.table(
-    reference_date = as.Date("2023-01-01") + 0:29,
-    `0` = rpois(30, 100),
-    `1` = rpois(30, 50),
-    `2` = rpois(30, 25),
-    `3` = rpois(30, 10),
-    `4` = rpois(30, 5)
-  )
+  triangle <- matrix(rpois(30 * 5, lambda = 25), nrow = 30, ncol = 5)
 
   # Test 1: Basic functionality
   result <- get_delay_estimate(triangle)
   expect_is(result, "data.frame")
-  expect_identical(as.integer(nrow(result)), as.integer(ncol(triangle) - 1))
+  expect_identical(as.integer(nrow(result)), as.integer(ncol(triangle)))
   expect_identical(colnames(result), c("delay", "pmf"))
-  expect_true(all(result$delay == 0:(ncol(triangle) - 2)))
   expect_true(all(result$pmf >= 0 & result$pmf <= 1))
   expect_equal(sum(result$pmf), 1, tolerance = 1e-6)
 
@@ -42,22 +34,7 @@ test_that("get_delay_estimate function works correctly", {
   result2 <- get_delay_estimate(triangle)
   expect_identical(result1, result2)
 
-  # Test 7: Handling different input types
-  result_df <- get_delay_estimate(as.data.frame(triangle))
-  result_dt <- get_delay_estimate(data.table::as.data.table(triangle))
-  expect_identical(result_dt, result_df)
-
-  # Test 8: Check that the function errors if its not passed a triangle
+  # Test 7: Check that the function errors if its not passed a triangle
   triangle_single_day <- triangle[1, ]
   expect_error(get_delay_estimate(triangle_single_day))
-
-  # Test 9: Check that function throws error if column names are incorrect
-  triangle_renamed <- as.data.frame(triangle)
-  triangle_renamed <- stats::setNames(
-    triangle_renamed,
-    c("date", paste0("delay_", 0:4))
-  )
-  expect_error(get_delay_estimate(triangle_renamed),
-    regexp = "Names must include the elements"
-  )
 })

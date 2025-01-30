@@ -4,7 +4,7 @@
 #' `estimate_delay()` is formatted properly.
 #' @param triangle a dataframe formatted as a reporting triangle
 #'
-#' @returns
+#' @returns NULL, invisibly
 validate_triangle <- function(triangle) {
   # check column names includes reference date
   checkmate::assert_names(names(triangle), must.include = "reference_date")

@@ -34,13 +34,13 @@
 #' )
 #' pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 21)
 #' triangle_raw <- pobs$reporting_triangle[[1]]
-#' delay_df <- estimate_delay(triangle_raw[, -1],
+#' delay_df <- get_delay_estimate(triangle_raw[, -1],
 #'   max_delay = 20,
 #'   n_history = 30
 #' )
-estimate_delay <- function(triangle,
-                           max_delay = ncol(triangle) - 2,
-                           n_history = nrow(triangle)) {
+get_delay_estimate <- function(triangle,
+                               max_delay = ncol(triangle) - 2,
+                               n_history = nrow(triangle)) {
   # Check that the input reporting triangle is formatted properly.
   validate_triangle(triangle)
 

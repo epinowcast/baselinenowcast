@@ -218,11 +218,10 @@ function.
 If reference date are repeated because the reporting triangle contains multiple
 strata, the function will throw an error.
 
-The `estimate_delay()` function expects the following inputs:
-  - `triangle`: the reporting triangle for a single strata, with the left column
-  indicating the `reference_date` and the subsequent columns indexed starting
-  at 0 through the number of observed delays. There should be no repeated
-  reference dates or additional columns of metadata.
+The `get_delay_estimate()` function expects the following inputs:
+  - `triangle`: a matrix with the reporting triangle for a single strata. Here
+  the rows represent the time points and the columns represent the observed
+  delays, starting at 0.
   - `max_delay`: an integer indicating the maximum delay to estimate. This must
   be less than or equal to the number of delays in `triangle`.
   - `n_history`: an integer indicating the number of observations by reference

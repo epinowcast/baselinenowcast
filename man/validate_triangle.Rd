@@ -9,6 +9,9 @@ validate_triangle(triangle)
 \arguments{
 \item{triangle}{a dataframe formatted as a reporting triangle}
 }
+\value{
+NULL, invisibly
+}
 \description{
 Various checks to make sure that the reporting triangle passed in to
 \code{estimate_delay()} is formatted properly.

@@ -128,7 +128,7 @@ ggplot() +
   xlab("Reference date") +
   ylab("Confirmed admissions") +
   scale_y_continuous(trans = "log10") +
-  ggtitle("Comparing all admissions by reference date and those with no delay")
+  ggtitle("Comparing real-time and later observed cases")
 ```
 Here the black line represents the quantity we will evaluate our nowcast
 against, and the red line represents the data we have available to us up until
@@ -325,7 +325,7 @@ ggplot() +
   xlab("Reference date") +
   ylab("Confirmed admissions") +
   scale_y_continuous(trans = "log10") +
-  ggtitle("Comparing all admissions by reference date and those with no delay")
+  ggtitle("Comparing real-time, nowcasted, and later observed cases")
 ```
 Here we can see that our point nowcast slightly overestimates what was
 eventually reported (black line), but does a decent overally job of correcting

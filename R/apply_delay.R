@@ -17,7 +17,7 @@
 #' @export
 #'
 #' @examples
-#' #' library(epinowcast)
+#' library(epinowcast)
 #' nat_germany_hosp <-
 #'   germany_covid19_hosp[location == "DE"][age_group == "00+"]
 #' nat_germany_hosp <- enw_filter_report_dates(

@@ -25,7 +25,7 @@ complete with a nowcast and a delay pmf and generates a point estimate of a
 completed reporting square (or rectangle)
 }
 \examples{
-#' library(epinowcast)
+library(epinowcast)
 nat_germany_hosp <-
   germany_covid19_hosp[location == "DE"][age_group == "00+"]
 nat_germany_hosp <- enw_filter_report_dates(
@@ -44,5 +44,6 @@ delay_df <- get_delay_estimate(
 )
 reporting_square <- apply_delay(
   triangle_to_nowcast = triangle_raw,
-  delay_pmf = delay_df$pmf)
+  delay_pmf = delay_df$pmf
+)
 }

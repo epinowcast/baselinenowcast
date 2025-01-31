@@ -82,25 +82,17 @@ For this quick start, we use daily level data from the
 These data represent hospitalisation counts by date of positive test and date
 of test report in Germany up to October 1, 2021.
 
-# Filtering
+
+# Filtering and plotting the data
 
 We will filter the data to just look at the national-level data, for all age
 groups.
 We will pretend that we are making a nowcast as of July 1, 2021, therefore we
 will exclude all reference dates and report dates after that date.
 `germany_covid19_hosp` is provided as package data from `epinowcast`
-```{r load-data}
-observed_long <- epinowcast::germany_covid19_hosp |>
-  enw_filter_report_dates(latest_date = "2021-07-01") |>
-  dplyr::filter(location == "DE", age_group == "00+")
-```
-
-Let's start by plotting all of the values reported on the day of admissions,
+Let's start by plotting the sum of the reports at each reference date,
 and then compare that to what we will eventually observe as of the final date
 in the complete dataset.
-
-# Plotting
-
 The red line shows the cumulative number of confirmed admissions on each report
 date, across all delays, using the data available as of July 1, 2021.
 It demonstrates the characteristic behavior of right-truncation.
@@ -114,18 +106,23 @@ at each reference date, observed as of the "fully observed" data on October
 ggplot() +
   geom_line(
     # Plot the data summed across reporting days
-    data = observed_long |>
-      group_by(reference_date) |>
-      summarise(total_confirmed = sum(confirm)),
-    aes(x = reference_date, y = total_confirmed), color = "darkred"
+    data = epinowcast::germany_covid19_hosp |>
+      enw_filter_report_dates(latest_date = "2021-07-01") |>
+      dplyr::filter(
+        location == "DE", age_group == "00+",
+        report_date == "2021-07-01"
+      ),
+    aes(x = reference_date, y = confirm), color = "darkred"
   ) +
   geom_line(
     data = epinowcast::germany_covid19_hosp |>
-      dplyr::filter(location == "DE", age_group == "00+") |>
-      group_by(reference_date) |>
-      summarise(total_confirmed = sum(confirm)) |>
-      dplyr::filter(reference_date <= "2021-07-01"),
-    aes(x = reference_date, y = total_confirmed), color = "black"
+      dplyr::filter(
+        location == "DE", age_group == "00+",
+        reference_date <= "2021-07-01"
+      ) |>
+      dplyr::group_by(reference_date) |>
+      dplyr::summarise(confirm = max(confirm)),
+    aes(x = reference_date, y = confirm), color = "black"
   ) +
   theme_bw() +
   xlab("Reference date") +
@@ -202,6 +199,16 @@ pobs <- enw_preprocess_data(
 
 triangle_full <- pobs$reporting_triangle[[1]]
 head(triangle_full)
+
+# Check that the sum of the rows in the reporting triangle is the
+# same as the sums across report dates by reference date
+observed_sums <- observed_long |>
+  dplyr::group_by(reference_date) |>
+  dplyr::summarise(total_confirmed = max(confirm)) |>
+  dplyr::mutate(triangle_sums = rowSums(triangle_full |>
+    dplyr::select(-`.group`, -reference_date) |>
+    as.matrix() |>
+    unname()))
 ```
 
 # Estimate delay
@@ -246,6 +253,7 @@ delay_df <- get_delay_estimate(
   n_history = n_history
 )
 
+
 ggplot(delay_df) +
   geom_line(aes(x = delay, y = cumsum(pmf))) +
   xlab("Delay") +
@@ -274,11 +282,59 @@ The reporting triangle we are applying it to must have the same `max_delay`
 as the delay estimate.
 
 ```{r}
-# point_reporting_square <- apply_delay( #nolint
-#   triangle_to_nowcast = triangle,#nolint
-#   delay_df#nolint
-# )#nolint
+point_reporting_square <- apply_delay(
+  triangle_to_nowcast = triangle,
+  delay_pmf = delay_df$pmf
+)
 ```
+
+We'll make a quick plot to compare the nowcast to the later observed data
+```{r}
+# Get the confirmations through July 1, 2021, from the observations up until
+# October 1, 2021.
+final_data <- epinowcast::germany_covid19_hosp[location == "DE"][age_group == "00+"] |> # nolint
+  enw_filter_report_dates(latest_date = "2021-10-01") |>
+  enw_filter_reference_dates(
+    latest_date = "2021-07-01",
+    include_days = n_history - 1
+  ) |>
+  dplyr::group_by(reference_date) |>
+  dplyr::summarise(
+    total_confirmed = max(confirm)
+  ) |>
+  dplyr::mutate(nowcast = rowSums(point_reporting_square))
+
+
+ggplot() +
+  geom_line(
+    # Plot the data summed across reporting days as of July 1,2021
+    data = observed_long |>
+      group_by(reference_date) |>
+      summarise(total_confirmed = max(confirm)),
+    aes(x = reference_date, y = total_confirmed), color = "darkred"
+  ) +
+  geom_line(
+    data = final_data,
+    aes(x = reference_date, y = total_confirmed), color = "black"
+  ) +
+  geom_line(
+    data = final_data,
+    aes(x = reference_date, y = nowcast), color = "darkblue"
+  ) +
+  theme_bw() +
+  xlab("Reference date") +
+  ylab("Confirmed admissions") +
+  scale_y_continuous(trans = "log10") +
+  ggtitle("Comparing all admissions by reference date and those with no delay")
+```
+Here we can see that our point nowcast slightly overestimates what was
+eventually reported (black line), but does a decent overally job of correcting
+for the right-truncation observed in the red line (the data prior to the
+nowcast).
+
+What we of course really want is a probabilistic estimate of the nowcasted
+case counts.
+
 
 # Estimate uncertainty
 

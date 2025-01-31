@@ -10,7 +10,6 @@
 #' Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
 #' @param triangle matrix of the reporting triangle, with rows representing
 #' the time points of reference and columns representing the delays
-#' indexed at 0
 #' @param max_delay integer indicating the maximum delay to estimate, in units
 #' of the delay. The default is to use the whole reporting triangle,
 #'  `ncol(triangle) -1`.

@@ -12,8 +12,7 @@ get_delay_estimate(
 }
 \arguments{
 \item{triangle}{matrix of the reporting triangle, with rows representing
-the time points of reference and columns representing the delays
-indexed at 0}
+the time points of reference and columns representing the delays}
 
 \item{max_delay}{integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,

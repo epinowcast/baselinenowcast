@@ -30,9 +30,12 @@ URL: https://github.com/epinowcast/baselinenowcast/
 BugReports: https://github.com/epinowcast/baselinenowcast/issues
 Depends:
     R (>= 4.0.0)
+Imports:
+  cli
 Suggests:
-    dplyr,
+    epinowcast,
     bookdown,
+    dplyr,
     ggplot2,
     spelling,
     rmarkdown,
@@ -44,5 +47,7 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
+Remotes:
+  epinowcast=epinowcast/epinowcast@v0.3.0
 Config/Needs/hexsticker: hexSticker, sysfonts, ggplot2
 Config/Needs/website: r-lib/pkgdown, epinowcast/enwtheme

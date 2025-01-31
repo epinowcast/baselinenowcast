@@ -46,7 +46,7 @@ test_that("apply_delay function works correctly with larger triangle", {
   expect_identical(result[1:3, 1:2], triangle_to_nowcast[1:3, 1:2])
 
   # Test that NA values are replaced
-  expect_false(any(is.na(result)))
+  expect_false(anyNA(result))
 
   # Test specific calculations
   # For the last row, second column (delay = 1)

@@ -45,7 +45,7 @@ apply_delay <- function(triangle_to_nowcast,
     triangle,
     delay_pmf
   )
-  n_delays <- nrow(delay_df)
+  n_delays <- length(delay_pmf)
   n_dates <- nrow(triangle_to_nowcast)
   expectation <- triangle_to_nowcast
 

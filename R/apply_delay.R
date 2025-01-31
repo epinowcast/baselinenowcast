@@ -42,7 +42,7 @@ apply_delay <- function(triangle_to_nowcast,
                         delay_pmf) {
   # Checks that the delay df and the triangle are compatible
   validate_delay_and_triangle(
-    triangle,
+    triangle_to_nowcast,
     delay_pmf
   )
   n_delays <- length(delay_pmf)

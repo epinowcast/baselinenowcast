@@ -18,12 +18,13 @@
 #' @examples
 #' triangle <- matrix(
 #'   c(
+#'     80, 50, 25, 10,
 #'     100, 50, 30, 20,
 #'     90, 45, 25, NA,
 #'     80, 40, NA, NA,
 #'     70, NA, NA, NA
 #'   ),
-#'   nrow = 4,
+#'   nrow = 5,
 #'   byrow = TRUE
 #' )
 #' delay_df <- get_delay_estimate(

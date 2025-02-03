@@ -11,13 +11,13 @@
 columns indicating the delays}
 
 \item{delay_pmf}{Vector of length of the number of delays indicating the
-probability of a case being reportined on a given delay}
+probability of a case being reported on a given delay}
 }
 \value{
 NULL, invisibly
 }
 \description{
 Various checks to make sure that the reporting triangle  and the delay pmf
-passed in to \code{\link[=apply_delay]{apply_delay()}} are formatted properly and compaitble
+passed in to \code{\link[=apply_delay]{apply_delay()}} are formatted properly and compatible
 }
 \keyword{internal}

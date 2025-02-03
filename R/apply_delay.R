@@ -1,11 +1,11 @@
 #' Apply the delay to generate a point nowcast
 #' @description
-#' This function takes as an input the reporting triangle that we want to
-#'  complete with a nowcast and a delay pmf and generates a point estimate of a
-#'  completed reporting square (or rectangle). This code is based on the code
-#'  originally developed by the Karlsruhe Institute of Technology RESPINOW
-#'  German Hospitalization Nowcasting Hub,
-#'  Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
+#' Generate a point estimate of a completed reporting square (or rectangle)
+#' from a reporting triangle that we want to complete with a nowcast and a
+#' delay pmf. This code is based on the code
+#' originally developed by the Karlsruhe Institute of Technology RESPINOW
+#' German Hospitalization Nowcasting Hub,
+#' Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
 #' @param triangle_to_nowcast Matrix of the incomplete reporting triangle to be
 #'  nowcasted, with rows representing the time points of reference and columns
 #'  representing the delays
@@ -66,7 +66,12 @@ apply_delay <- function(triangle_to_nowcast,
 #' values for the specified rows and column
 #' @keywords internal
 .calc_expectation <- function(co, expectation, n_dates, delay_pmf) {
-  block_bottom_left <- expectation[(n_dates - co + 2):n_dates, 1:(co - 1), drop = FALSE] # nolint
+  block_bottom_left <- expectation[
+    (n_dates - co + 2):n_dates,
+    1:(co - 1),
+    drop = FALSE
+  ]
+
   exp_total <- rowSums(block_bottom_left) / sum(delay_pmf[1:(co - 1)])
   expectation[(n_dates - co + 2):n_dates, co] <- exp_total * delay_pmf[co]
   return(expectation)

@@ -56,11 +56,11 @@
 #' Validate triangle to nowcast and delay pmf together
 #' @description
 #' Various checks to make sure that the reporting triangle  and the delay pmf
-#'  passed in to [apply_delay()] are formatted properly and compaitble
+#'  passed in to [apply_delay()] are formatted properly and compatible
 #' @param triangle Matrix of values with rows indicating the time points and
 #'  columns indicating the delays
 #' @param delay_pmf Vector of length of the number of delays indicating the
-#'  probability of a case being reportined on a given delay
+#'  probability of a case being reported on a given delay
 #'
 #' @returns NULL, invisibly
 #' @keywords internal

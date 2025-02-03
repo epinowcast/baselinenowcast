@@ -328,7 +328,7 @@ ggplot() +
   ggtitle("Comparing real-time, nowcasted, and later observed cases")
 ```
 Here we can see that our point nowcast slightly overestimates what was
-eventually reported (black line), but does a decent overally job of correcting
+eventually reported (black line), but does a decent overall job of correcting
 for the right-truncation observed in the red line (the data prior to the
 nowcast).
 

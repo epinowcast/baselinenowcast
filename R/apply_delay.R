@@ -49,17 +49,30 @@ apply_delay <- function(triangle_to_nowcast,
   n_dates <- nrow(triangle_to_nowcast)
   expectation <- triangle_to_nowcast
 
-  for (co in 2:n_delays) {
-    block_bottom_left <- expectation[(n_dates - co + 2):n_dates, 1:(co - 1),
-      drop = FALSE
-    ]
-    # Uses the observed data to find the expected total on that reference date
-    exp_total <- rowSums(block_bottom_left) / sum(delay_pmf[1:(co - 1)])
-    # * Note, we will have to do some correction if this is 0, ignore for now*
-    # Finds the expected value for the particular delay by scaling by the
-    # delay pmf for delay d
-    expectation[(n_dates - co + 2):n_dates, co] <- exp_total * delay_pmf[co]
-  }
+  # Iterates through each column and adds entries to the expected reporting
+  # triangle
+  expectation <- Reduce(function(acc, co) {
+    calc_expectation(co, acc, n_dates, delay_pmf)
+  }, 2:n_delays, init = triangle_to_nowcast)
 
+
+  return(expectation)
+}
+
+#' Calculate the updates rows of the expected nowcasted triangle
+#'
+#' @param co An integer indicating the column index
+#' @param expectation A matrix of the partially complete reporting triangle
+#' @param n_dates An integer indicating the number of dates in the reporting
+#' triangle (number of rows in the reporting triangle)
+#' @param delay_pmf A vector specifying the probability of a case being
+#' reported with delay d
+#'
+#' @returns a matrix with another set of entries corresponding to the updated
+#' values for the specified rows and column
+calc_expectation <- function(co, expectation, n_dates, delay_pmf) {
+  block_bottom_left <- expectation[(n_dates - co + 2):n_dates, 1:(co - 1), drop = FALSE] # nolint
+  exp_total <- rowSums(block_bottom_left) / sum(delay_pmf[1:(co - 1)])
+  expectation[(n_dates - co + 2):n_dates, co] <- exp_total * delay_pmf[co]
   return(expectation)
 }

@@ -65,3 +65,62 @@ test_that("apply_delay function works correctly with larger triangle", {
     regexp = "Length of the delay pmf is not the same"
   )
 })
+
+test_that("apply_delay function works the same as the more verbose for loop", {
+  triangle <- matrix(nrow = 5, ncol = 4, data = 1)
+  delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
+  result <- apply_delay(
+    triangle_to_nowcast = triangle,
+    delay_pmf = delay_pmf
+  )
+
+  n_delays <- length(delay_pmf)
+  n_dates <- nrow(triangle)
+  expectation2 <- triangle
+  for (co in 2:n_delays) {
+    block_bottom_left <- expectation2[(n_dates - co + 2):n_dates, 1:(co - 1),
+      drop = FALSE
+    ]
+    # Uses the observed data to find the expected total on that reference date
+    exp_total <- rowSums(block_bottom_left) / sum(delay_pmf[1:(co - 1)])
+    # * Note, we will have to do some correction if this is 0, ignore for now*
+    # Finds the expected value for the particular delay by scaling by the
+    # delay pmf for delay d
+    expectation2[(n_dates - co + 2):n_dates, co] <- exp_total * delay_pmf[co]
+  }
+
+  expect_identical(result, expectation2)
+})
+
+test_that("calc_expectation function works correctly", {
+  # Setup
+  n_dates <- 10
+  n_delays <- 5
+  expectation <- matrix(1:50, nrow = n_dates, ncol = n_delays)
+  delay_pmf <- c(0.5, 0.3, 0.1, 0.07, 0.03)
+
+  # Test 1: Basic functionality
+  result <- calc_expectation(3, expectation, n_dates, delay_pmf)
+  expect_is(result, "matrix")
+  expect_identical(dim(result), as.integer(c(n_dates, n_delays)))
+
+  # Test 2: Check if the function modifies the correct cells
+  original <- expectation
+  modified <- calc_expectation(3, expectation, n_dates, delay_pmf)
+  expect_equal(modified[1:8, ], original[1:8, ])
+  expect_false(all(modified[9:10, 3] == original[9:10, 3]))
+
+  # Test 3: Check if the calculation is correct
+  block_bottom_left <- expectation[9:10, 1:2]
+  exp_total <- rowSums(block_bottom_left) / sum(delay_pmf[1:2])
+  expected_values <- exp_total * delay_pmf[3]
+  expect_equal(modified[9:10, 3], expected_values)
+
+  # Test 4: Edge case - when co is 2
+  result_edge <- calc_expectation(2, expectation, n_dates, delay_pmf)
+  expect_equal(dim(result_edge), c(n_dates, n_delays))
+
+  # Test 5: Error handling - invalid co
+  expect_error(calc_expectation(1, expectation, n_dates, delay_pmf))
+  expect_error(calc_expectation(n_delays + 1, expectation, n_dates, delay_pmf))
+})

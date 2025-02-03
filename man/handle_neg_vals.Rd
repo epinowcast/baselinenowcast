@@ -18,6 +18,6 @@ reporting handled via passing them to the subsequent days delay
 \description{
 Takes in a reporting triangle and returns a matrix in the same format
 as the input triangle, but with negative values of reporting handled via
-passing them to the subsequent days delay.
+passing them to the subsequent days (from longer delay to shorter).
 Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R #nolint
 }

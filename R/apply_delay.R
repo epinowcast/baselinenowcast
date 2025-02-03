@@ -8,13 +8,13 @@
 #' Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
 #'
 #'
-#' @param triangle_to_nowcast matrix of the incomplete reporting triangle to be
+#' @param triangle_to_nowcast Matrix of the incomplete reporting triangle to be
 #' nowcasted, with rows representing the time points of reference and columns
 #' representing the delays
-#' @param delay_pmf vector of delays assumed to be indexed starting at the
+#' @param delay_pmf Vector of delays assumed to be indexed starting at the
 #' first delay column in `triangle_to_nowcast`
 #'
-#' @return expectation, a matrix of the same number of rows and columns as the
+#' @return expectation, matrix of the same number of rows and columns as the
 #' `triangle_to_nowcast` but with the missing values filled in as point
 #' estimates
 #' @export

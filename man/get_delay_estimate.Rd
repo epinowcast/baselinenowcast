@@ -11,20 +11,20 @@ get_delay_estimate(
 )
 }
 \arguments{
-\item{triangle}{matrix of the reporting triangle, with rows representing
+\item{triangle}{Matrix of the reporting triangle, with rows representing
 the time points of reference and columns representing the delays}
 
-\item{max_delay}{integer indicating the maximum delay to estimate, in units
+\item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
 \code{ncol(triangle) -1}.}
 
-\item{n_history}{integer indicating the number of reference dates to be
+\item{n_history}{Integer indicating the number of reference dates to be
 used in the estimate of the reporting delay, always starting from the most
 recent reporting delay. The default is to use the whole reporting triangle,
 so \code{nrow(triangle)-1}}
 }
 \value{
-delay_df dataframe of length \code{max_delay} with columns \code{delay}
+delay_df Dataframe of length \code{max_delay} with columns \code{delay}
 and \code{pmf}, indicating the point estimate of the empirical probability
 mass on each delay
 }

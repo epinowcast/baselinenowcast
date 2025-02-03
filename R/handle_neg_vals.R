@@ -4,10 +4,8 @@
 #' as the input triangle, but with negative values of reporting handled via
 #' passing them to the subsequent days (from longer delay to shorter).
 #' Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R #nolint
-#' @param triangle the reporting triangle as a matrix, where rows are the
-#' time points and columns are the delays, already truncated to the maximum
-#' delay and the number of historical observations
-#' @return pos_triangle a positive integer matrix with negative values of
+#' @inheritParams get_delay_estimate
+#' @return pos_triangle matrix of positive integers with negative values of
 #' reporting handled via passing them to the subsequent days delay
 handle_neg_vals <- function(triangle) {
   integer_cols <- seq_len(ncol(triangle))

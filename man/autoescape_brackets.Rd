@@ -7,10 +7,10 @@
 autoescape_brackets(string)
 }
 \arguments{
-\item{string}{A string vector containing \code{{}}}
+\item{string}{Vector of strings containing \code{{}}}
 }
 \value{
-A string vector where all single brackets are replaced with double
+Vector of strings where all single brackets are replaced with double
 brackets
 }
 \description{

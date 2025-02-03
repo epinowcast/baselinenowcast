@@ -7,15 +7,15 @@
 apply_delay(triangle_to_nowcast, delay_pmf)
 }
 \arguments{
-\item{triangle_to_nowcast}{matrix of the incomplete reporting triangle to be
+\item{triangle_to_nowcast}{Matrix of the incomplete reporting triangle to be
 nowcasted, with rows representing the time points of reference and columns
 representing the delays}
 
-\item{delay_pmf}{vector of delays assumed to be indexed starting at the
+\item{delay_pmf}{Vector of delays assumed to be indexed starting at the
 first delay column in \code{triangle_to_nowcast}}
 }
 \value{
-expectation, a matrix of the same number of rows and columns as the
+expectation, matrix of the same number of rows and columns as the
 \code{triangle_to_nowcast} but with the missing values filled in as point
 estimates
 }

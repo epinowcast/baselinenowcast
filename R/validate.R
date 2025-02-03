@@ -2,8 +2,6 @@
 #' @description
 #' Various checks to make sure that the reporting triangle passed in to
 #' `estimate_delay()` is formatted properly.
-#' @param triangle a matrix of values with rows indicating the time points and
-#' columns indicating the delays
 #' @inheritParams get_delay_estimate
 #'
 #' @returns NULL, invisibly
@@ -59,9 +57,9 @@ validate_triangle <- function(triangle,
 #' @description
 #' Various checks to make sure that the reporting triangle  and the delay pmf
 #' passed in to `apply_delay()` are formatted properly and compaitble
-#' @param triangle a matrix of values with rows indicating the time points and
+#' @param triangle Matrix of values with rows indicating the time points and
 #' columns indicating the delays
-#' @param delay_pmf a vector of length of the number of delays indicating the
+#' @param delay_pmf Vector of length of the number of delays indicating the
 #' probability of a case being reportined on a given delay
 #'
 #' @returns NULL, invisibly

@@ -7,10 +7,10 @@
 validate_delay_and_triangle(triangle, delay_pmf)
 }
 \arguments{
-\item{triangle}{a matrix of values with rows indicating the time points and
+\item{triangle}{Matrix of values with rows indicating the time points and
 columns indicating the delays}
 
-\item{delay_pmf}{a vector of length of the number of delays indicating the
+\item{delay_pmf}{Vector of length of the number of delays indicating the
 probability of a case being reportined on a given delay}
 }
 \value{

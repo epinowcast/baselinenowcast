@@ -7,12 +7,11 @@
 handle_neg_vals(triangle)
 }
 \arguments{
-\item{triangle}{the reporting triangle as a matrix, where rows are the
-time points and columns are the delays, already truncated to the maximum
-delay and the number of historical observations}
+\item{triangle}{Matrix of the reporting triangle, with rows representing
+the time points of reference and columns representing the delays}
 }
 \value{
-pos_triangle a positive integer matrix with negative values of
+pos_triangle matrix of positive integers with negative values of
 reporting handled via passing them to the subsequent days delay
 }
 \description{

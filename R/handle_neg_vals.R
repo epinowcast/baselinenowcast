@@ -40,6 +40,6 @@
   }
 
   # Return values that were NA back to NA
-  pos_triangle(is.na(triangle)) <- NA
+  pos_triangle[is.na(triangle)] <- NA
   return(pos_triangle)
 }

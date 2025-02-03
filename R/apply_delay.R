@@ -38,7 +38,7 @@
 apply_delay <- function(triangle_to_nowcast,
                         delay_pmf) {
   # Checks that the delay df and the triangle are compatible
-  validate_delay_and_triangle(
+  .validate_delay_and_triangle(
     triangle_to_nowcast,
     delay_pmf
   )
@@ -48,7 +48,7 @@ apply_delay <- function(triangle_to_nowcast,
   # Iterates through each column and adds entries to the expected reporting
   # triangle
   expectation <- Reduce(function(acc, co) {
-    calc_expectation(co, acc, n_dates, delay_pmf)
+    .calc_expectation(co, acc, n_dates, delay_pmf)
   }, 2:n_delays, init = triangle_to_nowcast)
   return(expectation)
 }

@@ -41,7 +41,7 @@ get_delay_estimate <- function(triangle,
                                max_delay = ncol(triangle) - 1,
                                n_history = nrow(triangle)) {
   # Check that the input reporting triangle is formatted properly.
-  validate_triangle(triangle,
+  .validate_triangle(triangle,
     max_delay = max_delay,
     n_history = n_history
   )
@@ -49,7 +49,7 @@ get_delay_estimate <- function(triangle,
   # Filter the triangle down to nrow = n_history + 1, ncol = max_delay
   nr0 <- nrow(triangle)
   trunc_triangle <- triangle[(nr0 - n_history + 1):nr0, 1:(max_delay + 1)]
-  rt <- handle_neg_vals(trunc_triangle)
+  rt <- .handle_neg_vals(trunc_triangle)
   n_delays <- ncol(rt)
   n_dates <- nrow(rt)
   factor <- vector(length = max_delay - 1)

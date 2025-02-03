@@ -108,7 +108,7 @@ ggplot() +
     # Plot the data summed across reporting days
     data = epinowcast::germany_covid19_hosp |>
       enw_filter_report_dates(latest_date = "2021-07-01") |>
-      dplyr::filter(
+      filter(
         location == "DE", age_group == "00+",
         report_date == "2021-07-01"
       ),
@@ -116,12 +116,12 @@ ggplot() +
   ) +
   geom_line(
     data = epinowcast::germany_covid19_hosp |>
-      dplyr::filter(
+      filter(
         location == "DE", age_group == "00+",
         reference_date <= "2021-07-01"
       ) |>
-      dplyr::group_by(reference_date) |>
-      dplyr::summarise(confirm = max(confirm)),
+      group_by(reference_date) |>
+      summarise(confirm = max(confirm)),
     aes(x = reference_date, y = confirm), color = "black"
   ) +
   theme_bw() +
@@ -203,10 +203,10 @@ head(triangle_full)
 # Check that the sum of the rows in the reporting triangle is the
 # same as the sums across report dates by reference date
 observed_sums <- observed_long |>
-  dplyr::group_by(reference_date) |>
-  dplyr::summarise(total_confirmed = max(confirm)) |>
-  dplyr::mutate(triangle_sums = rowSums(triangle_full |>
-    dplyr::select(-`.group`, -reference_date) |>
+  group_by(reference_date) |>
+  summarise(total_confirmed = max(confirm)) |>
+  mutate(triangle_sums = rowSums(triangle_full |>
+    select(-`.group`, -reference_date) |>
     as.matrix() |>
     unname()))
 ```
@@ -242,7 +242,7 @@ reporting triangle.
 
 ```{r estimate-delay}
 triangle <- triangle_full |>
-  dplyr::select(-`.group`, -reference_date) |> # remove unnecessary columns
+  select(-`.group`, -reference_date) |> # remove unnecessary columns
   as.matrix() |>
   unname()
 head(triangle)
@@ -288,18 +288,18 @@ point_reporting_square <- apply_delay(
 )
 ```
 
-We'll make a quick plot to compare the nowcast to the later observed data
+We'll make a quick plot to compare the nowcasted confirmed cases through
+July 1, 2021, from the observations up until October 1, 2021.
+We'll compare this to the right-truncated data available up until July 1, 2021.
 ```{r}
-# Get the confirmations through July 1, 2021, from the observations up until
-# October 1, 2021.
 final_data <- epinowcast::germany_covid19_hosp[location == "DE"][age_group == "00+"] |> # nolint
   enw_filter_report_dates(latest_date = "2021-10-01") |>
   enw_filter_reference_dates(
     latest_date = "2021-07-01",
     include_days = n_history - 1
   ) |>
-  dplyr::group_by(reference_date) |>
-  dplyr::summarise(
+  group_by(reference_date) |>
+  summarise(
     total_confirmed = max(confirm)
   ) |>
   dplyr::mutate(nowcast = rowSums(point_reporting_square))

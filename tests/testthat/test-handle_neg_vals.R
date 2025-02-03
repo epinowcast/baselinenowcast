@@ -45,8 +45,8 @@ test_that("handle_neg_vals function works correctly", {
   ), nrow = 2, byrow = TRUE)
 
   expected4 <- matrix(c(
-    10, 3, 0, 0,
-    5, 0, 0, 2
+    10, 3, NA, 0,
+    5, 0, NA, 2
   ), nrow = 2, byrow = TRUE)
 
   result4 <- handle_neg_vals(triangle4)

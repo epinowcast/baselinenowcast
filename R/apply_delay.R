@@ -50,7 +50,6 @@ apply_delay <- function(triangle_to_nowcast,
   )
   n_delays <- length(delay_pmf)
   n_dates <- nrow(triangle_to_nowcast)
-  expectation <- triangle_to_nowcast
 
   # Iterates through each column and adds entries to the expected reporting
   # triangle

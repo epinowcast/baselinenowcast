@@ -74,7 +74,11 @@ apply_delay <- function(triangle_to_nowcast,
 #' @returns a matrix with another set of entries corresponding to the updated
 #' values for the specified rows and column
 calc_expectation <- function(co, expectation, n_dates, delay_pmf) {
-  block_bottom_left <- expectation[(n_dates - co + 2):n_dates, 1:(co - 1), drop = FALSE] # nolint
+  block_bottom_left <- expectation[
+    (n_dates - co + 2):n_dates,
+    1:(co - 1), 
+    drop = FALSE
+  ]
   exp_total <- rowSums(block_bottom_left) / sum(delay_pmf[1:(co - 1)])
   expectation[(n_dates - co + 2):n_dates, co] <- exp_total * delay_pmf[co]
   return(expectation)

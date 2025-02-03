@@ -39,7 +39,7 @@ byrow = TRUE
 )
 delay_df <- get_delay_estimate(
   triangle = triangle,
-  max_delay = 3
+  max_delay = 3,
   n_history = 4
 )
 reporting_square <- apply_delay(

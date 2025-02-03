@@ -2,11 +2,11 @@
 #' @description
 #' Provides an estimate of the reporting delay as a function
 #'  of the delay, based on the reporting triangle and the specified maximum
-#'  delay and number of reference date observations to be used in the estimation.
-#'  This point estimate of the delay is computed empirically, using an
-#'  iterative algorithm starting from the most recent observations. It was
-#'  modified from the code originally developed by the Karlsruhe Institute
-#'  of Technology RESPINOW German Hospitalization Nowcasting Hub,
+#'  delay and number of reference date observations to be used in the
+#'  estimation. This point estimate of the delay is computed empirically,
+#'  using an iterative algorithm starting from the most recent observations.
+#'  It was modified from the code originally developed by the Karlsruhe
+#'  Institute of Technology RESPINOW German Hospitalization Nowcasting Hub,
 #'  Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
 #' @param triangle Matrix of the reporting triangle, with rows representing
 #'  the time points of reference and columns representing the delays
@@ -23,17 +23,18 @@
 #' @export
 #' @examples
 #' triangle <- matrix(
-#' c(
-#' 100, 50, 30, 20,
-#' 90, 45, 25, NA,
-#' 80, 40, NA, NA,
-#' 70, NA, NA, NA),
-#' nrow = 4,
-#' byrow = TRUE
+#'   c(
+#'     100, 50, 30, 20,
+#'     90, 45, 25, NA,
+#'     80, 40, NA, NA,
+#'     70, NA, NA, NA
+#'   ),
+#'   nrow = 4,
+#'   byrow = TRUE
 #' )
 #' delay_df <- get_delay_estimate(
 #'   triangle = triangle,
-#'   max_delay = 3
+#'   max_delay = 3,
 #'   n_history = 4
 #' )
 #' print(delay_df)

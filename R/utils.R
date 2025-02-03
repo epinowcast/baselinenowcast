@@ -25,10 +25,7 @@ replace_lower_right_with_NA <- function(matrix) {
   # Replace the lower right triangle with NAs
   for (i in 1:rows) {
     for (j in 1:cols) {
-      if (i == rows && j > 1) {
-        # For the bottom row, replace all but the first element with NA
-        result[i, j] <- NA
-      } else if (i + j > (cols + 2)) {
+      if (i + j > (rows + 1)) {
         # For other rows, replace the lower right triangle with NA
         result[i, j] <- NA
       }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimate_uncertainty.R
 \name{fit_nb}
 \alias{fit_nb}
-\title{Fit a negatiae binomial}
+\title{Fit a negative binomial to a vector of observations and expectations}
 \usage{
 fit_nb(x, mu)
 }
@@ -10,6 +10,9 @@ fit_nb(x, mu)
 \item{x}{the observed values}
 
 \item{mu}{the expected values}
+}
+\value{
+the maximum likelihood estimate of the dispersion
 }
 \description{
 Takes in a vector of observations and a vector of expectations and performs

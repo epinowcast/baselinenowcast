@@ -58,7 +58,7 @@ validate_triangle <- function(triangle,
 #' Validate triangle to nowcast and delay pmf together
 #' @description
 #' Various checks to make sure that the reporting triangle  and the delay pmf
-#' passed in to `apply_delay()` are formatted properly and compaitble
+#' passed in to `apply_delay()` are formatted properly and compatible
 #' @param triangle a matrix of values with rows indicating the time points and
 #' columns indicating the delays
 #' @param delay_pmf a vector of length of the number of delays indicating the

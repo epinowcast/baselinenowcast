@@ -66,16 +66,15 @@ apply_delay <- function(triangle_to_nowcast,
 #'
 #' @param co An integer indicating the column index
 #' @param expectation A matrix of the partially complete reporting triangle
-#' @param n_dates An integer indicating the number of dates in the reporting
-#' triangle (number of rows in the reporting triangle)
 #' @param delay_pmf A vector specifying the probability of a case being
 #' reported with delay d
 #'
 #' @returns a matrix with another set of entries corresponding to the updated
 #' values for the specified rows and column
-calc_expectation <- function(co, expectation, n_dates, delay_pmf) {
-  block_bottom_left <- expectation[(n_dates - co + 2):n_dates, 1:(co - 1), drop = FALSE] # nolint
+calc_expectation <- function(co, expectation, delay_pmf) {
+  n_rows <- nrow(expectation)
+  block_bottom_left <- expectation[max((n_rows - co + 2), 1):n_rows, 1:(co - 1), drop = FALSE] # nolint
   exp_total <- rowSums(block_bottom_left) / sum(delay_pmf[1:(co - 1)])
-  expectation[(n_dates - co + 2):n_dates, co] <- exp_total * delay_pmf[co]
+  expectation[max((n_rows - co + 2), 1):n_rows, co] <- exp_total * delay_pmf[co]
   return(expectation)
 }

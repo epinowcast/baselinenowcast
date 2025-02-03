@@ -4,15 +4,12 @@
 \alias{calc_expectation}
 \title{Calculate the updates rows of the expected nowcasted triangle}
 \usage{
-calc_expectation(co, expectation, n_dates, delay_pmf)
+calc_expectation(co, expectation, delay_pmf)
 }
 \arguments{
 \item{co}{An integer indicating the column index}
 
 \item{expectation}{A matrix of the partially complete reporting triangle}
-
-\item{n_dates}{An integer indicating the number of dates in the reporting
-triangle (number of rows in the reporting triangle)}
 
 \item{delay_pmf}{A vector specifying the probability of a case being
 reported with delay d}

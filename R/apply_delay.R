@@ -33,7 +33,7 @@
 #'   n_history = 4
 #' )
 #' reporting_square <- apply_delay(
-#'   triangle_to_nowcast = triangle_raw,
+#'   triangle_to_nowcast = triangle,
 #'   delay_pmf = delay_df$pmf
 #' )
 #' print(reporting_square)

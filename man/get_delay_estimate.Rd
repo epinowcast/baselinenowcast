@@ -40,13 +40,14 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116
 }
 \examples{
 triangle <- matrix(
-c(
-100, 50, 30, 20,
-90, 45, 25, NA,
-80, 40, NA, NA,
-70, NA, NA, NA),
-nrow = 4,
-byrow = TRUE
+  c(
+    100, 50, 30, 20,
+    90, 45, 25, NA,
+    80, 40, NA, NA,
+    70, NA, NA, NA
+  ),
+  nrow = 4,
+  byrow = TRUE
 )
 delay_df <- get_delay_estimate(
   triangle = triangle,

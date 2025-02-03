@@ -24,6 +24,6 @@ NULL, invisibly
 }
 \description{
 Various checks to make sure that the reporting triangle passed in to
-\code{\link[=estimate_delay]{estimate_delay()}} is formatted properly.
+\code{\link[=get_delay_estimate]{get_delay_estimate()}} is formatted properly.
 }
 \keyword{internal}

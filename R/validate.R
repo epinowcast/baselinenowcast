@@ -1,7 +1,7 @@
 #' Validate triangle
 #' @description
 #' Various checks to make sure that the reporting triangle passed in to
-#'  [estimate_delay()] is formatted properly.
+#'  [get_delay_estimate()] is formatted properly.
 #' @inheritParams get_delay_estimate
 #' @returns NULL, invisibly
 #' @keywords internal

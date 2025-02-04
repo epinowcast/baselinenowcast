@@ -1,4 +1,4 @@
-test_that("handle_neg_vals function works correctly", {
+test_that(".handle_neg_vals function works correctly", {
   # Test case 1: Basic functionality
   triangle1 <- matrix(c(
     10, 5, -2, 3,
@@ -12,7 +12,7 @@ test_that("handle_neg_vals function works correctly", {
     1, 6, 2, 0
   ), nrow = 3, byrow = TRUE)
 
-  result1 <- handle_neg_vals(triangle1)
+  result1 <- .handle_neg_vals(triangle1)
   expect_identical(result1, expected1)
 
   # Test case 2: No negative values
@@ -21,7 +21,7 @@ test_that("handle_neg_vals function works correctly", {
     4, 3, 2, 1
   ), nrow = 2, byrow = TRUE)
 
-  result2 <- handle_neg_vals(triangle2)
+  result2 <- .handle_neg_vals(triangle2)
   expect_identical(result2, triangle2)
 
   # Test case 3: Negative values at the end of rows
@@ -35,7 +35,7 @@ test_that("handle_neg_vals function works correctly", {
     8, 0, 0, 0
   ), nrow = 2, byrow = TRUE)
 
-  result3 <- handle_neg_vals(triangle3)
+  result3 <- .handle_neg_vals(triangle3)
   expect_identical(result3, expected3)
 
   # Test case 4: NA values
@@ -45,15 +45,15 @@ test_that("handle_neg_vals function works correctly", {
   ), nrow = 2, byrow = TRUE)
 
   expected4 <- matrix(c(
-    10, 3, 0, 0,
-    5, 0, 0, 2
+    10, 3, NA, 0,
+    5, 0, NA, 2
   ), nrow = 2, byrow = TRUE)
 
-  result4 <- handle_neg_vals(triangle4)
+  result4 <- .handle_neg_vals(triangle4)
   expect_identical(result4, expected4)
 
   # Test case 5: Output is integer matrix
-  result5 <- handle_neg_vals(triangle1)
+  result5 <- .handle_neg_vals(triangle1)
   expect_true(is.matrix(result5))
   expect_true(checkmate::check_integerish(result5))
 })

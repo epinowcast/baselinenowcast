@@ -7,46 +7,46 @@
 apply_delay(triangle_to_nowcast, delay_pmf)
 }
 \arguments{
-\item{triangle_to_nowcast}{matrix of the incomplete reporting triangle to be
+\item{triangle_to_nowcast}{Matrix of the incomplete reporting triangle to be
 nowcasted, with rows representing the time points of reference and columns
 representing the delays}
 
-\item{delay_pmf}{vector of delays assumed to be indexed starting at the
+\item{delay_pmf}{Vector of delays assumed to be indexed starting at the
 first delay column in \code{triangle_to_nowcast}}
 }
 \value{
-expectation, a matrix of the same number of rows and columns as the
+expectation, matrix of the same number of rows and columns as the
 \code{triangle_to_nowcast} but with the missing values filled in as point
 estimates
 }
 \description{
-This function takes as an input the reporting triangle that we want to
-complete with a nowcast and a delay pmf and generates a point estimate of a
-completed reporting square (or rectangle). This code is based on the code
+Generate a point estimate of a completed reporting square (or rectangle)
+from a reporting triangle that we want to complete with a nowcast and a
+delay pmf. This code is based on the code
 originally developed by the Karlsruhe Institute of Technology RESPINOW
 German Hospitalization Nowcasting Hub,
 Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
 }
 \examples{
-library(epinowcast)
-nat_germany_hosp <-
-  germany_covid19_hosp[location == "DE"][age_group == "00+"]
-nat_germany_hosp <- enw_filter_report_dates(
-  nat_germany_hosp,
-  latest_date = "2021-10-01"
+triangle <- matrix(
+  c(
+    80, 50, 25, 10,
+    100, 50, 30, 20,
+    90, 45, 25, NA,
+    80, 40, NA, NA,
+    70, NA, NA, NA
+  ),
+  nrow = 5,
+  byrow = TRUE
 )
-pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 21)
-triangle_raw <- pobs$reporting_triangle[[1]] |>
-  dplyr::select(-`.group`, -reference_date) |>
-  as.matrix() |>
-  unname()
 delay_df <- get_delay_estimate(
-  triangle = triangle_raw,
-  max_delay = 20,
-  n_history = 30
+  triangle = triangle,
+  max_delay = 3,
+  n_history = 4
 )
 reporting_square <- apply_delay(
-  triangle_to_nowcast = triangle_raw,
+  triangle_to_nowcast = triangle,
   delay_pmf = delay_df$pmf
 )
+print(reporting_square)
 }

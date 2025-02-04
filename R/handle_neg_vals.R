@@ -1,18 +1,18 @@
 #' Handle negative values in the reporting triangle
 #' @description
 #' Takes in a reporting triangle and returns a matrix in the same format
-#' as the input triangle, but with negative values of reporting handled via
-#' passing them to the subsequent days (from longer delay to shorter).
-#' Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R #nolint
-#' @param triangle the reporting triangle as a matrix, where rows are the
-#' time points and columns are the delays, already truncated to the maximum
-#' delay and the number of historical observations
-#' @return pos_triangle a positive integer matrix with negative values of
-#' reporting handled via passing them to the subsequent days delay
-handle_neg_vals <- function(triangle) {
+#'  as the input triangle, but with negative values of reporting handled via
+#'  passing them to the subsequent days (from longer delay to shorter).
+#'  Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R #nolint
+#' @param triangle Matrix of the reporting triangle, with rows representing
+#'  the time points of reference and columns representing the delays
+#' @return pos_triangle matrix of positive integers with negative values of
+#'  reporting handled via passing them to the subsequent days delay
+#' @keywords internal
+.handle_neg_vals <- function(triangle) {
   integer_cols <- seq_len(ncol(triangle))
   pos_triangle <- triangle
-  pos_triangle[is.na(pos_triangle)] <- 0 # Set NAs to 0
+  pos_triangle[is.na(pos_triangle)] <- 0 # Set NAs to 0 temporarily
   for (i in seq_len(nrow(triangle))) {
     to_subtract <- 0
     row <- pos_triangle[i, ]
@@ -38,5 +38,8 @@ handle_neg_vals <- function(triangle) {
   for (col in integer_cols) {
     pos_triangle[[col]] <- as.integer(pos_triangle[[col]])
   }
+
+  # Return values that were NA back to NA
+  pos_triangle[is.na(triangle)] <- NA
   return(pos_triangle)
 }

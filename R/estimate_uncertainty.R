@@ -54,8 +54,11 @@ estimate_uncertainty <- function(triangle_to_nowcast,
   # Get the truncated matrix of observations you will use to estimate the
   # dispersion (get rid of early rows that we're not using and add NAs to
   # bottom right of the triangle)
-  matr_observed_raw <- triangle_to_nowcast[(nrow(triangle_to_nowcast) - n_history_dispersion):nrow(triangle_to_nowcast), ] # nolint
-  matr_observed <- replace_lower_right_with_NA(matr_observed_raw)
+  matr_observed_raw <- triangle_to_nowcast[
+    (nrow(triangle_to_nowcast) - n_history_dispersion):
+    nrow(triangle_to_nowcast),
+  ]
+  matr_observed <- .replace_lower_right_with_NA(matr_observed_raw)
   exp_to_add_already_observed <-
     to_add_already_observed <-
     matrix(NA, nrow = n_history_dispersion, ncol = length(delay_pmf))
@@ -65,7 +68,7 @@ estimate_uncertainty <- function(triangle_to_nowcast,
     # Truncate the matrix observed by ignoring rows after t, replace rows that
     # wouldn't be observed with NAs
     matr_observed_temp <- matrix(matr_observed[1:t, ], nrow = t)
-    matr_observed_temp <- replace_lower_right_with_NA(matr_observed_temp)
+    matr_observed_temp <- .replace_lower_right_with_NA(matr_observed_temp)
 
     # From the truncated would have been observed as of t matrix, get the
     # expected nowcast as of t for each d
@@ -74,17 +77,29 @@ estimate_uncertainty <- function(triangle_to_nowcast,
       delay_pmf = delay_pmf
     )
 
-    # We now have what we would have added, and what we observed to have added.
+    # We now have what we would have estimated for each delay,
+    # and the corresponding observations for those reference dates and delays
+    # (if they are present).
     trunc_matr_observed <- matrix(matr_observed[1:t, ], nrow = t)
     indices_nowcast <- matrix(is.na(matr_observed_temp), nrow = t)
     indices_observed <- matrix(!is.na(trunc_matr_observed), nrow = t)
 
     # For each delay, find what would have been added at that delay for that
     # forecast date, and compare to what was actually added at that delay up
-    # until and including that forecast date
+    # until and including that forecast date (this will sum across
+    # the forecast dates (so across the rows))
     for (d in seq_along(1:n_delays)) {
       exp_to_add_already_observed[t, d] <- sum(indices_nowcast[, d] * indices_observed[, d] * matr_exp_temp[, d], na.rm = TRUE) # nolint
       to_add_already_observed[t, d] <- sum(indices_nowcast[, d] * indices_observed[, d] * trunc_matr_observed[, d], na.rm = TRUE) # nolint
+      # Question: this currently will produce 0s if both the index nowcast
+      # and index observed are false, which, will for example always be the c
+      # case for a delay of 0. Should these instead be NAs and excluded from the
+      # estimate below?  I don't think we want to exclude real 0s if there are
+      # any
+
+      # The last row of the exp_to_add_already_observed and
+      # to_add_already observed will always be 0s if partially reported because
+      # they are all not observed or if observed not nowcasted
     }
   }
 

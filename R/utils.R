@@ -14,7 +14,8 @@
 #'
 #' @returns A mattrix of the same dimensions, with NAs for all the lower right
 #' entries
-replace_lower_right_with_NA <- function(matrix) {
+#' @keywords internal
+.replace_lower_right_with_NA <- function(matrix) {
   # Get matrix dimensions
   rows <- nrow(matrix)
   cols <- ncol(matrix)

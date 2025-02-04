@@ -41,7 +41,7 @@ test_that("calc_expectation function works correctly", {
   third_result <- .calc_expectation(4, second_result, delay_pmf)
   last_result <- .calc_expectation(5, third_result, delay_pmf)
   # Test no more NAs in final result
-  expect_true(!any(is.na(last_result)))
+  expect_false(anyNA(last_result))
 
 
   # Test 6: Error handling - invalid co

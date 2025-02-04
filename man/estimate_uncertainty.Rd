@@ -35,29 +35,28 @@ confirmed cases on that forecast date at that delay d. For each delay, it
 estimates an independent negative binomial dispersion parameter. This code
 is based on the code originally developed by the Karlsruhe Institute of
 Technology RESPINOW German Hospitalization Nowcasting Hub,
-https://github.com/KITmetricslab/RESPINOW-Hub/blob/39e2b17bc79492b0aee4c0b615a1c8dbf978ef53/code/baseline/functions.R#L142
+https://github.com/KITmetricslab/RESPINOW-Hub/blob/39e2b17bc79492b0aee4c0b615a1c8dbf978ef53/code/baseline/functions.R#L142 #nolint
 }
 \examples{
-#' library(epinowcast)
-nat_germany_hosp <-
-  germany_covid19_hosp[location == "DE"][age_group == "00+"]
-nat_germany_hosp <- enw_filter_report_dates(
-  nat_germany_hosp,
-  latest_date = "2021-10-01"
+triangle <- matrix(
+  c(
+    80, 50, 25, 10,
+    100, 50, 30, 20,
+    90, 45, 25, NA,
+    80, 40, NA, NA,
+    70, NA, NA, NA
+  ),
+  nrow = 5,
+  byrow = TRUE
 )
-pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 21)
-triangle_raw <- pobs$reporting_triangle[[1]] |>
-  dplyr::select(-`.group`, -reference_date) |>
-  as.matrix() |>
-  unname()
 delay_df <- get_delay_estimate(
-  triangle = triangle_raw,
-  max_delay = 20,
-  n_history = 30
+  triangle = triangle,
+  max_delay = 3,
+  n_history = 4
 )
-disp_df <- estimate_uncertainty(
-  triangle_to_nowcast = triangle_raw,
+disp_params <- estimate_uncertainty(
+  triangle_to_nowcast = triangle,
   delay_pmf = delay_df$pmf,
-  n_history_dispersion = n_history_dispersion
+  n_history_dispersion = 5
 )
 }

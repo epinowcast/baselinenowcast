@@ -7,7 +7,7 @@
 #' estimates an independent negative binomial dispersion parameter. This code
 #' is based on the code originally developed by the Karlsruhe Institute of
 #' Technology RESPINOW German Hospitalization Nowcasting Hub,
-#' https://github.com/KITmetricslab/RESPINOW-Hub/blob/39e2b17bc79492b0aee4c0b615a1c8dbf978ef53/code/baseline/functions.R#L142
+#' https://github.com/KITmetricslab/RESPINOW-Hub/blob/39e2b17bc79492b0aee4c0b615a1c8dbf978ef53/code/baseline/functions.R#L142 #nolint
 #'
 #'
 #' @param triangle_to_nowcast matrix of the incomplete reporting triangle to be
@@ -50,21 +50,19 @@
 estimate_uncertainty <- function(triangle_to_nowcast,
                                  delay_pmf,
                                  n_history_dispersion = nrow(triangle_to_nowcast)) { # nolint
+  n_delays <- length(delay_pmf)
 
   # Get the truncated matrix of observations you will use to estimate the
   # dispersion (get rid of early rows that we're not using and add NAs to
   # bottom right of the triangle)
   matr_observed_raw <- triangle_to_nowcast[(nrow(triangle_to_nowcast) - n_history_dispersion):nrow(triangle_to_nowcast), ] # nolint
   matr_observed <- replace_lower_right_with_NA(matr_observed_raw)
-  expectation_to_add_already_observed <-
+  exp_to_add_already_observed <-
     to_add_already_observed <-
     matrix(NA, nrow = n_history_dispersion, ncol = length(delay_pmf))
   for (t in seq_along(1:n_history_dispersion)) {
     # What would we have already observed as of the first forecast date we are
-    # using to estimate the dispersion?
-    # matr_observed_temp <- matr_NAs
-    # matr_obs_temp_to_nowcast <- matr_NAs
-
+    # using to estimate the dispersion
     # Truncate the matrix observed by ignoring rows after t, replace rows that
     # wouldn't be observed with NAs
     matr_observed_temp <- matrix(matr_observed[1:t, ], nrow = t)
@@ -85,17 +83,17 @@ estimate_uncertainty <- function(triangle_to_nowcast,
     # For each delay, find what would have been added at that delay for that
     # forecast date, and compare to what was actually added at that delay up
     # until and including that forecast date
-    for (d in 1:length(delay_pmf)) {
-      expectation_to_add_already_observed[t, d] <- sum(indices_nowcast[, d] * indices_observed[, d] * matr_exp_temp[, d], na.rm = TRUE)
-      to_add_already_observed[t, d] <- sum(indices_nowcast[, d] * indices_observed[, d] * trunc_matr_observed[, d], na.rm = TRUE)
+    for (d in seq_along(1:n_delays)) {
+      exp_to_add_already_observed[t, d] <- sum(indices_nowcast[, d] * indices_observed[, d] * matr_exp_temp[, d], na.rm = TRUE) # nolint
+      to_add_already_observed[t, d] <- sum(indices_nowcast[, d] * indices_observed[, d] * trunc_matr_observed[, d], na.rm = TRUE) # nolint
     }
   }
 
-  disp_params <- vector(length = length(delay_pmf))
+  disp_params <- vector(length = n_delays)
   # run through horizons
-  for (i in 1:length(delay_pmf)) {
+  for (i in seq_along(1:n_delays)) {
     obs_temp <- to_add_already_observed[, i]
-    mu_temp <- expectation_to_add_already_observed[, i]
+    mu_temp <- exp_to_add_already_observed[, i]
     mu_temp <- mu_temp + 0.1
     disp_params[i] <- fit_nb(x = obs_temp, mu = mu_temp)
   }
@@ -111,7 +109,7 @@ estimate_uncertainty <- function(triangle_to_nowcast,
 #' This code is based on the code originally developed by the Karlsruhe
 #' Institute of Technology RESPINOW German Hospitalization Nowcasting Hub
 #' https://github.com/KITmetricslab/RESPINOW-Hub/blob/7fab4dce7b559c3076ab643cf22048cb5fb84cc2/code/baseline/functions.R#L404 #nolint
-#'
+#' @importFrom stats dnbinom optimize
 #' @param x the observed values
 #' @param mu the expected values
 #' @returns the maximum likelihood estimate of the dispersion

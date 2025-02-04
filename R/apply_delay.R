@@ -1,11 +1,11 @@
 #' Apply the delay to generate a point nowcast
 #' @description
 #' Generate a point estimate of a completed reporting square (or rectangle)
-#' from a reporting triangle that we want to complete with a nowcast and a
-#' delay pmf. This code is based on the code
-#' originally developed by the Karlsruhe Institute of Technology RESPINOW
-#' German Hospitalization Nowcasting Hub,
-#' Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
+#'  from a reporting triangle that we want to complete with a nowcast and a
+#'  delay pmf. This code is based on the code
+#'  originally developed by the Karlsruhe Institute of Technology RESPINOW
+#'  German Hospitalization Nowcasting Hub,
+#'  Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
 #' @param triangle_to_nowcast Matrix of the incomplete reporting triangle to be
 #'  nowcasted, with rows representing the time points of reference and columns
 #'  representing the delays
@@ -60,12 +60,12 @@ apply_delay <- function(triangle_to_nowcast,
 #' @param co Integer indicating the column index
 #' @param expectation Matrix of the partially complete reporting triangle
 #' @param n_dates Integer indicating the number of dates in the reporting
-#' triangle (number of rows in the reporting triangle)
+#'  triangle (number of rows in the reporting triangle)
 #' @param delay_pmf Vector specifying the probability of a case being
-#' reported with delay d
+#'  reported with delay d
 #'
 #' @returns Matrix with another set of entries corresponding to the updated
-#' values for the specified rows and column
+#'  values for the specified rows and column
 #' @keywords internal
 .calc_expectation <- function(co, expectation, n_dates, delay_pmf) {
   block_bottom_left <- expectation[

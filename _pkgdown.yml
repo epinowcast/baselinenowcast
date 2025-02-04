@@ -14,9 +14,6 @@ navbar:
   components:
     metareference:
       text: Reference
-      menu:
-      - text: R reference
-        href: reference/index.html
 
 home:
   title: Baseline nowcast for right-truncated epidemiological data

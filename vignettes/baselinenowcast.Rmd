@@ -256,7 +256,7 @@ delay_pmf <- get_delay_estimate(
 )
 
 delay_df <- data.frame(
-  delay = 0:nrow(delay_pmf),
+  delay = 0:length(delay_pmf),
   pmf = delay_pmf
 )
 

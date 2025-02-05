@@ -3,6 +3,9 @@
 #' Takes in a reporting triangle and returns a matrix in the same format
 #'  as the input triangle, but with negative values of reporting handled via
 #'  passing them to the subsequent days (from longer delay to shorter).
+#'  This code was adapted from code written (under an MIT license)
+#'  by the Karlsruhe Institute of Technology RESPINOW
+#'  German Hospitalization Nowcasting Hub.
 #'  Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R #nolint
 #' @param triangle Matrix of the reporting triangle, with rows representing
 #'  the time points of reference and columns representing the delays

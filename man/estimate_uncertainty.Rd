@@ -38,16 +38,16 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/39e2b17bc79492
 }
 \examples{
 triangle <- matrix(
- c(
-  70, 40, 20, 5,
-  80, 50, 10, 10,
-  100, 40, 31, 20,
-  95, 45, 21, NA,
-  82, 42, NA, NA,
-  70, NA, NA, NA
+  c(
+    70, 40, 20, 5,
+    80, 50, 10, 10,
+    100, 40, 31, 20,
+    95, 45, 21, NA,
+    82, 42, NA, NA,
+    70, NA, NA, NA
   ),
-nrow = 6,
-byrow = TRUE
+  nrow = 6,
+  byrow = TRUE
 )
 delay_df <- get_delay_estimate(
   triangle = triangle,

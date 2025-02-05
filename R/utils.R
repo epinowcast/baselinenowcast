@@ -2,7 +2,7 @@
 #'
 #' @param string Vector of strings containing `{}`
 #' @return Vector of strings where all single brackets are replaced with double
-#'  brackets
+#'   brackets
 #' @keywords internal
 .autoescape_brackets <- function(string) {
   return(gsub("\\{|\\}", "", string))

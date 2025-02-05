@@ -20,10 +20,8 @@
 
   if (nrow(triangle) <= ncol(triangle)) {
     cli_abort(
-      message = c(
-        "Number of observations must be greater than the maximum",
-        "delay"
-      )
+      message =
+        "Number of observations must be greater than the maximum delay"
     )
   }
 

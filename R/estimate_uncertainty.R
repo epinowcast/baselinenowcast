@@ -17,7 +17,7 @@
 #' to be used in the estimate of the dispersion, always starting from the most
 #' recent refrence date. The default is to use the whole reporting triangle,
 #' so `nrow(triangle_to_nowcast) - 1`
-#'
+#' @importFrom cli cli_abort
 #' @returns a vector of dispersion parameters of length of the `delay_pmf` -1
 #' @export
 #'
@@ -52,6 +52,19 @@ estimate_uncertainty <- function(triangle_to_nowcast,
 
   # Add validation for n_history_dispersion, must be less than
   # number of rows in the triangle minus one
+  .validate_delay_and_triangle(
+    triangle = triangle_to_nowcast,
+    delay_pmf = delay_pmf
+  )
+  if (n_history_dispersion > nrow(triangle_to_nowcast) - 1) {
+    cli_abort(
+      message = c(
+        "Triangle to nowcast does not contain sufficient rows to ",
+        "estimate uncertainty from `n_history_dispersion` observations. Either",
+        "pass in a triangle of more rows or lower the `n_history_dispersion`"
+      )
+    )
+  }
 
   # Get the truncated matrix of observations you will use to estimate the
   # dispersion (get rid of early rows that we're not using and add NAs to

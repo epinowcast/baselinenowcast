@@ -87,4 +87,14 @@ test_that(".validate_triangle works correctly", {
     max_delay = 2,
     n_history = 4
   ))
+
+  # Test case 12: matrix of all NAs
+  na_triangle <- matrix(NA, nrow = 6, ncol = 4)
+  expect_error(
+    .validate_triangle(na_triangle,
+      max_delay = 3,
+      n_history = 5
+    ),
+    regexp = "Assertion on 'triangle' failed: Contains only missing values."
+  ) # nolint
 })

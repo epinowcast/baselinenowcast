@@ -4,19 +4,21 @@
 #'  [get_delay_estimate()] is formatted properly.
 #' @importFrom checkmate assert_class
 #' @importFrom checkmate assert_integerish
+#' @importFrom checkmate assert_matrix
 #' @importFrom cli cli_abort
 #' @inheritParams get_delay_estimate
 #' @returns NULL, invisibly
 #' @keywords internal
 .validate_triangle <- function(triangle,
-                               max_delay,
-                               n_history) {
+                               max_delay = ncol(triangle) - 1,
+                               n_history = nrow(triangle)) {
   # Make sure the input triangle only contains integer values
   # and is of the correct class
   assert_class(triangle, "matrix")
   assert_integerish(triangle)
   assert_integerish(max_delay)
   assert_integerish(n_history)
+  assert_matrix(triangle, all.missing = FALSE)
 
   if (nrow(triangle) <= ncol(triangle)) {
     cli_abort(
@@ -64,6 +66,7 @@
 #'  probability of a case being reported on a given delay
 #' @importFrom checkmate assert_class
 #' @importFrom checkmate assert_integerish
+#' @importFrm checkmate assert_matrix
 #' @importFrom cli cli_abort
 #' @returns NULL, invisibly
 #' @keywords internal
@@ -74,6 +77,8 @@
   # Check that the inputs are the correct type
   assert_class(triangle, "matrix")
   assert_class(delay_pmf, "numeric")
+  assert_matrix(triangle, all.missing = FALSE)
+
 
   # Make sure the triangle has the same number of colums as the delay
   if ((ncol(triangle) != length(delay_pmf))) {

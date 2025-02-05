@@ -52,6 +52,7 @@ estimate_uncertainty <- function(triangle_to_nowcast,
 
   # Add validation for n_history_dispersion, must be less than
   # number of rows in the triangle minus one
+  .validate_triangle(triangle_to_nowcast)
   .validate_delay_and_triangle(
     triangle = triangle_to_nowcast,
     delay_pmf = delay_pmf

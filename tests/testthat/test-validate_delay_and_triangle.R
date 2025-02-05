@@ -16,33 +16,33 @@ test_that(".validate_delay_and_triangle works correctly", {
   expect_error(
     .validate_delay_and_triangle(not_matrix_triangle, c(0.6, 0.4)),
     "Assertion on 'triangle' failed: Must inherit from class 'matrix'"
-  ) # nolint
+  )
 
   # Test case 4: Delay PMF is not numeric
   non_numeric_delay <- c("0.5", "0.5")
   expect_error(
     .validate_delay_and_triangle(valid_triangle, non_numeric_delay),
     "Assertion on 'delay_pmf' failed: Must inherit from class 'numeric'"
-  ) # nolint
+  )
 
   # Test case 5: Mismatch between triangle columns and delay PMF length
   mismatched_delay <- c(0.3, 0.3, 0.4)
   expect_error(
     .validate_delay_and_triangle(valid_triangle, mismatched_delay),
     "Length of the delay pmf is not the same as the number of delays"
-  ) # nolint
+  )
 
   # Test case 6: Empty triangle
   empty_triangle <- matrix(integer(0), nrow = 0, ncol = 0)
   expect_error(
     .validate_delay_and_triangle(empty_triangle, valid_delay_pmf),
-    "Length of the delay pmf is not the same as the number of delays"
-  ) # nolint
+    "Assertion on 'triangle' failed: Contains only missing values."
+  )
 
   # Test case 7: Empty delay PMF
   empty_delay <- numeric(0)
   expect_error(
     .validate_delay_and_triangle(valid_triangle, empty_delay),
     "Length of the delay pmf is not the same as the number of delays"
-  ) # nolint
+  )
 })

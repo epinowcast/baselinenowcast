@@ -1,7 +1,4 @@
-test_that(c(
-  "estimate_uncertainty function generates dispersion parameter",
-  "estimates"
-), {
+test_that("estimate_uncertainty function generates dispersion parameters", {
   set.seed(123)
   # Make a simple triangle
   triangle <- matrix(

@@ -69,7 +69,7 @@ test_that(".replace_lower_right_with_NA works correctly", {
     4, 5, NA,
     7, NA, NA
   ), nrow = 3, byrow = TRUE)
-  expect_equaal(.replace_lower_right_with_NA(na_matrix),
+  expect_equal(.replace_lower_right_with_NA(na_matrix),
     expected_na,
     tol = 1e-6
   )

@@ -21,4 +21,6 @@ test_that(c(
     delay_pmf = delay_pmf,
     n_history_dispersion = 3
   )
+  expect_vector(disp_params)
+  expect_length(disp_params, 3L)
 })

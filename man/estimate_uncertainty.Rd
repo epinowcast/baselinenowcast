@@ -2,12 +2,12 @@
 % Please edit documentation in R/estimate_uncertainty.R
 \name{estimate_uncertainty}
 \alias{estimate_uncertainty}
-\title{Estimate the uncertainty as a function of delay d}
+\title{Estimate the uncertainty in the nowcasts}
 \usage{
 estimate_uncertainty(
   triangle_to_nowcast,
   delay_pmf,
-  n_history_dispersion = nrow(triangle_to_nowcast)
+  n_history_dispersion = nrow(triangle_to_nowcast) - 1
 )
 }
 \arguments{
@@ -24,8 +24,7 @@ recent refrence date. The default is to use the whole reporting triangle,
 so \code{nrow(triangle_to_nowcast) - 1}}
 }
 \value{
-a dataframe of dispersion parameters alongside their corresponding
-delay d
+a vector of dispersion parameters of length of the \code{delay_pmf} -1
 }
 \description{
 This function takes in as input the triangle that we want to nowcast and
@@ -33,21 +32,22 @@ the delay pmf, which may have been estimated separately. It uses the delay
 pmf to compute, for each forecast date and delay, the expected number of
 confirmed cases on that forecast date at that delay d. For each delay, it
 estimates an independent negative binomial dispersion parameter. This code
-is based on the code originally developed by the Karlsruhe Institute of
-Technology RESPINOW German Hospitalization Nowcasting Hub,
-https://github.com/KITmetricslab/RESPINOW-Hub/blob/39e2b17bc79492b0aee4c0b615a1c8dbf978ef53/code/baseline/functions.R#L142 #nolint
+was adapted from code written (under an MIT license) by the Karlsruhe
+Institute of Technology RESPINOW German Hospitalization Nowcasting Hub,
+Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/39e2b17bc79492b0aee4c0b615a1c8dbf978ef53/code/baseline/functions.R#L142 #nolint
 }
 \examples{
 triangle <- matrix(
-  c(
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    90, 45, 25, NA,
-    80, 40, NA, NA,
-    70, NA, NA, NA
+ c(
+  70, 40, 20, 5,
+  80, 50, 10, 10,
+  100, 40, 31, 20,
+  95, 45, 21, NA,
+  82, 42, NA, NA,
+  70, NA, NA, NA
   ),
-  nrow = 5,
-  byrow = TRUE
+nrow = 6,
+byrow = TRUE
 )
 delay_df <- get_delay_estimate(
   triangle = triangle,

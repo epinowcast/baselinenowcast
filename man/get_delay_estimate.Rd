@@ -24,8 +24,8 @@ recent reporting delay. The default is to use the whole reporting triangle,
 so \code{nrow(triangle)-1}}
 }
 \value{
-delay_df Dataframe of length \code{max_delay} with columns \code{delay}
-and \code{pmf}, indicating the point estimate of the empirical probability
+delay_df 0-indexed vector of length \code{max_delay + 1} with columns
+indicating the point estimate of the empirical probability
 mass on each delay
 }
 \description{
@@ -51,10 +51,10 @@ triangle <- matrix(
   nrow = 5,
   byrow = TRUE
 )
-delay_df <- get_delay_estimate(
+delay_pmf <- get_delay_estimate(
   triangle = triangle,
   max_delay = 3,
   n_history = 4
 )
-print(delay_df)
+print(delay_pmf)
 }

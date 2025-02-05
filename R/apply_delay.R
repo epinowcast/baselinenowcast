@@ -27,14 +27,14 @@
 #'   nrow = 5,
 #'   byrow = TRUE
 #' )
-#' delay_df <- get_delay_estimate(
+#' delay_pmf <- get_delay_estimate(
 #'   triangle = triangle,
 #'   max_delay = 3,
 #'   n_history = 4
 #' )
 #' reporting_square <- apply_delay(
 #'   triangle_to_nowcast = triangle,
-#'   delay_pmf = delay_df$pmf
+#'   delay_pmf = delay_pmf
 #' )
 #' print(reporting_square)
 apply_delay <- function(triangle_to_nowcast,

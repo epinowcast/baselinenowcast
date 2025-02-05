@@ -18,8 +18,8 @@
 #'  used in the estimate of the reporting delay, always starting from the most
 #'  recent reporting delay. The default is to use the whole reporting triangle,
 #'  so `nrow(triangle)-1`
-#' @returns delay_df Dataframe of length `max_delay` with columns `delay`
-#'  and `pmf`, indicating the point estimate of the empirical probability
+#' @returns delay_df 0-indexed vector of length `max_delay + 1` with columns
+#'  indicating the point estimate of the empirical probability
 #'  mass on each delay
 #' @export
 #' @examples
@@ -34,12 +34,12 @@
 #'   nrow = 5,
 #'   byrow = TRUE
 #' )
-#' delay_df <- get_delay_estimate(
+#' delay_pmf <- get_delay_estimate(
 #'   triangle = triangle,
 #'   max_delay = 3,
 #'   n_history = 4
 #' )
-#' print(delay_df)
+#' print(delay_pmf)
 get_delay_estimate <- function(triangle,
                                max_delay = ncol(triangle) - 1,
                                n_history = nrow(triangle)) {
@@ -73,9 +73,6 @@ get_delay_estimate <- function(triangle,
   # Use the completed reporting square to get the point estimate of the delay
   # distribution
   pmf <- colSums(expectation) / sum(expectation)
-  delay_df <- data.frame(
-    delay = 0:max_delay,
-    pmf = pmf
-  )
-  return(delay_df)
+
+  return(pmf)
 }

@@ -249,17 +249,21 @@ triangle <- triangle_full |>
   unname()
 head(triangle)
 
-delay_df <- get_delay_estimate(
+delay_pmf <- get_delay_estimate(
   triangle = triangle,
   max_delay = max_delay,
   n_history = n_history
 )
 
+delay_df <- data.frame(
+  delay = 0:nrow(delay_pmf),
+  pmf = delay_pmf
+)
 
 ggplot(delay_df) +
   geom_line(aes(x = delay, y = cumsum(pmf))) +
   xlab("Delay") +
-  ylab("Cumulativee proportion reported") +
+  ylab("Cumulative proportion reported") +
   ggtitle("Empirical point estimate of cumulative proportion reported by delay") + # nolint
   theme_bw()
 
@@ -286,7 +290,7 @@ as the delay estimate.
 ```{r}
 point_reporting_square <- apply_delay(
   triangle_to_nowcast = triangle,
-  delay_pmf = delay_df$pmf
+  delay_pmf = delay_pmf
 )
 ```
 
@@ -352,7 +356,7 @@ as a function of the delay d
 ```{r}
 disp_params <- estimate_uncertainty(
   triangle_to_nowcast = triangle,
-  delay_pmf = delay_df$pmf
+  delay_pmf = delay_pmf
 )
 ```
 

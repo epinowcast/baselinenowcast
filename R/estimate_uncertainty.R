@@ -34,14 +34,14 @@
 #'   nrow = 6,
 #'   byrow = TRUE
 #' )
-#' delay_df <- get_delay_estimate(
+#' delay_pmf <- get_delay_estimate(
 #'   triangle = triangle,
 #'   max_delay = 3,
 #'   n_history = 4
 #' )
 #' disp_params <- estimate_uncertainty(
 #'   triangle_to_nowcast = triangle,
-#'   delay_pmf = delay_df$pmf,
+#'   delay_pmf = delay_pmf,
 #'   n_history_dispersion = 5
 #' )
 estimate_uncertainty <- function(triangle_to_nowcast,
@@ -50,7 +50,8 @@ estimate_uncertainty <- function(triangle_to_nowcast,
 
   n_horizons <- length(delay_pmf) - 1
 
-  # Add validation for n_history_dispersion, must be less than nrow(triangle) - 1
+  # Add validation for n_history_dispersion, must be less than
+  # nrow(triangle) - 1
 
   # Get the truncated matrix of observations you will use to estimate the
   # dispersion (get rid of early rows that we're not using and add NAs to

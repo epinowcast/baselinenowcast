@@ -51,7 +51,7 @@ estimate_uncertainty <- function(triangle_to_nowcast,
   n_horizons <- length(delay_pmf) - 1
 
   # Add validation for n_history_dispersion, must be less than
-  # nrow(triangle) - 1
+  # number of rows in the triangle minus one
 
   # Get the truncated matrix of observations you will use to estimate the
   # dispersion (get rid of early rows that we're not using and add NAs to
@@ -145,6 +145,25 @@ estimate_uncertainty <- function(triangle_to_nowcast,
                                   matrix_bool1,
                                   matrix_bool2,
                                   matrix_to_sum) {
+  if (col > dim(matrix_to_sum)[2]) {
+    cli::cli_abort(
+      message = "Column to sum is out of bounds of input matrices"
+    )
+  }
+
+  if (!all(dim(matrix_bool1) == dim(matrix_bool2))) {
+    cli::cli_abort(
+      message = "Dimensions of boolean matrices are not the same"
+    )
+  }
+
+  if (!all(dim(matrix_to_sum) == dim(matrix_bool1))) {
+    cli::cli_abort(
+      message =
+        "Dimensions of boolean matrices and matrix to sum are not the same"
+    )
+  }
+
   cond_sum <- sum(
     matrix_bool1[, col] *
       matrix_bool2[, col] *

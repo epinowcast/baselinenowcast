@@ -19,6 +19,6 @@ test_that(c(
   disp_params <- estimate_uncertainty(
     triangle_to_nowcast = triangle,
     delay_pmf = delay_pmf,
-    n_history_dispersion = 4
+    n_history_dispersion = 3
   )
 })

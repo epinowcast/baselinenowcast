@@ -4,7 +4,11 @@
 \alias{.validate_triangle}
 \title{Validate triangle}
 \usage{
-.validate_triangle(triangle, max_delay, n_history)
+.validate_triangle(
+  triangle,
+  max_delay = ncol(triangle) - 1,
+  n_history = nrow(triangle)
+)
 }
 \arguments{
 \item{triangle}{Matrix of the reporting triangle, with rows representing

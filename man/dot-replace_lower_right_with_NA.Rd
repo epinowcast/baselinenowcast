@@ -7,10 +7,10 @@
 .replace_lower_right_with_NA(matrix)
 }
 \arguments{
-\item{matrix}{A matrix}
+\item{matrix}{Matrix}
 }
 \value{
-A mattrix of the same dimensions, with NAs for all the lower right
+A matrix of the same dimensions, with NAs for all the lower right
 entries
 }
 \description{

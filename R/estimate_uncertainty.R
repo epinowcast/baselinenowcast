@@ -1,22 +1,22 @@
 #' Estimate the uncertainty in the nowcasts
 #' @description
 #' This function takes in as input the triangle that we want to nowcast and
-#' the delay pmf, which may have been estimated separately. It uses the delay
-#' pmf to compute, for each forecast date and delay, the expected number of
-#' confirmed cases on that forecast date at that delay d. For each delay, it
-#' estimates an independent negative binomial dispersion parameter. This code
-#' was adapted from code written (under an MIT license) by the Karlsruhe
-#' Institute of Technology RESPINOW German Hospitalization Nowcasting Hub,
+#'   the delay pmf, which may have been estimated separately. It uses the delay
+#'   pmf to compute, for each forecast date and delay, the expected number of
+#'   confirmed cases on that forecast date at that delay d. For each delay, it
+#'   estimates an independent negative binomial dispersion parameter. This code
+#'   was adapted from code written (under an MIT license) by the Karlsruhe
+#'   Institute of Technology RESPINOW German Hospitalization Nowcasting Hub,
 #' Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/39e2b17bc79492b0aee4c0b615a1c8dbf978ef53/code/baseline/functions.R#L142 #nolint
 #' @param triangle_to_nowcast matrix of the incomplete reporting triangle to be
-#' nowcasted, with rows representing the time points of reference and columns
-#' representing the delays
+#'   nowcasted, with rows representing the time points of reference and columns
+#'   representing the delays
 #' @param delay_pmf vector of delays assumed to be indexed starting at the
-#' first delay column in `triangle_to_nowcast`
+#'   first delay column in `triangle_to_nowcast`
 #' @param n_history_dispersion integer indicating the number of reference dates
-#' to be used in the estimate of the dispersion, always starting from the most
-#' recent refrence date. The default is to use the whole reporting triangle,
-#' so `nrow(triangle_to_nowcast) - 1`
+#'   to be used in the estimate of the dispersion, always starting from the most
+#'   recent refrence date. The default is to use the whole reporting triangle,
+#'   so `nrow(triangle_to_nowcast) - 1`
 #' @importFrom cli cli_abort
 #' @returns a vector of dispersion parameters of length of the `delay_pmf` -1
 #' @export
@@ -145,7 +145,7 @@ estimate_uncertainty <- function(triangle_to_nowcast,
 }
 
 #' Compute the sum of entries of a column in a matrix where both sets of
-#' matrices of booleans are TRUE
+#'   matrices of booleans are TRUE
 #'
 #' @param col Integer indicating the column to sum over
 #' @param matrix_bool1 Matrix of booleans for the first set of indices
@@ -153,7 +153,7 @@ estimate_uncertainty <- function(triangle_to_nowcast,
 #' @param matrix_to_sum Matrix to be summed for that specific colun
 #'
 #' @returns Numeric summing the values in the `matrix_to_sum` at the specified
-#' column for the entries that are true
+#'   column for the entries that are true
 #' @keywords internal
 .conditional_sum_cols <- function(col,
                                   matrix_bool1,
@@ -191,11 +191,11 @@ estimate_uncertainty <- function(triangle_to_nowcast,
 #'
 #' @description
 #' Takes in a vector of observations and a vector of expectations and performs
-#' a MLE estimator to estimate the dispersion parameter of a negative binomial.
-#' This code was adapted from code written (under an MIT license) by the
-#' Karlsruhe Institute of Technology RESPINOW German Hospitalization Nowcasting
-#' Hub.
-#' Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7fab4dce7b559c3076ab643cf22048cb5fb84cc2/code/baseline/functions.R#L404 #nolint
+#'   a MLE estimator to estimate the dispersion parameter of a negative
+#'   binomial. This code was adapted from code written (under an MIT license)
+#'   by the Karlsruhe Institute of Technology RESPINOW German Hospitalization
+#'   Nowcasting Hub.
+#'   Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7fab4dce7b559c3076ab643cf22048cb5fb84cc2/code/baseline/functions.R#L404 #nolint
 #' @importFrom stats dnbinom optimize
 #' @param x the observed values
 #' @param mu the expected values

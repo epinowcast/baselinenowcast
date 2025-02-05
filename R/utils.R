@@ -1,9 +1,8 @@
 #' Replace the lower right triangle of the matrix with NAs
 #'
-#' @param matrix A matrix
-#'
-#' @returns A mattrix of the same dimensions, with NAs for all the lower right
-#' entries
+#' @param matrix Matrix
+#' @returns A matrix of the same dimensions, with NAs for all the lower right
+#'   entries
 #' @keywords internal
 .replace_lower_right_with_NA <- function(matrix) {
   # Get matrix dimensions

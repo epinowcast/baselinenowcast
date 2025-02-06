@@ -14,12 +14,12 @@
 #'   of the delay. The default is to use the whole reporting triangle,
 #'   `ncol(triangle) -1`.
 #' @param n_history Integer indicating the number of reference dates to be
-#'    used in the estimate of the reporting delay, always starting from the most
-#'    recent reporting delay. The default is to use the whole reporting
-#'    triangle, so `nrow(triangle)-1`
-#' @returns delay_df Dataframe of length `max_delay` with columns `delay`
-#'    and `pmf`, indicating the point estimate of the empirical probability
-#'    mass on each delay
+#'   used in the estimate of the reporting delay, always starting from the most
+#'   recent reporting delay. The default is to use the whole reporting triangle,
+#'   so `nrow(triangle)-1`
+#' @returns delay_df Dataframe with `max_delay` rows and `delay` columns
+#'   and `pmf`, indicating the point estimate of the empirical probability
+#'   mass on each delay
 #' @export
 #' @examples
 #' triangle <- matrix(

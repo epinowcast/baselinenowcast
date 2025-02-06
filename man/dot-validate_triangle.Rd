@@ -18,8 +18,8 @@ of the delay. The default is to use the whole reporting triangle,
 
 \item{n_history}{Integer indicating the number of reference dates to be
 used in the estimate of the reporting delay, always starting from the most
-recent reporting delay. The default is to use the whole reporting
-triangle, so \code{nrow(triangle)-1}}
+recent reporting delay. The default is to use the whole reporting triangle,
+so \code{nrow(triangle)-1}}
 }
 \value{
 NULL, invisibly

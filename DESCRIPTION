@@ -29,7 +29,7 @@ License: MIT + file LICENSE
 URL: https://baselinenowcast.epinowcast.org, https://github.com/epinowcast/baselinenowcast/
 BugReports: https://github.com/epinowcast/baselinenowcast/issues
 Depends:
-    R (>= 4.0.0)
+    R (>= 4.1.0)
 Imports:
   cli
 Suggests:

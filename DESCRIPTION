@@ -26,7 +26,7 @@ Description: Provides functions for nowcasting right-truncated epidemiological
   data, based heavily on the method implemented in
   https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/code/baseline
 License: MIT + file LICENSE
-URL: https://github.com/epinowcast/baselinenowcast/
+URL: https://baselinenowcast.epinowcast.org, https://github.com/epinowcast/baselinenowcast/
 BugReports: https://github.com/epinowcast/baselinenowcast/issues
 Depends:
     R (>= 4.0.0)
@@ -44,6 +44,8 @@ Suggests:
     withr,
     knitr
 Encoding: UTF-8
+Language: en-GB
+LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr

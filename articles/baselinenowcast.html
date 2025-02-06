@@ -135,27 +135,18 @@ These data represent hospitalisation counts by date of positive test and date
 of test report in Germany up to October 1, 2021.</p>
 </div>
 <div class="section level2" number="4">
-<h2 id="filtering">
-<span class="header-section-number">4</span> Filtering<a class="anchor" aria-label="anchor" href="#filtering"></a>
+<h2 id="filtering-and-plotting-the-data">
+<span class="header-section-number">4</span> Filtering and plotting the data<a class="anchor" aria-label="anchor" href="#filtering-and-plotting-the-data"></a>
 </h2>
 <p>We will filter the data to just look at the national-level data, for all age
 groups.
 We will pretend that we are making a nowcast as of July 1, 2021, therefore we
 will exclude all reference dates and report dates after that date.
-<code>germany_covid19_hosp</code> is provided as package data from <code>epinowcast</code></p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">observed_long</span> <span class="op">&lt;-</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="va"><a href="https://package.epinowcast.org/reference/germany_covid19_hosp.html" class="external-link">germany_covid19_hosp</a></span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_report_dates.html" class="external-link">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-07-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span>, <span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span><span class="op">)</span></span></code></pre></div>
-<p>Let’s start by plotting all of the values reported on the day of admissions,
+<code>germany_covid19_hosp</code> is provided as package data from <code>epinowcast</code>
+Let’s start by plotting the sum of the reports at each reference date,
 and then compare that to what we will eventually observe as of the final date
-in the complete dataset.</p>
-</div>
-<div class="section level2" number="5">
-<h2 id="plotting">
-<span class="header-section-number">5</span> Plotting<a class="anchor" aria-label="anchor" href="#plotting"></a>
-</h2>
-<p>The red line shows the cumulative number of confirmed admissions on each report
+in the complete dataset.
+The red line shows the cumulative number of confirmed admissions on each report
 date, across all delays, using the data available as of July 1, 2021.
 It demonstrates the characteristic behavior of right-truncation.
 This is because we have not yet observed the data that will become available
@@ -163,36 +154,43 @@ for the longer delays at recent time points.</p>
 <p>Our task will be to estimate what the “final” cumulative number of cases will
 at each reference date, observed as of the “fully observed” data on October
 2021.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data_long</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span> <span class="co"># import data from epinowcast</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span></span>
 <span>    <span class="co"># Plot the data summed across reporting days</span></span>
-<span>    data <span class="op">=</span> <span class="va">observed_long</span> <span class="op">|&gt;</span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>total_confirmed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">confirm</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">reference_date</span>, y <span class="op">=</span> <span class="va">total_confirmed</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"darkred"</span></span>
+<span>    data <span class="op">=</span> <span class="va">data_long</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_report_dates.html" class="external-link">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-07-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span>, <span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span>,</span>
+<span>        <span class="va">report_date</span> <span class="op">==</span> <span class="st">"2021-07-01"</span></span>
+<span>      <span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">reference_date</span>, y <span class="op">=</span> <span class="va">confirm</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"darkred"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="va"><a href="https://package.epinowcast.org/reference/germany_covid19_hosp.html" class="external-link">germany_covid19_hosp</a></span> <span class="op">|&gt;</span></span>
-<span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span>, <span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    data <span class="op">=</span> <span class="va">data_long</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span>, <span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span>,</span>
+<span>        <span class="va">reference_date</span> <span class="op">&lt;=</span> <span class="st">"2021-07-01"</span></span>
+<span>      <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>total_confirmed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">confirm</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">reference_date</span> <span class="op">&lt;=</span> <span class="st">"2021-07-01"</span><span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">reference_date</span>, y <span class="op">=</span> <span class="va">total_confirmed</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"black"</span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>confirm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">confirm</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">reference_date</span>, y <span class="op">=</span> <span class="va">confirm</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"black"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Reference date"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Confirmed admissions"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>trans <span class="op">=</span> <span class="st">"log10"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Comparing all admissions by reference date and those with no delay"</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Comparing real-time and later observed cases"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="baselinenowcast_files/figure-html/plot-the-data-by-reference-date-1.png" width="672">
 Here the black line represents the quantity we will evaluate our nowcast
 against, and the red line represents the data we have available to us up until
 July 1st, 2021.</p>
 </div>
-<div class="section level2" number="6">
+<div class="section level2" number="5">
 <h2 id="pre-processing">
-<span class="header-section-number">6</span> Pre-processing<a class="anchor" aria-label="anchor" href="#pre-processing"></a>
+<span class="header-section-number">5</span> Pre-processing<a class="anchor" aria-label="anchor" href="#pre-processing"></a>
 </h2>
 <p>In order to compute a nowcast for this data, we will need to start by creating
 what we call a reporting triangle.
@@ -222,7 +220,7 @@ estimate the delay distribution.
 We recommend choosing the maximum delay and number of historical observations
 based on an exploratory data analysis, as these specifications will change
 significantly depending on the dataset.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast_date</span> <span class="op">&lt;-</span> <span class="st">"2021-07-01"</span></span>
 <span><span class="co"># Specify the maximum delay, which will determine the length of your delay</span></span>
 <span><span class="co"># distribution. Empirical data outside this delay window will not be used for</span></span>
@@ -236,11 +234,11 @@ significantly depending on the dataset.</p>
 data in the form a of a long tidy dataframe indexed by reference date and
 report date and filtered to the strata we are interested in, to generate a
 reporting triangle.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Noting that this is the only way epinowcast preprocessing would work --</span></span>
 <span><span class="co"># return to this later. IDate was throwing errors if we used the dplyr processed</span></span>
 <span><span class="co"># observed long above.</span></span>
-<span><span class="va">observed_long</span> <span class="op">&lt;-</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="va"><a href="https://package.epinowcast.org/reference/germany_covid19_hosp.html" class="external-link">germany_covid19_hosp</a></span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="co"># nolint</span></span>
+<span><span class="va">observed_long</span> <span class="op">&lt;-</span> <span class="va">data_long</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="co"># nolint</span></span>
 <span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_report_dates.html" class="external-link">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="va">nowcast_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_reference_dates.html" class="external-link">enw_filter_reference_dates</a></span><span class="op">(</span>include_days <span class="op">=</span> <span class="va">n_history</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">observed_long</span><span class="op">)</span></span></code></pre></div>
@@ -252,7 +250,7 @@ reporting triangle.</p>
 <span><span class="co">## 4:     2021-05-06       DE       00+     259  2021-05-06</span></span>
 <span><span class="co">## 5:     2021-05-07       DE       00+     263  2021-05-07</span></span>
 <span><span class="co">## 6:     2021-05-08       DE       00+     189  2021-05-08</span></span></code></pre>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get the reporting triangle, adding an additional day because epinowcast</span></span>
 <span><span class="co"># we want the max_delay + 1 entries since 0 is a valid delay.</span></span>
 <span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://package.epinowcast.org/reference/enw_preprocess_data.html" class="external-link">enw_preprocess_data</a></span><span class="op">(</span></span>
@@ -295,10 +293,20 @@ reporting triangle.</p>
 <span><span class="co">## 4:     1     3     4     4     3     3     1    10</span></span>
 <span><span class="co">## 5:     3     4     2     0     2     0     4     4</span></span>
 <span><span class="co">## 6:     2     1     4     0     0     0     3     7</span></span></code></pre>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Check that the sum of the rows in the reporting triangle is the</span></span>
+<span><span class="co"># same as the sums across report dates by reference date</span></span>
+<span><span class="va">observed_sums</span> <span class="op">&lt;-</span> <span class="va">observed_long</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>total_confirmed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">confirm</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>triangle_sums <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">triangle_full</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">`.group`</span>, <span class="op">-</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2" number="7">
+<div class="section level2" number="6">
 <h2 id="estimate-delay">
-<span class="header-section-number">7</span> Estimate delay<a class="anchor" aria-label="anchor" href="#estimate-delay"></a>
+<span class="header-section-number">6</span> Estimate delay<a class="anchor" aria-label="anchor" href="#estimate-delay"></a>
 </h2>
 <p>Now that we have the reporting triangle, we are now ready to pass it in to the
 <code>baselinenowcast</code> package to estimate the delay distribution.
@@ -327,7 +335,7 @@ we will start by demonstrating the functionality on only the matrix of the
 reporting triangle.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">triangle</span> <span class="op">&lt;-</span> <span class="va">triangle_full</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">`.group`</span>, <span class="op">-</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># remove unnecessary columns</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">`.group`</span>, <span class="op">-</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># remove unnecessary columns</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">triangle</span><span class="op">)</span></span></code></pre></div>
@@ -366,6 +374,7 @@ reporting triangle.</p>
 <span>  n_history <span class="op">=</span> <span class="va">n_history</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">delay_df</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">delay</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumsum</a></span><span class="op">(</span><span class="va">pmf</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Delay"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -382,9 +391,9 @@ reporting triangle.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="baselinenowcast_files/figure-html/estimate-delay-2.png" width="672"></p>
 </div>
-<div class="section level2" number="8">
+<div class="section level2" number="7">
 <h2 id="apply-delay-to-generate-point-nowcast">
-<span class="header-section-number">8</span> Apply delay to generate point nowcast<a class="anchor" aria-label="anchor" href="#apply-delay-to-generate-point-nowcast"></a>
+<span class="header-section-number">7</span> Apply delay to generate point nowcast<a class="anchor" aria-label="anchor" href="#apply-delay-to-generate-point-nowcast"></a>
 </h2>
 <p>The next step in our workflow is to take the estimated delay distribution and
 apply it to the partially observed reporting triangle, generating an estimate
@@ -396,14 +405,58 @@ used to generate the estimate, but this doesn’t always have to be the case.
 The reporting triangle we are applying it to must have the same <code>max_delay</code>
 as the delay estimate.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># point_reporting_square &lt;- apply_delay( #nolint</span></span>
-<span><span class="co">#   triangle_to_nowcast = triangle,#nolint</span></span>
-<span><span class="co">#   delay_df#nolint</span></span>
-<span><span class="co"># )#nolint</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">point_reporting_square</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apply_delay.html">apply_delay</a></span><span class="op">(</span></span>
+<span>  triangle_to_nowcast <span class="op">=</span> <span class="va">triangle</span>,</span>
+<span>  delay_pmf <span class="op">=</span> <span class="va">delay_df</span><span class="op">$</span><span class="va">pmf</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>We’ll make a quick plot to compare the nowcasted confirmed cases through
+July 1, 2021, from the observations up until October 1, 2021.
+We’ll compare this to the right-truncated data available up until July 1, 2021.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">final_data</span> <span class="op">&lt;-</span> <span class="va">data_long</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="co"># nolint</span></span>
+<span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_report_dates.html" class="external-link">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-10-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_reference_dates.html" class="external-link">enw_filter_reference_dates</a></span><span class="op">(</span></span>
+<span>    latest_date <span class="op">=</span> <span class="st">"2021-07-01"</span>,</span>
+<span>    include_days <span class="op">=</span> <span class="va">n_history</span> <span class="op">-</span> <span class="fl">1</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
+<span>    total_confirmed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">confirm</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>nowcast <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">point_reporting_square</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span></span>
+<span>    <span class="co"># Plot the data summed across reporting days as of July 1,2021</span></span>
+<span>    data <span class="op">=</span> <span class="va">observed_long</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>total_confirmed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">confirm</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">reference_date</span>, y <span class="op">=</span> <span class="va">total_confirmed</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"darkred"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">final_data</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">reference_date</span>, y <span class="op">=</span> <span class="va">total_confirmed</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"black"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">final_data</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">reference_date</span>, y <span class="op">=</span> <span class="va">nowcast</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"darkblue"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Reference date"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Confirmed admissions"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>trans <span class="op">=</span> <span class="st">"log10"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Comparing real-time, nowcasted, and later observed cases"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="baselinenowcast_files/figure-html/unnamed-chunk-2-1.png" width="672">
+Here we can see that our point nowcast slightly overestimates what was
+eventually reported (black line), but does a decent overall job of correcting
+for the right-truncation observed in the red line (the data prior to the
+nowcast).</p>
+<p>What we really want is a probabilistic estimate of the nowcasted
+case counts.</p>
 </div>
-<div class="section level2" number="9">
+<div class="section level2" number="8">
 <h2 id="estimate-uncertainty">
-<span class="header-section-number">9</span> Estimate uncertainty<a class="anchor" aria-label="anchor" href="#estimate-uncertainty"></a>
+<span class="header-section-number">8</span> Estimate uncertainty<a class="anchor" aria-label="anchor" href="#estimate-uncertainty"></a>
 </h2>
 <p>So far, we’ve demonstrated how to generate a point estimate of a nowcast.
 We would like to generate a probabilistic nowcasts, which will require
@@ -412,20 +465,20 @@ actual observations when applying the delay distribution.
 This assumes a negative binomial observation model.</p>
 <p><em>Note, we could probably create objects of different classes for the outputs
 of each of these functions, but I am not sure this is necessary</em></p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># disp_params &lt;- estimate_uncertainty( #nolint</span></span>
 <span><span class="co"># triangle_to_nowcast = triangle #nolint</span></span>
 <span><span class="co"># delay_pmf = delay_df$pmf #nolint</span></span>
 <span><span class="co"># ) #nolint</span></span></code></pre></div>
 </div>
-<div class="section level2" number="10">
+<div class="section level2" number="9">
 <h2 id="generate-probabilistic-nowcast">
-<span class="header-section-number">10</span> Generate probabilistic nowcast<a class="anchor" aria-label="anchor" href="#generate-probabilistic-nowcast"></a>
+<span class="header-section-number">9</span> Generate probabilistic nowcast<a class="anchor" aria-label="anchor" href="#generate-probabilistic-nowcast"></a>
 </h2>
 <p>Now that we have estimated the dispersion, we can use the delay distribution,
 the reporting triangle that we want to nowcast, and the dispersion parameters to
 generate a probabilistic nowcast.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># nowcast &lt;- generate_nowcast( #nolint</span></span>
 <span><span class="co"># triangle_to_nowcast = triangle, #nolint</span></span>
 <span><span class="co"># delay_df = delay_df, #nolint</span></span>

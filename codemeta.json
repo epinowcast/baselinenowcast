@@ -4,6 +4,7 @@
   "identifier": "baselinenowcast",
   "description": "Provides functions for nowcasting right-truncated epidemiological data, based heavily on the method implemented in https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/code/baseline",
   "name": "baselinenowcast: Baseline nowcast",
+  "relatedLink": "https://baselinenowcast.epinowcast.org",
   "codeRepository": "https://github.com/epinowcast/baselinenowcast/",
   "issueTracker": "https://github.com/epinowcast/baselinenowcast/issues",
   "license": "https://spdx.org/licenses/MIT",
@@ -65,15 +66,8 @@
   "softwareSuggestions": [
     {
       "@type": "SoftwareApplication",
-      "identifier": "dplyr",
-      "name": "dplyr",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=dplyr"
+      "identifier": "epinowcast",
+      "name": "epinowcast"
     },
     {
       "@type": "SoftwareApplication",
@@ -86,6 +80,18 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=bookdown"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "dplyr",
+      "name": "dplyr",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=dplyr"
     },
     {
       "@type": "SoftwareApplication",
@@ -178,13 +184,25 @@
       "@type": "SoftwareApplication",
       "identifier": "R",
       "name": "R",
-      "version": ">= 4.0.0"
+      "version": ">= 4.1.0"
+    },
+    "2": {
+      "@type": "SoftwareApplication",
+      "identifier": "cli",
+      "name": "cli",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=cli"
     },
     "SystemRequirements": null
   },
-  "fileSize": "4.575KB",
+  "fileSize": "33.639KB",
   "releaseNotes": "https://github.com/epinowcast/baselinenowcast/blob/master/NEWS.md",
-  "readme": "https://github.com/epinowcast/baselinenowcast/blob/main/README.Rmd",
+  "readme": "https://github.com/epinowcast/baselinenowcast/blob/main/README.md",
   "contIntegration": ["https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/epinowcast/baselinenowcast"],
   "developmentStatus": "https://lifecycle.r-lib.org/articles/stages.html#stable"
 }

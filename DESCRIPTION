@@ -31,7 +31,8 @@ BugReports: https://github.com/epinowcast/baselinenowcast/issues
 Depends:
     R (>= 4.1.0)
 Imports:
-  cli
+  cli,
+  checkmate
 Suggests:
     epinowcast,
     bookdown,

@@ -1,5 +1,4 @@
 #' Handle negative values in the reporting triangle
-#' @description
 #' Takes in a reporting triangle and returns a matrix in the same format
 #'   as the input triangle, but with negative values of reporting handled via
 #'   passing them to the subsequent days (from longer delay to shorter).

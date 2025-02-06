@@ -1,26 +1,25 @@
 #' Estimate a delay distribution from a reporting triangle
-#' @description
 #' Provides an estimate of the reporting delay as a function
-#'  of the delay, based on the reporting triangle and the specified maximum
-#'  delay and number of reference date observations to be used in the
-#'  estimation. This point estimate of the delay is computed empirically,
-#'  using an iterative algorithm starting from the most recent observations.
-#'  This code was adapted from code written (under an MIT license)
-#'  by the Karlsruhe Institute of Technology RESPINOW
-#'  German Hospitalization Nowcasting Hub.
-#'  Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
+#'   of the delay, based on the reporting triangle and the specified maximum
+#'   delay and number of reference date observations to be used in the
+#'   estimation. This point estimate of the delay is computed empirically,
+#'   using an iterative algorithm starting from the most recent observations.
+#'   This code was adapted from code written (under an MIT license)
+#'   by the Karlsruhe Institute of Technology RESPINOW
+#'   German Hospitalization Nowcasting Hub.
+#'   Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
 #' @param triangle Matrix of the reporting triangle, with rows representing
-#'  the time points of reference and columns representing the delays
+#'   the time points of reference and columns representing the delays
 #' @param max_delay Integer indicating the maximum delay to estimate, in units
-#'  of the delay. The default is to use the whole reporting triangle,
-#'  `ncol(triangle) -1`.
+#'   of the delay. The default is to use the whole reporting triangle,
+#'   `ncol(triangle) -1`.
 #' @param n_history Integer indicating the number of reference dates to be
-#'   used in the estimate of the reporting delay, always starting from the most
-#'   recent reporting delay. The default is to use the whole reporting triangle,
-#'   so `nrow(triangle)-1`
+#'    used in the estimate of the reporting delay, always starting from the most
+#'    recent reporting delay. The default is to use the whole reporting
+#'    triangle, so `nrow(triangle)-1`
 #' @returns delay_df Dataframe of length `max_delay` with columns `delay`
-#'   and `pmf`, indicating the point estimate of the empirical probability
-#'   mass on each delay
+#'    and `pmf`, indicating the point estimate of the empirical probability
+#'    mass on each delay
 #' @export
 #' @examples
 #' triangle <- matrix(

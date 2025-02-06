@@ -2,7 +2,9 @@
 % Please edit documentation in R/validate.R
 \name{.validate_triangle}
 \alias{.validate_triangle}
-\title{Validate triangle}
+\title{Validate triangle
+Various checks to make sure that the reporting triangle passed in to
+\code{\link[=get_delay_estimate]{get_delay_estimate()}} is formatted properly.}
 \usage{
 .validate_triangle(triangle, max_delay, n_history)
 }
@@ -16,13 +18,14 @@ of the delay. The default is to use the whole reporting triangle,
 
 \item{n_history}{Integer indicating the number of reference dates to be
 used in the estimate of the reporting delay, always starting from the most
-recent reporting delay. The default is to use the whole reporting triangle,
-so \code{nrow(triangle)-1}}
+recent reporting delay. The default is to use the whole reporting
+triangle, so \code{nrow(triangle)-1}}
 }
 \value{
 NULL, invisibly
 }
 \description{
+Validate triangle
 Various checks to make sure that the reporting triangle passed in to
 \code{\link[=get_delay_estimate]{get_delay_estimate()}} is formatted properly.
 }

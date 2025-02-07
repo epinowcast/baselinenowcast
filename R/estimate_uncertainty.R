@@ -164,6 +164,7 @@ estimate_uncertainty <- function(triangle_to_nowcast,
 .get_exp_and_obs_as_of_t <- function(t,
                                      matr_observed,
                                      delay_pmf) {
+  n_horizons <- length(delay_pmf) - 1
   # Truncate the matrix observed by ignoring rows after t, replace rows that
   # wouldn't be observed with NAs
   matr_observed_temp <- matrix(matr_observed[1:t, ], nrow = t) |>

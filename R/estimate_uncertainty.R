@@ -112,9 +112,10 @@ estimate_uncertainty <- function(triangle_to_nowcast,
       matrix_to_sum = trunc_matr_observed
     )
     return(
-      list(
+      data.frame(
         exp_to_add = exp_to_add,
-        to_add = to_add
+        to_add = to_add,
+        t = t
       )
     )
   })

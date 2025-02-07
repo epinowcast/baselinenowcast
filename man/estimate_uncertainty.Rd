@@ -15,16 +15,16 @@ estimate_uncertainty(
 nowcasted, with rows representing the time points of reference and columns
 representing the delays}
 
-\item{delay_pmf}{vector of delays assumed to be indexed starting at the
+\item{delay_pmf}{Vector of delays assumed to be indexed starting at the
 first delay column in \code{triangle_to_nowcast}}
 
-\item{n_history_dispersion}{integer indicating the number of reference dates
+\item{n_history_dispersion}{Integer indicating the number of reference dates
 to be used in the estimate of the dispersion, always starting from the most
 recent refrence date. The default is to use the whole reporting triangle,
 so \code{nrow(triangle_to_nowcast) - 1}}
 }
 \value{
-a vector of dispersion parameters of length of the \code{delay_pmf} -1
+Vector of dispersion parameters of length of the \code{delay_pmf} -1
 }
 \description{
 This function takes in as input the triangle that we want to nowcast and

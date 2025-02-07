@@ -2,7 +2,9 @@
 % Please edit documentation in R/validate.R
 \name{.validate_triangle}
 \alias{.validate_triangle}
-\title{Validate triangle}
+\title{Validate triangle
+Various checks to make sure that the reporting triangle passed in to
+\code{\link[=get_delay_estimate]{get_delay_estimate()}} is formatted properly.}
 \usage{
 .validate_triangle(
   triangle,
@@ -27,6 +29,7 @@ so \code{nrow(triangle)-1}}
 NULL, invisibly
 }
 \description{
+Validate triangle
 Various checks to make sure that the reporting triangle passed in to
 \code{\link[=get_delay_estimate]{get_delay_estimate()}} is formatted properly.
 }

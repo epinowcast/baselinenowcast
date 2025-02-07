@@ -2,7 +2,16 @@
 % Please edit documentation in R/get_delay_estimate.R
 \name{get_delay_estimate}
 \alias{get_delay_estimate}
-\title{Estimate a delay distribution from a reporting triangle}
+\title{Estimate a delay distribution from a reporting triangle
+Provides an estimate of the reporting delay as a function
+of the delay, based on the reporting triangle and the specified maximum
+delay and number of reference date observations to be used in the
+estimation. This point estimate of the delay is computed empirically,
+using an iterative algorithm starting from the most recent observations.
+This code was adapted from code written (under an MIT license)
+by the Karlsruhe Institute of Technology RESPINOW
+German Hospitalization Nowcasting Hub.
+Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint}
 \usage{
 get_delay_estimate(
   triangle,
@@ -29,6 +38,7 @@ indicating the point estimate of the empirical probability
 mass on each delay
 }
 \description{
+Estimate a delay distribution from a reporting triangle
 Provides an estimate of the reporting delay as a function
 of the delay, based on the reporting triangle and the specified maximum
 delay and number of reference date observations to be used in the

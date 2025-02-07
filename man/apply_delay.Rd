@@ -2,7 +2,13 @@
 % Please edit documentation in R/apply_delay.R
 \name{apply_delay}
 \alias{apply_delay}
-\title{Apply the delay to generate a point nowcast}
+\title{Apply the delay to generate a point nowcast
+Generate a point estimate of a completed reporting square (or rectangle)
+from a reporting triangle that we want to complete with a nowcast and a
+delay pmf. This code was adapted from code written (under an MIT license)
+by the Karlsruhe Institute of Technology RESPINOW
+German Hospitalization Nowcasting Hub.
+Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint}
 \usage{
 apply_delay(triangle_to_nowcast, delay_pmf)
 }
@@ -20,6 +26,7 @@ expectation, matrix of the same number of rows and columns as the
 estimates
 }
 \description{
+Apply the delay to generate a point nowcast
 Generate a point estimate of a completed reporting square (or rectangle)
 from a reporting triangle that we want to complete with a nowcast and a
 delay pmf. This code was adapted from code written (under an MIT license)

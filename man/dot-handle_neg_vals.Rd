@@ -2,7 +2,14 @@
 % Please edit documentation in R/handle_neg_vals.R
 \name{.handle_neg_vals}
 \alias{.handle_neg_vals}
-\title{Handle negative values in the reporting triangle}
+\title{Handle negative values in the reporting triangle
+Takes in a reporting triangle and returns a matrix in the same format
+as the input triangle, but with negative values of reporting handled via
+passing them to the subsequent days (from longer delay to shorter).
+This code was adapted from code written (under an MIT license)
+by the Karlsruhe Institute of Technology RESPINOW
+German Hospitalization Nowcasting Hub.
+Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R #nolint}
 \usage{
 .handle_neg_vals(triangle)
 }
@@ -15,6 +22,7 @@ pos_triangle matrix of positive integers with negative values of
 reporting handled via passing them to the subsequent days delay
 }
 \description{
+Handle negative values in the reporting triangle
 Takes in a reporting triangle and returns a matrix in the same format
 as the input triangle, but with negative values of reporting handled via
 passing them to the subsequent days (from longer delay to shorter).

@@ -1,5 +1,4 @@
 #' Validate triangle
-#' @description
 #' Various checks to make sure that the reporting triangle passed in to
 #'   [get_delay_estimate()] is formatted properly.
 #' @importFrom checkmate assert_class
@@ -57,7 +56,6 @@
 }
 
 #' Validate triangle to nowcast and delay pmf together
-#' @description
 #' Various checks to make sure that the reporting triangle  and the delay pmf
 #'   passed in to [apply_delay()] are formatted properly and compatible
 #' @param triangle Matrix of values with rows indicating the time points and

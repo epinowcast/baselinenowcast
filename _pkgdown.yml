@@ -1,6 +1,6 @@
 url: https://baselinenowcast.epinowcast.org/
 template:
-  pacakge: enwtheme
+  package: enwtheme
   math-rendering: mathjax
 
 
@@ -9,8 +9,11 @@ development:
 
 navbar:
   structure:
+    left: [intro, metareference, news]
     right: [search, github, lightswitch]
   components:
+    metareference:
+      text: Reference
 
 home:
   title: Baseline nowcast for right-truncated epidemiological data

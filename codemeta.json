@@ -210,9 +210,14 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=checkmate"
     },
+    "4": {
+      "@type": "SoftwareApplication",
+      "identifier": "stats",
+      "name": "stats"
+    },
     "SystemRequirements": null
   },
-  "fileSize": "50.852KB",
+  "fileSize": "80.288KB",
   "releaseNotes": "https://github.com/epinowcast/baselinenowcast/blob/master/NEWS.md",
   "readme": "https://github.com/epinowcast/baselinenowcast/blob/main/README.md",
   "contIntegration": ["https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/epinowcast/baselinenowcast"],

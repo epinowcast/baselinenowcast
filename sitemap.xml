@@ -8,11 +8,15 @@
 <url><loc>https://baselinenowcast.epinowcast.org/index.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/news/index.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/apply_delay.html</loc></url>
-<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-autoescape_brackets.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-calc_expectation.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-conditional_sum_cols.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-fit_nb.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-get_exp_and_obs_as_of_t.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-handle_neg_vals.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-replace_lower_right_with_NA.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_delay_and_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_triangle.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/get_delay_estimate.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/index.html</loc></url>
 </urlset>

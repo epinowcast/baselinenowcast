@@ -50,7 +50,7 @@ jobs:
         with:
           artifact-name: website
           gh-token: ${{ secrets.GITHUB_TOKEN }}
-          message: 'Thank you for your contribution ${{ github.actor }} :rocket! Your { artifact-name } is ready for download :point_right: [here]( { artifact-url }) :point_left:!'
+          message: 'Thank you for your contribution ${{ github.actor }} :rocket:! Your { artifact-name } is ready for download :point_right: [here]( { artifact-url }) :point_left:!'
 
 
       - name: Deploy to GitHub pages 🚀

@@ -44,6 +44,15 @@ jobs:
           retention-days: 5
           path: docs
 
+      - name: Post the artifact
+        uses: CDCgov/cfa-actions/post-artifact@main
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          artifact-name: website
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
+          message: 'Thank you for your contribution ${{ github.actor }} :rocket! Your { artifact-name } is ready for download :point_right: [here]( { artifact-url }) :point_left:!'
+
+
       - name: Deploy to GitHub pages 🚀
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4.7.2

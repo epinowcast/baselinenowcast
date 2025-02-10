@@ -249,17 +249,21 @@ triangle <- triangle_full |>
   unname()
 head(triangle)
 
-delay_df <- get_delay_estimate(
+delay_pmf <- get_delay_estimate(
   triangle = triangle,
   max_delay = max_delay,
   n_history = n_history
 )
 
+delay_df <- data.frame(
+  delay = 0:(length(delay_pmf) - 1),
+  pmf = delay_pmf
+)
 
 ggplot(delay_df) +
   geom_line(aes(x = delay, y = cumsum(pmf))) +
   xlab("Delay") +
-  ylab("Cumulativee proportion reported") +
+  ylab("Cumulative proportion reported") +
   ggtitle("Empirical point estimate of cumulative proportion reported by delay") + # nolint
   theme_bw()
 
@@ -286,7 +290,7 @@ as the delay estimate.
 ```{r}
 point_reporting_square <- apply_delay(
   triangle_to_nowcast = triangle,
-  delay_pmf = delay_df$pmf
+  delay_pmf = delay_pmf
 )
 ```
 
@@ -340,19 +344,20 @@ case counts.
 # Estimate uncertainty
 
 So far, we've demonstrated how to generate a point estimate of a nowcast.
-We would like to generate a probabilistic nowcasts, which will require
+We would like to generate probabilistic nowcasts, which will require
 estimating the empirical error between the expected observations and the
 actual observations when applying the delay distribution.
 This assumes a negative binomial observation model.
 
-*Note, we could probably create objects of different classes for the outputs
-of each of these functions, but I am not sure this is necessary*
+We will start by estimating the dispersion parameter of the negative binomial
+as a function of the delay d
+
 
 ```{r}
-# disp_params <- estimate_uncertainty( #nolint
-# triangle_to_nowcast = triangle #nolint
-# delay_pmf = delay_df$pmf #nolint
-# ) #nolint
+disp_params <- estimate_uncertainty(
+  triangle_to_nowcast = triangle,
+  delay_pmf = delay_pmf
+)
 ```
 
 # Generate probabilistic nowcast

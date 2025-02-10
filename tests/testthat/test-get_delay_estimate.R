@@ -4,19 +4,18 @@ test_that("get_delay_estimate function works correctly", {
 
   # Test 1: Basic functionality
   result <- get_delay_estimate(triangle)
-  expect_is(result, "data.frame")
-  expect_identical(as.integer(nrow(result)), as.integer(ncol(triangle)))
-  expect_identical(colnames(result), c("delay", "pmf"))
-  expect_true(all(result$pmf >= 0 & result$pmf <= 1))
-  expect_equal(sum(result$pmf), 1, tolerance = 1e-6)
+  expect_is(result, "numeric")
+  expect_identical(as.integer(length(result)), as.integer(ncol(triangle)))
+  expect_true(all(result >= 0 & result <= 1))
+  expect_equal(sum(result), 1, tolerance = 1e-6)
 
   # Test 2: Custom max_delay
   result_max_delay <- get_delay_estimate(triangle, max_delay = 3)
-  expect_identical(as.integer(nrow(result_max_delay)), 4L)
+  expect_identical(as.integer(length(result_max_delay)), 4L)
 
   # Test 3: Custom n_history
   result_n_history <- get_delay_estimate(triangle, n_history = 20)
-  expect_is(result_n_history, "data.frame")
+  expect_is(result_n_history, "numeric")
 
   # Test 4: Input validation *These should be more useful error messages*
   expect_error(get_delay_estimate(triangle, max_delay = 0))
@@ -27,7 +26,7 @@ test_that("get_delay_estimate function works correctly", {
   triangle_with_na <- triangle
   triangle_with_na[1, 2] <- NA
   result_with_na <- get_delay_estimate(triangle_with_na)
-  expect_is(result_with_na, "data.frame")
+  expect_is(result_with_na, "numeric")
 
   # Test 6: Consistency of results
   result1 <- get_delay_estimate(triangle)

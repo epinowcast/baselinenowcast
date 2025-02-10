@@ -198,9 +198,21 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=cli"
     },
+    "3": {
+      "@type": "SoftwareApplication",
+      "identifier": "checkmate",
+      "name": "checkmate",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=checkmate"
+    },
     "SystemRequirements": null
   },
-  "fileSize": "33.639KB",
+  "fileSize": "50.852KB",
   "releaseNotes": "https://github.com/epinowcast/baselinenowcast/blob/master/NEWS.md",
   "readme": "https://github.com/epinowcast/baselinenowcast/blob/main/README.md",
   "contIntegration": ["https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/epinowcast/baselinenowcast"],

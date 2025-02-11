@@ -32,7 +32,8 @@ Depends:
     R (>= 4.1.0)
 Imports:
   cli,
-  checkmate
+  checkmate,
+  stats
 Suggests:
     epinowcast,
     bookdown,

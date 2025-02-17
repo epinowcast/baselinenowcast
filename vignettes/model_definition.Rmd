@@ -1,3 +1,22 @@
+---
+title: "Mathematical methods for `baselinenowcast`"
+description: "Description of mathematical methods used in the package"
+author: Kaitlyn Johnson
+output:
+  bookdown::html_document2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{Mathematical methods for baselinenowcast}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
 # `baselinenowcast` mathematical model
 
 The following describes the estimate of the delay distribution, the generation of the point nowcast, and the estimate of the observation error, for a partially observed or complete reporting triangle. The method assumes that the units of the delays, $d$\$ and the units of reference time $t$ are the same, e.g. weekly data and weekly releases or daily data with daily releases. This method is based on the method described by ([Wolffram et al. 2023](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1011394)) developed by the Karlsruhe Institute of Technology.
@@ -28,7 +47,7 @@ We refer to the matrix of $x$ available at a given data release time $t^*$ , as 
 ### Point estimate of the delay distribution
 
 We use the entire reporting triangle to compute an empirical estimate of the delay distribution, $\pi(d)$, or the probability that a case at reference time $t$ appears in the dataset at time $t + d$. We will refer to the realized empirical estimate of the delay distribution from a reporting triangle as $\pi(d)$.
-The delay distribution, $\pi(d)$ can be estimated directly from the completed reporting matrix $X$ 
+The delay distribution, $\pi(d)$ can be estimated directly from the completed reporting matrix $X$
 
 $$
 {\pi}_d= \frac{\sum_{t=1}^{t=t^*} X_{t,d}}{\sum_{d=0}^{D} \sum_{t=1}^{t=t^*} X_{t,d}}
@@ -47,11 +66,11 @@ $$
 
 *Note:* this amounts to taking the sum of the elements in column $d$ up until time $t*-d$ and dividing by the sum over all the elements to the left of column $d$ up until time $t*-d$, referred to as `block_top` and `block_top_left`, respectively, in the code.
 
-This factor is then used to compute the expected values for all the missing rows with delay $d$ as: 
+This factor is then used to compute the expected values for all the missing rows with delay $d$ as:
 
 $$
 \hat{x}_{t,d} = \hat{\theta_d}(t^*) \times \sum_{t=t^*-d}^{t^*} x_{t,d-1}
-$$ 
+$$
 
 *Note:* this amounts to effectively taking the sum across the columns in the bottom left (`block_bottom_left` in the code) of the matrix up until column $d$ and multiplying by the factor to estimate the value of $x_{t,d}$ in each row.
 This process is repeated iteratively, from bottom left to top right, to impute the bottom right triangle of the reporting matrix for each time $t$ and delay $d$ when $t+d>t^*$. The combination of the imputed and observed reporting matrix is then used to compute the delay distribution $\hat{\pi}(d)$ as described above.
@@ -85,7 +104,7 @@ For each horizon $d = 1, ..., D$ we assume that the observed values, $X_{s^*-d, 
 
 $$
 X_{s^*-d,>d} | \hat{x}_{s^*-d, >d}(s*) \sim NegBin(\mu = \hat{x}_{s^*-d} + 0.1, \phi = \phi_d)
-$$ 
+$$
 
 We add a small number to the mean to avoid an ill-defined negative binomial. We note that to perform all these computations, data snapshots from at least $N +M$ past observations, or rows of the reporting triangle, are needed. This estimate of the uncertainty accounts for the empirical uncertainty in the point estimate of the delay distribution over time.
 

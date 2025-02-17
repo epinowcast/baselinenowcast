@@ -5,23 +5,28 @@
 \title{Estimate the uncertainty in the nowcasts}
 \usage{
 estimate_uncertainty(
-  triangle_to_nowcast,
-  delay_pmf,
-  n_history_dispersion = nrow(triangle_to_nowcast) - 1
+  triangle_for_uncertainty,
+  delay_pmf = NULL,
+  n_history_dispersion = floor(nrow(triangle_to_nowcast)/2) - 1,
+  n_history = floor(nrow(triangle_to_nowcast)/2) - 1
 )
 }
 \arguments{
-\item{triangle_to_nowcast}{matrix of the incomplete reporting triangle to be
+\item{triangle_for_uncertainty}{matrix of the incomplete reporting triangle to be
 nowcasted, with rows representing the time points of reference and columns
 representing the delays}
 
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
-first delay column in \code{triangle_to_nowcast}}
+first delay column in \code{triangle_to_nowcast}. Default is \code{NULL}}
 
-\item{n_history_dispersion}{Integer indicating the number of reference dates
+\item{n_history_dispersion}{Integer indicating the number of observations
 to be used in the estimate of the dispersion, always starting from the most
-recent refrence date. The default is to use the whole reporting triangle,
+recent reference date. The default is to use the whole reporting triangle,
 so \code{nrow(triangle_to_nowcast) - 1}}
+
+\item{n_history}{Integer indicating the number of observations to be
+used in the estimate of the delay estimate for each retrospective reporting
+triangle, if the delay estimate is being re-estimated. Default is \code{NULL}}
 }
 \value{
 Vector of dispersion parameters of length of the \code{delay_pmf} -1
@@ -54,9 +59,16 @@ delay_pmf <- get_delay_estimate(
   max_delay = 3,
   n_history = 4
 )
+# If using delay_pmf to estimate uncertainty
 disp_params <- estimate_uncertainty(
-  triangle_to_nowcast = triangle,
+  triangle_for_uncertainty= triangle,
   delay_pmf = delay_pmf,
   n_history_dispersion = 5
+)
+# If using iterative process of re-estimating delay to estimate uncertainty
+disp_params <- estimate_uncertainty(
+  triangle_for_uncertainty= triangle,
+  n_history_dispersion = 2,
+  n_history = 3
 )
 }

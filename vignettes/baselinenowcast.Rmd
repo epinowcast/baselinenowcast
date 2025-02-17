@@ -345,21 +345,45 @@ case counts.
 # Estimate uncertainty
 
 So far, we've demonstrated how to generate a point estimate of a nowcast.
-We would like to generate probabilistic nowcasts, which will require
-estimating the empirical error between the expected observations and the
-actual observations when applying the delay distribution.
-This assumes a negative binomial observation model.
+We would like to generate probabilistic nowcasts.
+To do so, we will use the error between the observations that we have and what
+we would have nowcasted retrospectively. We will assume that the observations
+follow a negative binomial observation model, and independently estimate the
+dispersion in the negative binomial at each delay $d$.
 
+There are two methods we could use to estimate the errors. The first method
+simulates exactly the iterative process, by generating retrospective reporting
+triangles using what would have been available as of the time, estimating a
+delay distribution, and then re-computing the nowcast. To do this, we need to
+specify the number of observations we want to use for the estimation of the
+dispersion, which we will call `n_history_dispersion`. We will need to have
+`n_history_dispersion + n_history` observations to generate these estimates, as
+each `n_history_dispersion` will require at least `n_history` rows to
+re-estimate the delay distribution.
+
+```{r}
+disp_params1 <- estimate_uncertainty(
+  triangle_for_uncertainty = triangle,
+  n_history = 40,
+  n_history_dispersion = 20
+)
+```
+The second method differs slightly, in that instead of re-estimating the
+delay distribution each time, we are going to use the same delay distribution
+that will be used to generate the nowcast to compute the retrospective nowcasts.
+In this case, since we do not need the additional `n_history` observations to
+re-estimate the delay distribution, we only need `n_history_dispersion`
+observations
+```{r}
+disp_params2 <- estimate_uncertainty(
+  triangle_for_uncertainty = triangle,
+  delay_pmf = delay_pmf,
+  n_history_dispersion = 60
+)
+```
 We will start by estimating the dispersion parameter of the negative binomial
 as a function of the delay d
 
-
-```{r}
-disp_params <- estimate_uncertainty(
-  triangle_to_nowcast = triangle,
-  delay_pmf = delay_pmf
-)
-```
 
 # Generate probabilistic nowcast
 

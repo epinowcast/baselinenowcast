@@ -90,3 +90,81 @@
     )
   }
 }
+
+#' Validate the triangle used to estimate uncertainty and the specified
+#'   inputs together, as only certain combinations are valid
+#'
+#' @param triangle_for_uncertainty Matrix of values with rows indicating the
+#'   time points and columns indicating the delays. Specifically, the triangle
+#'   used to generate the uncertainty estimates.
+#' @param delay_pmf Vector of length of the number of delays indicating the
+#'   probability of a case being reported on a given delay
+#' @param n_history_dispersion Integer indicating the number of observations
+#'   to be used to estimate the dispersion parameters in the observation model
+#' @param n_history Integer indicating the number of observations to be used to
+#'   estimate the delay distribution in order to generate retrospective
+#'   nowcasts
+#' @importFrom cli cli_abort
+#' @returns NULL, invisibly
+#' @keywords internal
+.validate_uncertainty_inputs <- function(triangle_for_uncertainty,
+                                         delay_pmf,
+                                         n_history_dispersion,
+                                         n_history) {
+  if (n_history_dispersion < 1) {
+    cli_abort(
+      message = c(
+        "Number of observations to use to estimate dispersion ",
+        "`n_history_dispersion`, must be greater than one."
+      )
+    )
+  }
+
+  # Case where you are not providing delay_pmf and n_history_dispersion +
+  # n_history < nrow(triangle_for_uncertainty
+  if (nrow(triangle_for_uncertainty) < (n_history + n_history_dispersion) &
+    is.null(delay_pmf)) {
+    cli_abort(
+      message = c(
+        "Reporting triangle to estimate uncertainty does not contain ",
+        "sufficient observations to use `n_history_dispersion` observations ",
+        "to recompute a delay distribution using `n_history` observations. ",
+        "User must either pass in longer historical data or adjust the number ",
+        "of observations used for either estimating the delay or estimating ",
+        "the dispersion."
+      )
+    )
+  }
+
+  if (ncol(triangle_for_uncertainty) < n_history &
+    is.null(delay_pmf)) {
+    cli_abort(
+      message = c(
+        "Number of observations to estimate delay from must be greater than",
+        "the maximum delay."
+      )
+    )
+  }
+
+  # Warn about which delay not being re-estimated
+  if (!is.null(delay_pmf)) {
+    cli_warn(
+      message = c(
+        "The delay distribution specified will be used to compute ",
+        "retrospective nowcasts. `n_history` is not being used, because the ",
+        "delay distribution is not being re-estimated at each iteration."
+      )
+    )
+  }
+
+  # Warn about delay being re-estimated
+  if (is.null(delay_pmf)) {
+    cli_warn(
+      message = c(
+        "No delay distribution was specified, therefore the delay ",
+        "distribution will be re-estimated at each `n_history_dispersion` ",
+        "reporting triangle."
+      )
+    )
+  }
+}

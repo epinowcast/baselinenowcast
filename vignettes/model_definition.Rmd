@@ -97,9 +97,9 @@ Where the number of reports at timepoint $t$ with delay $d$ is the product of th
 
 To extend these point nowcasts to probabilistic nowcasts, we can use the past nowcast errors. We will describe two methods for doing this, both of which generate retrospective reporting triangles to replicate would would have been available as of time $t^*=s^*$.
 
-#### Uncertainty estimate via iteratively re-estimating the delay distribution
+#### Uncertainty estimate via iteratively re-estimating the delay distribution and computing retrospective nowcasts
 
-The first method uses the retrospective incomplete reporting triangle to recompute a point nowcast using the $N$ preceding rows of the reporting triangle before $s^*$, for $M$ realizations of the retrospective reporting triangle (so $M$ different $s^*$ values).
+The first method uses the retrospective incomplete reporting triangle to re-estimate a delay distribution using the $N$ preceding rows of the reporting triangle before $s^*$, and using it to recompute a retrospective nowcast, for $M$ realizations of the retrospective reporting triangle (so $M$ different $s^*$ values).
 For each horizon $d = 1, ..., D$ we assume that the observed values, $X_{s^*-d, >d}$ assume a negative binomial observation model with a mean of $\hat{x}_{s^*-d}$:
 
 $$
@@ -108,9 +108,9 @@ $$
 
 We add a small number to the mean to avoid an ill-defined negative binomial. We note that to perform all these computations, data snapshots from at least $N +M$ past observations, or rows of the reporting triangle, are needed. This estimate of the uncertainty accounts for the empirical uncertainty in the point estimate of the delay distribution over time.
 
-#### Uncertainty estimate via generating retrospective nowcasts from the delay distribution, $\pi(d)$
+#### Uncertainty estimate via computing retrospective nowcasts from a single delay distribution, $\pi(d)$
 
-The second method uses the retrospective incomplete reporting triangles to recompute a point nowcast, using the delay distribution specified, $\pi(d)$, as is described above. Then, following the same assumption above, for each horizon $d = 1, ..., D$ we assume that the observed values, $X_{s^*-d, >d}$ assume a negative binomial observation model with a mean of $\hat{x}_{s^*-d}$:
+The second method uses the retrospective incomplete reporting triangles to recompute a point nowcast, using the delay distribution specified, $\pi(d)$, as described above. Then, following the same assumption above, for each horizon $d = 1, ..., D$ we assume that the observed values, $X_{s^*-d, >d}$ assume a negative binomial observation model with a mean of $\hat{x}_{s^*-d}$:
 
 $$
 X_{s^*-d,>d} | \hat{x}_{s^*-d, >d}(s*) \sim NegBin(\mu = \hat{x}_{s^*-d} + 0.1, \phi = \phi(d))

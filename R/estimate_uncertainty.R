@@ -27,6 +27,7 @@
 #' @examples
 #' triangle <- matrix(
 #'   c(
+#'     65, 46, 21, 7,
 #'     70, 40, 20, 5,
 #'     80, 50, 10, 10,
 #'     100, 40, 31, 20,
@@ -52,7 +53,7 @@
 #' disp_params <- estimate_uncertainty(
 #'   triangle_for_uncertainty = triangle,
 #'   n_history_dispersion = 2,
-#'   n_history = 3
+#'   n_history = 4
 #' )
 estimate_uncertainty <- function(triangle_for_uncertainty,
                                  delay_pmf = NULL,

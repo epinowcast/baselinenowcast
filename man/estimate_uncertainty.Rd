@@ -7,26 +7,27 @@
 estimate_uncertainty(
   triangle_for_uncertainty,
   delay_pmf = NULL,
-  n_history_dispersion = floor(nrow(triangle_to_nowcast)/2) - 1,
-  n_history = floor(nrow(triangle_to_nowcast)/2) - 1
+  n_history = max(floor(nrow(triangle_for_uncertainty)/2) - 1,
+    ncol(triangle_for_uncertainty)),
+  n_history_dispersion = nrow(triangle_for_uncertainty) - n_history - 1
 )
 }
 \arguments{
-\item{triangle_for_uncertainty}{matrix of the incomplete reporting triangle to be
-nowcasted, with rows representing the time points of reference and columns
-representing the delays}
+\item{triangle_for_uncertainty}{matrix of the incomplete reporting triangle
+to be nowcasted, with rows representing the time points of reference and
+columns representing the delays}
 
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
-first delay column in \code{triangle_to_nowcast}. Default is \code{NULL}}
-
-\item{n_history_dispersion}{Integer indicating the number of observations
-to be used in the estimate of the dispersion, always starting from the most
-recent reference date. The default is to use the whole reporting triangle,
-so \code{nrow(triangle_to_nowcast) - 1}}
+first delay column in \code{triangle_for_uncertainty}. Default is \code{NULL}}
 
 \item{n_history}{Integer indicating the number of observations to be
 used in the estimate of the delay estimate for each retrospective reporting
 triangle, if the delay estimate is being re-estimated. Default is \code{NULL}}
+
+\item{n_history_dispersion}{Integer indicating the number of observations
+to be used in the estimate of the dispersion, always starting from the most
+recent reference date. The default is to use the whole reporting triangle,
+so \code{nrow(triangle_for_uncertainty) - 1}}
 }
 \value{
 Vector of dispersion parameters of length of the \code{delay_pmf} -1
@@ -44,6 +45,7 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/39e2b17bc79492
 \examples{
 triangle <- matrix(
   c(
+    65, 46, 21, 7,
     70, 40, 20, 5,
     80, 50, 10, 10,
     100, 40, 31, 20,
@@ -61,14 +63,14 @@ delay_pmf <- get_delay_estimate(
 )
 # If using delay_pmf to estimate uncertainty
 disp_params <- estimate_uncertainty(
-  triangle_for_uncertainty= triangle,
+  triangle_for_uncertainty = triangle,
   delay_pmf = delay_pmf,
   n_history_dispersion = 5
 )
 # If using iterative process of re-estimating delay to estimate uncertainty
 disp_params <- estimate_uncertainty(
-  triangle_for_uncertainty= triangle,
+  triangle_for_uncertainty = triangle,
   n_history_dispersion = 2,
-  n_history = 3
+  n_history = 4
 )
 }

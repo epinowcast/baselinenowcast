@@ -114,7 +114,7 @@
   if (n_history_dispersion < 1) {
     cli_abort(
       message = c(
-        "Number of observations to use to estimate dispersion ",
+        "Number of observations to use to estimate dispersion, ",
         "`n_history_dispersion`, must be greater than one."
       )
     )

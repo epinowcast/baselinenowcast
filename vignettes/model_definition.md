@@ -1,48 +1,20 @@
----
-title: "Mathematical description of `baselinenowcast` method"
-output: html_document
-editor_options:
-  markdown:
-    wrap: 72
----
+# `baselinenowcast` mathematical model
 
-## `baselinenowcast` mathematical model
-
-The following describes the estimate of the delay distribution, the
-generation of the point nowcast, and the estimate of the observation
-error, for a partially observed or complete reporting triangle. The
-method assumes that the units of the delays, $d$\$ and the units of
-reference time $t$ are the same, e.g. weekly data and weekly releases or
-daily data with daily releases. This method is based on the method
-described by (Wolffram et al. 2023) developed by the Karlsruhe Institute
-of Technology.
+The following describes the estimate of the delay distribution, the generation of the point nowcast, and the estimate of the observation error, for a partially observed or complete reporting triangle. The method assumes that the units of the delays, $d$\$ and the units of reference time $t$ are the same, e.g. weekly data and weekly releases or daily data with daily releases. This method is based on the method described by (Wolffram et al. 2023) developed by the Karlsruhe Institute of Technology.
 
 ### Notation
 
-We denote $X_{t,d}, d = 0, .., D$ as the number of cases occurring on
-time $t$ which appear in the dataset with a delay of $d$. For example, a
-delay $d = 0$ means that a case occurring on day $t$ arrived in the
-dataset on day $t$, or on what is considered to be the first possible
-report date in practice. We only consider cases reporting within a
-maximum delay $D$. The number of cases reporting for time $t$ with a
-delay of at most $d$ can be written as:
+We denote $X_{t,d}, d = 0, .., D$ as the number of cases occurring on time $t$ which appear in the dataset with a delay of $d$. For example, a delay $d = 0$ means that a case occurring on day $t$ arrived in the dataset on day $t$, or on what is considered to be the first possible report date in practice. We only consider cases reporting within a maximum delay $D$. The number of cases reporting for time $t$ with a delay of at most $d$ can be written as:
 
 $$X_{t, \le d} = \sum_{i=0}^d X_{t,i} $$
 
-Such that $X_t = X_{t, \le D}$ is the “final” number of reported cases
-on time $t$. Conversely, for $d < D$
+Such that $X_t = X_{t, \le D}$ is the “final” number of reported cases on time $t$. Conversely, for $d < D$
 
 $$X_{t,>d} = \sum_{i = d+1} ^{D} X_{t,i}$$
 
 is the number of cases still missing after $d$ delays.
-
-We refer to $X_t$ to describe a random variable, $x_t$ for the
-corresponding observation, and $\hat{x}_t$ for an estimated/imputed
-value.
-
-We refer to the matrix of $x$ available at a given data release time
-$t^*$, as the reporting triangle. Here, all $t+d > t^*$ have yet to be
-observed.
+We refer to $X_t$ to describe a random variable, $x_t$ for the corresponding observation, and $\hat{x}_t$ for an estimated/imputed value.
+We refer to the matrix of $x$ available at a given data release time $t^*$ , as the reporting triangle. Here, all $t+d>t^*$ have yet to be observed.
 
 |   | $d = 0$ | $d = 1$ | $d=2$ | $...$ | $d= D-1$ | $d= D$ |
 |-----------|-----------|-----------|-----------|-----------|-----------|-----------|
@@ -55,153 +27,84 @@ observed.
 
 ### Point estimate of the delay distribution
 
-We use the entire reporting triangle to compute an empirical estimate of
-the delay distribution, $\pi(d)$, or the probability that a case at
-reference time $t$ appears in the dataset at time $t + d$. We will refer
-to the realized empirical estimate of the delay distribution from a
-reporting triangle as $\hat{\pi}(d)$.
+We use the entire reporting triangle to compute an empirical estimate of the delay distribution, $\pi(d)$, or the probability that a case at reference time $t$ appears in the dataset at time $t + d$. We will refer to the realized empirical estimate of the delay distribution from a reporting triangle as $\hat{\pi}(d)$.
+The delay distribution, $\pi(d)$ can be estimated directly from the completed reporting matrix $X$ 
 
-The delay distribution, $\pi(d)$ can be estimated directly from the
-completed reporting matrix $X$ $$
+$$
 {\pi}_d= \frac{\sum_{t=1}^{t=t^*} X_{t,d}}{\sum_{d=0}^{D} \sum_{t=1}^{t=t^*} X_{t,d}}
 $$
 
-In the special case when the time the estimate is made $t'$, is beyond
-the data release time $t^{*}$, such that $t' \ge t^* + D$, $\hat{\pi}_d$
-can be computed directly by summing over all reference time points $t$
-at each delay $d$.
-
-In the case where there are partial observations, in order to properly
-weight the denominator with the missing delays, we have to first impute
-the cases $\hat{x}_{t,d}$ for all instances where $t+d > t^*$. This
-amounts to computing the point nowcast from the partial reporting
-triangle.
+In the special case when the time the estimate is made $t'$, is beyond the data release time $t^{*}$, such that $t' \ge t^* + D$, $\hat{\pi}_d$ can be computed directly by summing over all reference time points $t$ at each delay $d$.
+In the case where there are partial observations, in order to properly weight the denominator with the missing delays, we have to first impute the cases $\hat{x}_{t,d}$ for all instances where $t+d > t^*$. This amounts to computing the point nowcast from the partial reporting triangle.
 
 ### Point nowcast from incomplete reporting matrix
 
-To do so, we start by defining $\theta_d$, which is the factor by which
-the cases on delay $d$ compare to the total cases through delay $d-1$,
-obtained from $N$ preceding rows of the triangle. In practice,
-$N \ge D$, with any $N > D$ representing the number of completed
-observations used to inform the estimate
+To do so, we start by defining $\theta_d$, which is the factor by which the cases on delay $d$ compare to the total cases through delay $d-1$, obtained from $N$ preceding rows of the triangle. In practice, $N \ge D$, with any $N > D$ representing the number of completed observations used to inform the estimate
 
 $$
 \hat{\theta}_d(t^*) = \frac{\sum_{i=1}^{N} x_{t^*-i+d, d}}{\sum_{d=1}^{d-1} \sum_{i=1}^{N} x_{t^*-i+d,d}}
 $$
 
-*Note:* this amounts to taking the sum of the elements in column $d$ up
-until time $t*-d$ and dividing by the sum over all the elements to the
-left of column $d$ up until time $t*-d$, referred to as `block_top` and
-`block_top_left`, respectively, in the code.
+*Note:* this amounts to taking the sum of the elements in column $d$ up until time $t*-d$ and dividing by the sum over all the elements to the left of column $d$ up until time $t*-d$, referred to as `block_top` and `block_top_left`, respectively, in the code.
 
-This factor is then used to compute the expected values for all the
-missing rows with delay $d$ as: $$
+This factor is then used to compute the expected values for all the missing rows with delay $d$ as: 
+
+$$
 \hat{x}_{t,d} = \hat{\theta_d}(t^*) \times \sum_{t=t^*-d}^{t^*} x_{t,d-1}
-$$ *Note:* this amounts to effectively taking the sum across the columns
-in the bottom left (`block_bottom_left` in the code) of the matrix up
-until column $d$ and multiplying by the factor to estimate the value of
-$x_{t,d}$ in each row.
+$$ 
 
-This process is repeated iteratively, from bottom left to top right, to
-impute the bottom right triangle of the reporting matrix for each time
-$t$ and delay $d$ when $t+d>t^*$. The combination of the imputed and
-observed reporting matrix is then used to compute the delay distribution
-$\hat{\pi}(d)$ as described above.
-
-The factor, $\theta_d$ can only be computed for delays greater than 0,
-which effectively means that a row of the reporting triangle without any
-observations, can not be imputed as the process works iteratively.
-Therefore, the reporting matrix must have at least an entry (though it
-can be 0) for $x_{t*,d=0}$ to compute a nowcast for $t^*$. We will
-describe the method for estimating nowcasts for zero-valued counts
-below.
-
-The method desribed above uses the incomplete reporting triangle to
-iteratively compute a point nowcast. We can also use the delay
-distribution $\hat{\pi(d)}$ directly to compute a point nowcast, which
-can be useful if, for example, the delay distribution is estimated from
-different strata or as part of a separate estimate.
+*Note:* this amounts to effectively taking the sum across the columns in the bottom left (`block_bottom_left` in the code) of the matrix up until column $d$ and multiplying by the factor to estimate the value of $x_{t,d}$ in each row.
+This process is repeated iteratively, from bottom left to top right, to impute the bottom right triangle of the reporting matrix for each time $t$ and delay $d$ when $t+d>t^*$. The combination of the imputed and observed reporting matrix is then used to compute the delay distribution $\hat{\pi}(d)$ as described above.
+The factor, $\theta_d$ can only be computed for delays greater than 0, which effectively means that a row of the reporting triangle without any observations, can not be imputed as the process works iteratively. Therefore, the reporting matrix must have at least an entry (though it can be 0) for $x_{t*,d=0}$ to compute a nowcast for $t^*$. We will describe the method for estimating nowcasts for zero-valued counts below.
+The method described above uses the incomplete reporting triangle to iteratively compute a point nowcast. We can also use the delay distribution $\hat{\pi(d)}$ directly to compute a point nowcast, which can be useful if, for example, the delay distribution is estimated from different strata or as part of a separate estimate.
 
 ### Point nowcast from delay distribution $\pi(d)$
 
-We start by computing the expected total number of eventual observed
-cases $\hat{x}_t$, for each reference time $t$, by summing over all
-delays $d$ that have already been observed (up until $t^*-t$) and
-dividing by the cumulative sum of the delay distribution, $\pi(d)$ up
-until $d = t^*-t$.
+We start by computing the expected total number of eventual observed cases $\hat{x}_t$, for each reference time $t$, by summing over all delays $d$ that have already been observed (up until $t^*-t$) and dividing by the cumulative sum of the delay distribution, $\pi(d)$ up until $d = t^*-t$.
 
 $$
 \hat{x}_t= \frac{\sum_{d=1}^{d=t^*-t} x_{t,d}}{\sum_{d=1}^{d=t^*-t} \\pi(d)}
 $$
 
-Then we can compute $\hat{x}_{t,d}$ directly using the $d$th element of
-$\pi(d)$
+Then we can compute $\hat{x}_{t,d}$ directly using the $d$th element of $\pi(d)$
 
 $$
 \hat{x}_{t,d} = \pi(d) \times \hat{x}_t
 $$
 
-Where the number of reports at timepoint $t$ with delay $d$ is the
-product of the the expected total reports, $x_t$ and the proportion
-expected at that particular delay $d$, $\pi(d)$.
+Where the number of reports at timepoint $t$ with delay $d$ is the product of the the expected total reports, $x_t$ and the proportion expected at that particular delay $d$, $\pi(d)$.
 
 ### Estimate of uncertainty in the nowcast
 
-To extend these point nowcasts to probabilistic nowcasts, we can use the
-past nowcast errors. We will describe two methods for doing this, both
-of which generate retrospective reporting triangles to replicate would
-would have been available as of time $t^*=s^*$.
+To extend these point nowcasts to probabilistic nowcasts, we can use the past nowcast errors. We will describe two methods for doing this, both of which generate retrospective reporting triangles to replicate would would have been available as of time $t^*=s^*$.
 
 #### Uncertainty estimate via iteratively re-estimating the delay distribution
 
-The first method uses the retrospective incomplete reporting triangle to
-recompute a point nowcast using the $N$ preceding rows of the reporting
-triangle before $s^*$, for $M$ realizations of the retrospective
-reporting triangle (so $M$ different $s^*$ values).
-
-For each horizon $d = 1, ..., D$ we assume that the observed values,
-$X_{s^*-d, >d}$ assume a negative binomial observation model with a mean
-of $\hat{x}_{s^*-d}$:
+The first method uses the retrospective incomplete reporting triangle to recompute a point nowcast using the $N$ preceding rows of the reporting triangle before $s^*$, for $M$ realizations of the retrospective reporting triangle (so $M$ different $s^*$ values).
+For each horizon $d = 1, ..., D$ we assume that the observed values, $X_{s^*-d, >d}$ assume a negative binomial observation model with a mean of $\hat{x}_{s^*-d}$:
 
 $$
 X_{s^*-d,>d} | \hat{x}_{s^*-d, >d}(s*) \sim NegBin(\mu = \hat{x}_{s^*-d} + 0.1, \phi = \phi_d)
-$$
-We add a small number to the mean to avoid an ill-defined negative binomial.
-We note that to perform all these computations, data snapshots from at
-least $N +M$ past observations, or rows of the reporting triangle, are
-needed. This estimate of the uncertainty accounts for the empirical
-uncertainty in the point estimate of the delay distribution over time.
+$$ 
 
+We add a small number to the mean to avoid an ill-defined negative binomial. We note that to perform all these computations, data snapshots from at least $N +M$ past observations, or rows of the reporting triangle, are needed. This estimate of the uncertainty accounts for the empirical uncertainty in the point estimate of the delay distribution over time.
 
 #### Uncertainty estimate via generating retrospective nowcasts from the delay distribution, $\pi(d)$
 
-The second method uses the retrospective incomplete reporting triangles
-to recompute a point nowcast, using the delay distribution specified,
-$\pi(d)$, as is described above. Then, following the same assumption
-above, for each horizon $d = 1, ..., D$ we assume that the observed values,
-$X_{s^*-d, >d}$ assume a negative binomial observation model with a mean
-of $\hat{x}_{s^*-d}$:
+The second method uses the retrospective incomplete reporting triangles to recompute a point nowcast, using the delay distribution specified, $\pi(d)$, as is described above. Then, following the same assumption above, for each horizon $d = 1, ..., D$ we assume that the observed values, $X_{s^*-d, >d}$ assume a negative binomial observation model with a mean of $\hat{x}_{s^*-d}$:
 
 $$
 X_{s^*-d,>d} | \hat{x}_{s^*-d, >d}(s*) \sim NegBin(\mu = \hat{x}_{s^*-d} + 0.1, \phi = \phi(d))
 $$
-Where again, we add a small number to avoid an ill-defined negative binomial.
-We note that in this estimate of uncertainty, data snapshots from $M$ past
-observations, or rows of the reporting triangle, are needed, as we do not
-need to use any other rows to generate the point nowcasts.
-We suggest using this estimate of the uncertainty if you suspect that the delay
-distribution that you are using may be misspecified, for example, if it was
-estimated from a different strata.
+
+Where again, we add a small number to avoid an ill-defined negative binomial. We note that in this estimate of uncertainty, data snapshots from $M$ past observations, or rows of the reporting triangle, are needed, as we do not need to use any other rows to generate the point nowcasts. We suggest using this estimate of the uncertainty if you suspect that the delay distribution that you are using may be misspecified, for example, if it was estimated from a different strata.
 
 ### Generating probabilistic nowcasts
 
-Using the dispersion parameters for each delay, $\phi(d)$ for $d = 1,...D$,
-we can generate probabilistic nowcasts by drawing samples from the
-negative binomial:
+Using the dispersion parameters for each delay, $\phi(d)$ for $d = 1,...D$, we can generate probabilistic nowcasts by drawing samples from the negative binomial:
 
 $$
 X_{t,d} \sim NegBin(\mu = \hat{x}_{t,d}, \phi = phi(d))
 $$
 
-We can sample for any number of draws, and then use the draws to compute
-any desired quantiles to summarize the outputs.
+We can sample for any number of draws, and then use the draws to compute any desired quantiles to summarize the outputs.

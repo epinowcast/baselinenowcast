@@ -359,13 +359,14 @@ specify the number of observations we want to use for the estimation of the
 dispersion, which we will call `n_history_dispersion`. We will need to have
 `n_history_dispersion + n_history` observations to generate these estimates, as
 each `n_history_dispersion` will require at least `n_history` rows to
-re-estimate the delay distribution.
+re-estimate the delay distribution. Note that `n_history` must always be
+greater than the `max_delay`.
 
-```{r}
+```{r estimate-uncertainty-method1}
 disp_params1 <- estimate_uncertainty(
   triangle_for_uncertainty = triangle,
-  n_history = 40,
-  n_history_dispersion = 20
+  n_history = 41,
+  n_history_dispersion = 18
 )
 ```
 The second method differs slightly, in that instead of re-estimating the
@@ -374,7 +375,7 @@ that will be used to generate the nowcast to compute the retrospective nowcasts.
 In this case, since we do not need the additional `n_history` observations to
 re-estimate the delay distribution, we only need `n_history_dispersion`
 observations
-```{r}
+```{r estimate-uncertainty-method2}
 disp_params2 <- estimate_uncertainty(
   triangle_for_uncertainty = triangle,
   delay_pmf = delay_pmf,

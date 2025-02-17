@@ -103,22 +103,9 @@ estimate_uncertainty <- function(triangle_for_uncertainty,
       matr_observed = matr_observed,
       n_history = n_history
     )
-
-    # Extracting results
-    exp_to_add_already_observed <- do.call(
-      rbind,
-      lapply(results, `[[`, "exp_to_add")
-    )
-    to_add_already_observed <- do.call(
-      rbind,
-      lapply(results, `[[`, "to_add")
-    )
-  }
-
-
-  ## Method 2: Generate retrospective nowcasts using the delay distribution
-  # specified
-  if (!is.null(delay_pmf)) {
+    ## Method 2: Generate retrospective nowcasts using the delay distribution
+    # specified
+  } else if (!is.null(delay_pmf)) {
     .validate_delay_and_triangle(
       triangle = triangle_for_uncertainty,
       delay_pmf = delay_pmf
@@ -137,17 +124,18 @@ estimate_uncertainty <- function(triangle_for_uncertainty,
       matr_observed = matr_observed,
       delay_pmf = delay_pmf
     )
-
-    # Extracting results
-    exp_to_add_already_observed <- do.call(
-      rbind,
-      lapply(results, `[[`, "exp_to_add")
-    )
-    to_add_already_observed <- do.call(
-      rbind,
-      lapply(results, `[[`, "to_add")
-    )
   }
+
+
+  # Extracting results
+  exp_to_add_already_observed <- do.call(
+    rbind,
+    lapply(results, `[[`, "exp_to_add")
+  )
+  to_add_already_observed <- do.call(
+    rbind,
+    lapply(results, `[[`, "to_add")
+  )
 
 
   disp_params <- vector(length = n_horizons)

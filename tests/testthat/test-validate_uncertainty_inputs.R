@@ -22,13 +22,13 @@ test_that(".validate_uncertainty_inputs provides correct warnings", {
   # Test case 4: Warning when delay_pmf is provided
   expect_warning(
     .validate_uncertainty_inputs(matrix(1:16, 4, 4), c(0.5, 0.3, 0.2), 2, 2),
-    "The delay distribution specified will be used to compute "
+    regexp = "The delay distribution specified will be used to compute"
   )
 
   # Test case 5: Warning when delay_pmf is not provided
   expect_warning(
     .validate_uncertainty_inputs(matrix(1:16, 4, 4), NULL, 2, 2),
-    "No delay distribution was specified, therefore the delay "
+    "No delay distribution was specified, therefore the delay"
   )
 })
 

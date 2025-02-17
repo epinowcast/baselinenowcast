@@ -16,14 +16,15 @@ test_that("estimate_uncertainty function generates dispersion parameters", {
   delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
 
   disp_params <- estimate_uncertainty(
-    triangle_to_nowcast = triangle,
+    triangle_for_uncertainty = triangle,
     delay_pmf = delay_pmf
   )
   expect_vector(disp_params)
   expect_length(disp_params, 3L)
 
   # Test case 2: Custom n_history_dispersion
-  result2 <- estimate_uncertainty(triangle,
+  result2 <- estimate_uncertainty(
+    triangle_for_uncertainty = triangle,
     delay_pmf,
     n_history_dispersion = 4
   )
@@ -31,7 +32,8 @@ test_that("estimate_uncertainty function generates dispersion parameters", {
 
   # Test case 3: n_history_dispersion too large
   expect_error(
-    estimate_uncertainty(triangle,
+    estimate_uncertainty(
+      triangle_for_uncertainty = triangle,
       delay_pmf,
       n_history_dispersion = 10
     ),
@@ -41,7 +43,7 @@ test_that("estimate_uncertainty function generates dispersion parameters", {
   wrong_delay_pmf <- c(0.5, 0.5)
   expect_error(
     estimate_uncertainty(
-      triangle,
+      triangle_for_uncertainty = triangle,
       wrong_delay_pmf
     ),
     regexp = "Length of the delay pmf is not the same as the number of delays"

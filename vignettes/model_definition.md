@@ -27,7 +27,7 @@ We refer to the matrix of $x$ available at a given data release time $t^*$ , as 
 
 ### Point estimate of the delay distribution
 
-We use the entire reporting triangle to compute an empirical estimate of the delay distribution, $\pi(d)$, or the probability that a case at reference time $t$ appears in the dataset at time $t + d$. We will refer to the realized empirical estimate of the delay distribution from a reporting triangle as $\hat{\pi}(d)$.
+We use the entire reporting triangle to compute an empirical estimate of the delay distribution, $\pi(d)$, or the probability that a case at reference time $t$ appears in the dataset at time $t + d$. We will refer to the realized empirical estimate of the delay distribution from a reporting triangle as $\pi(d)$.
 The delay distribution, $\pi(d)$ can be estimated directly from the completed reporting matrix $X$ 
 
 $$

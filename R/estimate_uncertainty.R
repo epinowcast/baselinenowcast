@@ -63,8 +63,7 @@ estimate_uncertainty <- function(triangle_for_uncertainty,
                                    ) - 1,
                                    ncol(triangle_for_uncertainty)
                                  ),
-                                 n_history_dispersion =
-                                   nrow(triangle_for_uncertainty) - n_history - 1) { # nolint
+                                 n_history_dispersion = NULL) { # nolint
 
   .validate_uncertainty_inputs(
     triangle_for_uncertainty,

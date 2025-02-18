@@ -111,6 +111,14 @@
                                          delay_pmf,
                                          n_history_dispersion,
                                          n_history) {
+  if (is.null(n_history_dispersion)) {
+    cli_abort(
+      message = c(
+        "User must specify the number of observation to estimate ",
+        "dispersion via `n_history_dispersion`"
+      )
+    )
+  }
   if (n_history_dispersion < 1) {
     cli_abort(
       message = c(

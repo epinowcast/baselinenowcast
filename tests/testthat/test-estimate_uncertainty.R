@@ -15,14 +15,8 @@ test_that("estimate_uncertainty function generates dispersion parameters", {
   )
   delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
 
-  disp_params <- estimate_uncertainty(
-    triangle_for_uncertainty = triangle,
-    delay_pmf = delay_pmf
-  )
-  expect_vector(disp_params)
-  expect_length(disp_params, 3L)
 
-  # Test case 2: Custom n_history_dispersion
+  # Test case 1: works as expected
   result2 <- estimate_uncertainty(
     triangle_for_uncertainty = triangle,
     delay_pmf,
@@ -34,7 +28,7 @@ test_that("estimate_uncertainty function generates dispersion parameters", {
   expect_error(
     estimate_uncertainty(
       triangle_for_uncertainty = triangle,
-      delay_pmf,
+      delay_pmf = delay_pmf,
       n_history_dispersion = 10
     ),
     regexp = "Triangle to nowcast does not contain sufficient rows"
@@ -44,27 +38,42 @@ test_that("estimate_uncertainty function generates dispersion parameters", {
   expect_error(
     estimate_uncertainty(
       triangle_for_uncertainty = triangle,
-      wrong_delay_pmf
+      delay_pmf = wrong_delay_pmf,
+      n_history_dispersion = 4
     ),
     regexp = "Length of the delay pmf is not the same as the number of delays"
   ) # nolint
 
   # Test case 5: Empty triangle
   empty_triangle <- matrix(nrow = 0, ncol = 0)
-  expect_error(estimate_uncertainty(empty_triangle, delay_pmf),
+  expect_error(
+    estimate_uncertainty(
+      triangle_for_uncertainty = empty_triangle,
+      delay_pmf = delay_pmf,
+      n_history_dispersion = 1
+    ),
     regexp = "Assertion on 'triangle' failed: Contains only missing values."
   ) # nolint
 
   # Test case 6: Triangle with all NAs, should error
   na_triangle <- matrix(NA, nrow = 6, ncol = 4)
-  expect_error(estimate_uncertainty(na_triangle, delay_pmf),
+  expect_error(
+    estimate_uncertainty(
+      triangle_for_uncertainty = na_triangle,
+      delay_pmf = delay_pmf,
+      n_history_dispersion = 4
+    ),
     regexp = "Assertion on 'triangle' failed: Contains only missing values."
   ) # nolint
 
   # Test case 7: Triangle with some zero values
   zero_triangle <- triangle
   zero_triangle[1, 1] <- 0
-  result7 <- estimate_uncertainty(zero_triangle, delay_pmf)
+  result7 <- estimate_uncertainty(
+    triangle_for_uncertainty = zero_triangle,
+    delay_pmf = delay_pmf,
+    n_history_dispersion = 4
+  )
   expect_type(result7, "double")
   expect_length(result7, length(delay_pmf) - 1)
 
@@ -77,8 +86,9 @@ test_that("estimate_uncertainty function generates dispersion parameters", {
   small_delay_pmf <- c(0.6, 0.3, 0.1)
   expect_error(
     estimate_uncertainty(
-      small_triangle,
-      small_delay_pmf
+      triangle_for_uncertainty = small_triangle,
+      delay_pmf = small_delay_pmf,
+      n_history_dispersion = 2
     ),
     regexp = "Assertion on 'triangle' failed: Must be of type 'integerish'"
   ) # nolint

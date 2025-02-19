@@ -65,6 +65,10 @@ estimate_uncertainty <- function(triangle_for_uncertainty,
                                  ),
                                  n_history_dispersion = NULL) { # nolint
 
+  # If we are using the delay_pmf, than n_history = 0
+  if (!is.null(delay_pmf)) {
+    n_history <- 0
+  }
   .validate_uncertainty_inputs(
     triangle_for_uncertainty,
     delay_pmf,
@@ -72,7 +76,9 @@ estimate_uncertainty <- function(triangle_for_uncertainty,
     n_history
   )
 
+
   n_horizons <- ncol(triangle_for_uncertainty) - 1
+
 
   .validate_triangle(triangle_for_uncertainty)
   if (n_history_dispersion > nrow(triangle_for_uncertainty - 1)) {

@@ -105,6 +105,7 @@
 #'   estimate the delay distribution in order to generate retrospective
 #'   nowcasts
 #' @importFrom cli cli_abort
+#' @importFrom checkmate assert_integerish
 #' @returns NULL, invisibly
 #' @keywords internal
 .validate_uncertainty_inputs <- function(triangle_for_uncertainty,
@@ -128,6 +129,18 @@
     )
   }
 
+  if ((n_history_dispersion + n_history) > nrow(triangle_for_uncertainty)) {
+    cli_abort(
+      message = c(
+        "Insufficient rows in reporting triangle for specified number ",
+        "of observations used to estimate dispersion and delay pmf"
+      )
+    )
+  }
+
+  assert_integerish(n_history)
+  assert_integerish(n_history_dispersion)
+
   # Case where you are not providing delay_pmf and n_history_dispersion +
   # n_history < nrow(triangle_for_uncertainty
   if (nrow(triangle_for_uncertainty) < (n_history + n_history_dispersion) &
@@ -144,7 +157,7 @@
     )
   }
 
-  if (ncol(triangle_for_uncertainty) < n_history &
+  if (ncol(triangle_for_uncertainty) < n_history &&
     is.null(delay_pmf)) {
     cli_abort(
       message = c(
@@ -154,25 +167,21 @@
     )
   }
 
-  # Warn about which delay not being re-estimated
+  # Message about which delay not being re-estimated
   if (!is.null(delay_pmf)) {
-    cli_warn(
-      message = c(
-        "The delay distribution specified will be used to compute ",
-        "retrospective nowcasts. `n_history` is not being used, because the ",
-        "delay distribution is not being re-estimated at each iteration."
-      )
+    message(
+      "The delay distribution specified will be used to compute ",
+      "retrospective nowcasts. `n_history` is not being used, because the ",
+      "delay distribution is not being re-estimated at each iteration."
     )
   }
 
-  # Warn about delay being re-estimated
+  # Message about delay being re-estimated
   if (is.null(delay_pmf)) {
-    cli_warn(
-      message = c(
-        "No delay distribution was specified, therefore the delay ",
-        "distribution will be re-estimated at each `n_history_dispersion` ",
-        "reporting triangle."
-      )
+    message(
+      "No delay distribution was specified, therefore the delay ",
+      "distribution will be re-estimated at each `n_history_dispersion` ",
+      "reporting triangle."
     )
   }
 }

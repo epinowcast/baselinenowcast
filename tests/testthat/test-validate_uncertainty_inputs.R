@@ -8,40 +8,35 @@ test_that(".validate_uncertainty_inputs handles invalid inputs correctly", {
   # Test case 2: Insufficient observations in triangle
   expect_error(
     .validate_uncertainty_inputs(matrix(1:9, 3, 3), NULL, 2, 2),
-    "Reporting triangle to estimate uncertainty does not "
+    "Insufficient rows in reporting triangle for specified number"
   )
 
   # Test case 3: n_history greater than number of rows in triangle
   expect_error(
     .validate_uncertainty_inputs(matrix(1:9, 3, 3), NULL, 1, 4),
-    "Reporting triangle to estimate uncertainty does not contain"
+    "Insufficient rows in reporting triangle for specified number"
   )
 })
 
-test_that(".validate_uncertainty_inputs provides correct warnings", {
-  # Test case 4: Warning when delay_pmf is provided
-  expect_warning(
-    .validate_uncertainty_inputs(matrix(1:16, 4, 4), c(0.5, 0.3, 0.2), 2, 2),
-    regexp = "The delay distribution specified will be used to compute"
-  )
-
-  # Test case 5: Warning when delay_pmf is not provided
-  expect_warning(
-    .validate_uncertainty_inputs(matrix(1:16, 4, 4), NULL, 2, 2),
-    "No delay distribution was specified, therefore the delay"
-  )
+test_that(".validate_uncertainty_inputs handles valid inputs correctly", {
+  expect_no_error(.validate_uncertainty_inputs(matrix(1:25, 5, 5), NULL, 2, 3))
+  expect_no_error(.validate_uncertainty_inputs(
+    matrix(1:25, 5, 5),
+    c(0.5, 0.3, 0.2),
+    2,
+    3
+  ))
 })
-
-test_that(".validate_uncertainty_inputs runs without errors for valid inputs", {
-  # Test case 6: Valid inputs without delay_pmf
-  expect_warning(
+test_that(".validate_uncertainty_inputs produces correct messages", {
+  expect_message(
     .validate_uncertainty_inputs(matrix(1:25, 5, 5), NULL, 2, 3),
-    "No delay distribution was specified"
+    "No delay distribution was specified, therefore the delay "
   )
-
-  # Test case 7: Valid inputs with delay_pmf
-  expect_warning(
-    .validate_uncertainty_inputs(matrix(1:25, 5, 5), c(0.5, 0.3, 0.2), 2, 3),
-    "The delay distribution specified will be used"
+  expect_message(
+    .validate_uncertainty_inputs(
+      matrix(1:25, 5, 5),
+      c(0.5, 0.3, 0.2), 2, 3
+    ),
+    "The delay distribution specified will be used to compute "
   )
 })

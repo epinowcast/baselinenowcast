@@ -9,7 +9,7 @@ estimate_uncertainty(
   delay_pmf = NULL,
   n_history = max(floor(nrow(triangle_for_uncertainty)/2) - 1,
     ncol(triangle_for_uncertainty)),
-  n_history_dispersion = nrow(triangle_for_uncertainty) - n_history - 1
+  n_history_dispersion = NULL
 )
 }
 \arguments{
@@ -53,7 +53,7 @@ triangle <- matrix(
     82, 42, NA, NA,
     70, NA, NA, NA
   ),
-  nrow = 6,
+  nrow = 7,
   byrow = TRUE
 )
 delay_pmf <- get_delay_estimate(

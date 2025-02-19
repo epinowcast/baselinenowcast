@@ -35,7 +35,7 @@
 #'     82, 42, NA, NA,
 #'     70, NA, NA, NA
 #'   ),
-#'   nrow = 6,
+#'   nrow = 7,
 #'   byrow = TRUE
 #' )
 #' delay_pmf <- get_delay_estimate(

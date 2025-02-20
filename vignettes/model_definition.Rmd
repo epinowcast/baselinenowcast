@@ -31,7 +31,7 @@ Such that $X_t = X_{t, \le D}$ is the “final” number of reported cases on ti
 
 $$X_{t,>d} = \sum_{i = d+1} ^{D} X_{t,i}$$
 
-is the number of cases still missing after $d$ delays.
+is the number of cases still missing after $d$ delay.
 We refer to $X_t$ to describe a random variable, $x_t$ for the corresponding observation, and $\hat{x}_t$ for an estimated/imputed value.
 We refer to the matrix of $x$ available at a given data release time $t^*$ , as the reporting triangle. Here, all $t+d>t^*$ have yet to be observed.
 

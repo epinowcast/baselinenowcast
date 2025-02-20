@@ -19,7 +19,7 @@ vignette: >
 
 # `baselinenowcast` mathematical model
 
-The following describes the estimate of the delay distribution, the generation of the point nowcast, and the estimate of the observation error, for a partially observed or complete reporting triangle. The method assumes that the units of the delays, $d$\$ and the units of reference time $t$ are the same, e.g. weekly data and weekly releases or daily data with daily releases. This method is based on the method described by ([Wolffram et al. 2023](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1011394)) developed by the Karlsruhe Institute of Technology.
+The following describes the estimate of the delay distribution, the generation of the point nowcast, and the estimate of the observation error, for a partially observed or complete reporting triangle. The method assumes that the units of the delays, $d$ and the units of reference time $t$ are the same, e.g. weekly data and weekly releases or daily data with daily releases. This method is based on the method described by ([Wolffram et al. 2023](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1011394)) developed by the Karlsruhe Institute of Technology.
 
 ### Notation
 

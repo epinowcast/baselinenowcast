@@ -95,7 +95,7 @@ and then compare that to what we will eventually observe as of the final date
 in the complete dataset.
 The red line shows the cumulative number of confirmed admissions on each report
 date, across all delays, using the data available as of July 1, 2021.
-It demonstrates the characteristic behavior of right-truncation.
+It demonstrates the characteristic behaviour of right-truncation.
 This is because we have not yet observed the data that will become available
 for the longer delays at recent time points.
 

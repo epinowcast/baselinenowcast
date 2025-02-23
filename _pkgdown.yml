@@ -16,7 +16,7 @@ navbar:
       text: Articles
       menu:
         - text: "Getting started"
-          href: arrticles/baselinenowcast.html
+          href: articles/baselinenowcast.html
         - text: "Mathematical model"
           href: articles/model_definition.html
 

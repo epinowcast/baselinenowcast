@@ -43,6 +43,6 @@ test_that(".validate_delay_and_triangle works correctly", {
   empty_delay <- numeric(0)
   expect_error(
     .validate_delay_and_triangle(valid_triangle, empty_delay),
-    "Length of the delay pmf is not the same as the number of delays"
+    "Length of the delay PMF is not the same as the number of delays"
   )
 })

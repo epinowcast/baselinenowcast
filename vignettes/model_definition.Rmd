@@ -21,6 +21,10 @@ vignette: >
 At a high-level, the method to generate nowcasts use a conceptually simple
 multiplicative model. This multiplicative model works by iteratively "filling in" the reporting triangle starting from the bottom left, and moving column by column from left to right until the bottom right of the triangle is filled in.
 
+![](../man/figures/schematic_fig.png)
+
+Figure 1. Schematic figure demonstrating the iterative generation of nowcasts from a reporting triangle. In this case, the values being estimated are $x_{t=6, d = 2}$ and $x_{t=5, d= 2}$ assuming that we have already iteratively estimated $x_{t=6, d= 1}$. The dotted dashed lines around observations $x_{t,d}$ indicated estimates that have been imputed, the dashed lines indicates observations $x_{t,d}$ that have not yet been observed or imputed, and the solid lines indicate observations that have been observed.
+
 The method requires at least one observation, at delay $d=0$ for the most recent reference date, located at the bottom of the reporting triangle in Fig 1 above. The method assumes that the values at each delay $d$ column will be the same proportion of the values previously reported. To fill in the missing values for each column $d$, we sum over the rectangle of completely observed reference dates for all $d-1$ columns (block top left) and sum over the column of completely observed reference dates for all of the entries in column $d$ (block left). The ratio of these two sums is assumed to be the same in the missing entries in column $d$, so we use the entries observed up to $d-1$ for each incomplete reference date (block bottom left), and scale by this ratio to get the missing entries in column $d$. This process is repeated for each delay from $d$ to the maximum delay $D$. At each iteration an additional reference date entry is computed as the delay $d$ increases.
 
 # Mathematical model

@@ -82,9 +82,9 @@
   if ((ncol(triangle) != length(delay_pmf))) {
     cli_abort(
       message = c(
-        "Length of the delay pmf is not the same as the number of delays ",
+        "Length of the delay PMF is not the same as the number of delays ",
         "in the triangle to be nowcasted. Ensure that these are equivalent ",
-        "by generating the delay pmf using the same maximum delay as in the ",
+        "by generating the delay PMF using the same maximum delay as in the ",
         "data you want to be nowcasted."
       )
     )

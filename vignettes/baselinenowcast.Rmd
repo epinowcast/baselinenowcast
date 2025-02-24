@@ -190,7 +190,7 @@ reporting triangle.
 # observed long above.
 observed_long <- data_long[location == "DE"][age_group == "00+"] |> # nolint
   enw_filter_report_dates(latest_date = nowcast_date) |>
-  enw_filter_reference_dates(include_days = n_history - 1)
+  enw_filter_reference_dates(include_days = n_history_delay - 1)
 head(observed_long)
 # Get the reporting triangle, adding an additional day because epinowcast
 # we want the max_delay + 1 entries since 0 is a valid delay.
@@ -233,7 +233,7 @@ The `get_delay_estimate()` function expects the following inputs:
   - `max_delay`: an integer indicating the maximum delay to estimate. This must
   be less than or equal to the number of rows in `triangle` minus 1, since we
   assume `triangle` is indexed at 0.
-  - `n_history`: an integer indicating the number of observations by reference
+  - `n_history_delay`: an integer indicating the number of observations by reference
   date to use to fit the delay distribution. This must be less than or equal to
   the number of rows in `triangle`.
 `enw_preprocess()` returns a `triangle` with the columns `.group` and
@@ -302,7 +302,7 @@ final_data <- data_long[location == "DE"][age_group == "00+"] |> # nolint
   enw_filter_report_dates(latest_date = "2021-10-01") |>
   enw_filter_reference_dates(
     latest_date = "2021-07-01",
-    include_days = n_history - 1
+    include_days = n_history_delay - 1
   ) |>
   group_by(reference_date) |>
   summarise(
@@ -357,11 +357,11 @@ To do this, we will first generate retrospective nowcasts from the reporting
 triangle. We will have to specify the number of observations we want to
 use for the estimation of the uncertainty, which we will call
 `n_history_uncertainty`.
-Note, we will need to have more than `n_history_uncertainty + n_history`
+Note, we will need to have more than `n_history_uncertainty + n_history_delay`
 observations in our original reporting triangle to estimate the uncertainty in
 this way, as each `n_history_uncertainty` will require at least `n_history`
-rows to re-estimate the delay distribution. Note also that `n_history` must
-always be greater than the `max_delay + 1`.
+rows to re-estimate the delay distribution. Note also that `n_history_delay`
+must always be greater than the `max_delay + 1`.
 
 We'll start by generating the set of retrospective reporting triangles.
 Since we have 60 observations in our reporting triangle, we will use 19 of them

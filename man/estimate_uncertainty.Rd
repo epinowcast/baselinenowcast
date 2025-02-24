@@ -13,7 +13,7 @@ estimate_uncertainty(
 )
 }
 \arguments{
-\item{triangle_for_uncertainty}{matrix of the incomplete reporting triangle
+\item{triangle_for_uncertainty}{Matrix of the incomplete reporting triangle
 to be nowcasted, with rows representing the time points of reference and
 columns representing the delays}
 

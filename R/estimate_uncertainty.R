@@ -8,7 +8,7 @@
 #'   was adapted from code written (under an MIT license) by the Karlsruhe
 #'   Institute of Technology RESPINOW German Hospitalization Nowcasting Hub,
 #' Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/39e2b17bc79492b0aee4c0b615a1c8dbf978ef53/code/baseline/functions.R#L142 #nolint
-#' @param triangle_for_uncertainty matrix of the incomplete reporting triangle
+#' @param triangle_for_uncertainty Matrix of the incomplete reporting triangle
 #'   to be nowcasted, with rows representing the time points of reference and
 #'   columns representing the delays
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the

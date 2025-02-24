@@ -338,9 +338,6 @@ eventually reported (black line), but does a decent overall job of correcting
 for the right-truncation observed in the red line (the data prior to the
 nowcast).
 
-What we really want is a probabilistic estimate of the nowcasted
-case counts.
-
 
 # Estimate uncertainty
 
@@ -351,22 +348,31 @@ we would have nowcasted retrospectively. We will assume that the observations
 follow a negative binomial observation model, and independently estimate the
 dispersion in the negative binomial at each delay $d$.
 
-There are two methods we could use to estimate the errors. The first method
-simulates exactly the iterative process, by generating retrospective reporting
+The method used to estimate the uncertainty in the nowcast simulates exactly
+the iterative process, by generating retrospective reporting
 triangles using what would have been available as of the time, estimating a
-delay distribution, and then re-computing the nowcast. To do this, we need to
-specify the number of observations we want to use for the estimation of the
-dispersion, which we will call `n_history_dispersion`. We will need to have
-`n_history_dispersion + n_history` observations to generate these estimates, as
-each `n_history_dispersion` will require at least `n_history` rows to
-re-estimate the delay distribution. Note that `n_history` must always be
-greater than the `max_delay`.
+delay distribution, and then re-computing the nowcast.
 
-```{r estimate-uncertainty-method1}
-disp_params1 <- estimate_uncertainty(
-  triangle_for_uncertainty = triangle,
-  n_history = 41,
-  n_history_dispersion = 18
+To do this, we will first generate retrospective nowcasts from the reporting
+triangle we have. We will have to specify the number of observations we want to
+use for the estimation of the uncertainty, which we will call
+`n_history_uncertainty`.
+Note, we will need to have more than `n_history_uncertainty + n_history`
+observations in our original reporting triangle to estimate the uncertainty in
+this way, as each `n_history_uncertainty` will require at least `n_history`
+rows to re-estimate the delay distribution. Note also that `n_history` must
+always be greater than the `max_delay + 1`.
+
+We'll start by generating the set of retrospective reporting triangles.
+Since we have 60 observations in our reporting triangle, we will use 19 of them
+to estimate the uncertainty and the remaining 41 to estimate the delay
+distribution (since we need to have at least 41 observations to estimate a
+delay distribution with a maximum of 40).
+
+```{r generate-retrospective-data}
+retro_rts <- generate_retrospective_data(
+  triangle_for_retro = triangle,
+  n_history_uncertainty = 19
 )
 ```
 The second method differs slightly, in that instead of re-estimating the

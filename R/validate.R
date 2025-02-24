@@ -131,3 +131,59 @@
     )
   }
 }
+
+.validate_est_uncertainty_inputs <- function(triangle,
+                                             retro_rts,
+                                             n_history_uncertainty,
+                                             n_history_delay) {
+  assert_integerish(n_history_delay)
+  assert_integerish(n_history_uncertainty)
+  assert_number(n_history_uncertainty, lower = 0, finite = TRUE)
+  assert_number(n_history_delay, lower = 0, finite = TRUE)
+
+  # Check that specified historical values for estimation are possible
+  if (n_history_uncertainty > length(retro_rts)) {
+    cli_abort(
+      message = c(
+        "Specified nuber of reporting triangles used to estimate the ",
+        "uncertainty is greater than the number of reporting triangles ",
+        "passed in."
+      )
+    )
+  }
+
+  # Check that specified historical values for estimation are possible
+  if (n_history_delay > nrows(retro_rts[[1]]) ||
+    n_history_delay > nrows(retro_rts[[length(retro_rts)]])) {
+    cli_abort(
+      message = c(
+        "Specified nuber of observations used to estimate the ",
+        "delay is greater than the number of rows in the reporting triangles ",
+        "passed in."
+      )
+    )
+  }
+
+  # Check that the number of columns in the latest triangle and the retro
+  # triangles are the same
+  if (ncol(triangle_latest) != ncol(retro_rts[[1]]) ||
+    ncol(triangle_latest) != ncol(retro_rts[[length(retro_rts)]])) {
+    cli_abort(
+      message = c(
+        "The number of columns, which is assumed to be one more than the ",
+        "maximum delay, is not equivalent in the latest reporting triangle ",
+        "and the retrospective reporting triangles"
+      )
+    )
+  }
+
+  if ((n_history_uncertainty + n_history_delay) > nrow(triangle - 1)) {
+    cli_abort(
+      message = c(
+        "Triangle to nowcast does not contain sufficient rows to ",
+        "estimate uncertainty from `n_history_dispersion` observations. Either",
+        "pass in a triangle of more rows or lower the `n_history_dispersion`"
+      )
+    )
+  }
+}

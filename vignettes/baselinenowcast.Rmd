@@ -353,21 +353,21 @@ the iterative process, by generating retrospective reporting
 triangles using what would have been available as of the time, estimating a
 delay distribution, and then re-computing the nowcast.
 
-To do this, we will first generate retrospective nowcasts from the reporting
-triangle. We will have to specify the number of observations we want to
-use for the estimation of the uncertainty, which we will call
-`n_history_uncertainty`.
+To do this, we will first generate retrospective reporting triangles from the
+latest reporting triangle.
+We will have to specify the number of observations we want to use for the
+estimation of the uncertainty, which we will call `n_history_uncertainty`.
 Note, we will need to have more than `n_history_uncertainty + n_history_delay`
-observations in our original reporting triangle to estimate the uncertainty in
-this way, as each `n_history_uncertainty` will require at least `n_history`
-rows to re-estimate the delay distribution. Note also that `n_history_delay`
+observations in our original reporting triangle to estimate the uncertainty
+using this method, as each `n_history_uncertainty` will require at least
+`n_history` rows to re-estimate the delay distribution. Note also that `n_history_delay`
 must always be greater than the `max_delay + 1`.
 
 We'll start by generating the set of retrospective reporting triangles.
 Since we have 60 observations in our reporting triangle, we will use 19 of them
 to estimate the uncertainty and the remaining 41 to estimate the delay
 distribution (since we need to have at least 41 observations to estimate a
-delay distribution with a maximum of 40).
+delay distribution with a maximum delay of 40).
 
 
 ```{r generate-retrospective-data}
@@ -382,8 +382,12 @@ Next, we will use the list of retrospective reporting triangles to estimate
 the uncertainty at each delay $d$
 
 ```{r}
-# insert new functionality to estimate uncertainty from list of retrospective
-# reporting triangles
+disp_params <- estimate_uncertainty(
+  triangle_latest = triangle,
+  list_of_retro_rts = retro_rts,
+  n_history_delay = 41,
+  n_history_uncertainty = 19
+)
 ```
 
 # Generate probabilistic nowcast

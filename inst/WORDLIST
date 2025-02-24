@@ -1,3 +1,4 @@
+allcontributors
 booleans
 CMD
 Codecov
@@ -10,6 +11,7 @@ Karlsruhe
 KITmetricslab
 Lifecycle
 modeling
+nolint
 nowcast
 Nowcasting
 nowcasting

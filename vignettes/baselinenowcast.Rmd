@@ -132,6 +132,7 @@ ggplot() +
   scale_y_continuous(trans = "log10") +
   ggtitle("Comparing real-time and later observed cases")
 ```
+
 Here the black line represents the quantity we will evaluate our nowcast
 against, and the red line represents the data we have available to us up until
 July 1st, 2021.

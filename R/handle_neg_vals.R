@@ -8,7 +8,7 @@
 #'   Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R #nolint
 #' @param triangle Matrix of the reporting triangle, with rows representing
 #'   the time points of reference and columns representing the delays
-#' @return pos_triangle matrix of positive integers with negative values of
+#' @return Matrix of positive integers with negative values of
 #'   reporting handled via passing them to the subsequent days delay
 #' @keywords internal
 .handle_neg_vals <- function(triangle) {

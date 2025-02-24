@@ -3,7 +3,7 @@ test_that(".validate_triangle works correctly", {
   valid_triangle <- matrix(1:20, nrow = 5, ncol = 4)
   expect_no_error(.validate_triangle(valid_triangle,
     max_delay = 3,
-    n_history = 4
+    n_history_delay = 4
   ))
 
   # Test case 2: Non-integer values in triangle
@@ -11,7 +11,7 @@ test_that(".validate_triangle works correctly", {
   expect_error(
     .validate_triangle(non_integer_triangle,
       max_delay = 1,
-      n_history = 1
+      n_history_delay = 1
     ),
     "Assertion on 'triangle' failed: Must be of type 'integerish'"
   )
@@ -21,7 +21,7 @@ test_that(".validate_triangle works correctly", {
   expect_error(
     .validate_triangle(not_matrix_triangle,
       max_delay = 1,
-      n_history = 1
+      n_history_delay = 1
     ),
     "Assertion on 'triangle' failed: Must inherit from class 'matrix'"
   ) # nolint
@@ -30,7 +30,7 @@ test_that(".validate_triangle works correctly", {
   expect_error(
     .validate_triangle(valid_triangle,
       max_delay = 1.5,
-      n_history = 1
+      n_history_delay = 1
     ),
     "Assertion on 'max_delay' failed: Must be of type 'integerish'"
   )
@@ -39,9 +39,9 @@ test_that(".validate_triangle works correctly", {
   expect_error(
     .validate_triangle(valid_triangle,
       max_delay = 1,
-      n_history = 1.5
+      n_history_delay = 1.5
     ),
-    "Assertion on 'n_history' failed: Must be of type 'integerish'"
+    "Assertion on 'n_history_delay' failed: Must be of type 'integerish'"
   )
 
   # Test case 6: Number of observations not greater than maximum delay
@@ -49,7 +49,7 @@ test_that(".validate_triangle works correctly", {
   expect_error(
     .validate_triangle(triangle,
       max_delay = 2,
-      n_history = 2
+      n_history_delay = 2
     ),
     "Number of observations must be greater than the maximum delay"
   )
@@ -58,26 +58,26 @@ test_that(".validate_triangle works correctly", {
   expect_error(
     .validate_triangle(valid_triangle,
       max_delay = 3,
-      n_history = 6
+      n_history_delay = 6
     ),
     "Number of observations in input data not sufficient"
   )
 
   # Test case 8: Number of delays less than max_delay + 1
   expect_error(
-    .validate_triangle(valid_triangle, max_delay = 4, n_history = 4),
+    .validate_triangle(valid_triangle, max_delay = 4, n_history_delay = 4),
     "Number of delays in input data not sufficient"
   )
 
   # Test case 9: max_delay less than 1
   expect_error(
-    .validate_triangle(valid_triangle, max_delay = 0, n_history = 4),
+    .validate_triangle(valid_triangle, max_delay = 0, n_history_delay = 4),
     "Insufficient `max_delay` or `n_history_delay`"
   )
 
   # Test case 10: n_history less than 1
   expect_error(
-    .validate_triangle(valid_triangle, max_delay = 3, n_history = 0),
+    .validate_triangle(valid_triangle, max_delay = 3, n_history_delay = 0),
     "Insufficient `max_delay` or `n_history_delay`"
   )
 
@@ -85,7 +85,7 @@ test_that(".validate_triangle works correctly", {
   edge_triangle <- matrix(1:12, nrow = 4, ncol = 3)
   expect_no_error(.validate_triangle(edge_triangle,
     max_delay = 2,
-    n_history = 4
+    n_history_delay = 4
   ))
 
   # Test case 12: matrix of all NAs
@@ -93,7 +93,7 @@ test_that(".validate_triangle works correctly", {
   expect_error(
     .validate_triangle(na_triangle,
       max_delay = 3,
-      n_history = 5
+      n_history_delay = 5
     ),
     regexp = "Assertion on 'triangle' failed: Contains only missing values."
   ) # nolint

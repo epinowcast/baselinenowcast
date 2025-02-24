@@ -45,11 +45,11 @@
     )
   }
 
-  if ((max_delay < 1 || n_history < 1)) {
+  if ((max_delay < 1 || n_history_delay < 1)) {
     cli_abort(
       message = c(
-        "Insufficient `max_delay` or `n_histor_delay`, must be greater than or",
-        " equal to 1."
+        "Insufficient `max_delay` or `n_history_delay`, must be greater than ",
+        "or equal to 1."
       )
     )
   }
@@ -86,6 +86,47 @@
         "in the triangle to be nowcasted. Ensure that these are equivalent ",
         "by generating the delay pmf using the same maximum delay as in the ",
         "data you want to be nowcasted."
+      )
+    )
+  }
+}
+
+#' Validate inputs use to generate retrospective data
+#' Various checks to make sure that the reporting triangle and specified
+#'   integers passed in to [generate_retrospective_data()] are formatted
+#'   properly
+#' @importFrom checkmate assert_integerish
+#' @importFrom checkmate assert_number
+#' @importFrom cli cli_abort
+#' @inheritParams generate_retrospective_data
+#' @returns NULL, invisibly
+#' @keywords internal
+.validate_retro_inputs <- function(triangle,
+                                   n_history_uncertainty,
+                                   n_history_delay) {
+  assert_integerish(n_history_delay)
+  assert_integerish(n_history_uncertainty)
+  assert_number(n_history_uncertainty, lower = 0, finite = TRUE)
+  assert_number(n_history_delay, lower = 0, finite = TRUE)
+
+  if ((n_history_uncertainty + n_history_delay) > nrow(triangle)) {
+    cli_abort(
+      message = c(
+        "Triangle to nowcast does not contain sufficient rows to ",
+        "estimate uncertainty from `n_history_uncertainty` reporting ",
+        "triangles and `n_history_delay` rows of the reporting triangle. ",
+        "Either pass in a triangle of more rows or lower the ",
+        "`n_history_uncertainty`"
+      )
+    )
+  }
+
+  if (n_history_delay < ncol(triangle)) {
+    cli_abort(
+      message = c(
+        "Specified number of observations to use to estimate the delay ",
+        "`n_history_delay` must be greater than the number of columns in ",
+        " the reporting triangle"
       )
     )
   }

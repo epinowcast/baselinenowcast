@@ -28,31 +28,44 @@ test_that("generate_retrospective_data works correctly", {
   expect_identical(dim(retro_triangles[[3]]), c(4L, 4L))
 
   # Test 4: Check if the content of the first retrospective triangle is correct
-  expect_identical(retro_triangles[[1]], triangle)
+  expect_identical(
+    retro_triangles[[1]],
+    triangle[3:6, ] |> .replace_lower_right_with_NA()
+  )
 
   # Test 5: Check if the content of the last retrospective triangle is correct
   expected_last_triangle <- matrix(
     c(
       65, 46, 21, 7,
-      70, 40, 20, 5,
-      80, 50, 10, 10,
-      100, 40, 31, NA,
-      95, 45, NA, NA
+      70, 40, 20, NA,
+      80, 50, NA, NA,
+      100, NA, NA, NA
     ),
-    nrow = 5,
+    nrow = 4,
     byrow = TRUE
   )
-  expect_equal(retro_triangles[[3]], expected_last_triangle)
+  expect_identical(retro_triangles[[3]], expected_last_triangle)
 
   # Test 6: Check if the function handles custom n_history_uncertainty
-  custom_retro <- generate_retrospective_data(triangle, n_history_uncertainty = 2)
+  custom_retro <- generate_retrospective_data(triangle,
+    n_history_uncertainty = 2
+  )
   expect_length(custom_retro, 2)
 
   # Test 7: Check if the function handles custom n_history_delay
-  custom_delay_retro <- generate_retrospective_data(triangle, n_history_delay = 5)
-  expect_equal(dim(custom_delay_retro[[1]]), c(7, 4))
-  expect_equal(dim(custom_delay_retro[[2]]), c(6, 4))
+  custom_delay_retro <- generate_retrospective_data(triangle,
+    n_history_delay = 4
+  )
+  expect_identical(dim(custom_delay_retro[[1]]), c(4L, 4L))
+  expect_identical(dim(custom_delay_retro[[2]]), c(4L, 4L))
 
   # Test 8: Check if the function throws an error when n_history_uncertainty + n_history_delay > nrow(triangle)
-  expect_error(generate_retrospective_data(triangle, n_history_uncertainty = 5, n_history_delay = 3))
+  expect_error(
+    generate_retrospective_data(
+      triangle,
+      n_history_uncertainty = 5,
+      n_history_delay = 3
+    ),
+    regexp = "Triangle to nowcast does not contain sufficient rows to"
+  )
 })

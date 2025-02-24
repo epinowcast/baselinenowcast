@@ -28,14 +28,16 @@ the number of observation (rows) in \code{triangle_for_retro} and
 \code{n_history_uncertainty} so all of the data is being used.}
 }
 \value{
-A list of retrospective reporting triangle matrices
+A list of retrospective reporting triangle matrices with
+\code{n_history_delay} number of rows and the same number of columns as
+\code{triangle_for_retro}
 }
 \description{
 This function ingests a reporting triangle and the number of retrospective
 reporting triangles we want to create, and iteratively generates the
 reporting triangle that would have been available as of the maximum
-reference time, and iteratively working backwards for \code{n_history_uncertainty}
-snapshots
+reference time, and iteratively working backwards for
+\code{n_history_uncertainty} snapshots
 }
 \examples{
 triangle <- matrix(

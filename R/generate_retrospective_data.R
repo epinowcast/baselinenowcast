@@ -49,18 +49,12 @@ generate_retrospective_data <- function(
   # the nowcast for each of the retrospective datasets
   triangle <- triangle_for_retro
   .validate_triangle(triangle)
-  if ((n_history_uncertainty + n_history_delay) > nrow(triangle)) {
-    cli_abort(
-      message = c(
-        "Triangle to nowcast does not contain sufficient rows to ",
-        "estimate uncertainty from `n_history_uncertainty` reporting ",
-        "triangles and `n_history_delay` rows of the reporting triangle. ",
-        "Either pass in a triangle of more rows or lower the ",
-        "`n_history_uncertainty`"
-      )
-    )
-  }
 
+  .validate_retro_inputs(
+    triangle,
+    n_history_uncertainty,
+    n_history_delay
+  )
   # Will be able to remove this step if we require NAs in the bottom right
   # of the triangle
   matr_observed <- triangle |> .replace_lower_right_with_NA()

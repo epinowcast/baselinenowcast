@@ -3,8 +3,8 @@
 #' This function ingests a reporting triangle and the number of retrospective
 #'   reporting triangles we want to create, and iteratively generates the
 #'   reporting triangle that would have been available as of the maximum
-#'   reference time, and iteratively working backwards for `n_history_uncertainty`
-#'   snapshots
+#'   reference time, and iteratively working backwards for
+#'   `n_history_uncertainty` snapshots
 #'
 #' @param triangle_for_retro Matrix of the incomplete reporting triangle
 #'   to be used to generate retrospective nowcasts, with rows representing the
@@ -19,10 +19,10 @@
 #'   recent reporting delay. The default here is to us the difference between
 #'   the number of observation (rows) in `triangle_for_retro` and
 #'   `n_history_uncertainty` so all of the data is being used.
-#'
-#' @returns A list of retrospective reporting triangle matrices
+#' @returns A list of retrospective reporting triangle matrices with
+#'   `n_history_delay` number of rows and the same number of columns as
+#'   `triangle_for_retro`
 #' @export
-#'
 #' @examples
 #' triangle <- matrix(
 #'   c(
@@ -49,12 +49,14 @@ generate_retrospective_data <- function(
   # the nowcast for each of the retrospective datasets
   triangle <- triangle_for_retro
   .validate_triangle(triangle)
-  if (n_history_uncertainty + ncol(triangle_for_retro) > nrow(triangle)) {
+  if ((n_history_uncertainty + n_history_delay) > nrow(triangle)) {
     cli_abort(
       message = c(
         "Triangle to nowcast does not contain sufficient rows to ",
-        "estimate uncertainty from `n_history_uncertainty` observations. Either",
-        "pass in a triangle of more rows or lower the `n_history_uncertainty`"
+        "estimate uncertainty from `n_history_uncertainty` reporting ",
+        "triangles and `n_history_delay` rows of the reporting triangle. ",
+        "Either pass in a triangle of more rows or lower the ",
+        "`n_history_uncertainty`"
       )
     )
   }

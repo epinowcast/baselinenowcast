@@ -1,8 +1,8 @@
 #' Estimate the uncertainty in the nowcasts
 #' @description
 #' This function takes in as input the triangle that we want to nowcast and
-#'   the delay pmf, which may have been estimated separately. It uses the delay
-#'   pmf to compute, for each forecast date and delay, the expected number of
+#'   the delay PMF, which may have been estimated separately. It uses the delay
+#'   PMF to compute, for each forecast date and delay, the expected number of
 #'   confirmed cases on that forecast date at that delay d. For each delay, it
 #'   estimates an independent negative binomial dispersion parameter. This code
 #'   was adapted from code written (under an MIT license) by the Karlsruhe
@@ -15,7 +15,7 @@
 #'   first delay column in `triangle_to_nowcast`
 #' @param n_history_dispersion Integer indicating the number of reference dates
 #'   to be used in the estimate of the dispersion, always starting from the most
-#'   recent refrence date. The default is to use the whole reporting triangle,
+#'   recent reference date. The default is to use the whole reporting triangle,
 #'   so `nrow(triangle_to_nowcast) - 1`
 #' @importFrom cli cli_abort
 #' @returns Vector of dispersion parameters of length of the `delay_pmf` -1
@@ -113,7 +113,7 @@ estimate_uncertainty <- function(triangle_to_nowcast,
 #' @param col Integer indicating the column to sum over
 #' @param matrix_bool1 Matrix of booleans for the first set of indices
 #' @param matrix_bool2 Matrix of booleans for the second set of indices
-#' @param matrix_to_sum Matrix to be summed for that specific colun
+#' @param matrix_to_sum Matrix to be summed for that specific column
 #'
 #' @returns Numeric summing the values in the `matrix_to_sum` at the specified
 #'   column for the entries that are true

@@ -5,7 +5,7 @@
 \title{Apply the delay to generate a point nowcast
 Generate a point estimate of a completed reporting square (or rectangle)
 from a reporting triangle that we want to complete with a nowcast and a
-delay pmf. This code was adapted from code written (under an MIT license)
+delay PMF. This code was adapted from code written (under an MIT license)
 by the Karlsruhe Institute of Technology RESPINOW
 German Hospitalization Nowcasting Hub.
 Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint}
@@ -29,7 +29,7 @@ estimates
 Apply the delay to generate a point nowcast
 Generate a point estimate of a completed reporting square (or rectangle)
 from a reporting triangle that we want to complete with a nowcast and a
-delay pmf. This code was adapted from code written (under an MIT license)
+delay PMF. This code was adapted from code written (under an MIT license)
 by the Karlsruhe Institute of Technology RESPINOW
 German Hospitalization Nowcasting Hub.
 Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint

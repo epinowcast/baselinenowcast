@@ -62,7 +62,7 @@ test_that("apply_delay function works correctly with larger triangle", {
       triangle_to_nowcast,
       c(0.5, 0.5)
     ),
-    regexp = "Length of the delay pmf is not the same"
+    regexp = "Length of the delay PMF is not the same"
   )
 })
 

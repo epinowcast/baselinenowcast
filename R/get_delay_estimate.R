@@ -17,7 +17,7 @@
 #'   used in the estimate of the reporting delay, always starting from the most
 #'   recent reporting delay. The default is to use the whole reporting triangle,
 #'   so `nrow(triangle)-1`
-#' @returns delay_df 0-indexed vector of length `max_delay + 1` with columns
+#' @returns Vector indexed at 0 of length `max_delay + 1` with columns
 #'   indicating the point estimate of the empirical probability
 #'   mass on each delay
 #' @export

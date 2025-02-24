@@ -3,7 +3,7 @@
 \name{.validate_delay_and_triangle}
 \alias{.validate_delay_and_triangle}
 \title{Validate triangle to nowcast and delay pmf together
-Various checks to make sure that the reporting triangle  and the delay pmf
+Various checks to make sure that the reporting triangle  and the delay PMF
 passed in to \code{\link[=apply_delay]{apply_delay()}} are formatted properly and compatible}
 \usage{
 .validate_delay_and_triangle(triangle, delay_pmf)
@@ -20,7 +20,7 @@ NULL, invisibly
 }
 \description{
 Validate triangle to nowcast and delay pmf together
-Various checks to make sure that the reporting triangle  and the delay pmf
+Various checks to make sure that the reporting triangle  and the delay PMF
 passed in to \code{\link[=apply_delay]{apply_delay()}} are formatted properly and compatible
 }
 \keyword{internal}

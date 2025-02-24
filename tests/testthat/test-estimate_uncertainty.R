@@ -44,7 +44,7 @@ test_that("estimate_uncertainty function generates dispersion parameters", {
       triangle,
       wrong_delay_pmf
     ),
-    regexp = "Length of the delay pmf is not the same as the number of delays"
+    regexp = "Length of the delay PMF is not the same as the number of delays"
   ) # nolint
 
   # Test case 5: Empty triangle

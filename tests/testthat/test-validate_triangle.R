@@ -72,13 +72,13 @@ test_that(".validate_triangle works correctly", {
   # Test case 9: max_delay less than 1
   expect_error(
     .validate_triangle(valid_triangle, max_delay = 0, n_history = 4),
-    "Insufficient `max_delay` or `n_history`"
+    "Insufficient `max_delay` or `n_history_delay`"
   )
 
   # Test case 10: n_history less than 1
   expect_error(
     .validate_triangle(valid_triangle, max_delay = 3, n_history = 0),
-    "Insufficient `max_delay` or `n_history`"
+    "Insufficient `max_delay` or `n_history_delay`"
   )
 
   # Test case 11: Edge case - triangle with exactly enough rows and columns

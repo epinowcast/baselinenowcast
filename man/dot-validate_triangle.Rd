@@ -9,7 +9,7 @@ Various checks to make sure that the reporting triangle passed in to
 .validate_triangle(
   triangle,
   max_delay = ncol(triangle) - 1,
-  n_history = nrow(triangle)
+  n_history_delay = nrow(triangle)
 )
 }
 \arguments{
@@ -20,7 +20,7 @@ the time points of reference and columns representing the delays}
 of the delay. The default is to use the whole reporting triangle,
 \code{ncol(triangle) -1}.}
 
-\item{n_history}{Integer indicating the number of reference dates to be
+\item{n_history_delay}{Integer indicating the number of reference dates to be
 used in the estimate of the reporting delay, always starting from the most
 recent reporting delay. The default is to use the whole reporting triangle,
 so \code{nrow(triangle)-1}}

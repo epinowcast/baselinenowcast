@@ -9,7 +9,16 @@ development:
 
 navbar:
   structure:
+    left: [intro, reference, articles, news]
     right: [search, github, lightswitch]
+  components:
+    articles:
+      text: Articles
+      menu:
+        - text: "Getting started"
+          href: articles/baselinenowcast.html
+        - text: "Mathematical model"
+          href: articles/model_definition.html
 
 
 home:

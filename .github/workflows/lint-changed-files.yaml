@@ -27,7 +27,7 @@ jobs:
             any::gh
             any::lintr
             any::purrr
-            any::cylocomp
+            any::cyclocomp
           needs: check
 
       - name: Add lintr options

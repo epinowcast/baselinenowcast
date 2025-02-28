@@ -203,11 +203,12 @@ head(triangle_full)
 
 # Check that the sum of the rows in the reporting triangle is the
 # same as the sums across report dates by reference date
+triangle_matrix <- triangle_full |>
+  select(-`.group`, -reference_date) |>
+  as.matrix() |>
+  unname()
 triangle_sums <- rowSums(
-  triangle_full |>
-    select(-`.group`, -reference_date) |>
-    as.matrix() |>
-    unname()
+  triangle_matrix
 )
 observed_sums <- observed_long |>
   group_by(reference_date) |>

@@ -16,10 +16,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# High-level overview
+# Overview
 
-At a high-level, the method to generate nowcasts use a conceptually simple
-multiplicative model. This multiplicative model works by iteratively "filling in" the reporting triangle starting from the bottom left, and moving column by column from left to right until the bottom right of the triangle is filled in.
+The method to generate nowcasts use a multiplicative model.
+This multiplicative model works by iteratively "filling in" the reporting triangle starting from the bottom left, and moving column by column from left to right until the bottom right of the triangle is filled in.
 
 ![](../man/figures/schematic_fig.png)
 

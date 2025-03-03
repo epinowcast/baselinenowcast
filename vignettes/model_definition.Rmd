@@ -100,7 +100,7 @@ The method described above uses the incomplete reporting triangle to iteratively
 We start by computing the expected total number of eventual observed cases $\hat{x}_t$, for each reference time $t$, by summing over all delays $d$ that have already been observed (up until $t^*-t$) and dividing by the cumulative sum of the delay distribution, $\pi(d)$ up until $d = t^*-t$.
 
 $$
-\hat{x}_t= \frac{\sum_{d=1}^{d=t^*-t} x_{t,d}}{\sum_{d=1}^{d=t^*-t} \\pi(d)}
+\hat{x}_t= \frac{\sum_{d=1}^{d=t^*-t} x_{t,d}}{\sum_{d=1}^{d=t^*-t} \pi(d)}
 $$
 
 Then we can compute $\hat{x}_{t,d}$ directly using the $d$th element of $\pi(d)$

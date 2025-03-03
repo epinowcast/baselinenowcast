@@ -132,7 +132,7 @@ We add a small number (0.1) to the mean to avoid an ill-defined negative binomia
 Using the dispersion parameters for each delay, $\phi(d)$ for $d = 1,...D$, we can generate probabilistic nowcasts by drawing samples from the negative binomial:
 
 $$
-X_{t,d} \sim NegBin(\mu = \hat{x}_{t,d}, \phi = phi(d))
+X_{t,d} \sim NegBin(\mu = \hat{x}_{t,d}, \phi = \phi(d))
 $$
 
 We can sample for any number of draws, and then use the draws to compute any desired quantiles to summarize the outputs.

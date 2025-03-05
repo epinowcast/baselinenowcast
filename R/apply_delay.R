@@ -48,7 +48,8 @@ apply_delay <- function(triangle_to_nowcast,
   # Iterates through each column and adds entries to the expected reporting
   # triangle
   expectation <- Reduce(function(acc, co) {
-    .calc_expectation(co, acc, delay_pmf)
+    x <- .calc_expectation(co, acc, delay_pmf)
+    return(x)
   }, 2:n_delays, init = triangle_to_nowcast)
   return(expectation)
 }

@@ -228,7 +228,8 @@ estimate_uncertainty <- function(triangle_to_nowcast,
     return(NA)
   }
   nllik <- function(size) {
-    -sum(dnbinom(x = x, mu = mu, size = size, log = TRUE), na.rm = TRUE)
+    nll <- -sum(dnbinom(x = x, mu = mu, size = size, log = TRUE), na.rm = TRUE)
+    return(nll)
   }
   opt <- optimize(nllik, c(0.1, 1000))
   opt$minimum

@@ -2,7 +2,7 @@
 % Please edit documentation in R/validate.R
 \name{.validate_delay_and_triangle}
 \alias{.validate_delay_and_triangle}
-\title{Validate triangle to nowcast and delay pmf together
+\title{Validate triangle to nowcast and delay PMF together
 Various checks to make sure that the reporting triangle  and the delay PMF
 passed in to \code{\link[=apply_delay]{apply_delay()}} are formatted properly and compatible}
 \usage{
@@ -19,7 +19,7 @@ probability of a case being reported on a given delay}
 NULL, invisibly
 }
 \description{
-Validate triangle to nowcast and delay pmf together
+Validate triangle to nowcast and delay PMF together
 Various checks to make sure that the reporting triangle  and the delay PMF
 passed in to \code{\link[=apply_delay]{apply_delay()}} are formatted properly and compatible
 }

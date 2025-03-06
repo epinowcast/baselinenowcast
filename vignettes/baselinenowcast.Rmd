@@ -376,7 +376,7 @@ estimate a delay distribution with a maximum of 40.
 
 ```{r generate-retrospective-triangles}
 retro_rts <- generate_retro_triangles(
-  triangle_for_retro = triangle,
+  triangle = triangle,
   n_triangles = 19
 )
 ```

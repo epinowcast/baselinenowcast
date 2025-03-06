@@ -48,7 +48,7 @@ get_delay_estimate <- function(triangle,
     n_history_delay = n_history_delay
   )
 
-  # Filter the triangle down to nrow = n_history + 1, ncol = max_delay
+  # Filter the triangle down to nrow = n_history_delay + 1, ncol = max_delay
   nr0 <- nrow(triangle)
   trunc_triangle <- triangle[(nr0 - n_history_delay + 1):nr0, 1:(max_delay + 1)]
   rt <- .handle_neg_vals(trunc_triangle)

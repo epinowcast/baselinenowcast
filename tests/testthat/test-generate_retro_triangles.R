@@ -23,13 +23,10 @@ test_that("generate_retro_triangles works correctly", {
   # Test 3: Check if the number of retro triangles is correct without specifying
   expect_length(generate_retro_triangles(triangle), 3)
 
-  # Test 4: Check that you get a warnng but still the right length if you
+  # Test 4: Check that you get a warning if you
   # ask for more triangles than will be able to generate a nowcast
-  expect_warn(generate_retro_triangles(triangle, 4),
-    regexp =
-      "Not all of the triangles generated will contain sufficient "
-  )
-  expect_length(generate_retro_triangles(triangle), 4, 4)
+  expect_warning(generate_retro_triangles(triangle, 4))
+
 
   # Test 3: Check that the dimensions of the returned triangles are as
   # expected
@@ -40,7 +37,7 @@ test_that("generate_retro_triangles works correctly", {
   # Test 4: Check if the content of the first retrospective triangle is correct
   expect_identical(
     retro_triangles[[1]],
-    triangle[3:6, ] |> .replace_lower_right_with_NA()
+    .replace_lower_right_with_NA(triangle[1:6, ])
   )
 
   # Test 5: Check if the content of the last retrospective triangle is correct

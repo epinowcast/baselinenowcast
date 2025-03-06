@@ -17,7 +17,7 @@
 #'   used in the estimate of the reporting delay, always starting from the most
 #'   recent reporting delay. The default is to use the whole reporting triangle,
 #'   so `nrow(triangle)-1`
-#' @returns delay_df 0-indexed vector of length `max_delay + 1` with columns
+#' @returns Vector indexed at 0 of length `max_delay + 1` with columns
 #'   indicating the point estimate of the empirical probability
 #'   mass on each delay
 #' @export
@@ -50,27 +50,28 @@ get_delay_estimate <- function(triangle,
 
   # Filter the triangle down to nrow = n_history_delay + 1, ncol = max_delay
   nr0 <- nrow(triangle)
-  trunc_triangle <- triangle[(nr0 - n_history_delay + 1):nr0, 1:(max_delay + 1)]
-  rt <- .handle_neg_vals(trunc_triangle)
-  n_delays <- ncol(rt)
-  n_dates <- nrow(rt)
-  factor <- vector(length = max_delay - 1)
-  expectation <- rt
+  trunc_triangle <- triangle[(nr0 - n_history + 1):nr0, 1:(max_delay + 1)]
+  rep_tri <- .handle_neg_vals(trunc_triangle)
+  n_delays <- ncol(rep_tri)
+  n_dates <- nrow(rep_tri)
+  mult_factor <- vector(length = max_delay - 1)
+  expectation <- rep_tri
   for (co in 2:(n_delays)) {
-    block_top_left <- rt[1:(n_dates - co + 1), 1:(co - 1), drop = FALSE]
-    block_top <- rt[1:(n_dates - co + 1), co, drop = FALSE]
-    factor[co - 1] <- sum(block_top) / max(sum(block_top_left), 1)
+    block_top_left <- rep_tri[1:(n_dates - co + 1), 1:(co - 1), drop = FALSE]
+    block_top <- rep_tri[1:(n_dates - co + 1), co, drop = FALSE]
+    mult_factor[co - 1] <- sum(block_top) / max(sum(block_top_left), 1)
     block_bottom_left <- expectation[(n_dates - co + 2):n_dates, 1:(co - 1),
       drop = FALSE
     ]
     # We compute the expectation so that we can get the delay estimate
-    expectation[(n_dates - co + 2):n_dates, co] <- factor[co - 1] * rowSums(
-      block_bottom_left
-    )
+    expectation[(n_dates - co + 2):n_dates, co] <- mult_factor[co - 1] *
+      rowSums(
+        block_bottom_left
+      )
   }
 
-  # Use the completed reporting square to get the point estimate of the delay
-  # distribution
+  # Use the completed reporep_triing square to get the point estimate of the
+  # delay distribution
   pmf <- colSums(expectation) / sum(expectation)
 
   return(pmf)

@@ -2,7 +2,6 @@
 ---
 title: "Getting Started with baselinenowcast"
 description: "A quick start example demonstrating use of baselinenowcast"
-author: Kaitlyn Johnson
 output:
   bookdown::html_document2:
     fig_caption: yes
@@ -95,7 +94,7 @@ and then compare that to what we will eventually observe as of the final date
 in the complete dataset.
 The red line shows the cumulative number of confirmed admissions on each report
 date, across all delays, using the data available as of July 1, 2021.
-It demonstrates the characteristic behavior of right-truncation.
+It demonstrates the characteristic behaviour of right-truncation.
 This is because we have not yet observed the data that will become available
 for the longer delays at recent time points.
 
@@ -104,26 +103,26 @@ at each reference date, observed as of the "fully observed" data on October
 2021.
 ```{r plot-the-data-by-reference-date}
 data_long <- germany_covid19_hosp # import data from epinowcast
-
+data_filtered <- data_long |>
+  enw_filter_report_dates(latest_date = "2021-07-01") |>
+  filter(
+    location == "DE", age_group == "00+",
+    report_date == "2021-07-01"
+  )
+data_filtered_max <- data_long |>
+  filter(
+    location == "DE", age_group == "00+",
+    reference_date <= "2021-07-01"
+  ) |>
+  group_by(reference_date) |>
+  summarise(confirm = max(confirm))
 ggplot() +
   geom_line(
-    # Plot the data summed across reporting days
-    data = data_long |>
-      enw_filter_report_dates(latest_date = "2021-07-01") |>
-      filter(
-        location == "DE", age_group == "00+",
-        report_date == "2021-07-01"
-      ),
+    data = data_filtered,
     aes(x = reference_date, y = confirm), color = "darkred"
   ) +
   geom_line(
-    data = data_long |>
-      filter(
-        location == "DE", age_group == "00+",
-        reference_date <= "2021-07-01"
-      ) |>
-      group_by(reference_date) |>
-      summarise(confirm = max(confirm)),
+    data = data_filtered_max,
     aes(x = reference_date, y = confirm), color = "black"
   ) +
   theme_bw() +
@@ -132,6 +131,7 @@ ggplot() +
   scale_y_continuous(trans = "log10") +
   ggtitle("Comparing real-time and later observed cases")
 ```
+
 Here the black line represents the quantity we will evaluate our nowcast
 against, and the red line represents the data we have available to us up until
 July 1st, 2021.
@@ -204,13 +204,17 @@ head(triangle_full)
 
 # Check that the sum of the rows in the reporting triangle is the
 # same as the sums across report dates by reference date
+triangle_matrix <- triangle_full |>
+  select(-`.group`, -reference_date) |>
+  as.matrix() |>
+  unname()
+triangle_sums <- rowSums(
+  triangle_matrix
+)
 observed_sums <- observed_long |>
   group_by(reference_date) |>
   summarise(total_confirmed = max(confirm)) |>
-  mutate(triangle_sums = rowSums(triangle_full |>
-    select(-`.group`, -reference_date) |>
-    as.matrix() |>
-    unname()))
+  mutate(triangle_sums = triangle_sums)
 ```
 
 # Estimate delay
@@ -309,13 +313,13 @@ final_data <- data_long[location == "DE"][age_group == "00+"] |> # nolint
     total_confirmed = max(confirm)
   ) |>
   mutate(nowcast = rowSums(point_reporting_square))
-
+summary_data <- observed_long |>
+  group_by(reference_date) |>
+  summarise(total_confirmed = max(confirm))
 ggplot() +
   geom_line(
     # Plot the data summed across reporting days as of July 1,2021
-    data = observed_long |>
-      group_by(reference_date) |>
-      summarise(total_confirmed = max(confirm)),
+    data = summary_data,
     aes(x = reference_date, y = total_confirmed), color = "darkred"
   ) +
   geom_line(

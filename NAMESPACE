@@ -2,12 +2,11 @@
 
 export(apply_delay)
 export(estimate_uncertainty)
-export(generate_retrospective_data)
+export(generate_retro_triangles)
 export(get_delay_estimate)
 importFrom(checkmate,assert_class)
 importFrom(checkmate,assert_integerish)
 importFrom(checkmate,assert_matrix)
-importFrom(checkmate,assert_number)
 importFrom(cli,cli_abort)
 importFrom(stats,dnbinom)
 importFrom(stats,optimize)

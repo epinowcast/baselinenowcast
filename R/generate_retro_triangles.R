@@ -79,9 +79,26 @@ generate_retro_triangles <- function(
 #'
 #' @returns Matrix with `t` fewer rows than `matr_observed`, replicating what
 #'   would have been observed as of `t` days prior.
+#' @importFrom checkmate assert_integerish
+#' @importFrom cli cli_abort
 generate_retro_triangle <- function(t,
                                     matr_observed) {
   n_obs <- nrow(matr_observed)
+  if (t >= n_obs) {
+    cli_abort(
+      message = c(
+        "The as of time point is greater than or equal to the number of ",
+        "rows in the original triangle."
+      )
+    )
+  }
+  if (t < 0) {
+    cli_abort(
+      message = "t must be a non-negative integer"
+    )
+  }
+
+  assert_integerish(t)
   matr_observed_trunc <- matrix(
     matr_observed[1:(n_obs - t), ],
     nrow = (n_obs - t)

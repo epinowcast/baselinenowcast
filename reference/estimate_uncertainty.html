@@ -6,15 +6,15 @@
     }
   };
 </script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Estimate the uncertainty in the nowcasts — estimate_uncertainty"><meta name="description" content="This function takes in as input the triangle that we want to nowcast and
-the delay pmf, which may have been estimated separately. It uses the delay
-pmf to compute, for each forecast date and delay, the expected number of
+the delay PMF, which may have been estimated separately. It uses the delay
+PMF to compute, for each forecast date and delay, the expected number of
 confirmed cases on that forecast date at that delay d. For each delay, it
 estimates an independent negative binomial dispersion parameter. This code
 was adapted from code written (under an MIT license) by the Karlsruhe
 Institute of Technology RESPINOW German Hospitalization Nowcasting Hub,
 Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/39e2b17bc79492b0aee4c0b615a1c8dbf978ef53/code/baseline/functions.R#L142 #nolint"><meta property="og:description" content="This function takes in as input the triangle that we want to nowcast and
-the delay pmf, which may have been estimated separately. It uses the delay
-pmf to compute, for each forecast date and delay, the expected number of
+the delay PMF, which may have been estimated separately. It uses the delay
+PMF to compute, for each forecast date and delay, the expected number of
 confirmed cases on that forecast date at that delay d. For each delay, it
 estimates an independent negative binomial dispersion parameter. This code
 was adapted from code written (under an MIT license) by the Karlsruhe
@@ -67,8 +67,8 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/39e2b17bc79492
 
     <div class="ref-description section level2">
     <p>This function takes in as input the triangle that we want to nowcast and
-the delay pmf, which may have been estimated separately. It uses the delay
-pmf to compute, for each forecast date and delay, the expected number of
+the delay PMF, which may have been estimated separately. It uses the delay
+PMF to compute, for each forecast date and delay, the expected number of
 confirmed cases on that forecast date at that delay d. For each delay, it
 estimates an independent negative binomial dispersion parameter. This code
 was adapted from code written (under an MIT license) by the Karlsruhe
@@ -103,7 +103,7 @@ first delay column in <code>triangle_to_nowcast</code></p></dd>
 <dt id="arg-n-history-dispersion">n_history_dispersion<a class="anchor" aria-label="anchor" href="#arg-n-history-dispersion"></a></dt>
 <dd><p>Integer indicating the number of reference dates
 to be used in the estimate of the dispersion, always starting from the most
-recent refrence date. The default is to use the whole reporting triangle,
+recent reference date. The default is to use the whole reporting triangle,
 so <code>nrow(triangle_to_nowcast) - 1</code></p></dd>
 
 </dl></div>

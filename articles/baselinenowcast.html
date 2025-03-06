@@ -160,7 +160,7 @@ and then compare that to what we will eventually observe as of the final date
 in the complete dataset.
 The red line shows the cumulative number of confirmed admissions on each report
 date, across all delays, using the data available as of July 1, 2021.
-It demonstrates the characteristic behavior of right-truncation.
+It demonstrates the characteristic behaviour of right-truncation.
 This is because we have not yet observed the data that will become available
 for the longer delays at recent time points.</p>
 <p>Our task will be to estimate what the “final” cumulative number of cases will
@@ -195,8 +195,8 @@ at each reference date, observed as of the “fully observed” data on October
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Confirmed admissions"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>trans <span class="op">=</span> <span class="st">"log10"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Comparing real-time and later observed cases"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="baselinenowcast_files/figure-html/plot-the-data-by-reference-date-1.png" width="672">
-Here the black line represents the quantity we will evaluate our nowcast
+<p><img src="baselinenowcast_files/figure-html/plot-the-data-by-reference-date-1.png" width="672"></p>
+<p>Here the black line represents the quantity we will evaluate our nowcast
 against, and the red line represents the data we have available to us up until
 July 1st, 2021.</p>
 </div>

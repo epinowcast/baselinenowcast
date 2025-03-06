@@ -363,7 +363,7 @@ latest reporting triangle, and then we will generate nowcasts from the list
 of reporting triangles. To generate the nowcasts, we will have to specify the
 number of reporting triangles we want to use for the estimation of the
 uncertainty, which we will call `n_history_uncertainty`, as well as the number
-of obserations we want to use to estimate the delay when we generate the
+of observations we want to use to estimate the delay when we generate the
 nowcast, `n_history_delay`.
 
 Note, we will need to have more than `n_history_uncertainty + n_history_delay`

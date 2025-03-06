@@ -64,9 +64,10 @@ get_delay_estimate <- function(triangle,
       drop = FALSE
     ]
     # We compute the expectation so that we can get the delay estimate
-    expectation[(n_dates - co + 2):n_dates, co] <- mult_factor[co - 1] * rowSums(
-      block_bottom_left
-    )
+    expectation[(n_dates - co + 2):n_dates, co] <- mult_factor[co - 1] *
+      rowSums(
+        block_bottom_left
+      )
   }
 
   # Use the completed reporep_triing square to get the point estimate of the delay

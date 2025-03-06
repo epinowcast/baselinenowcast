@@ -53,6 +53,7 @@
       )
     )
   }
+  return(NULL)
 }
 
 #' Validate triangle to nowcast and delay PMF together

@@ -232,5 +232,5 @@ estimate_uncertainty <- function(triangle_to_nowcast,
     return(nll)
   }
   opt <- optimize(nllik, c(0.1, 1000))
-  opt$minimum
+  return(opt$minimum)
 }

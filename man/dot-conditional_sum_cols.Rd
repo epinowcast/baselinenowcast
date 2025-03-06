@@ -14,7 +14,7 @@ matrices of booleans are TRUE}
 
 \item{matrix_bool2}{Matrix of booleans for the second set of indices}
 
-\item{matrix_to_sum}{Matrix to be summed for that specific colun}
+\item{matrix_to_sum}{Matrix to be summed for that specific column}
 }
 \value{
 Numeric summing the values in the \code{matrix_to_sum} at the specified

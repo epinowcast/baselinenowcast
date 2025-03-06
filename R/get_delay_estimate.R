@@ -70,8 +70,8 @@ get_delay_estimate <- function(triangle,
       )
   }
 
-  # Use the completed reporep_triing square to get the point estimate of the delay
-  # distribution
+  # Use the completed reporep_triing square to get the point estimate of the
+  # delay distribution
   pmf <- colSums(expectation) / sum(expectation)
 
   return(pmf)

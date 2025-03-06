@@ -57,7 +57,7 @@ get_delay_estimate <- function(triangle,
   mult_factor <- vector(length = max_delay - 1)
   expectation <- rep_tri
   for (co in 2:(n_delays)) {
-    block_top_left <- rt[1:(n_dates - co + 1), 1:(co - 1), drop = FALSE]
+    block_top_left <- rep_tri[1:(n_dates - co + 1), 1:(co - 1), drop = FALSE]
     block_top <- rep_tri[1:(n_dates - co + 1), co, drop = FALSE]
     mult_factor[co - 1] <- sum(block_top) / max(sum(block_top_left), 1)
     block_bottom_left <- expectation[(n_dates - co + 2):n_dates, 1:(co - 1),

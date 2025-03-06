@@ -18,7 +18,7 @@ Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/basel
 the time points of reference and columns representing the delays}
 }
 \value{
-pos_triangle matrix of positive integers with negative values of
+Matrix of positive integers with negative values of
 reporting handled via passing them to the subsequent days delay
 }
 \description{

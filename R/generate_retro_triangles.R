@@ -41,7 +41,7 @@
 #' print(retro_rts[[2]])
 generate_retro_triangles <- function(
     triangle,
-    n_triangles = nrow(triangle) - ncol(triangle)) {
+    n_triangles = nrow(triangle) - ncol(triangle) - 1) {
   .validate_triangle(triangle)
   if (n_triangles > (nrow(triangle) - ncol(triangle))) {
     cli::cli_warn(

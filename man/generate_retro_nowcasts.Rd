@@ -32,7 +32,7 @@ observations to estimate the empirical delay for each retrospective
 reporting triangle.
 }
 \examples{
- triangle <- matrix(
+triangle <- matrix(
   c(
     65, 46, 21, 7,
     70, 40, 20, 5,
@@ -52,5 +52,6 @@ retro_rts <- generate_retro_triangles(
 )
 retro_nowcasts <- generate_retro_nowcasts(
   list_of_retro_rts = retro_rts,
-  n_history_delay = 5)
+  n_history_delay = 5
+)
 }

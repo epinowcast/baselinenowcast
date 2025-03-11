@@ -373,15 +373,15 @@ rows to re-estimate the delay distribution. Note also that `n_history_delay`
 must always be greater than the `max_delay + 1`.
 
 We'll start by generating the set of retrospective reporting triangles.
-Since we have 60 observations in our reporting triangle, we will generate 19
-reporting triangles, as we will need at least 41 observations in each to
-estimate a delay distribution with a maximum of 40.
+Since we have 60 observations in our reporting triangle, we will generate 18
+reporting triangles, as we will need at least 42 observations (rows) in each
+reporting triangle to estimate a delay distribution with a maximum of 40.
 
 
 ```{r generate-retrospective-triangles}
 retro_rts <- generate_retro_triangles(
   triangle = triangle,
-  n_triangles = 19
+  n_triangles = 18
 )
 ```
 The `generate_retro_triangles()` function returns a list of
@@ -391,13 +391,17 @@ rows that may not ultimately be used to generate the nowcast, which means
 that each triangle will be a different number of rows.
 
 Next we will pass this list of reporting triangles to the
-`generate_retro_nowcasts()` alongside the specification of how many triangles
-to use for the uncertainty estimate and how many observations to use to
-estimate the delay
+`generate_retro_nowcasts()` alongside the specification of how many
+observations to use to estimate the delay, which will default to the minimum
+number of rows in all of the matrices in the list of retrospective reporting
+triangles, in this case, 42.
+
+We could make this number larger, but that would require passing in only
+the reporting triangles with that number or more rows.
 ```{r}
 retro_nowcasts <- generate_retro_nowcasts(
-  list_of_retro_rts <- retro_rts,
-  n_history_delay = n_history_delay
+  list_of_retro_rts = retro_rts,
+  n_history_delay = 42
 )
 ```
 

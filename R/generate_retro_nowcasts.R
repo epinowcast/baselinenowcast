@@ -45,6 +45,20 @@ generate_retro_nowcasts <- function(list_of_retro_rts,
                                     n_history_delay = min(
                                       sapply(list_of_retro_rts, nrow)
                                     )) {
+  if (n_history_delay > min(
+    sapply(list_of_retro_rts, nrow)
+  )) {
+    cli_abort(
+      message = c(
+        "The number of observations specified for delay estimation is greater ",
+        "than the minimum number of rows in all of the retrospective ",
+        "reporting triangles. Either remove the reporting triangles that do ",
+        "not contain sufficient data, or lower `n_history_delay`"
+      )
+    )
+  }
+
+
   list_of_retro_nowcasts <- list()
 
   for (i in 1:length(list_of_retro_rts)) {

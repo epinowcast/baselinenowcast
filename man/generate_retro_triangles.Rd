@@ -6,7 +6,7 @@
 \usage{
 generate_retro_triangles(
   triangle,
-  n_triangles = nrow(triangle) - ncol(triangle)
+  n_triangles = nrow(triangle) - ncol(triangle) - 1
 )
 }
 \arguments{

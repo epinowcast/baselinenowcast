@@ -2,6 +2,7 @@
 
 export(apply_delay)
 export(estimate_uncertainty)
+export(generate_retro_nowcasts)
 export(generate_retro_triangles)
 export(get_delay_estimate)
 importFrom(checkmate,assert_class)

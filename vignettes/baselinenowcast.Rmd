@@ -395,13 +395,10 @@ Next we will pass this list of reporting triangles to the
 to use for the uncertainty estimate and how many observations to use to
 estimate the delay
 ```{r}
-# nolint start
-# retro_nowcasts <- generate_retro_nowcasts(
-#   list_of_retro_rts <- retro_rts,
-#   n_history_uncertainty = 19,
-#   n_history_delay = n_history_delay
-# )
-# nolint end
+retro_nowcasts <- generate_retro_nowcasts(
+  list_of_retro_rts <- retro_rts,
+  n_history_delay = n_history_delay
+)
 ```
 
 

@@ -21,7 +21,7 @@ test_that("generate_retro_triangles works correctly", {
   expect_length(generate_retro_triangles(triangle, 2), 2)
 
   # Test 3: Check if the number of retro triangles is correct without specifying
-  expect_length(generate_retro_triangles(triangle), 3)
+  expect_length(generate_retro_triangles(triangle), 2)
 
   # Test 4: Check that you get a warning if you
   # ask for more triangles than will be able to generate a nowcast
@@ -44,12 +44,13 @@ test_that("generate_retro_triangles works correctly", {
   expected_last_triangle <- matrix(
     c(
       65, 46, 21, 7,
-      70, 40, 20, NA,
-      80, 50, NA, NA,
-      100, NA, NA, NA
+      70, 40, 20, 5,
+      80, 50, 10, NA,
+      100, 40, NA, NA,
+      95, NA, NA, NA
     ),
-    nrow = 4,
+    nrow = 5,
     byrow = TRUE
   )
-  expect_identical(retro_triangles[[3]], expected_last_triangle)
+  expect_identical(retro_triangles[[2]], expected_last_triangle)
 })

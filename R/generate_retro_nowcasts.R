@@ -61,12 +61,12 @@ generate_retro_nowcasts <- function(list_of_retro_rts,
 
   list_of_retro_nowcasts <- list()
 
-  for (i in 1:length(list_of_retro_rts)) {
+  for (i in seq_along(list_of_retro_rts)) {
     # Estimate delay
-    rt <- list_of_retro_rts[[i]]
-    delay_pmf <- get_delay_estimate(rt, n_history_delay = n_history_delay)
+    rep_tri <- list_of_retro_rts[[i]]
+    delay_pmf <- get_delay_estimate(rep_tri, n_history_delay = n_history_delay)
     # Apply delay
-    rt_complete <- apply_delay(rt, delay_pmf)
+    rt_complete <- apply_delay(rep_tri, delay_pmf)
 
     list_of_retro_nowcasts[[i]] <- rt_complete
   }

@@ -4,33 +4,30 @@
 \alias{generate_retro_triangles}
 \title{Generate retrospective reporting triangles}
 \usage{
-generate_retro_triangles(
-  triangle,
-  n_triangles = nrow(triangle) - ncol(triangle) - 1
-)
+generate_retro_triangles(triangle, n = nrow(triangle) - ncol(triangle) - 1)
+
 }
 \arguments{
-\item{triangle}{Matrix of the reporting triangle
-to be used to generate retrospective nowcasts, with rows representing the
-time points of reference and columns representing the delays}
+\item{triangle}{Matrix of the reporting triangle/rectangle
+to be used to generate retrospective triangles, with rows representing the
+time points of reference and columns representing the delays.}
 
-\item{n_triangles}{Integer indicating the number of retrospective
+\item{n}{Integer indicating the number of retrospective
 reporting triangles to be generated, always starting from the most
 recent reference time. Default is  only generate truncated matrices
 that have sufficient number of rows to generate a nowcast from, though
 any number can be specified.}
 }
 \value{
-List of \code{n_triangle} retrospective reporting triangle matrices
+A list of \code{n} retrospective reporting triangle matrices.
 with as many rows as available given the truncation, and the same number
-of columns as \code{triangle}
+of columns as \code{triangle}.
 }
 \description{
-This function ingests a reporting triangle and the number of retrospective
-reporting triangles we want to create, and iteratively generates the
-reporting triangle that would have been available as of the maximum
-reference time, and iteratively working backwards for
-\code{n_history_uncertainty} snapshots
+This function ingests a reporting triangle/matrix and the number of
+retrospective reporting triangles we want to create \code{n}, and iteratively
+generates the reporting triangle that would have been available as of the
+maximum reference time, working from bottom to top for \code{n} snapshots
 }
 \examples{
 triangle <- matrix(
@@ -49,7 +46,7 @@ triangle <- matrix(
 
 retro_rts <- generate_retro_triangles(
   triangle = triangle,
-  n_triangles = 2
+  n = 2
 )
 print(retro_rts[[1]])
 print(retro_rts[[2]])

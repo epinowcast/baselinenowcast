@@ -8,11 +8,11 @@ generate_retro_triangle(t, matr_observed)
 }
 \arguments{
 \item{t}{Integer indicating the number of days prior to generate the
-retrospective reporting triangle for}
+retrospective reporting triangle for.}
 
-\item{matr_observed}{Matrix of the incomplete reporting triangle
+\item{matr_observed}{Matrix of the reporting triangle/rectangle
 to be used to generate retrospective nowcasts, with rows representing the
-time points of reference and columns representing the delays}
+time points of reference and columns representing the delays.}
 }
 \value{
 Matrix with \code{t} fewer rows than \code{matr_observed}, replicating what
@@ -21,5 +21,27 @@ would have been observed as of \code{t} days prior.
 \description{
 This function takes in a integer \code{t} and a reporting triangle and generates
 the reporting triangle that would have been observed as of \code{t} units
-earlier (starting from the bottom of the reporting triangle)
+earlier (starting from the bottom of the reporting triangle).
+}
+\examples{
+# example code
+triangle <- matrix(
+  c(
+    65, 46, 21, 7,
+    70, 40, 20, 5,
+    80, 50, 10, 10,
+    100, 40, 31, 20,
+    95, 45, 21, NA,
+    82, 42, NA, NA,
+    70, NA, NA, NA
+  ),
+  nrow = 7,
+  byrow = TRUE
+)
+
+retro_rep_tri <- generate_retro_triangle(
+  t = 1,
+  matr_observed = triangle
+)
+print(retro_rep_tri)
 }

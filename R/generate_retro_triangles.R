@@ -1,22 +1,21 @@
 #' Generate retrospective reporting triangles
 #'
-#' This function ingests a reporting triangle and the number of retrospective
-#'   reporting triangles we want to create, and iteratively generates the
-#'   reporting triangle that would have been available as of the maximum
-#'   reference time, and iteratively working backwards for
-#'   `n_history_uncertainty` snapshots
+#' This function ingests a reporting triangle/matrix and the number of
+#'   retrospective reporting triangles we want to create `n`, and iteratively
+#'   generates the reporting triangle that would have been available as of the
+#'   maximum reference time, working from bottom to top for `n` snapshots
 #'
-#' @param triangle Matrix of the reporting triangle
-#'   to be used to generate retrospective nowcasts, with rows representing the
-#'   time points of reference and columns representing the delays
-#' @param n_triangles Integer indicating the number of retrospective
+#' @param triangle Matrix of the reporting triangle/rectangle
+#'   to be used to generate retrospective triangles, with rows representing the
+#'   time points of reference and columns representing the delays.
+#' @param n Integer indicating the number of retrospective
 #'   reporting triangles to be generated, always starting from the most
 #'   recent reference time. Default is  only generate truncated matrices
 #'   that have sufficient number of rows to generate a nowcast from, though
 #'   any number can be specified.
-#' @returns List of `n_triangle` retrospective reporting triangle matrices
+#' @returns A list of `n` retrospective reporting triangle matrices.
 #'   with as many rows as available given the truncation, and the same number
-#'   of columns as `triangle`
+#'   of columns as `triangle`.
 #' @export
 #' @examples
 #' triangle <- matrix(
@@ -35,15 +34,15 @@
 #'
 #' retro_rts <- generate_retro_triangles(
 #'   triangle = triangle,
-#'   n_triangles = 2
+#'   n = 2
 #' )
 #' print(retro_rts[[1]])
 #' print(retro_rts[[2]])
 generate_retro_triangles <- function(
     triangle,
-    n_triangles = nrow(triangle) - ncol(triangle) - 1) {
+    n = nrow(triangle) - ncol(triangle) - 1) {
   .validate_triangle(triangle)
-  if (n_triangles > (nrow(triangle) - ncol(triangle))) {
+  if (n > (nrow(triangle) - ncol(triangle) - 1)) {
     cli::cli_warn(
       message = c(
         "Not all of the triangles generated will contain sufficient ",
@@ -52,13 +51,9 @@ generate_retro_triangles <- function(
     )
   }
 
-  # Will be able to remove this step if we require NAs in the bottom right
-  # of the triangle
-  matr_observed <- .replace_lower_right_with_NA(triangle)
-
-  results <- lapply(seq_len(n_triangles),
+  results <- lapply(seq_len(n),
     generate_retro_triangle,
-    matr_observed = matr_observed
+    matr_observed = triangle
   )
 
   return(results)
@@ -69,18 +64,40 @@ generate_retro_triangles <- function(
 #'
 #' This function takes in a integer `t` and a reporting triangle and generates
 #'  the reporting triangle that would have been observed as of `t` units
-#'  earlier (starting from the bottom of the reporting triangle)
+#'  earlier (starting from the bottom of the reporting triangle).
 #'
 #' @param t Integer indicating the number of days prior to generate the
-#'  retrospective reporting triangle for
-#' @param matr_observed Matrix of the incomplete reporting triangle
+#'  retrospective reporting triangle for.
+#' @param matr_observed Matrix of the reporting triangle/rectangle
 #'   to be used to generate retrospective nowcasts, with rows representing the
-#'   time points of reference and columns representing the delays
+#'   time points of reference and columns representing the delays.
 #'
 #' @returns Matrix with `t` fewer rows than `matr_observed`, replicating what
 #'   would have been observed as of `t` days prior.
 #' @importFrom checkmate assert_integerish
 #' @importFrom cli cli_abort
+#' @export
+#' @examples
+#' # example code
+#' triangle <- matrix(
+#'   c(
+#'     65, 46, 21, 7,
+#'     70, 40, 20, 5,
+#'     80, 50, 10, 10,
+#'     100, 40, 31, 20,
+#'     95, 45, 21, NA,
+#'     82, 42, NA, NA,
+#'     70, NA, NA, NA
+#'   ),
+#'   nrow = 7,
+#'   byrow = TRUE
+#' )
+#'
+#' retro_rep_tri <- generate_retro_triangle(
+#'   t = 1,
+#'   matr_observed = triangle
+#' )
+#' print(retro_rep_tri)
 generate_retro_triangle <- function(t,
                                     matr_observed) {
   n_obs <- nrow(matr_observed)
@@ -92,13 +109,7 @@ generate_retro_triangle <- function(t,
       )
     )
   }
-  if (t < 0) {
-    cli_abort(
-      message = "t must be a non-negative integer"
-    )
-  }
-
-  assert_integerish(t)
+  assert_integerish(t, lower = 0)
   matr_observed_trunc <- matrix(
     matr_observed[1:(n_obs - t), ],
     nrow = (n_obs - t)

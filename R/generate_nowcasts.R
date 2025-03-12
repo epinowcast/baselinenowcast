@@ -6,15 +6,15 @@
 #'   observations to estimate the empirical delay for each retrospective
 #'   reporting triangle.
 #'
-#' @param list_of_retro_rts List of reporting triangle matrices, in order
+#' @param list_of_rts List of reporting triangle matrices, in order
 #'    from most recent (most complete) to least recent. Bottom right of the
 #'    matrices should contain NAs.
-#' @param n_history_delay Integer indicating the number of observations
+#' @param n Integer indicating the number of observations
 #'    (number of rows) to use to estimate the delay distribution for each
 #'    reporting triangle. Default is the minimum of the number of rows of
-#'    all the matrices in the `list_of_retro_rts`
+#'    all the matrices in the `list_of_rts`
 #'
-#' @returns List of the same number of elements as the input `list_of_retro_rts`
+#' @returns List of the same number of elements as the input `list_of_rts`
 #'    but with each reporting triangle filled in based on the delay estimated
 #'    in that reporting triangle.
 #' @export
@@ -33,20 +33,20 @@
 #'   byrow = TRUE
 #' )
 #'
-#' retro_rts <- generate_retro_triangles(
+#' retro_rts <- generate_triangles(
 #'   triangle = triangle,
 #'   n_triangles = 2
 #' )
-#' retro_nowcasts <- generate_retro_nowcasts(
-#'   list_of_retro_rts = retro_rts,
+#' retro_nowcasts <- generate_nowcasts(
+#'   list_of_rts = retro_rts,
 #'   n_history_delay = 5
 #' )
-generate_retro_nowcasts <- function(list_of_retro_rts,
-                                    n_history_delay = min(
-                                      sapply(list_of_retro_rts, nrow)
-                                    )) {
-  if (n_history_delay > min(
-    sapply(list_of_retro_rts, nrow)
+generate_nowcasts <- function(list_of_rts,
+                              n = min(
+                                sapply(list_of_rts, nrow)
+                              )) {
+  if (n > min(
+    sapply(list_of_rts, nrow)
   )) {
     cli_abort(
       message = c(
@@ -57,7 +57,7 @@ generate_retro_nowcasts <- function(list_of_retro_rts,
       )
     )
   }
-  if (n_history_delay < min(sapply(list_of_retro_rts, ncol))) {
+  if (n < min(sapply(list_of_rts, ncol))) {
     cli_abort(
       message = c(
         "The number of observations specified for delay estimation is less ",
@@ -69,17 +69,17 @@ generate_retro_nowcasts <- function(list_of_retro_rts,
   }
 
 
-  list_of_retro_nowcasts <- list()
+  list_of_nowcasts <- list()
 
-  for (i in seq_along(list_of_retro_rts)) {
+  for (i in seq_along(list_of_rts)) {
     # Estimate delay
-    rep_tri <- list_of_retro_rts[[i]]
-    delay_pmf <- get_delay_estimate(rep_tri, n_history_delay = n_history_delay)
+    rep_tri <- list_of_rts[[i]]
+    delay_pmf <- get_delay_estimate(rep_tri, n = n)
     # Apply delay
     rt_complete <- apply_delay(rep_tri, delay_pmf)
 
-    list_of_retro_nowcasts[[i]] <- rt_complete
+    list_of_nowcasts[[i]] <- rt_complete
   }
 
-  return(list_of_retro_nowcasts)
+  return(list_of_nowcasts)
 }

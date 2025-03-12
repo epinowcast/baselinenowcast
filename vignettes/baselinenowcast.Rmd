@@ -382,9 +382,9 @@ Next we will pass this list of reporting triangles to the
 `generate_nowcasts()` alongside the specification of how many observations
 to use to estimate the delay
 ```{r}
-retro_nowcasts <- generate_retro_nowcasts(
+retro_nowcasts <- generate_nowcasts(
   list_of_retro_rts = retro_rts,
-  n_history_delay = 42
+  n = 42
 )
 ```
 

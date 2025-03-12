@@ -2,7 +2,7 @@
 
 export(apply_delay)
 export(estimate_uncertainty)
-export(generate_retro_nowcasts)
+export(generate_nowcasts)
 export(generate_triangle)
 export(generate_triangles)
 export(get_delay_estimate)

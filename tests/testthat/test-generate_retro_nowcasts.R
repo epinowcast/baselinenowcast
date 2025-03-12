@@ -32,7 +32,7 @@ test_that("Function returns correctly structured output", {
   result <- generate_retro_nowcasts(list_of_retro_rts = retro_rts_list)
 
   # Output has same number of elements as input
-  expect_identical(length(result), length(retro_rts_list))
+  expect_length(length(result), 2)
 
   # Each output matrix has same dimensions as input
   for (i in seq_along(retro_rts_list)) {
@@ -41,8 +41,8 @@ test_that("Function returns correctly structured output", {
 
   # Check that NAs are replaced (lower-right corner filled)
   # This assumes your method removes all NAs
-  expect_false(any(is.na(result[[1]])))
-  expect_false(any(is.na(result[[2]])))
+  expect_false(anyNA(result[[1]]))
+  expect_false(anyNA(result[[2]]))
 })
 
 ### Test 2: Default n_history_delay Calculation
@@ -77,7 +77,7 @@ test_that("Custom n_history_delay is respected", {
       list_of_retro_rts = retro_rts_list,
       n_history_delay = 8
     ),
-    regexp = "The number of observations specified for delay estimation is greater"
+    regexp = "The number of observations specified for delay estimation is greater" # nolint
   ) # nolint
   # Custom n_history_delay is too low
   expect_error(

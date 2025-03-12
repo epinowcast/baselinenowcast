@@ -72,7 +72,7 @@ generate_retro_triangles <- function(
 #'  earlier (starting from the bottom of the reporting triangle).
 #'
 #' @param t Integer indicating the number of days prior to generate the
-#'  retrospective reporting triangle for
+#'  retrospective reporting triangle for.
 #' @param matr_observed Matrix of the incomplete reporting triangle
 #'   to be used to generate retrospective nowcasts, with rows representing the
 #'   time points of reference and columns representing the delays

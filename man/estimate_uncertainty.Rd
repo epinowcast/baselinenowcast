@@ -52,7 +52,7 @@ triangle <- matrix(
 delay_pmf <- get_delay_estimate(
   triangle = triangle,
   max_delay = 3,
-  n_history_delay = 4
+  n = 4
 )
 disp_params <- estimate_uncertainty(
   triangle_to_nowcast = triangle,

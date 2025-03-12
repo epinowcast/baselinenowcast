@@ -1,4 +1,4 @@
-test_that("generate_retro_triangles works correctly", {
+test_that("generate_triangles works correctly", {
   # Setup
   triangle <- matrix(
     c(
@@ -15,22 +15,22 @@ test_that("generate_retro_triangles works correctly", {
   )
 
   # Test 1: Check if the function returns a list
-  expect_type(generate_retro_triangles(triangle, 2), "list")
+  expect_type(generate_triangles(triangle, 2), "list")
 
   # Test 2: Check if the number of retrospective triangles is correct
-  expect_length(generate_retro_triangles(triangle, 2), 2)
+  expect_length(generate_triangles(triangle, 2), 2)
 
   # Test 3: Check if the number of retro triangles is correct without specifying
-  expect_length(generate_retro_triangles(triangle), 2)
+  expect_length(generate_triangles(triangle), 2)
 
   # Test 4: Check that you get a warning if you
   # ask for more triangles than will be able to generate a nowcast
-  expect_warning(generate_retro_triangles(triangle, 4))
+  expect_warning(generate_triangles(triangle, 4))
 
 
   # Test 3: Check that the dimensions of the returned triangles are as
   # expected
-  retro_triangles <- generate_retro_triangles(triangle)
+  retro_triangles <- generate_triangles(triangle)
   expect_identical(dim(retro_triangles[[1]]), c(6L, 4L))
   expect_identical(dim(retro_triangles[[2]]), c(5L, 4L))
 

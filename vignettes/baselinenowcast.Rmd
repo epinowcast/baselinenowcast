@@ -367,19 +367,19 @@ reporting triangles, with the smallest one containing 42 rows, all of which
 are needed to generate a nowcast of reporting triangle with 41 delay columns.
 
 
-```{r generate-retrospective-triangles}
-retro_rts <- generate_retro_triangles(
+```{r generate-triangles}
+retro_rts <- generate_triangles(
   triangle = triangle
 )
 ```
-The `generate_retro_triangles()` function returns a list of
+The `generate_triangles()` function returns a list of
 reporting triangles, in order from the most to least
 recent, starting from the most recent. It is not filtered to exclude any
 rows that may not ultimately be used to generate the nowcast, which means
 that each triangle will have a different number of rows.
 
 Next we will pass this list of reporting triangles to the
-`generate_retro_nowcasts()` alongside the specification of how many observations
+`generate_nowcasts()` alongside the specification of how many observations
 to use to estimate the delay
 ```{r}
 # nolint start

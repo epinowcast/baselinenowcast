@@ -32,13 +32,13 @@
 #'   byrow = TRUE
 #' )
 #'
-#' retro_rts <- generate_retro_triangles(
+#' retro_rts <- generate_triangles(
 #'   triangle = triangle,
 #'   n = 2
 #' )
 #' print(retro_rts[[1]])
 #' print(retro_rts[[2]])
-generate_retro_triangles <- function(
+generate_triangles <- function(
     triangle,
     n = nrow(triangle) - ncol(triangle) - 1) {
   .validate_triangle(triangle)
@@ -52,7 +52,7 @@ generate_retro_triangles <- function(
   }
 
   results <- lapply(seq_len(n),
-    generate_retro_triangle,
+    generate_triangle,
     matr_observed = triangle
   )
 
@@ -93,13 +93,13 @@ generate_retro_triangles <- function(
 #'   byrow = TRUE
 #' )
 #'
-#' retro_rep_tri <- generate_retro_triangle(
+#' retro_rep_tri <- generate_triangle(
 #'   t = 1,
 #'   matr_observed = triangle
 #' )
 #' print(retro_rep_tri)
-generate_retro_triangle <- function(t,
-                                    matr_observed) {
+generate_triangle <- function(t,
+                              matr_observed) {
   n_obs <- nrow(matr_observed)
   if (t >= n_obs) {
     cli_abort(

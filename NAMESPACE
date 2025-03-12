@@ -2,6 +2,8 @@
 
 export(apply_delay)
 export(estimate_uncertainty)
+export(generate_triangle)
+export(generate_triangles)
 export(get_delay_estimate)
 importFrom(checkmate,assert_class)
 importFrom(checkmate,assert_integerish)

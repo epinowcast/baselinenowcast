@@ -10,17 +10,24 @@ test_that("get_delay_estimate function works correctly", {
   expect_equal(sum(result), 1, tolerance = 1e-6)
 
   # Test 2: Custom max_delay
-  result_max_delay <- get_delay_estimate(triangle, max_delay = 3)
+  result_max_delay <- get_delay_estimate(triangle,
+    max_delay = 3
+  )
   expect_identical(as.integer(length(result_max_delay)), 4L)
 
   # Test 3: Custom n_history
-  result_n_history <- get_delay_estimate(triangle, n_history = 20)
+  result_n_history <- get_delay_estimate(triangle,
+    n = 20
+  )
   expect_is(result_n_history, "numeric")
 
   # Test 4: Input validation *These should be more useful error messages*
   expect_error(get_delay_estimate(triangle, max_delay = 0))
-  expect_error(get_delay_estimate(triangle, n_history = 0))
-  expect_error(get_delay_estimate(triangle, max_delay = 10, n_history = 40))
+  expect_error(get_delay_estimate(triangle, n = 0))
+  expect_error(get_delay_estimate(triangle,
+    max_delay = 10,
+    n = 40
+  ))
 
   # Test 5: Handling of missing values
   triangle_with_na <- triangle

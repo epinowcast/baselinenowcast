@@ -10,13 +10,13 @@
 #' @keywords internal
 .validate_triangle <- function(triangle,
                                max_delay = ncol(triangle) - 1,
-                               n_history = nrow(triangle)) {
+                               n = nrow(triangle)) {
   # Make sure the input triangle only contains integer values
   # and is of the correct class
   assert_class(triangle, "matrix")
   assert_integerish(triangle)
   assert_integerish(max_delay)
-  assert_integerish(n_history)
+  assert_integerish(n)
   assert_matrix(triangle, all.missing = FALSE)
 
   if (nrow(triangle) <= ncol(triangle)) {
@@ -26,7 +26,7 @@
     )
   }
 
-  if (nrow(triangle) < n_history) {
+  if (nrow(triangle) < n) {
     cli_abort(
       message = c(
         "Number of observations in input data not sufficient for",
@@ -45,11 +45,11 @@
     )
   }
 
-  if ((max_delay < 1 || n_history < 1)) {
+  if ((max_delay < 1 || n < 1)) {
     cli_abort(
       message = c(
-        "Insufficient `max_delay` or `n_history`, must be greater than or",
-        " equal to 1."
+        "Insufficient `max_delay` or `n`, must be greater than ",
+        "or equal to 1."
       )
     )
   }

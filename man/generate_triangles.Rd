@@ -13,7 +13,7 @@ time points of reference and columns representing the delays.}
 
 \item{n}{Integer indicating the number of retrospective
 reporting triangles to be generated, always starting from the most
-recent reference time. Default is  only generate truncated matrices
+recent reference time. Default is to only generate truncated matrices
 that have sufficient number of rows to generate a nowcast from, though
 any number can be specified.}
 }
@@ -26,7 +26,7 @@ of columns as \code{triangle}.
 This function ingests a reporting triangle/matrix and the number of
 retrospective reporting triangles we want to create \code{n}, and iteratively
 generates the reporting triangle that would have been available as of the
-maximum reference time, working from bottom to top for \code{n} snapshots
+maximum reference time, working from bottom to top for \code{n} snapshots.
 }
 \examples{
 triangle <- matrix(

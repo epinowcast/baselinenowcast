@@ -3,14 +3,14 @@
 #' This function ingests a reporting triangle/matrix and the number of
 #'   retrospective reporting triangles we want to create `n`, and iteratively
 #'   generates the reporting triangle that would have been available as of the
-#'   maximum reference time, working from bottom to top for `n` snapshots
+#'   maximum reference time, working from bottom to top for `n` snapshots.
 #'
 #' @param triangle Matrix of the reporting triangle/rectangle
 #'   to be used to generate retrospective triangles, with rows representing the
 #'   time points of reference and columns representing the delays.
 #' @param n Integer indicating the number of retrospective
 #'   reporting triangles to be generated, always starting from the most
-#'   recent reference time. Default is  only generate truncated matrices
+#'   recent reference time. Default is to only generate truncated matrices
 #'   that have sufficient number of rows to generate a nowcast from, though
 #'   any number can be specified.
 #' @returns A list of `n` retrospective reporting triangle matrices.

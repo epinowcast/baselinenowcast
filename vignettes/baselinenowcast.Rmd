@@ -393,7 +393,7 @@ the uncertainty at each delay $d$
 
 ```{r}
 disp_params <- estimate_disp_params(
-  list_of_retro_nowcasts = retro_nowcasts,
+  list_of_nowcasts = retro_nowcasts,
   latest_rep_tri = triangle
 )
 ```

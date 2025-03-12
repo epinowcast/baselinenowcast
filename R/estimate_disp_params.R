@@ -45,7 +45,7 @@
 #'   latest_rep_tri = triangle
 #' )
 estimate_disp_params <- function(
-    list_of_retro_nowcasts,
+    list_of_nowcasts,
     latest_rep_tri,
     n = length(list_of_retro_nowcasts)) {
   .validate_triangle(latest_rep_tri)
@@ -88,15 +88,15 @@ estimate_disp_params <- function(
       d = seq_len(ncol(matr_observed)) - 1
     )
     if (i == 1) {
-      df <- df_i
+      df_exp_obs <- df_i
     } else {
-      df <- bind_rows(df, df_i)
+      df_exp_obs <- rbind(df_exp_obs, df_i)
     }
   }
   disp_params <- vector(length = (ncol(matr_observed) - 1))
   for (i in seq_len(ncol(matr_observed) - 1)) {
-    obs_temp <- df$to_add[df$d == i]
-    mu_temp <- df$exp_to_add[df$d == i] + 0.1
+    obs_temp <- df_exp_obs$to_add[df$d == i]
+    mu_temp <- df_exp_obs$exp_to_add[df$d == i] + 0.1
     disp_params[i] <- .fit_nb(x = obs_temp, mu = mu_temp)
   }
 

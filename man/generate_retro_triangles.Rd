@@ -7,7 +7,7 @@
 generate_retro_triangles(triangle, n = nrow(triangle) - ncol(triangle) - 1)
 }
 \arguments{
-\item{triangle}{Matrix of the reporting triangle/rectancgle
+\item{triangle}{Matrix of the reporting triangle/rectangle
 to be used to generate retrospective triangles, with rows representing the
 time points of reference and columns representing the delays.}
 

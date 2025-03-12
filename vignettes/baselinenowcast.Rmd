@@ -360,7 +360,11 @@ a nowcast.
 
 To do this, we will first generate retrospective reporting triangles using the
 latest reporting triangle, and then we will generate nowcasts from the list
-of reporting triangles.
+of reporting triangles. This will default to assuming you want to generate
+as many retrospective reporting triangles that you will be able to generate
+nowcasts from. In this case, the function will return 18 retrospective
+reporting triangles, with the smallest one containing 42 rows, all of which
+are needed to generate a nowcast of reporting triangle with 41 delay columns.
 
 
 ```{r generate-retrospective-triangles}

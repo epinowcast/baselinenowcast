@@ -5,7 +5,7 @@
 #'   generates the reporting triangle that would have been available as of the
 #'   maximum reference time, working from bottom to top for `n` snapshots
 #'
-#' @param triangle Matrix of the reporting triangle/rectancgle
+#' @param triangle Matrix of the reporting triangle/rectangle
 #'   to be used to generate retrospective triangles, with rows representing the
 #'   time points of reference and columns representing the delays.
 #' @param n Integer indicating the number of retrospective

@@ -41,7 +41,7 @@ triangle <- matrix(
 
 retro_rep_tri <- generate_retro_triangle(
   t = 1,
-  matr_observed= triangle
+  matr_observed = triangle
 )
 print(retro_rep_tri)
 }

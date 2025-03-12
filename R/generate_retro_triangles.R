@@ -14,7 +14,7 @@
 #'   recent reference time. Default is  only generate truncated matrices
 #'   that have sufficient number of rows to generate a nowcast from, though
 #'   any number can be specified.
-#' @returns A list of `n_triangle` retrospective reporting triangle matrices
+#' @returns A list of `n_triangle` retrospective reporting triangle matrices.
 #'   with as many rows as available given the truncation, and the same number
 #'   of columns as `triangle`
 #' @export

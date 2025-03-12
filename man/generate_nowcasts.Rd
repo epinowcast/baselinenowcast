@@ -49,6 +49,6 @@ retro_rts <- generate_triangles(
 )
 retro_nowcasts <- generate_nowcasts(
   list_of_rts = retro_rts,
-  n= 5
+  n = 5
 )
 }

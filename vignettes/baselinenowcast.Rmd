@@ -392,10 +392,10 @@ Next, we will use the list of retrospective reporting triangles to estimate
 the uncertainty at each delay $d$
 
 ```{r}
-# disp_params <- estimate_disp_params(
-# list_of_retro_nowcasts = retro_nowcasts, #nolint
-# orig_rep_tri = triangle, #nolint
-# n) #nolint
+disp_params <- estimate_disp_params(
+  list_of_retro_nowcasts = retro_nowcasts,
+  latest_rep_tri = triangle
+)
 ```
 
 # Generate probabilistic nowcast

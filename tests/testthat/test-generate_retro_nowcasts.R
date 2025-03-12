@@ -32,7 +32,7 @@ test_that("Function returns correctly structured output", {
   result <- generate_retro_nowcasts(list_of_retro_rts = retro_rts_list)
 
   # Output has same number of elements as input
-  expect_length(length(result), 2)
+  expect_length(result, 2)
 
   # Each output matrix has same dimensions as input
   for (i in seq_along(retro_rts_list)) {

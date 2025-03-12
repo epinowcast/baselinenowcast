@@ -40,8 +40,7 @@ test_that("generate_retro_triangle throws an error when t is too large", {
 test_that("generate_retro_triangle throws an error for a negative t", {
   t <- -1
   expect_error(
-    generate_retro_triangle(t, matr_observed),
-    "t must be a non-negative integer"
+    generate_retro_triangle(t, matr_observed)
   )
 })
 

@@ -109,13 +109,7 @@ generate_retro_triangle <- function(t,
       )
     )
   }
-  if (t < 0) {
-    cli_abort(
-      message = "t must be a non-negative integer"
-    )
-  }
-
-  assert_integerish(t)
+  assert_integerish(t, lower = 0)
   matr_observed_trunc <- matrix(
     matr_observed[1:(n_obs - t), ],
     nrow = (n_obs - t)

@@ -75,7 +75,7 @@ generate_retro_triangles <- function(
 #'  retrospective reporting triangle for.
 #' @param matr_observed Matrix of the incomplete reporting triangle
 #'   to be used to generate retrospective nowcasts, with rows representing the
-#'   time points of reference and columns representing the delays
+#'   time points of reference and columns representing the delays.
 #'
 #' @returns Matrix with `t` fewer rows than `matr_observed`, replicating what
 #'   would have been observed as of `t` days prior.

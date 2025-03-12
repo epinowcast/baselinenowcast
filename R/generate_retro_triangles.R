@@ -7,7 +7,7 @@
 #'   `n_history_uncertainty` snapshots
 #'
 #' @param triangle Matrix of the reporting triangle
-#'   to be used to generate retrospective nowcasts, with rows representing the
+#'   to be used to generate retrospective triangles, with rows representing the
 #'   time points of reference and columns representing the delays
 #' @param n_triangles Integer indicating the number of retrospective
 #'   reporting triangles to be generated, always starting from the most

@@ -16,7 +16,7 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116
 get_delay_estimate(
   triangle,
   max_delay = ncol(triangle) - 1,
-  n_history_delay = nrow(triangle)
+  n = nrow(triangle)
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ the time points of reference and columns representing the delays}
 of the delay. The default is to use the whole reporting triangle,
 \code{ncol(triangle) -1}.}
 
-\item{n_history_delay}{Integer indicating the number of reference dates to be
+\item{n}{Integer indicating the number of reference dates to be
 used in the estimate of the reporting delay, always starting from the most
 recent reporting delay. The default is to use the whole reporting triangle,
 so \code{nrow(triangle)-1}}
@@ -64,7 +64,7 @@ triangle <- matrix(
 delay_pmf <- get_delay_estimate(
   triangle = triangle,
   max_delay = 3,
-  n_history_delay = 4
+  n = 4
 )
 print(delay_pmf)
 }

@@ -57,6 +57,16 @@ generate_retro_nowcasts <- function(list_of_retro_rts,
       )
     )
   }
+  if (n_history_delay < min(sapply(list_of_retro_rts, ncol))) {
+    cli_abort(
+      message = c(
+        "The number of observations specified for delay estimation is less ",
+        "than one plus the number of columns in the retrospective reporting ",
+        "triangles. The delay distribution can only be estimated from at ",
+        "at least the number of columns in the reporting triangle."
+      )
+    )
+  }
 
 
   list_of_retro_nowcasts <- list()

@@ -69,7 +69,7 @@ generate_retro_triangles <- function(
 #'
 #' This function takes in a integer `t` and a reporting triangle and generates
 #'  the reporting triangle that would have been observed as of `t` units
-#'  earlier (starting from the bottom of the reporting triangle)
+#'  earlier (starting from the bottom of the reporting triangle).
 #'
 #' @param t Integer indicating the number of days prior to generate the
 #'  retrospective reporting triangle for

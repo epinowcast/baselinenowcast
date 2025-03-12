@@ -41,20 +41,20 @@
 #'   n = 5
 #' )
 #' disp_params <- estimate_disp_params(
-#'   list_of_retro_nowcasts = retro_nowcasts,
+#'   list_of_nowcasts = retro_nowcasts,
 #'   latest_rep_tri = triangle
 #' )
 estimate_disp_params <- function(
     list_of_nowcasts,
     latest_rep_tri,
-    n = length(list_of_retro_nowcasts)) {
+    n = length(list_of_nowcasts)) {
   .validate_triangle(latest_rep_tri)
 
   matr_observed <- .replace_lower_right_with_NA(latest_rep_tri)
 
   for (i in seq_len(n)) {
     # Rretrospective nowcast as of i delays ago
-    nowcast_i <- list_of_retro_nowcasts[[i]]
+    nowcast_i <- list_of_nowcasts[[i]]
     # Remove the last i observations
     trunc_matr_observed <- matr_observed[1:(nrow(matr_observed) - i), ]
     # What would have been nowcasted? The values that would have been NA

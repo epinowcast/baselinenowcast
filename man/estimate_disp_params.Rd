@@ -5,21 +5,21 @@
 \title{Estimate dispersion parameters}
 \usage{
 estimate_disp_params(
-  list_of_retro_nowcasts,
+  list_of_nowcasts,
   latest_rep_tri,
-  n = length(list_of_retro_nowcasts)
+  n = length(list_of_nowcasts)
 )
 }
 \arguments{
+\item{list_of_nowcasts}{List of complete reporting rectangles where rows
+represent reference time points and columns represent delays.}
+
 \item{latest_rep_tri}{Matrix of the latest, incomplete, reporting triangle,
 with rows representing the time points of reference and columns
 representing the delays.}
 
 \item{n}{Integer indicating the number of reporting rectangles to use to
 estimate the dispersion parameters}
-
-\item{list_of_nowcasts}{List of complete reporting rectangles where rows
-represent reference time points and columns represent delays.}
 }
 \value{
 Vector of length one less than the number of columns in the
@@ -55,7 +55,7 @@ retro_nowcasts <- generate_nowcasts(
   n = 5
 )
 disp_params <- estimate_disp_params(
-  list_of_retro_nowcasts = retro_nowcasts,
+  list_of_nowcasts = retro_nowcasts,
   latest_rep_tri = triangle
 )
 }

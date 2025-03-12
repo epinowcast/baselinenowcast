@@ -51,13 +51,9 @@ generate_retro_triangles <- function(
     )
   }
 
-  # Will be able to remove this step if we require NAs in the bottom right
-  # of the triangle
-  matr_observed <- .replace_lower_right_with_NA(triangle)
-
   results <- lapply(seq_len(n),
     generate_retro_triangle,
-    matr_observed = matr_observed
+    matr_observed = triangle
   )
 
   return(results)

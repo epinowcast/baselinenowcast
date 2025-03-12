@@ -95,8 +95,8 @@ estimate_disp_params <- function(
   }
   disp_params <- vector(length = (ncol(matr_observed) - 1))
   for (i in seq_len(ncol(matr_observed) - 1)) {
-    obs_temp <- df_exp_obs$to_add[df$d == i]
-    mu_temp <- df_exp_obs$exp_to_add[df$d == i] + 0.1
+    obs_temp <- df_exp_obs$to_add[df_exp_obs$d == i]
+    mu_temp <- df_exp_obs$exp_to_add[df_exp_obs$d == i] + 0.1
     disp_params[i] <- .fit_nb(x = obs_temp, mu = mu_temp)
   }
 

@@ -35,11 +35,11 @@
 #'
 #' retro_rts <- generate_triangles(
 #'   triangle = triangle,
-#'   n_triangles = 2
+#'   n = 2
 #' )
 #' retro_nowcasts <- generate_nowcasts(
 #'   list_of_rts = retro_rts,
-#'   n_history_delay = 5
+#'   n = 5
 #' )
 generate_nowcasts <- function(list_of_rts,
                               n = min(

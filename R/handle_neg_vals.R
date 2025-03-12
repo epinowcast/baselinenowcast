@@ -8,7 +8,7 @@
 #'   Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R #nolint
 #' @param triangle Matrix of the reporting triangle, with rows representing
 #'   the time points of reference and columns representing the delays
-#' @return pos_triangle matrix of positive integers with negative values of
+#' @return Matrix of positive integers with negative values of
 #'   reporting handled via passing them to the subsequent days delay
 #' @keywords internal
 .handle_neg_vals <- function(triangle) {
@@ -17,12 +17,12 @@
   pos_triangle[is.na(pos_triangle)] <- 0 # Set NAs to 0 temporarily
   for (i in seq_len(nrow(triangle))) {
     to_subtract <- 0
-    row <- pos_triangle[i, ]
+    row_i <- pos_triangle[i, ]
     # Loop over the columns starting from the last column back to max delay
     # column, and if there is a negative value, we add this to the
     # next day and set that one as 0.
     for (j in rev(integer_cols)) {
-      value <- row[[j]]
+      value <- row_i[[j]]
       if (!is.na(value)) {
         # Either adds 0 or the previous days negative value
         value <- value + to_subtract

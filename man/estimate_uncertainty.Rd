@@ -20,7 +20,7 @@ first delay column in \code{triangle_to_nowcast}}
 
 \item{n_history_dispersion}{Integer indicating the number of reference dates
 to be used in the estimate of the dispersion, always starting from the most
-recent refrence date. The default is to use the whole reporting triangle,
+recent reference date. The default is to use the whole reporting triangle,
 so \code{nrow(triangle_to_nowcast) - 1}}
 }
 \value{
@@ -28,8 +28,8 @@ Vector of dispersion parameters of length of the \code{delay_pmf} -1
 }
 \description{
 This function takes in as input the triangle that we want to nowcast and
-the delay pmf, which may have been estimated separately. It uses the delay
-pmf to compute, for each forecast date and delay, the expected number of
+the delay PMF, which may have been estimated separately. It uses the delay
+PMF to compute, for each forecast date and delay, the expected number of
 confirmed cases on that forecast date at that delay d. For each delay, it
 estimates an independent negative binomial dispersion parameter. This code
 was adapted from code written (under an MIT license) by the Karlsruhe

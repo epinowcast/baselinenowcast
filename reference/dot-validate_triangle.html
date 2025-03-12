@@ -66,7 +66,7 @@ Various checks to make sure that the reporting triangle passed in to
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.validate_triangle</span><span class="op">(</span></span>
 <span>  <span class="va">triangle</span>,</span>
 <span>  max_delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">triangle</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
-<span>  n_history <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">triangle</span><span class="op">)</span></span>
+<span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">triangle</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -85,11 +85,11 @@ of the delay. The default is to use the whole reporting triangle,
 <code>ncol(triangle) -1</code>.</p></dd>
 
 
-<dt id="arg-n-history">n_history<a class="anchor" aria-label="anchor" href="#arg-n-history"></a></dt>
-<dd><p>Integer indicating the number of reference dates to be
-used in the estimate of the reporting delay, always starting from the most
-recent reporting delay. The default is to use the whole reporting triangle,
-so <code>nrow(triangle)-1</code></p></dd>
+<dt id="arg-n">n<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
+<dd><p>Integer indicating the number of reference times (observations) to
+be used in the estimate of the reporting delay, always starting from the
+most recent reporting delay. The default is to use the whole reporting
+triangle, so <code>nrow(triangle)</code></p></dd>
 
 </dl></div>
     <div class="section level2">

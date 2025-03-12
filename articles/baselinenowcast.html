@@ -241,7 +241,7 @@ significantly depending on the dataset.</p>
 <span><span class="co"># Specify the number of reference dates to use to estimate the delay</span></span>
 <span><span class="co"># distribution.Note this assumes you want the most recent observations</span></span>
 <span><span class="co"># (though we can consider changing this)</span></span>
-<span><span class="va">n_history</span> <span class="op">&lt;-</span> <span class="fl">60</span></span></code></pre></div>
+<span><span class="va">n_history_delay</span> <span class="op">&lt;-</span> <span class="fl">60</span></span></code></pre></div>
 <p>Next we will use the <code>epinowcast</code> function, <code><a href="https://package.epinowcast.org/reference/enw_preprocess_data.html" class="external-link">enw_preprocess_data()</a></code> and the
 data in the form a of a long tidy dataframe indexed by reference date and
 report date and filtered to the strata we are interested in, to generate a
@@ -252,7 +252,7 @@ reporting triangle.</p>
 <span><span class="co"># observed long above.</span></span>
 <span><span class="va">observed_long</span> <span class="op">&lt;-</span> <span class="va">data_long</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="co"># nolint</span></span>
 <span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_report_dates.html" class="external-link">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="va">nowcast_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_reference_dates.html" class="external-link">enw_filter_reference_dates</a></span><span class="op">(</span>include_days <span class="op">=</span> <span class="va">n_history</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_reference_dates.html" class="external-link">enw_filter_reference_dates</a></span><span class="op">(</span>include_days <span class="op">=</span> <span class="va">n_history_delay</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">observed_long</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##    reference_date location age_group confirm report_date</span></span>
 <span><span class="co">##            &lt;IDat&gt;   &lt;fctr&gt;    &lt;fctr&gt;   &lt;int&gt;      &lt;IDat&gt;</span></span>
@@ -341,7 +341,7 @@ delays, starting at 0.
 - <code>max_delay</code>: an integer indicating the maximum delay to estimate. This must
 be less than or equal to the number of rows in <code>triangle</code> minus 1, since we
 assume <code>triangle</code> is indexed at 0.
-- <code>n_history</code>: an integer indicating the number of observations by reference
+- <code>n_history_delay</code>: an integer indicating the number of observations by reference
 date to use to fit the delay distribution. This must be less than or equal to
 the number of rows in <code>triangle</code>.
 <code>enw_preprocess()</code> returns a <code>triangle</code> with the columns <code>.group</code> and
@@ -387,7 +387,7 @@ reporting triangle.</p>
 <code class="sourceCode R"><span><span class="va">delay_pmf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_delay_estimate.html">get_delay_estimate</a></span><span class="op">(</span></span>
 <span>  triangle <span class="op">=</span> <span class="va">triangle</span>,</span>
 <span>  max_delay <span class="op">=</span> <span class="va">max_delay</span>,</span>
-<span>  n_history <span class="op">=</span> <span class="va">n_history</span></span>
+<span>  n <span class="op">=</span> <span class="va">n_history_delay</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">delay_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -437,7 +437,7 @@ We’ll compare this to the right-truncated data available up until July 1, 2021
 <span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_report_dates.html" class="external-link">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-10-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_reference_dates.html" class="external-link">enw_filter_reference_dates</a></span><span class="op">(</span></span>
 <span>    latest_date <span class="op">=</span> <span class="st">"2021-07-01"</span>,</span>
-<span>    include_days <span class="op">=</span> <span class="va">n_history</span> <span class="op">-</span> <span class="fl">1</span></span>
+<span>    include_days <span class="op">=</span> <span class="va">n_history_delay</span> <span class="op">-</span> <span class="fl">1</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
@@ -471,25 +471,53 @@ We’ll compare this to the right-truncated data available up until July 1, 2021
 eventually reported (black line), but does a decent overall job of correcting
 for the right-truncation observed in the red line (the data prior to the
 nowcast).</p>
-<p>What we really want is a probabilistic estimate of the nowcasted
-case counts.</p>
 </div>
 <div class="section level2" number="8">
 <h2 id="estimate-uncertainty">
 <span class="header-section-number">8</span> Estimate uncertainty<a class="anchor" aria-label="anchor" href="#estimate-uncertainty"></a>
 </h2>
 <p>So far, we’ve demonstrated how to generate a point estimate of a nowcast.
-We would like to generate probabilistic nowcasts, which will require
-estimating the empirical error between the expected observations and the
-actual observations when applying the delay distribution.
-This assumes a negative binomial observation model.</p>
-<p>We will start by estimating the dispersion parameter of the negative binomial
-as a function of the delay d</p>
+We would like to generate probabilistic nowcasts.
+To do so, we will use the error between the observations that we have and what
+we would have nowcasted retrospectively. We will assume that the observations
+follow a negative binomial observation model, and independently estimate the
+dispersion in the negative binomial at each delay <span class="math inline">\(d\)</span>.</p>
+<p>The method used to estimate the uncertainty in the nowcast simulates exactly
+the iterative process, by generating retrospective reporting
+triangles using what would have been available as of the time, and then for
+each reporting triangle, estimating a delay distribution and generating
+a nowcast.</p>
+<p>To do this, we will first generate retrospective reporting triangles using the
+latest reporting triangle, and then we will generate nowcasts from the list
+of reporting triangles. This will default to assuming you want to generate
+as many retrospective reporting triangles that you will be able to generate
+nowcasts from. In this case, the function will return 18 retrospective
+reporting triangles, with the smallest one containing 42 rows, all of which
+are needed to generate a nowcast of reporting triangle with 41 delay columns.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">disp_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_uncertainty.html">estimate_uncertainty</a></span><span class="op">(</span></span>
-<span>  triangle_to_nowcast <span class="op">=</span> <span class="va">triangle</span>,</span>
-<span>  delay_pmf <span class="op">=</span> <span class="va">delay_pmf</span></span>
+<code class="sourceCode R"><span><span class="va">retro_rts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_triangles.html">generate_triangles</a></span><span class="op">(</span></span>
+<span>  triangle <span class="op">=</span> <span class="va">triangle</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<p>The <code><a href="../reference/generate_triangles.html">generate_triangles()</a></code> function returns a list of
+reporting triangles, in order from the most to least
+recent, starting from the most recent. It is not filtered to exclude any
+rows that may not ultimately be used to generate the nowcast, which means
+that each triangle will have a different number of rows.</p>
+<p>Next we will pass this list of reporting triangles to the
+<code>generate_nowcasts()</code> alongside the specification of how many observations
+to use to estimate the delay</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># nolint start</span></span>
+<span><span class="co"># retro_nowcasts &lt;- generate_retro_nowcasts(</span></span>
+<span><span class="co">#   list_of_retro_rts &lt;- retro_rts,</span></span>
+<span><span class="co">#   n_history_uncertainty = 19,</span></span>
+<span><span class="co">#   n_history_delay = n_history_delay</span></span>
+<span><span class="co"># )</span></span>
+<span><span class="co"># nolint end</span></span></code></pre></div>
+<p>Next, we will use the list of retrospective reporting triangles to estimate
+the uncertainty at each delay <span class="math inline">\(d\)</span></p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># disp_params &lt;- estimate_disp_params(retro_nowcasts) #nolint</span></span></code></pre></div>
 </div>
 <div class="section level2" number="9">
 <h2 id="generate-probabilistic-nowcast">
@@ -498,12 +526,14 @@ as a function of the delay d</p>
 <p>Now that we have estimated the dispersion, we can use the delay distribution,
 the reporting triangle that we want to nowcast, and the dispersion parameters to
 generate a probabilistic nowcast.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># nowcast &lt;- generate_nowcast( #nolint</span></span>
-<span><span class="co"># triangle_to_nowcast = triangle, #nolint</span></span>
-<span><span class="co"># delay_df = delay_df, #nolint</span></span>
-<span><span class="co"># disp_params = disp_params #nolint</span></span>
-<span><span class="co"># ) #nolint</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># nolint start</span></span>
+<span><span class="co"># nowcast &lt;- generate_nowcast(</span></span>
+<span><span class="co"># triangle_to_nowcast = triangle,</span></span>
+<span><span class="co"># delay_df = delay_df,</span></span>
+<span><span class="co"># disp_params = disp_params</span></span>
+<span><span class="co"># )</span></span>
+<span><span class="co"># nolint end</span></span></code></pre></div>
 <p>In the above, we might want to make sure we include the necessary metadata if
 the user passes it in, so we could write methods that dispatch on objects of
 a particular type so that they spit back out things with dates if those were

@@ -12,7 +12,7 @@ reporting triangle. Bottom right entries will estimates generated from
 applying the delay distribution to the nowcast}
 
 \item{disp}{Vector of dispersion parameters of a negative binomial, for
-delays from 1 through the maximu delay}
+delays from 1 through the maximum delay}
 }
 \value{
 Matrix containing the same upper left values as the \code{nowcast}
@@ -23,7 +23,7 @@ from \code{disp}
 }
 \description{
 The function ingests an estimate of a point nowcast, in the form of a
-reporting rectangle nd a vector of dispersion parameters, and adds
+reporting rectangle and a vector of dispersion parameters, and adds
 observation error to generate an expected observed nowcast
 }
 \examples{
@@ -40,7 +40,8 @@ point_nowcast <- matrix(
 )
 
 exp_obs_nowcast <- add_obs_error_to_nowcast(
-      nowcast = point_nowcast,
-      disp = c(8, 1.4, 4))
+  nowcast = point_nowcast,
+  disp = c(8, 1.4, 4)
+)
 print(exp_obs_nowcast)
 }

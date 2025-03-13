@@ -1,14 +1,14 @@
 #' Add observation error to a point nowcast
 #'
 #' The function ingests an estimate of a point nowcast, in the form of a
-#'   reporting rectangle nd a vector of dispersion parameters, and adds
+#'   reporting rectangle and a vector of dispersion parameters, and adds
 #'   observation error to generate an expected observed nowcast
 #'
 #' @param nowcast Matrix containing both observed and estimated values of the
 #'    reporting triangle. Bottom right entries will estimates generated from
 #'    applying the delay distribution to the nowcast
 #' @param disp Vector of dispersion parameters of a negative binomial, for
-#'    delays from 1 through the maximu delay
+#'    delays from 1 through the maximum delay
 #'
 #' @returns Matrix containing the same upper left values as the `nowcast`
 #'    input matrix, with the bottom right containing expected observed counts
@@ -41,7 +41,6 @@ add_obs_error_to_nowcast <- function(nowcast,
 
   for (i in seq_along(disp)) {
     max_t <- nrow(nowcast)
-    max_d <- length(disp) + 1
     mean_vals <- nowcast[(max_t - i + 1):max_t, i + 1]
     nowcast_w_obs_error[(max_t - i - 1):max_t, i + 1] <- rnbinom(1,
       size = disp[i],

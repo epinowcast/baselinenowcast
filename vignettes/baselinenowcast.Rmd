@@ -400,10 +400,11 @@ disp_params <- estimate_disp_params(
 
 # Generate probabilistic nowcast
 
-Now that we have estimated the dispersion, we can treat the point nowcast we
-previously generated, `point_reporting_square` and add observation error to it
-for many draws to generate probabilistic nowcasts. We'll start by demonstrating
-how to just add observation error to a single poist nowcast.
+Now that we have estimated the dispersion, we take the point nowcast we
+previously generated, `point_reporting_square` and generate many draws of the
+expected observed values to get a probabilistic nowcast. We'll start by
+demonstrating how to generate a single expected observation from just a point
+nowcast.
 
 ```{r add-observation-error}
 nowcast_draw <- add_obs_error_to_nowcast(

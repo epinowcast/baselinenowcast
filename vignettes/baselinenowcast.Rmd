@@ -381,7 +381,7 @@ that each triangle will have a different number of rows.
 Next we will pass this list of reporting triangles to the
 `generate_nowcasts()` alongside the specification of how many observations
 to use to estimate the delay
-```{r}
+```{r generate-nowcasts}
 retro_nowcasts <- generate_nowcasts(
   list_of_rts = retro_rts
 )
@@ -391,7 +391,7 @@ retro_nowcasts <- generate_nowcasts(
 Next, we will use the list of retrospective reporting triangles to estimate
 the uncertainty at each delay $d$
 
-```{r}
+```{r estimate-dispersion}
 disp_params <- estimate_disp_params(
   list_of_nowcasts = retro_nowcasts,
   latest_rep_tri = triangle
@@ -400,18 +400,16 @@ disp_params <- estimate_disp_params(
 
 # Generate probabilistic nowcast
 
-Now that we have estimated the dispersion, we can use the delay distribution,
-the reporting triangle that we want to nowcast, and the dispersion parameters to
-generate a probabilistic nowcast.
+Now that we have estimated the dispersion, we can treat the point nowcast we
+previously generated, `point_reporting_square` and add observation error to it
+for many draws to generate probabilistic nowcasts. We'll start by demonstrating
+how to just add observation error to a single poist nowcast.
 
-```{r}
-# nolint start
-# nowcast <- generate_nowcast(
-# triangle_to_nowcast = triangle,
-# delay_df = delay_df,
-# disp_params = disp_params
-# )
-# nolint end
+```{r add-observation-error}
+nowcast_draw <- add_obs_error_to_nowcast(
+  nowcast = point_reporting_square,
+  disp = disp_params
+)
 ```
 
 In the above, we might want to make sure we include the necessary metadata if

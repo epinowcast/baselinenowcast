@@ -1,19 +1,19 @@
-#' Generate retrospective reporting triangles
+#' Generate truncated reporting triangles
 #'
 #' This function ingests a reporting triangle/matrix and the number of
-#'   retrospective reporting triangles we want to create, `n`, and iteratively
-#'   generates the reporting triangle that would have been available as of the
-#'   maximum reference time, working from bottom to top for `n` snapshots.
+#'   truncated reporting triangles we want to create, `n`, and iteratively
+#'   truncated the reporting triangle, working from bottom to top for `n`
+#'   snapshots.
 #'
 #' @param triangle Matrix of the reporting triangle/rectangle
 #'   to be used to generate retrospective triangles, with rows representing the
 #'   time points of reference and columns representing the delays.
 #' @param n Integer indicating the number of retrospective
-#'   reporting triangles to be generated, always starting from the most
+#'   truncated triangles to be generated, always starting from the most
 #'   recent reference time. Default is to only generate truncated matrices
 #'   that have sufficient number of rows to generate a nowcast from, though
 #'   any number can be specified.
-#' @returns A list of `n` retrospective reporting triangle matrices.
+#' @returns A list of `n` truncated reporting triangle matrices.
 #'   with as many rows as available given the truncation, and the same number
 #'   of columns as `triangle`.
 #' @export
@@ -32,16 +32,17 @@
 #'   byrow = TRUE
 #' )
 #'
-#' retro_rts <- generate_triangles(
+#' truncated_rts <- truncate_triangles(
 #'   triangle = triangle,
 #'   n = 2
 #' )
-#' print(retro_rts[[1]])
-#' print(retro_rts[[2]])
-generate_triangles <- function(
+#' print(truncated_rts[[1]])
+#' print(truncated_rts[[2]])
+truncate_triangles <- function(
     triangle,
     n = nrow(triangle) - ncol(triangle) - 1) {
   .validate_triangle(triangle)
+  triangle <- .replace_lower_right_with_NA(triangle)
   if (n > (nrow(triangle) - ncol(triangle) - 1)) {
     cli::cli_warn(
       message = c(
@@ -52,28 +53,25 @@ generate_triangles <- function(
   }
 
   results <- lapply(seq_len(n),
-    generate_triangle,
+    truncate_triangle,
     matr_observed = triangle
   )
 
   return(results)
 }
 
-
-#' Get a single retrospective triangle
+#' Get a single truncated triangle
 #'
 #' This function takes in a integer `t` and a reporting triangle and generates
-#'  the reporting triangle that would have been observed as of `t` units
-#'  earlier (starting from the bottom of the reporting triangle).
+#'   a truncated reporting triangle, remove the last `t` observations
 #'
-#' @param t Integer indicating the number of days prior to generate the
-#'  retrospective reporting triangle for.
+#' @param t Integer indicating the number of timepoints to truncate off the
+#'   bottom of the original reporting triangle
 #' @param matr_observed Matrix of the reporting triangle/rectangle
 #'   to be used to generate retrospective nowcasts, with rows representing the
 #'   time points of reference and columns representing the delays.
 #'
-#' @returns Matrix with `t` fewer rows than `matr_observed`, replicating what
-#'   would have been observed as of `t` days prior.
+#' @returns Matrix with `t` fewer rows than `matr_observed`
 #' @importFrom checkmate assert_integerish
 #' @importFrom cli cli_abort
 #' @export
@@ -93,12 +91,12 @@ generate_triangles <- function(
 #'   byrow = TRUE
 #' )
 #'
-#' retro_rep_tri <- generate_triangle(
+#' trunc_rep_tri <- truncate_triangle(
 #'   t = 1,
 #'   matr_observed = triangle
 #' )
-#' print(retro_rep_tri)
-generate_triangle <- function(t,
+#' print(trunc_rep_tri)
+truncate_triangle <- function(t,
                               matr_observed) {
   n_obs <- nrow(matr_observed)
   if (t >= n_obs) {
@@ -114,6 +112,5 @@ generate_triangle <- function(t,
     matr_observed[1:(n_obs - t), ],
     nrow = (n_obs - t)
   )
-  matr_observed_temp <- .replace_lower_right_with_NA(matr_observed_trunc)
-  return(matr_observed_temp)
+  return(matr_observed_trunc)
 }

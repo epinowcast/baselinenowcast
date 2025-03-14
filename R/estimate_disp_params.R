@@ -32,9 +32,12 @@
 #'   byrow = TRUE
 #' )
 #'
-#' retro_rts <- generate_triangles(
+#' trunc_rts <- truncate_triangles(
 #'   triangle = triangle,
 #'   n = 2
+#' )
+#' retro_rts <- generate_triangles(
+#'   truncated_triangles = trunc_rts
 #' )
 #' retro_nowcasts <- generate_nowcasts(
 #'   list_of_rts = retro_rts,

@@ -40,7 +40,8 @@ trunc_rts <- truncate_triangles(
   n = 2
 )
 retro_rts <- generate_triangles(
-  truncated_triangles = trunc_rts)
+  truncated_triangles = trunc_rts
+)
 print(retro_rts[[1]])
 print(retro_rts[[2]])
 }

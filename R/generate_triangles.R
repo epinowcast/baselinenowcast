@@ -5,17 +5,10 @@
 #'   generates the reporting triangle that would have been available as of the
 #'   maximum reference time, working from bottom to top for `n` snapshots.
 #'
-#' @param triangle Matrix of the reporting triangle/rectangle
-#'   to be used to generate retrospective triangles, with rows representing the
-#'   time points of reference and columns representing the delays.
-#' @param n Integer indicating the number of retrospective
-#'   reporting triangles to be generated, always starting from the most
-#'   recent reference time. Default is to only generate truncated matrices
-#'   that have sufficient number of rows to generate a nowcast from, though
-#'   any number can be specified.
-#' @returns A list of `n` retrospective reporting triangle matrices.
-#'   with as many rows as available given the truncation, and the same number
-#'   of columns as `triangle`.
+#' @param truncated_triangles List of truncated reporting triangle matrices.
+#' @returns List of retrospective reporting triangle matrices, generated
+#'   by removing the bottom right observations from the truncated reporting
+#'   triangle matrices.
 #' @export
 #' @examples
 #' triangle <- matrix(
@@ -32,28 +25,20 @@
 #'   byrow = TRUE
 #' )
 #'
-#' retro_rts <- generate_triangles(
+#' trunc_rts <- truncate_triangles(
 #'   triangle = triangle,
 #'   n = 2
+#' )
+#' retro_rts <- generate_triangles(
+#'   truncated_triangles = trunc_rts
 #' )
 #' print(retro_rts[[1]])
 #' print(retro_rts[[2]])
 generate_triangles <- function(
-    triangle,
-    n = nrow(triangle) - ncol(triangle) - 1) {
-  .validate_triangle(triangle)
-  if (n > (nrow(triangle) - ncol(triangle) - 1)) {
-    cli::cli_warn(
-      message = c(
-        "Not all of the triangles generated will contain sufficient ",
-        "observations to generate a nowcast from"
-      )
-    )
-  }
-
-  results <- lapply(seq_len(n),
-    generate_triangle,
-    matr_observed = triangle
+    truncated_triangles) {
+  results <- lapply(
+    truncated_triangles,
+    .replace_lower_right_with_NA
   )
 
   return(results)

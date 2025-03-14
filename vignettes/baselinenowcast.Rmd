@@ -375,7 +375,7 @@ truncated_rts <- truncate_triangles(
   triangle = triangle
 )
 retro_rts <- generate_triangles(
-  triangle = triangle
+  truncated_triangles = truncated_rts
 )
 ```
 The `generate_triangles()` function returns a list of

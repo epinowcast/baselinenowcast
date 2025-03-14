@@ -4,23 +4,15 @@
 \alias{generate_triangles}
 \title{Generate retrospective reporting triangles}
 \usage{
-generate_triangles(triangle, n = nrow(triangle) - ncol(triangle) - 1)
+generate_triangles(truncated_triangles)
 }
 \arguments{
-\item{triangle}{Matrix of the reporting triangle/rectangle
-to be used to generate retrospective triangles, with rows representing the
-time points of reference and columns representing the delays.}
-
-\item{n}{Integer indicating the number of retrospective
-reporting triangles to be generated, always starting from the most
-recent reference time. Default is to only generate truncated matrices
-that have sufficient number of rows to generate a nowcast from, though
-any number can be specified.}
+\item{truncated_triangles}{List of truncated reporting triangle matrices.}
 }
 \value{
-A list of \code{n} retrospective reporting triangle matrices.
-with as many rows as available given the truncation, and the same number
-of columns as \code{triangle}.
+List of retrospective reporting triangle matrices, generated
+by removing the bottom right observations from the truncated reporting
+triangle matrices.
 }
 \description{
 This function ingests a reporting triangle/matrix and the number of
@@ -43,10 +35,12 @@ triangle <- matrix(
   byrow = TRUE
 )
 
-retro_rts <- generate_triangles(
+trunc_rts <- truncate_triangles(
   triangle = triangle,
   n = 2
 )
+retro_rts <- generate_triangles(
+  truncated_triangles = trunc_rts)
 print(retro_rts[[1]])
 print(retro_rts[[2]])
 }

@@ -1,5 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
+-   Add a function to generate retrospective nowcasts from a list of reporting triangles
 -   Refactor uncertainty estimation to use a user-facing function to generate retrospective reporting triangles.
 -   Methods write-up as a separate vignette
 -   Introduced function to estimate the uncertainty from a triangle to be nowcasted and a delay distribution.

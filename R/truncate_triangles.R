@@ -13,7 +13,7 @@
 #'   recent reference time. Default is to only generate truncated matrices
 #'   that have sufficient number of rows to generate a nowcast from, though
 #'   any number can be specified.
-#' @returns List of `n` truncated reporting triangle matrices.
+#' @returns list_of_trunc_rts List of `n` truncated reporting triangle matrices.
 #'   with as many rows as available given the truncation, and the same number
 #'   of columns as `triangle`.
 #' @importFrom checkmate assert_integerish

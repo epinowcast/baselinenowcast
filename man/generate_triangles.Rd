@@ -7,10 +7,10 @@
 generate_triangles(truncated_triangles)
 }
 \arguments{
-\item{truncated_triangles}{List of truncated reporting triangle matrices.}
+\item{list_of_trunc_rts}{List of truncated reporting triangle matrices.}
 }
 \value{
-List of retrospective reporting triangle matrices, generated
+list_of_rts List of retrospective reporting triangle matrices, generated
 by removing the bottom right observations from the truncated reporting
 triangle matrices.
 }
@@ -40,7 +40,7 @@ trunc_rts <- truncate_triangles(
   n = 2
 )
 retro_rts <- generate_triangles(
-  truncated_triangles = trunc_rts
+  list_of_trunc_rts = trunc_rts
 )
 print(retro_rts[[1]])
 print(retro_rts[[2]])

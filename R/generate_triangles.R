@@ -5,8 +5,8 @@
 #'   generates the reporting triangle that would have been available as of the
 #'   maximum reference time, working from bottom to top for `n` snapshots.
 #'
-#' @param truncated_triangles List of truncated reporting triangle matrices.
-#' @returns List of retrospective reporting triangle matrices, generated
+#' @param list_of_trunc_rts List of truncated reporting triangle matrices.
+#' @returns list_of_rts List of retrospective reporting triangle matrices, generated
 #'   by removing the bottom right observations from the truncated reporting
 #'   triangle matrices.
 #' @importFrom cli cli_abort
@@ -31,7 +31,7 @@
 #'   n = 2
 #' )
 #' retro_rts <- generate_triangles(
-#'   truncated_triangles = trunc_rts
+#'   list_of_trunc_rts = trunc_rts
 #' )
 #' print(retro_rts[[1]])
 #' print(retro_rts[[2]])

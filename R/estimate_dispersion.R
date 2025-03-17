@@ -1,14 +1,16 @@
 #' Estimate dispersion parameters
 #'
-#' This function ingests a list of nowcasts (completed reporting rectangles) and
-#'    the latest reporting triangle and uses both to estimate dispersion
-#'    parameters from the observations and estimates at each delay.
+#' This function ingests a list of point nowcasts (completed reporting
+#'    rectangles) and a corresponding list of truncated reporting triangles and
+#'    estimates and uses both to estimate a vector of negative binomial
+#'    dispersion parameters from the observations and estimates at each delay,
+#'    starting at delay = 1.
 #'
 #' @param list_of_nowcasts List of complete reporting rectangles where rows
 #'    represent reference time points and columns represent delays.
-#' @param latest_rep_tri Matrix of the latest, incomplete, reporting triangle,
-#'    with rows representing the time points of reference and columns
-#'    representing the delays.
+#' @param list_of_trunc_rts List of truncated reporting triangle matrices,
+#'    containing all observations as of the latest reference time. Elements of
+#'    list are paired with elements of `list_of_nowcasts`
 #' @param n Integer indicating the number of reporting rectangles to use to
 #'    estimate the dispersion parameters
 #'
@@ -45,21 +47,32 @@
 #' )
 #' disp_params <- estimate_dispersion(
 #'   list_of_nowcasts = retro_nowcasts,
-#'   latest_rep_tri = triangle
+#'   list_of_trunc_rts = trunc_rts,
+#'   n = 2
 #' )
 estimate_dispersion <- function(
     list_of_nowcasts,
-    latest_rep_tri,
+    list_of_trunc_rts,
     n = length(list_of_nowcasts)) {
-  .validate_triangle(latest_rep_tri)
+  # Check that the length of the list of nowcasts is greater than
+  # or equal to the specified n
+  if (length(list_of_nowcasts) < n) {
+    cli_abort(message = c(
+      "Insufficient elements in `list_of_nowcasts` for the `n` desired number ",
+      "of nowcasted reporting triangles specified for dispersion estimation"
+    ))
+  }
 
-  matr_observed <- .replace_lower_right_with_NA(latest_rep_tri)
+  # Truncate to only n nowcasts
+  list_of_ncs <- list_of_nowcasts[1:n]
+  list_of_obs <- list_of_trunc_rts[1:n]
 
+  n_horizons <- ncol(list_of_ncs[[1]])
   for (i in seq_len(n)) {
     # Rretrospective nowcast as of i delays ago
-    nowcast_i <- list_of_nowcasts[[i]]
+    nowcast_i <- list_of_ncs[[i]]
     # Remove the last i observations
-    trunc_matr_observed <- matr_observed[1:(nrow(matr_observed) - i), ]
+    trunc_matr_observed <- list_of_obs[[i]]
     # What would have been nowcasted? The values that would have been NA
     indices_nowcast <- is.na(.replace_lower_right_with_NA(trunc_matr_observed))
     # What was observed? Any non-NAs from the truncated observed matrix
@@ -68,7 +81,7 @@ estimate_dispersion <- function(
     # Get a vector of for each delay of what would have been added in this
     # reference time, based on the indices nowcasted and the indices later
     # observed
-    exp_to_add <- sapply(seq_len(ncol(matr_observed)),
+    exp_to_add <- sapply(seq_len(ncol(trunc_matr_observed)),
       .conditional_sum_cols,
       matrix_bool1 = indices_nowcast,
       matrix_bool2 = indices_observed,
@@ -76,7 +89,7 @@ estimate_dispersion <- function(
     )
     # Get a vector for each delay of what was observed using the truncated
     # observed matrix
-    to_add <- sapply(seq_len(ncol(matr_observed)),
+    to_add <- sapply(seq_len(ncol(trunc_matr_observed)),
       .conditional_sum_cols,
       matrix_bool1 = indices_nowcast,
       matrix_bool2 = indices_observed,
@@ -88,7 +101,7 @@ estimate_dispersion <- function(
       exp_to_add = exp_to_add,
       to_add = to_add,
       t = i,
-      d = seq_len(ncol(matr_observed)) - 1
+      d = seq_len(n_horizons) - 1
     )
     if (i == 1) {
       df_exp_obs <- df_i
@@ -96,8 +109,12 @@ estimate_dispersion <- function(
       df_exp_obs <- rbind(df_exp_obs, df_i)
     }
   }
+
+  # Separate step which uses the dataframe that compares the expected values to
+  # add and the values observed at each reference time and delay to estimate
+  # the dispersion (we could make this a separate function).
   disp_params <- vector(length = (ncol(matr_observed) - 1))
-  for (i in seq_len(ncol(matr_observed) - 1)) {
+  for (i in seq_len(n_horizons - 1)) {
     obs_temp <- df_exp_obs$to_add[df_exp_obs$d == i]
     mu_temp <- df_exp_obs$exp_to_add[df_exp_obs$d == i] + 0.1
     disp_params[i] <- .fit_nb(x = obs_temp, mu = mu_temp)

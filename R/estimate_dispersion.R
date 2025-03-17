@@ -64,7 +64,7 @@ estimate_dispersion <- function(
   }
   if (length(list_of_trunc_rts) < n) {
     cli_abort(message = c(
-      "Insufficient elements in `list_of_trunc_rts` for the `n` desired number ",
+      "Insufficient elements in `list_of_trunc_rts` for the `n` desired number ", # nolint
       "of observed reporting triangles specified for dispersion estimation"
     ))
   }
@@ -83,14 +83,16 @@ estimate_dispersion <- function(
 
   # Check that nowcasts has no NAs, trunc_rts has some NAs
   if (any(sapply(list_of_ncs, anyNA))) {
-    cli_abort(message = c(
-      "`list_of_nowcasts` contains NAs"
-    ))
+    cli_abort(
+      message =
+        "`list_of_nowcasts` contains NAs"
+    )
   }
   if (!any(sapply(list_of_obs, anyNA))) {
-    cli_abort(message = c(
-      "`list_of_obs` does not contain any NAs"
-    ))
+    cli_abort(
+      message =
+        "`list_of_obs` does not contain any NAs"
+    )
   }
   # Check that the sets of matrices are the same dimensions
   dims_ncs <- lapply(list_of_ncs, dim)

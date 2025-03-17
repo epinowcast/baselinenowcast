@@ -41,7 +41,7 @@ valid_trunc_rts <- list(
   test_triangle[1:5, ],
   test_triangle[1:4, ]
 )
-### Test 1: Basic Functionality -------------------------------------------------
+### Test 1: Basic Functionality ------------------------------------------------
 test_that("Basic functionality with valid inputs", {
   result <- estimate_dispersion(
     list_of_nowcasts = valid_nowcasts,
@@ -55,14 +55,14 @@ test_that("Basic functionality with valid inputs", {
   expect_true(all(is.finite(result)))
 })
 
-### Test 2: Default Parameter Handling ------------------------------------------
+### Test 2: Default Parameter Handling -----------------------------------------
 test_that("Default n parameter works correctly", {
   result_default <- estimate_dispersion(valid_nowcasts, valid_trunc_rts)
   result_explicit <- estimate_dispersion(valid_nowcasts, valid_trunc_rts, n = 2)
   expect_identical(result_default, result_explicit)
 })
 
-### Test 3: Error Conditions ----------------------------------------------------
+### Test 3: Error Conditions ---------------------------------------------------
 test_that("Error conditions are properly handled", {
   # Invalid input types
   expect_error(estimate_dispersion(list("not_a_matrix"), valid_trunc_rts))

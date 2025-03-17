@@ -388,7 +388,7 @@ Next we will pass this list of reporting triangles to the
 `generate_nowcasts()` alongside the specification of how many observations
 to use to estimate the delay
 ```{r generate-nowcasts}
-retro_nowcasts <- generate_nowcasts(
+retro_nowcasts <- generate_point_nowcasts(
   list_of_rts = retro_rts
 )
 ```
@@ -399,7 +399,7 @@ Next, we will use the list of retrospective reporting triangles to estimate
 the uncertainty at each delay $d$
 
 ```{r}
-disp_params <- estimate_disp_params(
+disp_params <- estimate_dispersion(
   list_of_nowcasts = retro_nowcasts,
   latest_rep_tri = triangle
 )

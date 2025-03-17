@@ -2,7 +2,7 @@
 #'
 #' This function ingests a list of retrospective reporting triangles and
 #'   generates a list of retrospective reporting squares, or "complete"
-#'   reporting triangles. It uses the specified `n_history_delay`  number of
+#'   point estimates of reporting triangles. It uses the specified `n` number of
 #'   observations to estimate the empirical delay for each retrospective
 #'   reporting triangle.
 #'
@@ -37,16 +37,16 @@
 #'   triangle = triangle
 #' )
 #' retro_rts <- generate_triangles(
-#'   truncated_triangles = trunc_rts,
+#'   truncated_triangles = trunc_rts
 #' )
-#' retro_nowcasts <- generate_nowcasts(
+#' retro_nowcasts <- generate_point_nowcasts(
 #'   list_of_rts = retro_rts
 #' )
 #' print(retro_nowcasts[[1]])
-generate_nowcasts <- function(list_of_rts,
-                              n = min(
-                                sapply(list_of_rts, nrow)
-                              )) {
+generate_point_nowcasts <- function(list_of_rts,
+                                    n = min(
+                                      sapply(list_of_rts, nrow)
+                                    )) {
   if (n > min(
     sapply(list_of_rts, nrow)
   )) {

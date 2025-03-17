@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_nowcasts.R
 \name{generate_nowcasts}
 \alias{generate_nowcasts}
-\title{Generate retrospective nowcasts}
+\title{Generate retrospective point nowcasts}
 \usage{
 generate_nowcasts(list_of_rts, n = min(sapply(list_of_rts, nrow)))
 }
@@ -24,7 +24,7 @@ in that reporting triangle.
 \description{
 This function ingests a list of retrospective reporting triangles and
 generates a list of retrospective reporting squares, or "complete"
-reporting triangles. It uses the specified \code{n_history_delay}  number of
+point estimates of reporting triangles. It uses the specified \code{n} number of
 observations to estimate the empirical delay for each retrospective
 reporting triangle.
 }
@@ -49,6 +49,6 @@ retro_rts <- generate_triangles(
 )
 retro_nowcasts <- generate_nowcasts(
   list_of_rts = retro_rts,
-  n= 5
+  n = 5
 )
 }

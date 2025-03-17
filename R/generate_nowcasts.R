@@ -1,8 +1,8 @@
-#' Generate retrospective nowcasts
+#' Generate retrospective point nowcasts
 #'
 #' This function ingests a list of retrospective reporting triangles and
 #'   generates a list of retrospective reporting squares, or "complete"
-#'   reporting triangles. It uses the specified `n_history_delay`  number of
+#'   point estimates of reporting triangles. It uses the specified `n` number of
 #'   observations to estimate the empirical delay for each retrospective
 #'   reporting triangle.
 #'

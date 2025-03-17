@@ -401,7 +401,7 @@ the uncertainty at each delay $d$
 ```{r}
 disp_params <- estimate_dispersion(
   list_of_nowcasts = retro_nowcasts,
-  latest_rep_tri = triangle
+  list_of_trunc_rts = truncated_rts
 )
 ```
 

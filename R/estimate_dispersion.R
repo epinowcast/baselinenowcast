@@ -113,7 +113,7 @@ estimate_dispersion <- function(
   # Separate step which uses the dataframe that compares the expected values to
   # add and the values observed at each reference time and delay to estimate
   # the dispersion (we could make this a separate function).
-  disp_params <- vector(length = (ncol(matr_observed) - 1))
+  disp_params <- vector(length = n_horizons - 1)
   for (i in seq_len(n_horizons - 1)) {
     obs_temp <- df_exp_obs$to_add[df_exp_obs$d == i]
     mu_temp <- df_exp_obs$exp_to_add[df_exp_obs$d == i] + 0.1

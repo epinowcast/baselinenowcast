@@ -2,7 +2,6 @@
 
 export(apply_delay)
 export(estimate_dispersion)
-export(estimate_uncertainty)
 export(generate_point_nowcasts)
 export(generate_triangles)
 export(get_delay_estimate)

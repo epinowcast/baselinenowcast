@@ -17,9 +17,9 @@ reporting triangle. Default is the minimum of the number of rows of
 all the matrices in the \code{list_of_rts}}
 }
 \value{
-list_of_nowcasts List of the same number of elements as the input \code{list_of_rts}
-but with each reporting triangle filled in based on the delay estimated
-in that reporting triangle.
+list_of_nowcasts List of the same number of elements as the input
+\code{list_of_rts}but with each reporting triangle filled in based on the delay
+estimated in that reporting triangle.
 }
 \description{
 This function ingests a list of incomplete reporting triangles and

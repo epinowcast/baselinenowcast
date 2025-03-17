@@ -15,9 +15,9 @@
 #'    reporting triangle. Default is the minimum of the number of rows of
 #'    all the matrices in the `list_of_rts`
 #'
-#' @returns list_of_nowcasts List of the same number of elements as the input `list_of_rts`
-#'    but with each reporting triangle filled in based on the delay estimated
-#'    in that reporting triangle.
+#' @returns list_of_nowcasts List of the same number of elements as the input
+#'   `list_of_rts`but with each reporting triangle filled in based on the delay
+#'    estimated in that reporting triangle.
 #' @export
 #' @examples
 #' triangle <- matrix(

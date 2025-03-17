@@ -33,14 +33,16 @@
 #'   byrow = TRUE
 #' )
 #'
+#' trunc_rts <- truncate_triangles(
+#'   triangle = triangle
+#' )
 #' retro_rts <- generate_triangles(
-#'   triangle = triangle,
-#'   n = 2
+#'   truncated_triangles = trunc_rts,
 #' )
 #' retro_nowcasts <- generate_nowcasts(
-#'   list_of_rts = retro_rts,
-#'   n = 5
+#'   list_of_rts = retro_rts
 #' )
+#' print(retro_nowcasts[[1]])
 generate_nowcasts <- function(list_of_rts,
                               n = min(
                                 sapply(list_of_rts, nrow)

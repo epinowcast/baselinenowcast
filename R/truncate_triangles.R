@@ -16,6 +16,7 @@
 #' @returns List of `n` truncated reporting triangle matrices.
 #'   with as many rows as available given the truncation, and the same number
 #'   of columns as `triangle`.
+#' @importFrom checkmate assert_integerish
 #' @export
 #' @examples
 #' triangle <- matrix(
@@ -42,6 +43,7 @@ truncate_triangles <- function(
     triangle,
     n = nrow(triangle) - ncol(triangle) - 1) {
   .validate_triangle(triangle)
+  assert_integerish(n, lower = 0)
   triangle <- .replace_lower_right_with_NA(triangle)
   if (n > (nrow(triangle) - ncol(triangle) - 1)) {
     cli::cli_warn(

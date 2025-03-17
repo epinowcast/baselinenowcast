@@ -37,7 +37,7 @@
 #'   n = 2
 #' )
 #' retro_rts <- generate_triangles(
-#'   truncated_triangles = trunc_rts
+#'   list_of_trunc_rts = trunc_rts
 #' )
 #' retro_nowcasts <- generate_point_nowcasts(
 #'   list_of_rts = retro_rts,

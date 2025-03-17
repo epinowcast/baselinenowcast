@@ -18,9 +18,9 @@ that have sufficient number of rows to generate a nowcast from, though
 any number can be specified.}
 }
 \value{
-\code{list_of_trunc_rts} List of \code{n} truncated reporting triangle matrices.
-with as many rows as available given the truncation, and the same number
-of columns as \code{triangle}.
+\code{list_of_trunc_rts} List of \code{n} truncated reporting triangle
+matrices with as many rows as available given the truncation, and the same
+number of columns as \code{triangle}.
 }
 \description{
 This function ingests a reporting triangle/matrix and the number of

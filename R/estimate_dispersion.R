@@ -13,7 +13,7 @@
 #'    list are paired with elements of `list_of_nowcasts`
 #' @param n Integer indicating the number of reporting rectangles to use to
 #'    estimate the dispersion parameters
-#'
+#' @importFrom checkmate assert_integerish
 #' @returns Vector of length one less than the number of columns in the
 #'    latest reporting triangle, with each element representing the estimate
 #'    of the dispersion parameter for each delay d, starting at delay d=1.
@@ -62,10 +62,47 @@ estimate_dispersion <- function(
       "of nowcasted reporting triangles specified for dispersion estimation"
     ))
   }
+  if (length(list_of_trunc_rts) < n) {
+    cli_abort(message = c(
+      "Insufficient elements in `list_of_trunc_rts` for the `n` desired number ",
+      "of observed reporting triangles specified for dispersion estimation"
+    ))
+  }
+  if (length(list_of_nowcasts) < 1) {
+    "`list_of_nowcasts` is an empty list"
+  }
+  if (length(list_of_trunc_rts) < 1) {
+    "`list_of_trunc_rts` is an empty list"
+  }
+
+  assert_integerish(n, lower = 0)
 
   # Truncate to only n nowcasts
   list_of_ncs <- list_of_nowcasts[1:n]
   list_of_obs <- list_of_trunc_rts[1:n]
+
+  # Check that nowcasts has no NAs, trunc_rts has some NAs
+  if (any(sapply(list_of_ncs, anyNA))) {
+    cli_abort(message = c(
+      "`list_of_nowcasts` contains NAs"
+    ))
+  }
+  if (!any(sapply(list_of_obs, anyNA))) {
+    cli_abort(message = c(
+      "`list_of_obs` does not contain any NAs"
+    ))
+  }
+  # Check that the sets of matrices are the same dimensions
+  dims_ncs <- lapply(list_of_ncs, dim)
+  dims_obs <- lapply(list_of_obs, dim)
+  all_identical <- all(mapply(identical, dims_ncs, dims_obs))
+  if (!all_identical) {
+    cli_abort(message = c(
+      "Dimensions of the first `n` matrices in `list_of_nowcasts` and ",
+      "`list_of_trunc_rts` are not the same."
+    ))
+  }
+
 
   n_horizons <- ncol(list_of_ncs[[1]])
   for (i in seq_len(n)) {

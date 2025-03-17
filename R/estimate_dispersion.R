@@ -105,3 +105,72 @@ estimate_dispersion <- function(
 
   return(disp_params)
 }
+
+#' Compute the sum of entries of a column in a matrix where both sets of
+#'   matrices of booleans are TRUE
+#'
+#' @param col Integer indicating the column to sum over
+#' @param matrix_bool1 Matrix of booleans for the first set of indices
+#' @param matrix_bool2 Matrix of booleans for the second set of indices
+#' @param matrix_to_sum Matrix to be summed for that specific column
+#'
+#' @returns Numeric summing the values in the `matrix_to_sum` at the specified
+#'   column for the entries that are true
+#' @keywords internal
+.conditional_sum_cols <- function(col,
+                                  matrix_bool1,
+                                  matrix_bool2,
+                                  matrix_to_sum) {
+  if (col > dim(matrix_to_sum)[2]) {
+    cli::cli_abort(
+      message = "Column to sum is out of bounds of input matrices"
+    )
+  }
+
+  if (!all(dim(matrix_bool1) == dim(matrix_bool2))) {
+    cli::cli_abort(
+      message = "Dimensions of boolean matrices are not the same"
+    )
+  }
+
+  if (!all(dim(matrix_to_sum) == dim(matrix_bool1))) {
+    cli::cli_abort(
+      message =
+        "Dimensions of boolean matrices and matrix to sum are not the same"
+    )
+  }
+
+  cond_sum <- sum(
+    matrix_bool1[, col] *
+      matrix_bool2[, col] *
+      matrix_to_sum[, col],
+    na.rm = TRUE
+  )
+  return(cond_sum)
+}
+
+#' Fit a negative binomial to a vector of observations and expectations
+#'
+#' @description
+#' Takes in a vector of observations and a vector of expectations and performs
+#'   a MLE estimator to estimate the dispersion parameter of a negative
+#'   binomial. This code was adapted from code written (under an MIT license)
+#'   by the Karlsruhe Institute of Technology RESPINOW German Hospitalization
+#'   Nowcasting Hub.
+#'   Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7fab4dce7b559c3076ab643cf22048cb5fb84cc2/code/baseline/functions.R#L404 #nolint
+#' @importFrom stats dnbinom optimize
+#' @param x the observed values
+#' @param mu the expected values
+#' @returns the maximum likelihood estimate of the dispersion
+#' @keywords internal
+.fit_nb <- function(x, mu) {
+  if (length(x) == 0) {
+    return(NA)
+  }
+  nllik <- function(size) {
+    nll <- -sum(dnbinom(x = x, mu = mu, size = size, log = TRUE), na.rm = TRUE)
+    return(nll)
+  }
+  opt <- optimize(nllik, c(0.1, 1000))
+  return(opt$minimum)
+}

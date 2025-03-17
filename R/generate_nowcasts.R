@@ -1,8 +1,9 @@
 #' Generate retrospective nowcasts
 #'
-#' This function ingests a list of retrospective reporting triangles and
-#'   generates a list of retrospective reporting squares, or "complete"
-#'   reporting triangles. It uses the specified `n_history_delay`  number of
+#' This function ingests a list of incomplete reporting triangles and
+#'   generates a list of reporting squares, or "complete"
+#'   point estimates of reporting triangles based on the delay estimated in
+#'   each triangle. It uses the specified `n` number of
 #'   observations to estimate the empirical delay for each retrospective
 #'   reporting triangle.
 #'
@@ -14,9 +15,9 @@
 #'    reporting triangle. Default is the minimum of the number of rows of
 #'    all the matrices in the `list_of_rts`
 #'
-#' @returns List of the same number of elements as the input `list_of_rts`
-#'    but with each reporting triangle filled in based on the delay estimated
-#'    in that reporting triangle.
+#' @returns `list_of_nowcasts` List of the same number of elements as the input
+#'   `list_of_rts`but with each reporting triangle filled in based on the delay
+#'    estimated in that reporting triangle.
 #' @export
 #' @examples
 #' triangle <- matrix(
@@ -33,18 +34,20 @@
 #'   byrow = TRUE
 #' )
 #'
+#' trunc_rts <- truncate_triangles(
+#'   triangle = triangle
+#' )
 #' retro_rts <- generate_triangles(
-#'   triangle = triangle,
-#'   n = 2
+#'   list_of_trunc_rts = trunc_rts
 #' )
-#' retro_nowcasts <- generate_nowcasts(
-#'   list_of_rts = retro_rts,
-#'   n = 5
+#' retro_nowcasts <- generate_point_nowcasts(
+#'   list_of_rts = retro_rts
 #' )
-generate_nowcasts <- function(list_of_rts,
-                              n = min(
-                                sapply(list_of_rts, nrow)
-                              )) {
+#' print(retro_nowcasts[[1]])
+generate_point_nowcasts <- function(list_of_rts,
+                                    n = min(
+                                      sapply(list_of_rts, nrow)
+                                    )) {
   if (n > min(
     sapply(list_of_rts, nrow)
   )) {

@@ -57,7 +57,7 @@ retro_nowcasts <- generate_point_nowcasts(
   list_of_rts = retro_rts,
   n = 5
 )
-disp_params <- estimate_disp_params(
+disp_params <- estimate_dispersion(
   list_of_nowcasts = retro_nowcasts,
   latest_rep_tri = triangle
 )

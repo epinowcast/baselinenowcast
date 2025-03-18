@@ -5,6 +5,7 @@
 #'    `n_draws` expected observed completed reporting squares.
 #'
 #' @inheritParams add_obs_error_to_nowcast
+#' @importFrom checkmate assert_integerish
 #' @param n_draws Integer indicating the number of expected observed reporting
 #'    squares to generate
 #'
@@ -34,6 +35,7 @@
 add_obs_errors_to_nowcast <- function(comp_rep_square,
                                       disp,
                                       n_draws = 1000) {
+  assert_integerish(n_draws, lower = 1)
   list_of_exp_obs_nowcasts <- lapply(1:n_draws, function(i) {
     return(add_obs_error_to_nowcast(comp_rep_square, disp))
   })
@@ -102,6 +104,9 @@ add_obs_error_to_nowcast <- function(comp_rep_square,
   }
   # Make sure dispersion values greater than 0
   sapply(disp, assert_numeric, lower = 1e-5)
+  if (!is.matrix(comp_rep_square)) {
+    cli_abort(message = "`comp_rep_square` is not a matrix.")
+  }
 
   for (i in seq_along(disp)) {
     max_t <- nrow(comp_rep_square)

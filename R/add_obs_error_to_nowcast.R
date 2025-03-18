@@ -9,6 +9,8 @@
 #'    reporting square
 #' @param disp Vector of dispersion parameters of a negative binomial, for
 #'    delays from 1 through the maximum delay
+#' @importFrom cli cli_abort
+#' @importFrom checkmate assert_numeric
 #'
 #' @returns `nowcast_w_obs_error` Matrix containing the same upper left values
 #'    as the `comp_rep_square` input matrix, with the bottom right containing
@@ -45,6 +47,18 @@ add_obs_error_to_nowcast <- function(comp_rep_square,
     ))
   }
   nowcast_w_obs_error <- .replace_lower_right_with_NA(comp_rep_square)
+
+  if (ncol(comp_rep_square) - 1 != length(disp)) {
+    cli_abort(
+      message =
+        c(
+          "`disp` vector should be of length one less than the number ",
+          "of columns in `comp_rep_square`"
+        )
+    )
+  }
+  # Make sure dispersion values greater than 0
+  sapply(disp, assert_numeric, lower = 1e-5)
 
   for (i in seq_along(disp)) {
     max_t <- nrow(comp_rep_square)

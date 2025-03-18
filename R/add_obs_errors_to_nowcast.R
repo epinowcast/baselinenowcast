@@ -9,7 +9,7 @@
 #'    squares to generate
 #'
 #' @returns `list_of_exp_obs_nowcasts` List of `n_draws` matrices of expected
-#'    obsrved reporting sqaures
+#'    observed reporting squares
 #' @export
 #'
 #' @examples
@@ -35,7 +35,7 @@ add_obs_errors_to_nowcast <- function(comp_rep_square,
                                       disp,
                                       n_draws = 1000) {
   list_of_exp_obs_nowcasts <- lapply(1:n_draws, function(i) {
-    add_obs_error_to_nowcast(comp_rep_square, disp)
+    return(add_obs_error_to_nowcast(comp_rep_square, disp))
   })
   return(list_of_exp_obs_nowcasts)
 }

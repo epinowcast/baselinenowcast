@@ -19,7 +19,7 @@ squares to generate}
 }
 \value{
 \code{list_of_exp_obs_nowcasts} List of \code{n_draws} matrices of expected
-obsrved reporting sqaures
+observed reporting squares
 }
 \description{
 This function ingests a point nowcast in the form of a completed reporting

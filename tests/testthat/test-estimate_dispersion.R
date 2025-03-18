@@ -108,6 +108,7 @@ test_that("Matrix dimension validation works", {
 
 ## Test 6: fit_nb returns NA if nothing passed to it---------------------------
 test_that("Passing in empty vector returns NA", {
-  NA_result <- .fit_nb(x = c(), mu = 1)
+  x <- c()
+  NA_result <- .fit_nb(x, mu = 1)
   expect_true(is.na(NA_result))
 })

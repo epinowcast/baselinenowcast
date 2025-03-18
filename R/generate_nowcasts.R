@@ -90,7 +90,8 @@ generate_point_nowcasts <- function(list_of_rts,
 #'    the point nowcast. If a delay distribution is specified, this will be
 #'    used to generate the nowcast, otherwise, a delay distribution will be
 #'    estimated from the `triangle_to_nowcast`.
-#'
+#' @param delay_pmf Vector of delays assumed to be indexed starting at the
+#'   first delay column in `triangle_to_nowcast`
 #' @inheritParams get_delay_estimate
 #' @returns `comp_rep_square` Matrix of the same number of rows and columns as
 #'    the `triangle_to_nowcast` but with the missing values filled in as point
@@ -110,22 +111,22 @@ generate_point_nowcasts <- function(list_of_rts,
 #'   byrow = TRUE
 #' )
 #' reporting_square <- generate_point_nowcast(
-#'   triangle_to_nowcast = triangle
+#'   triangle = triangle
 #' )
 #' print(reporting_sqaure)
-generate_point_nowcast <- function(triangle_to_nowcast,
-                                   max_delay = ncol(triangle_to_nowcast) - 1,
-                                   n = nrow(triangle_to_nowcast),
+generate_point_nowcast <- function(triangle,
+                                   max_delay = ncol(triangle) - 1,
+                                   n = nrow(triangle),
                                    delay_pmf = NULL) {
   .validate_triangle(triangle_to_nowcast)
   if (is.null(delay_pmf)) {
     delay_pmf <- get_delay_estimate(
-      triangle_to_nowcast,
-      max_delay,
-      n
+      triangle = triangle,
+      max_delay = max_delay,
+      n = n
     )
   }
 
-  comp_rep_square <- apply_delay(triangle_to_nowcast, delay_pmf)
+  comp_rep_square <- apply_delay(triangle, delay_pmf)
   return(comp_rep_square)
 }

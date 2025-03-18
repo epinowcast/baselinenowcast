@@ -11,7 +11,7 @@ test_triangle <- matrix(
   byrow = TRUE
 )
 
-### Test 1: Basic Functionality -------------------------------------------------
+### Test 1: Basic Functionality ------------------------------------------------
 test_that("Basic functionality with default parameters", {
   result <- generate_point_nowcast(test_triangle)
 
@@ -21,7 +21,7 @@ test_that("Basic functionality with default parameters", {
   expect_false(anyNA(result))
 })
 
-### Test 2: Custom Delay PMF ----------------------------------------------------
+### Test 2: Custom Delay PMF ---------------------------------------------------
 test_that("Custom delay PMF is used when provided", {
   custom_pmf <- c(0.4, 0.3, 0.2, 0.1)
   result <- generate_point_nowcast(test_triangle, delay_pmf = custom_pmf)
@@ -30,21 +30,23 @@ test_that("Custom delay PMF is used when provided", {
   expect_identical(dim(result), dim(test_triangle))
 })
 
-### Test 3: Input Validation ----------------------------------------------------
+### Test 3: Input Validation ---------------------------------------------------
 test_that("Invalid inputs throw errors", {
   # Non-matrix input
   expect_error(generate_point_nowcast(as.data.frame(test_triangle)))
 
   # Invalid max_delay
   expect_error(generate_point_nowcast(test_triangle, max_delay = -1))
-  expect_error(generate_point_nowcast(test_triangle, max_delay = ncol(test_triangle) + 1))
+  expect_error(generate_point_nowcast(test_triangle,
+    max_delay = ncol(test_triangle) + 1
+  ))
 
   # Invalid n values
   expect_error(generate_point_nowcast(test_triangle, n = -1))
   expect_error(generate_point_nowcast(test_triangle, n = 1.5))
 })
 
-### Test 4: Edge Cases ----------------------------------------------------------
+### Test 4: Edge Cases ---------------------------------------------------------
 test_that("Edge cases are handled properly", {
   # All-NA matrix (except first row)
   na_triangle <- matrix(NA, nrow = 4, ncol = 3)
@@ -55,7 +57,7 @@ test_that("Edge cases are handled properly", {
   )
 })
 
-### Test 5: Default Parameter Values --------------------------------------------
+### Test 5: Default Parameter Values -------------------------------------------
 test_that("Default parameters work as expected", {
   # Test max_delay default
   result_default <- generate_point_nowcast(test_triangle)
@@ -66,11 +68,13 @@ test_that("Default parameters work as expected", {
 
   # Test n default
   result_n_default <- generate_point_nowcast(test_triangle)
-  result_n_explicit <- generate_point_nowcast(test_triangle, n = nrow(test_triangle))
+  result_n_explicit <- generate_point_nowcast(test_triangle,
+    n = nrow(test_triangle)
+  )
   expect_identical(result_n_default, result_n_explicit)
 })
 
-### Test 6: NA Handling ---------------------------------------------------------
+### Test 6: NA Handling --------------------------------------------------------
 test_that("NA patterns are handled correctly", {
   # Matrix with strategic NAs
   strategic_na_tri <- matrix(
@@ -89,7 +93,7 @@ test_that("NA patterns are handled correctly", {
   expect_false(anyNA(result))
 })
 
-### Test 7: Dimension Preservation ----------------------------------------------
+### Test 7: Dimension Preservation ---------------------------------------------
 test_that("Output dimensions match input", {
   odd_dim_tri <- matrix(1:6, nrow = 3, ncol = 2)
   result <- generate_point_nowcast(odd_dim_tri)

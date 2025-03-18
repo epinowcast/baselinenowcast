@@ -5,13 +5,16 @@
 \title{Generate point nowcast}
 \usage{
 generate_point_nowcast(
-  triangle_to_nowcast,
-  max_delay = ncol(triangle_to_nowcast) - 1,
-  n = nrow(triangle_to_nowcast),
+  triangle,
+  max_delay = ncol(triangle) - 1,
+  n = nrow(triangle),
   delay_pmf = NULL
 )
 }
 \arguments{
+\item{triangle}{Matrix of the reporting triangle, with rows representing
+the time points of reference and columns representing the delays}
+
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
 \code{ncol(triangle) -1}.}
@@ -20,6 +23,9 @@ of the delay. The default is to use the whole reporting triangle,
 be used in the estimate of the reporting delay, always starting from the
 most recent reporting delay. The default is to use the whole reporting
 triangle, so \code{nrow(triangle)}}
+
+\item{delay_pmf}{Vector of delays assumed to be indexed starting at the
+first delay column in \code{triangle_to_nowcast}}
 }
 \value{
 \code{comp_rep_square} Matrix of the same number of rows and columns as
@@ -46,7 +52,7 @@ triangle <- matrix(
   byrow = TRUE
 )
 reporting_square <- generate_point_nowcast(
-  triangle_to_nowcast = triangle
+  triangle = triangle
 )
 print(reporting_sqaure)
 }

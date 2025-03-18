@@ -50,7 +50,7 @@ test_that("Invalid dispersion parameters throw errors", {
   # Negative dispersion
   expect_error(add_obs_error_to_nowcast(test_matrix, c(-1, 2, 3)))
 
-  # Zero dispersion
+  # Zero dispersion should fail
   expect_error(add_obs_error_to_nowcast(test_matrix, c(0, 2, 3)))
 })
 

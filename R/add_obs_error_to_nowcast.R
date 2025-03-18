@@ -4,16 +4,17 @@
 #'   reporting rectangle and a vector of dispersion parameters, and adds
 #'   observation error to generate an expected observed nowcast
 #'
-#' @param nowcast Matrix containing both observed and estimated values of the
-#'    reporting triangle. Bottom right entries will estimates generated from
-#'    applying the delay distribution to the nowcast
+#' @param comp_rep_square Matrix containing both observed and point estimated
+#'    values of the reporting triangle, i.e. the complete
+#'    reporting square
 #' @param disp Vector of dispersion parameters of a negative binomial, for
 #'    delays from 1 through the maximum delay
 #'
-#' @returns Matrix containing the same upper left values as the `nowcast`
-#'    input matrix, with the bottom right containing expected observed counts
-#'    of values assuming a negative binomial observation model with a mean
-#'    given by the lower right entries in `nowcast` and dispersion parameters
+#' @returns `nowcast_w_obs_error` Matrix containing the same upper left values
+#'    as the `comp_rep_square` input matrix, with the bottom right containing
+#'    expected observed counts of values assuming a negative binomial
+#'    observation model with a mean given by the lower right entries in
+#'    `comp_rep_square` and dispersion parameters
 #'    from `disp`
 #' @export
 #'
@@ -31,18 +32,26 @@
 #' )
 #'
 #' exp_obs_nowcast <- add_obs_error_to_nowcast(
-#'   nowcast = point_nowcast,
+#'   comp_rep_square = point_nowcast,
 #'   disp = c(8, 1.4, 4)
 #' )
 #' print(exp_obs_nowcast)
-add_obs_error_to_nowcast <- function(nowcast,
+add_obs_error_to_nowcast <- function(comp_rep_square,
                                      disp) {
-  nowcast_w_obs_error <- .replace_lower_right_with_NA(nowcast)
+  if (anyNA(comp_rep_square)) {
+    cli_abort(message = c(
+      "`comp_rep_square` contains NA values. It should only contain ",
+      "observations or point estimates of mean expected values."
+    ))
+  }
+  nowcast_w_obs_error <- .replace_lower_right_with_NA(comp_rep_square)
 
   for (i in seq_along(disp)) {
-    max_t <- nrow(nowcast)
-    mean_vals <- nowcast[(max_t - i + 1):max_t, i + 1]
-    nowcast_w_obs_error[(max_t - i - 1):max_t, i + 1] <- rnbinom(1,
+    max_t <- nrow(comp_rep_square)
+    # Start at second column, move left to right
+    mean_vals <- comp_rep_square[(max_t - i + 1):max_t, i + 1]
+    nowcast_w_obs_error[(max_t - i + 1):max_t, i + 1] <- rnbinom(
+      n = length(mean_vals),
       size = disp[i],
       mu = mean_vals
     )

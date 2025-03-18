@@ -4,21 +4,22 @@
 \alias{add_obs_error_to_nowcast}
 \title{Add observation error to a point nowcast}
 \usage{
-add_obs_error_to_nowcast(nowcast, disp)
+add_obs_error_to_nowcast(comp_rep_square, disp)
 }
 \arguments{
-\item{nowcast}{Matrix containing both observed and estimated values of the
-reporting triangle. Bottom right entries will estimates generated from
-applying the delay distribution to the nowcast}
+\item{comp_rep_square}{Matrix containing both observed and point estimated
+values of the reporting triangle, i.e. the complete
+reporting square}
 
 \item{disp}{Vector of dispersion parameters of a negative binomial, for
 delays from 1 through the maximum delay}
 }
 \value{
-Matrix containing the same upper left values as the \code{nowcast}
-input matrix, with the bottom right containing expected observed counts
-of values assuming a negative binomial observation model with a mean
-given by the lower right entries in \code{nowcast} and dispersion parameters
+\code{nowcast_w_obs_error} Matrix containing the same upper left values
+as the \code{comp_rep_square} input matrix, with the bottom right containing
+expected observed counts of values assuming a negative binomial
+observation model with a mean given by the lower right entries in
+\code{comp_rep_square} and dispersion parameters
 from \code{disp}
 }
 \description{
@@ -40,7 +41,7 @@ point_nowcast <- matrix(
 )
 
 exp_obs_nowcast <- add_obs_error_to_nowcast(
-  nowcast = point_nowcast,
+  comp_rep_square = point_nowcast,
   disp = c(8, 1.4, 4)
 )
 print(exp_obs_nowcast)

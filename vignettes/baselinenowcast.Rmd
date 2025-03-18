@@ -415,7 +415,7 @@ nowcast.
 
 ```{r add-observation-error}
 nowcast_draw <- add_obs_error_to_nowcast(
-  nowcast = point_reporting_square,
+  comp_rep_square = point_reporting_square,
   disp = disp_params
 )
 ```

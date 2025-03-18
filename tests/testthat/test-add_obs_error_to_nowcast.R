@@ -19,7 +19,7 @@ test_that("Basic functionality with valid inputs", {
 
   # Verify output structure
   expect_identical(dim(result), dim(test_matrix))
-  expect_true(!anyNA(result))
+  expect_false(anyNA(result))
 
   # Verify upper triangle remains unchanged
   expect_identical(result[1:2, 1:2], test_matrix[1:2, 1:2])

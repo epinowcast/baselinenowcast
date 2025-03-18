@@ -74,10 +74,11 @@ test_that("Output follows negative binomial distribution", {
   original_means <- test_matrix[3:4, 4]
 
   # Check mean is close to original (with tolerance for sampling error)
-  test_bounds <- mean(generated_vals) |> between(
-    mean(original_means) - 15,
-    mean(original_means) + 15
-  )
+  test_bounds <- (mean(generated_vals) >
+    mean(original_means) - 15) &
+    (mean(generated_vals) <
+      mean(original_means) + 15)
+
   expect_true(test_bounds)
 })
 

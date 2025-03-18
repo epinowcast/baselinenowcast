@@ -24,3 +24,20 @@
 
   return(result)
 }
+
+.check_na_bottom_right <- function(mat) {
+  # Create a logical mask for valid NA positions
+  n_rows <- nrow(mat)
+  mask <- matrix(FALSE, nrow = n_rows, ncol = ncol(mat))
+
+  for (i in seq_len(n_rows)) {
+    cutoff <- n_rows - i + 1
+    if (cutoff < ncol(mat)) {
+      mask[i, (cutoff + 1):ncol(mat)] <- TRUE
+    }
+  }
+
+  # Check if any NAs exist outside valid region
+  invalid_nas <- sum(is.na(mat) & !mask)
+  invalid_nas == 0
+}

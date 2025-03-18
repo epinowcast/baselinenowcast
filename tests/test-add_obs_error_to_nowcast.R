@@ -12,14 +12,14 @@ test_matrix <- matrix(
 
 valid_disp <- c(5, 3, 2)
 
-### Test 1: Basic Functionality -------------------------------------------------
+### Test 1: Basic Functionality ------------------------------------------------
 test_that("Basic functionality with valid inputs", {
   set.seed(123)
   result <- add_obs_error_to_nowcast(test_matrix, valid_disp)
 
   # Verify output structure
-  expect_equal(dim(result), dim(test_matrix))
-  expect_true(all(!is.na(result)))
+  expect_identical(dim(result), dim(test_matrix))
+  expect_true(!anyNA(result))
 
   # Verify upper triangle remains unchanged
   expect_identical(result[1:2, 1:2], test_matrix[1:2, 1:2])
@@ -28,7 +28,7 @@ test_that("Basic functionality with valid inputs", {
   expect_silent(assert_integerish(result))
 })
 
-### Test 2: Input Validation ----------------------------------------------------
+### Test 2: Input Validation ---------------------------------------------------
 test_that("Input validation works correctly", {
   # NA in input matrix
   na_matrix <- test_matrix
@@ -45,7 +45,7 @@ test_that("Input validation works correctly", {
   )
 })
 
-### Test 3: Error Propagation ---------------------------------------------------
+### Test 3: Error Propagation --------------------------------------------------
 test_that("Invalid dispersion parameters throw errors", {
   # Negative dispersion
   expect_error(add_obs_error_to_nowcast(test_matrix, c(-1, 2, 3)))
@@ -54,7 +54,7 @@ test_that("Invalid dispersion parameters throw errors", {
   expect_error(add_obs_error_to_nowcast(test_matrix, c(0, 2, 3)))
 })
 
-### Test 4: Stochastic Behavior -------------------------------------------------
+### Test 4: Stochastic Behavior ------------------------------------------------
 test_that("Random generation is reproducible with seed", {
   set.seed(456)
   result1 <- add_obs_error_to_nowcast(test_matrix, valid_disp)
@@ -74,10 +74,11 @@ test_that("Output follows negative binomial distribution", {
   original_means <- test_matrix[3:4, 4]
 
   # Check mean is close to original (with tolerance for sampling error)
-  expect_true(mean(generated_vals) |> between(
+  test_bounds <- mean(generated_vals) |> between(
     mean(original_means) - 15,
     mean(original_means) + 15
-  ))
+  )
+  expect_true(test_bounds)
 })
 
 ### Test 6: Dimension Preservation ---------------------------------------------

@@ -38,11 +38,6 @@
 generate_triangles <- function(
     list_of_trunc_rts) {
   # Check that input is a list of matrices
-  if (typeof(list_of_trunc_rts) != "list") {
-    cli_abort(
-      message = "`list_of_trunc_rts` must be a list"
-    )
-  }
   if (!is.matrix(list_of_trunc_rts[[1]])) {
     cli_abort(
       message = "The elements of `list_of_trunc_rts`must be matrices"

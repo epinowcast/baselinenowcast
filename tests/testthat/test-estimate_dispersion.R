@@ -105,3 +105,9 @@ test_that("Matrix dimension validation works", {
     "Dimensions of the first `n` matrices in `list_of_nowcasts` and"
   ) # nolint
 })
+
+## Test 6: fit_nb returns NA if nothing passed to it---------------------------
+test_that("Passing in empty vector returns NA", {
+  NA_result <- .fit_nb(x = c(), mu = 1)
+  expect_true(is.na(NA_result))
+})

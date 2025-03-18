@@ -10,6 +10,9 @@
 #' @param list_of_rts List of reporting triangle matrices, in order
 #'    from most recent (most complete) to least recent. Bottom right of the
 #'    matrices should contain NAs.
+#' @param max_delay Integer indicating the maximum delay to estimate, in units
+#'   of the delay. The default is to use one less than the minimum number of
+#'   rows of all of the matrices in the `list_of_rts`
 #' @param n Integer indicating the number of observations
 #'    (number of rows) to use to estimate the delay distribution for each
 #'    reporting triangle. Default is the minimum of the number of rows of
@@ -45,6 +48,9 @@
 #' )
 #' print(retro_nowcasts[[1]])
 generate_point_nowcasts <- function(list_of_rts,
+                                    max_delay = min(
+                                      sapply(list_of_rts, ncol)
+                                    ) - 1,
                                     n = min(
                                       sapply(list_of_rts, nrow)
                                     )) {
@@ -71,18 +77,56 @@ generate_point_nowcasts <- function(list_of_rts,
     )
   }
 
+  list_of_nowcasts <- lapply(list_of_rts, generate_point_nowcast, n = n)
 
-  list_of_nowcasts <- list()
-
-  for (i in seq_along(list_of_rts)) {
-    # Estimate delay
-    rep_tri <- list_of_rts[[i]]
-    delay_pmf <- get_delay_estimate(rep_tri, n = n)
-    # Apply delay
-    rt_complete <- apply_delay(rep_tri, delay_pmf)
-
-    list_of_nowcasts[[i]] <- rt_complete
-  }
 
   return(list_of_nowcasts)
+}
+
+#' Generate point nowcast
+#'
+#' This function ingests a reporting triangle matrix and optionally, a delay
+#'    distribution, and returns a completed reporting square which represents
+#'    the point nowcast. If a delay distribution is specified, this will be
+#'    used to generate the nowcast, otherwise, a delay distribution will be
+#'    estimated from the `triangle_to_nowcast`.
+#' @param delay_pmf Vector of delays assumed to be indexed starting at the
+#'   first delay column in `triangle_to_nowcast`
+#' @inheritParams get_delay_estimate
+#' @returns `comp_rep_square` Matrix of the same number of rows and columns as
+#'    the `triangle_to_nowcast` but with the missing values filled in as point
+#'   estimates
+#' @export
+#'
+#' @examples
+#' triangle <- matrix(
+#'   c(
+#'     80, 50, 25, 10,
+#'     100, 50, 30, 20,
+#'     90, 45, 25, NA,
+#'     80, 40, NA, NA,
+#'     70, NA, NA, NA
+#'   ),
+#'   nrow = 5,
+#'   byrow = TRUE
+#' )
+#' reporting_square <- generate_point_nowcast(
+#'   triangle = triangle
+#' )
+#' print(reporting_square)
+generate_point_nowcast <- function(triangle,
+                                   max_delay = ncol(triangle) - 1,
+                                   n = nrow(triangle),
+                                   delay_pmf = NULL) {
+  .validate_triangle(triangle)
+  if (is.null(delay_pmf)) {
+    delay_pmf <- get_delay_estimate(
+      triangle = triangle,
+      max_delay = max_delay,
+      n = n
+    )
+  }
+
+  comp_rep_square <- apply_delay(triangle, delay_pmf)
+  return(comp_rep_square)
 }

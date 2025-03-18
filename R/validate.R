@@ -53,6 +53,16 @@
       )
     )
   }
+
+  if (!.check_na_bottom_right(triangle)) {
+    cli_abort(
+      message = c(
+        "Reporting triangle contains NA values in elements other than ",
+        "the bottom right of the matrix. Cannot produce nowcasts from this ",
+        "triangle."
+      )
+    )
+  }
   return(NULL)
 }
 

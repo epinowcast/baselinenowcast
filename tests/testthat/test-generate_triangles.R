@@ -61,4 +61,10 @@ test_that("generate_triangles works correctly", {
     byrow = TRUE
   )
   expect_identical(retro_triangles[[2]], expected_last_triangle)
+
+  # Test 6: Check for error messages
+  expect_error(
+    generate_triangles(data.frame(trunc_triangles[1])),
+    "The elements of `list_of_trunc_rts`must be matrices"
+  )
 })

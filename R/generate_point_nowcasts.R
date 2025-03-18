@@ -118,7 +118,7 @@ generate_point_nowcast <- function(triangle,
                                    max_delay = ncol(triangle) - 1,
                                    n = nrow(triangle),
                                    delay_pmf = NULL) {
-  .validate_triangle(triangle_to_nowcast)
+  .validate_triangle(triangle)
   if (is.null(delay_pmf)) {
     delay_pmf <- get_delay_estimate(
       triangle = triangle,

@@ -46,6 +46,5 @@
 
   # Check if any NAs exist outside valid region
   invalid_nas <- sum(is.na(mat) & !mask)
-  invalid_nas == 0
-  return(invalid_nas)
+  return(invalid_nas == 0)
 }

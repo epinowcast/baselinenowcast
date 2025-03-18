@@ -113,7 +113,7 @@ generate_point_nowcasts <- function(list_of_rts,
 #' reporting_square <- generate_point_nowcast(
 #'   triangle = triangle
 #' )
-#' print(reporting_sqaure)
+#' print(reporting_square)
 generate_point_nowcast <- function(triangle,
                                    max_delay = ncol(triangle) - 1,
                                    n = nrow(triangle),

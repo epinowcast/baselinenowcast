@@ -54,5 +54,5 @@ triangle <- matrix(
 reporting_square <- generate_point_nowcast(
   triangle = triangle
 )
-print(reporting_sqaure)
+print(reporting_square)
 }

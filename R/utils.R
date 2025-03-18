@@ -25,6 +25,13 @@
   return(result)
 }
 
+#' Check if matrix only contains NAs in the bottom right
+#'
+#' @param mat Matrix
+#'
+#' @returns Boolean indicating whether the matrix only contains NAs in the
+#'    bottom right (TRUE if only in botom right, FALSE if elsewhere)
+#' @keywords internal
 .check_na_bottom_right <- function(mat) {
   # Create a logical mask for valid NA positions
   n_rows <- nrow(mat)
@@ -40,4 +47,5 @@
   # Check if any NAs exist outside valid region
   invalid_nas <- sum(is.na(mat) & !mask)
   invalid_nas == 0
+  return(invalid_nas)
 }

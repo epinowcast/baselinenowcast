@@ -86,6 +86,6 @@ test_that("Lower triangle shows expected variation", {
 
   # Check coefficient of variation is within expected range
   cv <- sd(lower_right_vals) / mean(lower_right_vals)
-  expect_true(cv > 0.05)
-  expect_true(cv < 0.5) # Adjust based on dispersion parameters
+  expect_gt(cv, 0.05)
+  expect_lt(cv, 0.5) # Adjust based on dispersion parameters
 })

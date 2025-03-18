@@ -1,3 +1,46 @@
+#' Add observation errors to nowcasts
+#'
+#' This function ingests a point nowcast in the form of a completed reporting
+#'    square and a vector of dispersion parameters. It generates a list of
+#'    `n_draws` expected observed completed reporting squares.
+#'
+#' @inheritParams add_obs_error_to_nowcast
+#' @param n_draws Integer indicating the number of expected observed reporting
+#'    squares to generate
+#'
+#' @returns `list_of_exp_obs_nowcasts` List of `n_draws` matrices of expected
+#'    obsrved reporting sqaures
+#' @export
+#'
+#' @examples
+#' point_nowcast <- matrix(
+#'   c(
+#'     80, 50, 25, 10,
+#'     100, 50, 30, 20,
+#'     90, 45, 25, 17.8,
+#'     80, 40, 23.2, 15.9,
+#'     70, 35, 20.3, 19.9
+#'   ),
+#'   nrow = 5,
+#'   byrow = TRUE
+#' )
+#'
+#' list_of_exp_obs_nowcast <- add_obs_errors_to_nowcast(
+#'   comp_rep_square = point_nowcast,
+#'   disp = c(8, 1.4, 4),
+#'   n_draws = 10
+#' )
+#' print(list_of_exp_obs_nowcast[[1]])
+add_obs_errors_to_nowcast <- function(comp_rep_square,
+                                      disp,
+                                      n_draws = 1000) {
+  list_of_exp_obs_nowcasts <- lapply(1:n_draws, function(i) {
+    add_obs_error_to_nowcast(comp_rep_square, disp)
+  })
+  return(list_of_exp_obs_nowcasts)
+}
+
+
 #' Add observation error to a point nowcast
 #'
 #' The function ingests an estimate of a point nowcast, in the form of a

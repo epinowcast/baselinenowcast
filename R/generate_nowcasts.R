@@ -88,7 +88,7 @@ generate_point_nowcasts <- function(list_of_rts,
 #' This function ingests a reporting triangle matrix and optionally, a delay
 #'    distribution, and returns a completed reporting square which represents
 #'    the point nowcast. If a delay distribution is specified, this will be
-#'    ised to generate the nowcast, otherwise, a delay distribution will be
+#'    used to generate the nowcast, otherwise, a delay distribution will be
 #'    estimated from the `triangle_to_nowcast`.
 #'
 #' @inheritParams get_delay_estimate
@@ -114,8 +114,8 @@ generate_point_nowcasts <- function(list_of_rts,
 #' )
 #' print(reporting_sqaure)
 generate_point_nowcast <- function(triangle_to_nowcast,
-                                   max_delay = ncol(triangle) - 1,
-                                   n = nrow(triangle),
+                                   max_delay = ncol(triangle_to_nowcast) - 1,
+                                   n = nrow(triangle_to_nowcast),
                                    delay_pmf = NULL) {
   .validate_triangle(triangle_to_nowcast)
   if (is.null(delay_pmf)) {

@@ -6,8 +6,8 @@
 \usage{
 generate_point_nowcast(
   triangle_to_nowcast,
-  max_delay = ncol(triangle) - 1,
-  n = nrow(triangle),
+  max_delay = ncol(triangle_to_nowcast) - 1,
+  n = nrow(triangle_to_nowcast),
   delay_pmf = NULL
 )
 }
@@ -30,7 +30,7 @@ estimates
 This function ingests a reporting triangle matrix and optionally, a delay
 distribution, and returns a completed reporting square which represents
 the point nowcast. If a delay distribution is specified, this will be
-ised to generate the nowcast, otherwise, a delay distribution will be
+used to generate the nowcast, otherwise, a delay distribution will be
 estimated from the \code{triangle_to_nowcast}.
 }
 \examples{

@@ -126,6 +126,6 @@ generate_point_nowcast <- function(triangle_to_nowcast,
     )
   }
 
-  comp_rep_square <- apply_delay(triangle, delay_pmf)
+  comp_rep_square <- apply_delay(triangle_to_nowcast, delay_pmf)
   return(comp_rep_square)
 }

@@ -27,7 +27,10 @@ test_that("Basic functionality with valid inputs", {
 ### Test 2: Input Validation ---------------------------------------------------
 test_that("Input validation works correctly", {
   # Invalid comp_rep_square, must be a matrix
-  expect_error(add_obs_errors_to_nowcast(as.data.frame(test_matrix), valid_disp))
+  expect_error(add_obs_errors_to_nowcast(
+    as.data.frame(test_matrix),
+    valid_disp
+  ))
 
   # Invalid dispersion parameters
   expect_error(add_obs_errors_to_nowcast(test_matrix, c(-1, 2, 3))) # Negative
@@ -42,8 +45,8 @@ test_that("Input validation works correctly", {
     valid_disp,
     n_draws = 2.5
   ))
-  # n_draws = 0
-  expect_error(add_obs_errors_to_nowcast(test_matrix, valid_disp, 0), 0)
+  # case where draws is 0
+  expect_error(add_obs_errors_to_nowcast(test_matrix, valid_disp, 0))
 
   # dispersion insufficient
   expect_error(add_obs_errors_to_nowcast(test_matrix, c(1, 2), 1))
@@ -71,7 +74,7 @@ test_that("Upper triangle remains unchanged", {
 
   # Check upper triangle matches input for all draws
   lapply(result, function(x) {
-    expect_identical(x[1:2, 1:2], test_matrix[1:2, 1:2])
+    return(expect_identical(x[1:2, 1:2], test_matrix[1:2, 1:2]))
   })
 })
 
@@ -83,5 +86,6 @@ test_that("Lower triangle shows expected variation", {
 
   # Check coefficient of variation is within expected range
   cv <- sd(lower_right_vals) / mean(lower_right_vals)
-  expect_true(cv > 0.05 && cv < 0.5) # Adjust based on dispersion parameters
+  expect_true(cv > 0.05)
+  expect_true(cv < 0.5) # Adjust based on dispersion parameters
 })

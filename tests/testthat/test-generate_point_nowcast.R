@@ -97,5 +97,5 @@ test_that("NA patterns are handled correctly", {
 test_that("Output dimensions match input", {
   odd_dim_tri <- matrix(1:6, nrow = 3, ncol = 2)
   result <- generate_point_nowcast(odd_dim_tri)
-  expect_equal(dim(result), c(3, 2))
+  expect_identical(dim(result), c(3L, 2L))
 })

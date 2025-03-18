@@ -30,7 +30,7 @@
 #' @param mat Matrix
 #'
 #' @returns Boolean indicating whether the matrix only contains NAs in the
-#'    bottom right (TRUE if only in botom right, FALSE if elsewhere)
+#'    bottom right (TRUE if only in bottom right, FALSE if elsewhere)
 #' @keywords internal
 .check_na_bottom_right <- function(mat) {
   # Create a logical mask for valid NA positions

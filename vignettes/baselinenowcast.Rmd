@@ -432,12 +432,20 @@ exp_obs_nowcasts <- add_obs_errors_to_nowcast(
 
 Next, we will take the list of expected observed reporting squares and
 convert this into a long tidy dataframe, indexed by reference time `t` and
-delay `d`.
+delay `d`, and plot the results
 
 ```{r generate-nowcasted-draws-df}
 nowcast_draws <- generate_prob_nowcast_df(
   list_of_nowcasts = exp_obs_nowcasts
 )
+
+ggplot(nowcast_draws |>
+  group_by(time, draw) |>
+  summarise(total_counts = sum(count))) +
+  geom_line(aes(x = time, y = total_counts, group = draw),
+    alpha = 0.1, color = "gray", linewidth = 0.1
+  ) +
+  theme_bw()
 ```
 
 In the above, we might want to make sure we include the necessary metadata if

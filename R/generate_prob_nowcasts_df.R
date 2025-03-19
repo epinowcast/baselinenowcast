@@ -39,7 +39,7 @@ generate_prob_nowcast_df <- function(list_of_nowcasts) {
   }
 
   # Convert each matrix to a data frame with an index column
-  df_list <- lapply(seq_along(list_of_matrices), function(i) {
+  df_list <- lapply(seq_along(list_of_nowcasts), function(i) {
     mat <- list_of_nowcasts[[i]]
     df <- as.data.frame(mat)
     df$draw <- i # Add an index column for list element

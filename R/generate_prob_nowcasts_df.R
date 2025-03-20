@@ -44,10 +44,10 @@ generate_prob_nowcast_df <- function(list_of_nowcasts) {
     lapply(
       seq_along(list_of_nowcasts),
       function(i) {
-        convert_reporting_square_to_df(
+        return(convert_reporting_square_to_df(
           list_of_nowcasts[[i]],
           draw = i
-        )
+        ))
       }
     )
   )
@@ -86,17 +86,17 @@ generate_prob_nowcast_df <- function(list_of_nowcasts) {
 convert_reporting_square_to_df <- function(matrix,
                                            draw = NULL) {
   # Convert to data.frame
-  df <- as.data.frame(matrix)
+  df_wide <- as.data.frame(matrix)
 
   # Pivot matrix from wide to long manually
   df_long <- data.frame(
-    time = rep(seq_len(nrow(df)), each = ncol(df)),
-    delay = rep(seq_len(ncol(df)), times = nrow(df)),
-    count = as.vector(t(df[, grep("^V", names(df), value = TRUE)]))
+    time = rep(seq_len(nrow(df_wide)), each = ncol(df_wide)),
+    delay = rep(seq_len(ncol(df_wide)), times = nrow(df_wide)),
+    count = as.vector(t(df_wide[, grep("^V", names(df_wide), value = TRUE)]))
   )
 
   if (!is.null(draw)) {
-    df_long$draw <- rep(draw, times = nrow(df) * (ncol(df) - 2))
+    df_long$draw <- rep(draw, times = nrow(df_wide) * ncol(df_wide))
   }
 
   return(df_long)

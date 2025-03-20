@@ -420,6 +420,16 @@ nowcast_draw <- add_obs_error_to_nowcast(
 )
 ```
 
+We will generate `n_draws` of these expected observed nowcast draws, which
+will be used to generate a probabilistic nowcast
+```{r generate-many-expected-observed-nowcasts}
+list_of_nowcasts <- add_obs_errors_to_nowcast(
+  comp_rep_square = point_reporting_square,
+  disp = disp_params,
+  n_draws = 1000
+)
+```
+
 In the above, we might want to make sure we include the necessary metadata if
 the user passes it in, so we could write methods that dispatch on objects of
 a particular type so that they spit back out things with dates if those were

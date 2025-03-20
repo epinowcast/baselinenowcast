@@ -52,6 +52,9 @@ test_that("Invalid dispersion parameters throw errors", {
 
   # Zero dispersion should fail
   expect_error(add_obs_error_to_nowcast(test_matrix, c(0, 2, 3)))
+
+  # input not a matrix
+  expect_error(add_obs_error_to_nowcast(data.frame(test_matrix), valid_disp))
 })
 
 ### Test 4: Stochastic Behavior ------------------------------------------------

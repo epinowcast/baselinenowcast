@@ -1,5 +1,7 @@
 # baselinenowcast 0.0.0.1000
 
+-   Add function to estimate dispersion parameters from a match list of nowcasts and observed reporting triangles.
+-   Add functions to generate retrospective nowcasts from a single reporting triangle
 -   Refactor uncertainty estimation to use a user-facing function to generate retrospective reporting triangles.
 -   Methods write-up as a separate vignette
 -   Introduced function to estimate the uncertainty from a triangle to be nowcasted and a delay distribution.

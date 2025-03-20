@@ -29,11 +29,11 @@ test_that("get_delay_estimate function works correctly", {
     n = 40
   ))
 
-  # Test 5: Handling of missing values
+  # Test 5: Errors when NAs are in upper part of reportign triangle
+  # (These should be 0s)
   triangle_with_na <- triangle
   triangle_with_na[1, 2] <- NA
-  result_with_na <- get_delay_estimate(triangle_with_na)
-  expect_is(result_with_na, "numeric")
+  expect_error(get_delay_estimate(triangle_with_na))
 
   # Test 6: Consistency of results
   result1 <- get_delay_estimate(triangle)

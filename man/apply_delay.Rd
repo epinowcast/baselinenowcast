@@ -21,8 +21,8 @@ representing the delays}
 first delay column in \code{triangle_to_nowcast}}
 }
 \value{
-expectation, matrix of the same number of rows and columns as the
-\code{triangle_to_nowcast} but with the missing values filled in as point
+\code{comp_rep_square} Matrix of the same number of rows and columns as
+the \code{triangle_to_nowcast} but with the missing values filled in as point
 estimates
 }
 \description{

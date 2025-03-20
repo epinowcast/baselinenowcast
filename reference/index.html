@@ -68,16 +68,22 @@
         <dd>Apply the delay to generate a point nowcast Generate a point estimate of a completed reporting square (or rectangle) from a reporting triangle that we want to complete with a nowcast and a delay PMF. This code was adapted from code written (under an MIT license) by the Karlsruhe Institute of Technology RESPINOW German Hospitalization Nowcasting Hub. Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint</dd>
       </dl><dl><dt>
 
-          <code><a href="estimate_uncertainty.html">estimate_uncertainty()</a></code>
+          <code><a href="estimate_dispersion.html">estimate_dispersion()</a></code>
 
         </dt>
-        <dd>Estimate the uncertainty in the nowcasts</dd>
+        <dd>Estimate dispersion parameters</dd>
       </dl><dl><dt>
 
-          <code><a href="generate_triangle.html">generate_triangle()</a></code>
+          <code><a href="generate_point_nowcast.html">generate_point_nowcast()</a></code>
 
         </dt>
-        <dd>Get a single retrospective triangle</dd>
+        <dd>Generate point nowcast</dd>
+      </dl><dl><dt>
+
+          <code><a href="generate_point_nowcasts.html">generate_point_nowcasts()</a></code>
+
+        </dt>
+        <dd>Generate retrospective nowcasts</dd>
       </dl><dl><dt>
 
           <code><a href="generate_triangles.html">generate_triangles()</a></code>
@@ -90,6 +96,18 @@
 
         </dt>
         <dd>Estimate a delay distribution from a reporting triangle Provides an estimate of the reporting delay as a function of the delay, based on the reporting triangle and the specified maximum delay and number of reference date observations to be used in the estimation. This point estimate of the delay is computed empirically, using an iterative algorithm starting from the most recent observations. This code was adapted from code written (under an MIT license) by the Karlsruhe Institute of Technology RESPINOW German Hospitalization Nowcasting Hub. Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint</dd>
+      </dl><dl><dt>
+
+          <code><a href="truncate_triangle.html">truncate_triangle()</a></code>
+
+        </dt>
+        <dd>Get a single truncated triangle</dd>
+      </dl><dl><dt>
+
+          <code><a href="truncate_triangles.html">truncate_triangles()</a></code>
+
+        </dt>
+        <dd>Generate truncated reporting triangles</dd>
       </dl></div>
   </main></div>
 

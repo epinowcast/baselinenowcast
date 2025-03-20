@@ -487,16 +487,22 @@ the iterative process, by generating retrospective reporting
 triangles using what would have been available as of the time, and then for
 each reporting triangle, estimating a delay distribution and generating
 a nowcast.</p>
-<p>To do this, we will first generate retrospective reporting triangles using the
-latest reporting triangle, and then we will generate nowcasts from the list
-of reporting triangles. This will default to assuming you want to generate
+<p>To do this, we will first generate truncated reporting triangles from the
+latest reporting triangle, then generate retrospective reporting triangles
+by removing observations that wouldn’t have been observed as of the latest time
+point, and then we will generate nowcasts from that list
+of retrospective reporting triangles.
+The function will default to assuming you want to generate
 as many retrospective reporting triangles that you will be able to generate
 nowcasts from. In this case, the function will return 18 retrospective
 reporting triangles, with the smallest one containing 42 rows, all of which
 are needed to generate a nowcast of reporting triangle with 41 delay columns.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">retro_rts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_triangles.html">generate_triangles</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">truncated_rts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/truncate_triangles.html">truncate_triangles</a></span><span class="op">(</span></span>
 <span>  triangle <span class="op">=</span> <span class="va">triangle</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">retro_rts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_triangles.html">generate_triangles</a></span><span class="op">(</span></span>
+<span>  list_of_trunc_rts <span class="op">=</span> <span class="va">truncated_rts</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The <code><a href="../reference/generate_triangles.html">generate_triangles()</a></code> function returns a list of
 reporting triangles, in order from the most to least
@@ -507,17 +513,16 @@ that each triangle will have a different number of rows.</p>
 <code>generate_nowcasts()</code> alongside the specification of how many observations
 to use to estimate the delay</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># nolint start</span></span>
-<span><span class="co"># retro_nowcasts &lt;- generate_retro_nowcasts(</span></span>
-<span><span class="co">#   list_of_retro_rts &lt;- retro_rts,</span></span>
-<span><span class="co">#   n_history_uncertainty = 19,</span></span>
-<span><span class="co">#   n_history_delay = n_history_delay</span></span>
-<span><span class="co"># )</span></span>
-<span><span class="co"># nolint end</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">retro_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_point_nowcasts.html">generate_point_nowcasts</a></span><span class="op">(</span></span>
+<span>  list_of_rts <span class="op">=</span> <span class="va">retro_rts</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>Next, we will use the list of retrospective reporting triangles to estimate
 the uncertainty at each delay <span class="math inline">\(d\)</span></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># disp_params &lt;- estimate_disp_params(retro_nowcasts) #nolint</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">disp_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_dispersion.html">estimate_dispersion</a></span><span class="op">(</span></span>
+<span>  list_of_nowcasts <span class="op">=</span> <span class="va">retro_nowcasts</span>,</span>
+<span>  list_of_trunc_rts <span class="op">=</span> <span class="va">truncated_rts</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2" number="9">
 <h2 id="generate-probabilistic-nowcast">

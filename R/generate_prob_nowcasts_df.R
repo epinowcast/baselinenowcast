@@ -61,6 +61,7 @@ generate_prob_nowcast_df <- function(list_of_nowcasts) {
 #'    rows indicate the reference time and the columns indicate the delay.
 #' @param draw integer tracking the draw that the reporting matrix
 #'    corresponds to. Default is `NULL` which will not return a draw column.
+#' @importFrom checkmate assert_integerish
 #'
 #' @returns A long dataframe of the length of the product of the number of
 #'    columns and the number of rows, with information on what time and delay
@@ -96,6 +97,7 @@ convert_reporting_square_to_df <- function(matrix,
   )
 
   if (!is.null(draw)) {
+    assert_integerish(draw, lower = 0)
     df_long$draw <- rep(draw, times = nrow(df_wide) * ncol(df_wide))
   }
 

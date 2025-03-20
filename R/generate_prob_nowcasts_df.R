@@ -37,6 +37,9 @@ generate_prob_nowcast_df <- function(list_of_nowcasts) {
   if (!all(sapply(list_of_nowcasts, is.matrix))) {
     cli_abort("All elements in the list must be matrices.")
   }
+  if (length(list_of_nowcasts) < 1) {
+    cli_abort("List of nowcasts is empty")
+  }
 
   # Convert each matrix to a data frame with an index column
   combined_df <- do.call(

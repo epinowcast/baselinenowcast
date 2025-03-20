@@ -8,7 +8,7 @@ generate_prob_nowcast_df(list_of_nowcasts)
 }
 \arguments{
 \item{list_of_nowcasts}{List of  matrices of expected
-observed reporting squares}
+observed reporting squares.}
 }
 \value{
 \code{nowcast_df} Dataframe containing observations and expected
@@ -16,7 +16,7 @@ observed nowcasts indexed by reference time and delay.
 }
 \description{
 This function ingests a list of matrices that represent expected observed
-nowcasts, and generates a long tidy dataframe indexed by
+nowcasts, and generates a long tidy dataframe indexed by time and delay.
 }
 \examples{
 point_nowcast <- matrix(
@@ -38,5 +38,6 @@ list_of_exp_obs_nowcast <- add_obs_errors_to_nowcast(
 )
 
 nowcast_df <- generate_prob_nowcast_df(
-  list_of_nowcasts = list_of_exp_obs_nowcast)
+  list_of_nowcasts = list_of_exp_obs_nowcast
+)
 }

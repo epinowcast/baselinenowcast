@@ -1,10 +1,10 @@
 #' Generate probabilistic nowcast dataframe
 #'
 #' This function ingests a list of matrices that represent expected observed
-#'    nowcasts, and generates a long tidy dataframe indexed by
+#'    nowcasts, and generates a long tidy dataframe indexed by time and delay.
 #'
 #' @param list_of_nowcasts List of  matrices of expected
-#'    observed reporting squares
+#'    observed reporting squares.
 #' @importFrom cli cli_abort
 #' @returns `nowcast_df` Dataframe containing observations and expected
 #'    observed nowcasts indexed by reference time and delay.
@@ -39,25 +39,65 @@ generate_prob_nowcast_df <- function(list_of_nowcasts) {
   }
 
   # Convert each matrix to a data frame with an index column
-  df_list <- lapply(seq_along(list_of_nowcasts), function(i) {
-    mat <- list_of_nowcasts[[i]]
-    df <- as.data.frame(mat)
-    df$draw <- i # Add an index column for list element
-    df$time <- seq_len(nrow(df)) # Add a row index for matrix rows
+  combined_df <- do.call(
+    rbind,
+    lapply(
+      seq_along(list_of_nowcasts),
+      function(i) {
+        convert_reporting_square_to_df(
+          list_of_nowcasts[[i]],
+          draw = i
+        )
+      }
+    )
+  )
 
-    n_rows <- nrow(mat)
-    df_long <- df |>
-      tidyr::pivot_longer(
-        cols = starts_with("V"),
-        names_to = "delay",
-        names_prefix = "V",
-        values_to = "count"
-      )
+  return(combined_df)
+}
 
+#' Convert a reporting square matrix to a long data frame
+#'
+#' @param matrix Matrix in the form of a reporting triangle/square, where the
+#'    rows indicate the reference time and the columns indicate the delay.
+#' @param draw integer tracking the draw that the reporting matrix
+#'    corresponds to. Default is `NULL` which will not return a draw column.
+#'
+#' @returns A long dataframe of the length of the product of the number of
+#'    columns and the number of rows, with information on what time and delay
+#'    the observation corresponds to.
+#' @export
+#'
+#' @examples
+#' rep_square <- matrix(
+#'   c(
+#'     80, 50, 25, 10,
+#'     100, 50, 30, 20,
+#'     90, 45, 25, 18,
+#'     80, 40, 24, 16,
+#'     70, 35, 21, 19,
+#'     67, 34, 15, 9
+#'   ),
+#'   nrow = 6,
+#'   byrow = TRUE
+#' )
+#'
+#' long_df <- convert_reporting_square_to_df(rep_square)
+#' print(long_df)
+convert_reporting_square_to_df <- function(matrix,
+                                           draw = NULL) {
+  # Convert to data.frame
+  df <- as.data.frame(matrix)
 
-    return(df_long)
-  })
+  # Pivot matrix from wide to long manually
+  df_long <- data.frame(
+    time = rep(seq_len(nrow(df)), each = ncol(df)),
+    delay = rep(seq_len(ncol(df)), times = nrow(df)),
+    count = as.vector(t(df[, grep("^V", names(df), value = TRUE)]))
+  )
 
-  # Combine all data frames into a single data frame
-  combined_df <- do.call(rbind, df_list)
+  if (!is.null(draw)) {
+    df_long$draw <- rep(draw, times = nrow(df) * (ncol(df) - 2))
+  }
+
+  return(df_long)
 }

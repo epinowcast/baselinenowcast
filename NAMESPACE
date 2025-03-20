@@ -3,6 +3,7 @@
 export(add_obs_error_to_nowcast)
 export(add_obs_errors_to_nowcast)
 export(apply_delay)
+export(convert_reporting_square_to_df)
 export(estimate_dispersion)
 export(generate_point_nowcast)
 export(generate_point_nowcasts)

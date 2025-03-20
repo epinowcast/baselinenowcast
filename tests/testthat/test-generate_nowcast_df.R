@@ -30,7 +30,7 @@ test_that("NA values are preserved in output", {
   nowcast_list <- list(na_matrix)
 
   result <- generate_prob_nowcast_df(nowcast_list)
-  expect_true(any(is.na(result$count)))
+  expect_true(anyNA(result$count))
 })
 
 test_that("Input validation works correctly", {

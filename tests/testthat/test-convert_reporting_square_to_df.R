@@ -1,18 +1,20 @@
-test_that("convert_rep_square_to_df function mimics pivot longer", {
-  test_matrix <- matrix(
-    c(
-      80, 50, 25, 10,
-      100, 50, 30, 20,
-      90, 45, 25, 18,
-      80, 40, 24, 16,
-      70, 35, 21, 19,
-      67, 34, 15, 9
-    ),
-    nrow = 6,
-    byrow = TRUE
-  )
+test_matrix <- matrix(
+  c(
+    80, 50, 25, 10,
+    100, 50, 30, 20,
+    90, 45, 25, 18,
+    80, 40, 24, 16,
+    70, 35, 21, 19,
+    67, 34, 15, 9
+  ),
+  nrow = 6,
+  byrow = TRUE
+)
 
-  result <- convert_reporting_square_to_df(test_matrix)
+result <- convert_reporting_square_to_df(test_matrix)
+
+
+test_that("convert_rep_square_to_df function mimics pivot longer", {
   ### Test 1: Matches pivot longer output-----------------------------------
   # result using pivot longer
   df <- as.data.frame(test_matrix)

@@ -528,17 +528,24 @@ the uncertainty at each delay <span class="math inline">\(d\)</span></p>
 <h2 id="generate-probabilistic-nowcast">
 <span class="header-section-number">9</span> Generate probabilistic nowcast<a class="anchor" aria-label="anchor" href="#generate-probabilistic-nowcast"></a>
 </h2>
-<p>Now that we have estimated the dispersion, we can use the delay distribution,
-the reporting triangle that we want to nowcast, and the dispersion parameters to
-generate a probabilistic nowcast.</p>
+<p>Now that we have estimated the dispersion, we take the point nowcast we
+previously generated, <code>point_reporting_square</code> and generate many draws of the
+expected observed values to get a probabilistic nowcast. We’ll start by
+demonstrating how to generate a single expected observation from just a point
+nowcast.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># nolint start</span></span>
-<span><span class="co"># nowcast &lt;- generate_nowcast(</span></span>
-<span><span class="co"># triangle_to_nowcast = triangle,</span></span>
-<span><span class="co"># delay_df = delay_df,</span></span>
-<span><span class="co"># disp_params = disp_params</span></span>
-<span><span class="co"># )</span></span>
-<span><span class="co"># nolint end</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">nowcast_draw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/add_obs_error_to_nowcast.html">add_obs_error_to_nowcast</a></span><span class="op">(</span></span>
+<span>  comp_rep_square <span class="op">=</span> <span class="va">point_reporting_square</span>,</span>
+<span>  disp <span class="op">=</span> <span class="va">disp_params</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>We will generate <code>n_draws</code> of these expected observed nowcast draws, which
+will be used to generate a probabilistic nowcast</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">list_of_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/add_obs_errors_to_nowcast.html">add_obs_errors_to_nowcast</a></span><span class="op">(</span></span>
+<span>  comp_rep_square <span class="op">=</span> <span class="va">point_reporting_square</span>,</span>
+<span>  disp <span class="op">=</span> <span class="va">disp_params</span>,</span>
+<span>  n_draws <span class="op">=</span> <span class="fl">1000</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>In the above, we might want to make sure we include the necessary metadata if
 the user passes it in, so we could write methods that dispatch on objects of
 a particular type so that they spit back out things with dates if those were

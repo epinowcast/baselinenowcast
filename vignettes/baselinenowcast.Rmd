@@ -435,7 +435,7 @@ convert this into a long tidy dataframe, indexed by reference time `t` and
 delay `d`, and plot the results
 
 ```{r generate-nowcasted-draws-df}
-nowcast_draws <- generate_prob_nowcast_df(
+nowcast_draws <- nowcast_list_to_df(
   list_of_nowcasts = exp_obs_nowcasts
 )
 

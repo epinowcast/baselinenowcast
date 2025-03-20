@@ -29,10 +29,10 @@
 #'   n_draws = 10
 #' )
 #'
-#' nowcast_df <- generate_prob_nowcast_df(
+#' nowcast_df <- nowcast_list_to_df(
 #'   list_of_nowcasts = list_of_exp_obs_nowcast
 #' )
-generate_prob_nowcast_df <- function(list_of_nowcasts) {
+nowcast_list_to_df <- function(list_of_nowcasts) {
   # Check if all elements are matrices
   if (!all(sapply(list_of_nowcasts, is.matrix))) {
     cli_abort("All elements in the list must be matrices.")

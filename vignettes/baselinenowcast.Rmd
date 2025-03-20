@@ -423,11 +423,31 @@ nowcast_draw <- add_obs_error_to_nowcast(
 We will generate `n_draws` of these expected observed nowcast draws, which
 will be used to generate a probabilistic nowcast
 ```{r generate-many-expected-observed-nowcasts}
-list_of_nowcasts <- add_obs_errors_to_nowcast(
+exp_obs_nowcasts <- add_obs_errors_to_nowcast(
   comp_rep_square = point_reporting_square,
   disp = disp_params,
   n_draws = 1000
 )
+```
+
+Next, we will take the list of expected observed reporting squares and
+convert this into a long tidy dataframe, indexed by reference time `t` and
+delay `d`, and plot the results
+
+```{r generate-nowcasted-draws-df}
+nowcast_draws <- nowcast_list_to_df(
+  list_of_nowcasts = exp_obs_nowcasts
+)
+
+summary_nowcast <- nowcast_draws |>
+  group_by(time, draw) |>
+  summarise(total_counts = sum(count))
+
+ggplot(summary_nowcast) +
+  geom_line(aes(x = time, y = total_counts, group = draw),
+    alpha = 0.1, color = "gray", linewidth = 0.1
+  ) +
+  theme_bw()
 ```
 
 In the above, we might want to make sure we include the necessary metadata if

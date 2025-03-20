@@ -44,7 +44,8 @@ Suggests:
     testthat (>= 3.1.9),
     usethis,
     withr,
-    knitr
+    knitr,
+    tidyr
 Encoding: UTF-8
 Language: en-GB
 LazyData: true

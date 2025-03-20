@@ -398,7 +398,7 @@ retro_nowcasts <- generate_point_nowcasts(
 Next, we will use the list of retrospective reporting triangles to estimate
 the uncertainty at each delay $d$
 
-```{r}
+```{r estimate-dispersion}
 disp_params <- estimate_dispersion(
   list_of_nowcasts = retro_nowcasts,
   list_of_trunc_rts = truncated_rts
@@ -407,18 +407,27 @@ disp_params <- estimate_dispersion(
 
 # Generate probabilistic nowcast
 
-Now that we have estimated the dispersion, we can use the delay distribution,
-the reporting triangle that we want to nowcast, and the dispersion parameters to
-generate a probabilistic nowcast.
+Now that we have estimated the dispersion, we take the point nowcast we
+previously generated, `point_reporting_square` and generate many draws of the
+expected observed values to get a probabilistic nowcast. We'll start by
+demonstrating how to generate a single expected observation from just a point
+nowcast.
 
-```{r}
-# nolint start
-# nowcast <- generate_nowcast(
-# triangle_to_nowcast = triangle,
-# delay_df = delay_df,
-# disp_params = disp_params
-# )
-# nolint end
+```{r add-observation-error}
+nowcast_draw <- add_obs_error_to_nowcast(
+  comp_rep_square = point_reporting_square,
+  disp = disp_params
+)
+```
+
+We will generate `n_draws` of these expected observed nowcast draws, which
+will be used to generate a probabilistic nowcast
+```{r generate-many-expected-observed-nowcasts}
+list_of_nowcasts <- add_obs_errors_to_nowcast(
+  comp_rep_square = point_reporting_square,
+  disp = disp_params,
+  n_draws = 1000
+)
 ```
 
 In the above, we might want to make sure we include the necessary metadata if

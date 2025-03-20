@@ -1,5 +1,7 @@
 # baselinenowcast 0.0.0.1000
 
+-   Add function to generate a list of expected observed reporting squares
+-   Add function to generate an expected observed reporting square from a point nowcast and a vector of dispersion parameters.
 -   Add function to estimate dispersion parameters from a match list of nowcasts and observed reporting triangles.
 -   Add functions to generate retrospective nowcasts from a single reporting triangle
 -   Refactor uncertainty estimation to use a user-facing function to generate retrospective reporting triangles.

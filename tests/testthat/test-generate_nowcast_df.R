@@ -67,9 +67,9 @@ test_that("Column values match original matrices", {
 
   # Check values are ordered correctly (row-wise)
   expected_values <- as.vector(t(test_matrix))
-  expect_equal(result$count, expected_values)
+  expect_identical(result$count, expected_values)
 
   # Check time/delay mapping
-  expect_equal(result$time, c(1, 1, 2, 2))
-  expect_equal(result$delay, c(1, 2, 1, 2))
+  expect_identical(result$time, c(1L, 1L, 2L, 2L))
+  expect_identical(result$delay, c(1L, 2L, 1L, 2L))
 })

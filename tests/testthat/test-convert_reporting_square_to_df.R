@@ -16,8 +16,8 @@ test_that("convert_rep_square_to_df function mimics pivot longer", {
 
   # result using pivot longer
   df <- as.data.frame(rep_square)
+  df$time <- seq_len(nrow(df))
   df_long <- df |>
-    mutate(time = seq_len(nrow(df))) |>
     tidyr::pivot_longer(
       cols = starts_with("V"),
       names_to = "delay",

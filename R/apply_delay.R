@@ -70,9 +70,9 @@ apply_delay <- function(triangle_to_nowcast,
     1:(co - 1),
     drop = FALSE
   ]
-  pi <- sum(delay_pmf[1:(co - 1)])
-  x <- rowSums(block_bottom_left) / pi
-  exp_N <- (x + 1 - pi) / pi
+  cdf_dpmf <- sum(delay_pmf[1:(co - 1)])
+  x <- rowSums(block_bottom_left) / cdf_dpmf
+  exp_N <- (x + 1 - cdf_dpmf) / cdf_dpmf
   expectation[max((n_rows - co + 2), 1):n_rows, co] <- exp_N * delay_pmf[co]
   return(expectation)
 }

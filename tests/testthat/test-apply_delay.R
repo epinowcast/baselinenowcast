@@ -17,6 +17,38 @@ test_that("apply_delay function works correctly on simple triangle", {
   expect_identical(result[1:3, 1:2], triangle[1:3, 1:2])
 })
 
+test_that("apply_delay function works on a triangle with 0s", {
+  set.seed(123)
+  # Make a simple triangle of ones
+  triangle <- matrix(
+    c(
+      8, 5, 2, 1,
+      1, 5, 3, 2,
+      0, 4, 2, NA,
+      3, 4, NA, NA,
+      0, NA, NA, NA
+    ),
+    nrow = 5,
+    byrow = TRUE
+  )
+  delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
+  result <- apply_delay(
+    triangle_to_nowcast = triangle,
+    delay_pmf = delay_pmf
+  )
+
+  expect_is(result, "matrix")
+
+  # Test that the dimensions of the output match the input
+  expect_identical(dim(result), dim(triangle))
+
+  # Test that the known values remain unchanged
+  expect_identical(result[1:3, 1:2], triangle[1:3, 1:2])
+
+  # Test that there are no 0s being propagated to the rest of the row
+  expect_false(any(result[, 2:4] == 0))
+})
+
 test_that("apply_delay function works correctly with larger triangle", {
   # Create a sample triangle to nowcast
   triangle_to_nowcast <- matrix(
@@ -50,10 +82,11 @@ test_that("apply_delay function works correctly with larger triangle", {
 
   # Test specific calculations
   # For the last row, second column (delay = 1)
-  expect_equal(result[4, 2], 70 * delay_pmf[2] / delay_pmf[1], tolerance = 1e-6)
+  exp_N <- (70 + 1 - delay_pmf[1]) / delay_pmf[1]
+  expect_equal(result[4, 2], exp_N * delay_pmf[2], tolerance = 1e-6)
 
   # For the third row, third column (delay = 2)
-  expected_total <- sum(triangle_to_nowcast[3, 1:2]) / sum(delay_pmf[1:2])
+  expected_total <- (sum(triangle_to_nowcast[3, 1:2]) + 1 - sum(delay_pmf[1:2])) / sum(delay_pmf[1:2]) # nolint
   expect_equal(result[3, 3], expected_total * delay_pmf[3], tolerance = 1e-6)
 
   # Test error handling, specific error message expected
@@ -82,7 +115,7 @@ test_that("apply_delay function works the same as the more verbose for loop", {
       drop = FALSE
     ]
     # Uses the observed data to find the expected total on that reference date
-    exp_total <- rowSums(block_bottom_left) / sum(delay_pmf[1:(co - 1)])
+    exp_total <- (rowSums(block_bottom_left) + 1 - sum(delay_pmf[1:(co - 1)])) / sum(delay_pmf[1:(co - 1)]) # nolint
     # * Note, we will have to do some correction if this is 0, ignore for now*
     # Finds the expected value for the particular delay by scaling by the
     # delay pmf for delay d

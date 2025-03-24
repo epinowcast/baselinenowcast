@@ -83,7 +83,7 @@ estimated from the <code>triangle_to_nowcast</code>.</p>
 
 <dl><dt id="arg-triangle">triangle<a class="anchor" aria-label="anchor" href="#arg-triangle"></a></dt>
 <dd><p>Matrix of the reporting triangle, with rows representing
-the time points of reference and columns representing the delays</p></dd>
+the time points of reference and columns representing the delays.</p></dd>
 
 
 <dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
@@ -96,19 +96,19 @@ of the delay. The default is to use the whole reporting triangle,
 <dd><p>Integer indicating the number of reference times (observations) to
 be used in the estimate of the reporting delay, always starting from the
 most recent reporting delay. The default is to use the whole reporting
-triangle, so <code>nrow(triangle)</code></p></dd>
+triangle, so <code>nrow(triangle)</code>.</p></dd>
 
 
 <dt id="arg-delay-pmf">delay_pmf<a class="anchor" aria-label="anchor" href="#arg-delay-pmf"></a></dt>
 <dd><p>Vector of delays assumed to be indexed starting at the
-first delay column in <code>triangle_to_nowcast</code></p></dd>
+first delay column in <code>triangle_to_nowcast</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p><code>comp_rep_square</code> Matrix of the same number of rows and columns as
 the <code>triangle_to_nowcast</code> but with the missing values filled in as point
-estimates</p>
+estimates.</p>
     </div>
 
     <div class="section level2">

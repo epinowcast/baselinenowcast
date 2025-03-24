@@ -7,9 +7,9 @@
 #'   German Hospitalization Nowcasting Hub.
 #'   Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R #nolint
 #' @param triangle Matrix of the reporting triangle, with rows representing
-#'   the time points of reference and columns representing the delays
+#'   the time points of reference and columns representing the delays.
 #' @return Matrix of positive integers with negative values of
-#'   reporting handled via passing them to the subsequent days delay
+#'   reporting handled via passing them to the subsequent days delay.
 #' @keywords internal
 .handle_neg_vals <- function(triangle) {
   integer_cols <- seq_len(ncol(triangle))

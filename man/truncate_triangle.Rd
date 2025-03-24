@@ -8,18 +8,18 @@ truncate_triangle(t, matr_observed)
 }
 \arguments{
 \item{t}{Integer indicating the number of timepoints to truncate off the
-bottom of the original reporting triangle}
+bottom of the original reporting triangle.}
 
 \item{matr_observed}{Matrix of the reporting triangle/rectangle
 to be used to generate retrospective nowcasts, with rows representing the
 time points of reference and columns representing the delays.}
 }
 \value{
-Matrix with \code{t} fewer rows than \code{matr_observed}
+Matrix with \code{t} fewer rows than \code{matr_observed}.
 }
 \description{
 This function takes in a integer \code{t} and a reporting triangle and generates
-a truncated reporting triangle, remove the last \code{t} observations
+a truncated reporting triangle, remove the last \code{t} observations.
 }
 \examples{
 # example code

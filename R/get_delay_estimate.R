@@ -9,17 +9,17 @@
 #'   German Hospitalization Nowcasting Hub.
 #'   Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
 #' @param triangle Matrix of the reporting triangle, with rows representing
-#'   the time points of reference and columns representing the delays
+#'   the time points of reference and columns representing the delays.
 #' @param max_delay Integer indicating the maximum delay to estimate, in units
 #'   of the delay. The default is to use the whole reporting triangle,
 #'   `ncol(triangle) -1`.
 #' @param n Integer indicating the number of reference times (observations) to
 #'   be used in the estimate of the reporting delay, always starting from the
 #'   most recent reporting delay. The default is to use the whole reporting
-#'   triangle, so `nrow(triangle)`
+#'   triangle, so `nrow(triangle)`.
 #' @returns Vector indexed at 0 of length `max_delay + 1` with columns
 #'   indicating the point estimate of the empirical probability
-#'   mass on each delay
+#'   mass on each delay.
 #' @export
 #' @examples
 #' triangle <- matrix(

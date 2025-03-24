@@ -12,11 +12,11 @@
 #'    matrices should contain NAs.
 #' @param max_delay Integer indicating the maximum delay to estimate, in units
 #'   of the delay. The default is to use one less than the minimum number of
-#'   rows of all of the matrices in the `list_of_rts`
+#'   rows of all of the matrices in the `list_of_rts`.
 #' @param n Integer indicating the number of observations
 #'    (number of rows) to use to estimate the delay distribution for each
 #'    reporting triangle. Default is the minimum of the number of rows of
-#'    all the matrices in the `list_of_rts`
+#'    all the matrices in the `list_of_rts`.
 #'
 #' @returns `list_of_nowcasts` List of the same number of elements as the input
 #'   `list_of_rts`but with each reporting triangle filled in based on the delay
@@ -91,11 +91,11 @@ generate_point_nowcasts <- function(list_of_rts,
 #'    used to generate the nowcast, otherwise, a delay distribution will be
 #'    estimated from the `triangle_to_nowcast`.
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
-#'   first delay column in `triangle_to_nowcast`
+#'   first delay column in `triangle_to_nowcast`.
 #' @inheritParams get_delay_estimate
 #' @returns `comp_rep_square` Matrix of the same number of rows and columns as
 #'    the `triangle_to_nowcast` but with the missing values filled in as point
-#'   estimates
+#'   estimates.
 #' @export
 #'
 #' @examples

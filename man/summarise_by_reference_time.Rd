@@ -27,7 +27,8 @@ nowcast_draws_df <- data.frame(
   time = c(1, 1, 1, 1, 2, 2, 2, 2),
   delay = c(1, 2, 1, 2, 1, 2, 1, 2),
   draw = c(1, 1, 2, 2, 1, 1, 2, 2),
-  count = c(3, 6, 4, 7, 1, 2, 2, 3))
-summary_df <- summarise_by_reference_time(nowcast_draw_df)
+  count = c(3, 6, 4, 7, 1, 2, 2, 3)
+)
+summary_df <- summarise_by_reference_time(nowcast_draws_df)
 print(summary_df)
 }

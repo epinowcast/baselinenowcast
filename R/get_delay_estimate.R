@@ -20,6 +20,7 @@
 #' @returns Vector indexed at 0 of length `max_delay + 1` with columns
 #'   indicating the point estimate of the empirical probability
 #'   mass on each delay.
+#' @importFrom cli cli_warn
 #' @export
 #' @examples
 #' triangle <- matrix(
@@ -48,6 +49,18 @@ get_delay_estimate <- function(triangle,
     n = n
   )
 
+  # Produce a warning if the bottom left of a reporting triangle is all 0s.
+  if (isTRUE(.check_zeros_bottom_right(triangle))) {
+    cli_warn(
+      message =
+        c(
+          "All entries in bottom right are 0. Are these true observations ",
+          "with zero reports, or are these unobserved? If the latter, ",
+          "replace with NA using the `replace_bottom_right_with_NA()` ",
+          "function."
+        )
+    )
+  }
   # Filter the triangle down to nrow = n_history_delay + 1, ncol = max_delay
   nr0 <- nrow(triangle)
   trunc_triangle <- triangle[(nr0 - n + 1):nr0, 1:(max_delay + 1)]
@@ -56,21 +69,28 @@ get_delay_estimate <- function(triangle,
   n_dates <- nrow(rep_tri)
   mult_factor <- vector(length = max_delay - 1)
   expectation <- rep_tri
-  for (co in 2:(n_delays)) {
-    block_top_left <- rep_tri[1:(n_dates - co + 1), 1:(co - 1), drop = FALSE]
-    block_top <- rep_tri[1:(n_dates - co + 1), co, drop = FALSE]
-    mult_factor[co - 1] <- sum(block_top) / max(sum(block_top_left), 1)
-    block_bottom_left <- expectation[(n_dates - co + 2):n_dates, 1:(co - 1),
-      drop = FALSE
-    ]
-    # We compute the expectation so that we can get the delay estimate
-    expectation[(n_dates - co + 2):n_dates, co] <- mult_factor[co - 1] *
-      rowSums(
-        block_bottom_left
-      )
+  # Find the column to start filling in
+  start_col <- which(colSums(is.na(rep_tri)) > 0)[1]
+
+  # Only fill in reporting triangle if it is incomplete
+  if (!is.na(start_col)) {
+    for (co in start_col:(n_delays)) {
+      block_top_left <- rep_tri[1:(n_dates - co + 1), 1:(co - 1), drop = FALSE]
+      block_top <- rep_tri[1:(n_dates - co + 1), co, drop = FALSE]
+      mult_factor[co - 1] <- sum(block_top) / max(sum(block_top_left), 1)
+      block_bottom_left <- expectation[(n_dates - co + 2):n_dates, 1:(co - 1),
+        drop = FALSE
+      ]
+      # We compute the expectation so that we can get the delay estimate
+      expectation[(n_dates - co + 2):n_dates, co] <- mult_factor[co - 1] *
+        rowSums(
+          block_bottom_left
+        )
+    }
   }
 
-  # Use the completed reporep_triing square to get the point estimate of the
+
+  # Use the completed reporting square to get the point estimate of the
   # delay distribution
   pmf <- colSums(expectation) / sum(expectation)
 

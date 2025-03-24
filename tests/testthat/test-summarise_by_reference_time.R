@@ -1,12 +1,12 @@
-test_that("summarise_by_reference_time works correctly", {
-  # Setup test data
-  example_df <- data.frame(
-    time = c(1, 1, 1, 1, 2, 2, 2, 2),
-    delay = c(1, 2, 1, 2, 1, 2, 1, 2),
-    draw = c(1, 1, 2, 2, 1, 1, 2, 2),
-    count = c(3, 6, 4, 7, 1, 2, 2, 3)
-  )
+# Setup test data
+example_df <- data.frame(
+  time = c(1, 1, 1, 1, 2, 2, 2, 2),
+  delay = c(1, 2, 1, 2, 1, 2, 1, 2),
+  draw = c(1, 1, 2, 2, 1, 1, 2, 2),
+  count = c(3, 6, 4, 7, 1, 2, 2, 3)
+)
 
+test_that("summarise_by_reference_time works correctly", {
   # Test 1: Correctly sums counts for example data
   result <- summarise_by_reference_time(example_df)
   expected <- data.frame(
@@ -24,7 +24,10 @@ test_that("summarise_by_reference_time works correctly", {
 
   # Test 3: Handles zero counts
   zero_df <- data.frame(
-    time = c(1, 1), delay = c(1, 2), draw = c(1, 1), count = c(0, 0)
+    time = c(1, 1),
+    delay = c(1, 2),
+    draw = c(1, 1),
+    count = c(0, 0)
   )
   expect_identical(summarise_by_reference_time(zero_df)$total_count, 0)
 

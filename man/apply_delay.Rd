@@ -9,7 +9,7 @@ delay PMF. Each element is computed by taking the product of the expected
 number of total cases assigned to a reference time $t$ and the proportion
 of those cases reported on delay $d$. The formula to obtain the expected
 number of total cases as a function of the reporting delay and previous
-observations was derived by X et al (Note this is a placeholder).
+observations was derived elsewhere.
 This code was adapted from code written (under an MIT license)
 by the Karlsruhe Institute of Technology RESPINOW
 German Hospitalization Nowcasting Hub.
@@ -38,7 +38,7 @@ delay PMF. Each element is computed by taking the product of the expected
 number of total cases assigned to a reference time $t$ and the proportion
 of those cases reported on delay $d$. The formula to obtain the expected
 number of total cases as a function of the reporting delay and previous
-observations was derived by X et al (Note this is a placeholder).
+observations was derived elsewhere.
 This code was adapted from code written (under an MIT license)
 by the Karlsruhe Institute of Technology RESPINOW
 German Hospitalization Nowcasting Hub.

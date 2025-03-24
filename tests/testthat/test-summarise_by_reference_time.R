@@ -24,10 +24,10 @@ test_that("summarise_by_reference_time works correctly", {
 
   # Test 3: Handles zero counts
   zero_df <- data.frame(
-    time = c(1, 1),
-    delay = c(1, 2),
-    draw = c(1, 1),
-    count = c(0, 0)
+    time = c(1, 1), # nolint
+    delay = c(1, 2), # nolint
+    draw = c(1, 1), # nolint
+    count = c(0, 0) # nolint
   )
   expect_identical(summarise_by_reference_time(zero_df)$total_count, 0)
 

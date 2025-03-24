@@ -1,3 +1,46 @@
+test_that("apply_delay function works as expected when result is known", {
+  triangle <- matrix(
+    c(
+      10, 5, 5, 5,
+      20, 10, 10, NA,
+      40, 20, NA, NA,
+      60, NA, NA, NA
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  delay_pmf <- c(0.4, 0.2, 0.2, 0.2)
+
+  result <- apply_delay(
+    triangle_to_nowcast = triangle,
+    delay_pmf = delay_pmf
+  )
+
+  expect_equal(result[2, 4], 10, tol = 0.1)
+  expect_equal(result[3, 3:4], c(20, 20), tol = 0.1)
+
+  # now try with 0s
+  triangle <- matrix(
+    c(
+      10, 5, 5, 5,
+      20, 10, 10, NA,
+      40, 20, NA, NA,
+      0, NA, NA, NA
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  delay_pmf <- c(0.4, 0.2, 0.2, 0.2)
+
+  result <- apply_delay(
+    triangle_to_nowcast = triangle,
+    delay_pmf = delay_pmf
+  )
+
+  expect_equal(result[4, 4], 0.2, tol = 0.1)
+})
+
+
 test_that("apply_delay function works correctly on simple triangle", {
   set.seed(123)
   # Make a simple triangle of ones

@@ -65,15 +65,15 @@ truncate_triangles <- function(
 #' Get a single truncated triangle
 #'
 #' This function takes in a integer `t` and a reporting triangle and generates
-#'   a truncated reporting triangle, remove the last `t` observations
+#'   a truncated reporting triangle, remove the last `t` observations.
 #'
 #' @param t Integer indicating the number of timepoints to truncate off the
-#'   bottom of the original reporting triangle
+#'   bottom of the original reporting triangle.
 #' @param matr_observed Matrix of the reporting triangle/rectangle
 #'   to be used to generate retrospective nowcasts, with rows representing the
 #'   time points of reference and columns representing the delays.
 #'
-#' @returns Matrix with `t` fewer rows than `matr_observed`
+#' @returns Matrix with `t` fewer rows than `matr_observed`.
 #' @importFrom checkmate assert_integerish
 #' @importFrom cli cli_abort
 #' @export

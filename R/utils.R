@@ -2,7 +2,7 @@
 #'
 #' @param matrix Matrix
 #' @returns A matrix of the same dimensions, with NAs for all the lower right
-#'   entries
+#'   entries.
 #' @keywords internal
 .replace_lower_right_with_NA <- function(matrix) {
   # Get matrix dimensions
@@ -30,7 +30,7 @@
 #' @param mat Matrix
 #'
 #' @returns Boolean indicating whether the matrix only contains NAs in the
-#'    bottom right (TRUE if only in bottom right, FALSE if elsewhere)
+#'    bottom right (TRUE if only in bottom right, FALSE if elsewhere).
 #' @keywords internal
 .check_na_bottom_right <- function(mat) {
   # Create a logical mask for valid NA positions

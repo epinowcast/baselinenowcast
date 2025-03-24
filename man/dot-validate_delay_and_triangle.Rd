@@ -4,16 +4,16 @@
 \alias{.validate_delay_and_triangle}
 \title{Validate triangle to nowcast and delay PMF together
 Various checks to make sure that the reporting triangle  and the delay PMF
-passed in to \code{\link[=apply_delay]{apply_delay()}} are formatted properly and compatible}
+passed in to \code{\link[=apply_delay]{apply_delay()}} are formatted properly and compatible.}
 \usage{
 .validate_delay_and_triangle(triangle, delay_pmf)
 }
 \arguments{
 \item{triangle}{Matrix of values with rows indicating the time points and
-columns indicating the delays}
+columns indicating the delays.}
 
 \item{delay_pmf}{Vector of length of the number of delays indicating the
-probability of a case being reported on a given delay}
+probability of a case being reported on a given delay.}
 }
 \value{
 NULL, invisibly
@@ -21,6 +21,6 @@ NULL, invisibly
 \description{
 Validate triangle to nowcast and delay PMF together
 Various checks to make sure that the reporting triangle  and the delay PMF
-passed in to \code{\link[=apply_delay]{apply_delay()}} are formatted properly and compatible
+passed in to \code{\link[=apply_delay]{apply_delay()}} are formatted properly and compatible.
 }
 \keyword{internal}

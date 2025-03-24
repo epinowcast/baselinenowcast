@@ -26,7 +26,7 @@ summarise_by_reference_time <- function(nowcast_draws_df) {
     must.include = c("time", "delay", "draw", "count")
   )
   if (!isTRUE(colcheck)) {
-    cli_abort(message = c("Names must include: time, delay, draw, count"))
+    cli_abort(message = "Names must include: time, delay, draw, count")
   }
 
   summary_df <- aggregate(count ~ time + draw,

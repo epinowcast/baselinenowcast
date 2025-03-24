@@ -1,5 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
+-   Adjusts function to estimate delay distribution to be able to handle complete and partially complete reporting triangles.
 -   Add function to generate a list of expected observed reporting squares
 -   Add function to generate an expected observed reporting square from a point nowcast and a vector of dispersion parameters.
 -   Add function to estimate dispersion parameters from a match list of nowcasts and observed reporting triangles.

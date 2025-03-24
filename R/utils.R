@@ -83,11 +83,9 @@ replace_lower_right_with_NA <- function(matrix) {
   }
 
   if (any(mat == 0, na.rm = TRUE)) {
-    bool_all_zeros <- sum(isTRUE(mat == 0)) == sum(isTRUE(mask))
+    bool_all_zeros <- sum((mat == 0 & mask)) == sum((mask))
   } else {
     bool_all_zeros <- FALSE
   }
-
-
   return(bool_all_zeros)
 }

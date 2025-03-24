@@ -102,4 +102,23 @@ test_that("get_delay_estimate handles partially complete reporting triangles", {
     max_delay = 3,
     n = 5
   ))
+
+  # Test 11: zeros not just on bottom right
+  zero_triangle2 <- matrix(
+    c(
+      80, 50, 25, 10,
+      100, 0, 30, 20,
+      90, 45, 25, 0,
+      80, 40, 0, 0,
+      70, 0, 0, 0
+    ),
+    nrow = 5,
+    byrow = TRUE
+  )
+
+  expect_warning(get_delay_estimate(
+    triangle = zero_triangle2,
+    max_delay = 3,
+    n = 5
+  ))
 })

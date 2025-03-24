@@ -229,6 +229,7 @@ ggplot(
   theme_bw() +
   scale_y_reverse()
 ```
+
 It's clear from this figure that the bottom left of the reporting triangle
 contains 0s as a result of the pre-processing we have done.
 In this case, we want to assume that we are making the nowcast as of the last
@@ -254,7 +255,11 @@ ggplot(
 ) +
   geom_tile() +
   scale_fill_gradient(low = "white", high = "blue") +
-  labs(title = "Reporting triangle with NAs for missing values", x = "Delay", y = "Time") +
+  labs(
+    title = "Reporting triangle with NAs for missing values",
+    x = "Delay",
+    y = "Time"
+  ) +
   theme_bw() +
   scale_y_reverse()
 ```

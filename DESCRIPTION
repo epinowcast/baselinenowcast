@@ -38,6 +38,7 @@ Suggests:
     epinowcast,
     bookdown,
     dplyr,
+    tidyr,
     ggplot2,
     spelling,
     rmarkdown,

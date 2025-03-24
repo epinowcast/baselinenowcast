@@ -7,10 +7,10 @@
 #' @inheritParams add_obs_error_to_nowcast
 #' @importFrom checkmate assert_integerish
 #' @param n_draws Integer indicating the number of expected observed reporting
-#'    squares to generate
+#'    squares to generate.
 #'
 #' @returns `list_of_exp_obs_nowcasts` List of `n_draws` matrices of expected
-#'    observed reporting squares
+#'    observed reporting squares.
 #' @export
 #'
 #' @examples

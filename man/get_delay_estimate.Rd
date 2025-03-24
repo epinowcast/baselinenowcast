@@ -16,26 +16,26 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116
 get_delay_estimate(
   triangle,
   max_delay = ncol(triangle) - 1,
-  n_history = nrow(triangle)
+  n = nrow(triangle)
 )
 }
 \arguments{
 \item{triangle}{Matrix of the reporting triangle, with rows representing
-the time points of reference and columns representing the delays}
+the time points of reference and columns representing the delays.}
 
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
 \code{ncol(triangle) -1}.}
 
-\item{n_history}{Integer indicating the number of reference dates to be
-used in the estimate of the reporting delay, always starting from the most
-recent reporting delay. The default is to use the whole reporting triangle,
-so \code{nrow(triangle)-1}}
+\item{n}{Integer indicating the number of reference times (observations) to
+be used in the estimate of the reporting delay, always starting from the
+most recent reporting delay. The default is to use the whole reporting
+triangle, so \code{nrow(triangle)}.}
 }
 \value{
 Vector indexed at 0 of length \code{max_delay + 1} with columns
 indicating the point estimate of the empirical probability
-mass on each delay
+mass on each delay.
 }
 \description{
 Estimate a delay distribution from a reporting triangle
@@ -64,7 +64,7 @@ triangle <- matrix(
 delay_pmf <- get_delay_estimate(
   triangle = triangle,
   max_delay = 3,
-  n_history = 4
+  n = 4
 )
 print(delay_pmf)
 }

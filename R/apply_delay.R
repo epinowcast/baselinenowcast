@@ -10,8 +10,8 @@
 #'   representing the delays
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
 #'   first delay column in `triangle_to_nowcast`
-#' @return expectation, matrix of the same number of rows and columns as the
-#'   `triangle_to_nowcast` but with the missing values filled in as point
+#' @return `comp_rep_square` Matrix of the same number of rows and columns as
+#'    the `triangle_to_nowcast` but with the missing values filled in as point
 #'   estimates
 #' @export
 #' @examples
@@ -29,7 +29,7 @@
 #' delay_pmf <- get_delay_estimate(
 #'   triangle = triangle,
 #'   max_delay = 3,
-#'   n_history = 4
+#'   n = 4
 #' )
 #' reporting_square <- apply_delay(
 #'   triangle_to_nowcast = triangle,
@@ -47,11 +47,11 @@ apply_delay <- function(triangle_to_nowcast,
 
   # Iterates through each column and adds entries to the expected reporting
   # triangle
-  expectation <- Reduce(function(acc, co) {
+  comp_rep_square <- Reduce(function(acc, co) {
     x <- .calc_expectation(co, acc, delay_pmf)
     return(x)
   }, 2:n_delays, init = triangle_to_nowcast)
-  return(expectation)
+  return(comp_rep_square)
 }
 
 #' Calculate the updates rows of the expected nowcasted triangle

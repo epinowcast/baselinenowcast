@@ -10,13 +10,13 @@
 #' @keywords internal
 .validate_triangle <- function(triangle,
                                max_delay = ncol(triangle) - 1,
-                               n_history = nrow(triangle)) {
+                               n = nrow(triangle)) {
   # Make sure the input triangle only contains integer values
   # and is of the correct class
   assert_class(triangle, "matrix")
   assert_integerish(triangle)
   assert_integerish(max_delay)
-  assert_integerish(n_history)
+  assert_integerish(n)
   assert_matrix(triangle, all.missing = FALSE)
 
   if (nrow(triangle) <= ncol(triangle)) {
@@ -26,7 +26,7 @@
     )
   }
 
-  if (nrow(triangle) < n_history) {
+  if (nrow(triangle) < n) {
     cli_abort(
       message = c(
         "Number of observations in input data not sufficient for",
@@ -45,11 +45,21 @@
     )
   }
 
-  if ((max_delay < 1 || n_history < 1)) {
+  if ((max_delay < 1 || n < 1)) {
     cli_abort(
       message = c(
-        "Insufficient `max_delay` or `n_history`, must be greater than or",
-        " equal to 1."
+        "Insufficient `max_delay` or `n`, must be greater than ",
+        "or equal to 1."
+      )
+    )
+  }
+
+  if (!.check_na_bottom_right(triangle)) {
+    cli_abort(
+      message = c(
+        "Reporting triangle contains NA values in elements other than ",
+        "the bottom right of the matrix. Cannot produce nowcasts from this ",
+        "triangle."
       )
     )
   }
@@ -58,11 +68,11 @@
 
 #' Validate triangle to nowcast and delay PMF together
 #' Various checks to make sure that the reporting triangle  and the delay PMF
-#'   passed in to [apply_delay()] are formatted properly and compatible
+#'   passed in to [apply_delay()] are formatted properly and compatible.
 #' @param triangle Matrix of values with rows indicating the time points and
-#'   columns indicating the delays
+#'   columns indicating the delays.
 #' @param delay_pmf Vector of length of the number of delays indicating the
-#'   probability of a case being reported on a given delay
+#'   probability of a case being reported on a given delay.
 #' @importFrom checkmate assert_class
 #' @importFrom checkmate assert_integerish
 #' @importFrom checkmate assert_matrix

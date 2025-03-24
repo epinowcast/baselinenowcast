@@ -21,8 +21,8 @@ representing the delays}
 first delay column in \code{triangle_to_nowcast}}
 }
 \value{
-expectation, matrix of the same number of rows and columns as the
-\code{triangle_to_nowcast} but with the missing values filled in as point
+\code{comp_rep_square} Matrix of the same number of rows and columns as
+the \code{triangle_to_nowcast} but with the missing values filled in as point
 estimates
 }
 \description{
@@ -49,7 +49,7 @@ triangle <- matrix(
 delay_pmf <- get_delay_estimate(
   triangle = triangle,
   max_delay = 3,
-  n_history = 4
+  n = 4
 )
 reporting_square <- apply_delay(
   triangle_to_nowcast = triangle,

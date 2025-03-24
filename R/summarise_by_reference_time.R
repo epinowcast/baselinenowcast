@@ -22,9 +22,13 @@
 #' summary_df <- summarise_by_reference_time(nowcast_draws_df)
 #' print(summary_df)
 summarise_by_reference_time <- function(nowcast_draws_df) {
-  check_names(colnames(nowcast_draws_df),
+  colcheck <- check_names(colnames(nowcast_draws_df),
     must.include = c("time", "delay", "draw", "count")
   )
+  if (!isTRUE(colcheck)) {
+    cli_abort(message = c("Names must include: time, delay, draw, count"))
+  }
+
   summary_df <- aggregate(count ~ time + draw,
     data = nowcast_draws_df,
     FUN = sum

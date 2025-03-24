@@ -3,8 +3,23 @@
 #' @param matrix Matrix
 #' @returns A matrix of the same dimensions, with NAs for all the lower right
 #'   entries.
-#' @keywords internal
-.replace_lower_right_with_NA <- function(matrix) {
+#' @export
+#' @examples
+#' triangle_w_zeros <- matrix(
+#'   c(
+#'     1, 3, 5, 7,
+#'     4, 7, 8, 0,
+#'     9, 10, 0, 0,
+#'     3, 0, 0, 0
+#'   ),
+#'   nrow = 4,
+#'   byrow = TRUE
+#' )
+#'
+#' rep_tri <- replace_lower_right_with_NA(triangle_w_zeros)
+#' print(rep_tri)
+#'
+replace_lower_right_with_NA <- function(matrix) {
   # Get matrix dimensions
   rows <- nrow(matrix)
   cols <- ncol(matrix)

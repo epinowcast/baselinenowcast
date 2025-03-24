@@ -15,11 +15,11 @@ reporting square}
 delays from 1 through the maximum delay}
 
 \item{n_draws}{Integer indicating the number of expected observed reporting
-squares to generate}
+squares to generate.}
 }
 \value{
 \code{list_of_exp_obs_nowcasts} List of \code{n_draws} matrices of expected
-observed reporting squares
+observed reporting squares.
 }
 \description{
 This function ingests a point nowcast in the form of a completed reporting

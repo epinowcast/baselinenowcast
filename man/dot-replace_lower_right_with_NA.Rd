@@ -11,7 +11,7 @@
 }
 \value{
 A matrix of the same dimensions, with NAs for all the lower right
-entries
+entries.
 }
 \description{
 Replace the lower right triangle of the matrix with NAs

@@ -15,11 +15,11 @@ Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/basel
 }
 \arguments{
 \item{triangle}{Matrix of the reporting triangle, with rows representing
-the time points of reference and columns representing the delays}
+the time points of reference and columns representing the delays.}
 }
 \value{
 Matrix of positive integers with negative values of
-reporting handled via passing them to the subsequent days delay
+reporting handled via passing them to the subsequent days delay.
 }
 \description{
 Handle negative values in the reporting triangle

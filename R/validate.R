@@ -68,11 +68,11 @@
 
 #' Validate triangle to nowcast and delay PMF together
 #' Various checks to make sure that the reporting triangle  and the delay PMF
-#'   passed in to [apply_delay()] are formatted properly and compatible
+#'   passed in to [apply_delay()] are formatted properly and compatible.
 #' @param triangle Matrix of values with rows indicating the time points and
-#'   columns indicating the delays
+#'   columns indicating the delays.
 #' @param delay_pmf Vector of length of the number of delays indicating the
-#'   probability of a case being reported on a given delay
+#'   probability of a case being reported on a given delay.
 #' @importFrom checkmate assert_class
 #' @importFrom checkmate assert_integerish
 #' @importFrom checkmate assert_matrix

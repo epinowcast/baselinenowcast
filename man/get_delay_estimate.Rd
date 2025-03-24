@@ -21,7 +21,7 @@ get_delay_estimate(
 }
 \arguments{
 \item{triangle}{Matrix of the reporting triangle, with rows representing
-the time points of reference and columns representing the delays}
+the time points of reference and columns representing the delays.}
 
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
@@ -30,12 +30,12 @@ of the delay. The default is to use the whole reporting triangle,
 \item{n}{Integer indicating the number of reference times (observations) to
 be used in the estimate of the reporting delay, always starting from the
 most recent reporting delay. The default is to use the whole reporting
-triangle, so \code{nrow(triangle)}}
+triangle, so \code{nrow(triangle)}.}
 }
 \value{
 Vector indexed at 0 of length \code{max_delay + 1} with columns
 indicating the point estimate of the empirical probability
-mass on each delay
+mass on each delay.
 }
 \description{
 Estimate a delay distribution from a reporting triangle

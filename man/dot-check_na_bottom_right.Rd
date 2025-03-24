@@ -11,7 +11,7 @@
 }
 \value{
 Boolean indicating whether the matrix only contains NAs in the
-bottom right (TRUE if only in bottom right, FALSE if elsewhere)
+bottom right (TRUE if only in bottom right, FALSE if elsewhere).
 }
 \description{
 Check if matrix only contains NAs in the bottom right

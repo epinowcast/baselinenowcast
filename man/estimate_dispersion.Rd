@@ -16,10 +16,10 @@ represent reference time points and columns represent delays.}
 
 \item{list_of_trunc_rts}{List of truncated reporting triangle matrices,
 containing all observations as of the latest reference time. Elements of
-list are paired with elements of \code{list_of_nowcasts}}
+list are paired with elements of \code{list_of_nowcasts}.}
 
 \item{n}{Integer indicating the number of reporting rectangles to use to
-estimate the dispersion parameters}
+estimate the dispersion parameters.}
 }
 \value{
 Vector of length one less than the number of columns in the

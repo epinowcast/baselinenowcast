@@ -447,7 +447,7 @@ which converts the draws indexed by `t` and `d` to one which contains the sum
 over all delays. We can then use this to plot the nowcasts compared to the
 data available as of the nowcast date, and the later observed data.
 ```{r summarise-by-ref-time}
-summary_nowcast <- summarise_by_reference_time(nowcast_draws)
+summary_nowcast <- get_nowcast_df(nowcast_draws)
 
 # Join with the original data
 final_data <- data_long[location == "DE"][age_group == "00+"] |> # nolint

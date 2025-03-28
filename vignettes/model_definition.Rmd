@@ -47,6 +47,8 @@ We refer to the matrix with imputed values for all $t+d>t^*$ as a point nowcast,
 
 # Point estimate of the delay distribution
 
+The `get_delay_estimate()` function
+
 ## Estimate of the delay distribution from a complete reporting square
 
 We can use a complete reporting square (which can in reality, be rectangular) to compute an empirical estimate of the delay distribution, $\pi(d)$. The empirical delay distribution, $\pi(d)$ can be computed directly from the completed reporting square $X$
@@ -56,6 +58,8 @@ $$
 $$
 
 Where the numerator is the sum of all the observations across reference times $t$ for a particular delay $d$, and the denominator is the sum across all reference times $t$ and delays $d$.
+
+The `get_delay_estimate()` function ingests a complete reporting square and uses the last $n$ rows to compute an empirical delay probability mass function (returning a simplex vector indexed starting at delay 0).
 
 ## Estimate of the delay distribution from a reporting triangle
 
@@ -68,6 +72,8 @@ The multiplicative model works by iteratively "filling in" the reporting triangl
 Figure 1. Visual description of the iterative “completing” of the reporting triangle, moving from left to right and bottom to top. In this cases, we are imputing $x_{t=6, d = 2}$ and $x_{t=5, d= 2}$ assuming that the ratio between $x_{t=1:4, d = 2}$ (block top), and \$x\_{t=1:4, d = 0:1} \$ (block top left) holds for for $x_{t=5:6, d = 2}$ (block bottom) and $x_{t=5:6, d = 0:1}$ (block bottom left). In this example, $x_{t=6, d = 1}$ has already been imputed using the same approach, and we treat it as known going forward. This process is repeated across the reporting triangle to estimate all values shown in the dashed lines.
 
 The method requires at least one observation, at delay $d=0$ for the most recent reference time, located at the bottom of the reporting triangle in Fig 1 above. The method assumes that the values at each delay $d$ for the recent times $t$, will consist of the same proportion of the values previously reported for earlier times $t$. To fill in the missing values for each column $d$, we sum over the rectangle of completely observed reference dates for all $d-1$ columns (block top left) and sum over the column of completely observed reference dates for all of the entries in column $d$ (block left). The ratio of these two sums is assumed to be the same in the missing entries in column $d$, so we use the entries observed up to $d-1$ for each incomplete reference date (block bottom left), and scale by this ratio to get the missing entries in column $d$. This process is repeated for each delay from $d$ to the maximum delay $D$. At each iteration an additional reference time entry is computed as the delay $d$ increases.
+
+The `get_delay_estimate()` function ingests a reporting triangle and uses the last $n$ rows to compute an empirical delay probability mass function (returning a simplex vector indexed starting at delay 0).
 
 # Generation of a point nowcast from a delay distribution and a non-complete reporting triangle
 
@@ -85,6 +91,8 @@ $$
 
 Where the number of reports at timepoint $t$ with delay $d$ is the product of the the expected total reports, $x_t$ and the proportion expected at that particular delay $d$, $\pi(d)$.
 
+The `apply_delay()` function ingests a reporting triangle and a delay PMF and returns a point nowcast.
+
 # Estimate of dispersion
 
 To estimate the uncertainty in the nowcasts, we use past nowcast errors and assume a negative binomial observation model.
@@ -93,11 +101,15 @@ To estimate the uncertainty in the nowcasts, we use past nowcast errors and assu
 
 We describe a method which generates retrospective reporting triangles to replicate what would have been available as of time $t^*=s^*$, where $s^* = t^*-m$ for $m = 1, 2, ... M$ to generate $M$ retrospective reporting triangles.
 
-To generate the set of $M$ reporting triangles, we simply remove the last $m$ rows of the existing reporting triangle (or reporting square/rectangle), to generate $M$ truncated partially complete reporting triangles. We then replace the bottom right triangle of each matrix with NAs, assuming these would not have been observed as of $s^*$. The method uses each retrospective incomplete reporting triangle to re-estimate a delay distribution using the $N$ preceding rows of the reporting triangle before $s^*$, and recomputes a retrospective nowcast, for $M$ realizations of the retrospective reporting triangle (so $M$ different $s^*$ values).
+To generate the set of $M$ reporting triangles, we simply remove the last $m$ rows of the existing reporting triangle (or reporting square/rectangle), to generate $M$ truncated partially complete reporting triangles.
+These can be generated from a reporting triangle or square with the function `truncate_triangles()` which returns a list of `n` truncated triangles containing only observations and missing values.
+We then replace the bottom right triangle of each matrix with NAs, assuming these would not have been observed as of $s^*$, using the function `generate_triangles()` which returns a list of $n$ retrospective reporting triangles.
+The method uses each retrospective reporting triangle to re-estimate a delay distribution using the $N$ preceding rows of the reporting triangle before $s^*$, and recomputes a retrospective nowcast, for $M$ realizations of the retrospective reporting triangle (so $M$ different $s^*$ values).
 
 ## Generation of retrospective point nowcasts
 
 From the $M$ reporting triangles, we apply the method described above to estimate a delay distribution from a reporting triangle and generate a point nowcast for each reporting triangle, to generate $M$ point nowcasts.
+The function `generate_point_nowcasts()` ingests the list of reporting triangles, estimates a delay distribution for each, and generates a set of point nowcasts.
 
 ## Fit point nowcasts and observed values to a negative binomial observation model at each delay
 
@@ -111,6 +123,8 @@ $$
 
 We add a small number (0.1) to the mean to avoid an ill-defined negative binomial. We note that to perform all these computations, data snapshots from at least $N + M$ past observations, or rows of the reporting triangle, are needed. This estimate of the uncertainty accounts for the empirical uncertainty in the point estimate of the delay distribution over time.
 
+The function `estimate_dispersion()` ingests a list of truncateed triangles representing the observations, and the list of point nowcasts, and returns a vector of negative binomial dispersion parameters indexed starting at delay $d$.
+
 # Generate a probabilistic nowcast
 
 Using the dispersion parameters for each delay, $\phi(d)$ for $d = 1,...D$, we can generate probabilistic nowcasts by drawing samples from the negative binomial:
@@ -120,3 +134,6 @@ X_{t,d} \sim NegBin(\mu = \hat{x}_{t,d}, \phi = \phi(d))
 $$
 
 We can sample for any number of draws, and then use the draws to compute any desired quantiles to summarize the outputs.
+
+The function `add_obs_errors_to_nowcast()` ingests a point nowcast, the dispersion parameters, and the number of draws to sample and generates a list of expected observed point nowcasts.
+This can then be summarized across delays by passing the list to `nowcast_list_to_df()` and summarised by reference time using `summarise_by_ref_time()`.

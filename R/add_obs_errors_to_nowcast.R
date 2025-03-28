@@ -91,7 +91,7 @@ add_obs_error_to_nowcast <- function(comp_rep_square,
       "observations or point estimates of mean expected values."
     ))
   }
-  nowcast_w_obs_error <- .replace_lower_right_with_NA(comp_rep_square)
+  nowcast_w_obs_error <- replace_lower_right_with_NA(comp_rep_square)
 
   if (ncol(comp_rep_square) - 1 != length(disp)) {
     cli_abort(

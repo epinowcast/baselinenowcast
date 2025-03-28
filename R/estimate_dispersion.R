@@ -113,7 +113,7 @@ estimate_dispersion <- function(
     # Remove the last i observations
     trunc_matr_observed <- list_of_obs[[i]]
     # What would have been nowcasted? The values that would have been NA
-    indices_nowcast <- is.na(.replace_lower_right_with_NA(trunc_matr_observed))
+    indices_nowcast <- is.na(replace_lower_right_with_NA(trunc_matr_observed))
     # What was observed? Any non-NAs from the truncated observed matrix
     indices_observed <- !is.na(trunc_matr_observed)
 

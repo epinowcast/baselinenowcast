@@ -44,3 +44,81 @@ test_that("get_delay_estimate function works correctly", {
   triangle_single_day <- triangle[1, ]
   expect_error(get_delay_estimate(triangle_single_day))
 })
+
+test_that("get_delay_estimate handles partially complete reporting triangles", {
+  # Test 8: Test that a partial triangle works correctly
+  partial_triangle <- matrix(
+    c(
+      80, 50, 25, 10,
+      100, 50, 30, 20,
+      90, 45, 25, 20,
+      80, 40, 15, NA,
+      70, 30, NA, NA
+    ),
+    nrow = 5,
+    byrow = TRUE
+  )
+  delay_pmf <- get_delay_estimate(
+    triangle = partial_triangle,
+    max_delay = 3,
+    n = 4
+  )
+
+  # Test 9: Test that you get the correct delay with a complete triangle
+  complete_triangle <- matrix(
+    c(
+      80, 50, 25, 10,
+      100, 50, 30, 20,
+      90, 45, 25, 20,
+      80, 40, 15, 5,
+      70, 30, 10, 10
+    ),
+    nrow = 5,
+    byrow = TRUE
+  )
+  delay_pmf <- get_delay_estimate(
+    triangle = complete_triangle,
+    max_delay = 3,
+    n = 5
+  )
+  pmf <- colSums(complete_triangle) / sum(complete_triangle)
+  expect_identical(delay_pmf, pmf)
+
+  # Test 10: Test that you get a warning with zeros in the bottom right
+  zero_triangle <- matrix(
+    c(
+      80, 50, 25, 10,
+      100, 50, 30, 20,
+      90, 45, 25, 0,
+      80, 40, 0, 0,
+      70, 0, 0, 0
+    ),
+    nrow = 5,
+    byrow = TRUE
+  )
+
+  expect_warning(get_delay_estimate(
+    triangle = zero_triangle,
+    max_delay = 3,
+    n = 5
+  ))
+
+  # Test 11: zeros not just on bottom right
+  zero_triangle2 <- matrix(
+    c(
+      80, 50, 25, 10,
+      100, 0, 30, 20,
+      90, 45, 25, 0,
+      80, 40, 0, 0,
+      70, 0, 0, 0
+    ),
+    nrow = 5,
+    byrow = TRUE
+  )
+
+  expect_warning(get_delay_estimate(
+    triangle = zero_triangle2,
+    max_delay = 3,
+    n = 5
+  ))
+})

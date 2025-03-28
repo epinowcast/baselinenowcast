@@ -63,6 +63,7 @@ library(baselinenowcast)
 library(epinowcast)
 library(ggplot2)
 library(dplyr)
+library(tidyr)
 # Set seed for reproducibility
 set.seed(123)
 ```
@@ -202,20 +203,69 @@ pobs <- enw_preprocess_data(
 triangle_full <- pobs$reporting_triangle[[1]]
 head(triangle_full)
 
-# Check that the sum of the rows in the reporting triangle is the
-# same as the sums across report dates by reference date
 triangle_matrix <- triangle_full |>
   select(-`.group`, -reference_date) |>
   as.matrix() |>
   unname()
-triangle_sums <- rowSums(
-  triangle_matrix
-)
-observed_sums <- observed_long |>
-  group_by(reference_date) |>
-  summarise(total_confirmed = max(confirm)) |>
-  mutate(triangle_sums = triangle_sums)
 ```
+To see what this looks like, we can plot it using `ggplot()`.
+```{r make-heatmap-reporting-triangle}
+triangle_df <- as.data.frame(triangle_matrix) |>
+  mutate(time = row_number()) |>
+  pivot_longer(!time,
+    values_to = "count",
+    names_prefix = "V",
+    names_to = "delay"
+  ) |>
+  mutate(delay = as.numeric(delay))
+
+ggplot(
+  triangle_df,
+  aes(x = delay, y = time, fill = count)
+) +
+  geom_tile() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  labs(title = "Reporting triangle", x = "Delay", y = "Time") +
+  theme_bw() +
+  scale_y_reverse()
+```
+
+It's clear from this figure that the bottom left of the reporting triangle
+contains 0s as a result of the pre-processing we have done.
+In this case, we want to assume that we are making the nowcast as of the last
+reference time, which means the bottom right portion of the reporting triangle
+should contains NAs for the yet-to-be observed values.
+To make this change, we can use the package function
+`replace_lower_right_with_NA()`.
+```{r replace-lower-right-with-NA}
+triangle <- replace_lower_right_with_NA(triangle_matrix)
+
+triangle_df <- as.data.frame(triangle) |>
+  mutate(time = row_number()) |>
+  pivot_longer(!time,
+    values_to = "count",
+    names_prefix = "V",
+    names_to = "delay"
+  ) |>
+  mutate(delay = as.numeric(delay))
+
+ggplot(
+  triangle_df,
+  aes(x = delay, y = time, fill = count)
+) +
+  geom_tile() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  labs(
+    title = "Reporting triangle with NAs for missing values",
+    x = "Delay",
+    y = "Time"
+  ) +
+  theme_bw() +
+  scale_y_reverse()
+```
+
+Now we see that the bottom right of the triangle contains NAs where the
+observations are missing.
 
 # Estimate delay
 
@@ -247,12 +297,6 @@ we will start by demonstrating the functionality on only the matrix of the
 reporting triangle.
 
 ```{r estimate-delay}
-triangle <- triangle_full |>
-  select(-`.group`, -reference_date) |> # remove unnecessary columns
-  as.matrix() |>
-  unname()
-head(triangle)
-
 delay_pmf <- get_delay_estimate(
   triangle = triangle,
   max_delay = max_delay,

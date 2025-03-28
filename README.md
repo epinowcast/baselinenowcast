@@ -114,9 +114,15 @@ All contributions to this project are gratefully acknowledged using the
 following the [allcontributors](https://allcontributors.org)
 specification. Contributions of any kind are welcome!
 
+### Code
+
 <a href="https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson">kaitejohnson</a>,
 <a href="https://github.com/epinowcast/baselinenowcast/commits?author=seabbs">seabbs</a>,
 <a href="https://github.com/epinowcast/baselinenowcast/commits?author=sbfnk">sbfnk</a>
+
+### Issues
+
+<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher">jbracher</a>
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->

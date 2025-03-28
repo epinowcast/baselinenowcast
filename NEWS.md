@@ -1,5 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
+-   Add function to convert a list of expected observed reporting squares to a long tidy dataframe indexed by reference time, delay, and a sample index.
 -   Implement zero-handling in the bottom left of the reporting triangle when applying the delay to generate a point nowcast.
 -   Add function to generate a list of expected observed reporting squares.
 -   Add function to generate an expected observed reporting square from a point nowcast and a vector of dispersion parameters.

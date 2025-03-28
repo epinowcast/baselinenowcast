@@ -14,7 +14,7 @@
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.4.2 (2024-10-31)",
+  "runtimePlatform": "R version 4.4.3 (2025-02-28)",
   "author": [
     {
       "@type": "Person",
@@ -177,6 +177,18 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=knitr"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "tidyr",
+      "name": "tidyr",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=tidyr"
     }
   ],
   "softwareRequirements": {
@@ -217,7 +229,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "80.288KB",
+  "fileSize": "499.046KB",
   "releaseNotes": "https://github.com/epinowcast/baselinenowcast/blob/master/NEWS.md",
   "readme": "https://github.com/epinowcast/baselinenowcast/blob/main/README.md",
   "contIntegration": ["https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/epinowcast/baselinenowcast"],

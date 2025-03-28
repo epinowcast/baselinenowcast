@@ -99,7 +99,7 @@ The method described above uses the incomplete reporting triangle to iteratively
 
 To propagate the point nowcast from the delay distribution, we need to estimate the expected total number of eventual observed cases $\hat{x}_t$, for each reference time $t$.
 Let $z$ be the sum over all delays $d$ that have already been observed (up until $t^*-t$), such that $z =\sum_{d=1}^{d=t^*-t} x_{t,d}$ and $\delta$ be the cumulative sum of the delay distribution, $\pi(d)$ up until $d = t^*-t$ such that $\delta = \sum_{d=1}^{d=t^*-t} \pi(d)$.
-By assuming that $z \sim Bin(x_t, \delta)$ and $x_t \sim Unif(0, \inf)$, it has been shown that the expected value of $x_t$, the total number of reported cases on reference time $t$, can be written as:
+By assuming that $z \sim Bin(x_t, \delta)$ and $x_t \sim Unif(0, \inf)$, it can be shown that the expected value of $x_t$, the total number of reported cases on reference time $t$, can be written as:
 
 $$
 E(x_t | z, \delta) = \hat{x}_t = \frac{z + 1 - \delta}{\delta}

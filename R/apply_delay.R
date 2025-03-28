@@ -1,7 +1,12 @@
 #' Apply the delay to generate a point nowcast
 #' Generate a point estimate of a completed reporting square (or rectangle)
 #'   from a reporting triangle that we want to complete with a nowcast and a
-#'   delay PMF. This code was adapted from code written (under an MIT license)
+#'   delay PMF. Each element is computed by taking the product of the expected
+#'   number of total cases assigned to a reference time $t$ and the proportion
+#'   of those cases reported on delay $d$. The formula to obtain the expected
+#'   number of total cases as a function of the reporting delay and previous
+#'   observations was derived elsewhere.
+#'   This code was adapted from code written (under an MIT license)
 #'   by the Karlsruhe Institute of Technology RESPINOW
 #'   German Hospitalization Nowcasting Hub.
 #'   Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
@@ -70,7 +75,9 @@ apply_delay <- function(triangle_to_nowcast,
     1:(co - 1),
     drop = FALSE
   ]
-  exp_total <- rowSums(block_bottom_left) / sum(delay_pmf[1:(co - 1)])
-  expectation[max((n_rows - co + 2), 1):n_rows, co] <- exp_total * delay_pmf[co]
+  cdf_dpmf <- sum(delay_pmf[1:(co - 1)])
+  x <- rowSums(block_bottom_left)
+  exp_N <- (x + 1 - cdf_dpmf) / cdf_dpmf
+  expectation[max((n_rows - co + 2), 1):n_rows, co] <- exp_N * delay_pmf[co]
   return(expectation)
 }

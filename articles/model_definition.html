@@ -224,9 +224,11 @@ The method described above uses the incomplete reporting triangle to iteratively
 <h3 id="point-nowcast-from-delay-distribution-pid">
 <span class="header-section-number">2.4</span> Point nowcast from delay distribution <span class="math inline">\(\pi(d)\)</span><a class="anchor" aria-label="anchor" href="#point-nowcast-from-delay-distribution-pid"></a>
 </h3>
-<p>We start by computing the expected total number of eventual observed cases <span class="math inline">\(\hat{x}_t\)</span>, for each reference time <span class="math inline">\(t\)</span>, by summing over all delays <span class="math inline">\(d\)</span> that have already been observed (up until <span class="math inline">\(t^*-t\)</span>) and dividing by the cumulative sum of the delay distribution, <span class="math inline">\(\pi(d)\)</span> up until <span class="math inline">\(d = t^*-t\)</span>.</p>
+<p>To propagate the point nowcast from the delay distribution, we need to estimate the expected total number of eventual observed cases <span class="math inline">\(\hat{x}_t\)</span>, for each reference time <span class="math inline">\(t\)</span>.
+Let <span class="math inline">\(z\)</span> be the sum over all delays <span class="math inline">\(d\)</span> that have already been observed (up until <span class="math inline">\(t^*-t\)</span>), such that <span class="math inline">\(z =\sum_{d=1}^{d=t^*-t} x_{t,d}\)</span> and <span class="math inline">\(\delta\)</span> be the cumulative sum of the delay distribution, <span class="math inline">\(\pi(d)\)</span> up until <span class="math inline">\(d = t^*-t\)</span> such that <span class="math inline">\(\delta = \sum_{d=1}^{d=t^*-t} \pi(d)\)</span>.
+By assuming that <span class="math inline">\(z \sim Bin(x_t, \delta)\)</span> and <span class="math inline">\(x_t \sim Unif(0, \inf)\)</span>, it can be shown that the expected value of <span class="math inline">\(x_t\)</span>, the total number of reported cases on reference time <span class="math inline">\(t\)</span>, can be written as:</p>
 <p><span class="math display">\[
-\hat{x}_t= \frac{\sum_{d=1}^{d=t^*-t} x_{t,d}}{\sum_{d=1}^{d=t^*-t} \pi(d)}
+E(x_t | z, \delta) = \hat{x}_t = \frac{z + 1 - \delta}{\delta}
 \]</span></p>
 <p>Then we can compute <span class="math inline">\(\hat{x}_{t,d}\)</span> directly using the <span class="math inline">\(d\)</span>th element of <span class="math inline">\(\pi(d)\)</span></p>
 <p><span class="math display">\[

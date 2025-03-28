@@ -80,6 +80,12 @@
         <dd>Apply the delay to generate a point nowcast Generate a point estimate of a completed reporting square (or rectangle) from a reporting triangle that we want to complete with a nowcast and a delay PMF. Each element is computed by taking the product of the expected number of total cases assigned to a reference time $t$ and the proportion of those cases reported on delay $d$. The formula to obtain the expected number of total cases as a function of the reporting delay and previous observations was derived elsewhere. This code was adapted from code written (under an MIT license) by the Karlsruhe Institute of Technology RESPINOW German Hospitalization Nowcasting Hub. Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint</dd>
       </dl><dl><dt>
 
+          <code><a href="convert_reporting_square_to_df.html">convert_reporting_square_to_df()</a></code>
+
+        </dt>
+        <dd>Convert a reporting square matrix to a long data frame</dd>
+      </dl><dl><dt>
+
           <code><a href="estimate_dispersion.html">estimate_dispersion()</a></code>
 
         </dt>
@@ -108,6 +114,12 @@
 
         </dt>
         <dd>Estimate a delay distribution from a reporting triangle Provides an estimate of the reporting delay as a function of the delay, based on the reporting triangle and the specified maximum delay and number of reference date observations to be used in the estimation. This point estimate of the delay is computed empirically, using an iterative algorithm starting from the most recent observations. This code was adapted from code written (under an MIT license) by the Karlsruhe Institute of Technology RESPINOW German Hospitalization Nowcasting Hub. Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint</dd>
+      </dl><dl><dt>
+
+          <code><a href="nowcast_list_to_df.html">nowcast_list_to_df()</a></code>
+
+        </dt>
+        <dd>Generate probabilistic nowcast dataframe</dd>
       </dl><dl><dt>
 
           <code><a href="truncate_triangle.html">truncate_triangle()</a></code>

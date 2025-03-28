@@ -11,6 +11,7 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/add_obs_error_to_nowcast.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/add_obs_errors_to_nowcast.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/apply_delay.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/convert_reporting_square_to_df.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-calc_expectation.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-check_na_bottom_right.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-conditional_sum_cols.html</loc></url>
@@ -25,6 +26,7 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/generate_triangles.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/get_delay_estimate.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/index.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/nowcast_list_to_df.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/truncate_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/truncate_triangles.html</loc></url>
 </urlset>

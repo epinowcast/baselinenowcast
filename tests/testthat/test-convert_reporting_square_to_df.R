@@ -13,24 +13,20 @@ test_matrix <- matrix(
 
 result <- convert_reporting_square_to_df(test_matrix)
 
+pivoted_longer_df <- data.frame(
+  time = rep(1:6, each = 4),
+  delay = rep(1:4, 6),
+  count = as.vector(t(test_matrix))
+)
+
 
 test_that("convert_rep_square_to_df function mimics pivot longer", {
   ### Test 1: Matches pivot longer output-----------------------------------
-  # result using pivot longer
-  df <- as.data.frame(test_matrix)
-  df$time <- seq_len(nrow(df))
-  df_long <- df |>
-    tidyr::pivot_longer(
-      cols = starts_with("V"),
-      names_to = "delay",
-      names_prefix = "V",
-      values_to = "count"
-    )
-  df_long$delay <- as.integer(df_long$delay)
+  # result using pivot longer (written above)
 
-  expect_identical(result$time, df_long$time)
-  expect_identical(result$delay, df_long$delay)
-  expect_identical(result$count, df_long$count)
+  expect_identical(result$time, pivoted_longer_df$time)
+  expect_identical(result$delay, pivoted_longer_df$delay)
+  expect_identical(result$count, pivoted_longer_df$count)
 })
 
 test_that("convert_reporting_square_to_df works correctly", {

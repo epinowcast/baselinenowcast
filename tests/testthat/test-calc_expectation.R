@@ -18,7 +18,7 @@ test_that("calc_expectation function works correctly", {
 
   # Test 3: Check if the calculation is correct
   block_bottom_left <- expectation[9:10, 1:2]
-  exp_total <- rowSums(block_bottom_left) / sum(delay_pmf[1:2])
+  exp_total <- (rowSums(block_bottom_left) + 1 - sum(delay_pmf[1:2])) / sum(delay_pmf[1:2]) # nolint
   expected_values <- exp_total * delay_pmf[3]
   expect_identical(modified[9:10, 3], expected_values)
 

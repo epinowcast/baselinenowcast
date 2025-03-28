@@ -1,6 +1,5 @@
 library(testthat)
 library(baselinenowcast)
-library(tidyr)
 
 test_results <- test_check("baselinenowcast")
 

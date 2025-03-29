@@ -3,8 +3,23 @@
 #' @param matrix Matrix
 #' @returns A matrix of the same dimensions, with NAs for all the lower right
 #'   entries.
-#' @keywords internal
-.replace_lower_right_with_NA <- function(matrix) {
+#' @export
+#' @examples
+#' triangle_w_zeros <- matrix(
+#'   c(
+#'     1, 3, 5, 7,
+#'     4, 7, 8, 0,
+#'     9, 10, 0, 0,
+#'     3, 0, 0, 0
+#'   ),
+#'   nrow = 4,
+#'   byrow = TRUE
+#' )
+#'
+#' rep_tri <- replace_lower_right_with_NA(triangle_w_zeros)
+#' print(rep_tri)
+#'
+replace_lower_right_with_NA <- function(matrix) {
   # Get matrix dimensions
   rows <- nrow(matrix)
   cols <- ncol(matrix)
@@ -47,4 +62,30 @@
   # Check if any NAs exist outside valid region
   invalid_nas <- sum(is.na(mat) & !mask)
   return(invalid_nas == 0)
+}
+
+#' Check if matrix only contains zeros in the bottom right
+#'
+#' @param mat Matrix
+#'
+#' @returns Boolean indicating whether the matrix only contains zeros in the
+#'    bottom right (if TRUE, entire bottom right is 0s)
+#' @keywords internal
+.check_zeros_bottom_right <- function(mat) {
+  n_rows <- nrow(mat)
+  mask <- matrix(FALSE, nrow = n_rows, ncol = ncol(mat))
+
+  for (i in seq_len(n_rows)) {
+    cutoff <- n_rows - i + 1
+    if (cutoff < ncol(mat)) {
+      mask[i, (cutoff + 1):ncol(mat)] <- TRUE
+    }
+  }
+
+  if (any(mat == 0, na.rm = TRUE)) {
+    bool_all_zeros <- sum((mat == 0 & mask)) == sum((mask))
+  } else {
+    bool_all_zeros <- FALSE
+  }
+  return(bool_all_zeros)
 }

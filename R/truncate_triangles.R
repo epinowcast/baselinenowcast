@@ -44,7 +44,7 @@ truncate_triangles <- function(
     n = nrow(triangle) - ncol(triangle) - 1) {
   .validate_triangle(triangle)
   assert_integerish(n, lower = 0)
-  triangle <- .replace_lower_right_with_NA(triangle)
+  triangle <- replace_lower_right_with_NA(triangle)
   if (n > (nrow(triangle) - ncol(triangle) - 1)) {
     cli::cli_warn(
       message = c(

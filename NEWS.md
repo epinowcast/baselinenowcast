@@ -1,5 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
+-   Adjusts function to estimate delay distribution to be able to handle complete and partially complete reporting triangles.
 -   Add function to convert a list of expected observed reporting squares to a long tidy dataframe indexed by reference time, delay, and a sample index.
 -   Implement zero-handling in the bottom left of the reporting triangle when applying the delay to generate a point nowcast.
 -   Add function to generate a list of expected observed reporting squares.

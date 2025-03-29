@@ -46,7 +46,7 @@ generate_triangles <- function(
 
   results <- lapply(
     list_of_trunc_rts,
-    .replace_lower_right_with_NA
+    replace_lower_right_with_NA
   )
 
   return(results)

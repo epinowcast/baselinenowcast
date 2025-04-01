@@ -19,9 +19,9 @@
 #'   draw = c(1, 1, 2, 2, 1, 1, 2, 2),
 #'   count = c(3, 6, 4, 7, 1, 2, 2, 3)
 #' )
-#' summary_df <- get_nowcast_df(nowcast_draws_df)
+#' summary_df <- aggregate_df_by_ref_time(nowcast_draws_df)
 #' print(summary_df)
-get_nowcast_df <- function(nowcast_draws_df) {
+aggregate_df_by_ref_time <- function(nowcast_draws_df) {
   colcheck <- check_names(colnames(nowcast_draws_df),
     must.include = c("time", "delay", "draw", "count")
   )

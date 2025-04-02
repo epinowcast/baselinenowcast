@@ -4,7 +4,7 @@ pkgdown_sha: 66477c0dbb4f4925ec872cf64d5eaa316cc70bac
 articles:
   baselinenowcast: baselinenowcast.html
   model_definition: model_definition.html
-last_built: 2025-03-29T08:39Z
+last_built: 2025-04-02T16:51Z
 urls:
   reference: https://baselinenowcast.epinowcast.org/reference
   article: https://baselinenowcast.epinowcast.org/articles

@@ -63,6 +63,7 @@ library(baselinenowcast)
 library(epinowcast)
 library(ggplot2)
 library(dplyr)
+library(lubridate)
 library(tidyr)
 # Set seed for reproducibility
 set.seed(123)
@@ -475,26 +476,72 @@ exp_obs_nowcasts <- add_obs_errors_to_nowcast(
 ```
 
 Next, we will take the list of expected observed reporting squares and
-convert this into a long tidy dataframe, indexed by reference time `t` and
-delay `d`, and plot the results
+convert this into a long tidy dataframe, indexed by reference time `t`,
+delay `d`, and draws.
 
 ```{r generate-nowcasted-draws-df}
 nowcast_draws <- nowcast_list_to_df(
   list_of_nowcasts = exp_obs_nowcasts
 )
-
-summary_nowcast <- nowcast_draws |>
-  group_by(time, draw) |>
-  summarise(total_counts = sum(count))
-
-ggplot(summary_nowcast) +
-  geom_line(aes(x = time, y = total_counts, group = draw),
-    alpha = 0.1, color = "gray", linewidth = 0.1
-  ) +
-  theme_bw()
+head(nowcast_draws)
 ```
 
-In the above, we might want to make sure we include the necessary metadata if
-the user passes it in, so we could write methods that dispatch on objects of
-a particular type so that they spit back out things with dates if those were
-inputted.
+The package also provides a helper function, `aggregate_df_by_ref_time()`
+which converts the draws indexed by `t` and `d` to one which contains the sum
+over all delays. We can then use this to plot the nowcasts compared to the
+data available as of the nowcast date, and the later observed data.
+```{r summarise-by-ref-time}
+summary_nowcast <- aggregate_df_by_ref_time(nowcast_draws)
+
+# Join with the original data
+final_data <- data_long[location == "DE"][age_group == "00+"] |> # nolint
+  enw_filter_report_dates(latest_date = "2021-10-01") |>
+  enw_filter_reference_dates(
+    latest_date = "2021-07-01",
+    include_days = n_history_delay - 1
+  ) |>
+  group_by(reference_date) |>
+  summarise(
+    final_confirmed = max(confirm)
+  )
+original_data <- observed_long |>
+  group_by(reference_date) |>
+  summarise(original_confirmed = max(confirm))
+time_df <- data.frame(
+  reference_date =
+    seq(
+      from = min(original_data$reference_date),
+      to = max(original_data$reference_date),
+      by = "day"
+    )
+) |> mutate(time = row_number())
+sampled_draws <- sample.int(max(summary_nowcast$draw), 100)
+summary_nowcast_w_data <- summary_nowcast |>
+  left_join(time_df,
+    by = "time"
+  ) |>
+  left_join(original_data, by = "reference_date") |>
+  left_join(final_data, by = "reference_date") |>
+  # Filter to a set of draws for plotting + zoom in on nowcast period
+  filter(
+    draw %in% sampled_draws,
+    reference_date >= max(ymd(reference_date)) - days(max_delay)
+  )
+
+
+
+ggplot(summary_nowcast_w_data) +
+  geom_line(aes(x = reference_date, y = total_count, group = draw),
+    alpha = 0.2, color = "gray", linewidth = 0.2
+  ) +
+  geom_line(aes(x = reference_date, y = original_confirmed),
+    color = "darkred"
+  ) +
+  geom_line(aes(x = reference_date, y = final_confirmed),
+    color = "black"
+  ) +
+  theme_bw() +
+  xlab("Reference date") +
+  ylab("Hospital admissions") +
+  ggtitle("Comparison of admissions as of the nowcast date, later observed counts, \n and probabilistic nowcasted counts") # nolint
+```

@@ -22,7 +22,7 @@ contributors](https://img.shields.io/github/contributors/epinowcast/baselinenowc
 
 Provides functions for nowcasting right-truncated epidemiological data,
 based heavily on the method implemented in
-<https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/code/baseline>
+<https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/code/baseline>.
 
 ## Installation
 

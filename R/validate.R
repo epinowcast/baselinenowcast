@@ -22,7 +22,7 @@
   if (nrow(triangle) <= ncol(triangle)) {
     cli_abort(
       message =
-        "Number of observations must be greater than the maximum delay"
+        "Number of observations(rows) must be greater than the number of columns." # nolint
     )
   }
 

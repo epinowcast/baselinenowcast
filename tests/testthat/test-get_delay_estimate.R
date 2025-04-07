@@ -121,4 +121,18 @@ test_that("get_delay_estimate handles partially complete reporting triangles", {
     max_delay = 3,
     n = 5
   ))
+
+  # Test 12: Default works
+  triangle <- matrix(
+    c(
+      0, 1, 1, 1,
+      0, 5, 5, 5,
+      0, 10, 10, NA,
+      0, 20, NA, NA,
+      0, NA, NA, NA
+    ),
+    nrow = 5,
+    byrow = TRUE
+  )
+  delay_pmf <- get_delay_estimate(triangle)
 })

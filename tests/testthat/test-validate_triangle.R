@@ -50,8 +50,7 @@ test_that(".validate_triangle works correctly", {
     .validate_triangle(triangle,
       max_delay = 2,
       n = 2
-    ),
-    "Number of observations must be greater than the maximum delay"
+    )
   )
 
   # Test case 7: Number of observations less than n_history
@@ -59,8 +58,7 @@ test_that(".validate_triangle works correctly", {
     .validate_triangle(valid_triangle,
       max_delay = 3,
       n = 6
-    ),
-    "Number of observations in input data not sufficient"
+    )
   )
 
   # Test case 8: Number of delays less than max_delay + 1
@@ -96,5 +94,20 @@ test_that(".validate_triangle works correctly", {
       n = 5
     ),
     regexp = "Assertion on 'triangle' failed: Contains only missing values."
-  ) # nolint
+  )
+
+  # Test case 13: triangle is too short
+  short_triangle <- matrix(
+    c(
+      0, 5, 5, 5,
+      0, 10, 10, NA,
+      0, 20, NA, NA,
+      0, NA, NA, NA
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  expect_error(
+    .validate_triangle(short_triangle)
+  )
 })

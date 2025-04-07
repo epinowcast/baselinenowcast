@@ -2,7 +2,7 @@
   "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
   "@type": "SoftwareSourceCode",
   "identifier": "baselinenowcast",
-  "description": "Provides functions for nowcasting right-truncated epidemiological data, based heavily on the method implemented in https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/code/baseline",
+  "description": "Provides functions for nowcasting right-truncated epidemiological data, based heavily on the method implemented in https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/code/baseline.",
   "name": "baselinenowcast: Baseline nowcast",
   "relatedLink": "https://baselinenowcast.epinowcast.org",
   "codeRepository": "https://github.com/epinowcast/baselinenowcast/",
@@ -241,7 +241,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "505.511KB",
+  "fileSize": "511.897KB",
   "releaseNotes": "https://github.com/epinowcast/baselinenowcast/blob/master/NEWS.md",
   "readme": "https://github.com/epinowcast/baselinenowcast/blob/main/README.md",
   "contIntegration": ["https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/epinowcast/baselinenowcast"],

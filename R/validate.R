@@ -107,7 +107,7 @@
     cli_abort(
       message = c(
         "Value of delay PMF at delay = 0 is 0, and the latest reference time ",
-        "in the reporting matrix only contains a value at delay = 0. There ",
+        "in the reporting matrix only contains a value at delay = 0. There is",
         "insufficient information to generate a point nowcast for the latest ",
         "reference time. Consider re-indexing to set the delay = 0 to the ",
         "first delay where there are observations."

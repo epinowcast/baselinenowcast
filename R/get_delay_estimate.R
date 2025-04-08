@@ -93,18 +93,5 @@ get_delay_estimate <- function(triangle,
   # Use the completed reporting square to get the point estimate of the
   # delay distribution
   pmf <- colSums(expectation) / sum(expectation)
-
-  if (pmf[1] == 0) {
-    cli_warn(
-      message =
-        c(
-          "Value of delay PMF at delay = 0 is 0. This delay PMF will not be ",
-          "able to generate a nowcast from a reporting triangle because the ",
-          "first element at delay = 0 does not provide any information on the ",
-          "expected total count at that reference time."
-        )
-    )
-  }
-
   return(pmf)
 }

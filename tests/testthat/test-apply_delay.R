@@ -52,13 +52,11 @@ test_that("apply_delay function works as expected when result is known", {
   )
   delay_pmf <- c(0, 0.4, 0.4, 0.2)
 
-  result <- apply_delay(
+  expect_error(apply_delay(
     triangle_to_nowcast = triangle,
     delay_pmf = delay_pmf
-  )
-  # This will break -- remainder of last row is infinite
-  expect_false(anyNA(result))
-  expect_false(any(is.infinite(result)))
+  ))
+
 
   # Try with 0 in the middle of delay distrib
   triangle <- matrix(

@@ -122,7 +122,7 @@ test_that("get_delay_estimate handles partially complete reporting triangles", {
     n = 5
   ))
 
-  # Test 12: Default works
+  # Test 12: All 0s in first column produces warning
   triangle <- matrix(
     c(
       0, 1, 1, 1,
@@ -134,5 +134,5 @@ test_that("get_delay_estimate handles partially complete reporting triangles", {
     nrow = 5,
     byrow = TRUE
   )
-  delay_pmf <- get_delay_estimate(triangle)
+  expect_warning(get_delay_estimate(triangle))
 })

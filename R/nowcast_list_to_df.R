@@ -94,7 +94,7 @@ convert_reporting_square_to_df <- function(matrix,
   df_long <- data.frame(
     time = rep(seq_len(nrow(df_wide)), each = ncol(df_wide)),
     delay = rep(seq_len(ncol(df_wide)), times = nrow(df_wide)),
-    count = as.vector(t(df_wide[, grep("^V", names(df_wide), value = TRUE)]))
+    count = as.vector(t(df_wide))
   )
 
   if (!is.null(draw)) {

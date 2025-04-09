@@ -38,6 +38,45 @@ test_that("apply_delay function works as expected when result is known", {
   )
 
   expect_equal(result[4, 4], 0.2, tol = 0.1)
+
+  # Now try with a delay pmf with 0s
+  triangle <- matrix(
+    c(
+      10, 5, 5, 5,
+      20, 10, 10, NA,
+      40, 20, NA, NA,
+      1, NA, NA, NA
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  delay_pmf <- c(0, 0.4, 0.4, 0.2)
+
+  expect_error(apply_delay(
+    triangle_to_nowcast = triangle,
+    delay_pmf = delay_pmf
+  ))
+
+
+  # Try with 0 in the middle of delay distrib
+  triangle <- matrix(
+    c(
+      10, 5, 5, 5,
+      20, 10, 10, NA,
+      40, 20, NA, NA,
+      1, NA, NA, NA
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  delay_pmf <- c(0.2, 0.4, 0, 0.4)
+
+  result <- apply_delay(
+    triangle_to_nowcast = triangle,
+    delay_pmf = delay_pmf
+  )
+  expect_false(anyNA(result))
+  expect_false(any(is.infinite(result)))
 })
 
 

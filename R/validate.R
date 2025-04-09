@@ -22,7 +22,7 @@
   if (nrow(triangle) <= ncol(triangle)) {
     cli_abort(
       message =
-        "Number of observations must be greater than the maximum delay"
+        "Number of observations(rows) must be greater than the number of columns." # nolint
     )
   }
 
@@ -89,7 +89,7 @@
   assert_matrix(triangle, all.missing = FALSE)
 
 
-  # Make sure the triangle has the same number of colums as the delay
+  # Make sure the triangle has the same number of columns as the delay
   if ((ncol(triangle) != length(delay_pmf))) {
     cli_abort(
       message = c(
@@ -100,5 +100,20 @@
       )
     )
   }
+
+  # Make sure that nowcasts can be generated iteratively, ensuring delay_pmf[1]
+  # !=0 while the triangle is a reporting triangle (NAs all in bottom right)
+  if (is.na(triangle[nrow(triangle), 2]) && delay_pmf[1] == 0) {
+    cli_abort(
+      message = c(
+        "Value of delay PMF at delay = 0 is 0, and the latest reference time ",
+        "in the reporting matrix only contains a value at delay = 0. There is",
+        "insufficient information to generate a point nowcast for the latest ",
+        "reference time. Consider re-indexing to set the delay = 0 to the ",
+        "first delay where there are observations."
+      )
+    )
+  }
+
   return(NULL)
 }

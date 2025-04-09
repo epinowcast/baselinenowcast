@@ -45,4 +45,18 @@ test_that(".validate_delay_and_triangle works correctly", {
     .validate_delay_and_triangle(valid_triangle, empty_delay),
     "Length of the delay PMF is not the same as the number of delays"
   )
+
+  # Test case 8: delay_pmf[1] = 0 and passing a reporting triangle
+  triangle <- matrix(
+    c(
+      10, 5, 5, 5,
+      20, 10, 10, NA,
+      40, 20, NA, NA,
+      1, NA, NA, NA
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  delay_pmf <- c(0, 0.2, 0.4, 0.2)
+  expect_error(.validate_delay_and_triangle(triangle, delay_pmf))
 })

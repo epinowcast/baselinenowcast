@@ -93,6 +93,5 @@ get_delay_estimate <- function(triangle,
   # Use the completed reporting square to get the point estimate of the
   # delay distribution
   pmf <- colSums(expectation) / sum(expectation)
-
   return(pmf)
 }

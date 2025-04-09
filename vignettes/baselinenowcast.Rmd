@@ -357,7 +357,7 @@ final_data <- data_long[location == "DE"][age_group == "00+"] |> # nolint
   summarise(
     total_confirmed = max(confirm)
   ) |>
-  mutate(nowcast = rowSums(point_reporting_square))
+  mutate(nowcast = rowSums(point_nowcast_matrix))
 summary_data <- observed_long |>
   group_by(reference_date) |>
   summarise(total_confirmed = max(confirm))
@@ -459,7 +459,7 @@ demonstrating how to generate a single expected observation from just a point
 nowcast matrix.
 
 ```{r add-observation-error}
-nowcast_draw <- add_obs_errr_to_pt_nowcast_mat(
+nowcast_draw <- add_obs_err_to_pt_nowcast_mat(
   point_nowcast_matrix = point_nowcast_matrix,
   disp = disp_params
 )

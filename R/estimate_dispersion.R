@@ -41,8 +41,8 @@
 #' retro_rts <- generate_triangles(
 #'   list_of_trunc_rts = trunc_rts
 #' )
-#' retro_nowcasts <- generate_point_nowcasts(
-#'   list_of_rts = retro_rts,
+#' retro_nowcasts <- generate_pt_nowcast_mat_list(
+#'   reporting_triangle_matrix_list = retro_rts,
 #'   n = 5
 #' )
 #' disp_params <- estimate_dispersion(

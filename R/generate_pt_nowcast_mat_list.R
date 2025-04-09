@@ -7,7 +7,7 @@
 #'   observations to estimate the empirical delay for each retrospective
 #'   reporting triangle.
 #'
-#' @param list_of_rts List of reporting triangle matrices, in order
+#' @param reporting_triangle_list List of reporting triangle matrices, in order
 #'    from most recent (most complete) to least recent. Bottom right of the
 #'    matrices should contain NAs.
 #' @param max_delay Integer indicating the maximum delay to estimate, in units

@@ -57,7 +57,7 @@ triangle <- matrix(
   byrow = TRUE
 )
 delay_pmf <- get_delay_estimate(
-  triangle = triangle,
+  reporting_triangle = triangle,
   max_delay = 3,
   n = 4
 )

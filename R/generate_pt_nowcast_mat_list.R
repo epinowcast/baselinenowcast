@@ -18,9 +18,9 @@
 #'    reporting triangle. Default is the minimum of the number of rows of
 #'    all the matrices in the `list_of_rts`.
 #'
-#' @returns `pt_nowcast_matr_list` List of the same number of elements as the input
-#'   `list_of_rts`but with each reporting triangle filled in based on the delay
-#'    estimated in that reporting triangle.
+#' @returns `pt_nowcast_matr_list` List of the same number of elements as the
+#'    input `reporting_triangle_list`but with each reporting triangle filled
+#'    in based on the delay estimated in that reporting triangle.
 #' @export
 #' @examples
 #' triangle <- matrix(
@@ -89,16 +89,16 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
 #' Generate point nowcast
 #'
 #' This function ingests a reporting triangle matrix and optionally, a delay
-#'    distribution, and returns a completed reporting square which represents
-#'    the point nowcast. If a delay distribution is specified, this will be
-#'    used to generate the nowcast, otherwise, a delay distribution will be
-#'    estimated from the `reporting_triangle`.
+#'   distribution, and returns a completed reporting square which represents
+#'   the point nowcast. If a delay distribution is specified, this will be
+#'   used to generate the nowcast, otherwise, a delay distribution will be
+#'   estimated from the `reporting_triangle`.
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
 #'   first delay column in `triangle_to_nowcast`.
 #' @inheritParams get_delay_estimate
-#' @returns `point_nowcast_matrix` Matrix of the same number of rows and columns as
-#'    the `triangle` but with the missing values filled in as point
-#'   estimates.
+#' @returns `point_nowcast_matrix` Matrix of the same number of rows and
+#'   columns as the `reporting_triangle` but with the missing values filled
+#'   in as point estimates.
 #' @export
 #'
 #' @examples

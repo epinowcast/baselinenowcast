@@ -25,9 +25,9 @@ from most recent (most complete) to least recent. Bottom right of the
 matrices should contain NAs.}
 }
 \value{
-\code{pt_nowcast_matr_list} List of the same number of elements as the input
-\code{list_of_rts}but with each reporting triangle filled in based on the delay
-estimated in that reporting triangle.
+\code{pt_nowcast_matr_list} List of the same number of elements as the
+input \code{reporting_triangle_list}but with each reporting triangle filled
+in based on the delay estimated in that reporting triangle.
 }
 \description{
 This function ingests a list of incomplete reporting triangles and

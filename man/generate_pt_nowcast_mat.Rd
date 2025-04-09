@@ -29,9 +29,9 @@ triangle, so \code{nrow(triangle)}.}
 first delay column in \code{triangle_to_nowcast}.}
 }
 \value{
-\code{point_nowcast_matrix} Matrix of the same number of rows and columns as
-the \code{triangle} but with the missing values filled in as point
-estimates.
+\code{point_nowcast_matrix} Matrix of the same number of rows and
+columns as the \code{reporting_triangle} but with the missing values filled
+in as point estimates.
 }
 \description{
 This function ingests a reporting triangle matrix and optionally, a delay

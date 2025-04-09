@@ -28,7 +28,7 @@
 #'   n_draws = 10
 #' )
 #'
-#' nowcast_df <- nowcast_list_to_df(
+#' nowcast_df <- nowcast_matrix_list_to_df(
 #'   nowcast_matrix_list = nowcast_matrix_list
 #' )
 nowcast_matrix_list_to_df <- function(nowcast_matrix_list) {

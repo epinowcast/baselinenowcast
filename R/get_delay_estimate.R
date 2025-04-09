@@ -8,8 +8,9 @@
 #'   by the Karlsruhe Institute of Technology RESPINOW
 #'   German Hospitalization Nowcasting Hub.
 #'   Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
-#' @param triangle Matrix of the reporting triangle, with rows representing
-#'   the time points of reference and columns representing the delays.
+#' @param reporting_triangle Matrix of the reporting triangle, with rows
+#'   representing the time points of reference and columns representing the
+#'   delays. Can be a reporting matrix or incomplete reporting matrix.
 #' @param max_delay Integer indicating the maximum delay to estimate, in units
 #'   of the delay. The default is to use the whole reporting triangle,
 #'   `ncol(triangle) -1`.
@@ -35,22 +36,23 @@
 #'   byrow = TRUE
 #' )
 #' delay_pmf <- get_delay_estimate(
-#'   triangle = triangle,
+#'   reporting_triangle = triangle,
 #'   max_delay = 3,
 #'   n = 4
 #' )
 #' print(delay_pmf)
-get_delay_estimate <- function(triangle,
-                               max_delay = ncol(triangle) - 1,
-                               n = nrow(triangle)) {
+get_delay_estimate <- function(reporting_triangle,
+                               max_delay = ncol(reporting_triangle) - 1,
+                               n = nrow(reporting_triangle)) {
   # Check that the input reporting triangle is formatted properly.
-  .validate_triangle(triangle,
+  .validate_triangle(
+    triangle = reporting_triangle,
     max_delay = max_delay,
     n = n
   )
 
-  # Produce a warning if the bottom left of a reporting triangle is all 0s.
-  if (isTRUE(.check_zeros_bottom_right(triangle))) {
+  # Produce a warning if the bottom left of a reporting trianglei s all 0s.
+  if (isTRUE(.check_zeros_bottom_right(reporting_triangle))) {
     cli_warn(
       message =
         c(
@@ -61,9 +63,9 @@ get_delay_estimate <- function(triangle,
         )
     )
   }
-  # Filter the triangle down to nrow = n_history_delay + 1, ncol = max_delay
-  nr0 <- nrow(triangle)
-  trunc_triangle <- triangle[(nr0 - n + 1):nr0, 1:(max_delay + 1)]
+  # Filter the reporting_triangle down to nrow = n_history_delay + 1, ncol = max_delay
+  nr0 <- nrow(reporting_triangle)
+  trunc_triangle <- reporting_triangle[(nr0 - n + 1):nr0, 1:(max_delay + 1)]
   rep_tri <- .handle_neg_vals(trunc_triangle)
   n_delays <- ncol(rep_tri)
   n_dates <- nrow(rep_tri)
@@ -90,7 +92,7 @@ get_delay_estimate <- function(triangle,
   }
 
 
-  # Use the completed reporting square to get the point estimate of the
+  # Use the completed reporting matrix to get the point estimate of the
   # delay distribution
   pmf <- colSums(expectation) / sum(expectation)
   return(pmf)

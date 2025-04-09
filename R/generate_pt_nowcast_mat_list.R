@@ -18,7 +18,7 @@
 #'    reporting triangle. Default is the minimum of the number of rows of
 #'    all the matrices in the `list_of_rts`.
 #'
-#' @returns `list_of_nowcasts` List of the same number of elements as the input
+#' @returns `pt_nowcast_matr_list` List of the same number of elements as the input
 #'   `list_of_rts`but with each reporting triangle filled in based on the delay
 #'    estimated in that reporting triangle.
 #' @export
@@ -43,19 +43,19 @@
 #' retro_rts <- generate_triangles(
 #'   list_of_trunc_rts = trunc_rts
 #' )
-#' retro_nowcasts <- generate_point_nowcasts(
-#'   list_of_rts = retro_rts
+#' retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
+#'   reporting_triangle_list = retro_rts
 #' )
-#' print(retro_nowcasts[[1]])
-generate_point_nowcasts <- function(list_of_rts,
-                                    max_delay = min(
-                                      sapply(list_of_rts, ncol)
-                                    ) - 1,
-                                    n = min(
-                                      sapply(list_of_rts, nrow)
-                                    )) {
+#' print(retro_pt_nowcast_mat_list[[1]])
+generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
+                                         max_delay = min(
+                                           sapply(reporting_triangle_list, ncol)
+                                         ) - 1,
+                                         n = min(
+                                           sapply(reporting_triangle_list, nrow)
+                                         )) {
   if (n > min(
-    sapply(list_of_rts, nrow)
+    sapply(reporting_triangle_list, nrow)
   )) {
     cli_abort(
       message = c(
@@ -66,7 +66,7 @@ generate_point_nowcasts <- function(list_of_rts,
       )
     )
   }
-  if (n < min(sapply(list_of_rts, ncol))) {
+  if (n < min(sapply(reporting_triangle_list, ncol))) {
     cli_abort(
       message = c(
         "The number of observations specified for delay estimation is less ",
@@ -77,10 +77,13 @@ generate_point_nowcasts <- function(list_of_rts,
     )
   }
 
-  list_of_nowcasts <- lapply(list_of_rts, generate_point_nowcast, n = n)
+  pt_nowcast_mat_list <- lapply(reporting_triangle_list,
+    generate_pt_nowcast_mat,
+    n = n
+  )
 
 
-  return(list_of_nowcasts)
+  return(pt_nowcast_mat_list)
 }
 
 #' Generate point nowcast
@@ -89,12 +92,12 @@ generate_point_nowcasts <- function(list_of_rts,
 #'    distribution, and returns a completed reporting square which represents
 #'    the point nowcast. If a delay distribution is specified, this will be
 #'    used to generate the nowcast, otherwise, a delay distribution will be
-#'    estimated from the `triangle_to_nowcast`.
+#'    estimated from the `reporting_triangle`.
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
 #'   first delay column in `triangle_to_nowcast`.
 #' @inheritParams get_delay_estimate
-#' @returns `comp_rep_square` Matrix of the same number of rows and columns as
-#'    the `triangle_to_nowcast` but with the missing values filled in as point
+#' @returns `point_nowcast_matrix` Matrix of the same number of rows and columns as
+#'    the `triangle` but with the missing values filled in as point
 #'   estimates.
 #' @export
 #'
@@ -110,23 +113,23 @@ generate_point_nowcasts <- function(list_of_rts,
 #'   nrow = 5,
 #'   byrow = TRUE
 #' )
-#' reporting_square <- generate_point_nowcast(
-#'   triangle = triangle
+#' point_nowcast_matrix <- generate_pt_nowcast_mat(
+#'   reporting_triangle = triangle
 #' )
-#' print(reporting_square)
-generate_point_nowcast <- function(triangle,
-                                   max_delay = ncol(triangle) - 1,
-                                   n = nrow(triangle),
-                                   delay_pmf = NULL) {
-  .validate_triangle(triangle)
+#' print(point_nowcast_matrix)
+generate_pt_nowcast_mat <- function(reporting_triangle,
+                                    max_delay = ncol(reporting_triangle) - 1,
+                                    n = nrow(reporting_triangle),
+                                    delay_pmf = NULL) {
+  .validate_triangle(reporting_triangle)
   if (is.null(delay_pmf)) {
     delay_pmf <- get_delay_estimate(
-      triangle = triangle,
+      reporting_triangle = reporting_triangle,
       max_delay = max_delay,
       n = n
     )
   }
 
-  comp_rep_square <- apply_delay(triangle, delay_pmf)
-  return(comp_rep_square)
+  point_nowcast_matrix <- apply_delay(reporting_triangle, delay_pmf)
+  return(point_nowcast_matrix)
 }

@@ -337,7 +337,7 @@ The reporting triangle we are applying it to must have the same `max_delay`
 as the delay estimate.
 
 ```{r}
-point_reporting_square <- apply_delay(
+point_nowcast_matrix <- apply_delay(
   triangle_to_nowcast = triangle,
   delay_pmf = delay_pmf
 )
@@ -452,15 +452,15 @@ disp_params <- estimate_dispersion(
 
 # Generate probabilistic nowcast
 
-Now that we have estimated the dispersion, we take the point nowcast we
-previously generated, `point_reporting_square` and generate many draws of the
+Now that we have estimated the dispersion, we take the point nowcast matrix we
+previously generated, `point_nowcast_matrix` and generate many draws of the
 expected observed values to get a probabilistic nowcast. We'll start by
 demonstrating how to generate a single expected observation from just a point
-nowcast.
+nowcast matrix.
 
 ```{r add-observation-error}
-nowcast_draw <- add_obs_error_to_nowcast(
-  comp_rep_square = point_reporting_square,
+nowcast_draw <- add_obs_errr_to_pt_nowcast_mat(
+  point_nowcast_matrix = point_nowcast_matrix,
   disp = disp_params
 )
 ```
@@ -468,8 +468,8 @@ nowcast_draw <- add_obs_error_to_nowcast(
 We will generate `n_draws` of these expected observed nowcast draws, which
 will be used to generate a probabilistic nowcast
 ```{r generate-many-expected-observed-nowcasts}
-exp_obs_nowcasts <- add_obs_errors_to_nowcast(
-  comp_rep_square = point_reporting_square,
+exp_obs_nowcasts <- add_obs_errs_to_pt_nowcast_mat(
+  point_nowcast_matrix = point_nowcast_matrix,
   disp = disp_params,
   n_draws = 1000
 )
@@ -480,8 +480,8 @@ convert this into a long tidy dataframe, indexed by reference time `t`,
 delay `d`, and draws.
 
 ```{r generate-nowcasted-draws-df}
-nowcast_draws <- nowcast_list_to_df(
-  list_of_nowcasts = exp_obs_nowcasts
+nowcast_draws <- nowcast_matrix_list_to_df(
+  nowcast_matrix_list = exp_obs_nowcasts
 )
 head(nowcast_draws)
 ```

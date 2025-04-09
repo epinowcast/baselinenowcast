@@ -33,7 +33,7 @@ test_that("Input validation works correctly", {
   ))
 
   # Invalid dispersion parameters
-  expect_error(add_obs_errs_to_pt_nowcast_mat(test_matrix, c(-1, 2, 3))) # Negative
+  expect_error(add_obs_errs_to_pt_nowcast_mat(test_matrix, c(-1, 2, 3))) # Negative #nolint
   expect_error(add_obs_errs_to_pt_nowcast_mat(test_matrix, c(1, 2))) # mismatch
 
   # Invalid n_draws

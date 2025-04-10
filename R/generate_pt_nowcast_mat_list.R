@@ -38,10 +38,10 @@
 #' )
 #'
 #' trunc_rts <- truncate_triangles(
-#'   triangle = triangle
+#'   reporting_triangle = triangle
 #' )
 #' retro_rts <- generate_triangles(
-#'   list_of_trunc_rts = trunc_rts
+#'   trunc_rep_mat_list = trunc_rts
 #' )
 #' retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
 #'   reporting_triangle_list = retro_rts

@@ -15,9 +15,9 @@
 #'   representing the delays
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
 #'   first delay column in `rep_mat_to_nowcast`
-#' @return `point_nowcast_matrix` Matrix of the same number of rows and columns as
-#'    the `rep_mat_to_nowcast` but with the missing values filled in as point
-#'   estimates
+#' @return `point_nowcast_matrix` Matrix of the same number of rows and columns
+#'    as the `rep_mat_to_nowcast` but with the missing values filled in as point
+#'    estimates
 #' @export
 #' @examples
 #' triangle <- matrix(

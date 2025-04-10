@@ -43,7 +43,6 @@ truncate_triangles <- function(reporting_triangle,
                                n = nrow(reporting_triangle) - ncol(reporting_triangle) - 1) { # nolint
   .validate_triangle(reporting_triangle)
   assert_integerish(n, lower = 0)
-  triangle <- replace_lower_right_with_NA(reporting_triangle)
   if (n > (nrow(reporting_triangle) - ncol(reporting_triangle) - 1)) {
     cli::cli_warn(
       message = c(
@@ -69,7 +68,7 @@ truncate_triangles <- function(reporting_triangle,
 #' @param t Integer indicating the number of timepoints to truncate off the
 #'   bottom of the original reporting triangle.
 #' @param matr_observed Matrix of the reporting triangle/matrix
-#'   to be used to generate retrospective nowcast matrixes, with rows
+#'   to be used to generate retrospective nowcast matrices, with rows
 #'   representing the time points of reference and columns representing the
 #'   delays.
 #'

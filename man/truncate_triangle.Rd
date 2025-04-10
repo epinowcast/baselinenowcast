@@ -11,7 +11,7 @@ truncate_triangle(t, matr_observed)
 bottom of the original reporting triangle.}
 
 \item{matr_observed}{Matrix of the reporting triangle/matrix
-to be used to generate retrospective nowcast matrixes, with rows
+to be used to generate retrospective nowcast matrices, with rows
 representing the time points of reference and columns representing the
 delays.}
 }

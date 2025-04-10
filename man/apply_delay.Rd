@@ -62,7 +62,7 @@ delay_pmf <- get_delay_estimate(
   n = 4
 )
 point_nowcast_matrix <- apply_delay(
-  rep_mat_to_nowcast = triangle,
+  rep_tri_to_nowcast = triangle,
   delay_pmf = delay_pmf
 )
 print(reporting_square)

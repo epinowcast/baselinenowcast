@@ -13,9 +13,6 @@ Various checks to make sure that the reporting triangle passed in to
 )
 }
 \arguments{
-\item{triangle}{Matrix of the reporting triangle, with rows representing
-the time points of reference and columns representing the delays.}
-
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
 \code{ncol(triangle) -1}.}

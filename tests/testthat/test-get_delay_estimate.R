@@ -59,7 +59,7 @@ test_that("get_delay_estimate handles partially complete reporting triangles", {
     byrow = TRUE
   )
   delay_pmf <- get_delay_estimate(
-    triangle = partial_triangle,
+    reporting_triangle = partial_triangle,
     max_delay = 3,
     n = 4
   )
@@ -77,7 +77,7 @@ test_that("get_delay_estimate handles partially complete reporting triangles", {
     byrow = TRUE
   )
   delay_pmf <- get_delay_estimate(
-    triangle = complete_triangle,
+    reporting_triangle = complete_triangle,
     max_delay = 3,
     n = 5
   )
@@ -98,7 +98,7 @@ test_that("get_delay_estimate handles partially complete reporting triangles", {
   )
 
   expect_warning(get_delay_estimate(
-    triangle = zero_triangle,
+    reporting_triangle = zero_triangle,
     max_delay = 3,
     n = 5
   ))
@@ -117,7 +117,7 @@ test_that("get_delay_estimate handles partially complete reporting triangles", {
   )
 
   expect_warning(get_delay_estimate(
-    triangle = zero_triangle2,
+    reporting_triangle = zero_triangle2,
     max_delay = 3,
     n = 5
   ))

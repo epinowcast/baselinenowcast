@@ -29,7 +29,9 @@ retro_rts_list <- list(test_triangle_1, test_triangle_2)
 
 ### Test 1: Basic Functionality
 test_that("Function returns correctly structured output", {
-  result <- generate_point_nowcasts(list_of_rts = retro_rts_list)
+  result <- generate_pt_nowcast_mat_list(
+    reporting_triangle_list = retro_rts_list
+  )
 
   # Output has same number of elements as input
   expect_length(result, 2)
@@ -48,13 +50,15 @@ test_that("Function returns correctly structured output", {
 ### Test 2: Default n_history_delay Calculation
 test_that("Default n_history_delay uses minimum rows", {
   # Input matrices have 7 and 7 rows → min = 6
-  result_default <- generate_point_nowcasts(list_of_rts = retro_rts_list)
-  result_custom_w_def <- generate_point_nowcasts(
-    list_of_rts = retro_rts_list,
+  result_default <- generate_pt_nowcast_mat_list(
+    reporting_triangle_list = retro_rts_list
+  )
+  result_custom_w_def <- generate_pt_nowcast_mat_list(
+    reporting_triangle_list = retro_rts_list,
     n = 6
   )
-  result_custom <- generate_point_nowcasts(
-    list_of_rts = retro_rts_list,
+  result_custom <- generate_pt_nowcast_mat_list(
+    reporting_triangle_list = retro_rts_list,
     n = 5
   )
 
@@ -67,22 +71,22 @@ test_that("Default n_history_delay uses minimum rows", {
 
 ### Test 3: Custom n_history_delay
 test_that("Custom n_history_delay is respected", {
-  result <- generate_point_nowcasts(
-    list_of_rts = retro_rts_list,
+  result <- generate_pt_nowcast_mat_list(
+    reporting_triangle_list = retro_rts_list,
     n = 5
   )
   # Custom n_history_delay is too high
   expect_error(
-    generate_point_nowcasts(
-      list_of_rts = retro_rts_list,
+    generate_pt_nowcast_mat_list(
+      reporting_triangle_list = retro_rts_list,
       n = 8
     ),
     regexp = "The number of observations specified for delay estimation is greater" # nolint
   ) # nolint
   # Custom n_history_delay is too low
   expect_error(
-    generate_point_nowcasts(
-      list_of_rts = retro_rts_list,
+    generate_pt_nowcast_mat_list(
+      reporting_triangle_list = retro_rts_list,
       n = 3
     ),
     regexp = "The number of observations specified for delay estimation is less"
@@ -92,21 +96,25 @@ test_that("Custom n_history_delay is respected", {
 ### Test 4: Error Handling
 test_that("Invalid inputs throw errors", {
   # Non-list input
-  expect_error(generate_point_nowcasts(list_of_rts = "not_a_list"))
+  expect_error(generate_pt_nowcast_mat_list(
+    reporting_triangle_list = "not_a_list"
+  ))
 
   # List contains non-matrix elements
   bad_list <- list(test_triangle_1, "not_a_matrix")
-  expect_error(generate_point_nowcasts(list_of_rts = bad_list))
+  expect_error(generate_pt_nowcast_mat_list(
+    reporting_triangle_matrix_list = bad_list
+  ))
 
   # Invalid n_history_delay values
-  expect_error(generate_point_nowcasts(retro_rts_list, n = -1))
-  expect_error(generate_point_nowcasts(retro_rts_list, n = "two"))
+  expect_error(generate_pt_nowcast_mat_list(retro_rts_list, n = -1))
+  expect_error(generate_pt_nowcast_mat_list(retro_rts_list, n = "two"))
 })
 
 ### Test 5: Edge Case - All Matrices Same Size
 test_that("Identical-sized matrices work", {
   same_size_list <- list(test_triangle_1[2:7, ], test_triangle_2)
-  result <- generate_point_nowcasts(same_size_list)
+  result <- generate_pt_nowcast_mat_list(same_size_list)
 
   # Number of rows of each matrix should be identical (6 and 6)
   expect_identical(sapply(result, nrow), c(6L, 6L))

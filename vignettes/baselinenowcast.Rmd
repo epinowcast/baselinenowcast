@@ -338,7 +338,7 @@ as the delay estimate.
 
 ```{r}
 point_nowcast_matrix <- apply_delay(
-  triangle_to_nowcast = cleaned_reporting_triangle,
+  rep_mat_to_nowcast = cleaned_reporting_triangle,
   delay_pmf = delay_pmf
 )
 ```

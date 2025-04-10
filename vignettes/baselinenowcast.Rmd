@@ -403,11 +403,11 @@ triangles using what would have been available as of the time, and then for
 each reporting triangle, estimating a delay distribution and generating
 a nowcast.
 
-To do this, we will first generate truncated reporting triangles from the
-latest reporting triangle, then generate retrospective reporting triangles
+To do this, we will first generate truncated reporting matrices from the
+latest reporting triangle, generate retrospective reporting triangles
 by removing observations that wouldn't have been observed as of the latest time
-point, and then we will generate nowcasts from that list
-of retrospective reporting triangles.
+point, and lastly generate nowcasts from that list of retrospective reporting
+triangles.
 The function will default to assuming you want to generate
 as many retrospective reporting triangles that you will be able to generate
 nowcasts from. In this case, the function will return 18 retrospective
@@ -416,11 +416,11 @@ are needed to generate a nowcast of reporting triangle with 41 delay columns.
 
 
 ```{r generate-triangles}
-truncated_rts <- truncate_triangles(
-  triangle = cleaned_reporting_triangle
+trunc_rep_mat_list <- truncate_triangles(
+  reporting_triangle = cleaned_reporting_triangle
 )
 retro_rts <- generate_triangles(
-  list_of_trunc_rts = truncated_rts
+  list_of_trunc_rts = trunc_rep_mat_list
 )
 ```
 The `generate_triangles()` function returns a list of

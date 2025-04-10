@@ -32,8 +32,8 @@
 #' retro_rts <- generate_triangles(
 #'   trunc_rep_mat_list = trunc_rts
 #' )
-#' print(trunc_rep_mat_list[[1]])
-#' print(trunc_rep_mat_list[[2]])
+#' print(retro_rts[[1]])
+#' print(retro_rts[[2]])
 generate_triangles <- function(trunc_rep_mat_list) {
   # Check that input is a list of matrices
   if (!is.matrix(trunc_rep_mat_list[[1]])) {

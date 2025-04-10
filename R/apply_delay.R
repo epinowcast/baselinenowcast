@@ -40,7 +40,7 @@
 #'   rep_tri_to_nowcast = triangle,
 #'   delay_pmf = delay_pmf
 #' )
-#' print(reporting_square)
+#' print(point_nowcast_matrix)
 apply_delay <- function(rep_tri_to_nowcast,
                         delay_pmf) {
   # Checks that the delay df and the triangle are compatible

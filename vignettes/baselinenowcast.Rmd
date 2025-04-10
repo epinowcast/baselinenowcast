@@ -445,8 +445,8 @@ the uncertainty at each delay $d$
 
 ```{r estimate-dispersion}
 disp_params <- estimate_dispersion(
-  list_of_nowcasts = retro_pt_nowcast_mat_list,
-  list_of_trunc_rts = trunc_rep_mat_list
+  pt_nowcast_mat_list = retro_pt_nowcast_mat_list,
+  trunc_rep_mat_list = trunc_rep_mat_list
 )
 ```
 
@@ -465,23 +465,23 @@ nowcast_draw <- add_obs_err_to_pt_nowcast_mat(
 )
 ```
 
-We will generate `n_draws` of these expected observed nowcast draws, which
+We will generate `n_draws` of the nowcast matrices which
 will be used to generate a probabilistic nowcast
 ```{r generate-many-expected-observed-nowcasts}
-exp_obs_nowcasts <- add_obs_errs_to_pt_nowcast_mat(
+nowcast_matrix_list <- add_obs_errs_to_pt_nowcast_mat(
   point_nowcast_matrix = point_nowcast_matrix,
   disp = disp_params,
   n_draws = 1000
 )
 ```
 
-Next, we will take the list of expected observed reporting squares and
+Next, we will take the list of nowcast matrices and
 convert this into a long tidy dataframe, indexed by reference time `t`,
 delay `d`, and draws.
 
 ```{r generate-nowcasted-draws-df}
 nowcast_draws <- nowcast_matrix_list_to_df(
-  nowcast_matrix_list = exp_obs_nowcasts
+  nowcast_matrix_list = nowcast_matrix_list
 )
 head(nowcast_draws)
 ```

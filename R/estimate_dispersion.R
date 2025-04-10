@@ -1,17 +1,16 @@
 #' Estimate dispersion parameters
 #'
-#' This function ingests a list of point nowcasts (completed reporting
-#'    rectangles) and a corresponding list of truncated reporting triangles and
-#'    estimates and uses both to estimate a vector of negative binomial
-#'    dispersion parameters from the observations and estimates at each delay,
-#'    starting at delay = 1.
+#' This function ingests a list of point nowcast matrices and a corresponding
+#'    list of truncated reporting matrices and uses both to estimate a
+#'    vector of negative binomial dispersion parameters from the observations
+#'    and estimates at each delay, starting at delay = 1.
 #'
-#' @param list_of_nowcasts List of complete reporting rectangles where rows
+#' @param pt_nowcast_mat_list List of point nowcast matrices where rows
 #'    represent reference time points and columns represent delays.
-#' @param list_of_trunc_rts List of truncated reporting triangle matrices,
+#' @param trunc_rep_mat_list List of truncated reporting matrices,
 #'    containing all observations as of the latest reference time. Elements of
-#'    list are paired with elements of `list_of_nowcasts`.
-#' @param n Integer indicating the number of reporting rectangles to use to
+#'    list are paired with elements of `pt_nowcast_mat_list`.
+#' @param n Integer indicating the number of reporting matrices to use to
 #'    estimate the dispersion parameters.
 #' @importFrom checkmate assert_integerish
 #' @returns Vector of length one less than the number of columns in the
@@ -46,52 +45,54 @@
 #'   n = 5
 #' )
 #' disp_params <- estimate_dispersion(
-#'   list_of_nowcasts = retro_nowcasts,
-#'   list_of_trunc_rts = trunc_rts,
+#'   pt_nowcast_mat_list = retro_nowcasts,
+#'   trunc_rep_mat_list = trunc_rts,
 #'   n = 2
 #' )
 estimate_dispersion <- function(
-    list_of_nowcasts,
-    list_of_trunc_rts,
-    n = length(list_of_nowcasts)) {
+    pt_nowcast_mat_list,
+    trunc_rep_mat_list,
+    n = length(pt_nowcast_mat_list)) {
   # Check that the length of the list of nowcasts is greater than
   # or equal to the specified n
-  if (length(list_of_nowcasts) < n) {
+  if (length(pt_nowcast_mat_list) < n) {
     cli_abort(message = c(
-      "Insufficient elements in `list_of_nowcasts` for the `n` desired number ",
-      "of nowcasted reporting triangles specified for dispersion estimation"
+      "Insufficient elements in `pt_nowcast_mat_list` for the `n` desired ",
+      "number of nowcasted reporting triangles specified for dispersion ",
+      "estimation"
     ))
   }
-  if (length(list_of_trunc_rts) < n) {
+  if (length(trunc_rep_mat_list) < n) {
     cli_abort(message = c(
-      "Insufficient elements in `list_of_trunc_rts` for the `n` desired number ", # nolint
-      "of observed reporting triangles specified for dispersion estimation"
+      "Insufficient elements in `trunc_rep_mat_list` for the `n` desired ",
+      "number of observed reporting triangles specified for dispersion ",
+      "estimation"
     ))
   }
-  if (length(list_of_nowcasts) < 1) {
-    "`list_of_nowcasts` is an empty list"
+  if (length(pt_nowcast_mat_list) < 1) {
+    "`pt_nowcast_mat_list` is an empty list"
   }
-  if (length(list_of_trunc_rts) < 1) {
-    "`list_of_trunc_rts` is an empty list"
+  if (length(trunc_rep_mat_list) < 1) {
+    "`trunc_rep_mat_list` is an empty list"
   }
 
   assert_integerish(n, lower = 0)
 
   # Truncate to only n nowcasts
-  list_of_ncs <- list_of_nowcasts[1:n]
-  list_of_obs <- list_of_trunc_rts[1:n]
+  list_of_ncs <- pt_nowcast_mat_list[1:n]
+  list_of_obs <- trunc_rep_mat_list[1:n]
 
   # Check that nowcasts has no NAs, trunc_rts has some NAs
   if (any(sapply(list_of_ncs, anyNA))) {
     cli_abort(
       message =
-        "`list_of_nowcasts` contains NAs"
+        "`pt_nowcast_mat_list` contains NAs"
     )
   }
   if (!any(sapply(list_of_obs, anyNA))) {
     cli_abort(
       message =
-        "`list_of_obs` does not contain any NAs"
+        "`trunc_rep_mat_list` does not contain any NAs"
     )
   }
   # Check that the sets of matrices are the same dimensions
@@ -100,8 +101,8 @@ estimate_dispersion <- function(
   all_identical <- all(mapply(identical, dims_ncs, dims_obs))
   if (!all_identical) {
     cli_abort(message = c(
-      "Dimensions of the first `n` matrices in `list_of_nowcasts` and ",
-      "`list_of_trunc_rts` are not the same."
+      "Dimensions of the first `n` matrices in `pt_nowcast_mat_list` and ",
+      "`trunc_rep_mat_list` are not the same."
     ))
   }
 

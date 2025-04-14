@@ -109,8 +109,8 @@
         "Value of delay PMF at delay = 0 is 0, and the latest reference time ",
         "in the reporting matrix only contains a value at delay = 0. There is",
         "insufficient information to generate a point nowcast for the latest ",
-        "reference time. Consider re-indexing to set the delay = 0 to the ",
-        "first delay where there are observations."
+        "reference time. Consider truncating to an earlier reference time to ",
+        "ensure a nowcast, not a forecast, is being produced."
       )
     )
   }

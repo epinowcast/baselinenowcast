@@ -27,29 +27,30 @@
 #'   byrow = TRUE
 #' )
 #'
-#' list_of_exp_obs_nowcast <- add_obs_errs_to_pt_nowcast_mat(
+#' list_of_exp_obs_nowcast <- add_uncertainty(
 #'   point_nowcast_matrix = point_nowcast_matrix,
 #'   disp = c(8, 1.4, 4),
 #'   n_draws = 10
 #' )
 #' print(list_of_exp_obs_nowcast[[1]])
-add_obs_errs_to_pt_nowcast_mat <- function(point_nowcast_matrix,
-                                           disp,
-                                           n_draws = 1000) {
+add_uncertainty <- function(point_nowcast_matrix,
+                            disp,
+                            n_draws = 1000) {
   assert_integerish(n_draws, lower = 1)
   list_of_exp_obs_nowcasts <- lapply(1:n_draws, function(i) {
-    return(add_obs_err_to_pt_nowcast_mat(point_nowcast_matrix, disp))
+    return(get_nowcast_mat_draw(point_nowcast_matrix, disp))
   })
   return(list_of_exp_obs_nowcasts)
 }
 
 
-#' Add observation error to a point nowcast
+#' Get a probablistic draw from the observation model
 #'
 #' The function ingests an estimate of a point nowcast, in the form of a
-#'   reporting rectangle and a vector of dispersion parameters, and adds
-#'   observation error to generate an expected observed nowcast
-#' @inheritParams add_obs_errs_to_pt_nowcast_mat
+#'   point nowcast matrix and a vector of dispersion parameters, and draws
+#'   from a negative binomial to get a single expected observed probabilistic
+#'   draw of a nowcast
+#' @inheritParams add_uncertainty
 #' @importFrom cli cli_abort
 #' @importFrom checkmate assert_numeric
 #'
@@ -74,13 +75,13 @@ add_obs_errs_to_pt_nowcast_mat <- function(point_nowcast_matrix,
 #'   byrow = TRUE
 #' )
 #'
-#' exp_obs_nowcast <- add_obs_err_to_pt_nowcast_mat(
+#' exp_obs_nowcast <- get_nowcast_mat_draw(
 #'   point_nowcast_matrix = point_nowcast_matrix,
 #'   disp = c(8, 1.4, 4)
 #' )
 #' print(exp_obs_nowcast)
-add_obs_err_to_pt_nowcast_mat <- function(point_nowcast_matrix,
-                                          disp) {
+get_nowcast_mat_draw <- function(point_nowcast_matrix,
+                                 disp) {
   if (anyNA(point_nowcast_matrix)) {
     cli_abort(message = c(
       "`point_nowcast_matrix` contains NA values. It should only contain ",

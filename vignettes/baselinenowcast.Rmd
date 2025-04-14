@@ -453,22 +453,10 @@ disp_params <- estimate_dispersion(
 # Generate probabilistic nowcast
 
 Now that we have estimated the dispersion, we take the point nowcast matrix we
-previously generated, `point_nowcast_matrix` and generate many draws of the
-expected observed values to get a probabilistic nowcast. We'll start by
-demonstrating how to generate a single expected observation from just a point
-nowcast matrix.
-
-```{r add-observation-error}
-nowcast_draw <- add_obs_err_to_pt_nowcast_mat(
-  point_nowcast_matrix = point_nowcast_matrix,
-  disp = disp_params
-)
-```
-
-We will generate `n_draws` of the nowcast matrices which
-will be used to generate a probabilistic nowcast
+previously generated, `point_nowcast_matrix`, and generate many draws of the
+expected observed values to get a probabilistic nowcast.
 ```{r generate-many-expected-observed-nowcasts}
-nowcast_matrix_list <- add_obs_errs_to_pt_nowcast_mat(
+nowcast_matrix_list <- add_uncertainty(
   point_nowcast_matrix = point_nowcast_matrix,
   disp = disp_params,
   n_draws = 1000

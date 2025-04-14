@@ -85,9 +85,9 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_delay_estimate</span><span class="op">(</span></span>
-<span>  <span class="va">triangle</span>,</span>
-<span>  max_delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">triangle</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
-<span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">triangle</span><span class="op">)</span></span>
+<span>  <span class="va">reporting_triangle</span>,</span>
+<span>  max_delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
+<span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -95,9 +95,10 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-triangle">triangle<a class="anchor" aria-label="anchor" href="#arg-triangle"></a></dt>
-<dd><p>Matrix of the reporting triangle, with rows representing
-the time points of reference and columns representing the delays.</p></dd>
+<dl><dt id="arg-reporting-triangle">reporting_triangle<a class="anchor" aria-label="anchor" href="#arg-reporting-triangle"></a></dt>
+<dd><p>Matrix of the reporting triangle, with rows
+representing the time points of reference and columns representing the
+delays. Can be a reporting matrix or incomplete reporting matrix.</p></dd>
 
 
 <dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
@@ -134,7 +135,7 @@ mass on each delay.</p>
 <span class="r-in"><span>  byrow <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">delay_pmf</span> <span class="op">&lt;-</span> <span class="fu">get_delay_estimate</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  triangle <span class="op">=</span> <span class="va">triangle</span>,</span></span>
+<span class="r-in"><span>  reporting_triangle <span class="op">=</span> <span class="va">triangle</span>,</span></span>
 <span class="r-in"><span>  max_delay <span class="op">=</span> <span class="fl">3</span>,</span></span>
 <span class="r-in"><span>  n <span class="op">=</span> <span class="fl">4</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>

@@ -138,14 +138,14 @@ additionally install <code>CmdStan</code>.</p>
 </h2>
 <p>Nowcasting of right-truncated case counts involves the estimation of reporting
 delays for recently reported data.
-For this, we need case counts both by when they were diagnosed (often
+For this, we need case counts indexed both by when they were diagnosed (often
 called “reference date”) and by when they were
 reported (i.e. when administratively recorded via public health surveillance;
 often called “report date”). The difference between the reference date and the
 report date is the reporting delay.
 For this quick start, we use daily level data from the
 <a href="https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence" class="external-link">Robert Koch Institute via the Germany Nowcasting hub</a>.
-These data represent hospitalisation counts by date of positive test and date
+These data represent hospital admission counts by date of positive test and date
 of test report in Germany up to October 1, 2021.</p>
 </div>
 <div class="section level2" number="4">
@@ -165,7 +165,7 @@ date, across all delays, using the data available as of July 1, 2021.
 It demonstrates the characteristic behaviour of right-truncation.
 This is because we have not yet observed the data that will become available
 for the longer delays at recent time points.</p>
-<p>Our task will be to estimate what the “final” cumulative number of cases will
+<p>Our task will be to estimate what the “final” cumulative number of cases
 at each reference date, observed as of the “fully observed” data on October
 2021.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -199,8 +199,8 @@ at each reference date, observed as of the “fully observed” data on October
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Comparing real-time and later observed cases"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="baselinenowcast_files/figure-html/plot-the-data-by-reference-date-1.png" width="672"></p>
 <p>Here the black line represents the quantity we will evaluate our nowcast
-against, and the red line represents the data we have available to us up until
-July 1st, 2021.</p>
+against, the final observed cases, and the red line represents the observed
+cases we have observed up until July 1st, 2021.</p>
 </div>
 <div class="section level2" number="5">
 <h2 id="pre-processing">
@@ -208,19 +208,21 @@ July 1st, 2021.</p>
 </h2>
 <p>In order to compute a nowcast for this data, we will need to start by creating
 what we call a reporting triangle.
-This is a wide formatted dataframe where each row represents one of the time
-points being reference and each column represents the delay, starting from 0 up
+This is a matrix where each row represents one of the time
+points being referenced and each column represents the delay, starting from 0 up
 until the maximum delay.
 The entries represent the number of new cases assigned to that reference
-time point with a particular delay.
+time point with a particular delay, with entries in the bottom right triangle
+missing as the data reported with longer delays has yet to be observed for
+recent reference times.
 The reporting triangle will be used to estimate the delay distribution, or the
 proportion of the final number of cases reported on a particular delay.
 Since this data is both reported and referenced daily, we will use the time
 scale of days to create the reporting triangle, but the delay and the reference
 date can have any temporal granularity.</p>
 <p>In this example, we will both fit our delay distribution, and apply it to
-generate a nowcast using the same data, the national level data from Germany
-for all age groups.
+generate a nowcast matrix using the same data, the national level data from
+Germany for all age groups.
 However, these components can be separated, so for example, we could use the
 national level data for all age groups to estimate a delay distribution, and
 then we could apply that elsewhere, for example to the data stratified by
@@ -229,23 +231,24 @@ This type of “borrowing” from another training dataset can be really useful
 when you have low counts or relatively sparse data, which is likely to be the
 case for smaller populations.</p>
 <p>In the below sections, we will specify our nowcast date, the maximum delay,
-and the number of observations by reference date that we want to use to
+and the number of reference time observations that we want to use to
 estimate the delay distribution.
 We recommend choosing the maximum delay and number of historical observations
 based on an exploratory data analysis, as these specifications will change
 significantly depending on the dataset.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast_date</span> <span class="op">&lt;-</span> <span class="st">"2021-07-01"</span></span>
+<span></span>
 <span><span class="co"># Specify the maximum delay, which will determine the length of your delay</span></span>
 <span><span class="co"># distribution. Empirical data outside this delay window will not be used for</span></span>
 <span><span class="co"># training.</span></span>
 <span><span class="va">max_delay</span> <span class="op">&lt;-</span> <span class="fl">40</span></span>
-<span><span class="co"># Specify the number of reference dates to use to estimate the delay</span></span>
-<span><span class="co"># distribution.Note this assumes you want the most recent observations</span></span>
-<span><span class="co"># (though we can consider changing this)</span></span>
+<span></span>
+<span><span class="co"># Specify the number of reference times to use to estimate the delay</span></span>
+<span><span class="co"># distribution. Note this assumes you want the most recent observations.</span></span>
 <span><span class="va">n_history_delay</span> <span class="op">&lt;-</span> <span class="fl">60</span></span></code></pre></div>
 <p>Next we will use the <code>epinowcast</code> function, <code><a href="https://package.epinowcast.org/reference/enw_preprocess_data.html" class="external-link">enw_preprocess_data()</a></code> and the
-data in the form a of a long tidy dataframe indexed by reference date and
+data in the form of a long tidy dataframe indexed by reference date and
 report date and filtered to the strata we are interested in, to generate a
 reporting triangle.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -308,13 +311,13 @@ reporting triangle.</p>
 <span><span class="co">## 5:     3     4     2     0     2     0     4     4</span></span>
 <span><span class="co">## 6:     2     1     4     0     0     0     3     7</span></span></code></pre>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">triangle_matrix</span> <span class="op">&lt;-</span> <span class="va">triangle_full</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">reporting_triangle</span> <span class="op">&lt;-</span> <span class="va">triangle_full</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">`.group`</span>, <span class="op">-</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>To see what this looks like, we can plot it using <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot()</a></code>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">triangle_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">triangle_matrix</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">triangle_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>time <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="op">!</span><span class="va">time</span>,</span>
 <span>    values_to <span class="op">=</span> <span class="st">"count"</span>,</span>
@@ -341,9 +344,9 @@ should contains NAs for the yet-to-be observed values.
 To make this change, we can use the package function
 <code><a href="../reference/replace_lower_right_with_NA.html">replace_lower_right_with_NA()</a></code>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/replace_lower_right_with_NA.html">replace_lower_right_with_NA</a></span><span class="op">(</span><span class="va">triangle_matrix</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">cleaned_reporting_triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/replace_lower_right_with_NA.html">replace_lower_right_with_NA</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">triangle_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">triangle</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span><span class="va">triangle_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">cleaned_reporting_triangle</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>time <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="op">!</span><span class="va">time</span>,</span>
 <span>    values_to <span class="op">=</span> <span class="st">"count"</span>,</span>
@@ -384,23 +387,20 @@ function.
 If reference date are repeated because the reporting triangle contains multiple
 strata, the function will throw an error.</p>
 <p>The <code><a href="../reference/get_delay_estimate.html">get_delay_estimate()</a></code> function expects the following inputs:
-- <code>triangle</code>: a matrix with the reporting triangle for a single strata. Here
-the rows represent the time points and the columns represent the observed
-delays, starting at 0.
+- <code>reporting_triangle</code>: a matrix with the reporting triangle for a single
+strata. Here the rows represent the time points and the columns represent the
+observed delays, starting at 0. This can also be a reporting matrix or an
+incomplete reporting matrix (so not all elements of the bottom right triangle
+need to be missing).
 - <code>max_delay</code>: an integer indicating the maximum delay to estimate. This must
 be less than or equal to the number of rows in <code>triangle</code> minus 1, since we
 assume <code>triangle</code> is indexed at 0.
 - <code>n_history_delay</code>: an integer indicating the number of observations by reference
 date to use to fit the delay distribution. This must be less than or equal to
-the number of rows in <code>triangle</code>.
-<code>enw_preprocess()</code> returns a <code>triangle</code> with the columns <code>.group</code> and
-<code>.reference_date</code> and delays indicated by the column names. While we will
-eventually write methods that will map from other input formats such as this,
-we will start by demonstrating the functionality on only the matrix of the
-reporting triangle.</p>
+the number of rows in <code>triangle</code>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">delay_pmf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_delay_estimate.html">get_delay_estimate</a></span><span class="op">(</span></span>
-<span>  triangle <span class="op">=</span> <span class="va">triangle</span>,</span>
+<span>  reporting_triangle <span class="op">=</span> <span class="va">cleaned_reporting_triangle</span>,</span>
 <span>  max_delay <span class="op">=</span> <span class="va">max_delay</span>,</span>
 <span>  n <span class="op">=</span> <span class="va">n_history_delay</span></span>
 <span><span class="op">)</span></span>
@@ -440,8 +440,8 @@ used to generate the estimate, but this doesn’t always have to be the case.
 The reporting triangle we are applying it to must have the same <code>max_delay</code>
 as the delay estimate.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">point_reporting_square</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apply_delay.html">apply_delay</a></span><span class="op">(</span></span>
-<span>  triangle_to_nowcast <span class="op">=</span> <span class="va">triangle</span>,</span>
+<code class="sourceCode R"><span><span class="va">point_nowcast_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apply_delay.html">apply_delay</a></span><span class="op">(</span></span>
+<span>  rep_tri_to_nowcast <span class="op">=</span> <span class="va">cleaned_reporting_triangle</span>,</span>
 <span>  delay_pmf <span class="op">=</span> <span class="va">delay_pmf</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>We’ll make a quick plot to compare the nowcasted confirmed cases through
@@ -458,7 +458,7 @@ We’ll compare this to the right-truncated data available up until July 1, 2021
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
 <span>    total_confirmed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">confirm</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>nowcast <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">point_reporting_square</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>nowcast <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">point_nowcast_matrix</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">summary_data</span> <span class="op">&lt;-</span> <span class="va">observed_long</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>total_confirmed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">confirm</span><span class="op">)</span><span class="op">)</span></span>
@@ -502,22 +502,22 @@ the iterative process, by generating retrospective reporting
 triangles using what would have been available as of the time, and then for
 each reporting triangle, estimating a delay distribution and generating
 a nowcast.</p>
-<p>To do this, we will first generate truncated reporting triangles from the
-latest reporting triangle, then generate retrospective reporting triangles
+<p>To do this, we will first generate truncated reporting matrices from the
+latest reporting triangle, generate retrospective reporting triangles
 by removing observations that wouldn’t have been observed as of the latest time
-point, and then we will generate nowcasts from that list
-of retrospective reporting triangles.
+point, and lastly generate nowcasts from that list of retrospective reporting
+triangles.
 The function will default to assuming you want to generate
 as many retrospective reporting triangles that you will be able to generate
 nowcasts from. In this case, the function will return 18 retrospective
 reporting triangles, with the smallest one containing 42 rows, all of which
 are needed to generate a nowcast of reporting triangle with 41 delay columns.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">truncated_rts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/truncate_triangles.html">truncate_triangles</a></span><span class="op">(</span></span>
-<span>  triangle <span class="op">=</span> <span class="va">triangle</span></span>
+<code class="sourceCode R"><span><span class="va">trunc_rep_mat_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/truncate_triangles.html">truncate_triangles</a></span><span class="op">(</span></span>
+<span>  reporting_triangle <span class="op">=</span> <span class="va">cleaned_reporting_triangle</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">retro_rts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_triangles.html">generate_triangles</a></span><span class="op">(</span></span>
-<span>  list_of_trunc_rts <span class="op">=</span> <span class="va">truncated_rts</span></span>
+<span><span class="va">retro_rep_tri_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_triangles.html">generate_triangles</a></span><span class="op">(</span></span>
+<span>  trunc_rep_mat_list <span class="op">=</span> <span class="va">trunc_rep_mat_list</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The <code><a href="../reference/generate_triangles.html">generate_triangles()</a></code> function returns a list of
 reporting triangles, in order from the most to least
@@ -528,45 +528,36 @@ that each triangle will have a different number of rows.</p>
 <code>generate_nowcasts()</code> alongside the specification of how many observations
 to use to estimate the delay</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">retro_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_point_nowcasts.html">generate_point_nowcasts</a></span><span class="op">(</span></span>
-<span>  list_of_rts <span class="op">=</span> <span class="va">retro_rts</span></span>
+<code class="sourceCode R"><span><span class="va">retro_pt_nowcast_mat_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_pt_nowcast_mat_list.html">generate_pt_nowcast_mat_list</a></span><span class="op">(</span></span>
+<span>  reporting_triangle_list <span class="op">=</span> <span class="va">retro_rep_tri_list</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Next, we will use the list of retrospective reporting triangles to estimate
 the uncertainty at each delay <span class="math inline">\(d\)</span></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">disp_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_dispersion.html">estimate_dispersion</a></span><span class="op">(</span></span>
-<span>  list_of_nowcasts <span class="op">=</span> <span class="va">retro_nowcasts</span>,</span>
-<span>  list_of_trunc_rts <span class="op">=</span> <span class="va">truncated_rts</span></span>
+<span>  pt_nowcast_mat_list <span class="op">=</span> <span class="va">retro_pt_nowcast_mat_list</span>,</span>
+<span>  trunc_rep_mat_list <span class="op">=</span> <span class="va">trunc_rep_mat_list</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2" number="9">
 <h2 id="generate-probabilistic-nowcast">
 <span class="header-section-number">9</span> Generate probabilistic nowcast<a class="anchor" aria-label="anchor" href="#generate-probabilistic-nowcast"></a>
 </h2>
-<p>Now that we have estimated the dispersion, we take the point nowcast we
-previously generated, <code>point_reporting_square</code> and generate many draws of the
-expected observed values to get a probabilistic nowcast. We’ll start by
-demonstrating how to generate a single expected observation from just a point
-nowcast.</p>
+<p>Now that we have estimated the dispersion, we take the point nowcast matrix we
+previously generated, <code>point_nowcast_matrix</code>, and generate many draws of the
+expected observed values to get a probabilistic nowcast.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nowcast_draw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/add_obs_error_to_nowcast.html">add_obs_error_to_nowcast</a></span><span class="op">(</span></span>
-<span>  comp_rep_square <span class="op">=</span> <span class="va">point_reporting_square</span>,</span>
-<span>  disp <span class="op">=</span> <span class="va">disp_params</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>We will generate <code>n_draws</code> of these expected observed nowcast draws, which
-will be used to generate a probabilistic nowcast</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">exp_obs_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/add_obs_errors_to_nowcast.html">add_obs_errors_to_nowcast</a></span><span class="op">(</span></span>
-<span>  comp_rep_square <span class="op">=</span> <span class="va">point_reporting_square</span>,</span>
+<code class="sourceCode R"><span><span class="va">nowcast_matrix_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/add_uncertainty.html">add_uncertainty</a></span><span class="op">(</span></span>
+<span>  point_nowcast_matrix <span class="op">=</span> <span class="va">point_nowcast_matrix</span>,</span>
 <span>  disp <span class="op">=</span> <span class="va">disp_params</span>,</span>
 <span>  n_draws <span class="op">=</span> <span class="fl">1000</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Next, we will take the list of expected observed reporting squares and
+<p>Next, we will take the list of nowcast matrices and
 convert this into a long tidy dataframe, indexed by reference time <code>t</code>,
 delay <code>d</code>, and draws.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nowcast_draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nowcast_list_to_df.html">nowcast_list_to_df</a></span><span class="op">(</span></span>
-<span>  list_of_nowcasts <span class="op">=</span> <span class="va">exp_obs_nowcasts</span></span>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nowcast_draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nowcast_matrix_list_to_df.html">nowcast_matrix_list_to_df</a></span><span class="op">(</span></span>
+<span>  nowcast_matrix_list <span class="op">=</span> <span class="va">nowcast_matrix_list</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">nowcast_draws</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   time delay count draw</span></span>
@@ -580,7 +571,7 @@ delay <code>d</code>, and draws.</p>
 which converts the draws indexed by <code>t</code> and <code>d</code> to one which contains the sum
 over all delays. We can then use this to plot the nowcasts compared to the
 data available as of the nowcast date, and the later observed data.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">summary_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_df_by_ref_time.html">aggregate_df_by_ref_time</a></span><span class="op">(</span><span class="va">nowcast_draws</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Join with the original data</span></span>

@@ -90,28 +90,28 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">apply_delay</span><span class="op">(</span><span class="va">triangle_to_nowcast</span>, <span class="va">delay_pmf</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">apply_delay</span><span class="op">(</span><span class="va">rep_tri_to_nowcast</span>, <span class="va">delay_pmf</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-triangle-to-nowcast">triangle_to_nowcast<a class="anchor" aria-label="anchor" href="#arg-triangle-to-nowcast"></a></dt>
-<dd><p>Matrix of the incomplete reporting triangle to be
+<dl><dt id="arg-rep-tri-to-nowcast">rep_tri_to_nowcast<a class="anchor" aria-label="anchor" href="#arg-rep-tri-to-nowcast"></a></dt>
+<dd><p>Matrix of the reporting triangle to be
 nowcasted, with rows representing the time points of reference and columns
 representing the delays</p></dd>
 
 
 <dt id="arg-delay-pmf">delay_pmf<a class="anchor" aria-label="anchor" href="#arg-delay-pmf"></a></dt>
 <dd><p>Vector of delays assumed to be indexed starting at the
-first delay column in <code>triangle_to_nowcast</code></p></dd>
+first delay column in <code>rep_mat_to_nowcast</code></p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>comp_rep_square</code> Matrix of the same number of rows and columns as
-the <code>triangle_to_nowcast</code> but with the missing values filled in as point
+    <p><code>point_nowcast_matrix</code> Matrix of the same number of rows and columns
+as the <code>rep_mat_to_nowcast</code> but with the missing values filled in as point
 estimates</p>
     </div>
 
@@ -129,15 +129,15 @@ estimates</p>
 <span class="r-in"><span>  byrow <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">delay_pmf</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_delay_estimate.html">get_delay_estimate</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  triangle <span class="op">=</span> <span class="va">triangle</span>,</span></span>
+<span class="r-in"><span>  reporting_triangle <span class="op">=</span> <span class="va">triangle</span>,</span></span>
 <span class="r-in"><span>  max_delay <span class="op">=</span> <span class="fl">3</span>,</span></span>
 <span class="r-in"><span>  n <span class="op">=</span> <span class="fl">4</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">reporting_square</span> <span class="op">&lt;-</span> <span class="fu">apply_delay</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  triangle_to_nowcast <span class="op">=</span> <span class="va">triangle</span>,</span></span>
+<span class="r-in"><span><span class="va">point_nowcast_matrix</span> <span class="op">&lt;-</span> <span class="fu">apply_delay</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  rep_tri_to_nowcast <span class="op">=</span> <span class="va">triangle</span>,</span></span>
 <span class="r-in"><span>  delay_pmf <span class="op">=</span> <span class="va">delay_pmf</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">reporting_square</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">point_nowcast_matrix</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1]     [,2]     [,3]     [,4]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   80 50.00000 25.00000 10.00000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,]  100 50.00000 30.00000 20.00000</span>

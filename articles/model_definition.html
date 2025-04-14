@@ -85,9 +85,7 @@
 <h2 id="overview">
 <span class="header-section-number">1</span> Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>The <code>baselinenowcast</code> model, initially developed as a reference for the COVID-19 hospital admissions nowcasting challenge in Germany (2021-2022, <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1011394" class="external-link">Wolffram et al</a>, utilises reporting triangles of preliminary case counts and their delays. It applies a multiplicative approach, using empirically observed historical delay distributions to estimate yet-to-be-observed cases.
-Users can specify whether delay distributions are estimated from the current reporting triangle, fully observed past data, or data from different strata. The model produces point nowcasts by “filling in” the reporting triangle.
-Probabilistic nowcasts are generated using a negative binomial model with means from the point nowcast and dispersion parameters estimated from past nowcast errors. These parameters can also be flexibly sourced from current data, historical data, or alternative settings.</p>
+<p>The <code>baselinenowcast</code> model, initially developed as a reference for the COVID-19 hospital admissions nowcasting challenge in Germany (2021-2022, <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1011394" class="external-link">Wolffram et al</a>, utilises reporting triangles of preliminary case counts and their delays. It applies a multiplicative approach, using empirically observed historical delay distributions to estimate yet-to-be-observed cases. Users can specify whether delay distributions are estimated from the latest data, fully observed past data, or data from different strata. The model produces point estimates of nowcasts by “filling in” the reporting triangle. Probabilistic nowcasts are generated using a negative binomial model with means from the point nowcast and dispersion parameters estimated from past nowcast errors. The dispersion parameters can also be flexibly sourced from current data, historical data, or alternative settings.</p>
 <div class="section level3" number="1.1">
 <h3 id="notation">
 <span class="header-section-number">1.1</span> Notation<a class="anchor" aria-label="anchor" href="#notation"></a>
@@ -96,7 +94,7 @@ Probabilistic nowcasts are generated using a negative binomial model with means 
 <p><span class="math display">\[X_{t, \le d} = \sum_{i=0}^d X_{t,i} \]</span></p>
 <p>Such that <span class="math inline">\(X_t = X_{t, \le D}\)</span> is the “final” number of reported cases on time <span class="math inline">\(t\)</span>. Conversely, for <span class="math inline">\(d &lt; D\)</span></p>
 <p><span class="math display">\[X_{t,&gt;d} = \sum_{i = d+1} ^{D} X_{t,i}\]</span></p>
-<p>is the number of cases still missing after <span class="math inline">\(d\)</span> delay. We refer to <span class="math inline">\(X_t\)</span> to describe a random variable, <span class="math inline">\(x_t\)</span> for the corresponding observation, and <span class="math inline">\(\hat{x}_t\)</span> for an estimated/imputed value. The matrix of <span class="math inline">\(x_{t,d}\)</span> available at a given data release time <span class="math inline">\(t^*\)</span> is referred to as the reporting triangle. Here, all <span class="math inline">\(t+d&gt;t^*\)</span> have yet to be observed.</p>
+<p>is the number of cases still missing after <span class="math inline">\(d\)</span> delay. We refer to <span class="math inline">\(X_t\)</span> to describe a random variable, <span class="math inline">\(x_t\)</span> for the corresponding observation, and <span class="math inline">\(\hat{x}_t\)</span> for an estimated/imputed value. The matrix of <span class="math inline">\(x_{t,d}\)</span> available at a given time <span class="math inline">\(t^*\)</span> is referred to as a reporting matrix. In the case where all <span class="math inline">\(t+d&gt;t^*\)</span> have yet to be observed (e.g. <span class="math inline">\(t^*\)</span> is the current time), this reporting matrix is referred to as the reporting triangle, with all values in the bottom right corner of the triangle being missing, except for the first entry at <span class="math inline">\(x_{t=t*, d = 0}\)</span>.</p>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="14%">
@@ -173,7 +171,93 @@ Probabilistic nowcasts are generated using a negative binomial model with means 
 </tr>
 </tbody>
 </table>
-<p>We refer to the matrix with imputed values for all <span class="math inline">\(t+d&gt;t^*\)</span> as a point nowcast, and the matrix with a complete set of observations for all elements as a complete reporting square.</p>
+<p>Throughout this document and package, we will refer to these matrices, as well as their corresponding vectors, using the following table. In this table, “point” refers to a point estimate. When not indicated, we are referring to a probabilistic draw from an observation model.</p>
+<table class="table">
+<colgroup>
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th><strong>Data Structure</strong></th>
+<th><strong>Observations Only</strong></th>
+<th><strong>Mixed (Obs + Predictions)</strong></th>
+<th><strong>Pure Predictions Only</strong></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><strong>Matrix Format</strong></td>
+<td>
+<code>reporting_matrix</code> (complete)<br><code>reporting_triangle</code> (incomplete)<br><code>incomplete_reporting_matrix</code>
+</td>
+<td>
+<code>point_nowcast_matrix</code><br><code>nowcast_matrix</code>
+</td>
+<td>
+<code>point_pred_matrix</code><br><code>pred_matrix</code>
+</td>
+</tr>
+<tr class="even">
+<td><strong>List Format</strong></td>
+<td>
+<code>reporting_matrix_list</code> (complete)<br><code>reporting_triangle_list</code> (incomplete)<br><code>incomplete_reporting_matrix_list</code>
+</td>
+<td><code>nowcast_matrix_list</code></td>
+<td><code>pred_matrix_list</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Vector Format</strong></td>
+<td><code>observed_cases</code></td>
+<td>
+<code>point_nowcast</code><br><code>nowcast</code>
+</td>
+<td>
+<code>point_pred</code><br><code>pred</code>
+</td>
+</tr>
+<tr class="even">
+<td><strong>DataFrame Format</strong></td>
+<td>-</td>
+<td><code>nowcast_df</code></td>
+<td><code>pred_df</code></td>
+</tr>
+</tbody>
+</table>
+<p>For example, we refer to the matrix with imputed point estimates for all <span class="math inline">\(t+d&gt;t^*\)</span> as a point nowcast matrix, a matrix with a complete set of observations for all elements as a reporting matrix, and a matrix with only the predictions as a point prediction matrix.</p>
+<p>We will use the following to abbreviations to shorten names in the code:</p>
+<table class="table">
+<thead><tr class="header">
+<th><strong>Long Name</strong></th>
+<th><strong>Code Abbreviation</strong></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>reporting</td>
+<td><code>rep</code></td>
+</tr>
+<tr class="even">
+<td>observed</td>
+<td><code>obs</code></td>
+</tr>
+<tr class="odd">
+<td>incomplete</td>
+<td><code>inc</code></td>
+</tr>
+<tr class="even">
+<td>matrix</td>
+<td><code>mat</code></td>
+</tr>
+<tr class="odd">
+<td>point</td>
+<td><code>pt</code></td>
+</tr>
+<tr class="even">
+<td>error</td>
+<td><code>err</code></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="section level2" number="2">
@@ -181,10 +265,10 @@ Probabilistic nowcasts are generated using a negative binomial model with means 
 <span class="header-section-number">2</span> Point estimate of the delay distribution<a class="anchor" aria-label="anchor" href="#point-estimate-of-the-delay-distribution"></a>
 </h2>
 <div class="section level3" number="2.1">
-<h3 id="estimate-of-the-delay-distribution-from-a-complete-reporting-square">
-<span class="header-section-number">2.1</span> Estimate of the delay distribution from a complete reporting square<a class="anchor" aria-label="anchor" href="#estimate-of-the-delay-distribution-from-a-complete-reporting-square"></a>
+<h3 id="estimate-of-the-delay-distribution-from-a-reporting-matrix">
+<span class="header-section-number">2.1</span> Estimate of the delay distribution from a reporting matrix<a class="anchor" aria-label="anchor" href="#estimate-of-the-delay-distribution-from-a-reporting-matrix"></a>
 </h3>
-<p>We can use a complete reporting square (which can in reality, be rectangular) to compute an empirical estimate of the delay distribution, <span class="math inline">\(\pi(d)\)</span>. The empirical delay distribution, <span class="math inline">\(\pi(d)\)</span> can be computed directly from the completed reporting square <span class="math inline">\(X\)</span></p>
+<p>We can use a reporting matrix to compute an empirical estimate of the delay distribution, <span class="math inline">\(\pi(d)\)</span>. The empirical delay distribution, <span class="math inline">\(\pi(d)\)</span> can be computed directly from the reporting matrix <span class="math inline">\(X\)</span></p>
 <p><span class="math display">\[
 \pi(d)= \frac{\sum_{t=1}^{t=t^*} X_{t,d}}{\sum_{d=0}^{D} \sum_{t=1}^{t=t^*} X_{t,d}}
 \]</span></p>
@@ -194,21 +278,21 @@ Probabilistic nowcasts are generated using a negative binomial model with means 
 <h3 id="estimate-of-the-delay-distribution-from-a-reporting-triangle">
 <span class="header-section-number">2.2</span> Estimate of the delay distribution from a reporting triangle<a class="anchor" aria-label="anchor" href="#estimate-of-the-delay-distribution-from-a-reporting-triangle"></a>
 </h3>
-<p>In the case where we have missing values in the bottom right of the reporting triangle, we need to use the multiplicative model to generate a matrix containing a mixture of observed and imputed values. Then we can compute the delay distribution as described above for the complete reporting square case.</p>
+<p>In the case where we have missing values in the bottom right (i.e. we have a reporting triangle), we need to use the multiplicative model to generate a point nowcast matrix containing a mixture of observed and imputed values. Then we can compute the delay distribution as described above for the reporting matrix case.</p>
 <p>The multiplicative model works by iteratively “filling in” the reporting triangle starting from the bottom left, and moving column by column from left to right until the bottom right of the triangle is filled in.</p>
 <div class="float" id="fig1">
 <img src="../reference/figures/schematic_fig.png" alt="Visual description of the iterative “completing” of the reporting triangle, moving from left to right and bottom to top. In this cases, we are imputing $x_{t=6, d = 2}$ and $x_{t=5, d= 2}$ assuming that the ratio between $x_{t=1:4, d = 2}$ (block top), and $x_{t=1:4, d=0:1}$ (block top left) holds for for $x_{t=5:6, d = 2}$ (block bottom) and $x_{t=5:6, d = 0:1}$ (block bottom left). In this example, $\hat{x}_{t=6, d = 1}$ has already been imputed using the same approach, and we treat it as known going forward. This process is repeated across the reporting triangle to estimate all values outlined in the dashed lines."><div class="figcaption">Visual description of the iterative “completing” of the reporting triangle, moving from left to right and bottom to top. In this cases, we are imputing $x_{t=6, d = 2}$ and $x_{t=5, d= 2}$ assuming that the ratio between $x_{t=1:4, d = 2}$ (block top), and $x_{t=1:4, d=0:1}$ (block top left) holds for for $x_{t=5:6, d = 2}$ (block bottom) and $x_{t=5:6, d = 0:1}$ (block bottom left). In this example, $\hat{x}_{t=6, d = 1}$ has already been imputed using the same approach, and we treat it as known going forward. This process is repeated across the reporting triangle to estimate all values outlined in the dashed lines.</div>
 </div>
-<p>The method requires at least one observation, at delay <span class="math inline">\(d=0\)</span> for the most recent reference time, located at the bottom left of the reporting triangle in Figure <a href="#fig1"><strong>??</strong></a> above. The method assumes that the values at each delay <span class="math inline">\(d\)</span> for the recent times, <span class="math inline">\(t\)</span>, will consist of the same proportion of the values previously reported for earlier times <span class="math inline">\(t\)</span>. To fill in the missing values for each column <span class="math inline">\(d\)</span>, we sum over the rectangle of completely observed reference dates for all <span class="math inline">\(d-1\)</span> columns (block top left) and sum over the column of completely observed reference dates for all of the entries in column <span class="math inline">\(d\)</span> (block left). The ratio of these two sums is assumed to be the same in the missing entries in column <span class="math inline">\(d\)</span>, so we use the entries observed up to <span class="math inline">\(d-1\)</span> for each incomplete reference date (block bottom left), and scale by this ratio to get the missing entries in column <span class="math inline">\(d\)</span>. This process is repeated for each delay from <span class="math inline">\(d\)</span> up to the maximum delay <span class="math inline">\(D\)</span>. At each iteration an additional reference time entry is computed as the delay <span class="math inline">\(d\)</span> increases.</p>
-<p>The delay distribution is then estimated from the filled in reporting square, using the same algorithm as described above for the case of the complete reporting square.</p>
-<p>The <code><a href="../reference/get_delay_estimate.html">get_delay_estimate()</a></code> function ingests either a complete reporting square or a reporting triangle and uses the last <code>n</code> rows to compute an empirical delay probability mass function (returning a simplex vector indexed starting at delay 0).</p>
+<p>The method requires at least one observation, at delay <span class="math inline">\(d=0\)</span> for the most recent reference time, located at the bottom left of the reporting triangle in Figure <a href="#fig1"><strong>??</strong></a> above. The method assumes that the values at each delay <span class="math inline">\(d\)</span> for the recent times, <span class="math inline">\(t\)</span>, will consist of the same proportion of the values previously reported for earlier times <span class="math inline">\(t\)</span>. To fill in the missing values for each column <span class="math inline">\(d\)</span>, we sum over the rectangle of completely observed reference times for all <span class="math inline">\(d-1\)</span> columns (block top left) and sum over the column of completely observed reference times for all of the entries in column <span class="math inline">\(d\)</span> (block left). The ratio of these two sums is assumed to be the same in the missing entries in column <span class="math inline">\(d\)</span>, so we use the entries observed up to <span class="math inline">\(d-1\)</span> for each incomplete reference time (block bottom left), and scale by this ratio to get the missing entries in column <span class="math inline">\(d\)</span>. This process is repeated for each delay from <span class="math inline">\(d\)</span> up to the maximum delay <span class="math inline">\(D\)</span>. At each iteration an additional reference time entry is computed as the delay <span class="math inline">\(d\)</span> increases.</p>
+<p>The delay distribution is then estimated from the filled in reporting matrix, using the same algorithm as described above for the case of the complete reporting square.</p>
+<p>The <code><a href="../reference/get_delay_estimate.html">get_delay_estimate()</a></code> function ingests either a reporting matrix, an incomplete reporting matrix, or a reporting triangle and uses the last <code>n</code> rows to compute an empirical delay probability mass function (returning a simplex vector indexed starting at delay 0).</p>
 </div>
 </div>
 <div class="section level2" number="3">
-<h2 id="generation-of-a-point-nowcast-from-a-delay-distribution-and-a-reporting-triangle">
-<span class="header-section-number">3</span> Generation of a point nowcast from a delay distribution and a reporting triangle<a class="anchor" aria-label="anchor" href="#generation-of-a-point-nowcast-from-a-delay-distribution-and-a-reporting-triangle"></a>
+<h2 id="generation-of-a-point-nowcast-matrix-from-a-delay-distribution-and-a-reporting-triangle">
+<span class="header-section-number">3</span> Generation of a point nowcast matrix from a delay distribution and a reporting triangle<a class="anchor" aria-label="anchor" href="#generation-of-a-point-nowcast-matrix-from-a-delay-distribution-and-a-reporting-triangle"></a>
 </h2>
-<p>To propagate the point nowcast from the delay distribution, we need to estimate the expected total number of eventual observed cases <span class="math inline">\(\hat{x}_t\)</span>, for each reference time <span class="math inline">\(t\)</span>. Let <span class="math inline">\(z\)</span> be the sum over all delays <span class="math inline">\(d\)</span> that have already been observed (up until <span class="math inline">\(t^*-t\)</span>), such that <span class="math inline">\(z =\sum_{d=1}^{d=t^*-t} x_{t,d}\)</span> and <span class="math inline">\(\delta\)</span> be the cumulative sum of the delay distribution, <span class="math inline">\(\pi(d)\)</span> up until <span class="math inline">\(d = t^*-t\)</span> such that <span class="math inline">\(\delta = \sum_{d=1}^{d=t^*-t} \pi(d)\)</span>. By assuming that <span class="math inline">\(z \sim Bin(x_t, \delta)\)</span> and <span class="math inline">\(x_t \sim Unif(0, \inf)\)</span>, it can be shown that the expected value of <span class="math inline">\(x_t\)</span>, the total number of reported cases on reference time <span class="math inline">\(t\)</span>, can be written as:</p>
+<p>To “fill in” the reporting triangle from the delay distribution, we need to estimate the expected total number of eventual observed cases <span class="math inline">\(\hat{x}_t\)</span>, for each reference time <span class="math inline">\(t\)</span>. Let <span class="math inline">\(z\)</span> be the sum over all delays <span class="math inline">\(d\)</span> that have already been observed (up until <span class="math inline">\(t^*-t\)</span>), such that <span class="math inline">\(z =\sum_{d=1}^{d=t^*-t} x_{t,d}\)</span> and <span class="math inline">\(\delta\)</span> be the cumulative sum of the delay distribution, <span class="math inline">\(\pi(d)\)</span> up until <span class="math inline">\(d = t^*-t\)</span> such that <span class="math inline">\(\delta = \sum_{d=1}^{d=t^*-t} \pi(d)\)</span>. By assuming that <span class="math inline">\(z \sim Bin(x_t, \delta)\)</span> and <span class="math inline">\(x_t \sim Unif(0, \inf)\)</span>, it can be shown that the expected value of <span class="math inline">\(x_t\)</span>, the total number of reported cases on reference time <span class="math inline">\(t\)</span>, can be written as:</p>
 <p><span class="math display">\[
 E(x_t | z, \delta) = \hat{x}_t = \frac{z + 1 - \delta}{\delta}
 \]</span></p>
@@ -217,7 +301,7 @@ E(x_t | z, \delta) = \hat{x}_t = \frac{z + 1 - \delta}{\delta}
 \hat{x}_{t,d} = \pi(d) \times \hat{x}_t
 \]</span></p>
 <p>Where the number of reports at timepoint <span class="math inline">\(t\)</span> with delay <span class="math inline">\(d\)</span> is the product of the the expected total reports, <span class="math inline">\(\hat{x}_t\)</span> and the proportion expected at that particular delay <span class="math inline">\(d\)</span>, <span class="math inline">\(\pi(d)\)</span>.</p>
-<p>The <code><a href="../reference/apply_delay.html">apply_delay()</a></code> function ingests a reporting triangle and a delay PMF and returns a point nowcast.</p>
+<p>The <code><a href="../reference/apply_delay.html">apply_delay()</a></code> function ingests a reporting triangle or an incomplete reporting matrix and a delay PMF and returns a point nowcast matrix.</p>
 </div>
 <div class="section level2" number="4">
 <h2 id="estimate-of-dispersion">
@@ -229,37 +313,37 @@ E(x_t | z, \delta) = \hat{x}_t = \frac{z + 1 - \delta}{\delta}
 <span class="header-section-number">4.1</span> Generation of retrospective reporting triangles<a class="anchor" aria-label="anchor" href="#generation-of-retrospective-reporting-triangles"></a>
 </h3>
 <p>We describe a method which generates retrospective reporting triangles to replicate what would have been available as of time <span class="math inline">\(t^*=s^*\)</span>, where <span class="math inline">\(s^* = t^*-m\)</span> for <span class="math inline">\(m = 1, 2, ... M\)</span> to generate <span class="math inline">\(M\)</span> retrospective reporting triangles.</p>
-<p>To generate the set of <span class="math inline">\(M\)</span> reporting triangles, we simply remove the last <span class="math inline">\(m\)</span> rows of the existing reporting triangle (or reporting square/rectangle), to generate <span class="math inline">\(M\)</span> truncated partially complete reporting triangles. These can be generated from a reporting triangle or square with the function <code><a href="../reference/truncate_triangles.html">truncate_triangles()</a></code> which ingests a single reporting triangle (or square/rectangle) and returns a list of <code>n</code> truncated triangles containing only observations and missing values if present. We then replace the bottom right triangle of each matrix with NAs, assuming these would not have been observed as of <span class="math inline">\(s^*\)</span>, using the function <code><a href="../reference/generate_triangles.html">generate_triangles()</a></code> which returns a list of <code>n</code> retrospective reporting triangles. The method uses each retrospective reporting triangle to re-estimate a delay distribution using the <span class="math inline">\(N\)</span> preceding rows of the reporting triangle before <span class="math inline">\(s^*\)</span>, and recomputes a retrospective nowcast, for <span class="math inline">\(M\)</span> realizations of the retrospective reporting triangle (so <span class="math inline">\(M\)</span> different <span class="math inline">\(s^*\)</span> values).</p>
+<p>To generate the set of <span class="math inline">\(M\)</span> reporting triangles, we simply remove the last <span class="math inline">\(m\)</span> rows of the existing reporting triangle (or reporting matrix), to generate <span class="math inline">\(M\)</span> truncated incomplete reporting matrices. These can be generated from a reporting triangle or matrix with the function <code><a href="../reference/truncate_triangles.html">truncate_triangles()</a></code> which ingests a single reporting triangle (or matrix) and returns a list of <code>n</code> truncated (potentially incomplete) reporting matrices containing only observations and missing values if present. We then replace the bottom right triangle of each matrix with NAs, assuming these would not have been observed as of <span class="math inline">\(s^*\)</span>, using the function <code><a href="../reference/generate_triangles.html">generate_triangles()</a></code> which returns a list of <code>n</code> retrospective reporting triangles. The method uses each retrospective reporting triangle to re-estimate a delay distribution using the <span class="math inline">\(N\)</span> preceding rows of the reporting triangle before <span class="math inline">\(s^*\)</span>, and recomputes a retrospective nowcast, for <span class="math inline">\(M\)</span> realizations of the retrospective reporting triangle (so <span class="math inline">\(M\)</span> different <span class="math inline">\(s^*\)</span> values).</p>
 </div>
 <div class="section level3" number="4.2">
-<h3 id="generation-of-retrospective-point-nowcasts">
-<span class="header-section-number">4.2</span> Generation of retrospective point nowcasts<a class="anchor" aria-label="anchor" href="#generation-of-retrospective-point-nowcasts"></a>
+<h3 id="generation-of-retrospective-point-nowcast-matrices">
+<span class="header-section-number">4.2</span> Generation of retrospective point nowcast matrices<a class="anchor" aria-label="anchor" href="#generation-of-retrospective-point-nowcast-matrices"></a>
 </h3>
-<p>From the <span class="math inline">\(M\)</span> reporting triangles, we apply the method described above to estimate a delay distribution from a reporting triangle and generate a point nowcast for each reporting triangle, to generate <span class="math inline">\(M\)</span> point nowcasts. The function <code><a href="../reference/generate_point_nowcasts.html">generate_point_nowcasts()</a></code> ingests the list of reporting triangles, estimates a delay distribution for each, and generates a set of point nowcasts.</p>
+<p>From the <span class="math inline">\(M\)</span> reporting triangles, we apply the method described above to estimate a delay distribution from a reporting triangle and generate a point nowcast for each reporting triangle, to generate <span class="math inline">\(M\)</span> point nowcasts. The function <code>generate_point_nowcasts()</code> ingests the list of reporting triangles, estimates a delay distribution for each, and generates a list of point nowcast matrices.</p>
 </div>
 <div class="section level3" number="4.3">
-<h3 id="fit-point-nowcasts-and-observed-values-to-a-negative-binomial-observation-model-at-each-delay">
-<span class="header-section-number">4.3</span> Fit point nowcasts and observed values to a negative binomial observation model at each delay<a class="anchor" aria-label="anchor" href="#fit-point-nowcasts-and-observed-values-to-a-negative-binomial-observation-model-at-each-delay"></a>
+<h3 id="fit-point-nowcast-matrices-and-observed-values-to-a-negative-binomial-observation-model-at-each-delay">
+<span class="header-section-number">4.3</span> Fit point nowcast matrices and observed values to a negative binomial observation model at each delay<a class="anchor" aria-label="anchor" href="#fit-point-nowcast-matrices-and-observed-values-to-a-negative-binomial-observation-model-at-each-delay"></a>
 </h3>
-<p>We then take the set of point nowcasts, and the set of truncated partially complete reporting triangles (these do not necessarily contains NAs on the bottom right, the bottom right could be entirely or partially observed). For each delay <span class="math inline">\(d\)</span> we identify the overlapping set of matrix elements that were imputed retrospectively and matrix elements that had been observed as of the most recent time point.</p>
+<p>We then take the list of point nowcast matrices, and the list of truncated incomplete reporting matrices (these do not necessarily contains NAs on the bottom right, the bottom right could be entirely or partially observed). For each delay <span class="math inline">\(d\)</span> we identify the overlapping set of matrix elements that were imputed retrospectively and matrix elements that had been observed as of the most recent time point.</p>
 <p>For each delay <span class="math inline">\(d = 1, ..., D\)</span> we assume that the observed values, <span class="math inline">\(X_{s^*-d, &gt;d}\)</span> follow a negative binomial observation model with a mean of <span class="math inline">\(\hat{x}_{s^*-d}\)</span>:</p>
 <p><span class="math display">\[
 X_{s^*-d,&gt;d} | \hat{x}_{s^*-d, &gt;d}(s*) \sim NegBin(\mu = \hat{x}_{s^*-d} + 0.1, \phi = \phi_d)
 \]</span></p>
-<p>We add a small number (0.1) to the mean to avoid an ill-defined negative binomial. We note that to perform all these computations, data snapshots from at least <span class="math inline">\(N + M\)</span> past observations, or rows of the original reporting triangle (or square/rectangle), are needed. This estimate of the uncertainty accounts for the empirical uncertainty in the point estimate of the delay distribution over time.</p>
-<p>The function <code><a href="../reference/estimate_dispersion.html">estimate_dispersion()</a></code> ingests a list of truncated triangles representing the observations, and the list of point nowcasts, and returns a vector of negative binomial dispersion parameters indexed starting at delay <span class="math inline">\(d = 1\)</span>.</p>
+<p>We add a small number (0.1) to the mean to avoid an ill-defined negative binomial. We note that to perform all these computations, data snapshots from at least <span class="math inline">\(N + M\)</span> past observations, or rows of the original reporting triangle (or matrix), are needed. This estimate of the uncertainty accounts for the empirical uncertainty in the point estimate of the delay distribution over time.</p>
+<p>The function <code><a href="../reference/estimate_dispersion.html">estimate_dispersion()</a></code> ingests a list of truncated reporting matrices representing the observations, and the list of point nowcast matrices, and returns a vector of negative binomial dispersion parameters indexed starting at delay <span class="math inline">\(d = 1\)</span>.</p>
 </div>
 </div>
 <div class="section level2" number="5">
-<h2 id="generate-a-probabilistic-nowcast">
-<span class="header-section-number">5</span> Generate a probabilistic nowcast<a class="anchor" aria-label="anchor" href="#generate-a-probabilistic-nowcast"></a>
+<h2 id="generate-probabilistic-nowcast-matrices">
+<span class="header-section-number">5</span> Generate probabilistic nowcast matrices<a class="anchor" aria-label="anchor" href="#generate-probabilistic-nowcast-matrices"></a>
 </h2>
-<p>Using the dispersion parameters for each delay, <span class="math inline">\(\phi(d),\)</span> for <span class="math inline">\(d = 1,...D\)</span>, we can generate probabilistic nowcasts by drawing samples from the negative binomial:</p>
+<p>Using the dispersion parameters for each delay, <span class="math inline">\(\phi(d),\)</span> for <span class="math inline">\(d = 1,...D\)</span>, we can generate probabilistic nowcast matrices by drawing samples from the negative binomial:</p>
 <p><span class="math display">\[
 X_{t,d} \sim NegBin(\mu = \hat{x}_{t,d}, \phi = \phi(d))
 \]</span></p>
 <p>We can sample for any number of draws, and then use the draws to compute any desired quantiles to summarize the outputs.</p>
-<p>The function <code><a href="../reference/add_obs_errors_to_nowcast.html">add_obs_errors_to_nowcast()</a></code> ingests a point nowcast, the dispersion parameters, and the number of draws to sample and generates a list of expected observed point nowcasts. This can then be summarized across delays by passing the list to <code><a href="../reference/nowcast_list_to_df.html">nowcast_list_to_df()</a></code> and summarised by reference time using <code>aggregate_by_ref_time()</code>.</p>
+<p>The function <code>add_obs_errs_to_pt_nowcast_mat()</code> ingests a point nowcast matrix, the dispersion parameters, and the number of draws to sample and generates a list of point nowcast matrices. This can then be summarized across delays by passing the list to <code><a href="../reference/nowcast_matrix_list_to_df.html">nowcast_matrix_list_to_df()</a></code> and summarised by reference time using <code>aggregate_by_ref_time()</code>.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

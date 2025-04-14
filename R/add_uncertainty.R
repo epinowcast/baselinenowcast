@@ -44,7 +44,7 @@ add_uncertainty <- function(point_nowcast_matrix,
 }
 
 
-#' Get a probablistic draw from the observation model
+#' Get a probabilistic draw from the observation model
 #'
 #' The function ingests an estimate of a point nowcast, in the form of a
 #'   point nowcast matrix and a vector of dispersion parameters, and draws

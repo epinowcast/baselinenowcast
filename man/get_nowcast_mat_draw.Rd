@@ -2,7 +2,7 @@
 % Please edit documentation in R/add_uncertainty.R
 \name{get_nowcast_mat_draw}
 \alias{get_nowcast_mat_draw}
-\title{Get a probablistic draw from the observation model}
+\title{Get a probabilistic draw from the observation model}
 \usage{
 get_nowcast_mat_draw(point_nowcast_matrix, disp)
 }

@@ -15,7 +15,7 @@ valid_disp <- c(5, 3, 2)
 ### Test 1: Basic Functionality ------------------------------------------------
 test_that("Basic functionality with valid inputs", {
   set.seed(123)
-  result <- add_obs_error_to_nowcast(test_matrix, valid_disp)
+  result <- get_nowcast_mat_draw(test_matrix, valid_disp)
 
   # Verify output structure
   expect_identical(dim(result), dim(test_matrix))
@@ -34,13 +34,13 @@ test_that("Input validation works correctly", {
   na_matrix <- test_matrix
   na_matrix[1, 1] <- NA
   expect_error(
-    add_obs_error_to_nowcast(na_matrix, valid_disp),
-    "`comp_rep_square` contains NA values. It should only contain"
+    get_nowcast_mat_draw(na_matrix, valid_disp),
+    "`point_nowcast_matrix` contains NA values. It should only contain"
   )
 
   # Dispersion parameter length mismatch
   expect_error(
-    add_obs_error_to_nowcast(test_matrix, c(1, 2)),
+    get_nowcast_mat_draw(test_matrix, c(1, 2)),
     "`disp` vector should be of length one less than the number"
   )
 })
@@ -60,9 +60,9 @@ test_that("Invalid dispersion parameters throw errors", {
 ### Test 4: Stochastic Behavior ------------------------------------------------
 test_that("Random generation is reproducible with seed", {
   set.seed(456)
-  result1 <- add_obs_error_to_nowcast(test_matrix, valid_disp)
+  result1 <- get_nowcast_mat_draw(test_matrix, valid_disp)
   set.seed(456)
-  result2 <- add_obs_error_to_nowcast(test_matrix, valid_disp)
+  result2 <- get_nowcast_mat_draw(test_matrix, valid_disp)
   expect_identical(result1, result2)
 })
 
@@ -70,7 +70,7 @@ test_that("Random generation is reproducible with seed", {
 ### Test 5: Distribution Properties --------------------------------------------
 test_that("Output follows negative binomial distribution", {
   set.seed(789)
-  result <- add_obs_error_to_nowcast(test_matrix, valid_disp)
+  result <- get_nowcast_mat_draw(test_matrix, valid_disp)
 
   # Test last column (delay = 3)
   generated_vals <- result[3:4, 4]
@@ -89,6 +89,6 @@ test_that("Output follows negative binomial distribution", {
 test_that("Output dimensions match input", {
   square_matrix <- matrix(1:9, nrow = 3)
   disp <- c(2, 2)
-  result <- add_obs_error_to_nowcast(square_matrix, disp)
+  result <- get_nowcast_mat_draw(square_matrix, disp)
   expect_identical(dim(result), c(3L, 3L))
 })

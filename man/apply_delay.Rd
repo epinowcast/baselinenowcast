@@ -15,19 +15,19 @@ by the Karlsruhe Institute of Technology RESPINOW
 German Hospitalization Nowcasting Hub.
 Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint}
 \usage{
-apply_delay(triangle_to_nowcast, delay_pmf)
+apply_delay(rep_tri_to_nowcast, delay_pmf)
 }
 \arguments{
-\item{triangle_to_nowcast}{Matrix of the incomplete reporting triangle to be
+\item{rep_tri_to_nowcast}{Matrix of the reporting triangle to be
 nowcasted, with rows representing the time points of reference and columns
 representing the delays}
 
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
-first delay column in \code{triangle_to_nowcast}}
+first delay column in \code{rep_mat_to_nowcast}}
 }
 \value{
-\code{comp_rep_square} Matrix of the same number of rows and columns as
-the \code{triangle_to_nowcast} but with the missing values filled in as point
+\code{point_nowcast_matrix} Matrix of the same number of rows and columns
+as the \code{rep_mat_to_nowcast} but with the missing values filled in as point
 estimates
 }
 \description{
@@ -57,13 +57,13 @@ triangle <- matrix(
   byrow = TRUE
 )
 delay_pmf <- get_delay_estimate(
-  triangle = triangle,
+  reporting_triangle = triangle,
   max_delay = 3,
   n = 4
 )
-reporting_square <- apply_delay(
-  triangle_to_nowcast = triangle,
+point_nowcast_matrix <- apply_delay(
+  rep_tri_to_nowcast = triangle,
   delay_pmf = delay_pmf
 )
-print(reporting_square)
+print(point_nowcast_matrix)
 }

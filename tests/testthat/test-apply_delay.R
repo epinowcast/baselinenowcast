@@ -12,7 +12,7 @@ test_that("apply_delay function works as expected when result is known", {
   delay_pmf <- c(0.4, 0.2, 0.2, 0.2)
 
   result <- apply_delay(
-    triangle_to_nowcast = triangle,
+    rep_tri_to_nowcast = triangle,
     delay_pmf = delay_pmf
   )
 
@@ -33,7 +33,7 @@ test_that("apply_delay function works as expected when result is known", {
   delay_pmf <- c(0.4, 0.2, 0.2, 0.2)
 
   result <- apply_delay(
-    triangle_to_nowcast = triangle,
+    rep_tri_to_nowcast = triangle,
     delay_pmf = delay_pmf
   )
 
@@ -53,7 +53,7 @@ test_that("apply_delay function works as expected when result is known", {
   delay_pmf <- c(0, 0.4, 0.4, 0.2)
 
   expect_error(apply_delay(
-    triangle_to_nowcast = triangle,
+    rep_tri_to_nowcast = triangle,
     delay_pmf = delay_pmf
   ))
 
@@ -72,7 +72,7 @@ test_that("apply_delay function works as expected when result is known", {
   delay_pmf <- c(0.2, 0.4, 0, 0.4)
 
   result <- apply_delay(
-    triangle_to_nowcast = triangle,
+    rep_tri_to_nowcast = triangle,
     delay_pmf = delay_pmf
   )
   expect_false(anyNA(result))
@@ -86,7 +86,7 @@ test_that("apply_delay function works correctly on simple triangle", {
   triangle <- matrix(nrow = 5, ncol = 4, data = 1)
   delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
   result <- apply_delay(
-    triangle_to_nowcast = triangle,
+    rep_tri_to_nowcast = triangle,
     delay_pmf = delay_pmf
   )
 
@@ -115,7 +115,7 @@ test_that("apply_delay function works on a triangle with 0s", {
   )
   delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
   result <- apply_delay(
-    triangle_to_nowcast = triangle,
+    rep_tri_to_nowcast = triangle,
     delay_pmf = delay_pmf
   )
 
@@ -185,7 +185,7 @@ test_that("apply_delay function works the same as the more verbose for loop", {
   triangle <- matrix(nrow = 5, ncol = 4, data = 1)
   delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
   result <- apply_delay(
-    triangle_to_nowcast = triangle,
+    rep_tri_to_nowcast = triangle,
     delay_pmf = delay_pmf
   )
 

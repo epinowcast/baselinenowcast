@@ -2,14 +2,14 @@
 % Please edit documentation in R/apply_delay.R
 \name{.calc_expectation}
 \alias{.calc_expectation}
-\title{Calculate the updates rows of the expected nowcasted triangle}
+\title{Calculate the updated rows of the expected nowcasted triangle}
 \usage{
 .calc_expectation(co, expectation, delay_pmf)
 }
 \arguments{
 \item{co}{Integer indicating the column index}
 
-\item{expectation}{Matrix of the partially complete reporting triangle}
+\item{expectation}{Matrix of the incomplete reporting matrix}
 
 \item{delay_pmf}{Vector specifying the probability of a case being
 reported with delay d}
@@ -19,6 +19,6 @@ Matrix with another set of entries corresponding to the updated
 values for the specified rows and column
 }
 \description{
-Calculate the updates rows of the expected nowcasted triangle
+Calculate the updated rows of the expected nowcasted triangle
 }
 \keyword{internal}

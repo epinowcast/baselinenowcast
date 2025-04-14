@@ -1,6 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
--   Standardises nomenclature around objects that are matrices vs vectors and objects that contain observations, point estimates, and probabilistic draws.
+-   Standardises naming of objects that are matrices vs vectors and objects that contain observations, point estimates, and probabilistic draws.
 -   Modifies functions that estimate a delay and generate a point nowcast to ensure that they throw an error/warning if the first element of the delay PMF is 0.
 -   Adjusts function to estimate delay distribution to be able to handle complete and partially complete reporting triangles.
 -   Add function to convert a list of expected observed reporting squares to a long tidy dataframe indexed by reference time, delay, and a sample index.

@@ -22,7 +22,7 @@
 #'   byrow = TRUE
 #' )
 #'
-#' nowcast_matrix_list <- add_obs_errs_to_pt_nowcast_mat(
+#' nowcast_matrix_list <- add_uncertainty(
 #'   point_nowcast_matrix = point_nowcast_matrix,
 #'   disp = c(8, 1.4, 4),
 #'   n_draws = 10
@@ -46,7 +46,7 @@ nowcast_matrix_list_to_df <- function(nowcast_matrix_list) {
     lapply(
       seq_along(nowcast_matrix_list),
       function(i) {
-        return(convert_nowcast_matrix_to_df(
+        return(nowcast_matrix_to_df(
           nowcast_matrix_list[[i]],
           draw = i
         ))
@@ -84,10 +84,10 @@ nowcast_matrix_list_to_df <- function(nowcast_matrix_list) {
 #'   byrow = TRUE
 #' )
 #'
-#' long_df <- convert_nowcast_matrix_to_df(nowcast_matrix)
+#' long_df <- nowcast_matrix_to_df(nowcast_matrix)
 #' print(long_df)
-convert_nowcast_matrix_to_df <- function(matrix,
-                                         draw = NULL) {
+nowcast_matrix_to_df <- function(matrix,
+                                 draw = NULL) {
   df_wide <- as.data.frame(matrix)
 
   df_long <- data.frame(

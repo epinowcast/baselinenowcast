@@ -30,7 +30,7 @@ point_nowcast_matrix <- matrix(
   byrow = TRUE
 )
 
-nowcast_matrix_list <- add_obs_errs_to_pt_nowcast_mat(
+nowcast_matrix_list <- add_uncertainty(
   point_nowcast_matrix = point_nowcast_matrix,
   disp = c(8, 1.4, 4),
   n_draws = 10

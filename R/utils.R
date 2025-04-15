@@ -108,8 +108,8 @@ replace_lower_right_with_NA <- function(matrix) {
     }
   }
 
-  bool_bottom_right_NA <- !any(is.na(mat[mask]))
-  bool_top_right_not_NA <- !any(!is.na(mat[!mask]))
+  bool_bottom_right_NA <- all(is.na(mat[mask])) # nolint
+  bool_top_right_not_NA <- all(!is.na(mat[!mask])) # nolint
   bool_rep_tri <- bool_bottom_right_NA && bool_top_right_not_NA
   return(bool_rep_tri)
 }

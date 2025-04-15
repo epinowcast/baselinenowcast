@@ -45,7 +45,15 @@ test_that(".validate_triangle works correctly", {
   )
 
   # Test case 6: Number of observations not greater than maximum delay
-  triangle <- matrix(1:9, nrow = 3, ncol = 3)
+  triangle <- matrix(
+    c(
+      1, 4, 3,
+      4, 5, NA,
+      6, NA, NA
+    ),
+    nrow = 3,
+    byrow = TRUE
+  )
   expect_error(
     .validate_triangle(triangle,
       max_delay = 2,
@@ -96,18 +104,43 @@ test_that(".validate_triangle works correctly", {
     regexp = "Assertion on 'triangle' failed: Contains only missing values."
   )
 
-  # Test case 13: triangle is too short
-  short_triangle <- matrix(
+  # Test case 13: number of rows is equal to max delay, this shouldn't error
+  triangle <- matrix(
     c(
-      0, 5, 5, 5,
-      0, 10, 10, NA,
-      0, 20, NA, NA,
-      0, NA, NA, NA
+      2, 10, 30, 20,
+      1, 10, 10, NA,
+      1, 20, NA, NA,
+      1, NA, NA, NA
     ),
     nrow = 4,
     byrow = TRUE
   )
-  expect_error(
-    .validate_triangle(short_triangle)
+  expect_no_error(.validate_triangle(triangle))
+
+  # Test case 14: n is less than max_delay + 1, this should error
+  expect_error(.validate_triangle(triangle, n = 3))
+
+  # Test case 15: n is less than max_delay + 1 but triangle is filled in
+  rep_mat <- matrix(
+    c(
+      2, 10, 30, 20,
+      1, 10, 10, 5,
+      1, 20, 10, 43,
+      1, 10, 20, 5
+    ),
+    nrow = 4,
+    byrow = TRUE
   )
+  expect_no_error(.validate_triangle(rep_mat, n = 3))
+
+  # Test case 16: nrows is less than ncol but triangle is filled in
+  rep_mat <- matrix(
+    c(
+      2, 10, 30, 20,
+      1, 10, 10, 5
+    ),
+    nrow = 2,
+    byrow = TRUE
+  )
+  expect_no_error(.validate_triangle(rep_mat, n = 2))
 })

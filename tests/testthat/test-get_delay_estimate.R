@@ -121,4 +121,29 @@ test_that("get_delay_estimate handles partially complete reporting triangles", {
     max_delay = 3,
     n = 5
   ))
+
+  # Test 12: pass in a reporting square
+  rep_mat <- matrix(
+    c(
+      2, 10, 30, 20,
+      1, 10, 10, 5
+    ),
+    nrow = 2,
+    byrow = TRUE
+  )
+  expect_no_error(get_delay_estimate(rep_mat))
+
+  # Test 13: nrow = ncol shouldnt error
+  triangle <- matrix(
+    c(
+      2, 10, 30, 20,
+      1, 10, 10, NA,
+      1, 20, NA, NA,
+      1, NA, NA, NA
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  result <- get_delay_estimate(triangle)
+  expect_true(!any(is.na(result)))
 })

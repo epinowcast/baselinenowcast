@@ -19,11 +19,22 @@
   assert_integerish(n)
   assert_matrix(triangle, all.missing = FALSE)
 
-  if (nrow(triangle) <= ncol(triangle)) {
-    cli_abort(
-      message =
-        "Number of observations(rows) must be greater than the number of columns." # nolint
-    )
+  # Need to check for sufficient data if passing a in a true reporting triangle
+  # If its not, these rules don't apply.
+  if (.is_reporting_triangle(triangle)) {
+    if (nrow(triangle) < ncol(triangle)) {
+      cli_abort(
+        message =
+          "Number of observations(rows) must be greater or equal to the number of columns." # nolint
+      )
+    }
+
+    if (n < ncol(triangle)) {
+      cli_abort(
+        message =
+          "Number of historical observations used must be greater or equal to the number of columns." # nolint
+      )
+    }
   }
 
   if (nrow(triangle) < n) {

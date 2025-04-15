@@ -89,3 +89,27 @@ replace_lower_right_with_NA <- function(matrix) {
   }
   return(bool_all_zeros)
 }
+
+#' Check if matrix is a reporting triangle
+#'
+#' @param mat Matrix
+#'
+#' @returns Boolean indicating whether the matrix contains only NAs in the
+#'    bottom right and not NAs everywhere else
+#' @keywords internal
+.is_reporting_triangle <- function(mat) {
+  n_rows <- nrow(mat)
+  mask <- matrix(FALSE, nrow = n_rows, ncol = ncol(mat))
+
+  for (i in seq_len(n_rows)) {
+    cutoff <- n_rows - i + 1
+    if (cutoff < ncol(mat)) {
+      mask[i, (cutoff + 1):ncol(mat)] <- TRUE
+    }
+  }
+
+  bool_bottom_right_NA <- all(is.na(mat[mask]))
+  bool_top_right_not_NA <- all(!is.na(mat[!mask]))
+  bool_rep_tri <- bool_bottom_right_NA && bool_top_right_not_NA
+  return(bool_rep_tri)
+}

@@ -145,5 +145,5 @@ test_that("get_delay_estimate handles partially complete reporting triangles", {
     byrow = TRUE
   )
   result <- get_delay_estimate(triangle)
-  expect_true(!any(is.na(result)))
+  expect_false(anyNA(result))
 })

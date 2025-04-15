@@ -143,4 +143,16 @@ test_that(".validate_triangle works correctly", {
     byrow = TRUE
   )
   expect_no_error(.validate_triangle(rep_mat, n = 2))
+
+  # Test case 17: nrows less than ncolumns
+  triangle <- matrix(
+    c(
+      1, 10, 10, NA,
+      1, 20, NA, NA,
+      1, NA, NA, NA
+    ),
+    nrow = 3,
+    byrow = TRUE
+  )
+  expect_error(.validate_triangle(triangle))
 })

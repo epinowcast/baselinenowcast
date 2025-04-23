@@ -109,7 +109,7 @@ estimate_dispersion <- function(
 
   n_horizons <- ncol(list_of_ncs[[1]])
   for (i in seq_len(n)) {
-    # Rretrospective nowcast as of i delays ago
+    # Retrospective nowcast as of i delays ago
     nowcast_i <- list_of_ncs[[i]]
     # Remove the last i observations
     trunc_matr_observed <- list_of_obs[[i]]

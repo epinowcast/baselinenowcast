@@ -93,3 +93,25 @@ interleave_matrix_rows <- function(matrix_list) {
 }
 
 comb_matr <- interleave_matrix_rows((mat_list))
+
+
+# Check for transposing
+short_triangle <- t(long_triangle)
+reporting_triangle <- short_triangle
+cols_with_na <- sum(apply(reporting_triangle, 2, function(col) any(is.na(col))))
+rows_with_na <- sum(apply(reporting_triangle, 1, function(row) any(is.na(row))))
+
+int <- cols_with_na / rows_with_na
+n <- 4
+
+tri_list <- lapply(1:int, function(start_pos) {
+  return(extract_nth_columns(reporting_triangle, n = int, start = start_pos))
+})
+mat_list <- lapply(1:int, function(i) {
+  return(fill_in_tri(tri_list[[i]]))
+})
+
+comb_matr2 <- interleave_matrices((mat_list))
+test <- t(comb_matr2)
+
+print(all(test == comb_matr)) # This should be true

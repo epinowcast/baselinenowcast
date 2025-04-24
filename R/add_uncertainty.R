@@ -107,9 +107,10 @@ get_nowcast_mat_draw <- function(point_nowcast_matrix,
 
   for (i in seq_along(disp)) {
     max_t <- nrow(point_nowcast_matrix)
-    # Start at second column, move left to right
-    mean_vals <- point_nowcast_matrix[(max_t - i + 1):max_t, i + 1]
-    nowcast_w_obs_error[(max_t - i + 1):max_t, i + 1] <- rnbinom(
+    max_delay <- ncol(point_nowcast_matrix) - 1
+    # Apply to each row, starting from the bottom and moving up
+    mean_vals <- point_nowcast_matrix[(max_t - i + 1), (i:max_delay + 1)]
+    nowcast_w_obs_error[(max_t - i + 1), (i:max_delay + 1)] <- rnbinom(
       n = length(mean_vals),
       size = disp[i],
       mu = mean_vals

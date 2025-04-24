@@ -109,7 +109,6 @@ estimate_dispersion <- function(
   }
 
   max_delay <- ncol(list_of_ncs[[1]]) - 1
-  n_horizons <- ncol(list_of_ncs[[1]])
   for (i in seq_len(n)) {
     # Rretrospective nowcast as of i delays ago
     nowcast_i <- list_of_ncs[[i]]
@@ -145,9 +144,11 @@ estimate_dispersion <- function(
     )
   # Separate step which uses the dataframe that compares the expected values to
   # add and the values observed at each reference time and delay to estimate
-  # the dispersion as a function of reference time (horizon).
-  disp_params <- vector(length = max_delay + 1)
-  for (i in seq_len(max_delay + 1)) {
+  # the dispersion as a function of reference time. We intentionally only
+  # go back to the maximum delay though, so these are only estimated for the
+  # parts of the matrix that we've nowcasted
+  disp_params <- vector(length = max_delay)
+  for (i in 1:max_delay) {
     obs_temp <- df_exp_obs$obs_t_d[df_exp_obs$horizon == i]
     mu_temp <- df_exp_obs$mu_t_d[df_exp_obs$horizon == i] + 0.1
     disp_params[i] <- .fit_nb(x = obs_temp, mu = mu_temp)

@@ -19,7 +19,8 @@ containing all observations as of the latest reference time. Elements of
 list are paired with elements of \code{pt_nowcast_mat_list}.}
 
 \item{n}{Integer indicating the number of reporting matrices to use to
-estimate the dispersion parameters.}
+estimate the dispersion parameters. Default is the number of matrices
+in the \code{pt_nowcast_mat_list}}
 }
 \value{
 Vector of length one less than the number of columns in the
@@ -30,7 +31,8 @@ of the dispersion parameter for each delay d, starting at delay d=1.
 This function ingests a list of point nowcast matrices and a corresponding
 list of truncated reporting matrices and uses both to estimate a
 vector of negative binomial dispersion parameters from the observations
-and estimates at each delay, starting at delay = 1.
+and estimates at each reference time up until the latest reference time
+minust the maximum delay (excluding the latest one).
 }
 \examples{
 triangle <- matrix(

@@ -17,7 +17,7 @@ nowcast1 <- matrix(
     10, 7, 1,
     15, 12, 2,
     14, 16, 3,
-    11, 21, 8,
+    11, 21, 8.1,
     10, 15.3, 3.5
   ),
   nrow = 5,
@@ -25,28 +25,38 @@ nowcast1 <- matrix(
 )
 nowcast2 <- matrix(
   c(
-    10, 7, 0.8,
-    15, 12, 2.0,
+    10, 7, 1,
+    15, 12, 2.3,
     14, 16, 2.5,
-    11, 25.5, 2
+    11, 25.5, 2.1
   ),
   nrow = 4,
   byrow = TRUE
 )
+nowcast3 <- matrix(
+  c(
+    10, 7, 1,
+    15, 12, 2.0,
+    14, 14.1, 1.9
+  ),
+  nrow = 3,
+  byrow = TRUE
+)
 
 
-valid_nowcasts <- list(nowcast1, nowcast2)
+valid_nowcasts <- list(nowcast1, nowcast2, nowcast3)
 
 valid_trunc_rts <- list(
   test_triangle[1:5, ],
-  test_triangle[1:4, ]
+  test_triangle[1:4, ],
+  test_triangle[1:3, ]
 )
 ### Test 1: Basic Functionality ------------------------------------------------
 test_that("Basic functionality with valid inputs", {
   result <- estimate_dispersion(
     pt_nowcast_mat_list = valid_nowcasts,
     trunc_rep_mat_list = valid_trunc_rts,
-    n = 2
+    n = 3
   )
 
   # Verify output structure

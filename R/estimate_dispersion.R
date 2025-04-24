@@ -3,7 +3,8 @@
 #' This function ingests a list of point nowcast matrices and a corresponding
 #'    list of truncated reporting matrices and uses both to estimate a
 #'    vector of negative binomial dispersion parameters from the observations
-#'    and estimates at each delay, starting at delay = 1.
+#'    and estimates at each reference time up until the latest reference time
+#'    minust the maximum delay (excluding the latest one).
 #'
 #' @param pt_nowcast_mat_list List of point nowcast matrices where rows
 #'    represent reference time points and columns represent delays.
@@ -11,7 +12,8 @@
 #'    containing all observations as of the latest reference time. Elements of
 #'    list are paired with elements of `pt_nowcast_mat_list`.
 #' @param n Integer indicating the number of reporting matrices to use to
-#'    estimate the dispersion parameters.
+#'    estimate the dispersion parameters. Default is the number of matrices
+#'    in the `pt_nowcast_mat_list`
 #' @importFrom checkmate assert_integerish
 #' @returns Vector of length one less than the number of columns in the
 #'    latest reporting triangle, with each element representing the estimate
@@ -106,7 +108,7 @@ estimate_dispersion <- function(
     ))
   }
 
-
+  max_delay <- ncol(list_of_ncs[[1]]) - 1
   n_horizons <- ncol(list_of_ncs[[1]])
   for (i in seq_len(n)) {
     # Rretrospective nowcast as of i delays ago
@@ -118,45 +120,36 @@ estimate_dispersion <- function(
     # What was observed? Any non-NAs from the truncated observed matrix
     indices_observed <- !is.na(trunc_matr_observed)
 
-    # Get a vector of for each delay of what would have been added in this
-    # reference time, based on the indices nowcasted and the indices later
-    # observed
-    exp_to_add <- sapply(seq_len(ncol(trunc_matr_observed)),
-      .conditional_sum_cols,
-      matrix_bool1 = indices_nowcast,
-      matrix_bool2 = indices_observed,
-      matrix_to_sum = nowcast_i
-    )
-    # Get a vector for each delay of what was observed using the truncated
-    # observed matrix
-    to_add <- sapply(seq_len(ncol(trunc_matr_observed)),
-      .conditional_sum_cols,
-      matrix_bool1 = indices_nowcast,
-      matrix_bool2 = indices_observed,
-      matrix_to_sum = trunc_matr_observed
-    )
-    # Create a dataframe to what would have been added at each delay for
-    # each t delay ago.
-    df_i <- data.frame(
-      exp_to_add = exp_to_add,
-      to_add = to_add,
-      t = i,
-      d = seq_len(n_horizons) - 1
+    # For each retrospective nowcast, get a vector of expectations as a
+    # indexed by the original reference time and the delay
+    bool_mat <- (indices_nowcast * indices_observed) == 1
+    exp_val <- nowcast_i[bool_mat]
+    obs_val <- trunc_matr_observed[bool_mat]
+    indices <- which(bool_mat, arr.ind = TRUE)
+    exp_vals <- data.frame(
+      mu_t_d = exp_val,
+      obs_t_d = obs_val,
+      ref_time = indices[, 1],
+      delay = indices[, 2] - 1
     )
     if (i == 1) {
-      df_exp_obs <- df_i
+      df_exp_obs <- exp_vals
     } else {
-      df_exp_obs <- rbind(df_exp_obs, df_i)
+      df_exp_obs <- rbind(df_exp_obs, exp_vals)
     }
   }
 
+  df_exp_obs <- df_exp_obs |>
+    mutate(
+      horizon = nrow(list_of_ncs[[1]]) + 1 - ref_time
+    )
   # Separate step which uses the dataframe that compares the expected values to
   # add and the values observed at each reference time and delay to estimate
-  # the dispersion (we could make this a separate function).
-  disp_params <- vector(length = n_horizons - 1)
-  for (i in seq_len(n_horizons - 1)) {
-    obs_temp <- df_exp_obs$to_add[df_exp_obs$d == i]
-    mu_temp <- df_exp_obs$exp_to_add[df_exp_obs$d == i] + 0.1
+  # the dispersion as a function of reference time (horizon).
+  disp_params <- vector(length = max_delay + 1)
+  for (i in seq_len(max_delay + 1)) {
+    obs_temp <- df_exp_obs$obs_t_d[df_exp_obs$horizon == i]
+    mu_temp <- df_exp_obs$mu_t_d[df_exp_obs$horizon == i] + 0.1
     disp_params[i] <- .fit_nb(x = obs_temp, mu = mu_temp)
   }
 

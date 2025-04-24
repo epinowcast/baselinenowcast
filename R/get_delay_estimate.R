@@ -107,18 +107,24 @@ get_delay_estimate <- function(
   # Only fill in reporting triangle if it is incomplete
   if (!is.na(start_col)) {
     for (co in start_col:n_delays) {
+      start_row <- which(is.na(rep_tri[, co]))[1]
       # Extract relevant blocks of the triangle
-      block_top_left <- .extract_block_top_left(rep_tri, co, n_dates)
-      block_top <- .extract_block_top(rep_tri, co, n_dates)
+      block_top_left <- .extract_block_top_left(rep_tri, co, n_dates, start_row)
+      block_top <- .extract_block_top(rep_tri, co, n_dates, start_row)
 
       # Calculate multiplication factor
       mult_factor <- .calculate_mult_factor(block_top, block_top_left)
 
       # Extract block bottom left
-      block_bottom_left <- .extract_block_bottom_left(expectation, co, n_dates)
+      block_bottom_left <- .extract_block_bottom_left(
+        expectation,
+        co,
+        n_dates,
+        start_row
+      )
 
       # Compute expectations for bottom right
-      expectation[(n_dates - co + 2):n_dates, co] <- .compute_expectations(
+      expectation[start_row:n_dates, co] <- .compute_expectations(
         mult_factor,
         block_bottom_left
       )
@@ -133,32 +139,31 @@ get_delay_estimate <- function(
 #' @param rep_tri Reporting triangle
 #' @param co Current column
 #' @param n_dates Number of dates
+#' @param start_row Starting row
 #' @return Top left block of the triangle
 #' @noRd
-.extract_block_top_left <- function(rep_tri, co, n_dates) {
-  return(rep_tri[1:(n_dates - co + 1), 1:(co - 1), drop = FALSE])
+.extract_block_top_left <- function(rep_tri, co, n_dates, start_row) {
+  return(rep_tri[1:(start_row - 1), 1:(co - 1), drop = FALSE])
 }
 
 #' Extract the top block of the triangle
 #'
-#' @param rep_tri Reporting triangle
-#' @param co Current column
-#' @param n_dates Number of dates
+#' @inheritParams .extract_block_top_left
 #' @return Top block of the triangle
 #' @noRd
-.extract_block_top <- function(rep_tri, co, n_dates) {
-  return(rep_tri[1:(n_dates - co + 1), co, drop = FALSE])
+.extract_block_top <- function(rep_tri, co, n_dates, start_row) {
+  return(rep_tri[1:(start_row - 1), co, drop = FALSE])
 }
 
 #' Extract the bottom left block of the triangle
 #'
 #' @param expectation Expectation matrix
 #' @param co Current column
-#' @param n_dates Number of dates
+#' @inheritParams .extract_block_top_left
 #' @return Bottom left block of the triangle
 #' @noRd
-.extract_block_bottom_left <- function(expectation, co, n_dates) {
-  return(expectation[(n_dates - co + 2):n_dates, 1:(co - 1), drop = FALSE])
+.extract_block_bottom_left <- function(expectation, co, n_dates, start_row) {
+  return(expectation[start_row:n_dates, 1:(co - 1), drop = FALSE])
 }
 
 #' Calculate multiplication factor

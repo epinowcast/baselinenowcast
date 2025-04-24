@@ -10,24 +10,17 @@ test_that("get_delay_estimate function works correctly", {
   expect_equal(sum(result), 1, tolerance = 1e-6)
 
   # Test 2: Custom max_delay
-  result_max_delay <- get_delay_estimate(triangle,
-    max_delay = 3
-  )
+  result_max_delay <- get_delay_estimate(triangle, max_delay = 3)
   expect_identical(as.integer(length(result_max_delay)), 4L)
 
   # Test 3: Custom n_history
-  result_n_history <- get_delay_estimate(triangle,
-    n = 20
-  )
+  result_n_history <- get_delay_estimate(triangle, n = 20)
   expect_is(result_n_history, "numeric")
 
   # Test 4: Input validation *These should be more useful error messages*
   expect_error(get_delay_estimate(triangle, max_delay = 0))
   expect_error(get_delay_estimate(triangle, n = 0))
-  expect_error(get_delay_estimate(triangle,
-    max_delay = 10,
-    n = 40
-  ))
+  expect_error(get_delay_estimate(triangle, max_delay = 10, n = 40))
 
   # Test 5: Errors when NAs are in upper part of reportign triangle
   # (These should be 0s)
@@ -49,11 +42,26 @@ test_that("get_delay_estimate handles partially complete reporting triangles", {
   # Test 8: Test that a partial triangle works correctly
   partial_triangle <- matrix(
     c(
-      80, 50, 25, 10,
-      100, 50, 30, 20,
-      90, 45, 25, 20,
-      80, 40, 15, NA,
-      70, 30, NA, NA
+      80,
+      50,
+      25,
+      10,
+      100,
+      50,
+      30,
+      20,
+      90,
+      45,
+      25,
+      20,
+      80,
+      40,
+      15,
+      NA,
+      70,
+      30,
+      NA,
+      NA
     ),
     nrow = 5,
     byrow = TRUE
@@ -67,11 +75,26 @@ test_that("get_delay_estimate handles partially complete reporting triangles", {
   # Test 9: Test that you get the correct delay with a complete triangle
   complete_triangle <- matrix(
     c(
-      80, 50, 25, 10,
-      100, 50, 30, 20,
-      90, 45, 25, 20,
-      80, 40, 15, 5,
-      70, 30, 10, 10
+      80,
+      50,
+      25,
+      10,
+      100,
+      50,
+      30,
+      20,
+      90,
+      45,
+      25,
+      20,
+      80,
+      40,
+      15,
+      5,
+      70,
+      30,
+      10,
+      10
     ),
     nrow = 5,
     byrow = TRUE
@@ -87,11 +110,26 @@ test_that("get_delay_estimate handles partially complete reporting triangles", {
   # Test 10: Test that you get a warning with zeros in the bottom right
   zero_triangle <- matrix(
     c(
-      80, 50, 25, 10,
-      100, 50, 30, 20,
-      90, 45, 25, 0,
-      80, 40, 0, 0,
-      70, 0, 0, 0
+      80,
+      50,
+      25,
+      10,
+      100,
+      50,
+      30,
+      20,
+      90,
+      45,
+      25,
+      0,
+      80,
+      40,
+      0,
+      0,
+      70,
+      0,
+      0,
+      0
     ),
     nrow = 5,
     byrow = TRUE
@@ -106,11 +144,26 @@ test_that("get_delay_estimate handles partially complete reporting triangles", {
   # Test 11: zeros not just on bottom right
   zero_triangle2 <- matrix(
     c(
-      80, 50, 25, 10,
-      100, 0, 30, 20,
-      90, 45, 25, 0,
-      80, 40, 0, 0,
-      70, 0, 0, 0
+      80,
+      50,
+      25,
+      10,
+      100,
+      0,
+      30,
+      20,
+      90,
+      45,
+      25,
+      0,
+      80,
+      40,
+      0,
+      0,
+      70,
+      0,
+      0,
+      0
     ),
     nrow = 5,
     byrow = TRUE
@@ -121,4 +174,76 @@ test_that("get_delay_estimate handles partially complete reporting triangles", {
     max_delay = 3,
     n = 5
   ))
+})
+
+test_that("get_delay_estimate works with weekly reporting of daily data", {
+  sim_delay_pmf <- c(0.1, 0.2, 0.3, 0.1, 0.1, 0.1, 0.1)
+
+  counts <- c(100, 20, 30, 40, 50, 60, 70)
+
+  complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
+  complete_triangle <- do.call(rbind, complete_triangle)
+
+  reporting_triangle <- matrix(
+    c(
+      10,
+      20,
+      30,
+      10,
+      10,
+      10,
+      10,
+      2,
+      4,
+      6,
+      2,
+      2,
+      2,
+      2,
+      3,
+      6,
+      9,
+      3,
+      3,
+      3,
+      3,
+      4,
+      8,
+      12,
+      4,
+      4,
+      4,
+      4,
+      5,
+      10,
+      15,
+      5,
+      5,
+      5,
+      NA,
+      6,
+      12,
+      18,
+      6,
+      NA,
+      NA,
+      NA,
+      7,
+      14,
+      NA,
+      NA,
+      NA,
+      NA,
+      NA
+    ),
+    nrow = 7,
+    byrow = TRUE
+  )
+
+  # Get delay estimate
+  delay_pmf <- get_delay_estimate(
+    reporting_triangle = reporting_triangle
+  )
+  # Test that the function returns the expected PMF
+  expect_identical(delay_pmf, sim_delay_pmf)
 })

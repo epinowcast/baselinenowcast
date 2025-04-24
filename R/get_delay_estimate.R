@@ -168,7 +168,7 @@ get_delay_estimate <- function(
 #' @return Multiplication factor
 #' @noRd
 .calculate_mult_factor <- function(block_top, block_top_left) {
-  sum(block_top) / max(sum(block_top_left), 1)
+  return(sum(block_top) / max(sum(block_top_left), 1))
 }
 
 #' Compute expectations for the bottom right part
@@ -178,7 +178,7 @@ get_delay_estimate <- function(
 #' @return Vector of expectations
 #' @noRd
 .compute_expectations <- function(mult_factor, block_bottom_left) {
-  mult_factor * rowSums(block_bottom_left)
+  return(mult_factor * rowSums(block_bottom_left))
 }
 
 #' Calculate the probability mass function from the filled triangle
@@ -187,5 +187,5 @@ get_delay_estimate <- function(
 #' @return Probability mass function
 #' @noRd
 .calculate_pmf <- function(expectation) {
-  colSums(expectation) / sum(expectation)
+  return(colSums(expectation) / sum(expectation))
 }

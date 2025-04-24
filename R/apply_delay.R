@@ -41,8 +41,7 @@
 #'   delay_pmf = delay_pmf
 #' )
 #' print(point_nowcast_matrix)
-apply_delay <- function(rep_tri_to_nowcast,
-                        delay_pmf) {
+apply_delay <- function(rep_tri_to_nowcast, delay_pmf) {
   # Checks that the delay df and the triangle are compatible
   .validate_delay_and_triangle(
     rep_tri_to_nowcast,
@@ -52,10 +51,14 @@ apply_delay <- function(rep_tri_to_nowcast,
 
   # Iterates through each column and adds entries to the reporting
   # matrix to nowcast
-  point_nowcast_matrix <- Reduce(function(acc, co) {
-    x <- .calc_expectation(co, acc, delay_pmf)
-    return(x)
-  }, 2:n_delays, init = rep_tri_to_nowcast)
+  point_nowcast_matrix <- Reduce(
+    function(acc, co) {
+      x <- .calc_expectation(co, acc, delay_pmf)
+      return(x)
+    },
+    2:n_delays,
+    init = rep_tri_to_nowcast
+  )
   return(point_nowcast_matrix)
 }
 
@@ -70,14 +73,17 @@ apply_delay <- function(rep_tri_to_nowcast,
 #' @keywords internal
 .calc_expectation <- function(co, expectation, delay_pmf) {
   n_rows <- nrow(expectation)
-  block_bottom_left <- expectation[
-    max((n_rows - co + 2), 1):n_rows,
-    1:(co - 1),
-    drop = FALSE
-  ]
+  row_start <- max((n_rows - co + 2), 1)
+  block_bottom_left <- .extract_block_bottom_left(
+    expectation,
+    co,
+    n_rows,
+    row_start
+  )
+
   cdf_dpmf <- sum(delay_pmf[1:(co - 1)])
   x <- rowSums(block_bottom_left)
   exp_N <- (x + 1 - cdf_dpmf) / cdf_dpmf
-  expectation[max((n_rows - co + 2), 1):n_rows, co] <- exp_N * delay_pmf[co]
+  expectation[row_start:n_rows, co] <- exp_N * delay_pmf[co]
   return(expectation)
 }

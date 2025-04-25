@@ -127,10 +127,10 @@ From the $M$ reporting triangles, we apply the method described above to estimat
 We then take the list of point nowcast matrices, and the list of truncated incomplete reporting matrices (these do not necessarily contains NAs on the bottom right, the bottom right could be entirely or partially observed).
 For each retrospective nowcast time $t= s^*$, we identify the overlapping set of matrix elements that were estimated and the matrix elements that had been observed as of the most recent time point.
 
-For each delay $d = 1, ..., D$ we assume that the observed values in each element of the matrix, $X_{s^*-d, >d}$ follow a negative binomial observation model with a mean of $\hat{X}_{s^*-d, >d}$, for all $s^* = t^*, t^*-1, ... t^*-M$, with the negative binomial dispersion fit for each delay $d$ across all reference times $t$ and retrospective final reference times $s^*$ (Struggling to communicate this in mathematical notation that this is across $M$ $s^*$s).
+For each delay $d = 1, ..., D$ we assume that the observed values in each element of the matrix, $X_{s^*-d, d}$ follow a negative binomial observation model with a mean of $\hat{X}_{s^*-d, d}$, for all $s^* = t^*, t^*-1, ... t^*-M$, with the negative binomial dispersion fit for each delay $d$ across all reference times $t$ and retrospective final reference times $s^*$ (Struggling to communicate this in mathematical notation that this is across $M$ $s^*$s).
 
 $$
-X_{s^*-d,>d} | \hat{X}_{s^*-d, >d}(s^*) \sim NegBin(\mu = \hat{X}_{s^*-d, >d}+ 0.1, \phi = \phi_d)
+X_{s^*-d, d} | \hat{X}_{s^*-d, d}(s^*) \sim NegBin(\mu = \hat{X}_{s^*-d, d}+ 0.1, \phi = \phi_d)
 $$
 
 We add a small number (0.1) to the mean to avoid an ill-defined negative binomial. We note that to perform all these computations, data snapshots from at least $N + M$ past observations, or rows of the original reporting triangle (or matrix), are needed. This estimate of the uncertainty accounts for the empirical uncertainty in the point estimate of the delay distribution over time.

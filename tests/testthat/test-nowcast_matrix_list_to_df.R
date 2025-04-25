@@ -1,4 +1,4 @@
-test_that("Basic functionality with valid input", {
+test_that("nowcast_matrix_list_to_df basic functionality with valid input", {
   # Create test matrices
   mat1 <- matrix(1:4, nrow = 2, byrow = TRUE)
   mat2 <- matrix(5:8, nrow = 2, byrow = TRUE)
@@ -12,7 +12,7 @@ test_that("Basic functionality with valid input", {
   expect_identical(nrow(result), 8L) # 2 matrices * 2 rows * 2 cols
 })
 
-test_that("Draw numbers are correctly assigned", {
+test_that("nowcast_matrix_list_to_df draw numbers are correctly assigned", {
   mat1 <- matrix(1:4, nrow = 2)
   mat2 <- matrix(5:8, nrow = 2)
   nowcast_list <- list(mat1, mat2)
@@ -25,7 +25,7 @@ test_that("Draw numbers are correctly assigned", {
   expect_identical(sum(result$draw == 2), 4L)
 })
 
-test_that("NA values are preserved in output", {
+test_that("nowcast_matrix_list_to_df NA values are preserved in output", {
   na_matrix <- matrix(c(1, NA, 3, 4), nrow = 2)
   nowcast_list <- list(na_matrix)
 
@@ -33,7 +33,7 @@ test_that("NA values are preserved in output", {
   expect_true(anyNA(result$count))
 })
 
-test_that("Input validation works correctly", {
+test_that("nowcast_matrix_list_to_df input validation works correctly", {
   # Non-matrix element in list
   invalid_list <- list(matrix(1:4, nrow = 2), data.frame(a = 1:2))
   expect_error(nowcast_matrix_list_to_df(invalid_list))
@@ -42,7 +42,8 @@ test_that("Input validation works correctly", {
   expect_error(nowcast_matrix_list_to_df(list()))
 })
 
-test_that("Handles matrices of different dimensions", {
+test_that(
+  "nowcast_matrix_list_to_df handles matrices of different dimensions", {
   mat1 <- matrix(1:4, nrow = 2) # 2x2
   mat2 <- matrix(1:6, nrow = 3) # 3x2
   nowcast_list <- list(mat1, mat2)
@@ -51,7 +52,7 @@ test_that("Handles matrices of different dimensions", {
   expect_identical(nrow(result), 10L) # 4 + 6 = 10 rows
 })
 
-test_that("Single matrix handling", {
+test_that("nowcast_matrix_list_to_df single matrix handling", {
   single_mat <- matrix(1:4, nrow = 2)
   result <- nowcast_matrix_list_to_df(list(single_mat))
 
@@ -59,7 +60,7 @@ test_that("Single matrix handling", {
   expect_identical(nrow(result), 4L)
 })
 
-test_that("Column values match original matrices", {
+test_that("nowcast_matrix_list_to_df column values match original matrices", {
   test_matrix <- matrix(c(10, 20, 30, 40), nrow = 2, byrow = TRUE)
   nowcast_list <- list(test_matrix)
 

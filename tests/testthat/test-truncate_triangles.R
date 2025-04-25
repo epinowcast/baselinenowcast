@@ -13,8 +13,7 @@ test_triangle <- matrix(
   byrow = TRUE
 )
 
-### Test 1: Basic Functionality ------------------------------------------------
-test_that("Function returns correct number of truncated matrices with valid input", { # nolint
+test_that("truncate_triangles returns correct number of truncated matrices with valid input", { # nolint
   n <- 2
   result <- truncate_triangles(test_triangle, n = n)
 
@@ -30,15 +29,13 @@ test_that("Function returns correct number of truncated matrices with valid inpu
   expect_identical(nrow(result[[2]]), nrow(test_triangle) - 2L)
 })
 
-### Test 2: Default n Value ----------------------------------------------------
-test_that("Default n calculation works correctly", {
+test_that("truncate_triangles default n calculation works correctly", {
   expected_default <- nrow(test_triangle) - ncol(test_triangle) - 1
   result <- truncate_triangles(test_triangle)
   expect_length(result, expected_default)
 })
 
-### Test 3: Edge Case Handling -------------------------------------------------
-test_that("Edge cases are handled properly", {
+test_that("truncate_triangles edge cases are handled properly", {
   # n = 0 returns empty list
   expect_length(truncate_triangles(test_triangle, n = 0), 0)
 
@@ -57,15 +54,13 @@ test_that("Edge cases are handled properly", {
   )
 })
 
-### Test 4: Warning System -----------------------------------------------------
-test_that("Warnings are generated for excessive n values", {
+test_that("truncate_triangles warnings are generated for excessive n values", {
   safe_n <- nrow(test_triangle) - ncol(test_triangle) - 1
   expect_silent(truncate_triangles(test_triangle, n = safe_n))
   expect_warning(truncate_triangles(test_triangle, n = safe_n + 1))
 })
 
-### Test 5: NA Handling --------------------------------------------------------
-test_that("NA replacement works as expected", {
+test_that("truncate_triangles NA replacement works as expected", {
   result <- truncate_triangles(test_triangle, n = 1)[[1]]
   # Expect bottom 3 elemets of lower left triangle to be NAs
   expect_true(all(
@@ -74,8 +69,7 @@ test_that("NA replacement works as expected", {
   ))
 })
 
-### Test 6: Structure Preservation ---------------------------------------------
-test_that("Truncated matrices preserve original structure", {
+test_that("truncate_triangles truncated matrices preserve original structure", {
   result <- truncate_triangles(test_triangle, n = 1)[[1]]
 
   # Verify first rows remain unchanged

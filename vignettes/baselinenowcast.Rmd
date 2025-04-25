@@ -1,4 +1,3 @@
-
 ---
 title: "Getting Started with baselinenowcast"
 description: "A quick start example demonstrating use of baselinenowcast"

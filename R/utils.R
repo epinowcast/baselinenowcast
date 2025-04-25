@@ -9,7 +9,6 @@
 #'  entries.
 #' @export
 #' @examples
-#' @examples
 #' # Define a reporting triangle with zeros
 #' triangle_w_zeros <- matrix(
 #'   c(

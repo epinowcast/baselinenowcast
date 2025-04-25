@@ -81,7 +81,8 @@ In the case where we have missing values in the bottom right (i.e. we have a rep
 
 The multiplicative model works by iteratively "filling in" the reporting triangle starting from the bottom left, and moving column by column from left to right until the bottom right of the triangle is filled in.
 
-![Visual description of the iterative “completing” of the reporting triangle, moving from left to right and bottom to top. In this cases, we are imputing \$x\_{t=6, d = 2}\$ and \$x\_{t=5, d= 2}\$ assuming that the ratio between \$x\_{t=1:4, d = 2}\$ (block top), and \$x\_{t=1:4, d=0:1}\$ (block top left) holds for for \$x\_{t=5:6, d = 2}\$ (block bottom) and \$x\_{t=5:6, d = 0:1}\$ (block bottom left). In this example, \$\\hat{x}\_{t=6, d = 1}\$ has already been imputed using the same approach, and we treat it as known going forward. This process is repeated across the reporting triangle to estimate all values outlined in the dashed lines.](../man/figures/schematic_fig.png){#fig1}
+![Visual description of the iterative “completing” of the reporting triangle, moving from left to right and bottom to top. In this cases, we are imputing $x_{t=6, d = 2}$ and $x_{t=5, d= 2}$ assuming that the ratio between $x_{t=1:4, d = 2}$ (block top), and $x_{t=1:4, d=0:1}$ (block top left) holds for for $x_{t=5:6, d = 2}$ (block bottom) and $x_{t=5:6, d = 0:1}$ (block bottom left). In this example, $\hat{x}_{t=6, d = 1}$ has already been imputed using the same approach, and we treat it as known going forward. This process is repeated across the reporting triangle to estimate all values outlined in the dashed lines.](../man/figures/schematic_fig.png){#fig1}
+
 
 The method requires at least one observation, at delay $d=0$ for the most recent reference time, located at the bottom left of the reporting triangle in Figure \@ref(fig1) above. The method assumes that the values at each delay $d$ for the recent times, $t$, will consist of the same proportion of the values previously reported for earlier times $t$. To fill in the missing values for each column $d$, we sum over the rectangle of completely observed reference times for all $d-1$ columns (block top left) and sum over the column of completely observed reference times for all of the entries in column $d$ (block left). The ratio of these two sums is assumed to be the same in the missing entries in column $d$, so we use the entries observed up to $d-1$ for each incomplete reference time (block bottom left), and scale by this ratio to get the missing entries in column $d$. This process is repeated for each delay from $d$ up to the maximum delay $D$. At each iteration an additional reference time entry is computed as the delay $d$ increases.
 
@@ -109,7 +110,7 @@ The `apply_delay()` function ingests a reporting triangle or an incomplete repor
 
 # Estimate of dispersion
 
-To estimate the uncertainty in the nowcasts, we use past nowcast errors and assume a negative binomial observation model.
+To estimate the uncertainty in the nowcasts, we use past nowcast errors in estimates of elements of the nowcast matrix for each reference time and delay, assuming a negative binomial observation model.
 
 ## Generation of retrospective reporting triangles
 
@@ -121,14 +122,15 @@ To generate the set of $M$ reporting triangles, we simply remove the last $m$ ro
 
 From the $M$ reporting triangles, we apply the method described above to estimate a delay distribution from a reporting triangle and generate a point nowcast for each reporting triangle, to generate $M$ point nowcasts. The function `generate_point_nowcasts()` ingests the list of reporting triangles, estimates a delay distribution for each, and generates a list of point nowcast matrices.
 
-## Fit point nowcast matrices and observed values to a negative binomial observation model at each delay
+## Fit point estimates and observed counts to a negative binomial observation model by delay
 
-We then take the list of point nowcast matrices, and the list of truncated incomplete reporting matrices (these do not necessarily contains NAs on the bottom right, the bottom right could be entirely or partially observed). For each delay $d$ we identify the overlapping set of matrix elements that were imputed retrospectively and matrix elements that had been observed as of the most recent time point.
+We then take the list of point nowcast matrices, and the list of truncated incomplete reporting matrices (these do not necessarily contains NAs on the bottom right, the bottom right could be entirely or partially observed).
+For each retrospective nowcast time $t= s^*$, we identify the overlapping set of matrix elements that were estimated and the matrix elements that had been observed as of the most recent time point.
 
-For each delay $d = 1, ..., D$ we assume that the observed values, $X_{s^*-d, >d}$ follow a negative binomial observation model with a mean of $\hat{x}_{s^*-d}$:
+For each delay $d = 1, ..., D$ we assume that the observed values in each element of the matrix, $X_{s^*-d, >d}$ follow a negative binomial observation model with a mean of $\hat{X}_{s^*-d, >d}$, for all $s^* = t^*, t^*-1, ... t^*-M$, with the negative binomial dispersion fit for each delay $d$ across all reference times $t$ and retrospective final reference times $s^*$ (Struggling to communicate this in mathematical notation that this is across $M$ $s^*$s).
 
 $$
-X_{s^*-d,>d} | \hat{x}_{s^*-d, >d}(s*) \sim NegBin(\mu = \hat{x}_{s^*-d} + 0.1, \phi = \phi_d)
+X_{s^*-d,>d} | \hat{X}_{s^*-d, >d}(s^*) \sim NegBin(\mu = \hat{X}_{s^*-d, >d}+ 0.1, \phi = \phi_d)
 $$
 
 We add a small number (0.1) to the mean to avoid an ill-defined negative binomial. We note that to perform all these computations, data snapshots from at least $N + M$ past observations, or rows of the original reporting triangle (or matrix), are needed. This estimate of the uncertainty accounts for the empirical uncertainty in the point estimate of the delay distribution over time.
@@ -137,10 +139,10 @@ The function `estimate_dispersion()` ingests a list of truncated reporting matri
 
 # Generate probabilistic nowcast matrices
 
-Using the dispersion parameters for each delay, $\phi(d),$ for $d = 1,...D$, we can generate probabilistic nowcast matrices by drawing samples from the negative binomial:
+Using the dispersion parameters for each delay, $\phi_d,$ for $d = 1,...D$, we can generate probabilistic nowcast matrices by drawing samples from the negative binomial:
 
 $$
-X_{t,d} \sim NegBin(\mu = \hat{x}_{t,d}, \phi = \phi(d))
+X_{t,d} \sim NegBin(\mu = \hat{X}_{t,d}, \phi = \phi_d
 $$
 
 We can sample for any number of draws, and then use the draws to compute any desired quantiles to summarize the outputs.

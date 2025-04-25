@@ -4,10 +4,15 @@
 \alias{generate_triangles}
 \title{Generate retrospective reporting triangles}
 \usage{
-generate_triangles(trunc_rep_mat_list)
+generate_triangles(reporting_triangle_list, structure = 1)
 }
 \arguments{
-\item{trunc_rep_mat_list}{List of truncated reporting matrices.}
+\item{reporting_triangle_list}{List of reporting triangle matrices.}
+
+\item{structure}{Integer or vector specifying the reporting structure.
+If integer, divides columns evenly by that integer (with last possibly
+truncated).  If vector, must sum to number of columns.
+Default is 1 (standard triangular structure).}
 }
 \value{
 \code{rep_tri_mat_list} List of retrospective reporting triangles,
@@ -39,8 +44,14 @@ trunc_rts <- truncate_triangles(
   n = 2
 )
 retro_rts <- generate_triangles(
-  trunc_rep_mat_list = trunc_rts
+  reporting_triangle_list = trunc_rts
 )
-print(retro_rts[[1]])
-print(retro_rts[[2]])
+retro_rts
+
+# With custom structure
+retro_rts_custom <- generate_triangles(
+  reporting_triangle_list = reporting_triangle_list,
+  structure = 2
+)
+retro_rts_custom
 }

@@ -87,31 +87,6 @@ test_that("get_delay_estimate errors if not passed a matrix", {
   expect_error(get_delay_estimate(triangle_single_day))
 })
 
-test_that("get_delay_estimate handles partially complete reporting triangles", {
-  # Create a triangle with known delay PMF
-  partial_pmf <- c(0.45, 0.25, 0.2, 0.1)
-
-  # Generate counts for each reference date
-  partial_counts <- c(80, 100, 90, 80, 70)
-
-  # Create a complete triangle based on the known delay PMF
-  partial_complete <- lapply(partial_counts, function(x) x * partial_pmf)
-  partial_complete <- do.call(rbind, partial_complete)
-
-  # Create a reporting triangle with NAs in the lower right
-  partial_triangle <- replace_lower_right_with_NA(partial_complete)
-
-  delay_pmf <- get_delay_estimate(
-    reporting_triangle = partial_triangle,
-    max_delay = 3,
-    n = 4
-  )
-
-  expect_is(delay_pmf, "numeric")
-  expect_equal(sum(delay_pmf), 1, tolerance = 1e-6)
-  expect_equal(delay_pmf, partial_pmf, tolerance = 1e-6)
-})
-
 test_that("get_delay_estimate calculates correct PMF with complete triangle", {
   # Create a triangle with known delay PMF
   complete_pmf <- c(0.45, 0.25, 0.2, 0.1)
@@ -132,7 +107,8 @@ test_that("get_delay_estimate calculates correct PMF with complete triangle", {
   expect_equal(delay_pmf, complete_pmf, tolerance = 0.001)
 })
 
-test_that("get_delay_estimate works with every other day reporting of daily data", {
+test_that(
+  "get_delay_estimate works with every other day reporting of daily data", {
   sim_delay_pmf <- c(0.1, 0.2, 0.3, 0.1, 0.1, 0.1, 0.1)
 
   counts <- c(30, 40, 50, 60, 70)
@@ -150,4 +126,31 @@ test_that("get_delay_estimate works with every other day reporting of daily data
   )
   # Test that the function returns the expected PMF
   expect_identical(delay_pmf, sim_delay_pmf)
+})
+
+test_that("get_delay_estimate handles complete reporting triangles", {
+  # Create a triangle with known delay PMF
+  partial_pmf <- c(0.4, 0.2, 0.2, 0.2)
+
+  # Generate counts for each reference date
+  partial_counts <- c(80, 100, 90, 80, 70)
+
+  # Create a complete triangle based on the known delay PMF
+  partial_complete <- lapply(partial_counts, function(x) x * partial_pmf)
+  partial_complete <- do.call(rbind, partial_complete)
+
+  # Create a reporting triangle with NAs in the lower right
+  partial_triangle <- replace_lower_right_with_NA(
+    partial_complete, structure = 1
+  )
+
+  delay_pmf <- get_delay_estimate(
+    reporting_triangle = partial_triangle,
+    max_delay = 3,
+    n = 4
+  )
+
+  expect_is(delay_pmf, "numeric")
+  expect_equal(sum(delay_pmf), 1, tolerance = 1e-6)
+  expect_equal(delay_pmf, partial_pmf, tolerance = 1e-6)
 })

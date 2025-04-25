@@ -66,7 +66,7 @@ test_that(
 
   expect_error(
     generate_triangles(data.frame(trunc_triangles[1])),
-    "The elements of `trunc_rep_mat_list`must be matrices"
+    "The elements of"
   )
 })
 

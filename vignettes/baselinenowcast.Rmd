@@ -204,14 +204,22 @@ pobs <- enw_preprocess_data(
   max_delay = max_delay + 1
 )
 
-triangle_full <- pobs$reporting_triangle[[1]]
-head(triangle_full)
+# as we only have one group here we only need referfence_date, delay,
+# and new_confirm
+reporting_triangle_df <- pobs$new_confirm[[1]] |>
+  select(reference_date, delay, new_confirm)
 
-reporting_triangle <- triangle_full |>
-  select(-`.group`, -reference_date) |>
-  as.matrix() |>
-  unname()
+# we now pivot to wide format, dropping the reference_date column, and
+# convert to a matrix
+# this is the format that baselinenowcast expects
+reporting_triangle <- reporting_triangle_df |>
+  pivot_wider(names_from = delay, values_from = new_confirm) |>
+  select(-reference_date) |>
+  as.matrix()
+
+tail(reporting_triangle, n = 20)
 ```
+
 To see what this looks like, we can plot it using `ggplot()`.
 ```{r make-heatmap-reporting-triangle}
 triangle_df <- as.data.frame(reporting_triangle) |>

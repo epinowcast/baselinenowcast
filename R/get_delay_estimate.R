@@ -55,18 +55,6 @@ get_delay_estimate <- function(
     n = n
   )
 
-  # Produce a warning if the bottom left of a reporting trianglei s all 0s.
-  if (isTRUE(.check_zeros_bottom_right(reporting_triangle))) {
-    cli_warn(
-      message = c(
-        "All entries in bottom right are 0. Are these true observations ",
-        "with zero reports, or are these unobserved? If the latter, ",
-        "replace with NA using the `replace_bottom_right_with_NA()` ",
-        "function."
-      )
-    )
-  }
-
   # Filter the reporting_triangle down to relevant rows and columns
   trunc_triangle <- .prepare_triangle(reporting_triangle, max_delay, n)
 

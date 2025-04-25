@@ -1,8 +1,12 @@
 #' Replace the lower right triangle of the matrix with NAs
 #'
 #' @param matrix Matrix
-#' @returns A matrix of the same dimensions, with NAs for all the lower right
-#'   entries.
+#' @param structure Integer or vector specifying the reporting structure.
+#'   If integer, divides columns evenly by that integer (with last possibly
+#'   truncated).  If vector, must sum to number of columns.
+#'   Default is 1 (standard triangular structure).
+#' @returns A matrix of the same dimensions, with NAs for all unreported
+#'  entries.
 #' @export
 #' @examples
 #' triangle_w_zeros <- matrix(
@@ -16,10 +20,19 @@
 #'   byrow = TRUE
 #' )
 #'
+#' # Standard triangular structure (default)
 #' rep_tri <- replace_lower_right_with_NA(triangle_w_zeros)
-#' print(rep_tri)
+#' rep_tri
 #'
-replace_lower_right_with_NA <- function(matrix) {
+#' # Ragged structure with 2 columns per delay period
+#' rep_ragged <- replace_lower_right_with_NA(triangle_w_zeros, 2)
+#' rep_ragged
+#'
+#' # Custom structure
+#' rep_custom <- replace_lower_right_with_NA(triangle_w_zeros, c(1, 2, 1))
+#' rep_custom
+#'
+replace_lower_right_with_NA <- function(matrix, structure = 1) {
   # Get matrix dimensions
   rows <- nrow(matrix)
   cols <- ncol(matrix)
@@ -27,20 +40,55 @@ replace_lower_right_with_NA <- function(matrix) {
   # Create a copy of the input matrix
   result <- matrix
 
-  # Replace the lower right triangle with NAs
-  for (i in 1:rows) {
-    for (j in 1:cols) {
-      if (i + j > (rows + 1)) {
-        # For other rows, replace the lower right triangle with NA
-        result[i, j] <- NA
-      }
+  # Process structure parameter
+  if (length(structure) == 1) {
+    structure_vec <- .expand_structure_vec(structure, cols)
+  } else {
+    # Vector case
+    structure_vec <- structure
+
+    if (sum(structure_vec) != cols) {
+      cli_abort(
+        "Sum of structure vector must equal the number of columns in matrix"
+      )
     }
+  }
+
+  # For each row, determine which columns should be NA
+  cutoff_cols <- cumsum(structure_vec)
+
+  for (i in seq_along(structure_vec)) {
+    index_row <- rows - i + 1
+    start_col <- cutoff_cols[i] + 1
+    result[index_row, start_col:cols] <- NA_real_
   }
 
   return(result)
 }
 
-#' Check if matrix only contains NAs in the bottom right
+.expand_structure_vec <- function(structure, cols) {
+  if (structure <= 0) {
+    cli_abort("Structure must be positive")
+  }
+
+  if (structure > cols) {
+    cli_abort("Structure cannot be larger than number of columns")
+  }
+
+  n_complete_groups <- floor(cols / structure)
+
+  structure_vec <- rep(structure, n_complete_groups)
+
+  remainder <- cols - (n_complete_groups * structure)
+
+  if (remainder > 0) {
+    structure_vec <- c(structure_vec, remainder)
+  }
+
+  return(structure_vec)
+}
+
+#' Check if matrix has valid NA pattern
 #'
 #' @param mat Matrix
 #'
@@ -48,44 +96,39 @@ replace_lower_right_with_NA <- function(matrix) {
 #'    bottom right (TRUE if only in bottom right, FALSE if elsewhere).
 #' @keywords internal
 .check_na_bottom_right <- function(mat) {
-  # Create a logical mask for valid NA positions
   n_rows <- nrow(mat)
-  mask <- matrix(FALSE, nrow = n_rows, ncol = ncol(mat))
+  n_cols <- ncol(mat)
 
-  for (i in seq_len(n_rows)) {
-    cutoff <- n_rows - i + 1
-    if (cutoff < ncol(mat)) {
-      mask[i, (cutoff + 1):ncol(mat)] <- TRUE
+  for (i in 1:n_rows) {
+    row_data <- mat[i, ]
+    na_indices <- which(is.na(row_data))
+
+    # If there are NAs in this row
+    if (length(na_indices) > 0) {
+      min_na_idx <- min(na_indices)
+      # Check that all entries from the first NA onwards are also NA
+      if (!all(is.na(row_data[min_na_idx:n_cols]))) {
+        return(FALSE)
+      }
     }
   }
 
-  # Check if any NAs exist outside valid region
-  invalid_nas <- sum(is.na(mat) & !mask)
-  return(invalid_nas == 0)
-}
+  # Check column consistency (if a cell is NA, all cells below it must be NA)
+  for (j in 1:n_cols) {
+    col_data <- mat[, j]
+    na_indices <- which(is.na(col_data))
 
-#' Check if matrix only contains zeros in the bottom right
-#'
-#' @param mat Matrix
-#'
-#' @returns Boolean indicating whether the matrix only contains zeros in the
-#'    bottom right (if TRUE, entire bottom right is 0s)
-#' @keywords internal
-.check_zeros_bottom_right <- function(mat) {
-  n_rows <- nrow(mat)
-  mask <- matrix(FALSE, nrow = n_rows, ncol = ncol(mat))
-
-  for (i in seq_len(n_rows)) {
-    cutoff <- n_rows - i + 1
-    if (cutoff < ncol(mat)) {
-      mask[i, (cutoff + 1):ncol(mat)] <- TRUE
+    if (length(na_indices) > 0) {
+      min_na_idx <- min(na_indices)
+      if (!all(is.na(col_data[min_na_idx:n_rows]))) {
+        return(FALSE)
+      }
+      # Check that all entries above the first NA are not NA
+      if (min_na_idx > 1 && anyNA(col_data[1:(min_na_idx - 1)])) {
+        return(FALSE)
+      }
     }
   }
 
-  if (any(mat == 0, na.rm = TRUE)) {
-    bool_all_zeros <- sum((mat == 0 & mask)) == sum((mask))
-  } else {
-    bool_all_zeros <- FALSE
-  }
-  return(bool_all_zeros)
+  return(TRUE)
 }

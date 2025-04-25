@@ -68,7 +68,7 @@ test_that("Basic functionality with valid inputs", {
 ### Test 2: Default Parameter Handling -----------------------------------------
 test_that("Default n parameter works correctly", {
   result_default <- estimate_dispersion(valid_nowcasts, valid_trunc_rts)
-  result_explicit <- estimate_dispersion(valid_nowcasts, valid_trunc_rts, n = 2)
+  result_explicit <- estimate_dispersion(valid_nowcasts, valid_trunc_rts, n = 3)
   expect_identical(result_default, result_explicit)
 })
 

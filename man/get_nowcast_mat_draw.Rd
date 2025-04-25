@@ -22,7 +22,8 @@ from \code{disp}
 }
 \description{
 The function ingests an estimate of a point nowcast, in the form of a
-point nowcast matrix and a vector of dispersion parameters, and draws
+point nowcast matrix and a vector of dispersion parameters corresponding to
+the dispersion parameter for each delay, and draws
 from a negative binomial to get a single expected observed probabilistic
 draw of a nowcast
 }

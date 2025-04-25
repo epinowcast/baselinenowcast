@@ -31,8 +31,8 @@ of the dispersion parameter for each delay d, starting at delay d=1.
 This function ingests a list of point nowcast matrices and a corresponding
 list of truncated reporting matrices and uses both to estimate a
 vector of negative binomial dispersion parameters from the observations
-and estimates at each reference time up until the latest reference time
-minust the maximum delay (excluding the latest one).
+and estimates at each delay starting at delay = 1 and up until the
+maximum delay.
 }
 \examples{
 triangle <- matrix(

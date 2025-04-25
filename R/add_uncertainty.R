@@ -47,7 +47,8 @@ add_uncertainty <- function(point_nowcast_matrix,
 #' Get a probabilistic draw from the observation model
 #'
 #' The function ingests an estimate of a point nowcast, in the form of a
-#'   point nowcast matrix and a vector of dispersion parameters, and draws
+#'   point nowcast matrix and a vector of dispersion parameters corresponding to
+#'   the dispersion parameter for each delay, and draws
 #'   from a negative binomial to get a single expected observed probabilistic
 #'   draw of a nowcast
 #' @inheritParams add_uncertainty
@@ -104,13 +105,12 @@ get_nowcast_mat_draw <- function(point_nowcast_matrix,
   if (!is.matrix(point_nowcast_matrix)) {
     cli_abort(message = "`point_nowcast_matrix` is not a matrix.")
   }
-
+  max_t <- nrow(point_nowcast_matrix)
+  max_delay <- ncol(point_nowcast_matrix) - 1
   for (i in seq_along(disp)) {
-    max_t <- nrow(point_nowcast_matrix)
-    max_delay <- ncol(point_nowcast_matrix) - 1
-    # Apply to each row, starting from the bottom and moving up
-    mean_vals <- point_nowcast_matrix[(max_t - i + 1), (i:max_delay + 1)]
-    nowcast_w_obs_error[(max_t - i + 1), (i:max_delay + 1)] <- rnbinom(
+    # Apply to each column (delay), moving left to right
+    mean_vals <- point_nowcast_matrix[(max_t - i + 1):max_t, i + 1]
+    nowcast_w_obs_error[(max_t - i + 1):max_t, i + 1] <- rnbinom(
       n = length(mean_vals),
       size = disp[i],
       mu = mean_vals

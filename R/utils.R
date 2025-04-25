@@ -9,14 +9,17 @@
 #'  entries.
 #' @export
 #' @examples
+#' @examples
+#' # Define a reporting triangle with zeros
 #' triangle_w_zeros <- matrix(
 #'   c(
-#'     1, 3, 5, 7,
-#'     4, 7, 8, 0,
-#'     9, 10, 0, 0,
-#'     3, 0, 0, 0
+#'     1, 3, 5, 7, 9,
+#'     4, 7, 8, 0, 12,
+#'     9, 10, 0, 0, 15,
+#'     3, 0, 0, 0, 0,
+#'     6, 2, 0, 0, 0
 #'   ),
-#'   nrow = 4,
+#'   nrow = 5,
 #'   byrow = TRUE
 #' )
 #'
@@ -28,10 +31,9 @@
 #' rep_ragged <- replace_lower_right_with_NA(triangle_w_zeros, 2)
 #' rep_ragged
 #'
-#' # Custom structure
+#' # Custom structure with explicit column counts
 #' rep_custom <- replace_lower_right_with_NA(triangle_w_zeros, c(1, 2, 1))
 #' rep_custom
-#'
 replace_lower_right_with_NA <- function(matrix, structure = 1) {
   # Get matrix dimensions
   rows <- nrow(matrix)
@@ -47,19 +49,20 @@ replace_lower_right_with_NA <- function(matrix, structure = 1) {
     # Vector case
     structure_vec <- structure
 
-    if (sum(structure_vec) != cols) {
-      cli_abort(
-        "Sum of structure vector must equal the number of columns in matrix"
-      )
+    if (sum(structure_vec) != (cols - 1)) {
+      cli_abort(c(
+        "Sum of structure vector must equal the number of columns in matrix",
+        " minus 1"
+      ))
     }
   }
 
   # For each row, determine which columns should be NA
-  cutoff_cols <- cumsum(structure_vec)
+  cutoff_cols <- cumsum(structure_vec) + 1
 
   for (i in seq_along(structure_vec)) {
     index_row <- rows - i + 1
-    start_col <- cutoff_cols[i] + 1
+    start_col <- cutoff_cols[i]
     result[index_row, start_col:cols] <- NA_real_
   }
 
@@ -74,12 +77,13 @@ replace_lower_right_with_NA <- function(matrix, structure = 1) {
   if (structure > cols) {
     cli_abort("Structure cannot be larger than number of columns")
   }
+  adjusted_cols <- cols - 1
 
-  n_complete_groups <- floor(cols / structure)
+  n_complete_groups <- floor(adjusted_cols / structure)
 
   structure_vec <- rep(structure, n_complete_groups)
 
-  remainder <- cols - (n_complete_groups * structure)
+  remainder <- adjusted_cols %% structure
 
   if (remainder > 0) {
     structure_vec <- c(structure_vec, remainder)

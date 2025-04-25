@@ -206,8 +206,7 @@ pobs <- enw_preprocess_data(
 
 # as we only have one group here we only need referfence_date, delay,
 # and new_confirm
-reporting_triangle_df <- pobs$new_confirm[[1]] |>
-  select(reference_date, delay, new_confirm)
+reporting_triangle_df <- select(pobs$new_confirm[[1]], reference_date, delay, new_confirm)
 
 # we now pivot to wide format, dropping the reference_date column, and
 # convert to a matrix
@@ -242,43 +241,6 @@ ggplot(
   scale_y_reverse()
 ```
 
-It's clear from this figure that the bottom left of the reporting triangle
-contains 0s as a result of the pre-processing we have done.
-In this case, we want to assume that we are making the nowcast as of the last
-reference time, which means the bottom right portion of the reporting triangle
-should contains NAs for the yet-to-be observed values.
-To make this change, we can use the package function
-`replace_lower_right_with_NA()`.
-```{r replace-lower-right-with-NA}
-cleaned_reporting_triangle <- replace_lower_right_with_NA(reporting_triangle)
-
-triangle_df <- as.data.frame(cleaned_reporting_triangle) |>
-  mutate(time = row_number()) |>
-  pivot_longer(!time,
-    values_to = "count",
-    names_prefix = "V",
-    names_to = "delay"
-  ) |>
-  mutate(delay = as.numeric(delay))
-
-ggplot(
-  triangle_df,
-  aes(x = delay, y = time, fill = count)
-) +
-  geom_tile() +
-  scale_fill_gradient(low = "white", high = "blue") +
-  labs(
-    title = "Reporting triangle with NAs for missing values",
-    x = "Delay",
-    y = "Time"
-  ) +
-  theme_bw() +
-  scale_y_reverse()
-```
-
-Now we see that the bottom right of the triangle contains NAs where the
-observations are missing.
-
 # Estimate delay
 
 Now that we have the reporting triangle, we are now ready to pass it in to the
@@ -307,7 +269,7 @@ The `get_delay_estimate()` function expects the following inputs:
 
 ```{r estimate-delay}
 delay_pmf <- get_delay_estimate(
-  reporting_triangle = cleaned_reporting_triangle,
+  reporting_triangle = reporting_triangle,
   max_delay = max_delay,
   n = n_history_delay
 )
@@ -346,7 +308,7 @@ as the delay estimate.
 
 ```{r}
 point_nowcast_matrix <- apply_delay(
-  rep_tri_to_nowcast = cleaned_reporting_triangle,
+  rep_tri_to_nowcast = reporting_triangle,
   delay_pmf = delay_pmf
 )
 ```
@@ -425,7 +387,7 @@ are needed to generate a nowcast of reporting triangle with 41 delay columns.
 
 ```{r generate-triangles}
 trunc_rep_mat_list <- truncate_triangles(
-  reporting_triangle = cleaned_reporting_triangle
+  reporting_triangle = reporting_triangle
 )
 retro_rep_tri_list <- generate_triangles(
   trunc_rep_mat_list = trunc_rep_mat_list

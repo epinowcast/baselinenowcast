@@ -3,8 +3,8 @@
 #' This function ingests a list of point nowcast matrices and a corresponding
 #'    list of truncated reporting matrices and uses both to estimate a
 #'    vector of negative binomial dispersion parameters from the observations
-#'    and estimates at each reference time up until the latest reference time
-#'    minust the maximum delay (excluding the latest one).
+#'    and estimates at each delay starting at delay = 1 and up until the
+#'    maximum delay.
 #'
 #' @param pt_nowcast_mat_list List of point nowcast matrices where rows
 #'    represent reference time points and columns represent delays.
@@ -109,6 +109,8 @@ estimate_dispersion <- function(
   }
 
   max_delay <- ncol(list_of_ncs[[1]]) - 1
+  n_delays <- max_delay # We don't estimate a dispersion for delay =0
+  n_ref_times <- nrow(list_of_ncs[[1]])
   for (i in seq_len(n)) {
     # Rretrospective nowcast as of i delays ago
     nowcast_i <- list_of_ncs[[i]]
@@ -129,7 +131,8 @@ estimate_dispersion <- function(
       mu_t_d = exp_val,
       obs_t_d = obs_val,
       ref_time = indices[, 1],
-      delay = indices[, 2] - 1
+      delay = indices[, 2] - 1, # subtract 1 bc delay is 0 indexed, R is 1 indexed #nolint
+      horizon = n_ref_times + 1 - indices[, 1]
     )
     if (i == 1) {
       df_exp_obs <- exp_vals
@@ -138,19 +141,15 @@ estimate_dispersion <- function(
     }
   }
 
-  df_exp_obs <- df_exp_obs |>
-    mutate(
-      horizon = nrow(list_of_ncs[[1]]) + 1 - ref_time
-    )
   # Separate step which uses the dataframe that compares the expected values to
-  # add and the values observed at each reference time and delay to estimate
-  # the dispersion as a function of reference time. We intentionally only
+  # the values observed at each reference time and delay to estimate
+  # the dispersion as a function of delay. We intentionally only
   # go back to the maximum delay though, so these are only estimated for the
   # parts of the matrix that we've nowcasted
   disp_params <- vector(length = max_delay)
   for (i in 1:max_delay) {
-    obs_temp <- df_exp_obs$obs_t_d[df_exp_obs$horizon == i]
-    mu_temp <- df_exp_obs$mu_t_d[df_exp_obs$horizon == i] + 0.1
+    obs_temp <- df_exp_obs$obs_t_d[df_exp_obs$delay == i]
+    mu_temp <- df_exp_obs$mu_t_d[df_exp_obs$delay == i] + 0.1
     disp_params[i] <- .fit_nb(x = obs_temp, mu = mu_temp)
   }
 

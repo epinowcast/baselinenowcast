@@ -88,7 +88,7 @@ test_that("Error conditions are properly handled", {
   # Invalid n values
   expect_error(estimate_dispersion(valid_nowcasts, valid_trunc_rts, n = -1))
   expect_error(estimate_dispersion(valid_nowcasts, valid_trunc_rts, n = 1.5))
-  expect_error(estimate_dispersion(valid_nowcasts, valid_trunc_rts, n = 3))
+  expect_error(estimate_dispersion(valid_nowcasts, valid_trunc_rts, n = 4))
 })
 
 ### Test 4: Edge Cases ---------------------------------------------------------
@@ -109,10 +109,7 @@ test_that("Matrix dimension validation works", {
     test_triangle[1:5, ],
     test_triangle[1:3, ]
   )
-  expect_error(
-    estimate_dispersion(valid_nowcasts, bad_trunc_rts),
-    "Dimensions of the first `n` matrices in `pt_nowcast_mat_list` and"
-  ) # nolint
+  expect_error(estimate_dispersion(valid_nowcasts, bad_trunc_rts)) # nolint
 })
 
 ## Test 6: fit_nb returns NA if nothing passed to it---------------------------

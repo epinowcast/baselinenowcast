@@ -183,6 +183,7 @@ test_that("apply_delay function works correctly with larger triangle", {
 
 test_that("apply_delay function works the same as the more verbose for loop", {
   triangle <- matrix(nrow = 5, ncol = 4, data = 1)
+  triangle <- replace_lower_right_with_NA(triangle)
   delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
   result <- apply_delay(
     rep_tri_to_nowcast = triangle,
@@ -205,4 +206,48 @@ test_that("apply_delay function works the same as the more verbose for loop", {
   }
 
   expect_identical(result, expectation2)
+})
+
+test_that("apply_delay works with ragged reporting triangles", {
+  ragged_triangle <- matrix(
+    c(
+      80, 50, 25, 10,
+      100, 50, 30, 20,
+      90, 45, 25, NA,
+      80, 40, NA, NA,
+      70, NA, NA, NA
+    ),
+    nrow = 5,
+    byrow = TRUE
+  )
+
+  delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
+
+  # Apply delay to the ragged triangle
+  result <- apply_delay(
+    rep_tri_to_nowcast = ragged_triangle,
+    delay_pmf = delay_pmf
+  )
+
+  # Test that the function returns a matrix
+  expect_true(is.matrix(result))
+
+  # Test that the dimensions are preserved
+  expect_identical(dim(result), dim(ragged_triangle))
+
+  # Test that NA values are replaced
+  expect_false(anyNA(result))
+
+  # Test specific calculations for the ragged parts
+  # For the third row, fourth column (delay = 3)
+  expected_total <- (
+    sum(ragged_triangle[3, 1:3]) + 1 - sum(delay_pmf[1:3])) / sum(delay_pmf[1:3]
+  )
+  expect_equal(result[3, 4], expected_total * delay_pmf[4], tolerance = 1e-6)
+
+  # For the fourth row, third column (delay = 2)
+  expected_total <- (
+    sum(ragged_triangle[4, 1:2]) + 1 - sum(delay_pmf[1:2])) / sum(delay_pmf[1:2]
+  )
+  expect_equal(result[4, 3], expected_total * delay_pmf[3], tolerance = 1e-6)
 })

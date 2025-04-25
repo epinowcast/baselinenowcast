@@ -1,4 +1,5 @@
-test_that("generate_triangles works correctly", {
+test_that(
+  "generate_triangles constructs retrospective triangles with structure 1", {
   # Setup
   triangle1 <- matrix(
     c(
@@ -62,9 +63,64 @@ test_that("generate_triangles works correctly", {
   )
   expect_identical(retro_triangles[[2]], expected_last_triangle)
 
-  # Test 6: Check for error messages
+
   expect_error(
     generate_triangles(data.frame(trunc_triangles[1])),
     "The elements of `trunc_rep_mat_list`must be matrices"
   )
+})
+
+test_that(
+  "generate_triangles structure parameter is passed through correctly", {
+  # Create test triangles
+  triangle1 <- matrix(
+    c(
+      65, 46, 21, 7,
+      70, 40, 20, 5,
+      80, 50, 10, 10,
+      100, 40, 31, 20,
+      95, 45, 21, NA,
+      82, 42, NA, NA,
+      70, NA, NA, NA
+    ),
+    nrow = 7,
+    byrow = TRUE
+  )
+
+  triangle2 <- matrix(
+    c(
+      65, 46, 21, 7,
+      70, 40, 20, 5,
+      80, 50, 10, 10,
+      100, 40, 31, 20,
+      95, 45, 21, NA,
+      82, 42, NA, NA
+    ),
+    nrow = 6,
+    byrow = TRUE
+  )
+
+  trunc_triangles <- list(triangle1, triangle2)
+
+
+  retro_triangles_custom <- generate_triangles(trunc_triangles, structure = 2)
+
+  expected_triangle1_struct2 <- matrix(
+    c(
+      65, 46, 21, 7,
+      70, 40, 20, 5,
+      80, 50, 10, 10,
+      100, 40, 31, 20,
+      95, 45, 21, NA,
+      82, 42, NA, NA,
+      70, NA, NA, NA
+    ),
+    nrow = 7,
+    byrow = TRUE
+  )
+  expected_triangle1_struct2[5:7, 4] <- NA
+  expected_triangle1_struct2[6:7, 3] <- NA
+  expected_triangle1_struct2[7, 2] <- NA
+
+  expect_identical(retro_triangles_custom[[1]], expected_triangle1_struct2)
 })

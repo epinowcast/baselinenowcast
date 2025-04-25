@@ -16,10 +16,6 @@
 #'   representing the delays
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
 #'   first delay column in `rep_mat_to_nowcast`
-#' @param reporting_structure Vector specifying the number of reports per delay period.
-#'   Default is NULL which assumes a standard triangular structure. For example,
-#'   c(3, 4) means the first 3 columns belong to delay period 0 and the next 4 columns
-#'   belong to delay period 1.
 #' @return `point_nowcast_matrix` Matrix of the same number of rows and columns
 #'    as the `rep_mat_to_nowcast` but with the missing values filled in as point
 #'    estimates
@@ -87,12 +83,11 @@ apply_delay <- function(rep_tri_to_nowcast, delay_pmf) {
 #'   values for the specified rows and column
 #' @keywords internal
 .calc_expectation <- function(
-  delay_index,
-  expectation,
-  delay_prob,
-  delay_cdf_prev,
-  n_rows
-) {
+    delay_index,
+    expectation,
+    delay_prob,
+    delay_cdf_prev,
+    n_rows) {
   # Find rows with NA in this column that need to be filled
   col_index <- delay_index
   na_rows <- .where_is_na_in_col(expectation, col_index)

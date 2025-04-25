@@ -42,12 +42,11 @@
 #'   max_delay = 3,
 #'   n = 4
 #' )
-#' print(delay_pmf)
+#' delay_pmf
 get_delay_estimate <- function(
-  reporting_triangle,
-  max_delay = ncol(reporting_triangle) - 1,
-  n = nrow(reporting_triangle)
-) {
+    reporting_triangle,
+    max_delay = ncol(reporting_triangle) - 1,
+    n = nrow(reporting_triangle)) {
   # Check that the input reporting triangle is formatted properly.
   .validate_triangle(
     triangle = reporting_triangle,

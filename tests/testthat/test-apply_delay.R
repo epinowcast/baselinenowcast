@@ -241,13 +241,11 @@ test_that("apply_delay works with ragged reporting triangles", {
   # Test specific calculations for the ragged parts
   # For the third row, fourth column (delay = 3)
   expected_total <- (
-    sum(ragged_triangle[3, 1:3]) + 1 - sum(delay_pmf[1:3])) / sum(delay_pmf[1:3]
-  )
+    sum(ragged_triangle[3, 1:3]) + 1 - sum(delay_pmf[1:3])) / sum(delay_pmf[1:3])
   expect_equal(result[3, 4], expected_total * delay_pmf[4], tolerance = 1e-6)
 
   # For the fourth row, third column (delay = 2)
   expected_total <- (
-    sum(ragged_triangle[4, 1:2]) + 1 - sum(delay_pmf[1:2])) / sum(delay_pmf[1:2]
-  )
+    sum(ragged_triangle[4, 1:2]) + 1 - sum(delay_pmf[1:2])) / sum(delay_pmf[1:2])
   expect_equal(result[4, 3], expected_total * delay_pmf[3], tolerance = 1e-6)
 })

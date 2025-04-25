@@ -31,13 +31,15 @@ test_that(".validate_delay_and_triangle non-numeric delay PMF causes error", {
 })
 
 test_that(
-  ".validate_delay_and_triangle mismatched inputs cause error", {
-  mismatched_delay <- c(0.3, 0.3, 0.4)
-  expect_error(
-    .validate_delay_and_triangle(valid_triangle, mismatched_delay),
-    "Length of the delay PMF is not the same as the number of delays"
-  )
-})
+  ".validate_delay_and_triangle mismatched inputs cause error",
+  {
+    mismatched_delay <- c(0.3, 0.3, 0.4)
+    expect_error(
+      .validate_delay_and_triangle(valid_triangle, mismatched_delay),
+      "Length of the delay PMF is not the same as the number of delays"
+    )
+  }
+)
 
 test_that(".validate_delay_and_triangle empty triangle causes error", {
   empty_triangle <- matrix(integer(0), nrow = 0, ncol = 0)
@@ -56,17 +58,19 @@ test_that(".validate_delay_and_triangle empty delay PMF causes error", {
 })
 
 test_that(
-  ".validate_delay_and_triangle delay_pmf[1] = 0 with triangle causes error", {
-  triangle <- matrix(
-    c(
-      10, 5, 5, 5,
-      20, 10, 10, NA,
-      40, 20, NA, NA,
-      1, NA, NA, NA
-    ),
-    nrow = 4,
-    byrow = TRUE
-  )
-  delay_pmf <- c(0, 0.2, 0.4, 0.2)
-  expect_error(.validate_delay_and_triangle(triangle, delay_pmf))
-})
+  ".validate_delay_and_triangle delay_pmf[1] = 0 with triangle causes error",
+  {
+    triangle <- matrix(
+      c(
+        10, 5, 5, 5,
+        20, 10, 10, NA,
+        40, 20, NA, NA,
+        1, NA, NA, NA
+      ),
+      nrow = 4,
+      byrow = TRUE
+    )
+    delay_pmf <- c(0, 0.2, 0.4, 0.2)
+    expect_error(.validate_delay_and_triangle(triangle, delay_pmf))
+  }
+)

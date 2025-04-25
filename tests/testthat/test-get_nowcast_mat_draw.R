@@ -63,22 +63,24 @@ test_that("get_nowcast_mat_draw random generation is reproducible with seed", {
 })
 
 test_that(
-  "get_nowcast_mat_draw output follows negative binomial distribution", {
-  set.seed(789)
-  result <- get_nowcast_mat_draw(test_matrix, valid_disp)
+  "get_nowcast_mat_draw output follows negative binomial distribution",
+  {
+    set.seed(789)
+    result <- get_nowcast_mat_draw(test_matrix, valid_disp)
 
-  # Test last column (delay = 3)
-  generated_vals <- result[3:4, 4]
-  original_means <- test_matrix[3:4, 4]
+    # Test last column (delay = 3)
+    generated_vals <- result[3:4, 4]
+    original_means <- test_matrix[3:4, 4]
 
-  # Check mean is close to original (with tolerance for sampling error)
-  test_bounds <- (mean(generated_vals) >
-    mean(original_means) - 15) &
-    (mean(generated_vals) <
-      mean(original_means) + 15)
+    # Check mean is close to original (with tolerance for sampling error)
+    test_bounds <- (mean(generated_vals) >
+      mean(original_means) - 15) &
+      (mean(generated_vals) <
+        mean(original_means) + 15)
 
-  expect_true(test_bounds)
-})
+    expect_true(test_bounds)
+  }
+)
 
 test_that("get_nowcast_mat_draw output dimensions match input", {
   square_matrix <- matrix(1:9, nrow = 3)

@@ -73,13 +73,14 @@ test_that("get_delay_estimate validates input parameters correctly", {
 
 test_that(
   "get_delay_estimate errors when NAs are in upper part of reporting triangle",
- {
-  # Add NA in the upper part where it shouldn't be
-  triangle_with_na <- reporting_triangle
-  triangle_with_na[1, 2] <- NA
+  {
+    # Add NA in the upper part where it shouldn't be
+    triangle_with_na <- reporting_triangle
+    triangle_with_na[1, 2] <- NA
 
-  expect_error(get_delay_estimate(triangle_with_na))
-})
+    expect_error(get_delay_estimate(triangle_with_na))
+  }
+)
 
 test_that("get_delay_estimate errors if not passed a matrix", {
   # Create a vector instead of a matrix
@@ -108,25 +109,28 @@ test_that("get_delay_estimate calculates correct PMF with complete triangle", {
 })
 
 test_that(
-  "get_delay_estimate works with every other day reporting of daily data", {
-  sim_delay_pmf <- c(0.1, 0.2, 0.3, 0.1, 0.1, 0.1, 0.1)
+  "get_delay_estimate works with every other day reporting of daily data",
+  {
+    sim_delay_pmf <- c(0.1, 0.2, 0.3, 0.1, 0.1, 0.1, 0.1)
 
-  counts <- c(30, 40, 50, 60, 70)
+    counts <- c(30, 40, 50, 60, 70)
 
-  complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
-  complete_triangle <- do.call(rbind, complete_triangle)
+    complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
+    complete_triangle <- do.call(rbind, complete_triangle)
 
-  reporting_triangle <- replace_lower_right_with_NA(
-    complete_triangle, structure = 2
-  )
+    reporting_triangle <- replace_lower_right_with_NA(
+      complete_triangle,
+      structure = 2
+    )
 
-  # Get delay estimate
-  delay_pmf <- get_delay_estimate(
-    reporting_triangle = reporting_triangle
-  )
-  # Test that the function returns the expected PMF
-  expect_identical(delay_pmf, sim_delay_pmf)
-})
+    # Get delay estimate
+    delay_pmf <- get_delay_estimate(
+      reporting_triangle = reporting_triangle
+    )
+    # Test that the function returns the expected PMF
+    expect_identical(delay_pmf, sim_delay_pmf)
+  }
+)
 
 test_that("get_delay_estimate handles complete reporting triangles", {
   # Create a triangle with known delay PMF
@@ -141,7 +145,8 @@ test_that("get_delay_estimate handles complete reporting triangles", {
 
   # Create a reporting triangle with NAs in the lower right
   partial_triangle <- replace_lower_right_with_NA(
-    partial_complete, structure = 1
+    partial_complete,
+    structure = 1
   )
 
   delay_pmf <- get_delay_estimate(

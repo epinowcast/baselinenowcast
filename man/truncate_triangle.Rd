@@ -38,9 +38,6 @@ triangle <- matrix(
   byrow = TRUE
 )
 
-trunc_rep_tri <- truncate_triangle(
-  t = 1,
-  matr_observed = triangle
-)
-print(trunc_rep_tri)
+trunc_rep_tri <- truncate_triangle(t = 1, matr_observed = triangle)
+trunc_rep_tri
 }

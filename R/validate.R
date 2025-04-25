@@ -9,10 +9,9 @@
 #' @returns NULL, invisibly
 #' @keywords internal
 .validate_triangle <- function(
-  triangle,
-  max_delay = ncol(triangle) - 1,
-  n = nrow(triangle)
-) {
+    triangle,
+    max_delay = ncol(triangle) - 1,
+    n = nrow(triangle)) {
   # Make sure the input triangle only contains integer values
   # and is of the correct class
   assert_class(triangle, "matrix")

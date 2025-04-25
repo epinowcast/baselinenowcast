@@ -88,8 +88,8 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 ### Code
 
 
-<a href="https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson">kaitejohnson</a>, 
-<a href="https://github.com/epinowcast/baselinenowcast/commits?author=seabbs">seabbs</a>, 
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson">kaitejohnson</a>,
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=seabbs">seabbs</a>,
 <a href="https://github.com/epinowcast/baselinenowcast/commits?author=sbfnk">sbfnk</a>
 
 

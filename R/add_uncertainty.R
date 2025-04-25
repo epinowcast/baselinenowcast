@@ -53,6 +53,7 @@ add_uncertainty <- function(point_nowcast_matrix,
 #' @inheritParams add_uncertainty
 #' @importFrom cli cli_abort
 #' @importFrom checkmate assert_numeric
+#' @importFrom stats rnbinom
 #'
 #' @returns `nowcast_w_obs_error` Matrix containing the same upper left values
 #'    as the `point_nowcast_matrix`, with the bottom right containing

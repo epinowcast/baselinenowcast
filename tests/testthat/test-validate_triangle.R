@@ -51,15 +51,17 @@ test_that(".validate_triangle requires integer n_history", {
 })
 
 test_that(
-  ".validate_triangle checks observations are not less than n_history", {
-  valid_triangle <- matrix(1:20, nrow = 5, ncol = 4)
-  expect_error(
-    .validate_triangle(valid_triangle,
-      max_delay = 3,
-      n = 6
+  ".validate_triangle checks observations are not less than n_history",
+  {
+    valid_triangle <- matrix(1:20, nrow = 5, ncol = 4)
+    expect_error(
+      .validate_triangle(valid_triangle,
+        max_delay = 3,
+        n = 6
+      )
     )
-  )
-})
+  }
+)
 
 test_that(".validate_triangle checks number of delays against max_delay", {
   valid_triangle <- matrix(1:20, nrow = 5, ncol = 4)

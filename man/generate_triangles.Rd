@@ -39,18 +39,12 @@ triangle <- matrix(
   byrow = TRUE
 )
 
-trunc_rts <- truncate_triangles(
-  reporting_triangle = triangle,
-  n = 2
-)
-retro_rts <- generate_triangles(
-  reporting_triangle_list = trunc_rts
-)
-retro_rts
+trunc_rts <- truncate_triangles(triangle, n = 2)
+retro_rts <- generate_triangles(trunc_rts)
 
 # With custom structure
 retro_rts_custom <- generate_triangles(
-  reporting_triangle_list = reporting_triangle_list,
+  retro_rts,
   structure = 2
 )
 retro_rts_custom

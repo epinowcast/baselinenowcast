@@ -69,5 +69,5 @@ delay_pmf <- get_delay_estimate(
   max_delay = 3,
   n = 4
 )
-print(delay_pmf)
+delay_pmf
 }

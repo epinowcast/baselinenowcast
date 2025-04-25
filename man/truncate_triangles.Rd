@@ -46,10 +46,6 @@ triangle <- matrix(
   byrow = TRUE
 )
 
-truncated_rts <- truncate_triangles(
-  reporting_triangle = triangle,
-  n = 2
-)
-print(truncated_rts[[1]])
-print(truncated_rts[[2]])
+truncated_rts <- truncate_triangles(triangle, n = 2)
+truncated_rts[1:2]
 }

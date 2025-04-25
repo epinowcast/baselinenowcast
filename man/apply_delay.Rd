@@ -13,11 +13,6 @@ representing the delays}
 
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
 first delay column in \code{rep_mat_to_nowcast}}
-
-\item{reporting_structure}{Vector specifying the number of reports per delay period.
-Default is NULL which assumes a standard triangular structure. For example,
-c(3, 4) means the first 3 columns belong to delay period 0 and the next 4 columns
-belong to delay period 1.}
 }
 \value{
 \code{point_nowcast_matrix} Matrix of the same number of rows and columns

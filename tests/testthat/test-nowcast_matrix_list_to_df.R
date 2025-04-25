@@ -43,14 +43,16 @@ test_that("nowcast_matrix_list_to_df input validation works correctly", {
 })
 
 test_that(
-  "nowcast_matrix_list_to_df handles matrices of different dimensions", {
-  mat1 <- matrix(1:4, nrow = 2) # 2x2
-  mat2 <- matrix(1:6, nrow = 3) # 3x2
-  nowcast_list <- list(mat1, mat2)
+  "nowcast_matrix_list_to_df handles matrices of different dimensions",
+  {
+    mat1 <- matrix(1:4, nrow = 2) # 2x2
+    mat2 <- matrix(1:6, nrow = 3) # 3x2
+    nowcast_list <- list(mat1, mat2)
 
-  result <- nowcast_matrix_list_to_df(nowcast_list)
-  expect_identical(nrow(result), 10L) # 4 + 6 = 10 rows
-})
+    result <- nowcast_matrix_list_to_df(nowcast_list)
+    expect_identical(nrow(result), 10L) # 4 + 6 = 10 rows
+  }
+)
 
 test_that("nowcast_matrix_list_to_df single matrix handling", {
   single_mat <- matrix(1:4, nrow = 2)

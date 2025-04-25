@@ -1,69 +1,75 @@
 test_that(
-  "replace_lower_right_with_NA handles square matrix", {
-  square_matrix <- matrix(
-    1:16,
-    nrow = 4,
-    ncol = 4,
-    byrow = TRUE
-  )
-  expected <- matrix(
-    c(
-      1, 2, 3, 4,
-      5, 6, 7, NA,
-      9, 10, NA, NA,
-      13, NA, NA, NA
-    ),
-    nrow = 4,
-    byrow = TRUE
-  )
-  result <- replace_lower_right_with_NA(square_matrix)
-  expect_identical(result, expected)
-})
+  "replace_lower_right_with_NA handles square matrix",
+  {
+    square_matrix <- matrix(
+      1:16,
+      nrow = 4,
+      ncol = 4,
+      byrow = TRUE
+    )
+    expected <- matrix(
+      c(
+        1, 2, 3, 4,
+        5, 6, 7, NA,
+        9, 10, NA, NA,
+        13, NA, NA, NA
+      ),
+      nrow = 4,
+      byrow = TRUE
+    )
+    result <- replace_lower_right_with_NA(square_matrix)
+    expect_identical(result, expected)
+  }
+)
 
 test_that(
-  "replace_lower_right_with_NA handles rectangular matrix with more rows", {
-  rect_matrix <- matrix(
-    1:20,
-    nrow = 5,
-    ncol = 4,
-    byrow = TRUE
-  )
-  expected <- matrix(
-    c(
-      1, 2, 3, 4,
-      5, 6, 7, 8,
-      9, 10, 11, NA,
-      13, 14, NA, NA,
-      17, NA, NA, NA
-    ),
-    nrow = 5,
-    byrow = TRUE
-  )
-  result <- replace_lower_right_with_NA(rect_matrix)
-  expect_identical(result, expected)
-})
+  "replace_lower_right_with_NA handles rectangular matrix with more rows",
+  {
+    rect_matrix <- matrix(
+      1:20,
+      nrow = 5,
+      ncol = 4,
+      byrow = TRUE
+    )
+    expected <- matrix(
+      c(
+        1, 2, 3, 4,
+        5, 6, 7, 8,
+        9, 10, 11, NA,
+        13, 14, NA, NA,
+        17, NA, NA, NA
+      ),
+      nrow = 5,
+      byrow = TRUE
+    )
+    result <- replace_lower_right_with_NA(rect_matrix)
+    expect_identical(result, expected)
+  }
+)
 
 test_that(
-  "replace_lower_right_with_NA handles rectangular matrix with more columns", {
-  rect_matrix <- matrix(
-    1:20,
-    nrow = 4,
-    ncol = 5,
-    byrow = TRUE
-  )
-  expected <- matrix(
-    c(
-      1, 2, 3, 4, NA,
-      6, 7, 8, NA, NA,
-      11, 12, NA, NA, NA,
-      16, NA, NA, NA, NA
-    ),
-    nrow = 4,
-    byrow = TRUE
-  )
-  result <- replace_lower_right_with_NA(rect_matrix)
-  expect_identical(result, expected)
-})
+  "replace_lower_right_with_NA handles rectangular matrix with more columns",
+  {
+    rect_matrix <- matrix(
+      1:20,
+      nrow = 4,
+      ncol = 5,
+      byrow = TRUE
+    )
+    expected <- matrix(
+      c(
+        1, 2, 3, 4, NA,
+        6, 7, 8, NA, NA,
+        11, 12, NA, NA, NA,
+        16, NA, NA, NA, NA
+      ),
+      nrow = 4,
+      byrow = TRUE
+    )
+    result <- replace_lower_right_with_NA(rect_matrix)
+    expect_identical(result, expected)
+  }
+)
 
 test_that("replace_lower_right_with_NA leaves 1x1 matrix unchanged", {
   single_cell <- matrix(1, nrow = 1, ncol = 1)
@@ -197,12 +203,16 @@ test_that("replace_lower_right_with_NA validates structure parameter", {
   test_matrix <- matrix(1:9, nrow = 3)
 
   # Test with negative structure
-  expect_error(replace_lower_right_with_NA(test_matrix, -1),
-               "Structure must be positive")
+  expect_error(
+    replace_lower_right_with_NA(test_matrix, -1),
+    "Structure must be positive"
+  )
 
   # Test with structure larger than columns
-  expect_error(replace_lower_right_with_NA(test_matrix, 4),
-               "Structure cannot be larger than number of columns")
+  expect_error(
+    replace_lower_right_with_NA(test_matrix, 4),
+    "Structure cannot be larger than number of columns"
+  )
 
   # Test with invalid vector structure
   expect_error(

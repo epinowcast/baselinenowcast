@@ -37,16 +37,10 @@
 #'   byrow = TRUE
 #' )
 #'
-#' trunc_rts <- truncate_triangles(
-#'   reporting_triangle = triangle
-#' )
-#' retro_rts <- generate_triangles(
-#'   trunc_rep_mat_list = trunc_rts
-#' )
-#' retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
-#'   reporting_triangle_list = retro_rts
-#' )
-#' print(retro_pt_nowcast_mat_list[[1]])
+#' trunc_rts <- truncate_triangles(triangle)
+#' retro_rts <- generate_triangles(trunc_rts)
+#' retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(retro_rts)
+#' retro_pt_nowcast_mat_list[1:3]
 generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
                                          max_delay = min(
                                            sapply(reporting_triangle_list, ncol)
@@ -116,7 +110,7 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
 #' point_nowcast_matrix <- generate_pt_nowcast_mat(
 #'   reporting_triangle = triangle
 #' )
-#' print(point_nowcast_matrix)
+#' point_nowcast_matrix
 generate_pt_nowcast_mat <- function(reporting_triangle,
                                     max_delay = ncol(reporting_triangle) - 1,
                                     n = nrow(reporting_triangle),

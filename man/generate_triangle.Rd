@@ -38,8 +38,6 @@ triangle <- matrix(
   byrow = TRUE
 )
 
-retro_rt <- generate_triangle(
-  reporting_triangle = triangle
-)
+retro_rt <- generate_triangle(triangle)
 retro_rt
 }

@@ -52,14 +52,8 @@ triangle <- matrix(
   byrow = TRUE
 )
 
-trunc_rts <- truncate_triangles(
-  reporting_triangle = triangle
-)
-retro_rts <- generate_triangles(
-  trunc_rep_mat_list = trunc_rts
-)
-retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
-  reporting_triangle_list = retro_rts
-)
-print(retro_pt_nowcast_mat_list[[1]])
+trunc_rts <- truncate_triangles(triangle)
+retro_rts <- generate_triangles(trunc_rts)
+retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(retro_rts)
+retro_pt_nowcast_mat_list[1:3]
 }

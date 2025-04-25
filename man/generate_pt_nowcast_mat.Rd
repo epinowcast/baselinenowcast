@@ -57,5 +57,5 @@ triangle <- matrix(
 point_nowcast_matrix <- generate_pt_nowcast_mat(
   reporting_triangle = triangle
 )
-print(point_nowcast_matrix)
+point_nowcast_matrix
 }

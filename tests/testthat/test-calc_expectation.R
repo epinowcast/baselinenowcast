@@ -33,7 +33,6 @@ test_that(".calc_expectation modifies only the correct cells", {
 })
 
 test_that(".calc_expectation calculates correct values", {
-
   modified_step1 <- .calc_expectation(
     delay_index = 2,
     expectation = expectation,

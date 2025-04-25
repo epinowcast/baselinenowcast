@@ -109,7 +109,6 @@ estimate_dispersion <- function(
   }
 
   max_delay <- ncol(list_of_ncs[[1]]) - 1
-  n_delays <- max_delay # We don't estimate a dispersion for delay =0
   n_ref_times <- nrow(list_of_ncs[[1]])
   for (i in seq_len(n)) {
     # Rretrospective nowcast as of i delays ago

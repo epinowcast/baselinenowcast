@@ -106,7 +106,6 @@ get_nowcast_mat_draw <- function(point_nowcast_matrix,
     cli_abort(message = "`point_nowcast_matrix` is not a matrix.")
   }
   max_t <- nrow(point_nowcast_matrix)
-  max_delay <- ncol(point_nowcast_matrix) - 1
   for (i in seq_along(disp)) {
     # Apply to each column (delay), moving left to right
     mean_vals <- point_nowcast_matrix[(max_t - i + 1):max_t, i + 1]

@@ -118,3 +118,9 @@ get_nowcast_mat_draw <- function(point_nowcast_matrix,
 
   return(nowcast_w_obs_error)
 }
+
+get_nowcast_draw <- function(point_nowcast_pred_matrix,
+                             reporting_triangle,
+                             disp) {
+
+}

@@ -441,7 +441,7 @@ retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
 
 
 Next, we will use the list of retrospective reporting triangles to estimate
-the uncertainty at each delay $d$
+the uncertainty at each horizon, starting at horizon 0.
 
 ```{r estimate-dispersion}
 disp_params <- estimate_dispersion(
@@ -453,8 +453,27 @@ disp_params <- estimate_dispersion(
 # Generate probabilistic nowcast
 
 Now that we have estimated the dispersion, we take the point nowcast matrix we
-previously generated, `point_nowcast_matrix`, and generate many draws of the
-expected observed values to get a probabilistic nowcast.
+previously generated, `point_nowcast_matrix`, extract only the components that
+we predicted, aggregate across delays, and apply the uncertainty to the
+point estimate of the final count by reference time.
+
+As an example, let's start by just generating a single draw of the predicted
+nowcast vector. We'll first have to just extract from the point nowcast matrix
+the values that were predicted
+```{r}
+# Could make this a function or have an option in the apply_delay
+# To return only the predictions (but preference is to keep as a separate step)
+pt_nowcast_pred_matrix <- point_nowcast_matrix
+pt_nowcast_pred_matrix[!is.na(cleaned_reporting_triangle)] <- NA
+
+
+pred_nowcast_vector_draw <- get_nowcast_pred_draw(
+  point_nowcast_pred_matrix = pt_nowcast_pred_matrix,
+  reporting_triangle = cleaned_reporting_triangle,
+  disp = disp_params
+)
+```
+
 ```{r generate-many-expected-observed-nowcasts}
 nowcast_matrix_list <- add_uncertainty(
   point_nowcast_matrix = point_nowcast_matrix,

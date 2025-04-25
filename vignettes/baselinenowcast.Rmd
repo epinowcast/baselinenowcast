@@ -457,49 +457,28 @@ previously generated, `point_nowcast_matrix`, extract only the components that
 we predicted, aggregate across delays, and apply the uncertainty to the
 point estimate of the final count by reference time.
 
-As an example, let's start by just generating a single draw of the predicted
-nowcast vector. We'll first have to just extract from the point nowcast matrix
-the values that were predicted
-```{r}
+We will generate a long tidy dataframe containing draws of the predicted
+counts as well as the sum of those predicted draws plus the observations, which
+becomes the probabilistic final count estimate.
+We'll first have to just extract from the point nowcast matrix
+only the values that were predicted.
+```{r generate predicted nowcast draws}
 # Could make this a function or have an option in the apply_delay
 # To return only the predictions (but preference is to keep as a separate step)
 pt_nowcast_pred_matrix <- point_nowcast_matrix
 pt_nowcast_pred_matrix[!is.na(cleaned_reporting_triangle)] <- NA
 
 
-pred_nowcast_vector_draw <- get_nowcast_pred_draw(
+nowcast_draws_df <- get_nowcast_pred_draws(
   point_nowcast_pred_matrix = pt_nowcast_pred_matrix,
   reporting_triangle = cleaned_reporting_triangle,
   disp = disp_params
 )
 ```
 
-```{r generate-many-expected-observed-nowcasts}
-nowcast_matrix_list <- add_uncertainty(
-  point_nowcast_matrix = point_nowcast_matrix,
-  disp = disp_params,
-  n_draws = 1000
-)
-```
-
-Next, we will take the list of nowcast matrices and
-convert this into a long tidy dataframe, indexed by reference time `t`,
-delay `d`, and draws.
-
-```{r generate-nowcasted-draws-df}
-nowcast_draws <- nowcast_matrix_list_to_df(
-  nowcast_matrix_list = nowcast_matrix_list
-)
-head(nowcast_draws)
-```
-
-The package also provides a helper function, `aggregate_df_by_ref_time()`
-which converts the draws indexed by `t` and `d` to one which contains the sum
-over all delays. We can then use this to plot the nowcasts compared to the
+As a final step we will plot the nowcasts compared to the
 data available as of the nowcast date, and the later observed data.
-```{r summarise-by-ref-time}
-summary_nowcast <- aggregate_df_by_ref_time(nowcast_draws)
-
+```{r plot the nowcasts}
 # Join with the original data
 final_data <- data_long[location == "DE"][age_group == "00+"] |> # nolint
   enw_filter_report_dates(latest_date = "2021-10-01") |>
@@ -522,8 +501,8 @@ time_df <- data.frame(
       by = "day"
     )
 ) |> mutate(time = row_number())
-sampled_draws <- sample.int(max(summary_nowcast$draw), 100)
-summary_nowcast_w_data <- summary_nowcast |>
+sampled_draws <- sample.int(max(nowcast_draws_df$draw), 1000)
+summary_nowcast_w_data <- nowcast_draws_df |>
   left_join(time_df,
     by = "time"
   ) |>

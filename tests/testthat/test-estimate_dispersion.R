@@ -118,3 +118,70 @@ test_that("Passing in empty vector returns NA", {
   NA_result <- .fit_nb(x, mu = 1)
   expect_true(is.na(NA_result))
 })
+
+
+## Test 7: Make dispersion as a function of delay dramatic and test fxn works--
+# Sample data setup
+test_triangle <- matrix(
+  c(
+    1, 2, 3,
+    1, 2, 9,
+    1, 2, 0,
+    1, 2, 5,
+    1, 2, NA,
+    1, NA, NA
+  ),
+  nrow = 6,
+  byrow = TRUE
+)
+
+nowcast1 <- matrix(
+  c(
+    1, 2, 3,
+    1, 2, 9,
+    1, 2, 0,
+    1, 2, 4,
+    1, 2, 4
+  ),
+  nrow = 5,
+  byrow = TRUE
+)
+nowcast2 <- matrix(
+  c(
+    1, 2, 3,
+    1, 2, 9,
+    1, 2, 6,
+    1, 2, 6
+  ),
+  nrow = 4,
+  byrow = TRUE
+)
+nowcast3 <- matrix(
+  c(
+    1, 2, 3,
+    1, 2, 3,
+    1, 2, 3
+  ),
+  nrow = 3,
+  byrow = TRUE
+)
+
+
+valid_nowcasts <- list(nowcast1, nowcast2, nowcast3)
+
+valid_trunc_rts <- list(
+  test_triangle[1:5, ],
+  test_triangle[1:4, ],
+  test_triangle[1:3, ]
+)
+
+result <- estimate_dispersion(
+  pt_nowcast_mat_list = valid_nowcasts,
+  trunc_rep_mat_list = valid_trunc_rts,
+  n = 3
+)
+
+test_that("First delay dispersion is high, second is low", {
+  expect_true(result[1] > 500) # low dispersion in delay = 1
+  expect_true(result[2] < 10) # high dispersion in delay = 2
+})

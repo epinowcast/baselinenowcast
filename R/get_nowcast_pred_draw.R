@@ -1,13 +1,14 @@
 #' Get a draw of only the predicted elements of the nowcast vector
 #'
 #' @param point_nowcast_pred_matrix Matrix containing only the elements that
-#'    have not yet been observed as of the final reference date
+#'    have not yet been observed as of the final reference date.
 #' @param disp Vector of dispersion parameters indexed by horizon from minus
-#'    one to the maximum delay
+#'    one to the maximum delay.
 #'
-#' @returns Vector of predicted draws at each reference time
+#' @returns Vector of predicted draws at each reference time, for all reference
+#'    times in the input `point_nowcast_pred_matrix`.
 #' @export
-#'
+#' @importFrom cli cli_abort cli_warn
 #' @examples
 #' point_nowcast_pred_matrix <-
 #'   matrix(
@@ -29,24 +30,45 @@
 #' nowcast_pred_draw
 get_nowcast_pred_draw <- function(point_nowcast_pred_matrix,
                                   disp) {
+  if (length(disp) > nrow(point_nowcast_pred_matrix)) {
+    cli_abort(
+      message = c(
+        "Vector of dispersion parameters is greater than the number ",
+        "of reference times in `point_nowcast_pred_matrix`. Check ",
+        "to make sure this is expected behavior and truncate ",
+        "dispersion to eliminate the horizons that are not in ",
+        "the matrix."
+      )
+    )
+  }
+
+  if (!anyNA(point_nowcast_pred_matrix)) {
+    cli_warn(
+      message = c(
+        "No NAs detected in `point_pred_matrix`. Make sure ",
+        " that matrix contains NAs for the elements alredy observed ",
+        "as of the final reference time."
+      )
+    )
+  }
   n_horizons <- length(disp)
   max_t <- nrow(point_nowcast_pred_matrix)
-  mean_pred <- rowSums(point_nowcast_pred_matrix, na.rm = TRUE)[1:n_horizons]
+  mean_pred <- rowSums(point_nowcast_pred_matrix, na.rm = TRUE)[(max_t - n_horizons + 1):max_t]
   # Nowcast predictions only (these are reversed, first element is horizon 0)
   draw_pred <- rnbinom(n = n_horizons, size = rev(disp), mu = mean_pred)
   # Pad with 0s for the fully observed rows, which are before
   # the max_t - n_horizons
   draw_pred_long <- c(rep(0, max_t - n_horizons), draw_pred)
-  return(draw_pred)
+  return(draw_pred_long)
 }
 
 #' Get a dataframe of multiple draws of only the predicted elements of the
 #'    nowcast vector
 #'
 #' @param point_nowcast_pred_matrix Matrix containing only the elements that
-#'    have not yet been observed as of the final reference date
+#'    have not yet been observed as of the final reference date.
 #' @param disp Vector of dispersion parameters indexed by horizon from minus
-#'    one to the maximum delay
+#'    one to the maximum delay.
 #' @param n_draws Integer indicating the number of draws of the predicted
 #'    nowcast vector to generate. Default is `1000`.
 #'

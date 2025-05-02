@@ -24,7 +24,7 @@ test_that("function returns vector of correct length", {
   expect_true(all(result >= 0)) # Counts should be non-negative
   # The first (max_t - n_horizons + 1) elements should be 0
   expected_zeros <- 4 - 3
-  expect_equal(sum(result[1:expected_zeros] == 0), expected_zeros)
+  expect_identical(sum(result[1:expected_zeros] == 0), as.integer(expected_zeros)) # nolint
   expect_true(any(result[(expected_zeros + 1):length(result)] != 0))
 })
 
@@ -64,7 +64,7 @@ test_that("statistical properties are reasonable", {
   }
 
   # The first element should always be 0
-  expect_equal(mean(samples[1, ]), 0)
+  expect_identical(mean(samples[1, ]), 0)
 })
 
 test_that("function handles edge cases correctly", {
@@ -206,6 +206,6 @@ test_that("return vector has zeros in the right places", {
   expected <- c(0, 0)
 
   # Test
-  expect_equal(result[1:2], expected)
+  expect_identical(result[1:2], expected)
   expect_false(result[3] == 0)
 })

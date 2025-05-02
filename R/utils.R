@@ -131,7 +131,7 @@ extract_predictions <- function(pt_nowcast_mat,
   assert_matrix(pt_nowcast_mat, any.missing = FALSE)
   assert_matrix(rep_mat, all.missing = FALSE)
   # Check that the observations are the same
-  all_equal <- all(pt_nowcast_matrix[!is.na(rep_mat)] == rep_mat[!is.na(rep_mat)]) # nolint
+  all_equal <- all(pt_nowcast_mat[!is.na(rep_mat)] == rep_mat[!is.na(rep_mat)]) # nolint
   if (isFALSE(all_equal)) {
     cli_abort(message = c(
       " `obs_mat` is not a subset of `pt_nowcast_mat`. Check to make sure that ",

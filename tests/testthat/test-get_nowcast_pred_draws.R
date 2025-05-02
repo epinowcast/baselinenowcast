@@ -110,8 +110,8 @@ test_that("function works with different number of draws", {
   result <- get_nowcast_pred_draws(point_nowcast_pred_matrix, disp, n_draws)
 
   # Check that all draws were created
-  expect_equal(length(unique(result$draw)), n_draws)
-  expect_equal(nrow(result), n_draws * nrow(point_nowcast_pred_matrix))
+  expect_identical(length(unique(result$draw)), as.integer(n_draws))
+  expect_identical(nrow(result), as.integer(n_draws * nrow(point_nowcast_pred_matrix))) # nolint
 })
 
 test_that("function handles single-row matrix", {
@@ -128,6 +128,6 @@ test_that("function handles single-row matrix", {
 
 
   # Check that result has correct structure
-  expect_equal(nrow(result), n_draws)
-  expect_equal(result$time, rep(1, n_draws))
+  expect_identical(nrow(result), as.integer(n_draws))
+  expect_identical(result$time, as.integer(rep(1, n_draws)))
 })

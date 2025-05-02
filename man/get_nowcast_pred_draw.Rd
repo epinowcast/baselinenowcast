@@ -8,33 +8,35 @@ get_nowcast_pred_draw(point_nowcast_pred_matrix, disp)
 }
 \arguments{
 \item{point_nowcast_pred_matrix}{Matrix containing only the elements that
-have not yet been observed as of the final reference date}
+have not yet been observed as of the final reference date.}
 
 \item{disp}{Vector of dispersion parameters indexed by horizon from minus
-one to the maximum delay}
+one to the maximum delay.}
 }
 \value{
-Vector of predicted draws at each reference time
+Vector of predicted draws at each reference time, for all reference
+times in the input \code{point_nowcast_pred_matrix}.
 }
 \description{
 Get a draw of only the predicted elements of the nowcast vector
 }
 \examples{
 point_nowcast_pred_matrix <-
-matrix(
-  c(
-    NA, NA, NA, NA,
-    NA, NA, NA, NA,
-    NA, NA, NA, 16.8,
-    NA, NA, 21.2, 19.5,
-    NA, 34.5, 15.4, 9.1
-  ),
-  nrow = 4,
-  byrow = TRUE
-)
+  matrix(
+    c(
+      NA, NA, NA, NA,
+      NA, NA, NA, NA,
+      NA, NA, NA, 16.8,
+      NA, NA, 21.2, 19.5,
+      NA, 34.5, 15.4, 9.1
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
 disp <- c(0.8, 12.4, 9.1)
 nowcast_pred_draw <- get_nowcast_pred_draw(
-                         point_nowcast_pred_matrix,
-                         disp)
+  point_nowcast_pred_matrix,
+  disp
+)
 nowcast_pred_draw
 }

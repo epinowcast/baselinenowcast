@@ -463,10 +463,10 @@ becomes the probabilistic final count estimate.
 We'll first have to just extract from the point nowcast matrix
 only the values that were predicted.
 ```{r extract predictions}
-# Could make this a function or have an option in the apply_delay
-# To return only the predictions (but preference is to keep as a separate step)
-pt_nowcast_pred_matrix <- point_nowcast_matrix
-pt_nowcast_pred_matrix[!is.na(cleaned_reporting_triangle)] <- NA
+pt_nowcast_pred_matrix <- extract_missing_elements(
+  full_mat = point_nowcast_matrix,
+  subset_mat = cleaned_reporting_triangle
+)
 ```
 
 We will next take the point estimates of the prediction matrix and generate

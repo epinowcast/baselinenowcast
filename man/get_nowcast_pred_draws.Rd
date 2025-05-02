@@ -9,10 +9,10 @@ get_nowcast_pred_draws(point_nowcast_pred_matrix, disp, n_draws = 1000)
 }
 \arguments{
 \item{point_nowcast_pred_matrix}{Matrix containing only the elements that
-have not yet been observed as of the final reference date}
+have not yet been observed as of the final reference date.}
 
 \item{disp}{Vector of dispersion parameters indexed by horizon from minus
-one to the maximum delay}
+one to the maximum delay.}
 
 \item{n_draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}
@@ -28,21 +28,22 @@ nowcast vector
 }
 \examples{
 point_nowcast_pred_matrix <-
-matrix(
-  c(
-    NA, NA, NA, NA,
-    NA, NA, NA, NA,
-    NA, NA, NA, 16.8,
-    NA, NA, 21.2, 19.5,
-    NA, 34.5, 15.4, 9.1
-  ),
-  nrow = 4,
-  byrow = TRUE
-)
+  matrix(
+    c(
+      NA, NA, NA, NA,
+      NA, NA, NA, NA,
+      NA, NA, NA, 16.8,
+      NA, NA, 21.2, 19.5,
+      NA, 34.5, 15.4, 9.1
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
 disp <- c(0.8, 12.4, 9.1)
 nowcast_pred_draws_df <- get_nowcast_pred_draw(
-                         point_nowcast_pred_matrix,
-                         disp,
-                         500)
+  point_nowcast_pred_matrix,
+  disp,
+  500
+)
 nowcast_pred_draws_df
 }

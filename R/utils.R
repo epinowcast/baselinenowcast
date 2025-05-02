@@ -89,3 +89,56 @@ replace_lower_right_with_NA <- function(matrix) {
   }
   return(bool_all_zeros)
 }
+
+#' Extract from one matrix only elements that are missing in another
+#'
+#' @param full_mat Matrix containing values at all elements
+#' @param subset_mat Matrix containing missing values for some elements
+#'
+#' @returns `other_subset_mat` Matrix containing the elements from `full_mat`
+#'   for only the elements that are missing in `subset_mat`
+#' @export
+#'
+#' @examples
+#' full_mat <- matrix(
+#'   c(
+#'     1, 3, 5, 7,
+#'     4, 7, 8, 9,
+#'     9, 10, 3, 5,
+#'     3, 4, 8, 5
+#'   ),
+#'   nrow = 4,
+#'   byrow = TRUE
+#' )
+#'
+#' subset_mat <- matrix(
+#'   c(
+#'     1, 3, 5, 7,
+#'     4, 7, 8, NA,
+#'     9, 10, NA, NA,
+#'     3, NA, NA, NA
+#'   ),
+#'   nrow = 4,
+#'   byrow = TRUE
+#' )
+#'
+#' other_subset <- extract_missing_elements(full_mat, subset_mat)
+#' other_subset
+extract_missing_elements <- function(full_mat,
+                                     subset_mat) {
+  assert_matrix(full_mat, any.missing = FALSE)
+  assert_matrix(subset_mat, all.missing = FALSE)
+  # Check that the observations are the same
+  all_equal <- all(full_mat[!is.na(subset_mat)] == subset_mat[!is.na(subset_mat)]) # nolint
+  if (isFALSE(all_equal)) {
+    cli_abort(message = c(
+      " `subset_mat` is not a subset of `full_mat`. Check to make sure that ",
+      "the matrix combining predictions and observations aligns with the ",
+      "matrix containing only the observed values in the reporting matrix. "
+    ))
+  }
+
+  other_subset_mat <- full_mat
+  other_subset_mat[!is.na(subset_mat)] <- NA
+  return(other_subset_mat)
+}

@@ -462,22 +462,27 @@ counts as well as the sum of those predicted draws plus the observations, which
 becomes the probabilistic final count estimate.
 We'll first have to just extract from the point nowcast matrix
 only the values that were predicted.
-```{r generate predicted nowcast draws}
+```{r extract predictions}
 # Could make this a function or have an option in the apply_delay
 # To return only the predictions (but preference is to keep as a separate step)
 pt_nowcast_pred_matrix <- point_nowcast_matrix
 pt_nowcast_pred_matrix[!is.na(cleaned_reporting_triangle)] <- NA
+```
 
-
+We will next take the point estimates of the prediction matrix and generate
+probabilistic draws of the predicted nowcast vectors. We will store these draws
+in a dataframe indexed by reference time and draw.
+```{r generate pobablistic draws of predictions}
 nowcast_draws_df <- get_nowcast_pred_draws(
   point_nowcast_pred_matrix = pt_nowcast_pred_matrix,
-  reporting_triangle = cleaned_reporting_triangle,
   disp = disp_params
 )
 ```
 
-As a final step we will plot the nowcasts compared to the
-data available as of the nowcast date, and the later observed data.
+As a final step we will join the predictions for each reference date to the
+data available as of the final reference date. We will plot the probabilistic
+nowcast vectors (gray) compared to the final observed data (black) and the
+data available as of the nowcast time (red).
 ```{r plot the nowcasts}
 # Join with the original data
 final_data <- data_long[location == "DE"][age_group == "00+"] |> # nolint
@@ -512,6 +517,9 @@ summary_nowcast_w_data <- nowcast_draws_df |>
   filter(
     draw %in% sampled_draws,
     reference_date >= max(ymd(reference_date)) - days(max_delay)
+  ) |>
+  mutate(
+    total_count = pred_count + original_confirmed
   )
 
 

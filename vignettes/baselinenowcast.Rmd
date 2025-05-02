@@ -463,9 +463,9 @@ becomes the probabilistic final count estimate.
 We'll first have to just extract from the point nowcast matrix
 only the values that were predicted.
 ```{r extract predictions}
-pt_nowcast_pred_matrix <- extract_missing_elements(
-  full_mat = point_nowcast_matrix,
-  subset_mat = cleaned_reporting_triangle
+pt_nowcast_pred_matrix <- extract_predictions(
+  pt_nowcast_mat = point_nowcast_matrix,
+  rep_mat = cleaned_reporting_triangle
 )
 ```
 

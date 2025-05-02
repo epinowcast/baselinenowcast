@@ -92,15 +92,17 @@ replace_lower_right_with_NA <- function(matrix) {
 
 #' Extract from one matrix only elements that are missing in another
 #'
-#' @param full_mat Matrix containing values at all elements
-#' @param subset_mat Matrix containing missing values for some elements
+#' @param pt_nowcast_mat Matrix containing a mix of predicted and observed
+#'    values
+#' @param rep_mat Matrix containing only the observed elements of the
+#'    reporting triangle
 #'
-#' @returns `other_subset_mat` Matrix containing the elements from `full_mat`
-#'   for only the elements that are missing in `subset_mat`
+#' @returns `pred_mat` Matrix containing the elements from `pt_nowcast_mat`
+#'   for only the elements that are missing in `obs_mat`
 #' @export
 #'
 #' @examples
-#' full_mat <- matrix(
+#' pt_nowcast_mat <- matrix(
 #'   c(
 #'     1, 3, 5, 7,
 #'     4, 7, 8, 9,
@@ -111,7 +113,7 @@ replace_lower_right_with_NA <- function(matrix) {
 #'   byrow = TRUE
 #' )
 #'
-#' subset_mat <- matrix(
+#' reporting_matrix <- matrix(
 #'   c(
 #'     1, 3, 5, 7,
 #'     4, 7, 8, NA,
@@ -122,23 +124,23 @@ replace_lower_right_with_NA <- function(matrix) {
 #'   byrow = TRUE
 #' )
 #'
-#' other_subset <- extract_missing_elements(full_mat, subset_mat)
+#' other_subset <- extract_predictions(pt_nowcast_mat, reporting_matrix)
 #' other_subset
-extract_missing_elements <- function(full_mat,
-                                     subset_mat) {
-  assert_matrix(full_mat, any.missing = FALSE)
-  assert_matrix(subset_mat, all.missing = FALSE)
+extract_predictions <- function(pt_nowcast_mat,
+                                rep_mat) {
+  assert_matrix(pt_nowcast_mat, any.missing = FALSE)
+  assert_matrix(rep_mat, all.missing = FALSE)
   # Check that the observations are the same
-  all_equal <- all(full_mat[!is.na(subset_mat)] == subset_mat[!is.na(subset_mat)]) # nolint
+  all_equal <- all(pt_nowcast_matrix[!is.na(rep_mat)] == rep_mat[!is.na(rep_mat)]) # nolint
   if (isFALSE(all_equal)) {
     cli_abort(message = c(
-      " `subset_mat` is not a subset of `full_mat`. Check to make sure that ",
+      " `obs_mat` is not a subset of `pt_nowcast_mat`. Check to make sure that ",
       "the matrix combining predictions and observations aligns with the ",
       "matrix containing only the observed values in the reporting matrix. "
     ))
   }
 
-  other_subset_mat <- full_mat
-  other_subset_mat[!is.na(subset_mat)] <- NA
-  return(other_subset_mat)
+  pred_mat <- pt_nowcast_mat
+  pred_mat[!is.na(rep_mat)] <- NA
+  return(pred_mat)
 }

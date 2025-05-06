@@ -84,7 +84,9 @@ estimated from the <code>reporting_triangle</code>.</p>
 <dl><dt id="arg-reporting-triangle">reporting_triangle<a class="anchor" aria-label="anchor" href="#arg-reporting-triangle"></a></dt>
 <dd><p>Matrix of the reporting triangle, with rows
 representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.</p></dd>
+delays. Can be a reporting matrix or incomplete reporting matrix.
+Can also be a ragged reporting triangle, where multiple columns are
+reported for the same row. (e.g. weekly reporting of daily data).</p></dd>
 
 
 <dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
@@ -128,7 +130,7 @@ in as point estimates.</p>
 <span class="r-in"><span><span class="va">point_nowcast_matrix</span> <span class="op">&lt;-</span> <span class="fu">generate_pt_nowcast_mat</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  reporting_triangle <span class="op">=</span> <span class="va">triangle</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">point_nowcast_matrix</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">point_nowcast_matrix</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1]     [,2]     [,3]     [,4]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   80 50.00000 25.00000 10.00000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,]  100 50.00000 30.00000 20.00000</span>
@@ -146,7 +148,7 @@ in as point estimates.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.9000.</p>
 </div>
 
     </footer></div>

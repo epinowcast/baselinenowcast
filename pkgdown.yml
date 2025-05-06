@@ -1,10 +1,10 @@
 pandoc: 3.1.11
-pkgdown: 2.1.1.9000
-pkgdown_sha: c65c4bc3899c25cbdc7f3fd7706fe350bab66991
+pkgdown: 2.1.2.9000
+pkgdown_sha: 99457e7fa7f36696ae743b06aca59c0fdd97a7d6
 articles:
   baselinenowcast: baselinenowcast.html
   model_definition: model_definition.html
-last_built: 2025-04-15T15:19Z
+last_built: 2025-05-06T14:37Z
 urls:
   reference: https://baselinenowcast.epinowcast.org/reference
   article: https://baselinenowcast.epinowcast.org/articles

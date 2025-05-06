@@ -105,3 +105,25 @@ test_that(".validate_triangle rejects matrix of all NAs", {
     regexp = "Assertion on 'triangle' failed: Contains only missing values."
   )
 })
+
+test_that(".validate_triangle rejects matrix with empty columns", {
+  # Create a matrix with a column that has only NA values
+  empty_col_triangle <- matrix(
+    c(
+      1, 2, NA, 4,
+      5, 6, NA, 8,
+      9, 10, NA, 12,
+      13, 14, NA, 16
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  
+  expect_error(
+    .validate_triangle(empty_col_triangle,
+      max_delay = 3,
+      n = 4
+    ),
+    "Invalid reporting triangle structure. Each column must have"
+  )
+})

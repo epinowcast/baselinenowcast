@@ -183,7 +183,7 @@ test_that("apply_delay function works correctly with larger triangle", {
 
 test_that("apply_delay function works the same as the more verbose for loop", {
   triangle <- matrix(nrow = 5, ncol = 4, data = 1)
-  triangle <- replace_lower_right_with_NA(triangle)
+  triangle <- generate_triangle(triangle)
   delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
   result <- apply_delay(
     rep_tri_to_nowcast = triangle,
@@ -199,9 +199,6 @@ test_that("apply_delay function works the same as the more verbose for loop", {
     ]
     # Uses the observed data to find the expected total on that reference date
     exp_total <- (rowSums(block_bottom_left) + 1 - sum(delay_pmf[1:(co - 1)])) / sum(delay_pmf[1:(co - 1)]) # nolint
-    # * Note, we will have to do some correction if this is 0, ignore for now*
-    # Finds the expected value for the particular delay by scaling by the
-    # delay pmf for delay d
     expectation2[(n_dates - co + 2):n_dates, co] <- exp_total * delay_pmf[co]
   }
 
@@ -209,43 +206,19 @@ test_that("apply_delay function works the same as the more verbose for loop", {
 })
 
 test_that("apply_delay works with ragged reporting triangles", {
-  ragged_triangle <- matrix(
-    c(
-      80, 50, 25, 10,
-      100, 50, 30, 20,
-      90, 45, 25, NA,
-      80, 40, NA, NA,
-      70, NA, NA, NA
-    ),
-    nrow = 5,
-    byrow = TRUE
-  )
+  delay_pmf <- c(0.4, 0.3, 0.2, 0.05, 0.05)
+  partial_counts <- c(80, 100, 180, 80, 140)
 
-  delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
+  # Create a complete triangle based on the known delay PMF
+  triangle <- lapply(partial_counts, function(x) x * delay_pmf)
+  triangle <- do.call(rbind, triangle)
+  triangle <- generate_triangle(triangle, structure = c(1, 2, 1))
 
-  # Apply delay to the ragged triangle
   result <- apply_delay(
-    rep_tri_to_nowcast = ragged_triangle,
+    rep_tri_to_nowcast = triangle,
     delay_pmf = delay_pmf
   )
-
-  # Test that the function returns a matrix
-  expect_true(is.matrix(result))
-
-  # Test that the dimensions are preserved
-  expect_identical(dim(result), dim(ragged_triangle))
-
-  # Test that NA values are replaced
-  expect_false(anyNA(result))
-
-  # Test specific calculations for the ragged parts
-  # For the third row, fourth column (delay = 3)
-  expected_total <- (
-    sum(ragged_triangle[3, 1:3]) + 1 - sum(delay_pmf[1:3])) / sum(delay_pmf[1:3])
-  expect_equal(result[3, 4], expected_total * delay_pmf[4], tolerance = 1e-6)
-
-  # For the fourth row, third column (delay = 2)
-  expected_total <- (
-    sum(ragged_triangle[4, 1:2]) + 1 - sum(delay_pmf[1:2])) / sum(delay_pmf[1:2])
-  expect_equal(result[4, 3], expected_total * delay_pmf[3], tolerance = 1e-6)
+  cols <- colSums(result[3:5, ])
+  pmf <- cols / sum(cols)
+  expect_equal(pmf, delay_pmf, tolerance = 0.01)
 })

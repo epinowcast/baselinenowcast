@@ -39,7 +39,7 @@ test_that("get_nowcast_mat_draw input validation works correctly", {
   # Dispersion parameter length mismatch
   expect_error(
     get_nowcast_mat_draw(test_matrix, c(1, 2)),
-    "`disp` vector should be of length one less than the number"
+    "`disp` vector should be of length one less than"
   )
 })
 

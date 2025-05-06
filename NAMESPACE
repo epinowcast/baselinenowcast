@@ -29,5 +29,3 @@ importFrom(stats,aggregate)
 importFrom(stats,dnbinom)
 importFrom(stats,optimize)
 importFrom(stats,rnbinom)
-importFrom(stats,aggregate)
-

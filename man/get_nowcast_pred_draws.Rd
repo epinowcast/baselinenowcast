@@ -40,7 +40,7 @@ point_nowcast_pred_matrix <-
     byrow = TRUE
   )
 disp <- c(0.8, 12.4, 9.1)
-nowcast_pred_draws_df <- get_nowcast_pred_draw(
+nowcast_pred_draws_df <- get_nowcast_pred_draws(
   point_nowcast_pred_matrix,
   disp,
   500

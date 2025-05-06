@@ -91,7 +91,7 @@ get_nowcast_pred_draw <- function(point_nowcast_pred_matrix,
 #'     byrow = TRUE
 #'   )
 #' disp <- c(0.8, 12.4, 9.1)
-#' nowcast_pred_draws_df <- get_nowcast_pred_draw(
+#' nowcast_pred_draws_df <- get_nowcast_pred_draws(
 #'   point_nowcast_pred_matrix,
 #'   disp,
 #'   500
@@ -109,7 +109,7 @@ get_nowcast_pred_draws <- function(point_nowcast_pred_matrix,
     )
     df_i <- data.frame(
       pred_count = pred_nowcast_vec,
-      time = seq_along(1:length(pred_nowcast_vec)),
+      time = seq_along(pred_nowcast_vec),
       draw = i
     )
     if (i == 1) {

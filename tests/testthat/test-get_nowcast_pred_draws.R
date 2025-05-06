@@ -88,7 +88,7 @@ test_that("time index is correctly assigned", {
   n_draws <- 3
   result <- get_nowcast_pred_draws(point_nowcast_pred_matrix, disp, n_draws)
   # For each draw, time should go from 1 to nrow(matrix)
-  for (i in 1:n_draws) {
+  for (i in seq_along(1:n_draws)) {
     draw_data <- result[result$draw == i, ]
     expect_identical(as.integer(draw_data$time), as.integer(seq_along(1:nrow(point_nowcast_pred_matrix)))) # nolint
   }

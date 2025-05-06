@@ -58,7 +58,7 @@ test_that("statistical properties are reasonable", {
   sample_means <- rowMeans(samples[2:3, ])
 
   # Means should be close (within 10% for large samples)
-  for (i in seq_along(1:length(expected_means))) {
+  for (i in seq_along(length(expected_means))) {
     relative_error <- abs(sample_means[i] - expected_means[i]) / expected_means[i] # nolint
     expect_lt(relative_error, 0.1)
   }
@@ -78,7 +78,7 @@ test_that("function handles edge cases correctly", {
 
   # Single row matrix
   single_row <- matrix(c(NA, NA, 5, 10), nrow = 1)
-  disp_single <- c(1)
+  disp_single <- 1
 
   result <- get_nowcast_pred_draw(single_row, disp_single)
   expect_length(result, 1)
@@ -120,7 +120,7 @@ test_that("function correctly uses reversed dispersion parameters", {
   sample_std <- apply(samples[2:3, ], 1, sd)
   # The standard deviation in horizon 2 should be much lower than the standard
   # deviation at horizon 1, so the raito  of horizon 1 vs 2 should be very low
-  expect_true(sample_std[1] / sample_std[2] < 0.1) # horizon 2 / horizon 1
+  expect_lt(sample_std[1] / sample_std[2], 0.1) # horizon 2 / horizon 1
 })
 
 test_that("function handles incorrect dimensions appropriately", {

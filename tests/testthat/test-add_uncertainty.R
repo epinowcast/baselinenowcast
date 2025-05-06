@@ -12,8 +12,7 @@ test_matrix <- matrix(
 valid_disp <- c(5, 3, 2)
 n_draws <- 10
 
-### Test 1: Basic Functionality ------------------------------------------------
-test_that("Basic functionality with valid inputs", {
+test_that("add_uncertainty basic functionality with valid inputs", {
   set.seed(123)
   result <- add_uncertainty(test_matrix, valid_disp, n_draws)
 
@@ -24,8 +23,7 @@ test_that("Basic functionality with valid inputs", {
   expect_true(all(sapply(result, \(x) identical(dim(x), dim(test_matrix)))))
 })
 
-### Test 2: Input Validation ---------------------------------------------------
-test_that("Input validation works correctly", {
+test_that("add_uncertainty input validation works correctly", {
   # Invalid comp_rep_square, must be a matrix
   expect_error(add_uncertainty(
     as.data.frame(test_matrix),
@@ -52,8 +50,7 @@ test_that("Input validation works correctly", {
   expect_error(add_uncertainty(test_matrix, c(1, 2), 1))
 })
 
-### Test 3: Stochastic Behavior ------------------------------------------------
-test_that("Random generation is reproducible with seed", {
+test_that("add_uncertainty random generation is reproducible with seed", {
   set.seed(456)
   result1 <- add_uncertainty(test_matrix, valid_disp, 5)
   set.seed(456)
@@ -61,14 +58,12 @@ test_that("Random generation is reproducible with seed", {
   expect_identical(result1, result2)
 })
 
-### Test 4: Default Parameter Handling -----------------------------------------
-test_that("Default n_draws works correctly", {
+test_that("add_uncertainty default n_draws works correctly", {
   default_result <- add_uncertainty(test_matrix, valid_disp)
   expect_length(default_result, 1000)
 })
 
-### Test 6: Observation Preservation -------------------------------------------
-test_that("Upper triangle remains unchanged", {
+test_that("add_uncertainty upper triangle remains unchanged", {
   set.seed(789)
   result <- add_uncertainty(test_matrix, valid_disp, 5)
 
@@ -78,8 +73,7 @@ test_that("Upper triangle remains unchanged", {
   })
 })
 
-### Test 7: Error Distribution -------------------------------------------------
-test_that("Lower triangle shows expected variation", {
+test_that("add_uncertainty lower triangle shows expected variation", {
   set.seed(111)
   results <- add_uncertainty(test_matrix, c(100, 100, 100), 100)
   lower_right_vals <- sapply(results, function(x) x[3:4, 3:4])

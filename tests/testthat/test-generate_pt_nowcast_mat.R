@@ -11,8 +11,7 @@ test_triangle <- matrix(
   byrow = TRUE
 )
 
-### Test 1: Basic Functionality ------------------------------------------------
-test_that("Basic functionality with default parameters", {
+test_that("generate_pt_nowcast_mat basic functionality with default parameters", {
   result <- generate_pt_nowcast_mat(test_triangle)
 
   # Verify output structure
@@ -21,8 +20,7 @@ test_that("Basic functionality with default parameters", {
   expect_false(anyNA(result))
 })
 
-### Test 2: Custom Delay PMF ---------------------------------------------------
-test_that("Custom delay PMF is used when provided", {
+test_that("generate_pt_nowcast_mat custom delay PMF is used when provided", {
   custom_pmf <- c(0.4, 0.3, 0.2, 0.1)
   result <- generate_pt_nowcast_mat(test_triangle, delay_pmf = custom_pmf)
 
@@ -30,8 +28,7 @@ test_that("Custom delay PMF is used when provided", {
   expect_identical(dim(result), dim(test_triangle))
 })
 
-### Test 3: Input Validation ---------------------------------------------------
-test_that("Invalid inputs throw errors", {
+test_that("generate_pt_nowcast_mat invalid inputs throw errors", {
   # Non-matrix input
   expect_error(generate_pt_nowcast_mat(as.data.frame(test_triangle)))
 
@@ -46,19 +43,7 @@ test_that("Invalid inputs throw errors", {
   expect_error(generate_pt_nowcast_mat(test_triangle, n = 1.5))
 })
 
-### Test 4: Edge Cases ---------------------------------------------------------
-test_that("Edge cases are handled properly", {
-  # All-NA matrix (except first row)
-  na_triangle <- matrix(NA, nrow = 4, ncol = 3)
-  na_triangle[1, ] <- c(10, 20, 30)
-  expect_error(
-    generate_pt_nowcast_mat(na_triangle),
-    "Reporting triangle contains NA values in elements other than"
-  )
-})
-
-### Test 5: Default Parameter Values -------------------------------------------
-test_that("Default parameters work as expected", {
+test_that("generate_pt_nowcast_mat default parameters work as expected", {
   # Test max_delay default
   result_default <- generate_pt_nowcast_mat(test_triangle)
   result_explicit <- generate_pt_nowcast_mat(test_triangle,
@@ -74,8 +59,7 @@ test_that("Default parameters work as expected", {
   expect_identical(result_n_default, result_n_explicit)
 })
 
-### Test 6: NA Handling --------------------------------------------------------
-test_that("NA patterns are handled correctly", {
+test_that("generate_pt_nowcast_mat NA patterns are handled correctly", {
   # Matrix with strategic NAs
   strategic_na_tri <- matrix(
     c(
@@ -93,8 +77,7 @@ test_that("NA patterns are handled correctly", {
   expect_false(anyNA(result))
 })
 
-### Test 7: Dimension Preservation ---------------------------------------------
-test_that("Output dimensions match input", {
+test_that("generate_pt_nowcast_mat: Output dimensions match input", {
   odd_dim_tri <- matrix(1:6, nrow = 3, ncol = 2)
   result <- generate_pt_nowcast_mat(odd_dim_tri)
   expect_identical(dim(result), c(3L, 2L))

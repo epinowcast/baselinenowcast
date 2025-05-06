@@ -1,4 +1,5 @@
 #' Apply the delay to generate a point nowcast
+#'
 #' Generate a point estimate of a completed reporting square (or rectangle)
 #'   from a reporting triangle that we want to complete with a nowcast and a
 #'   delay PMF. Each element is computed by taking the product of the expected
@@ -41,43 +42,92 @@
 #'   delay_pmf = delay_pmf
 #' )
 #' print(point_nowcast_matrix)
-apply_delay <- function(rep_tri_to_nowcast,
-                        delay_pmf) {
+apply_delay <- function(rep_tri_to_nowcast, delay_pmf) {
   # Checks that the delay df and the triangle are compatible
   .validate_delay_and_triangle(
     rep_tri_to_nowcast,
     delay_pmf
   )
   n_delays <- length(delay_pmf)
+  n_rows <- nrow(rep_tri_to_nowcast)
 
-  # Iterates through each column and adds entries to the reporting
+  # Precompute CDFs for the delay PMF
+  delay_cdf <- cumsum(delay_pmf)
+
+  # Iterates through each column (delay) and adds entries to the reporting
   # matrix to nowcast
-  point_nowcast_matrix <- Reduce(function(acc, co) {
-    x <- .calc_expectation(co, acc, delay_pmf)
-    return(x)
-  }, 2:n_delays, init = rep_tri_to_nowcast)
+  point_nowcast_matrix <- Reduce(
+    function(acc, delay_index) {
+      return(.calc_expectation(
+        delay_index,
+        acc,
+        delay_pmf[delay_index],
+        delay_cdf[delay_index - 1],
+        n_rows
+      ))
+    },
+    2:n_delays,
+    init = rep_tri_to_nowcast
+  )
   return(point_nowcast_matrix)
 }
 
 #' Calculate the updated rows of the expected nowcasted triangle
 #'
-#' @param co Integer indicating the column index
+#' @param delay_index Integer indicating the delay index
 #' @param expectation Matrix of the incomplete reporting matrix
-#' @param delay_pmf Vector specifying the probability of a case being
-#'   reported with delay d
+#' @param delay_prob Probability of a case being reported with the current delay
+#' @param delay_cdf_prev CDF of the delay PMF up to the previous delay
+#' @param n_rows Number of rows in the expectation matrix
 #' @returns Matrix with another set of entries corresponding to the updated
 #'   values for the specified rows and column
 #' @keywords internal
-.calc_expectation <- function(co, expectation, delay_pmf) {
-  n_rows <- nrow(expectation)
-  block_bottom_left <- expectation[
-    max((n_rows - co + 2), 1):n_rows,
-    1:(co - 1),
-    drop = FALSE
-  ]
-  cdf_dpmf <- sum(delay_pmf[1:(co - 1)])
+.calc_expectation <- function(
+    delay_index,
+    expectation,
+    delay_prob,
+    delay_cdf_prev,
+    n_rows) {
+  # Find rows with NA in this column that need to be filled
+  col_index <- delay_index
+  na_rows <- .where_is_na_in_col(expectation, col_index)
+
+  while (length(na_rows) == 0) {
+    col_index <- col_index + 1
+    # Stop if we've reached the end of the matrix
+    if (col_index > ncol(expectation)) {
+      return(expectation)
+    }
+    na_rows <- .where_is_na_in_col(expectation, col_index)
+  }
+
+  # Start with the first row that has NA
+  row_start <- min(na_rows)
+
+  # Extract the left block for these rows
+  block_bottom_left <- .extract_block_bottom_left(
+    expectation,
+    col_index,
+    n_rows,
+    row_start
+  )
+
+  # Calculate row sums for the extracted block
   x <- rowSums(block_bottom_left)
-  exp_N <- (x + 1 - cdf_dpmf) / cdf_dpmf
-  expectation[max((n_rows - co + 2), 1):n_rows, co] <- exp_N * delay_pmf[co]
+
+  # Calculate expectations with support for zero values
+  exp_N <- .calc_modified_expectation(x, delay_cdf_prev)
+
+  # Update only the NA rows in the column
+  expectation[row_start:n_rows, col_index] <- exp_N * delay_prob
+
   return(expectation)
+}
+
+.where_is_na_in_col <- function(expectation, co) {
+  return(which(is.na(expectation[, co])))
+}
+
+.calc_modified_expectation <- function(x, delay_cdf_prev) {
+  return((x + 1 - delay_cdf_prev) / delay_cdf_prev)
 }

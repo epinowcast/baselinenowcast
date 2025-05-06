@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{.check_na_bottom_right}
 \alias{.check_na_bottom_right}
-\title{Check if matrix only contains NAs in the bottom right}
+\title{Check if matrix has valid NA pattern}
 \usage{
 .check_na_bottom_right(mat)
 }
@@ -14,6 +14,6 @@ Boolean indicating whether the matrix only contains NAs in the
 bottom right (TRUE if only in bottom right, FALSE if elsewhere).
 }
 \description{
-Check if matrix only contains NAs in the bottom right
+Check if matrix has valid NA pattern
 }
 \keyword{internal}

@@ -33,12 +33,8 @@
 #'   byrow = TRUE
 #' )
 #'
-#' truncated_rts <- truncate_triangles(
-#'   reporting_triangle = triangle,
-#'   n = 2
-#' )
-#' print(truncated_rts[[1]])
-#' print(truncated_rts[[2]])
+#' truncated_rts <- truncate_triangles(triangle, n = 2)
+#' truncated_rts[1:2]
 truncate_triangles <- function(reporting_triangle,
                                n = nrow(reporting_triangle) - ncol(reporting_triangle) - 1) { # nolint
   .validate_triangle(reporting_triangle)
@@ -92,11 +88,8 @@ truncate_triangles <- function(reporting_triangle,
 #'   byrow = TRUE
 #' )
 #'
-#' trunc_rep_tri <- truncate_triangle(
-#'   t = 1,
-#'   matr_observed = triangle
-#' )
-#' print(trunc_rep_tri)
+#' trunc_rep_tri <- truncate_triangle(t = 1, matr_observed = triangle)
+#' trunc_rep_tri
 truncate_triangle <- function(t,
                               matr_observed) {
   n_obs <- nrow(matr_observed)

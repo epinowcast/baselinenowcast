@@ -16,8 +16,8 @@ test_that("function returns a dataframe with correct structure", {
   result <- get_nowcast_pred_draws(point_nowcast_pred_matrix, disp, n_draws)
 
   expect_is(result, "data.frame")
-  expect_equal(nrow(result), n_draws * nrow(point_nowcast_pred_matrix))
-  expect_equal(ncol(result), 3)
+  expect_identical(nrow(result), as.integer(n_draws * nrow(point_nowcast_pred_matrix))) # nolint
+  expect_identical(ncol(result), 3L)
   expect_true(all(c("pred_count", "time", "draw") %in% names(result)))
 })
 
@@ -40,7 +40,7 @@ test_that("function handles the default n_draws parameter", {
 
 
   # Check that 1000 draws were created
-  expect_equal(length(unique(result$draw)), 1000)
+  expect_length(unique(result$draw), 1000L)
 })
 
 
@@ -69,7 +69,7 @@ test_that("draws are correctly indexed", {
   # Check that each draw has the correct pred_count values
   for (i in 1:n_draws) {
     draw_data <- result[result$draw == i, ]
-    expect_equal(draw_data$draw, draw_outputs[[i]])
+    expect_identical(as.integer(draw_data$draw), as.integer(draw_outputs[[i]]))
   }
 })
 
@@ -90,7 +90,7 @@ test_that("time index is correctly assigned", {
   # For each draw, time should go from 1 to nrow(matrix)
   for (i in 1:n_draws) {
     draw_data <- result[result$draw == i, ]
-    expect_equal(draw_data$time, 1:nrow(point_nowcast_pred_matrix))
+    expect_identical(as.integer(draw_data$time), as.integer(seq_along(1:nrow(point_nowcast_pred_matrix)))) # nolint
   }
 })
 
@@ -104,13 +104,13 @@ test_that("function works with different number of draws", {
     nrow = 2,
     byrow = TRUE
   )
-  disp <- c(0.8)
+  disp <- 0.8
   n_draws <- 100
 
   result <- get_nowcast_pred_draws(point_nowcast_pred_matrix, disp, n_draws)
 
   # Check that all draws were created
-  expect_identical(length(unique(result$draw)), as.integer(n_draws))
+  expect_length(unique(result$draw), as.integer(n_draws))
   expect_identical(nrow(result), as.integer(n_draws * nrow(point_nowcast_pred_matrix))) # nolint
 })
 
@@ -121,7 +121,7 @@ test_that("function handles single-row matrix", {
     nrow = 1,
     byrow = TRUE
   )
-  disp <- c(0.8)
+  disp <- 0.8
   n_draws <- 5
 
   result <- get_nowcast_pred_draws(point_nowcast_pred_matrix, disp, n_draws)

@@ -203,9 +203,14 @@ pobs <- enw_preprocess_data(
   max_delay = max_delay + 1
 )
 
-# as we only have one group here we only need referfence_date, delay,
+# as we only have one group here we only need reference_date, delay,
 # and new_confirm
-reporting_triangle_df <- select(pobs$new_confirm[[1]], reference_date, delay, new_confirm)
+reporting_triangle_df <- select(
+  pobs$new_confirm[[1]],
+  reference_date,
+  delay,
+  new_confirm
+)
 
 # we now pivot to wide format, dropping the reference_date column, and
 # convert to a matrix
@@ -219,6 +224,9 @@ tail(reporting_triangle, n = 20)
 ```
 
 To see what this looks like, we can plot it using `ggplot()`.
+In this figure, the grey indicates matrix elements that are `NA`, which we
+would expect to be the case in the bottom right portion of the reporting
+triangle where the counts have yet to be observed.
 ```{r make-heatmap-reporting-triangle}
 triangle_df <- as.data.frame(reporting_triangle) |>
   mutate(time = row_number()) |>
@@ -395,8 +403,9 @@ rows that may not ultimately be used to generate the nowcast, which means
 that each triangle will have a different number of rows.
 
 Next we will pass this list of reporting triangles to the
-`generate_nowcasts()` alongside the specification of how many observations
-to use to estimate the delay
+`generate_pt_nowcast_mat_list()`. In this function, we can also specify
+`n`, the number of reference times to be used to estimate the delay for each
+nowcast.
 ```{r generate-nowcasts}
 retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
   reporting_triangle_list = retro_rep_tri_list
@@ -422,15 +431,15 @@ previously generated, `point_nowcast_matrix`, extract only the components that
 we predicted, aggregate across delays, and apply the uncertainty to the
 point estimate of the final count by reference time.
 
-We will generate a long tidy dataframe containing draws of the predicted
+We will generate a long tidy dataframe containing draws of only the predicted
 counts as well as the sum of those predicted draws plus the observations, which
 becomes the probabilistic final count estimate.
-We'll first have to just extract from the point nowcast matrix
+We'll first have to extract from the point nowcast matrix
 only the values that were predicted.
 ```{r extract predictions}
 pt_nowcast_pred_matrix <- extract_predictions(
   pt_nowcast_mat = point_nowcast_matrix,
-  rep_mat = cleaned_reporting_triangle
+  rep_mat = reporting_triangle
 )
 ```
 

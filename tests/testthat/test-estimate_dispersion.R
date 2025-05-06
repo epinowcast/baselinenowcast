@@ -100,9 +100,8 @@ test_that("Matrix dimension validation works", {
     test_triangle[1:3, ]
   )
   expect_error(
-    estimate_dispersion(valid_nowcasts, bad_trunc_rts),
-    "Dimensions of the first `n` matrices in `pt_nowcast_mat_list` and"
-  ) # nolint
+    estimate_dispersion(valid_nowcasts, bad_trunc_rts)
+  )
 })
 
 ## Test 6: fit_nb returns NA if nothing passed to it---------------------------

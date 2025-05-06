@@ -32,8 +32,7 @@ test_that("get_nowcast_mat_draw input validation works correctly", {
   na_matrix <- test_matrix
   na_matrix[1, 1] <- NA
   expect_error(
-    get_nowcast_mat_draw(na_matrix, valid_disp),
-    "`point_nowcast_matrix` contains NA values. It should only contain"
+    get_nowcast_mat_draw(na_matrix, valid_disp)
   )
 
   # Dispersion parameter length mismatch

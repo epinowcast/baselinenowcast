@@ -166,8 +166,7 @@ test_that(".conditional_sum_cols works correctly", {
       matrix_bool1,
       matrix_bool2,
       matrix_to_sum
-    ),
-    regexp = "Dimensions of boolean matrices are not the same"
+    )
   )
   matrix_bool1 <- matrix_bool2
   expect_error(

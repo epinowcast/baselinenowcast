@@ -53,7 +53,7 @@ get_nowcast_pred_draw <- function(point_nowcast_pred_matrix,
   }
   n_horizons <- length(disp)
   max_t <- nrow(point_nowcast_pred_matrix)
-  mean_pred <- rowSums(point_nowcast_pred_matrix, na.rm = TRUE)[(max_t - n_horizons + 1):max_t]
+  mean_pred <- rowSums(point_nowcast_pred_matrix, na.rm = TRUE)[(max_t - n_horizons + 1):max_t] # nolint
   # Nowcast predictions only (these are reversed, first element is horizon 0)
   draw_pred <- rnbinom(n = n_horizons, size = rev(disp), mu = mean_pred)
   # Pad with 0s for the fully observed rows, which are before
@@ -109,7 +109,7 @@ get_nowcast_pred_draws <- function(point_nowcast_pred_matrix,
     )
     df_i <- data.frame(
       pred_count = pred_nowcast_vec,
-      time = 1:length(pred_nowcast_vec),
+      time = seq_along(1:length(pred_nowcast_vec)),
       draw = i
     )
     if (i == 1) {

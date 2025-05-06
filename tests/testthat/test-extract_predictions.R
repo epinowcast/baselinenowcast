@@ -21,7 +21,8 @@ test_that("function returns correct matrix for the example case", {
     byrow = TRUE
   )
 
-  # Expected result - NA where reporting_matrix has values, pt_nowcast_mat values elsewhere
+  # Expected result - NA where reporting_matrix has values, pt_nowcast_mat
+  # values elsewhere
   expected_result <- matrix(
     c(
       NA, NA, NA, NA,

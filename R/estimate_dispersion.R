@@ -114,8 +114,8 @@ estimate_dispersion <- function(
     # Remove the last i observations
     trunc_matr_observed <- list_of_obs[[i]]
     max_t <- nrow(trunc_matr_observed)
-    # Take the reporting triangle and look at one row at a time, which corresponds
-    # to one horizon
+    # Take the reporting triangle and look at one row at a time, which
+    # corresponds to one horizon
     for (d in 1:n_horizons) {
       obs_row <- trunc_matr_observed[max_t - d + 1, ]
       nowcast_row <- nowcast_i[max_t - d + 1, ]

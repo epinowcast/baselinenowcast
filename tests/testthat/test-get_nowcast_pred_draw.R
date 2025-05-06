@@ -20,7 +20,7 @@ test_that("function returns vector of correct length", {
   # Tests
   expect_no_error(assert_integerish(result))
   expect_length(result, nrow(point_nowcast_pred_matrix))
-  expect_true(!anyNA(result))
+  expect_false(anyNA(result))
   expect_true(all(result >= 0)) # Counts should be non-negative
   # The first (max_t - n_horizons + 1) elements should be 0
   expected_zeros <- 4 - 3
@@ -58,9 +58,9 @@ test_that("statistical properties are reasonable", {
   sample_means <- rowMeans(samples[2:3, ])
 
   # Means should be close (within 10% for large samples)
-  for (i in 1:length(expected_means)) {
+  for (i in seq_along(1:length(expected_means))) {
     relative_error <- abs(sample_means[i] - expected_means[i]) / expected_means[i] # nolint
-    expect_true(relative_error < 0.1)
+    expect_lt(relative_error, 0.1)
   }
 
   # The first element should always be 0
@@ -141,7 +141,7 @@ test_that("function handles incorrect dimensions appropriately", {
 
   # Test case: zero-row matrix
   zero_row_matrix <- matrix(nrow = 0, ncol = 4)
-  expect_error(get_nowcast_pred_draw(zero_row_matrix, c(1)))
+  expect_error(get_nowcast_pred_draw(zero_row_matrix, 1))
 })
 
 test_that("function correctly indexes into mean_pred", {

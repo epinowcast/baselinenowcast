@@ -481,7 +481,7 @@ nowcast_draws_df <- get_nowcast_pred_draws(
 
 As a final step we will join the predictions for each reference date to the
 data available as of the final reference date. We will plot the probabilistic
-nowcast vectors (gray) compared to the final observed data (black) and the
+nowcast vectors (grey) compared to the final observed data (black) and the
 data available as of the nowcast time (red).
 ```{r plot the nowcasts}
 # Join with the original data

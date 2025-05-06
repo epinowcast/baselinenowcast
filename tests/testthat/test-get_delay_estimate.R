@@ -88,7 +88,7 @@ test_that("get_delay_estimate errors if not passed a matrix", {
   expect_error(get_delay_estimate(triangle_single_day))
 })
 
-test_that("get_delay_estimate calculates correct PMF with complete triangle", {
+test_that("get_delay_estimate calculates correct PMF with complete matrix", {
   # Create a triangle with known delay PMF
   complete_pmf <- c(0.45, 0.25, 0.2, 0.1)
 
@@ -132,7 +132,7 @@ test_that(
   }
 )
 
-test_that("get_delay_estimate handles complete reporting triangles", {
+test_that("get_delay_estimate handles diagonal reporting triangles", {
   # Create a triangle with known delay PMF
   partial_pmf <- c(0.4, 0.2, 0.2, 0.2)
 

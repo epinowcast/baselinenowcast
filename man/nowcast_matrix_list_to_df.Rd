@@ -31,12 +31,11 @@ point_nowcast_matrix <- matrix(
 )
 
 nowcast_matrix_list <- add_uncertainty(
-  point_nowcast_matrix = point_nowcast_matrix,
+  point_nowcast_matrix,
   disp = c(8, 1.4, 4),
   n_draws = 10
 )
 
-nowcast_df <- nowcast_matrix_list_to_df(
-  nowcast_matrix_list = nowcast_matrix_list
-)
+nowcast_df <- nowcast_matrix_list_to_df(nowcast_matrix_list)
+nowcast_df
 }

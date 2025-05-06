@@ -12,8 +12,7 @@ test_matrix <- matrix(
 
 valid_disp <- c(5, 3, 2)
 
-### Test 1: Basic Functionality ------------------------------------------------
-test_that("Basic functionality with valid inputs", {
+test_that("get_nowcast_mat_draw basic functionality with valid inputs", {
   set.seed(123)
   result <- get_nowcast_mat_draw(test_matrix, valid_disp)
 
@@ -28,8 +27,7 @@ test_that("Basic functionality with valid inputs", {
   expect_silent(assert_integerish(result))
 })
 
-### Test 2: Input Validation ---------------------------------------------------
-test_that("Input validation works correctly", {
+test_that("get_nowcast_mat_draw input validation works correctly", {
   # NA in input matrix
   na_matrix <- test_matrix
   na_matrix[1, 1] <- NA
@@ -41,12 +39,11 @@ test_that("Input validation works correctly", {
   # Dispersion parameter length mismatch
   expect_error(
     get_nowcast_mat_draw(test_matrix, c(1, 2)),
-    "`disp` vector should be of length one less than the number"
+    "`disp` vector should be of length one less than"
   )
 })
 
-### Test 3: Error Propagation --------------------------------------------------
-test_that("Invalid dispersion parameters throw errors", {
+test_that("get_nowcast_mat_draw invalid dispersion parameters throw errors", {
   # Negative dispersion
   expect_error(add_obs_error_to_nowcast(test_matrix, c(-1, 2, 3)))
 
@@ -57,8 +54,7 @@ test_that("Invalid dispersion parameters throw errors", {
   expect_error(add_obs_error_to_nowcast(data.frame(test_matrix), valid_disp))
 })
 
-### Test 4: Stochastic Behavior ------------------------------------------------
-test_that("Random generation is reproducible with seed", {
+test_that("get_nowcast_mat_draw random generation is reproducible with seed", {
   set.seed(456)
   result1 <- get_nowcast_mat_draw(test_matrix, valid_disp)
   set.seed(456)
@@ -66,27 +62,27 @@ test_that("Random generation is reproducible with seed", {
   expect_identical(result1, result2)
 })
 
+test_that(
+  "get_nowcast_mat_draw output follows negative binomial distribution",
+  {
+    set.seed(789)
+    result <- get_nowcast_mat_draw(test_matrix, valid_disp)
 
-### Test 5: Distribution Properties --------------------------------------------
-test_that("Output follows negative binomial distribution", {
-  set.seed(789)
-  result <- get_nowcast_mat_draw(test_matrix, valid_disp)
+    # Test last column (delay = 3)
+    generated_vals <- result[3:4, 4]
+    original_means <- test_matrix[3:4, 4]
 
-  # Test last column (delay = 3)
-  generated_vals <- result[3:4, 4]
-  original_means <- test_matrix[3:4, 4]
+    # Check mean is close to original (with tolerance for sampling error)
+    test_bounds <- (mean(generated_vals) >
+      mean(original_means) - 15) &
+      (mean(generated_vals) <
+        mean(original_means) + 15)
 
-  # Check mean is close to original (with tolerance for sampling error)
-  test_bounds <- (mean(generated_vals) >
-    mean(original_means) - 15) &
-    (mean(generated_vals) <
-      mean(original_means) + 15)
+    expect_true(test_bounds)
+  }
+)
 
-  expect_true(test_bounds)
-})
-
-### Test 6: Dimension Preservation ---------------------------------------------
-test_that("Output dimensions match input", {
+test_that("get_nowcast_mat_draw output dimensions match input", {
   square_matrix <- matrix(1:9, nrow = 3)
   disp <- c(2, 2)
   result <- get_nowcast_mat_draw(square_matrix, disp)

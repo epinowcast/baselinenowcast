@@ -10,6 +10,7 @@
 #' @returns `summary_df` Dataframe containing the nowcasted expected observed
 #'    total observations at each reference time.
 #' @export
+#' @importFrom stats aggregate
 #' @importFrom checkmate check_names
 #'
 #' @examples

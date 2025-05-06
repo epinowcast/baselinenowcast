@@ -46,7 +46,7 @@ Suggests:
     usethis,
     withr,
     knitr,
-    tidyr
+    lubridate
 Encoding: UTF-8
 Language: en-GB
 LazyData: true

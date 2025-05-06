@@ -20,18 +20,13 @@ pivoted_longer_df <- data.frame(
 )
 
 
-test_that("convert_rep_square_to_df function mimics pivot longer", {
-  ### Test 1: Matches pivot longer output-----------------------------------
-  # result using pivot longer (written above)
-
+test_that("nowcast_matrix_to_df function mimics pivot longer", {
   expect_identical(result$time, pivoted_longer_df$time)
   expect_identical(result$delay, pivoted_longer_df$delay)
   expect_identical(result$count, pivoted_longer_df$count)
 })
 
 test_that("nowcast_matrix_to_df works correctly", {
-  ### Test 2: Basic Functionality ----------------------------------------------
-
   # Verify output structure
   expect_s3_class(result, "data.frame")
   expect_identical(colnames(result), c("time", "delay", "count"))
@@ -41,7 +36,6 @@ test_that("nowcast_matrix_to_df works correctly", {
   expect_identical(result$time, rep(1:6, each = 4))
   expect_identical(result$delay, rep(1:4, times = 6))
 
-  ### Test 3: Value Preservation -----------------------------------------------
   # Check values are ordered correctly (row-wise)
   expected_values <- as.vector(t(test_matrix))
   expect_identical(result$count, expected_values)
@@ -76,7 +70,7 @@ test_that("nowcast_matrix_to_df works correctly", {
   expect_error(nowcast_matrix_to_df(test_matrix, draw = "invalid"))
 })
 
-test_that("Column ordering and naming works correctly", {
+test_that("nowcast_matrix_to_df column ordering and naming works correctly", {
   # Matrix with named columns
   named_matrix <- matrix(1:4, nrow = 2)
   result_named <- nowcast_matrix_to_df(named_matrix)
@@ -85,7 +79,7 @@ test_that("Column ordering and naming works correctly", {
   expect_identical(colnames(result_named), c("time", "delay", "count"))
 })
 
-test_that("Large matrix handling", {
+test_that("nowcast_matrix_to_df large matrix handling", {
   # Create 100x100 matrix
   large_matrix <- matrix(runif(10000), nrow = 100)
   result_large <- nowcast_matrix_to_df(large_matrix)

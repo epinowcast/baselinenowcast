@@ -34,22 +34,16 @@
 #'   byrow = TRUE
 #' )
 #'
-#' trunc_rts <- truncate_triangles(
-#'   reporting_triangle = triangle,
-#'   n = 2
-#' )
-#' retro_rts <- generate_triangles(
-#'   trunc_rep_mat_list = trunc_rts
-#' )
-#' retro_nowcasts <- generate_pt_nowcast_mat_list(
-#'   reporting_triangle_list = retro_rts,
-#'   n = 5
-#' )
+#' trunc_rts <- truncate_triangles(triangle, n = 2)
+#' retro_rts <- generate_triangles(trunc_rts)
+#'
+#' retro_nowcasts <- generate_pt_nowcast_mat_list(retro_rts, n = 5)
 #' disp_params <- estimate_dispersion(
 #'   pt_nowcast_mat_list = retro_nowcasts,
 #'   trunc_rep_mat_list = trunc_rts,
 #'   n = 2
 #' )
+#' disp_params
 estimate_dispersion <- function(
     pt_nowcast_mat_list,
     trunc_rep_mat_list,

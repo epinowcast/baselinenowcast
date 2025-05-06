@@ -8,9 +8,10 @@
 #' @inheritParams get_delay_estimate
 #' @returns NULL, invisibly
 #' @keywords internal
-.validate_triangle <- function(triangle,
-                               max_delay = ncol(triangle) - 1,
-                               n = nrow(triangle)) {
+.validate_triangle <- function(
+    triangle,
+    max_delay = ncol(triangle) - 1,
+    n = nrow(triangle)) {
   # Make sure the input triangle only contains integer values
   # and is of the correct class
   assert_class(triangle, "matrix")
@@ -19,10 +20,25 @@
   assert_integerish(n)
   assert_matrix(triangle, all.missing = FALSE)
 
-  if (nrow(triangle) <= ncol(triangle)) {
+  # Check if the triangle has a valid structure
+  # Ensure each column has at least one non-NA value
+  if (any(colSums(!is.na(triangle)) == 0)) {
     cli_abort(
-      message =
-        "Number of observations(rows) must be greater than the number of columns." # nolint
+      message = c(
+        "Invalid reporting triangle structure. Each column must have",
+        "at least one non-NA value."
+      )
+    )
+  }
+
+  # For ragged triangles (e.g. weekly reporting of daily data),
+  # we need to ensure the triangle has proper structure
+  if (!.check_na_bottom_right(triangle)) {
+    cli_abort(
+      message = c(
+        "Invalid reporting triangle structure. NA values should only",
+        "appear in the bottom right portion of the triangle."
+      )
     )
   }
 
@@ -79,15 +95,13 @@
 #' @importFrom cli cli_abort
 #' @returns NULL, invisibly
 #' @keywords internal
-.validate_delay_and_triangle <- function(triangle,
-                                         delay_pmf) {
+.validate_delay_and_triangle <- function(triangle, delay_pmf) {
   # Check that the input triangle only contains integer values
   assert_integerish(triangle)
   # Check that the inputs are the correct type
   assert_class(triangle, "matrix")
   assert_class(delay_pmf, "numeric")
   assert_matrix(triangle, all.missing = FALSE)
-
 
   # Make sure the triangle has the same number of columns as the delay
   if ((ncol(triangle) != length(delay_pmf))) {

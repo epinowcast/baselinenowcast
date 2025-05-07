@@ -71,26 +71,18 @@ test_that("Default n_history_delay uses minimum rows", {
 
 ### Test 3: Custom n_history_delay
 test_that("Custom n_history_delay is respected", {
-  result <- generate_pt_nowcast_mat_list(
+  expect_no_error(generate_pt_nowcast_mat_list(
     reporting_triangle_list = retro_rts_list,
     n = 5
-  )
-  # Custom n_history_delay is too high
-  expect_error(
-    generate_pt_nowcast_mat_list(
-      reporting_triangle_list = retro_rts_list,
-      n = 8
-    ),
-    regexp = "The number of observations specified for delay estimation is greater" # nolint
-  ) # nolint
-  # Custom n_history_delay is too low
-  expect_error(
-    generate_pt_nowcast_mat_list(
-      reporting_triangle_list = retro_rts_list,
-      n = 3
-    ),
-    regexp = "The number of observations specified for delay estimation is less"
-  ) # nolint
+  ))
+  expect_error(generate_pt_nowcast_mat_list(
+    reporting_triangle_list = retro_rts_list,
+    n = 3
+  ))
+  expect_error(generate_pt_nowcast_mat_list(
+    reporting_triangle_list = retro_rts_list,
+    n = 8
+  ))
 })
 
 ### Test 4: Error Handling

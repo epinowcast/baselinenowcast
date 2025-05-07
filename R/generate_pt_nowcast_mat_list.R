@@ -17,6 +17,8 @@
 #'    (number of rows) to use to estimate the delay distribution for each
 #'    reporting triangle. Default is the minimum of the number of rows of
 #'    all the matrices in the `list_of_rts`.
+#' @param delay_pmf Vector of delays assumed to be indexed starting at the
+#'   first delay column in each of the matrices in `reporting_triangle_list`.
 #'
 #' @returns `pt_nowcast_matr_list` List of the same number of elements as the
 #'    input `reporting_triangle_list`but with each reporting triangle filled
@@ -47,33 +49,12 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
                                          ) - 1,
                                          n = min(
                                            sapply(reporting_triangle_list, nrow)
-                                         )) {
-  if (n > min(
-    sapply(reporting_triangle_list, nrow)
-  )) {
-    cli_abort(
-      message = c(
-        "The number of observations specified for delay estimation is greater ",
-        "than the minimum number of rows in all of the retrospective ",
-        "reporting triangles. Either remove the reporting triangles that do ",
-        "not contain sufficient data, or lower `n_history_delay`"
-      )
-    )
-  }
-  if (n < min(sapply(reporting_triangle_list, ncol))) {
-    cli_abort(
-      message = c(
-        "The number of observations specified for delay estimation is less ",
-        "than one plus the number of columns in the retrospective reporting ",
-        "triangles. The delay distribution can only be estimated from at ",
-        "at least the number of columns in the reporting triangle."
-      )
-    )
-  }
-
+                                         ),
+                                         delay_pmf = NULL) {
   pt_nowcast_mat_list <- lapply(reporting_triangle_list,
     generate_pt_nowcast_mat,
-    n = n
+    n = n,
+    delay_pmf = delay_pmf
   )
 
 
@@ -115,6 +96,26 @@ generate_pt_nowcast_mat <- function(reporting_triangle,
                                     max_delay = ncol(reporting_triangle) - 1,
                                     n = nrow(reporting_triangle),
                                     delay_pmf = NULL) {
+  if (n > nrow(reporting_triangle)) {
+    cli_abort(
+      message = c(
+        "The number of observations specified for delay estimation is greater ",
+        "than the minimum number of rows in all of the retrospective ",
+        "reporting triangles. Either remove the reporting triangles that do ",
+        "not contain sufficient data, or lower `n_history_delay`"
+      )
+    )
+  }
+  if (n < ncol(reporting_triangle)) {
+    cli_abort(
+      message = c(
+        "The number of observations specified for delay estimation is less ",
+        "than one plus the number of columns in the retrospective reporting ",
+        "triangles. The delay distribution can only be estimated from at ",
+        "at least the number of columns in the reporting triangle."
+      )
+    )
+  }
   .validate_triangle(reporting_triangle)
   if (is.null(delay_pmf)) {
     delay_pmf <- get_delay_estimate(

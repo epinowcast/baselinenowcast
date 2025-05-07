@@ -180,7 +180,7 @@ extract_predictions <- function(pt_nowcast_mat,
   all_equal <- all(pt_nowcast_mat[!is.na(rep_mat)] == rep_mat[!is.na(rep_mat)]) # nolint
   if (isFALSE(all_equal)) {
     cli_abort(message = c(
-      " `obs_mat` is not a subset of `pt_nowcast_mat`. Check to make sure ",
+      " `rep_mat` is not a subset of `pt_nowcast_mat`. Check to make sure ",
       "that the matrix combining predictions and observations aligns with the ",
       "matrix containing only the observed values in the reporting matrix. "
     ))

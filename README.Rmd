@@ -79,6 +79,7 @@ If you use `baselinenowcast` in your work, please consider citing it with `citat
 
 
 
+
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -88,13 +89,20 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 ### Code
 
 
-<a href="https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson">kaitejohnson</a>,
-<a href="https://github.com/epinowcast/baselinenowcast/commits?author=seabbs">seabbs</a>,
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson">kaitejohnson</a>, 
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=seabbs">seabbs</a>, 
 <a href="https://github.com/epinowcast/baselinenowcast/commits?author=sbfnk">sbfnk</a>
 
 
 
-### Issues
+### Issue Authors
+
+
+<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Ajonathonmellor">jonathonmellor</a>
+
+
+
+### Issue Contributors
 
 
 <a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher">jbracher</a>
@@ -103,6 +111,7 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
 
 
 <!-- will add this in later -->

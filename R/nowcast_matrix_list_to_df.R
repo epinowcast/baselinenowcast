@@ -1,17 +1,15 @@
 #' Generate probabilistic nowcast dataframe
 #'
-#' This function ingests a list of matrices that represent expected observed
-#'    nowcasts, and generates a long tidy dataframe indexed by time and delay.
+#' This function ingests a list of nowcast matrixes, and generates a long tidy
+#'    dataframe indexed by time and delay.
 #'
-#' @param list_of_nowcasts List of  matrices of expected
-#'    observed reporting squares.
+#' @param nowcast_matrix_list List of probabilistic nowcast matrices
 #' @importFrom cli cli_abort
-#' @returns `nowcast_df` Dataframe containing observations and expected
-#'    observed nowcasts indexed by reference time and delay.
+#' @returns `nowcast_df` Dataframe containing observations and probabilistic
+#'    nowcasts indexed by reference time and delay.
 #' @export
-#'
 #' @examples
-#' point_nowcast <- matrix(
+#' point_nowcast_matrix <- matrix(
 #'   c(
 #'     80, 50, 25, 10,
 #'     100, 50, 30, 20,
@@ -23,21 +21,20 @@
 #'   byrow = TRUE
 #' )
 #'
-#' list_of_exp_obs_nowcast <- add_obs_errors_to_nowcast(
-#'   comp_rep_square = point_nowcast,
+#' nowcast_matrix_list <- add_uncertainty(
+#'   point_nowcast_matrix,
 #'   disp = c(8, 1.4, 4),
 #'   n_draws = 10
 #' )
 #'
-#' nowcast_df <- nowcast_list_to_df(
-#'   list_of_nowcasts = list_of_exp_obs_nowcast
-#' )
-nowcast_list_to_df <- function(list_of_nowcasts) {
+#' nowcast_df <- nowcast_matrix_list_to_df(nowcast_matrix_list)
+#' nowcast_df
+nowcast_matrix_list_to_df <- function(nowcast_matrix_list) {
   # Check if all elements are matrices
-  if (!all(sapply(list_of_nowcasts, is.matrix))) {
+  if (!all(sapply(nowcast_matrix_list, is.matrix))) {
     cli_abort("All elements in the list must be matrices.")
   }
-  if (length(list_of_nowcasts) < 1) {
+  if (length(nowcast_matrix_list) < 1) {
     cli_abort("List of nowcasts is empty")
   }
 
@@ -45,10 +42,10 @@ nowcast_list_to_df <- function(list_of_nowcasts) {
   combined_df <- do.call(
     rbind,
     lapply(
-      seq_along(list_of_nowcasts),
+      seq_along(nowcast_matrix_list),
       function(i) {
-        return(convert_reporting_square_to_df(
-          list_of_nowcasts[[i]],
+        return(nowcast_matrix_to_df(
+          nowcast_matrix_list[[i]],
           draw = i
         ))
       }
@@ -72,7 +69,7 @@ nowcast_list_to_df <- function(list_of_nowcasts) {
 #' @export
 #'
 #' @examples
-#' rep_square <- matrix(
+#' nowcast_matrix <- matrix(
 #'   c(
 #'     80, 50, 25, 10,
 #'     100, 50, 30, 20,
@@ -85,10 +82,10 @@ nowcast_list_to_df <- function(list_of_nowcasts) {
 #'   byrow = TRUE
 #' )
 #'
-#' long_df <- convert_reporting_square_to_df(rep_square)
+#' long_df <- nowcast_matrix_to_df(nowcast_matrix)
 #' print(long_df)
-convert_reporting_square_to_df <- function(matrix,
-                                           draw = NULL) {
+nowcast_matrix_to_df <- function(matrix,
+                                 draw = NULL) {
   df_wide <- as.data.frame(matrix)
 
   df_long <- data.frame(

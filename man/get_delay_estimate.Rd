@@ -14,14 +14,17 @@ German Hospitalization Nowcasting Hub.
 Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint}
 \usage{
 get_delay_estimate(
-  triangle,
-  max_delay = ncol(triangle) - 1,
-  n = nrow(triangle)
+  reporting_triangle,
+  max_delay = ncol(reporting_triangle) - 1,
+  n = nrow(reporting_triangle)
 )
 }
 \arguments{
-\item{triangle}{Matrix of the reporting triangle, with rows representing
-the time points of reference and columns representing the delays.}
+\item{reporting_triangle}{Matrix of the reporting triangle, with rows
+representing the time points of reference and columns representing the
+delays. Can be a reporting matrix or incomplete reporting matrix.
+Can also be a ragged reporting triangle, where multiple columns are
+reported for the same row. (e.g. weekly reporting of daily data).}
 
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
@@ -62,9 +65,9 @@ triangle <- matrix(
   byrow = TRUE
 )
 delay_pmf <- get_delay_estimate(
-  triangle = triangle,
+  reporting_triangle = triangle,
   max_delay = 3,
   n = 4
 )
-print(delay_pmf)
+delay_pmf
 }

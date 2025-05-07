@@ -10,9 +10,10 @@ truncate_triangle(t, matr_observed)
 \item{t}{Integer indicating the number of timepoints to truncate off the
 bottom of the original reporting triangle.}
 
-\item{matr_observed}{Matrix of the reporting triangle/rectangle
-to be used to generate retrospective nowcasts, with rows representing the
-time points of reference and columns representing the delays.}
+\item{matr_observed}{Matrix of the reporting triangle/matrix
+to be used to generate retrospective nowcast matrices, with rows
+representing the time points of reference and columns representing the
+delays.}
 }
 \value{
 Matrix with \code{t} fewer rows than \code{matr_observed}.
@@ -37,9 +38,6 @@ triangle <- matrix(
   byrow = TRUE
 )
 
-trunc_rep_tri <- truncate_triangle(
-  t = 1,
-  matr_observed = triangle
-)
-print(trunc_rep_tri)
+trunc_rep_tri <- truncate_triangle(t = 1, matr_observed = triangle)
+trunc_rep_tri
 }

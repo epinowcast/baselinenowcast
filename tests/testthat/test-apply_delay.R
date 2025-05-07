@@ -12,7 +12,7 @@ test_that("apply_delay function works as expected when result is known", {
   delay_pmf <- c(0.4, 0.2, 0.2, 0.2)
 
   result <- apply_delay(
-    triangle_to_nowcast = triangle,
+    rep_tri_to_nowcast = triangle,
     delay_pmf = delay_pmf
   )
 
@@ -33,7 +33,7 @@ test_that("apply_delay function works as expected when result is known", {
   delay_pmf <- c(0.4, 0.2, 0.2, 0.2)
 
   result <- apply_delay(
-    triangle_to_nowcast = triangle,
+    rep_tri_to_nowcast = triangle,
     delay_pmf = delay_pmf
   )
 
@@ -53,7 +53,7 @@ test_that("apply_delay function works as expected when result is known", {
   delay_pmf <- c(0, 0.4, 0.4, 0.2)
 
   expect_error(apply_delay(
-    triangle_to_nowcast = triangle,
+    rep_tri_to_nowcast = triangle,
     delay_pmf = delay_pmf
   ))
 
@@ -72,7 +72,7 @@ test_that("apply_delay function works as expected when result is known", {
   delay_pmf <- c(0.2, 0.4, 0, 0.4)
 
   result <- apply_delay(
-    triangle_to_nowcast = triangle,
+    rep_tri_to_nowcast = triangle,
     delay_pmf = delay_pmf
   )
   expect_false(anyNA(result))
@@ -86,7 +86,7 @@ test_that("apply_delay function works correctly on simple triangle", {
   triangle <- matrix(nrow = 5, ncol = 4, data = 1)
   delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
   result <- apply_delay(
-    triangle_to_nowcast = triangle,
+    rep_tri_to_nowcast = triangle,
     delay_pmf = delay_pmf
   )
 
@@ -115,7 +115,7 @@ test_that("apply_delay function works on a triangle with 0s", {
   )
   delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
   result <- apply_delay(
-    triangle_to_nowcast = triangle,
+    rep_tri_to_nowcast = triangle,
     delay_pmf = delay_pmf
   )
 
@@ -183,9 +183,10 @@ test_that("apply_delay function works correctly with larger triangle", {
 
 test_that("apply_delay function works the same as the more verbose for loop", {
   triangle <- matrix(nrow = 5, ncol = 4, data = 1)
+  triangle <- generate_triangle(triangle)
   delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
   result <- apply_delay(
-    triangle_to_nowcast = triangle,
+    rep_tri_to_nowcast = triangle,
     delay_pmf = delay_pmf
   )
 
@@ -198,11 +199,26 @@ test_that("apply_delay function works the same as the more verbose for loop", {
     ]
     # Uses the observed data to find the expected total on that reference date
     exp_total <- (rowSums(block_bottom_left) + 1 - sum(delay_pmf[1:(co - 1)])) / sum(delay_pmf[1:(co - 1)]) # nolint
-    # * Note, we will have to do some correction if this is 0, ignore for now*
-    # Finds the expected value for the particular delay by scaling by the
-    # delay pmf for delay d
     expectation2[(n_dates - co + 2):n_dates, co] <- exp_total * delay_pmf[co]
   }
 
   expect_identical(result, expectation2)
+})
+
+test_that("apply_delay works with ragged reporting triangles", {
+  delay_pmf <- c(0.4, 0.3, 0.2, 0.05, 0.05)
+  partial_counts <- c(80, 100, 180, 80, 140)
+
+  # Create a complete triangle based on the known delay PMF
+  triangle <- lapply(partial_counts, function(x) x * delay_pmf)
+  triangle <- do.call(rbind, triangle)
+  triangle <- generate_triangle(triangle, structure = c(1, 2, 1))
+
+  result <- apply_delay(
+    rep_tri_to_nowcast = triangle,
+    delay_pmf = delay_pmf
+  )
+  cols <- colSums(result[3:5, ])
+  pmf <- cols / sum(cols)
+  expect_equal(pmf, delay_pmf, tolerance = 0.01)
 })

@@ -5,7 +5,7 @@
 #'   truncated the reporting triangle, working from bottom to top for `n`
 #'   snapshots.
 #'
-#' @param triangle Matrix of the reporting triangle/rectangle
+#' @param reporting_triangle Matrix of the reporting triangle/rectangle
 #'   to be used to generate retrospective triangles, with rows representing the
 #'   time points of reference and columns representing the delays.
 #' @param n Integer indicating the number of retrospective
@@ -13,7 +13,7 @@
 #'   recent reference time. Default is to only generate truncated matrices
 #'   that have sufficient number of rows to generate a nowcast from, though
 #'   any number can be specified.
-#' @returns `list_of_trunc_rts` List of `n` truncated reporting triangle
+#' @returns `trunc_rep_mat_list` List of `n` truncated reporting triangle
 #'   matrices with as many rows as available given the truncation, and the same
 #'   number of columns as `triangle`.
 #' @importFrom checkmate assert_integerish
@@ -33,19 +33,13 @@
 #'   byrow = TRUE
 #' )
 #'
-#' truncated_rts <- truncate_triangles(
-#'   triangle = triangle,
-#'   n = 2
-#' )
-#' print(truncated_rts[[1]])
-#' print(truncated_rts[[2]])
-truncate_triangles <- function(
-    triangle,
-    n = nrow(triangle) - ncol(triangle) - 1) {
-  .validate_triangle(triangle)
+#' truncated_rts <- truncate_triangles(triangle, n = 2)
+#' truncated_rts[1:2]
+truncate_triangles <- function(reporting_triangle,
+                               n = nrow(reporting_triangle) - ncol(reporting_triangle) - 1) { # nolint
+  .validate_triangle(reporting_triangle)
   assert_integerish(n, lower = 0)
-  triangle <- replace_lower_right_with_NA(triangle)
-  if (n > (nrow(triangle) - ncol(triangle) - 1)) {
+  if (n > (nrow(reporting_triangle) - ncol(reporting_triangle) - 1)) {
     cli::cli_warn(
       message = c(
         "Not all of the triangles generated will contain sufficient ",
@@ -56,7 +50,7 @@ truncate_triangles <- function(
 
   results <- lapply(seq_len(n),
     truncate_triangle,
-    matr_observed = triangle
+    matr_observed = reporting_triangle
   )
 
   return(results)
@@ -69,9 +63,10 @@ truncate_triangles <- function(
 #'
 #' @param t Integer indicating the number of timepoints to truncate off the
 #'   bottom of the original reporting triangle.
-#' @param matr_observed Matrix of the reporting triangle/rectangle
-#'   to be used to generate retrospective nowcasts, with rows representing the
-#'   time points of reference and columns representing the delays.
+#' @param matr_observed Matrix of the reporting triangle/matrix
+#'   to be used to generate retrospective nowcast matrices, with rows
+#'   representing the time points of reference and columns representing the
+#'   delays.
 #'
 #' @returns Matrix with `t` fewer rows than `matr_observed`.
 #' @importFrom checkmate assert_integerish
@@ -93,11 +88,8 @@ truncate_triangles <- function(
 #'   byrow = TRUE
 #' )
 #'
-#' trunc_rep_tri <- truncate_triangle(
-#'   t = 1,
-#'   matr_observed = triangle
-#' )
-#' print(trunc_rep_tri)
+#' trunc_rep_tri <- truncate_triangle(t = 1, matr_observed = triangle)
+#' trunc_rep_tri
 truncate_triangle <- function(t,
                               matr_observed) {
   n_obs <- nrow(matr_observed)

@@ -4,10 +4,13 @@
 \alias{truncate_triangles}
 \title{Generate truncated reporting triangles}
 \usage{
-truncate_triangles(triangle, n = nrow(triangle) - ncol(triangle) - 1)
+truncate_triangles(
+  reporting_triangle,
+  n = nrow(reporting_triangle) - ncol(reporting_triangle) - 1
+)
 }
 \arguments{
-\item{triangle}{Matrix of the reporting triangle/rectangle
+\item{reporting_triangle}{Matrix of the reporting triangle/rectangle
 to be used to generate retrospective triangles, with rows representing the
 time points of reference and columns representing the delays.}
 
@@ -18,7 +21,7 @@ that have sufficient number of rows to generate a nowcast from, though
 any number can be specified.}
 }
 \value{
-\code{list_of_trunc_rts} List of \code{n} truncated reporting triangle
+\code{trunc_rep_mat_list} List of \code{n} truncated reporting triangle
 matrices with as many rows as available given the truncation, and the same
 number of columns as \code{triangle}.
 }
@@ -43,10 +46,6 @@ triangle <- matrix(
   byrow = TRUE
 )
 
-truncated_rts <- truncate_triangles(
-  triangle = triangle,
-  n = 2
-)
-print(truncated_rts[[1]])
-print(truncated_rts[[2]])
+truncated_rts <- truncate_triangles(triangle, n = 2)
+truncated_rts[1:2]
 }

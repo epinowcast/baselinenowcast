@@ -5,20 +5,20 @@
 \title{Estimate dispersion parameters}
 \usage{
 estimate_dispersion(
-  list_of_nowcasts,
-  list_of_trunc_rts,
-  n = length(list_of_nowcasts)
+  pt_nowcast_mat_list,
+  trunc_rep_mat_list,
+  n = length(pt_nowcast_mat_list)
 )
 }
 \arguments{
-\item{list_of_nowcasts}{List of complete reporting rectangles where rows
+\item{pt_nowcast_mat_list}{List of point nowcast matrices where rows
 represent reference time points and columns represent delays.}
 
-\item{list_of_trunc_rts}{List of truncated reporting triangle matrices,
+\item{trunc_rep_mat_list}{List of truncated reporting matrices,
 containing all observations as of the latest reference time. Elements of
-list are paired with elements of \code{list_of_nowcasts}.}
+list are paired with elements of \code{pt_nowcast_mat_list}.}
 
-\item{n}{Integer indicating the number of reporting rectangles to use to
+\item{n}{Integer indicating the number of reporting matrices to use to
 estimate the dispersion parameters.}
 }
 \value{
@@ -27,11 +27,10 @@ latest reporting triangle, with each element representing the estimate
 of the dispersion parameter for each delay d, starting at delay d=1.
 }
 \description{
-This function ingests a list of point nowcasts (completed reporting
-rectangles) and a corresponding list of truncated reporting triangles and
-estimates and uses both to estimate a vector of negative binomial
-dispersion parameters from the observations and estimates at each delay,
-starting at delay = 1.
+This function ingests a list of point nowcast matrices and a corresponding
+list of truncated reporting matrices and uses both to estimate a
+vector of negative binomial dispersion parameters from the observations
+and estimates at each delay, starting at delay = 1.
 }
 \examples{
 triangle <- matrix(
@@ -48,20 +47,14 @@ triangle <- matrix(
   byrow = TRUE
 )
 
-trunc_rts <- truncate_triangles(
-  triangle = triangle,
-  n = 2
-)
-retro_rts <- generate_triangles(
-  list_of_trunc_rts = trunc_rts
-)
-retro_nowcasts <- generate_point_nowcasts(
-  list_of_rts = retro_rts,
-  n = 5
-)
+trunc_rts <- truncate_triangles(triangle, n = 2)
+retro_rts <- generate_triangles(trunc_rts)
+
+retro_nowcasts <- generate_pt_nowcast_mat_list(retro_rts, n = 5)
 disp_params <- estimate_dispersion(
-  list_of_nowcasts = retro_nowcasts,
-  list_of_trunc_rts = trunc_rts,
+  pt_nowcast_mat_list = retro_nowcasts,
+  trunc_rep_mat_list = trunc_rts,
   n = 2
 )
+disp_params
 }

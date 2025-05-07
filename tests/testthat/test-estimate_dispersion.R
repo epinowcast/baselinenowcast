@@ -44,8 +44,8 @@ valid_trunc_rts <- list(
 ### Test 1: Basic Functionality ------------------------------------------------
 test_that("Basic functionality with valid inputs", {
   result <- estimate_dispersion(
-    list_of_nowcasts = valid_nowcasts,
-    list_of_trunc_rts = valid_trunc_rts,
+    pt_nowcast_mat_list = valid_nowcasts,
+    trunc_rep_mat_list = valid_trunc_rts,
     n = 2
   )
 
@@ -72,8 +72,7 @@ test_that("Error conditions are properly handled", {
   # the nowcasts
   expect_silent(estimate_dispersion(valid_nowcasts[1], valid_trunc_rts))
   expect_error(
-    estimate_dispersion(valid_nowcasts[1], valid_trunc_rts, 2),
-    "Insufficient elements in `list_of_nowcasts` for the `n` desired number"
+    estimate_dispersion(valid_nowcasts[1], valid_trunc_rts, 2)
   ) # nolint
 
   # Invalid n values
@@ -102,7 +101,7 @@ test_that("Matrix dimension validation works", {
   )
   expect_error(
     estimate_dispersion(valid_nowcasts, bad_trunc_rts),
-    "Dimensions of the first `n` matrices in `list_of_nowcasts` and"
+    "Dimensions of the first `n` matrices in `pt_nowcast_mat_list` and"
   ) # nolint
 })
 

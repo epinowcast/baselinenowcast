@@ -11,7 +11,7 @@ test_triangle <- matrix(
   byrow = TRUE
 )
 
-test_that("generate_pt_nowcast_mat basic functionality with default parameters", {
+test_that("generate_pt_nowcast_mat basic functionality with default parameters", { # nolint
   result <- generate_pt_nowcast_mat(test_triangle)
 
   # Verify output structure

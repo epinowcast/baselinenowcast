@@ -120,7 +120,11 @@ specification. Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/baselinenowcast/commits?author=seabbs">seabbs</a>,
 <a href="https://github.com/epinowcast/baselinenowcast/commits?author=sbfnk">sbfnk</a>
 
-### Issues
+### Issue Authors
+
+<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Ajonathonmellor">jonathonmellor</a>
+
+### Issue Contributors
 
 <a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher">jbracher</a>
 

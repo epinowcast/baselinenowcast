@@ -218,6 +218,8 @@ estimate_dispersion <- function(
   if (length(x) == 0) {
     return(NA)
   }
+  # Check that all observations are integers
+  assert_integerish(x)
   nllik <- function(size) {
     nll <- -sum(dnbinom(x = x, mu = mu, size = size, log = TRUE), na.rm = TRUE)
     return(nll)

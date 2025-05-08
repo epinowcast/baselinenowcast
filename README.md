@@ -126,7 +126,8 @@ specification. Contributions of any kind are welcome!
 
 ### Issue Contributors
 
-<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher">jbracher</a>
+<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher">jbracher</a>,
+<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3ATimTaylor">TimTaylor</a>
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->

@@ -12,8 +12,8 @@
     triangle,
     max_delay = ncol(triangle) - 1,
     n = nrow(triangle)) {
-  # Make sure the input triangle is of the correct class, and n and max_delay are
-  # integers
+  # Make sure the input triangle is of the correct class, and n and max_delay
+  # are integers
   assert_class(triangle, "matrix")
   assert_integerish(max_delay)
   assert_integerish(n)

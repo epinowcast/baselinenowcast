@@ -4,7 +4,7 @@
 \alias{truncate_triangle}
 \title{Get a single truncated triangle}
 \usage{
-truncate_triangle(t, matr_observed)
+truncate_triangle(t, rep_tri)
 }
 \arguments{
 \item{t}{Integer indicating the number of timepoints to truncate off the
@@ -38,6 +38,6 @@ triangle <- matrix(
   byrow = TRUE
 )
 
-trunc_rep_tri <- truncate_triangle(t = 1, matr_observed = triangle)
+trunc_rep_tri <- truncate_triangle(t = 1, rep_tri = triangle)
 trunc_rep_tri
 }

@@ -393,7 +393,7 @@ are needed to generate a nowcast of reporting triangle with 41 delay columns.
 
 
 ```{r generate-triangles}
-trunc_rep_mat_list <- truncate_triangles(reporting_triangle)
+trunc_rep_tri_list <- truncate_triangles(reporting_triangle)
 retro_rep_tri_list <- generate_triangles(trunc_rep_mat_list)
 ```
 The `generate_triangles()` function returns a list of
@@ -420,7 +420,7 @@ the uncertainty at each horizon, starting at horizon 0.
 ```{r estimate-dispersion}
 disp_params <- estimate_dispersion(
   pt_nowcast_mat_list = retro_pt_nowcast_mat_list,
-  trunc_rep_mat_list = trunc_rep_mat_list
+  trunc_rep_tri_list = trunc_rep_tri_list
 )
 ```
 

@@ -48,7 +48,6 @@ test_that("Function returns correctly structured output", {
   expect_false(anyNA(result[[2]]))
 })
 
-### Function takes in separate delay_pmf
 test_that("Function takes in delay_pmf as vector or list", {
   result1 <- generate_pt_nowcast_mat_list(
     reporting_triangle_list = retro_rts_list,

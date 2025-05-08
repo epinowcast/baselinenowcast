@@ -71,11 +71,19 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
     )
   }
 
-  pt_nowcast_mat_list <- lapply(reporting_triangle_list,
-    generate_pt_nowcast_mat,
-    n = n
-  )
+  safe_generate_pt_nowcast_mat <- .safelydoesit(generate_pt_nowcast_mat)
 
+  # Use the safe version in lapply
+  pt_nowcast_mat_list <- lapply(reporting_triangle_list, function(triangle) {
+    result <- safe_generate_pt_nowcast_mat(triangle, n = n)
+    if (!is.null(result$error)) {
+      # Return NULL if there was an error
+      return(NULL)
+    } else {
+      # Return the result if successful
+      return(result$result)
+    }
+  })
 
   return(pt_nowcast_mat_list)
 }

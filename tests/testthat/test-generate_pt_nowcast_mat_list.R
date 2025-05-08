@@ -66,7 +66,6 @@ test_that("Function takes in delay_pmf as vector or list", {
   ))
 })
 
-### Default n_history_delay Calculation
 test_that("Default n_history_delay uses minimum rows", {
   # Input matrices have 7 and 7 rows → min = 6
   result_default <- generate_pt_nowcast_mat_list(

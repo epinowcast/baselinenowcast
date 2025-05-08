@@ -28,7 +28,6 @@ test_triangle_2 <- matrix(
 retro_rts_list <- list(test_triangle_1, test_triangle_2)
 delay_pmf <- c(0.1, 0.1, 0.5, 0.3)
 
-###  Basic Functionality
 test_that("Function returns correctly structured output", {
   result <- generate_pt_nowcast_mat_list(
     reporting_triangle_list = retro_rts_list
@@ -48,7 +47,6 @@ test_that("Function returns correctly structured output", {
   expect_false(anyNA(result[[2]]))
 })
 
-### Function takes in separate delay_pmf
 test_that("Function takes in delay_pmf as vector or list", {
   result1 <- generate_pt_nowcast_mat_list(
     reporting_triangle_list = retro_rts_list,
@@ -68,7 +66,6 @@ test_that("Function takes in delay_pmf as vector or list", {
   ))
 })
 
-### Default n_history_delay Calculation
 test_that("Default n_history_delay uses minimum rows", {
   # Input matrices have 7 and 7 rows → min = 6
   result_default <- generate_pt_nowcast_mat_list(
@@ -90,7 +87,6 @@ test_that("Default n_history_delay uses minimum rows", {
   expect_false(all(result_default[[1]] == result_custom[[1]]))
 })
 
-### Test 3: Custom n_history_delay
 test_that("Custom n_history_delay is respected", {
   result <- generate_pt_nowcast_mat_list(
     reporting_triangle_list = retro_rts_list,

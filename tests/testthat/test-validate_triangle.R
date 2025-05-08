@@ -6,14 +6,13 @@ test_that(".validate_triangle accepts valid inputs", {
   ))
 })
 
-test_that(".validate_triangle rejects non-integer values in triangle", {
+test_that(".validate_triangle accepts non-integer values in triangle", {
   non_integer_triangle <- matrix(c(1, 2.5, 3, 4), nrow = 2, ncol = 2)
-  expect_error(
+  expect_no_error(
     .validate_triangle(non_integer_triangle,
       max_delay = 1,
       n = 1
-    ),
-    "Assertion on 'triangle' failed: Must be of type 'integerish'"
+    )
   )
 })
 
@@ -118,7 +117,7 @@ test_that(".validate_triangle rejects matrix with empty columns", {
     nrow = 4,
     byrow = TRUE
   )
-  
+
   expect_error(
     .validate_triangle(empty_col_triangle,
       max_delay = 3,

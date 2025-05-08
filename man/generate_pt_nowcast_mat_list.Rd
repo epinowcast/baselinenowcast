@@ -25,8 +25,10 @@ rows of all of the matrices in the \code{list_of_rts}.}
 reporting triangle. Default is the minimum of the number of rows of
 all the matrices in the \code{list_of_rts}.}
 
-\item{delay_pmf}{Vector of delays assumed to be indexed starting at the
-first delay column in each of the matrices in \code{reporting_triangle_list}.}
+\item{delay_pmf}{Vector or list of vectors of delays assumed to be indexed
+starting at the first delay column in each of the matrices in
+\code{reporting_triangle_list}. If a list, must of the same length as
+\code{reporting_triangle_list}, with elements aligning. Default is \code{NULL}}
 }
 \value{
 \code{pt_nowcast_matr_list} List of the same number of elements as the

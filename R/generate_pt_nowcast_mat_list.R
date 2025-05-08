@@ -17,8 +17,10 @@
 #'    (number of rows) to use to estimate the delay distribution for each
 #'    reporting triangle. Default is the minimum of the number of rows of
 #'    all the matrices in the `list_of_rts`.
-#' @param delay_pmf Vector of delays assumed to be indexed starting at the
-#'   first delay column in each of the matrices in `reporting_triangle_list`.
+#' @param delay_pmf Vector or list of vectors of delays assumed to be indexed
+#'    starting at the first delay column in each of the matrices in
+#'     `reporting_triangle_list`. If a list, must of the same length as
+#'     `reporting_triangle_list`, with elements aligning. Default is `NULL`
 #'
 #' @returns `pt_nowcast_matr_list` List of the same number of elements as the
 #'    input `reporting_triangle_list`but with each reporting triangle filled
@@ -51,10 +53,25 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
                                            sapply(reporting_triangle_list, nrow)
                                          ),
                                          delay_pmf = NULL) {
-  pt_nowcast_mat_list <- lapply(reporting_triangle_list,
+  if (!is.list(delay_pmf)) {
+    delay_pmf_list <- rep(list(delay_pmf), length(reporting_triangle_list))
+  } else {
+    delay_pmf_list <- delay_pmf
+    if (length(delay_pmf_list) != length(reporting_triangle_list)) {
+      cli_abort(message = c(
+        "List of `delay_pmf` is not the same length as ",
+        "`reporting_triangle_list`."
+      ))
+    }
+  }
+  # Iterate through each item in both lists of reporting triangles
+  # and delay PMFs
+  pt_nowcast_mat_list <- mapply(
     generate_pt_nowcast_mat,
-    n = n,
-    delay_pmf = delay_pmf
+    reporting_triangle_list,
+    delay_pmf_list,
+    MoreArgs = list(max_delay = max_delay, n = n),
+    SIMPLIFY = FALSE
   )
 
 

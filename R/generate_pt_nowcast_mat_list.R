@@ -53,9 +53,7 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
                                            sapply(reporting_triangle_list, nrow)
                                          ),
                                          delay_pmf = NULL) {
-  if (!is.list(delay_pmf)) {
-    delay_pmf_list <- rep(list(delay_pmf), length(reporting_triangle_list))
-  } else {
+  if (is.list(delay_pmf)) { # name as a list and check length of elements
     delay_pmf_list <- delay_pmf
     if (length(delay_pmf_list) != length(reporting_triangle_list)) {
       cli_abort(message = c(
@@ -63,6 +61,8 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
         "`reporting_triangle_list`."
       ))
     }
+  } else { # create a list with the same pmf
+    delay_pmf_list <- rep(list(delay_pmf), length(reporting_triangle_list))
   }
   # Iterate through each item in both lists of reporting triangles
   # and delay PMFs

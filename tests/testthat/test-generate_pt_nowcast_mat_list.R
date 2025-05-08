@@ -87,7 +87,6 @@ test_that("Default n_history_delay uses minimum rows", {
   expect_false(all(result_default[[1]] == result_custom[[1]]))
 })
 
-### Test 3: Custom n_history_delay
 test_that("Custom n_history_delay is respected", {
   expect_no_error(generate_pt_nowcast_mat_list(
     reporting_triangle_list = retro_rts_list,

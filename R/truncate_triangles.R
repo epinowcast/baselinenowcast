@@ -63,12 +63,12 @@ truncate_triangles <- function(reporting_triangle,
 #'
 #' @param t Integer indicating the number of timepoints to truncate off the
 #'   bottom of the original reporting triangle.
-#' @param matr_observed Matrix of the reporting triangle/matrix
+#' @param rep_tri Matrix of the reporting triangle/matrix
 #'   to be used to generate retrospective nowcast matrices, with rows
 #'   representing the time points of reference and columns representing the
 #'   delays.
 #'
-#' @returns Matrix with `t` fewer rows than `matr_observed`.
+#' @returns Matrix with `t` fewer rows than `rep_tri`.
 #' @importFrom checkmate assert_integerish
 #' @importFrom cli cli_abort
 #' @export

@@ -10,13 +10,13 @@ truncate_triangle(t, rep_tri)
 \item{t}{Integer indicating the number of timepoints to truncate off the
 bottom of the original reporting triangle.}
 
-\item{matr_observed}{Matrix of the reporting triangle/matrix
+\item{rep_tri}{Matrix of the reporting triangle/matrix
 to be used to generate retrospective nowcast matrices, with rows
 representing the time points of reference and columns representing the
 delays.}
 }
 \value{
-Matrix with \code{t} fewer rows than \code{matr_observed}.
+Matrix with \code{t} fewer rows than \code{rep_tri}.
 }
 \description{
 This function takes in a integer \code{t} and a reporting triangle and generates

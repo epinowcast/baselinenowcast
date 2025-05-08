@@ -92,10 +92,18 @@ test_that("Default n_history_delay uses minimum rows", {
 
 ### Test 3: Custom n_history_delay
 test_that("Custom n_history_delay is respected", {
-  expect_no_error(generate_pt_nowcast_mat_list(
+  result <- generate_pt_nowcast_mat_list(
     reporting_triangle_list = retro_rts_list,
     n = 5
-  ))
+  )
+  # Compare to estimate using n=5
+  first_triangle <- result[[1]]
+  delay_pmf <- get_delay_estimate(retro_rts_list[[1]],
+    n = 5
+  )
+  exp_first_triangle <- apply_delay(retro_rts_list[[1]], delay_pmf)
+  expect_equal(first_triangle, exp_first_triangle, tol = 0.0001)
+
   expect_error(generate_pt_nowcast_mat_list(
     reporting_triangle_list = retro_rts_list,
     n = 3

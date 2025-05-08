@@ -107,5 +107,7 @@ test_that("generate_pt_nowcast_mat can take in another delay PMF", {
     test_triangle,
     delay_pmf = external_delay_pmf
   )
-  expect_equal(result[4, 4] / sum(result[4, ]), 0.3, tol = 1e-3)
+  last_row <- result[5, ]
+  pmf <- last_row / sum(last_row)
+  expect_equal(pmf, external_delay_pmf, tolerance = 0.01)
 })

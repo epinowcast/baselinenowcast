@@ -1,5 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
+-   Removes requirement that all elements of the reporting triangle are integers.
 -   Standardises naming of objects that are matrices vs vectors and objects that contain observations, point estimates, and probabilistic draws.
 -   Modifies functions that estimate a delay and generate a point nowcast to ensure that they throw an error/warning if the first element of the delay PMF is 0.
 -   Adjusts function to estimate delay distribution to be able to handle complete and partially complete reporting triangles.

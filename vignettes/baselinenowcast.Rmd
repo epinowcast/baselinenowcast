@@ -394,7 +394,7 @@ are needed to generate a nowcast of reporting triangle with 41 delay columns.
 
 ```{r generate-triangles}
 trunc_rep_tri_list <- truncate_triangles(reporting_triangle)
-retro_rep_tri_list <- generate_triangles(trunc_rep_mat_list)
+retro_rep_tri_list <- generate_triangles(trunc_rep_tri_list)
 ```
 The `generate_triangles()` function returns a list of
 reporting triangles, in order from the most to least

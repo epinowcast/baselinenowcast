@@ -74,6 +74,7 @@ estimate_dispersion <- function(
   assert_integerish(n, lower = 0)
 
   # Truncate to only n nowcasts
+  # Do something here to exclude any elements for which the nowcast is NULL
   list_of_ncs <- pt_nowcast_mat_list[1:n]
   list_of_obs <- trunc_rep_mat_list[1:n]
 

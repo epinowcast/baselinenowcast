@@ -110,3 +110,11 @@ test_that("Passing in empty vector returns NA", {
   NA_result <- .fit_nb(x, mu = 1)
   expect_true(is.na(NA_result))
 })
+
+test_that("Passing in a NULL for a nowcast still returns an estimate", {
+  nowcasts_with_null <- list(nowcast1, NULL)
+  # This currently breaks because we check that these are the same size.
+  # Do we want to violate this or have an upstream filter that removes the list
+  # elements that are NULL and then checks (this seems better)
+  estimate_dispersion(nowcasts_with_null, valid_trunc_rts)
+})

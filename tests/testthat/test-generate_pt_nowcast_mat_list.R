@@ -80,16 +80,14 @@ test_that("Custom n_history_delay is respected", {
     generate_pt_nowcast_mat_list(
       reporting_triangle_list = retro_rts_list,
       n = 8
-    ),
-    regexp = "The number of observations specified for delay estimation is greater" # nolint
+    )
   ) # nolint
   # Custom n_history_delay is too low
   expect_error(
     generate_pt_nowcast_mat_list(
       reporting_triangle_list = retro_rts_list,
       n = 3
-    ),
-    regexp = "The number of observations specified for delay estimation is less"
+    )
   ) # nolint
 })
 

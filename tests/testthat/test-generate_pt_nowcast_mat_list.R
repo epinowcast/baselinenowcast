@@ -28,7 +28,6 @@ test_triangle_2 <- matrix(
 retro_rts_list <- list(test_triangle_1, test_triangle_2)
 delay_pmf <- c(0.1, 0.1, 0.5, 0.3)
 
-###  Basic Functionality
 test_that("Function returns correctly structured output", {
   result <- generate_pt_nowcast_mat_list(
     reporting_triangle_list = retro_rts_list

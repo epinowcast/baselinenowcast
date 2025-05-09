@@ -23,8 +23,16 @@ Authors@R:
            email = "sebastian.funk@lshtm.ac.uk",
            comment = c(ORCID = "0000-0002-2842-3406")))
 Description: Provides functions for nowcasting right-truncated epidemiological
-  data, based heavily on the method implemented in
-  https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/code/baseline.
+  data using an iterative multiplicative model based on empirical delay
+  distributions. Nowcasting right-truncated epidemiological data is critical
+  to interpretation of public health data, as right-truncation can create a
+  misleading impression of declining trends in recent data due to reporting
+  delays. The method implemented here represents a baseline nowcasting method,
+  intended to address a critical public health need as well as provide a
+  standardised benchmark for nowcasting model development. The package provides
+  support for modular development of a nowcasting workflow, enabling flexible
+  implementation to allow for, for example, borrowing of delay distributions
+  and uncertainty estimation from other strata.
 License: MIT + file LICENSE
 URL: https://baselinenowcast.epinowcast.org, https://github.com/epinowcast/baselinenowcast/
 BugReports: https://github.com/epinowcast/baselinenowcast/issues

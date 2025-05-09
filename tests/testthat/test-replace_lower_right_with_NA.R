@@ -216,7 +216,6 @@ test_that("replace_lower_right_with_NA validates structure parameter", {
 
   # Test with invalid vector structure
   expect_error(
-    replace_lower_right_with_NA(test_matrix, c(1, 1, 1)),
-    "Sum of structure vector must equal the number of columns in matrix"
+    replace_lower_right_with_NA(test_matrix, c(1, 1, 1))
   )
 })

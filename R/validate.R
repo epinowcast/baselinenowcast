@@ -12,10 +12,9 @@
     triangle,
     max_delay = ncol(triangle) - 1,
     n = nrow(triangle)) {
-  # Make sure the input triangle only contains integer values
-  # and is of the correct class
+  # Make sure the input triangle is of the correct class, and n and max_delay
+  # are integers
   assert_class(triangle, "matrix")
-  assert_integerish(triangle)
   assert_integerish(max_delay)
   assert_integerish(n)
   assert_matrix(triangle, all.missing = FALSE)
@@ -96,8 +95,6 @@
 #' @returns NULL, invisibly
 #' @keywords internal
 .validate_delay_and_triangle <- function(triangle, delay_pmf) {
-  # Check that the input triangle only contains integer values
-  assert_integerish(triangle)
   # Check that the inputs are the correct type
   assert_class(triangle, "matrix")
   assert_class(delay_pmf, "numeric")

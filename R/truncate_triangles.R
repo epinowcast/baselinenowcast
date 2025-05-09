@@ -50,7 +50,7 @@ truncate_triangles <- function(reporting_triangle,
 
   results <- lapply(seq_len(n),
     truncate_triangle,
-    matr_observed = reporting_triangle
+    rep_tri = reporting_triangle
   )
 
   return(results)
@@ -63,12 +63,12 @@ truncate_triangles <- function(reporting_triangle,
 #'
 #' @param t Integer indicating the number of timepoints to truncate off the
 #'   bottom of the original reporting triangle.
-#' @param matr_observed Matrix of the reporting triangle/matrix
+#' @param rep_tri Matrix of the reporting triangle/matrix
 #'   to be used to generate retrospective nowcast matrices, with rows
 #'   representing the time points of reference and columns representing the
 #'   delays.
 #'
-#' @returns Matrix with `t` fewer rows than `matr_observed`.
+#' @returns Matrix with `t` fewer rows than `rep_tri`.
 #' @importFrom checkmate assert_integerish
 #' @importFrom cli cli_abort
 #' @export
@@ -88,11 +88,11 @@ truncate_triangles <- function(reporting_triangle,
 #'   byrow = TRUE
 #' )
 #'
-#' trunc_rep_tri <- truncate_triangle(t = 1, matr_observed = triangle)
+#' trunc_rep_tri <- truncate_triangle(t = 1, rep_tri = triangle)
 #' trunc_rep_tri
 truncate_triangle <- function(t,
-                              matr_observed) {
-  n_obs <- nrow(matr_observed)
+                              rep_tri) {
+  n_obs <- nrow(rep_tri)
   if (t >= n_obs) {
     cli_abort(
       message = c(
@@ -102,9 +102,9 @@ truncate_triangle <- function(t,
     )
   }
   assert_integerish(t, lower = 0)
-  matr_observed_trunc <- matrix(
-    matr_observed[1:(n_obs - t), ],
+  rep_tri_trunc <- matrix(
+    rep_tri[1:(n_obs - t), ],
     nrow = (n_obs - t)
   )
-  return(matr_observed_trunc)
+  return(rep_tri_trunc)
 }

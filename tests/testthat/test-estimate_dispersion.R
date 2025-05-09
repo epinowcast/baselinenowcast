@@ -45,7 +45,7 @@ valid_trunc_rts <- list(
 test_that("Basic functionality with valid inputs", {
   result <- estimate_dispersion(
     pt_nowcast_mat_list = valid_nowcasts,
-    trunc_rep_mat_list = valid_trunc_rts,
+    trunc_rep_tri_list = valid_trunc_rts,
     n = 2
   )
 

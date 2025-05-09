@@ -4,19 +4,19 @@
 \alias{truncate_triangle}
 \title{Get a single truncated triangle}
 \usage{
-truncate_triangle(t, matr_observed)
+truncate_triangle(t, rep_tri)
 }
 \arguments{
 \item{t}{Integer indicating the number of timepoints to truncate off the
 bottom of the original reporting triangle.}
 
-\item{matr_observed}{Matrix of the reporting triangle/matrix
+\item{rep_tri}{Matrix of the reporting triangle/matrix
 to be used to generate retrospective nowcast matrices, with rows
 representing the time points of reference and columns representing the
 delays.}
 }
 \value{
-Matrix with \code{t} fewer rows than \code{matr_observed}.
+Matrix with \code{t} fewer rows than \code{rep_tri}.
 }
 \description{
 This function takes in a integer \code{t} and a reporting triangle and generates
@@ -38,6 +38,6 @@ triangle <- matrix(
   byrow = TRUE
 )
 
-trunc_rep_tri <- truncate_triangle(t = 1, matr_observed = triangle)
+trunc_rep_tri <- truncate_triangle(t = 1, rep_tri = triangle)
 trunc_rep_tri
 }

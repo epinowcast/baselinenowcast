@@ -32,8 +32,6 @@ license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/
 ```{r, results = "asis", echo=FALSE}
 cat(gsub("\n[ ]+", " ", packageDescription("baselinenowcast")$Description))
 ```
-The below figure depicts the low-level function workflow, depicting options for estimating delays and uncertainty from other reporting triangles. ![](./man/figures/function_flow.png)
-See the ["Get Started" vignette](https://baselinenowcast.epinowcast.org/articles/baselinenowcast.html) for a full example of a typical user workflow estimating the delay distribution and uncertainty from a single reporting triangle.
 
 ## Installation
 

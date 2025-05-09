@@ -3,7 +3,8 @@
 #' This function ingests a list of point nowcast matrices and a corresponding
 #'    list of truncated reporting matrices and uses both to estimate a
 #'    vector of negative binomial dispersion parameters from the observations
-#'    and estimates at each delay, starting at delay = 1.
+#'    and estimates at each horizon, starting at 0 up until the max delay
+#'    number of horizons.
 #'
 #' @param pt_nowcast_mat_list List of point nowcast matrices where rows
 #'    represent reference time points and columns represent delays.
@@ -101,56 +102,42 @@ estimate_dispersion <- function(
   }
 
 
-  n_horizons <- ncol(list_of_ncs[[1]])
-  for (i in seq_len(n)) {
+  n_horizons <- ncol(list_of_ncs[[1]]) - 1
+  # Each row is retrospective nowcast date, each column is a horizon (i.e
+  # columns are not delays, but hoirzons, and each cell contains a total
+  # value corresponding to that horizon -- the total expected value to add
+  exp_to_add <-
+    to_add_already_observed <- matrix(NA, nrow = n, ncol = n_horizons)
+  for (i in seq_len(n)) { # Seq along retrospective forecast dates
     # Rretrospective nowcast as of i delays ago
     nowcast_i <- list_of_ncs[[i]]
     # Remove the last i observations
     trunc_matr_observed <- list_of_obs[[i]]
-    # What would have been nowcasted? The values that would have been NA
-    indices_nowcast <- is.na(replace_lower_right_with_NA(trunc_matr_observed))
-    # What was observed? Any non-NAs from the truncated observed matrix
-    indices_observed <- !is.na(trunc_matr_observed)
-
-    # Get a vector of for each delay of what would have been added in this
-    # reference time, based on the indices nowcasted and the indices later
-    # observed
-    exp_to_add <- sapply(seq_len(ncol(trunc_matr_observed)),
-      .conditional_sum_cols,
-      matrix_bool1 = indices_nowcast,
-      matrix_bool2 = indices_observed,
-      matrix_to_sum = nowcast_i
-    )
-    # Get a vector for each delay of what was observed using the truncated
-    # observed matrix
-    to_add <- sapply(seq_len(ncol(trunc_matr_observed)),
-      .conditional_sum_cols,
-      matrix_bool1 = indices_nowcast,
-      matrix_bool2 = indices_observed,
-      matrix_to_sum = trunc_matr_observed
-    )
-    # Create a dataframe to what would have been added at each delay for
-    # each t delay ago.
-    df_i <- data.frame(
-      exp_to_add = exp_to_add,
-      to_add = to_add,
-      t = i,
-      d = seq_len(n_horizons) - 1
-    )
-    if (i == 1) {
-      df_exp_obs <- df_i
-    } else {
-      df_exp_obs <- rbind(df_exp_obs, df_i)
+    max_t <- nrow(trunc_matr_observed)
+    # Take the reporting triangle and look at one row at a time, which
+    # corresponds to one horizon
+    for (d in 1:n_horizons) {
+      obs_row <- trunc_matr_observed[max_t - d + 1, ]
+      nowcast_row <- nowcast_i[max_t - d + 1, ]
+      indices_nowcast <- is.na(replace_lower_right_with_NA(
+        trunc_matr_observed
+      ))[max_t - d + 1, ]
+      indices_observed <- !is.na(trunc_matr_observed)[max_t - d + 1, ]
+      exp_to_add[i, d] <- sum(nowcast_row *
+        indices_nowcast * indices_observed)
+      to_add_already_observed[i, d] <- sum(
+        obs_row * indices_nowcast * indices_observed,
+        na.rm = TRUE
+      )
     }
   }
 
-  # Separate step which uses the dataframe that compares the expected values to
-  # add and the values observed at each reference time and delay to estimate
-  # the dispersion (we could make this a separate function).
-  disp_params <- vector(length = n_horizons - 1)
-  for (i in seq_len(n_horizons - 1)) {
-    obs_temp <- df_exp_obs$to_add[df_exp_obs$d == i]
-    mu_temp <- df_exp_obs$exp_to_add[df_exp_obs$d == i] + 0.1
+  # Estimate the dispersion as a function of horizon across retrospective
+  # nowcast dates
+  disp_params <- vector(length = n_horizons)
+  for (i in seq_len(n_horizons)) {
+    obs_temp <- to_add_already_observed[, i]
+    mu_temp <- exp_to_add[, i] + 0.1
     disp_params[i] <- .fit_nb(x = obs_temp, mu = mu_temp)
   }
 
@@ -218,6 +205,8 @@ estimate_dispersion <- function(
   if (length(x) == 0) {
     return(NA)
   }
+  # Check that all observations are integers
+  assert_integerish(x)
   nllik <- function(size) {
     nll <- -sum(dnbinom(x = x, mu = mu, size = size, log = TRUE), na.rm = TRUE)
     return(nll)

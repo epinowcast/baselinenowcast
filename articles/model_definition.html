@@ -326,28 +326,34 @@ E(x_t | z, \delta) = \hat{x}_t = \frac{z + 1 - \delta}{\delta}
 <p>From the <span class="math inline">\(M\)</span> reporting triangles, we apply the method described above to estimate a delay distribution from a reporting triangle and generate a point nowcast for each reporting triangle, to generate <span class="math inline">\(M\)</span> point nowcasts. The function <code>generate_point_nowcasts()</code> ingests the list of reporting triangles, estimates a delay distribution for each, and generates a list of point nowcast matrices.</p>
 </div>
 <div class="section level3" number="4.3">
-<h3 id="fit-point-nowcast-matrices-and-observed-values-to-a-negative-binomial-observation-model-at-each-delay">
-<span class="header-section-number">4.3</span> Fit point nowcast matrices and observed values to a negative binomial observation model at each delay<a class="anchor" aria-label="anchor" href="#fit-point-nowcast-matrices-and-observed-values-to-a-negative-binomial-observation-model-at-each-delay"></a>
+<h3 id="fit-predicted-point-nowcast-vectors-and-observed-counts-to-a-negative-binomial-observation-model-at-each-forecast-horizon">
+<span class="header-section-number">4.3</span> Fit predicted point nowcast vectors and observed counts to a negative binomial observation model at each forecast horizon<a class="anchor" aria-label="anchor" href="#fit-predicted-point-nowcast-vectors-and-observed-counts-to-a-negative-binomial-observation-model-at-each-forecast-horizon"></a>
 </h3>
-<p>We then take the list of point nowcast matrices, and the list of truncated incomplete reporting matrices (these do not necessarily contains NAs on the bottom right, the bottom right could be entirely or partially observed). For each delay <span class="math inline">\(d\)</span> we identify the overlapping set of matrix elements that were imputed retrospectively and matrix elements that had been observed as of the most recent time point.</p>
-<p>For each delay <span class="math inline">\(d = 1, ..., D\)</span> we assume that the observed values, <span class="math inline">\(X_{s^*-d, &gt;d}\)</span> follow a negative binomial observation model with a mean of <span class="math inline">\(\hat{x}_{s^*-d}\)</span>:</p>
-<p><span class="math display">\[
-X_{s^*-d,&gt;d} | \hat{x}_{s^*-d, &gt;d}(s*) \sim NegBin(\mu = \hat{x}_{s^*-d} + 0.1, \phi = \phi_d)
+<p>We take the list of point nowcast matrices, and the list of truncated incomplete reporting matrices (these do not necessarily contains NAs on the bottom right, the bottom right could be entirely or partially observed). For each retrospective nowcast time <span class="math inline">\(s^*\)</span>, we identify the overlapping set of matrix elements that were estimated and the matrix elements that had been observed as of the most recent time point.</p>
+<p>We choose to quantify the uncertainty at the level of the target quantity which is in this case assumed to be the final count at each reference time, summed across reporting delays. We estimate the dispersion by comparing the predicted counts summed across delays to the observed counts summed across delays, conditioned on the counts having been observed as of time <span class="math inline">\(t*\)</span>.</p>
+<p>At each retrospective nowcast time <span class="math inline">\(s^*\)</span>, we compute the predicted and corresponding observed nowcast at each forecast horizon <span class="math inline">\(j = 1, ..., D\)</span> by summing across the reporting delays for all delays <span class="math inline">\(d\)</span> that have been observed as of time <span class="math inline">\(t^*\)</span>, as indicated below by the indicator function. We define the predicted nowcast for forecast horizon <span class="math inline">\(j\)</span> at retrospective nowcast time <span class="math inline">\(s^*\)</span> <span class="math display">\[
+\hat{X}_{t-j}(s^*) = \sum_{d=0}^{D} \hat{X}_{t-j,d}(s^*) \times I(t-j+d \leq t^*)
+\]</span> and likewise the observed nowcast for forecast horizon <span class="math inline">\(j\)</span> at retrospective nowcast time <span class="math inline">\(s^*\)</span> <span class="math display">\[
+X_{t-j}(s^*) = \sum_{d=0}^{D} X_{t-j,d}(s^*) \times I(t-j+d \leq t^*)
 \]</span></p>
-<p>We add a small number (0.1) to the mean to avoid an ill-defined negative binomial. We note that to perform all these computations, data snapshots from at least <span class="math inline">\(N + M\)</span> past observations, or rows of the original reporting triangle (or matrix), are needed. This estimate of the uncertainty accounts for the empirical uncertainty in the point estimate of the delay distribution over time.</p>
-<p>The function <code><a href="../reference/estimate_dispersion.html">estimate_dispersion()</a></code> ingests a list of truncated reporting matrices representing the observations, and the list of point nowcast matrices, and returns a vector of negative binomial dispersion parameters indexed starting at delay <span class="math inline">\(d = 1\)</span>.</p>
+<p>This generates <span class="math inline">\(M\)</span> pairs of predicted nowcasts and observed nowcasts for each forecast horizon <span class="math inline">\(j = 1, ..., D\)</span>. We assume that the observed nowcasts <span class="math inline">\(X_{t-j}\)</span> follow a negative binomial observation model with a mean of <span class="math inline">\(\hat{X}_{t-j}(t^*-j)\)</span></p>
+<p><span class="math display">\[
+X_{t-j} | \hat{X}_{t-j}(t^* - j) \sim NegBin(\mu = \hat{X}_{t-j}(t^*-j) + 0.1, \phi = \phi_{t^*-t})
+\]</span> for all <span class="math inline">\(s^* = 1, ..., M\)</span>.</p>
+<p>We add a small number (0.1) to the mean to avoid an ill-defined negative binomial. We note that to perform all these computations, data snapshots from at least <span class="math inline">\(N + M\)</span> past observations, or rows of the original reporting triangle (or matrix), are needed.</p>
+<p>The function <code><a href="../reference/estimate_dispersion.html">estimate_dispersion()</a></code> ingests a list of truncated reporting matrices representing the observations, and the list of point nowcast matrices, and returns a vector of negative binomial dispersion parameters indexed starting at forecast horizon <span class="math inline">\(j = 1\)</span>.</p>
 </div>
 </div>
 <div class="section level2" number="5">
-<h2 id="generate-probabilistic-nowcast-matrices">
-<span class="header-section-number">5</span> Generate probabilistic nowcast matrices<a class="anchor" aria-label="anchor" href="#generate-probabilistic-nowcast-matrices"></a>
+<h2 id="generate-probabilistic-nowcasts">
+<span class="header-section-number">5</span> Generate probabilistic nowcasts<a class="anchor" aria-label="anchor" href="#generate-probabilistic-nowcasts"></a>
 </h2>
-<p>Using the dispersion parameters for each delay, <span class="math inline">\(\phi(d),\)</span> for <span class="math inline">\(d = 1,...D\)</span>, we can generate probabilistic nowcast matrices by drawing samples from the negative binomial:</p>
+<p>Using the dispersion parameters for each forecast horizon, <span class="math inline">\(\phi(j),\)</span> for <span class="math inline">\(j = 1,...D\)</span>, we can generate probabilistic nowcast matrices by drawing samples from the negative binomial:</p>
 <p><span class="math display">\[
-X_{t,d} \sim NegBin(\mu = \hat{x}_{t,d}, \phi = \phi(d))
+X_{t^*-j} \sim NegBin(\mu = \hat{X}_{t^*-j}, \phi = \phi(j))
 \]</span></p>
 <p>We can sample for any number of draws, and then use the draws to compute any desired quantiles to summarize the outputs.</p>
-<p>The function <code>add_obs_errs_to_pt_nowcast_mat()</code> ingests a point nowcast matrix, the dispersion parameters, and the number of draws to sample and generates a list of point nowcast matrices. This can then be summarized across delays by passing the list to <code><a href="../reference/nowcast_matrix_list_to_df.html">nowcast_matrix_list_to_df()</a></code> and summarised by reference time using <code>aggregate_by_ref_time()</code>.</p>
+<p>The function <code><a href="../reference/get_nowcast_pred_draws.html">get_nowcast_pred_draws()</a></code> ingests a point nowcast prediction matrix (containing only the predicted elements, not the observations in the reporting triangle), the dispersion parameters, and the number of draws to sample and generates a dataframe of predicted point nowcasts for each reference time. We can then join this to the original data in long form by reference date and reporting date in order to generate the probabilistic nowcasts as the sum of the predicted total count from each draw and the observed count for each reference time as of the final reference time.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

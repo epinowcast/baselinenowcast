@@ -8,10 +8,12 @@
 </script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Estimate dispersion parameters — estimate_dispersion"><meta name="description" content="This function ingests a list of point nowcast matrices and a corresponding
 list of truncated reporting matrices and uses both to estimate a
 vector of negative binomial dispersion parameters from the observations
-and estimates at each delay, starting at delay = 1."><meta property="og:description" content="This function ingests a list of point nowcast matrices and a corresponding
+and estimates at each horizon, starting at 0 up until the max delay
+number of horizons."><meta property="og:description" content="This function ingests a list of point nowcast matrices and a corresponding
 list of truncated reporting matrices and uses both to estimate a
 vector of negative binomial dispersion parameters from the observations
-and estimates at each delay, starting at delay = 1."></head><body>
+and estimates at each horizon, starting at 0 up until the max delay
+number of horizons."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -61,7 +63,8 @@ and estimates at each delay, starting at delay = 1."></head><body>
     <p>This function ingests a list of point nowcast matrices and a corresponding
 list of truncated reporting matrices and uses both to estimate a
 vector of negative binomial dispersion parameters from the observations
-and estimates at each delay, starting at delay = 1.</p>
+and estimates at each horizon, starting at 0 up until the max delay
+number of horizons.</p>
     </div>
 
     <div class="section level2">
@@ -126,7 +129,7 @@ of the dispersion parameter for each delay d, starting at delay d=1.</p>
 <span class="r-in"><span>  n <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">disp_params</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 999.99993 121.64191   1.73644</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 999.999935   5.141440   3.181066</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

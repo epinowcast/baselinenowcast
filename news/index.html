@@ -52,7 +52,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.0.1000" id="baselinenowcast-0001000">baselinenowcast 0.0.0.1000<a class="anchor" aria-label="anchor" href="#baselinenowcast-0001000"></a></h2>
-<ul><li>Standardises naming of objects that are matrices vs vectors and objects that contain observations, point estimates, and probabilistic draws.</li>
+<ul><li>Removes requirement that all elements of the reporting triangle are integers.</li>
+<li>Modify the method used to estimate dispersion. Instead of estimating dispersion on individual elements of the nowcast matrix, we now estimate dispersion on the predicted nowcasts summed across reporting dates as a function of forecast horizon.</li>
+<li>Standardises naming of objects that are matrices vs vectors and objects that contain observations, point estimates, and probabilistic draws.</li>
 <li>Modifies functions that estimate a delay and generate a point nowcast to ensure that they throw an error/warning if the first element of the delay PMF is 0.</li>
 <li>Adjusts function to estimate delay distribution to be able to handle complete and partially complete reporting triangles.</li>
 <li>Add function to convert a list of expected observed reporting squares to a long tidy dataframe indexed by reference time, delay, and a sample index.</li>

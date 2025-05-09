@@ -62,18 +62,6 @@
 
       <dl><dt>
 
-          <code><a href="add_uncertainty.html">add_uncertainty()</a></code>
-
-        </dt>
-        <dd>Add observation errors to nowcasts</dd>
-      </dl><dl><dt>
-
-          <code><a href="aggregate_df_by_ref_time.html">aggregate_df_by_ref_time()</a></code>
-
-        </dt>
-        <dd>Summarise a dataframe containing draws of reporting squares</dd>
-      </dl><dl><dt>
-
           <code><a href="apply_delay.html">apply_delay()</a></code>
 
         </dt>
@@ -84,6 +72,12 @@
 
         </dt>
         <dd>Estimate dispersion parameters</dd>
+      </dl><dl><dt>
+
+          <code><a href="extract_predictions.html">extract_predictions()</a></code>
+
+        </dt>
+        <dd>Extract from one matrix only elements that are missing in another</dd>
       </dl><dl><dt>
 
           <code><a href="generate_pt_nowcast_mat.html">generate_pt_nowcast_mat()</a></code>
@@ -116,22 +110,16 @@
         <dd>Estimate a delay distribution from a reporting triangle Provides an estimate of the reporting delay as a function of the delay, based on the reporting triangle and the specified maximum delay and number of reference date observations to be used in the estimation. This point estimate of the delay is computed empirically, using an iterative algorithm starting from the most recent observations. This code was adapted from code written (under an MIT license) by the Karlsruhe Institute of Technology RESPINOW German Hospitalization Nowcasting Hub. Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint</dd>
       </dl><dl><dt>
 
-          <code><a href="get_nowcast_mat_draw.html">get_nowcast_mat_draw()</a></code>
+          <code><a href="get_nowcast_pred_draw.html">get_nowcast_pred_draw()</a></code>
 
         </dt>
-        <dd>Get a probabilistic draw from the observation model</dd>
+        <dd>Get a draw of only the predicted elements of the nowcast vector</dd>
       </dl><dl><dt>
 
-          <code><a href="nowcast_matrix_list_to_df.html">nowcast_matrix_list_to_df()</a></code>
+          <code><a href="get_nowcast_pred_draws.html">get_nowcast_pred_draws()</a></code>
 
         </dt>
-        <dd>Generate probabilistic nowcast dataframe</dd>
-      </dl><dl><dt>
-
-          <code><a href="nowcast_matrix_to_df.html">nowcast_matrix_to_df()</a></code>
-
-        </dt>
-        <dd>Convert a reporting square matrix to a long data frame</dd>
+        <dd>Get a dataframe of multiple draws of only the predicted elements of the nowcast vector</dd>
       </dl><dl><dt>
 
           <code><a href="replace_lower_right_with_NA.html">replace_lower_right_with_NA()</a></code>

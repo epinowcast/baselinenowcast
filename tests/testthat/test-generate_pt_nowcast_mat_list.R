@@ -66,7 +66,8 @@ test_that("generate_pt_nowcast_mat_list takes in delay_pmf as vector or list", {
   ))
 })
 
-test_that("generate_pt_nowcast_mat_list default n_history_delay uses minimum rows", {
+test_that(
+  "generate_pt_nowcast_mat_list default n_history_delay uses minimum rows", {
   # Input matrices have 7 and 7 rows → min = 6
   result_default <- generate_pt_nowcast_mat_list(
     reporting_triangle_list = retro_rts_list

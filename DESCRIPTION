@@ -30,7 +30,7 @@ Description: Nowcasting right-truncated epidemiological data is critical
   to be used as a baseline method for developers of new nowcasting methods. It
   supports standard data frame inputs with reference date, report date, and
   count columns, is compatible with 'epinowcast' objects, and also supports
-  direct use of reporting matrices and triangles. Alongside an default workflow,
+  direct use of reporting triangles. Alongside an opinionated default workflow,
   it has a low-level pipe-friendly modular interface that allows for context
   specific workflows. It can accommodate a wide spectrum of reporting schedules
   including mixed patterns (daily-to-weekly, weekly-to-daily) and supports

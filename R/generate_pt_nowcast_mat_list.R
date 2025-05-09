@@ -85,6 +85,17 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
     }
   })
 
+
+  non_null_indices <- which(!sapply(pt_nowcast_mat_list, is.null))
+  if (length(non_null_indices) == 0) {
+    cli_abort(
+      message = c(
+        "No retrospective point nowcast matrices were generated from the ",
+        "`reporting_triangle_list`. Consider passing in separate delay PMFs"
+      )
+    )
+  }
+
   return(pt_nowcast_mat_list)
 }
 

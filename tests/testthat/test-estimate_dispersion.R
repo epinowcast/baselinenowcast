@@ -41,7 +41,7 @@ valid_trunc_rts <- list(
   test_triangle[1:5, ],
   test_triangle[1:4, ]
 )
-### Test 1: Basic Functionality ------------------------------------------------
+
 test_that("Basic functionality with valid inputs", {
   result <- estimate_dispersion(
     pt_nowcast_mat_list = valid_nowcasts,
@@ -55,14 +55,14 @@ test_that("Basic functionality with valid inputs", {
   expect_true(all(is.finite(result)))
 })
 
-### Test 2: Default Parameter Handling -----------------------------------------
+
 test_that("Default n parameter works correctly", {
   result_default <- estimate_dispersion(valid_nowcasts, valid_trunc_rts)
   result_explicit <- estimate_dispersion(valid_nowcasts, valid_trunc_rts, n = 2)
   expect_identical(result_default, result_explicit)
 })
 
-### Test 3: Error Conditions ---------------------------------------------------
+
 test_that("Error conditions are properly handled", {
   # Invalid input types
   expect_error(estimate_dispersion(list("not_a_matrix"), valid_trunc_rts))
@@ -81,7 +81,7 @@ test_that("Error conditions are properly handled", {
   expect_error(estimate_dispersion(valid_nowcasts, valid_trunc_rts, n = 3))
 })
 
-### Test 4: Edge Cases ---------------------------------------------------------
+
 test_that("Edge cases are handled properly", {
   # Empty lists
   expect_error(estimate_dispersion(list(), list(), n = 0))
@@ -92,7 +92,7 @@ test_that("Edge cases are handled properly", {
   expect_error(estimate_dispersion(na_nowcasts, na_trunc, n = 2))
 })
 
-### Test 5: Dimension Validation -----------------------------------------------
+
 test_that("Matrix dimension validation works", {
   # Mismatched dimensions between nowcasts and trunc_rts
   bad_trunc_rts <- list(
@@ -104,7 +104,7 @@ test_that("Matrix dimension validation works", {
   )
 })
 
-## Test 6: fit_nb returns NA if nothing passed to it---------------------------
+
 test_that("Passing in empty vector returns NA", {
   x <- NULL
   NA_result <- .fit_nb(x, mu = 1)
@@ -113,8 +113,12 @@ test_that("Passing in empty vector returns NA", {
 
 test_that("Passing in a NULL for a nowcast still returns an estimate", {
   nowcasts_with_null <- list(nowcast1, NULL)
-  # This currently breaks because we check that these are the same size.
-  # Do we want to violate this or have an upstream filter that removes the list
-  # elements that are NULL and then checks (this seems better)
-  estimate_dispersion(nowcasts_with_null, valid_trunc_rts)
+  # This should work, using only the first nowcast and first valid_trunc_rts
+  result1 <- estimate_dispersion(nowcasts_with_null, valid_trunc_rts)
+  result_to_compare <- estimate_dispersion(list(nowcast1), list(valid_trunc_rts[[1]]))
+  expect_identical(result1, result_to_compare)
+})
+
+test_that("Passing in only NULLs for nowcasts returns an error", {
+  expect_error(estimate_dispersion(list(NULL, NULL), valid_trunc_rts))
 })

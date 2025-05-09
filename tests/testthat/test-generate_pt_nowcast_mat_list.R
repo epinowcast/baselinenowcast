@@ -119,32 +119,6 @@ test_that("Identical-sized matrices work", {
 })
 
 test_that("Function handles a single triangle with 0s for first column appropriately", { # nolint
-  triangle1 <- matrix(
-    c(
-      65, 46, 21, 7,
-      70, 40, 20, 5,
-      80, 50, 10, 10,
-      100, 40, 31, 20,
-      95, 45, 21, NA,
-      82, 42, NA, NA,
-      70, NA, NA, NA
-    ),
-    nrow = 7,
-    byrow = TRUE
-  )
-
-  triangle2 <- matrix(
-    c(
-      65, 46, 21, 7,
-      70, 40, 20, 5,
-      80, 50, 10, 10,
-      100, 40, 31, NA,
-      95, 45, NA, NA,
-      82, NA, NA, NA
-    ),
-    nrow = 6,
-    byrow = TRUE
-  )
 
   triangle3 <- matrix(
     c(
@@ -158,7 +132,28 @@ test_that("Function handles a single triangle with 0s for first column appropria
     byrow = TRUE
   )
 
-  retro_rts_list <- list(triangle1, triangle2, triangle3)
+  retro_rts_list <- list(test_triangle1, test_triangle2, triangle3)
+
+  result <- generate_pt_nowcast_mat_list(retro_rts_list)
+
+  expect_identical(result[[3]], NULL)
+})
+
+test_that("Function errors if only contains triangles with first column 0", { # nolint
+
+  triangle3 <- matrix(
+    c(
+      0, 40, 20, 5,
+      0, 50, 10, 10,
+      0, 40, 31, NA,
+      0, 45, NA, NA,
+      0, NA, NA, NA
+    ),
+    nrow = 5,
+    byrow = TRUE
+  )
+
+  retro_rts_list <- list(test_triangle1, test_triangle2, triangle3)
 
   result <- generate_pt_nowcast_mat_list(retro_rts_list)
 

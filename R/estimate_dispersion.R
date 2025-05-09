@@ -73,10 +73,20 @@ estimate_dispersion <- function(
 
   assert_integerish(n, lower = 0)
 
-  # Truncate to only n nowcasts
-  # Do something here to exclude any elements for which the nowcast is NULL
-  list_of_ncs <- pt_nowcast_mat_list[1:n]
-  list_of_obs <- trunc_rep_mat_list[1:n]
+  # Truncate to only n nowcasts and extract only non-null elements of both lists
+  non_null_indices <- which(!sapply(pt_nowcast_mat_list[1:n], is.null))
+  n_iters <- length(non_null_indices)
+  list_of_ncs <- pt_nowcast_mat_list[non_null_indices]
+  list_of_obs <- trunc_rep_mat_list[non_null_indices]
+  if (n_iters == 0) {
+    cli_abort(
+      message = c(
+        "No retrospective nowcasts were generated, therefore ",
+        "uncertainty can not be estimated using the reporting ",
+        "triangle passed in"
+      )
+    )
+  }
 
   # Check that nowcasts has no NAs, trunc_rts has some NAs
   if (any(sapply(list_of_ncs, anyNA))) {
@@ -109,7 +119,7 @@ estimate_dispersion <- function(
   # value corresponding to that horizon -- the total expected value to add
   exp_to_add <-
     to_add_already_observed <- matrix(NA, nrow = n, ncol = n_horizons)
-  for (i in seq_len(n)) { # Seq along retrospective forecast dates
+  for (i in seq_len(n_iters)) { # Seq along retrospective forecast dates
     # Rretrospective nowcast as of i delays ago
     nowcast_i <- list_of_ncs[[i]]
     # Remove the last i observations

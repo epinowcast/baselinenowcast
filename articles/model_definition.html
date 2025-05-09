@@ -189,25 +189,22 @@
 <tr class="odd">
 <td><strong>Matrix Format</strong></td>
 <td>
-<code>reporting_matrix</code> (complete)<br><code>reporting_triangle</code> (incomplete)<br><code>incomplete_reporting_matrix</code>
-</td>
+<code>reporting_matrix</code> (complete with observations)<br><code>reporting_triangle</code> (contains NAs for missing observations)</td>
 <td>
 <code>point_nowcast_matrix</code><br><code>nowcast_matrix</code>
 </td>
 <td>
-<code>point_pred_matrix</code><br><code>pred_matrix</code>
-</td>
+<code>point_pred_matrix</code><br><code>pred_matrix</code> (contains NAs in elements where there were observations)</td>
 </tr>
 <tr class="even">
 <td><strong>List Format</strong></td>
 <td>
-<code>reporting_matrix_list</code> (complete)<br><code>reporting_triangle_list</code> (incomplete)<br><code>incomplete_reporting_matrix_list</code>
-</td>
+<code>reporting_matrix_list</code> (complete)<br><code>reporting_triangle_list</code> (contains NAs for missing observations)</td>
 <td><code>nowcast_matrix_list</code></td>
 <td><code>pred_matrix_list</code></td>
 </tr>
 <tr class="odd">
-<td><strong>Vector Format</strong></td>
+<td><strong>Vector Format (summed across delays)</strong></td>
 <td><code>observed_cases</code></td>
 <td>
 <code>point_nowcast</code><br><code>nowcast</code>
@@ -225,6 +222,7 @@
 </tbody>
 </table>
 <p>For example, we refer to the matrix with imputed point estimates for all <span class="math inline">\(t+d&gt;t^*\)</span> as a point nowcast matrix, a matrix with a complete set of observations for all elements as a reporting matrix, and a matrix with only the predictions as a point prediction matrix.</p>
+<p>In package documentation, we will generally use a reporting triangle to refer to a diagonal reporting triangle, which is the special case of a reporting triangle where the reporting delays and reference times are indexed on the same scale. An example of a diagonal reporting triangle is one with daily reporting of daily data. The package also supports what we refer to as a ragged reporting triangle, an example of which would be daily reporting of data referenced only once per week.</p>
 <p>We will use the following to abbreviations to shorten names in the code:</p>
 <table class="table">
 <thead><tr class="header">
@@ -281,10 +279,10 @@
 <p>In the case where we have missing values in the bottom right (i.e. we have a reporting triangle), we need to use the multiplicative model to generate a point nowcast matrix containing a mixture of observed and imputed values. Then we can compute the delay distribution as described above for the reporting matrix case.</p>
 <p>The multiplicative model works by iteratively “filling in” the reporting triangle starting from the bottom left, and moving column by column from left to right until the bottom right of the triangle is filled in.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#nolint start</span></span>
+<code class="sourceCode R"><span><span class="co"># nolint start</span></span>
 <span><span class="co">#| echo = FALSE,</span></span>
 <span><span class="co">#| fig.cap = 'Visual description of the iterative “completing” of the reporting triangle, moving from left to right and bottom to top. In this cases, we are imputing $x_{t=6, d = 2}$ and $x_{t=5, d= 2}$ assuming that the ratio between $x_{t=1:4, d = 2}$ (block top), and $x_{t=1:4, d=0:1}$ (block top left) holds for for $x_{t=5:6, d = 2}$ (block bottom) and $x_{t=5:6, d = 0:1}$ (block bottom left). In this example, $\\hat{x}_{t=6, d = 1}$ has already been imputed using the same approach, and we treat it as known going forward. This process is repeated across the reporting triangle to estimate all values outlined in the dashed lines.'</span></span>
-<span><span class="co">#nolint end</span></span>
+<span><span class="co"># nolint end</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">".."</span>, <span class="st">"man"</span>, <span class="st">"figures"</span>, <span class="st">"schematic_fig.png"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="../reference/figures/schematic_fig.png"><!-- --></p>
 <p>The method requires at least one observation, at delay <span class="math inline">\(d=0\)</span> for the most recent reference time, located at the bottom left of the reporting triangle in Figure <a href="#fig:squares"><strong>??</strong></a> above. The method assumes that the values at each delay <span class="math inline">\(d\)</span> for the recent times, <span class="math inline">\(t\)</span>, will consist of the same proportion of the values previously reported for earlier times <span class="math inline">\(t\)</span>. To fill in the missing values for each column <span class="math inline">\(d\)</span>, we sum over the rectangle of completely observed reference dates for all <span class="math inline">\(d-1\)</span> columns (block top left) and sum over the column of completely observed reference dates for all of the entries in column <span class="math inline">\(d\)</span> (block left). The ratio of these two sums is assumed to be the same in the missing entries in column <span class="math inline">\(d\)</span>, so we use the entries observed up to <span class="math inline">\(d-1\)</span> for each incomplete reference date (block bottom left), and scale by this ratio to get the missing entries in column <span class="math inline">\(d\)</span>. This process is repeated for each delay from <span class="math inline">\(d\)</span> up to the maximum delay <span class="math inline">\(D\)</span>. At each iteration an additional reference time entry is computed as the delay <span class="math inline">\(d\)</span> increases.</p>

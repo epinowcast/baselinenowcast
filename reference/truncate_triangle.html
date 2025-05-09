@@ -60,7 +60,7 @@ a truncated reporting triangle, remove the last <code>t</code> observations.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">truncate_triangle</span><span class="op">(</span><span class="va">t</span>, <span class="va">matr_observed</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">truncate_triangle</span><span class="op">(</span><span class="va">t</span>, <span class="va">rep_tri</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -72,7 +72,7 @@ a truncated reporting triangle, remove the last <code>t</code> observations.</p>
 bottom of the original reporting triangle.</p></dd>
 
 
-<dt id="arg-matr-observed">matr_observed<a class="anchor" aria-label="anchor" href="#arg-matr-observed"></a></dt>
+<dt id="arg-rep-tri">rep_tri<a class="anchor" aria-label="anchor" href="#arg-rep-tri"></a></dt>
 <dd><p>Matrix of the reporting triangle/matrix
 to be used to generate retrospective nowcast matrices, with rows
 representing the time points of reference and columns representing the
@@ -81,7 +81,7 @@ delays.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Matrix with <code>t</code> fewer rows than <code>matr_observed</code>.</p>
+    <p>Matrix with <code>t</code> fewer rows than <code>rep_tri</code>.</p>
     </div>
 
     <div class="section level2">
@@ -101,7 +101,7 @@ delays.</p></dd>
 <span class="r-in"><span>  byrow <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">trunc_rep_tri</span> <span class="op">&lt;-</span> <span class="fu">truncate_triangle</span><span class="op">(</span>t <span class="op">=</span> <span class="fl">1</span>, matr_observed <span class="op">=</span> <span class="va">triangle</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">trunc_rep_tri</span> <span class="op">&lt;-</span> <span class="fu">truncate_triangle</span><span class="op">(</span>t <span class="op">=</span> <span class="fl">1</span>, rep_tri <span class="op">=</span> <span class="va">triangle</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">trunc_rep_tri</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   65   46   21    7</span>

@@ -136,6 +136,23 @@ replace_lower_right_with_NA <- function(matrix, structure = 1) {
   return(TRUE)
 }
 
+#' Safe iterator
+#'
+#' @param fun Function to wrap around
+#'
+#' @returns Function that will return a NULL if an error occurs
+.safelydoesit <- function(fun) {
+  stopifnot(is.function(fun))
+  return(
+    function(...) {
+      tryCatch(
+        list(result = fun(...), error = NULL),
+        error = function(e) list(result = NULL, error = e)
+      )
+    }
+  )
+}
+
 #' Extract from one matrix only elements that are missing in another
 #'
 #' @param pt_nowcast_mat Matrix containing a mix of predicted and observed

@@ -6,11 +6,10 @@ test_that(".validate_delay_and_triangle valid inputs pass validation", {
   expect_no_error(.validate_delay_and_triangle(valid_triangle, valid_delay_pmf))
 })
 
-test_that(".validate_delay_and_triangle non-integer values in triangle cause error", {
+test_that(".validate_delay_and_triangle accepts non-integer values", {
   non_integer_triangle <- matrix(c(1, 2.5, 3, 4), nrow = 2, ncol = 2)
-  expect_error(
-    .validate_delay_and_triangle(non_integer_triangle, c(0.6, 0.4)),
-    "Assertion on 'triangle' failed: Must be of type 'integerish'"
+  expect_no_error(
+    .validate_delay_and_triangle(non_integer_triangle, c(0.6, 0.4))
   )
 })
 

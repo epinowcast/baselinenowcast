@@ -45,7 +45,7 @@ valid_trunc_rts <- list(
 test_that("Basic functionality with valid inputs", {
   result <- estimate_dispersion(
     pt_nowcast_mat_list = valid_nowcasts,
-    trunc_rep_mat_list = valid_trunc_rts,
+    trunc_rep_tri_list = valid_trunc_rts,
     n = 2
   )
 
@@ -79,6 +79,21 @@ test_that("Error conditions are properly handled", {
   expect_error(estimate_dispersion(valid_nowcasts, valid_trunc_rts, n = -1))
   expect_error(estimate_dispersion(valid_nowcasts, valid_trunc_rts, n = 1.5))
   expect_error(estimate_dispersion(valid_nowcasts, valid_trunc_rts, n = 3))
+
+  # pt nowcast contains NAs (use trunc rts) or is empty
+  expect_error(estimate_dispersion(valid_trunc_rts, valid_trunc_rts))
+  expect_error(estimate_dispersion(list(), valid_trunc_rts))
+
+  # trunc rep mat list does not contain NAs (use pt nowcasts)
+  expect_error(estimate_dispersion(valid_nowcasts, list()))
+
+  # observations contain non-integers
+  test_triangle_decimal <- test_triangle + 0.1
+  non_integer_trunc_rts <- list(
+    test_triangle_decimal[1:5, ],
+    test_triangle_decimal[1:4, ]
+  )
+  expect_error(estimate_dispersion(valid_nowcasts, non_integer_trunc_rts))
 })
 
 

@@ -33,7 +33,7 @@ $$X_{t,>d} = \sum_{i = d+1} ^{D} X_{t,i}$$
 is the number of cases still missing after $d$ delay. We refer to $X_t$ to describe a random variable, $x_t$ for the corresponding observation, and $\hat{x}_t$ for an estimated/imputed value. The matrix of $x_{t,d}$ available at a given time $t^*$ is referred to as a reporting matrix. In the case where all $t+d>t^*$ have yet to be observed (e.g. $t^*$ is the current time), this reporting matrix is referred to as the reporting triangle, with all values in the bottom right corner of the triangle being missing, except for the first entry at $x_{t=t*, d = 0}$.
 
 |   | $d = 0$ | $d = 1$ | $d=2$ | $...$ | $d= D-1$ | $d= D$ |
-|----|----|----|----|----|----|----|
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
 | $t=1$ | $x_{1,0}$ | $x_{1,1}$ | $x_{1,2}$ | $...$ | $x_{1,D-1}$ | $x_{1, D}$ |
 | $t=2$ | $x_{2,0}$ | $x_{2,1}$ | $x_{2,2}$ | $...$ | $x_{2,D-1}$ | $x_{2, D}$ |
 | $t=3$ | $x_{3,0}$ | $x_{3,1}$ | $x_{3,2}$ | $...$ | $x_{3,D-1}$ | $x_{3, D}$ |
@@ -44,13 +44,15 @@ is the number of cases still missing after $d$ delay. We refer to $X_t$ to descr
 Throughout this document and package, we will refer to these matrices, as well as their corresponding vectors, using the following table. In this table, "point" refers to a point estimate. When not indicated, we are referring to a probabilistic draw from an observation model.
 
 | **Data Structure** | **Observations Only** | **Mixed (Obs + Predictions)** | **Pure Predictions Only** |
-|----|----|----|----|
-| **Matrix Format** | `reporting_matrix` (complete)<br>`reporting_triangle` (incomplete)<br>`incomplete_reporting_matrix` | `point_nowcast_matrix`<br>`nowcast_matrix` | `point_pred_matrix`<br>`pred_matrix` |
-| **List Format** | `reporting_matrix_list` (complete)<br>`reporting_triangle_list` (incomplete)<br>`incomplete_reporting_matrix_list` | `nowcast_matrix_list` | `pred_matrix_list` |
-| **Vector Format** | `observed_cases` | `point_nowcast`<br>`nowcast` | `point_pred`<br>`pred` |
+|------------------|------------------|------------------|------------------|
+| **Matrix Format** | `reporting_matrix` (complete with observations)<br>`reporting_triangle` (contains NAs for missing observations) | `point_nowcast_matrix`<br>`nowcast_matrix` | `point_pred_matrix`<br>`pred_matrix`  (contains NAs in elements where there were observations) |
+| **List Format** | `reporting_matrix_list` (complete)<br>`reporting_triangle_list` (contains NAs for missing observations) | `nowcast_matrix_list` | `pred_matrix_list` |
+| **Vector Format (summed across delays)** | `observed_cases` | `point_nowcast`<br>`nowcast` | `point_pred`<br>`pred` |
 | **DataFrame Format** | \- | `nowcast_df` | `pred_df` |
 
 For example, we refer to the matrix with imputed point estimates for all $t+d>t^*$ as a point nowcast matrix, a matrix with a complete set of observations for all elements as a reporting matrix, and a matrix with only the predictions as a point prediction matrix.
+
+In package documentation, we will generally use a reporting triangle to refer to a diagonal reporting triangle, which is the special case of a reporting triangle where the reporting delays and reference times are indexed on the same scale. An example of a diagonal reporting triangle is one with daily reporting of daily data. The package also supports what we refer to as a ragged reporting triangle, an example of which would be daily reporting of data referenced only once per week.
 
 We will use the following to abbreviations to shorten names in the code:
 
@@ -82,10 +84,10 @@ In the case where we have missing values in the bottom right (i.e. we have a rep
 The multiplicative model works by iteratively "filling in" the reporting triangle starting from the bottom left, and moving column by column from left to right until the bottom right of the triangle is filled in.
 
 ```{r squares}
-#nolint start
+# nolint start
 #| echo = FALSE,
 #| fig.cap = 'Visual description of the iterative “completing” of the reporting triangle, moving from left to right and bottom to top. In this cases, we are imputing $x_{t=6, d = 2}$ and $x_{t=5, d= 2}$ assuming that the ratio between $x_{t=1:4, d = 2}$ (block top), and $x_{t=1:4, d=0:1}$ (block top left) holds for for $x_{t=5:6, d = 2}$ (block bottom) and $x_{t=5:6, d = 0:1}$ (block bottom left). In this example, $\\hat{x}_{t=6, d = 1}$ has already been imputed using the same approach, and we treat it as known going forward. This process is repeated across the reporting triangle to estimate all values outlined in the dashed lines.'
-#nolint end
+# nolint end
 knitr::include_graphics(file.path("..", "man", "figures", "schematic_fig.png"))
 ```
 

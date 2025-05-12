@@ -82,7 +82,7 @@ generate_triangles <- function(reporting_triangle_list, structure = 1) {
 #'   byrow = TRUE
 #' )
 #'
-#' Standard triangular structure (default)
+#' # Standard triangular structure (default)
 #' rep_tri <- generate_triangle(triangle)
 #' rep_tri
 #'

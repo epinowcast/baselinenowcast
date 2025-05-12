@@ -43,7 +43,8 @@ test_that(
     expect_identical(dim(retro_triangles[[1]]), c(7L, 4L))
     expect_identical(dim(retro_triangles[[2]]), c(6L, 4L))
 
-    # Test 4: Check if the content of the first retrospective triangle is correct
+    # Test 4: Check if the content of the first retrospective triangle is
+    # correct
     expect_identical(
       retro_triangles[[1]],
       generate_triangle(triangle1)

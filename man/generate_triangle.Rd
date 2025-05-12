@@ -39,7 +39,7 @@ triangle <- matrix(
   byrow = TRUE
 )
 
-Standard triangular structure (default)
+# Standard triangular structure (default)
 rep_tri <- generate_triangle(triangle)
 rep_tri
 

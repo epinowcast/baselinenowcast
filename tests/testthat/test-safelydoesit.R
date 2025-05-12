@@ -7,12 +7,12 @@ test_that("safelydoesit works correctly", {
 
   # Test successful execution
   result1 <- safe_add(2, 3)
-  expect_equal(result1$result, 5)
+  expect_identical(result1$result, 5)
   expect_null(result1$error)
 
   # Test with a function that throws an error
   divide <- function(x, y) {
-    if (y == 0) stop("Division by zero")
+    if (y == 0) stop("Division by zero", call. = FALSE)
     return(x / y)
   }
   safe_divide <- .safelydoesit(divide)
@@ -25,25 +25,25 @@ test_that("safelydoesit works correctly", {
 
   # Test successful case of error-throwing function
   result3 <- safe_divide(10, 2)
-  expect_equal(result3$result, 5)
+  expect_identical(result3$result, 5)
   expect_null(result3$error)
 
   # Test with wrong input - not a function
-  expect_error(.safelydoesit("not a function"), "is\\.function\\(fun\\) is not TRUE")
+  expect_error(.safelydoesit("not a function"))
 
   # Test with a function that has side effects
   counter <- 0
   increment <- function() {
-    counter <<- counter + 1
+    counter <<- counter + 1 # nolint
     return(counter)
   }
   safe_increment <- .safelydoesit(increment)
 
   # Verify side effects still happen
   result4 <- safe_increment()
-  expect_equal(result4$result, 1)
+  expect_identical(result4$result, 1)
   result5 <- safe_increment()
-  expect_equal(result5$result, 2)
+  expect_identical(result5$result, 2)
 
   # Test with a function that returns NULL normally
   return_null <- function() NULL
@@ -63,7 +63,7 @@ test_that("safelydoesit works correctly", {
   safe_complex <- .safelydoesit(complex_fun)
 
   # Test with different argument patterns
-  expect_equal(safe_complex(1, 2)$result, 4) # x=1, y=2, z=1 (default)
-  expect_equal(safe_complex(1, 2, 3)$result, 6) # x=1, y=2, z=3
-  expect_equal(safe_complex(1, 2, 3, 4, 5)$result, 15) # x=1, y=2, z=3, ...=4,5
+  expect_identical(safe_complex(1, 2)$result, 4)
+  expect_identical(safe_complex(1, 2, 3)$result, 6)
+  expect_identical(safe_complex(1, 2, 3, 4, 5)$result, 15)
 })

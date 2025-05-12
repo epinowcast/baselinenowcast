@@ -71,7 +71,8 @@ singular version of <code><a href="generate_triangles.html">generate_triangles()
 
 
 <dl><dt id="arg-reporting-triangle">reporting_triangle<a class="anchor" aria-label="anchor" href="#arg-reporting-triangle"></a></dt>
-<dd><p>A single reporting triangle matrix.</p></dd>
+<dd><p>A single reporting triangle matrix. May or may
+not contain NAs.</p></dd>
 
 
 <dt id="arg-structure">structure<a class="anchor" aria-label="anchor" href="#arg-structure"></a></dt>
@@ -95,16 +96,17 @@ appropriate positions.</p>
 <span class="r-in"><span>    <span class="fl">70</span>, <span class="fl">40</span>, <span class="fl">20</span>, <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>    <span class="fl">80</span>, <span class="fl">50</span>, <span class="fl">10</span>, <span class="fl">10</span>,</span></span>
 <span class="r-in"><span>    <span class="fl">100</span>, <span class="fl">40</span>, <span class="fl">31</span>, <span class="fl">20</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">95</span>, <span class="fl">45</span>, <span class="fl">21</span>, <span class="cn">NA</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">82</span>, <span class="fl">42</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">70</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span></span></span>
+<span class="r-in"><span>    <span class="fl">95</span>, <span class="fl">45</span>, <span class="fl">21</span>, <span class="fl">10</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">82</span>, <span class="fl">42</span>, <span class="fl">6</span>, <span class="cn">NA</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">70</span>, <span class="fl">90</span>, <span class="cn">NA</span>, <span class="cn">NA</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  nrow <span class="op">=</span> <span class="fl">7</span>,</span></span>
 <span class="r-in"><span>  byrow <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">retro_rt</span> <span class="op">&lt;-</span> <span class="fu">generate_triangle</span><span class="op">(</span><span class="va">triangle</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">retro_rt</span></span></span>
+<span class="r-in"><span><span class="co"># Standard triangular structure (default)</span></span></span>
+<span class="r-in"><span><span class="va">rep_tri</span> <span class="op">&lt;-</span> <span class="fu">generate_triangle</span><span class="op">(</span><span class="va">triangle</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">rep_tri</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   65   46   21    7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   70   40   20    5</span>
@@ -112,6 +114,30 @@ appropriate positions.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [4,]  100   40   31   20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [5,]   95   45   21   NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [6,]   82   42   NA   NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [7,]   70   NA   NA   NA</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Ragged structure with 2 columns per delay period</span></span></span>
+<span class="r-in"><span><span class="va">rep_ragged</span> <span class="op">&lt;-</span> <span class="fu">generate_triangle</span><span class="op">(</span><span class="va">triangle</span>, <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">rep_ragged</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   65   46   21    7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   70   40   20    5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   80   50   10   10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]  100   40   31   20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5,]   95   45   21   10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [6,]   82   42    6   NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [7,]   70   90   NA   NA</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Custom structure with explicit column counts</span></span></span>
+<span class="r-in"><span><span class="va">rep_custom</span> <span class="op">&lt;-</span> <span class="fu">generate_triangle</span><span class="op">(</span><span class="va">triangle</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">rep_custom</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   65   46   21    7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   70   40   20    5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   80   50   10   10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]  100   40   31   20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5,]   95   45   21   10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [6,]   82   42    6   NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [7,]   70   NA   NA   NA</span>
 </code></pre></div>
     </div>

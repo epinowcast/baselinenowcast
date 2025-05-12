@@ -1,5 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
+-   Implements a safe iterator in the step where retrospective point nowcasts are generated from a list of retrospetive reporting triangles, ensuring that the iterations continue even if not all retrospective point nowcasts can be generated.
 -   Removes requirement that all elements of the reporting triangle are integers.
 -   Modify the method used to estimate dispersion. Instead of estimating dispersion on individual elements of the nowcast matrix, we now estimate dispersion on the predicted nowcasts summed across reporting dates as a function of forecast horizon.
 -   Standardises naming of objects that are matrices vs vectors and objects that contain observations, point estimates, and probabilistic draws.

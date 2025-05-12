@@ -7,7 +7,9 @@
 estimate_dispersion(
   pt_nowcast_mat_list,
   trunc_rep_tri_list,
-  n = length(pt_nowcast_mat_list)
+  n = length(pt_nowcast_mat_list),
+  fun_to_aggregate = c("sum", "mean"),
+  k = 1
 )
 }
 \arguments{
@@ -20,6 +22,13 @@ list are paired with elements of \code{pt_nowcast_mat_list}.}
 
 \item{n}{Integer indicating the number of reporting matrices to use to
 estimate the dispersion parameters.}
+
+\item{fun_to_aggregate}{Character string indicating the function to pass to
+\code{rollapply}, which will operate along the reference times for each delay.
+Default is \code{sum}.}
+
+\item{k}{Integer indicating the number \code{width} of the call to \code{rollapply}.
+Default is 1.}
 }
 \value{
 Vector of length one less than the number of columns in the

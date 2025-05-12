@@ -41,7 +41,6 @@ valid_trunc_rts <- list(
   test_triangle[1:5, ],
   test_triangle[1:4, ]
 )
-### Test 1: Basic Functionality ------------------------------------------------
 test_that("Basic functionality with valid inputs", {
   result <- estimate_dispersion(
     pt_nowcast_mat_list = valid_nowcasts,
@@ -55,7 +54,41 @@ test_that("Basic functionality with valid inputs", {
   expect_true(all(is.finite(result)))
 })
 
-### Test 2: Default Parameter Handling -----------------------------------------
+test_that("Function can handle rolling sum with k=2", {
+  result1 <- estimate_dispersion(
+    pt_nowcast_mat_list = valid_nowcasts,
+    trunc_rep_tri_list = valid_trunc_rts,
+    n = 2,
+    fun_to_aggregate = "sum",
+    k = 2
+  )
+
+  result2 <- estimate_dispersion(
+    pt_nowcast_mat_list = valid_nowcasts,
+    trunc_rep_tri_list = valid_trunc_rts,
+    n = 2
+  )
+
+  expect_failure(expect_equal(result1, result2, tol = 0.01))
+})
+
+test_that("Function throws an error if function to aggregate is not valid", {
+  expect_error(estimate_dispersion(
+    pt_nowcast_mat_list = valid_nowcasts,
+    trunc_rep_tri_list = valid_trunc_rts,
+    n = 2,
+    fun_to_aggregate = "summary",
+    k = 2
+  ))
+  # Mean doesn't work right now because we haven't added another error model
+  expect_error(estimate_dispersion(
+    pt_nowcast_mat_list = valid_nowcasts,
+    trunc_rep_tri_list = valid_trunc_rts,
+    n = 2,
+    fun_to_aggregate = "mean",
+    k = 2
+  ))
+})
 test_that("Default n parameter works correctly", {
   result_default <- estimate_dispersion(valid_nowcasts, valid_trunc_rts)
   result_explicit <- estimate_dispersion(valid_nowcasts, valid_trunc_rts, n = 2)

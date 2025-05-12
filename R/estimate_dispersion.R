@@ -13,6 +13,13 @@
 #'    list are paired with elements of `pt_nowcast_mat_list`.
 #' @param n Integer indicating the number of reporting matrices to use to
 #'    estimate the dispersion parameters.
+#' @param fun_to_aggregate Character string indicating the function to pass to
+#'    `rollapply`, which will operate along the nowcast vectors after summing
+#'    across delays. Eventually, we can add things like mean, but for now since
+#'    we are only providing a negative binomial observation model, we can only
+#'    allow sum (min or max would work but wouldn't make much sense).
+#' @param k Integer indicating the number `width` of the call to `rollapply`.
+#'    Default is 1.
 #' @importFrom checkmate assert_integerish
 #' @returns Vector of length one less than the number of columns in the
 #'    latest reporting triangle, with each element representing the estimate
@@ -47,7 +54,10 @@
 estimate_dispersion <- function(
     pt_nowcast_mat_list,
     trunc_rep_tri_list,
-    n = length(pt_nowcast_mat_list)) {
+    n = length(pt_nowcast_mat_list),
+    fun_to_aggregate = c("sum"),
+    k = 1) {
+  fun_to_aggregate <- match.arg(fun_to_aggregate)
   # Check that the length of the list of nowcasts is greater than
   # or equal to the specified n
   if (length(pt_nowcast_mat_list) < n) {
@@ -114,19 +124,30 @@ estimate_dispersion <- function(
     # Remove the last i observations
     trunc_matr_observed <- list_of_obs[[i]]
     max_t <- nrow(trunc_matr_observed)
+    # Write a switch to use either mean or sum depending on string passed in
+    fun <- switch(fun_to_aggregate,
+      "sum" = sum
+    )
     # Take the reporting triangle and look at one row at a time, which
     # corresponds to one horizon
     for (d in 1:n_horizons) {
-      obs_row <- trunc_matr_observed[max_t - d + 1, ]
-      nowcast_row <- nowcast_i[max_t - d + 1, ]
+      obs <- trunc_matr_observed[(max_t - d - k + 2):(max_t - d + 1), ]
+      nowcast <- nowcast_i[(max_t - d - k + 2):(max_t - d + 1), ]
       indices_nowcast <- is.na(replace_lower_right_with_NA(
         trunc_matr_observed
-      ))[max_t - d + 1, ]
-      indices_observed <- !is.na(trunc_matr_observed)[max_t - d + 1, ]
-      exp_to_add[i, d] <- sum(nowcast_row *
-        indices_nowcast * indices_observed)
-      to_add_already_observed[i, d] <- sum(
-        obs_row * indices_nowcast * indices_observed,
+      ))[(max_t - d - k + 2):(max_t - d + 1), ]
+      indices_observed <- !is.na(trunc_matr_observed)[(max_t - d - k + 2):(max_t - d + 1), ]
+      # Function to aggregate is always applied after the matrix has been
+      # summed across delays
+      exp_to_add[i, d] <- fun(
+        rowSums(as.matrix(nowcast *
+          indices_nowcast * indices_observed)),
+        na.rm = TRUE
+      )
+      to_add_already_observed[i, d] <- fun(
+        rowSums(as.matrix(
+          obs * indices_nowcast * indices_observed
+        )),
         na.rm = TRUE
       )
     }

@@ -7,7 +7,8 @@
 generate_triangle(reporting_triangle, structure = 1)
 }
 \arguments{
-\item{reporting_triangle}{A single reporting triangle matrix.}
+\item{reporting_triangle}{A single reporting triangle matrix. May or may
+not contain NAs.}
 
 \item{structure}{Integer or vector specifying the reporting structure.
 If integer, divides columns evenly by that integer (with last possibly
@@ -30,14 +31,23 @@ triangle <- matrix(
     70, 40, 20, 5,
     80, 50, 10, 10,
     100, 40, 31, 20,
-    95, 45, 21, NA,
-    82, 42, NA, NA,
-    70, NA, NA, NA
+    95, 45, 21, 10,
+    82, 42, 6, NA,
+    70, 90, NA, NA
   ),
   nrow = 7,
   byrow = TRUE
 )
 
-retro_rt <- generate_triangle(triangle)
-retro_rt
+Standard triangular structure (default)
+rep_tri <- generate_triangle(triangle)
+rep_tri
+
+# Ragged structure with 2 columns per delay period
+rep_ragged <- generate_triangle(triangle, 2)
+rep_ragged
+
+# Custom structure with explicit column counts
+rep_custom <- generate_triangle(triangle, c(1, 2, 1))
+rep_custom
 }

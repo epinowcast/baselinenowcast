@@ -67,26 +67,28 @@ test_that("generate_pt_nowcast_mat_list takes in delay_pmf as vector or list", {
 })
 
 test_that(
-  "generate_pt_nowcast_mat_list default n_history_delay uses minimum rows", {
-  # Input matrices have 7 and 7 rows → min = 6
-  result_default <- generate_pt_nowcast_mat_list(
-    reporting_triangle_list = retro_rts_list
-  )
-  result_custom_w_def <- generate_pt_nowcast_mat_list(
-    reporting_triangle_list = retro_rts_list,
-    n = 6
-  )
-  result_custom <- generate_pt_nowcast_mat_list(
-    reporting_triangle_list = retro_rts_list,
-    n = 5
-  )
+  "generate_pt_nowcast_mat_list default n_history_delay uses minimum rows",
+  {
+    # Input matrices have 7 and 7 rows → min = 6
+    result_default <- generate_pt_nowcast_mat_list(
+      reporting_triangle_list = retro_rts_list
+    )
+    result_custom_w_def <- generate_pt_nowcast_mat_list(
+      reporting_triangle_list = retro_rts_list,
+      n = 6
+    )
+    result_custom <- generate_pt_nowcast_mat_list(
+      reporting_triangle_list = retro_rts_list,
+      n = 5
+    )
 
-  # Ensure default matches explicit use of min rows
-  expect_identical(result_default, result_custom_w_def)
-  # Because estimates are made from different observations, expect these
-  # not to be identical
-  expect_false(all(result_default[[1]] == result_custom[[1]]))
-})
+    # Ensure default matches explicit use of min rows
+    expect_identical(result_default, result_custom_w_def)
+    # Because estimates are made from different observations, expect these
+    # not to be identical
+    expect_false(all(result_default[[1]] == result_custom[[1]]))
+  }
+)
 
 test_that("generate_pt_nowcast_mat_list custom n_history_delay is respected", {
   result <- generate_pt_nowcast_mat_list(
@@ -159,8 +161,12 @@ test_that("Function handles a single triangle with 0s for first column appropria
   retro_rts_list <- list(test_triangle_1, test_triangle_2, triangle3)
 
   result <- generate_pt_nowcast_mat_list(retro_rts_list)
-
   expect_identical(result[[3]], NULL)
+  # Test that the message is correct.
+  expect_message(
+    generate_pt_nowcast_mat_list(retro_rts_list),
+    "1 of 3 retrospective point nowcast matrices are NULL due to 0s"
+  )
 })
 
 test_that("Function errors if only contains triangles with first column 0", { # nolint

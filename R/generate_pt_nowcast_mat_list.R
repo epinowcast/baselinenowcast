@@ -69,29 +69,40 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
 
   # Use the safe version in mapply, iterating through each item in both
   # lists of reporting triangles and delay PMFs
-  pt_nowcast_mat_list <- mapply(reporting_triangle_list, function(triangle) {
-    result <- safe_generate_pt_nowcast_mat(reporting_triangle = triangle,
-                                           delay_pmf = pmf,
-                                           n = n,
-                                           max_delay = max_delay)
-    if (!is.null(result$error)) {
-      # Return NULL if there was an error
-      return(NULL)
-    } else {
-      # Return the result if successful
-      return(result$result)
-    }
-  })
+  pt_nowcast_mat_list <- mapply(
+    function(triangle, pmf) {
+      result <- safe_generate_pt_nowcast_mat(
+        reporting_triangle = triangle,
+        delay_pmf = pmf,
+        n = n,
+        max_delay = max_delay
+      )
+      if (!is.null(result$error)) {
+        # Return NULL if there was an error
+        return(NULL)
+      } else {
+        # Return the result if successful
+        return(result$result)
+      }
+    },
+    reporting_triangle_list,
+    delay_pmf_list,
+    SIMPLIFY = FALSE
+  )
 
 
   non_null_indices <- which(!sapply(pt_nowcast_mat_list, is.null))
-  if (length(non_null_indices) == 0) {
+  n_non_nulls <- length(non_null_indices)
+  n_rts <- length(pt_nowcast_mat_list)
+  if (n_non_nulls == 0) {
     cli_abort(
       message = c(
         "No retrospective point nowcast matrices were generated from the ",
         "`reporting_triangle_list`. Consider passing in separate delay PMFs."
       )
     )
+  } else if (n_non_nulls > 0 & n_non_nulls < n_rts) {
+    message(glue("{n_rts - n_non_nulls} of {n_rts} retrospective point nowcast matrices are NULL due to 0s at delay = 0.")) # nolint
   }
 
   return(pt_nowcast_mat_list)

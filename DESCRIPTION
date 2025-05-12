@@ -23,18 +23,19 @@ Authors@R:
            email = "sebastian.funk@lshtm.ac.uk",
            comment = c(ORCID = "0000-0002-2842-3406")))
 Description: Nowcasting right-truncated epidemiological data is critical
-  to interpretation of public health data, as right-truncation can create a
-  misleading impression of declining trends in recent data due to reporting
-  delays. This is sometimes handled by simply truncating the recent data, which
-  has the disadvantage of reducing the amount of real-time information
-  available. There is a critical need for a simple nowcasting method, both to
-  address the public health need and to provide a standardised benchmark for
-  nowcasting model development. This package provides functions for nowcasting
-  right-truncated epidemiological data using a simple method based on empirical
-  delay distributions and uncertainty estimation based on past nowcast errors.
-  It provides support for modular development of a nowcasting workflow,
-  enabling flexible implementation to allow for, for example, borrowing of
-  delay distributions and uncertainty estimation from other strata.
+  for timely public health decision-making, as reporting delays can create
+  misleading impressions of declining trends in recent data. This package
+  provides simple nowcasting methods for practical use based on using empirical
+  delay distributions and uncertainty from past performance. It is also designed
+  to be used as a baseline method for developers of new nowcasting methods. It
+  supports standard data frame inputs with reference date, report date, and
+  count columns, is compatible with 'epinowcast' objects, and also supports
+  direct use of reporting triangles. Alongside an opinionated default workflow,
+  it has a low-level pipe-friendly modular interface, allowing context-specific
+  workflows. It can accommodate a wide spectrum of reporting schedules, including
+  mixed patterns of reference and reporting (daily-weekly, weekly-daily). It also
+  supports sharing delay distributions and uncertainty estimates between strata,
+  as well as custom uncertainty models and delay estimation methods.
 License: MIT + file LICENSE
 URL: https://baselinenowcast.epinowcast.org, https://github.com/epinowcast/baselinenowcast/
 BugReports: https://github.com/epinowcast/baselinenowcast/issues

@@ -95,11 +95,11 @@ generate_triangles <- function(reporting_triangle_list, structure = 1) {
 #' rep_custom
 generate_triangle <- function(reporting_triangle, structure = 1) {
   # Get matrix dimensions
-  rows <- nrow(matrix)
-  cols <- ncol(matrix)
+  rows <- nrow(reporting_triangle)
+  cols <- ncol(reporting_triangle)
 
   # Create a copy of the input matrix
-  result <- matrix
+  result <- reporting_triangle
 
   # Process structure parameter
   if (length(structure) == 1) {

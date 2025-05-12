@@ -46,7 +46,7 @@ test_that(
     # Test 4: Check if the content of the first retrospective triangle is correct
     expect_identical(
       retro_triangles[[1]],
-      replace_lower_right_with_NA(triangle1)
+      generate_triangle(triangle1)
     )
 
     # Test 5: Check if the content of the last retrospective triangle is correct

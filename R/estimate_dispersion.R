@@ -119,7 +119,7 @@ estimate_dispersion <- function(
     for (d in 1:n_horizons) {
       obs_row <- trunc_matr_observed[max_t - d + 1, ]
       nowcast_row <- nowcast_i[max_t - d + 1, ]
-      indices_nowcast <- is.na(replace_lower_right_with_NA(
+      indices_nowcast <- is.na(generate_triangle(
         trunc_matr_observed
       ))[max_t - d + 1, ]
       indices_observed <- !is.na(trunc_matr_observed)[max_t - d + 1, ]

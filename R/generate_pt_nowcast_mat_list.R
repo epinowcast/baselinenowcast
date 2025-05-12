@@ -102,7 +102,7 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
         "`reporting_triangle_list`. Consider passing in separate delay PMFs."
       )
     )
-  } else if (n_non_nulls > 0 & n_non_nulls < n_rts) {
+  } else if (n_non_nulls > 0 && n_non_nulls < n_rts) {
     message(sprintf("%d of %d retrospective point nowcast matrices are NULL due to 0s at delay = 0.", n_null, n_rts)) # nolint
   }
 

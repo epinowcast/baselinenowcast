@@ -147,7 +147,9 @@ replace_lower_right_with_NA <- function(matrix, structure = 1) {
     function(...) {
       tryCatch(
         list(result = fun(...), error = NULL),
-        error = function(e) list(result = NULL, error = e)
+        error = function(e) {
+          return(list(result = NULL, error = e))
+        }
       )
     }
   )

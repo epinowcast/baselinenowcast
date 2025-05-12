@@ -161,7 +161,7 @@ test_that("Function handles a single triangle with 0s for first column appropria
   retro_rts_list <- list(test_triangle_1, test_triangle_2, triangle3)
 
   result <- generate_pt_nowcast_mat_list(retro_rts_list)
-  expect_identical(result[[3]], NULL)
+  expect_null(result[[3]])
   # Test that the message is correct.
   expect_message(
     generate_pt_nowcast_mat_list(retro_rts_list),

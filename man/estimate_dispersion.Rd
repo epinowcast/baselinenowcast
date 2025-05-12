@@ -8,7 +8,7 @@ estimate_dispersion(
   pt_nowcast_mat_list,
   trunc_rep_tri_list,
   n = length(pt_nowcast_mat_list),
-  fun_to_aggregate = c("sum", "mean"),
+  fun_to_aggregate = c("sum"),
   k = 1
 )
 }
@@ -24,8 +24,10 @@ list are paired with elements of \code{pt_nowcast_mat_list}.}
 estimate the dispersion parameters.}
 
 \item{fun_to_aggregate}{Character string indicating the function to pass to
-\code{rollapply}, which will operate along the reference times for each delay.
-Default is \code{sum}.}
+\code{rollapply}, which will operate along the nowcast vectors after summing
+across delays. Eventually, we can add things like mean, but for now since
+we are only providing a negative binomial observation model, we can only
+allow sum (min or max would work but wouldn't make much sense).}
 
 \item{k}{Integer indicating the number \code{width} of the call to \code{rollapply}.
 Default is 1.}

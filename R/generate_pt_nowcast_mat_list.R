@@ -94,6 +94,7 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
   non_null_indices <- which(!sapply(pt_nowcast_mat_list, is.null))
   n_non_nulls <- length(non_null_indices)
   n_rts <- length(pt_nowcast_mat_list)
+  n_null <- n_rts - n_non_nulls
   if (n_non_nulls == 0) {
     cli_abort(
       message = c(
@@ -102,7 +103,7 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
       )
     )
   } else if (n_non_nulls > 0 & n_non_nulls < n_rts) {
-    message(glue("{n_rts - n_non_nulls} of {n_rts} retrospective point nowcast matrices are NULL due to 0s at delay = 0.")) # nolint
+    message(sprintf("%d of %d retrospective point nowcast matrices are NULL due to 0s at delay = 0.", n_null, n_rts)) # nolint
   }
 
   return(pt_nowcast_mat_list)

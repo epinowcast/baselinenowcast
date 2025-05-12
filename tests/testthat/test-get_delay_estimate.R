@@ -9,7 +9,7 @@ complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
 complete_triangle <- do.call(rbind, complete_triangle)
 
 # Create a reporting triangle with NAs in the lower right
-reporting_triangle <- replace_lower_right_with_NA(complete_triangle)
+reporting_triangle <- generate_triangle(complete_triangle)
 
 test_that("get_delay_estimate returns a valid probability mass function", {
   # Get delay estimate
@@ -118,7 +118,7 @@ test_that(
     complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
     complete_triangle <- do.call(rbind, complete_triangle)
 
-    reporting_triangle <- replace_lower_right_with_NA(
+    reporting_triangle <- generate_triangle(
       complete_triangle,
       structure = 2
     )
@@ -144,7 +144,7 @@ test_that("get_delay_estimate handles diagonal reporting triangles", {
   partial_complete <- do.call(rbind, partial_complete)
 
   # Create a reporting triangle with NAs in the lower right
-  partial_triangle <- replace_lower_right_with_NA(
+  partial_triangle <- generate_triangle(
     partial_complete,
     structure = 1
   )

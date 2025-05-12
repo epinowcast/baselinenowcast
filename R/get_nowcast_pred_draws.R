@@ -131,7 +131,7 @@ get_nowcast_pred_draws <- function(point_nowcast_pred_matrix,
     !any(sapply(allowed_functions, identical, fun_to_aggregate))) {
     allowed_names <- toString(names(allowed_functions), collapse = ", ")
     stop(sprintf("'fun_to_aggregate' should be one of: %s", allowed_names),
-      .call = FALSE
+      call, = FALSE
     )
   }
 

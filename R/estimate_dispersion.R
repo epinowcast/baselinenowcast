@@ -73,7 +73,7 @@ estimate_dispersion <- function(
     !any(sapply(allowed_functions, identical, fun_to_aggregate))) {
     allowed_names <- toString(names(allowed_functions), collapse = ", ")
     stop(sprintf("'fun_to_aggregate' should be one of: %s", allowed_names),
-      .call = FALSE
+      call. = FALSE
     )
   }
 

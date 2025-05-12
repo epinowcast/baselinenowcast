@@ -2,7 +2,7 @@
   "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
   "@type": "SoftwareSourceCode",
   "identifier": "baselinenowcast",
-  "description": "Provides functions for nowcasting right-truncated epidemiological data, based heavily on the method implemented in https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/code/baseline.",
+  "description": "Nowcasting right-truncated epidemiological data is critical for timely public health decision-making, as reporting delays can create misleading impressions of declining trends in recent data. This package provides simple nowcasting methods for practical use based on using empirical delay distributions and uncertainty from past performance. It is also designed to be used as a baseline method for developers of new nowcasting methods. It supports standard data frame inputs with reference date, report date, and count columns, is compatible with 'epinowcast' objects, and also supports direct use of reporting triangles. Alongside an opinionated default workflow, it has a low-level pipe-friendly modular interface, allowing context-specific workflows. It can accommodate a wide spectrum of reporting schedules, including mixed patterns of reference and reporting (daily-weekly, weekly-daily). It also supports sharing delay distributions and uncertainty estimates between strata, as well as custom uncertainty models and delay estimation methods.",
   "name": "baselinenowcast: Baseline nowcast",
   "relatedLink": "https://baselinenowcast.epinowcast.org",
   "codeRepository": "https://github.com/epinowcast/baselinenowcast/",
@@ -241,7 +241,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "529.858KB",
+  "fileSize": "976.091KB",
   "releaseNotes": "https://github.com/epinowcast/baselinenowcast/blob/master/NEWS.md",
   "readme": "https://github.com/epinowcast/baselinenowcast/blob/main/README.md",
   "contIntegration": ["https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/epinowcast/baselinenowcast"],

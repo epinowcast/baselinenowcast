@@ -132,7 +132,7 @@ test_that("Passing in a NULL for a nowcast still returns an estimate", {
   result1 <- estimate_dispersion(nowcasts_with_null, valid_trunc_rts)
   result_to_compare <- estimate_dispersion(
     list(nowcast1),
-    ist(valid_trunc_rts[[1]])
+    list(valid_trunc_rts[[1]])
   )
   expect_identical(result1, result_to_compare)
 })

@@ -66,7 +66,7 @@ get_nowcast_pred_draw <- function(point_nowcast_pred_matrix,
   n_horizons <- length(disp)
   max_t <- nrow(point_nowcast_pred_matrix)
   mean_pred <- rollapply(
-    rowSums(point_nowcast_pred_matrix, na.rm = TRUE)[(max_t - n_horizons + 1):max_t],
+    rowSums(point_nowcast_pred_matrix, na.rm = TRUE)[(max_t - n_horizons + 1):max_t], # nolint
     k,
     fun_to_aggregate
   ) # nolint
@@ -129,8 +129,10 @@ get_nowcast_pred_draws <- function(point_nowcast_pred_matrix,
   # Check if function is in allowed list
   if (!identical(fun_to_aggregate, allowed_functions[[fun_name]]) &&
     !any(sapply(allowed_functions, identical, fun_to_aggregate))) {
-    allowed_names <- paste(names(allowed_functions), collapse = ", ")
-    stop(sprintf("'fun_to_aggregate' should be one of: %s", allowed_names))
+    allowed_names <- toString(names(allowed_functions), collapse = ", ")
+    stop(sprintf("'fun_to_aggregate' should be one of: %s", allowed_names),
+      .call = FALSE
+    )
   }
 
   assert_integerish(n_draws, lower = 1)

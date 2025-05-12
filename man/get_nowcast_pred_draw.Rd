@@ -4,7 +4,12 @@
 \alias{get_nowcast_pred_draw}
 \title{Get a draw of only the predicted elements of the nowcast vector}
 \usage{
-get_nowcast_pred_draw(point_nowcast_pred_matrix, disp)
+get_nowcast_pred_draw(
+  point_nowcast_pred_matrix,
+  disp,
+  fun_to_aggregate = sum,
+  k = 1
+)
 }
 \arguments{
 \item{point_nowcast_pred_matrix}{Matrix containing only the elements that
@@ -12,6 +17,15 @@ have not yet been observed as of the final reference date.}
 
 \item{disp}{Vector of dispersion parameters indexed by horizon from minus
 one to the maximum delay.}
+
+\item{fun_to_aggregate}{Function to pass to
+\code{rollapply}, which will operate along the nowcast vectors after summing
+across delays. Eventually, we can add things like mean, but for now since
+we are only providing a negative binomial observation model, we can only
+allow sum (min or max would work but wouldn't make much sense).}
+
+\item{k}{Integer indicating the number \code{width} of the call to \code{rollapply}.
+Default is 1.}
 }
 \value{
 Vector of predicted draws at each reference time, for all reference

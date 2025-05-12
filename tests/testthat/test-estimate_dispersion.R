@@ -59,7 +59,7 @@ test_that("Function can handle rolling sum with k=2", {
     pt_nowcast_mat_list = valid_nowcasts,
     trunc_rep_tri_list = valid_trunc_rts,
     n = 2,
-    fun_to_aggregate = "sum",
+    fun_to_aggregate = sum,
     k = 2
   )
 
@@ -77,7 +77,7 @@ test_that("Function throws an error if function to aggregate is not valid", {
     pt_nowcast_mat_list = valid_nowcasts,
     trunc_rep_tri_list = valid_trunc_rts,
     n = 2,
-    fun_to_aggregate = "summary",
+    fun_to_aggregate = summary,
     k = 2
   ))
   # Mean doesn't work right now because we haven't added another error model
@@ -85,7 +85,7 @@ test_that("Function throws an error if function to aggregate is not valid", {
     pt_nowcast_mat_list = valid_nowcasts,
     trunc_rep_tri_list = valid_trunc_rts,
     n = 2,
-    fun_to_aggregate = "mean",
+    fun_to_aggregate = mean,
     k = 2
   ))
 })

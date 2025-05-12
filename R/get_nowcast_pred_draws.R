@@ -4,12 +4,20 @@
 #'    have not yet been observed as of the final reference date.
 #' @param disp Vector of dispersion parameters indexed by horizon from minus
 #'    one to the maximum delay.
+#' @param fun_to_aggregate Function to pass to
+#'    `rollapply`, which will operate along the nowcast vectors after summing
+#'    across delays. Eventually, we can add things like mean, but for now since
+#'    we are only providing a negative binomial observation model, we can only
+#'    allow sum (min or max would work but wouldn't make much sense).
+#' @param k Integer indicating the number `width` of the call to `rollapply`.
+#'    Default is 1.
 #'
 #' @returns Vector of predicted draws at each reference time, for all reference
 #'    times in the input `point_nowcast_pred_matrix`.
 #' @export
 #' @importFrom cli cli_abort cli_warn
 #' @importFrom stats rnbinom
+#' @importFrom zoo rollapply
 #' @examples
 #' point_nowcast_pred_matrix <-
 #'   matrix(
@@ -30,7 +38,9 @@
 #' )
 #' nowcast_pred_draw
 get_nowcast_pred_draw <- function(point_nowcast_pred_matrix,
-                                  disp) {
+                                  disp,
+                                  fun_to_aggregate = sum,
+                                  k = 1) {
   if (length(disp) > nrow(point_nowcast_pred_matrix)) {
     cli_abort(
       message = c(
@@ -52,9 +62,14 @@ get_nowcast_pred_draw <- function(point_nowcast_pred_matrix,
       )
     )
   }
+
   n_horizons <- length(disp)
   max_t <- nrow(point_nowcast_pred_matrix)
-  mean_pred <- rowSums(point_nowcast_pred_matrix, na.rm = TRUE)[(max_t - n_horizons + 1):max_t] # nolint
+  mean_pred <- rollapply(
+    rowSums(point_nowcast_pred_matrix, na.rm = TRUE)[(max_t - n_horizons + 1):max_t],
+    k,
+    fun_to_aggregate
+  ) # nolint
   # Nowcast predictions only (these are reversed, first element is horizon 0)
   draw_pred <- rnbinom(n = n_horizons, size = rev(disp), mu = mean_pred)
   # Pad with 0s for the fully observed rows, which are before
@@ -66,10 +81,7 @@ get_nowcast_pred_draw <- function(point_nowcast_pred_matrix,
 #' Get a dataframe of multiple draws of only the predicted elements of the
 #'    nowcast vector
 #'
-#' @param point_nowcast_pred_matrix Matrix containing only the elements that
-#'    have not yet been observed as of the final reference date.
-#' @param disp Vector of dispersion parameters indexed by horizon from minus
-#'    one to the maximum delay.
+#' @inheritParams get_nowcast_pred_draw
 #' @param n_draws Integer indicating the number of draws of the predicted
 #'    nowcast vector to generate. Default is `1000`.
 #'
@@ -100,13 +112,35 @@ get_nowcast_pred_draw <- function(point_nowcast_pred_matrix,
 #' nowcast_pred_draws_df
 get_nowcast_pred_draws <- function(point_nowcast_pred_matrix,
                                    disp,
-                                   n_draws = 1000) {
+                                   n_draws = 1000,
+                                   fun_to_aggregate = sum,
+                                   k = 1) {
+  # Define allowed functions
+  allowed_functions <- list(
+    sum = sum
+  )
+
+  # Validate function
+  fun_name <- deparse(substitute(fun_to_aggregate))
+  if (is.name(fun_to_aggregate)) {
+    fun_name <- as.character(fun_to_aggregate)
+  }
+
+  # Check if function is in allowed list
+  if (!identical(fun_to_aggregate, allowed_functions[[fun_name]]) &&
+    !any(sapply(allowed_functions, identical, fun_to_aggregate))) {
+    allowed_names <- paste(names(allowed_functions), collapse = ", ")
+    stop(sprintf("'fun_to_aggregate' should be one of: %s", allowed_names))
+  }
+
   assert_integerish(n_draws, lower = 1)
 
   for (i in 1:n_draws) {
     pred_nowcast_vec <- get_nowcast_pred_draw(
       point_nowcast_pred_matrix,
-      disp
+      disp,
+      fun_to_aggregate,
+      k
     )
     df_i <- data.frame(
       pred_count = pred_nowcast_vec,

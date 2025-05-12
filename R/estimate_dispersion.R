@@ -13,11 +13,11 @@
 #'    list are paired with elements of `pt_nowcast_mat_list`.
 #' @param n Integer indicating the number of reporting matrices to use to
 #'    estimate the dispersion parameters.
-#' @param fun_to_aggregate Character string indicating the function to pass to
-#'    `rollapply`, which will operate along the nowcast vectors after summing
-#'    across delays. Eventually, we can add things like mean, but for now since
-#'    we are only providing a negative binomial observation model, we can only
-#'    allow sum (min or max would work but wouldn't make much sense).
+#' @param fun_to_aggregate Function that will  will operate along the nowcast
+#'    vectors after summing across delays. Eventually, we can add things like
+#'    mean, but for now since we are only providing a negative binomial
+#'    observation model, we can only allow sum (min or max would work but
+#'    wouldn't make much sense).
 #' @param k Integer indicating the number `width` of the call to `rollapply`.
 #'    Default is 1.
 #' @importFrom checkmate assert_integerish
@@ -55,9 +55,27 @@ estimate_dispersion <- function(
     pt_nowcast_mat_list,
     trunc_rep_tri_list,
     n = length(pt_nowcast_mat_list),
-    fun_to_aggregate = c("sum"),
+    fun_to_aggregate = sum,
     k = 1) {
-  fun_to_aggregate <- match.arg(fun_to_aggregate)
+  # Define allowed functions
+  allowed_functions <- list(
+    sum = sum
+  )
+
+  # Validate function
+  fun_name <- deparse(substitute(fun_to_aggregate))
+  if (is.name(fun_to_aggregate)) {
+    fun_name <- as.character(fun_to_aggregate)
+  }
+
+  # Check if function is in allowed list
+  if (!identical(fun_to_aggregate, allowed_functions[[fun_name]]) &&
+    !any(sapply(allowed_functions, identical, fun_to_aggregate))) {
+    allowed_names <- paste(names(allowed_functions), collapse = ", ")
+    stop(sprintf("'fun_to_aggregate' should be one of: %s", allowed_names))
+  }
+
+
   # Check that the length of the list of nowcasts is greater than
   # or equal to the specified n
   if (length(pt_nowcast_mat_list) < n) {
@@ -124,10 +142,7 @@ estimate_dispersion <- function(
     # Remove the last i observations
     trunc_matr_observed <- list_of_obs[[i]]
     max_t <- nrow(trunc_matr_observed)
-    # Write a switch to use either mean or sum depending on string passed in
-    fun <- switch(fun_to_aggregate,
-      "sum" = sum
-    )
+
     # Take the reporting triangle and look at one row at a time, which
     # corresponds to one horizon
     for (d in 1:n_horizons) {
@@ -136,15 +151,15 @@ estimate_dispersion <- function(
       indices_nowcast <- is.na(generate_triangle(
         trunc_matr_observed
       ))[(max_t - d - k + 2):(max_t - d + 1), ]
-      indices_observed <- !is.na(trunc_matr_observed)[(max_t - d - k + 2):(max_t - d + 1), ]
+      indices_observed <- !is.na(trunc_matr_observed)[(max_t - d - k + 2):(max_t - d + 1), ] # nolint
       # Function to aggregate is always applied after the matrix has been
       # summed across delays
-      exp_to_add[i, d] <- fun(
+      exp_to_add[i, d] <- fun_to_aggregate(
         rowSums(as.matrix(nowcast *
           indices_nowcast * indices_observed)),
         na.rm = TRUE
       )
-      to_add_already_observed[i, d] <- fun(
+      to_add_already_observed[i, d] <- fun_to_aggregate(
         rowSums(as.matrix(
           obs * indices_nowcast * indices_observed
         )),

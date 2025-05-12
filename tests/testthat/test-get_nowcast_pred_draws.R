@@ -1,17 +1,18 @@
+point_nowcast_pred_matrix <- matrix(
+  c(
+    NA, NA, NA, NA,
+    NA, NA, NA, NA,
+    NA, NA, NA, 16.8,
+    NA, NA, 21.2, 19.5
+  ),
+  nrow = 4,
+  byrow = TRUE
+)
+disp <- c(0.8, 12.4, 9.1)
+n_draws <- 10
+
 test_that("function returns a dataframe with correct structure", {
   # Setup test data
-  point_nowcast_pred_matrix <- matrix(
-    c(
-      NA, NA, NA, NA,
-      NA, NA, NA, NA,
-      NA, NA, NA, 16.8,
-      NA, NA, 21.2, 19.5
-    ),
-    nrow = 4,
-    byrow = TRUE
-  )
-  disp <- c(0.8, 12.4, 9.1)
-  n_draws <- 10
 
   result <- get_nowcast_pred_draws(point_nowcast_pred_matrix, disp, n_draws)
 
@@ -19,6 +20,41 @@ test_that("function returns a dataframe with correct structure", {
   expect_identical(nrow(result), as.integer(n_draws * nrow(point_nowcast_pred_matrix))) # nolint
   expect_identical(ncol(result), 3L)
   expect_true(all(c("pred_count", "time", "draw") %in% names(result)))
+})
+
+test_that("function handles rolling sum appropriately", {
+  set.seed(123)
+  k <- 2
+  result2 <- get_nowcast_pred_draws(point_nowcast_pred_matrix,
+    disp,
+    n_draws,
+    k = k,
+    fun_to_aggregate = sum
+  )
+  result <- get_nowcast_pred_draws(point_nowcast_pred_matrix, disp, n_draws)
+  avg_rolling_sum <- mean(result2$pred_count[result2$time > k - 1])
+  avg_incidence <- mean(result$pred_count)
+  # The rolling sum should be on average k times greater than the
+  # incidence alone
+  expect_equal(avg_rolling_sum / avg_incidence, k, tol = 0.2)
+})
+
+test_that("Function throws an error if function to aggregate is not valid", {
+  expect_error(get_nowcast_pred_draws(
+    point_nowcast_pred_matrix,
+    disp,
+    n_draws,
+    fun_to_aggregate = summary,
+    k = 2
+  ))
+  # Mean doesn't work right now because we haven't added another error model
+  expect_error(get_nowcast_pred_draws(
+    point_nowcast_pred_matrix,
+    disp,
+    n_draws,
+    fun_to_aggregate = mean,
+    k = 2
+  ))
 })
 
 test_that("function handles the default n_draws parameter", {

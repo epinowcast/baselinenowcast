@@ -5,7 +5,13 @@
 \title{Get a dataframe of multiple draws of only the predicted elements of the
 nowcast vector}
 \usage{
-get_nowcast_pred_draws(point_nowcast_pred_matrix, disp, n_draws = 1000)
+get_nowcast_pred_draws(
+  point_nowcast_pred_matrix,
+  disp,
+  n_draws = 1000,
+  fun_to_aggregate = sum,
+  k = 1
+)
 }
 \arguments{
 \item{point_nowcast_pred_matrix}{Matrix containing only the elements that
@@ -16,6 +22,15 @@ one to the maximum delay.}
 
 \item{n_draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}
+
+\item{fun_to_aggregate}{Function to pass to
+\code{rollapply}, which will operate along the nowcast vectors after summing
+across delays. Eventually, we can add things like mean, but for now since
+we are only providing a negative binomial observation model, we can only
+allow sum (min or max would work but wouldn't make much sense).}
+
+\item{k}{Integer indicating the number \code{width} of the call to \code{rollapply}.
+Default is 1.}
 }
 \value{
 Dataframe containing the predicted point nowcast vectors indexed by

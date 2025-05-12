@@ -11,7 +11,7 @@ test_triangle <- matrix(
   byrow = TRUE
 )
 
-test_that("generate_pt_nowcast_mat basic functionality with default parameters", {
+test_that("generate_pt_nowcast_mat basic functionality with default parameters", { # nolint
   result <- generate_pt_nowcast_mat(test_triangle)
 
   # Verify output structure
@@ -81,4 +81,33 @@ test_that("generate_pt_nowcast_mat: Output dimensions match input", {
   odd_dim_tri <- matrix(1:6, nrow = 3, ncol = 2)
   result <- generate_pt_nowcast_mat(odd_dim_tri)
   expect_identical(dim(result), c(3L, 2L))
+})
+
+test_that("generate_pt_nowcast_mat errors when n is incompatible", {
+  # Custom n_history_delay is too high
+  expect_error(
+    generate_pt_nowcast_mat(
+      test_triangle,
+      n = 8
+    )
+  ) # nolint
+  # Custom n_history_delay is too low
+  expect_error(
+    generate_pt_nowcast_mat(
+      test_triangle,
+      n = 3
+    ),
+    regexp = "The number of observations specified for delay estimation is less"
+  ) # nolint
+})
+
+test_that("generate_pt_nowcast_mat can take in another delay PMF", {
+  external_delay_pmf <- c(0.1, 0.1, 0.5, 0.3)
+  result <- generate_pt_nowcast_mat(
+    test_triangle,
+    delay_pmf = external_delay_pmf
+  )
+  last_row <- result[5, ]
+  pmf <- last_row / sum(last_row)
+  expect_equal(pmf, external_delay_pmf, tolerance = 0.01)
 })

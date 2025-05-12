@@ -3,11 +3,12 @@
 #' This function ingests a list of point nowcast matrices and a corresponding
 #'    list of truncated reporting matrices and uses both to estimate a
 #'    vector of negative binomial dispersion parameters from the observations
-#'    and estimates at each delay, starting at delay = 1.
+#'    and estimates at each horizon, starting at 0 up until the max delay
+#'    number of horizons.
 #'
 #' @param pt_nowcast_mat_list List of point nowcast matrices where rows
 #'    represent reference time points and columns represent delays.
-#' @param trunc_rep_mat_list List of truncated reporting matrices,
+#' @param trunc_rep_tri_list List of truncated reporting matrices,
 #'    containing all observations as of the latest reference time. Elements of
 #'    list are paired with elements of `pt_nowcast_mat_list`.
 #' @param n Integer indicating the number of reporting matrices to use to
@@ -39,13 +40,13 @@
 #' retro_nowcasts <- generate_pt_nowcast_mat_list(retro_rts, n = 5)
 #' disp_params <- estimate_dispersion(
 #'   pt_nowcast_mat_list = retro_nowcasts,
-#'   trunc_rep_mat_list = trunc_rts,
+#'   trunc_rep_tri_list = trunc_rts,
 #'   n = 2
 #' )
 #' disp_params
 estimate_dispersion <- function(
     pt_nowcast_mat_list,
-    trunc_rep_mat_list,
+    trunc_rep_tri_list,
     n = length(pt_nowcast_mat_list)) {
   # Check that the length of the list of nowcasts is greater than
   # or equal to the specified n
@@ -56,9 +57,9 @@ estimate_dispersion <- function(
       "estimation"
     ))
   }
-  if (length(trunc_rep_mat_list) < n) {
+  if (length(trunc_rep_tri_list) < n) {
     cli_abort(message = c(
-      "Insufficient elements in `trunc_rep_mat_list` for the `n` desired ",
+      "Insufficient elements in `trunc_rep_tri_list` for the `n` desired ",
       "number of observed reporting triangles specified for dispersion ",
       "estimation"
     ))
@@ -66,15 +67,15 @@ estimate_dispersion <- function(
   if (length(pt_nowcast_mat_list) < 1) {
     "`pt_nowcast_mat_list` is an empty list"
   }
-  if (length(trunc_rep_mat_list) < 1) {
-    "`trunc_rep_mat_list` is an empty list"
+  if (length(trunc_rep_tri_list) < 1) {
+    "`trunc_rep_tri_list` is an empty list"
   }
 
   assert_integerish(n, lower = 0)
 
   # Truncate to only n nowcasts
   list_of_ncs <- pt_nowcast_mat_list[1:n]
-  list_of_obs <- trunc_rep_mat_list[1:n]
+  list_of_obs <- trunc_rep_tri_list[1:n]
 
   # Check that nowcasts has no NAs, trunc_rts has some NAs
   if (any(sapply(list_of_ncs, anyNA))) {
@@ -86,7 +87,7 @@ estimate_dispersion <- function(
   if (!any(sapply(list_of_obs, anyNA))) {
     cli_abort(
       message =
-        "`trunc_rep_mat_list` does not contain any NAs"
+        "`trunc_rep_tri_list` does not contain any NAs"
     )
   }
   # Check that the sets of matrices are the same dimensions
@@ -96,61 +97,47 @@ estimate_dispersion <- function(
   if (!all_identical) {
     cli_abort(message = c(
       "Dimensions of the first `n` matrices in `pt_nowcast_mat_list` and ",
-      "`trunc_rep_mat_list` are not the same."
+      "`trunc_rep_tri_list` are not the same."
     ))
   }
 
 
-  n_horizons <- ncol(list_of_ncs[[1]])
-  for (i in seq_len(n)) {
+  n_horizons <- ncol(list_of_ncs[[1]]) - 1
+  # Each row is retrospective nowcast date, each column is a horizon (i.e
+  # columns are not delays, but hoirzons, and each cell contains a total
+  # value corresponding to that horizon -- the total expected value to add
+  exp_to_add <-
+    to_add_already_observed <- matrix(NA, nrow = n, ncol = n_horizons)
+  for (i in seq_len(n)) { # Seq along retrospective forecast dates
     # Rretrospective nowcast as of i delays ago
     nowcast_i <- list_of_ncs[[i]]
     # Remove the last i observations
     trunc_matr_observed <- list_of_obs[[i]]
-    # What would have been nowcasted? The values that would have been NA
-    indices_nowcast <- is.na(replace_lower_right_with_NA(trunc_matr_observed))
-    # What was observed? Any non-NAs from the truncated observed matrix
-    indices_observed <- !is.na(trunc_matr_observed)
-
-    # Get a vector of for each delay of what would have been added in this
-    # reference time, based on the indices nowcasted and the indices later
-    # observed
-    exp_to_add <- sapply(seq_len(ncol(trunc_matr_observed)),
-      .conditional_sum_cols,
-      matrix_bool1 = indices_nowcast,
-      matrix_bool2 = indices_observed,
-      matrix_to_sum = nowcast_i
-    )
-    # Get a vector for each delay of what was observed using the truncated
-    # observed matrix
-    to_add <- sapply(seq_len(ncol(trunc_matr_observed)),
-      .conditional_sum_cols,
-      matrix_bool1 = indices_nowcast,
-      matrix_bool2 = indices_observed,
-      matrix_to_sum = trunc_matr_observed
-    )
-    # Create a dataframe to what would have been added at each delay for
-    # each t delay ago.
-    df_i <- data.frame(
-      exp_to_add = exp_to_add,
-      to_add = to_add,
-      t = i,
-      d = seq_len(n_horizons) - 1
-    )
-    if (i == 1) {
-      df_exp_obs <- df_i
-    } else {
-      df_exp_obs <- rbind(df_exp_obs, df_i)
+    max_t <- nrow(trunc_matr_observed)
+    # Take the reporting triangle and look at one row at a time, which
+    # corresponds to one horizon
+    for (d in 1:n_horizons) {
+      obs_row <- trunc_matr_observed[max_t - d + 1, ]
+      nowcast_row <- nowcast_i[max_t - d + 1, ]
+      indices_nowcast <- is.na(replace_lower_right_with_NA(
+        trunc_matr_observed
+      ))[max_t - d + 1, ]
+      indices_observed <- !is.na(trunc_matr_observed)[max_t - d + 1, ]
+      exp_to_add[i, d] <- sum(nowcast_row *
+        indices_nowcast * indices_observed)
+      to_add_already_observed[i, d] <- sum(
+        obs_row * indices_nowcast * indices_observed,
+        na.rm = TRUE
+      )
     }
   }
 
-  # Separate step which uses the dataframe that compares the expected values to
-  # add and the values observed at each reference time and delay to estimate
-  # the dispersion (we could make this a separate function).
-  disp_params <- vector(length = n_horizons - 1)
-  for (i in seq_len(n_horizons - 1)) {
-    obs_temp <- df_exp_obs$to_add[df_exp_obs$d == i]
-    mu_temp <- df_exp_obs$exp_to_add[df_exp_obs$d == i] + 0.1
+  # Estimate the dispersion as a function of horizon across retrospective
+  # nowcast dates
+  disp_params <- vector(length = n_horizons)
+  for (i in seq_len(n_horizons)) {
+    obs_temp <- to_add_already_observed[, i]
+    mu_temp <- exp_to_add[, i] + 0.1
     disp_params[i] <- .fit_nb(x = obs_temp, mu = mu_temp)
   }
 
@@ -218,6 +205,8 @@ estimate_dispersion <- function(
   if (length(x) == 0) {
     return(NA)
   }
+  # Check that all observations are integers
+  assert_integerish(x)
   nllik <- function(size) {
     nll <- -sum(dnbinom(x = x, mu = mu, size = size, log = TRUE), na.rm = TRUE)
     return(nll)

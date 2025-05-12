@@ -6,7 +6,7 @@
 \usage{
 estimate_dispersion(
   pt_nowcast_mat_list,
-  trunc_rep_mat_list,
+  trunc_rep_tri_list,
   n = length(pt_nowcast_mat_list)
 )
 }
@@ -14,7 +14,7 @@ estimate_dispersion(
 \item{pt_nowcast_mat_list}{List of point nowcast matrices where rows
 represent reference time points and columns represent delays.}
 
-\item{trunc_rep_mat_list}{List of truncated reporting matrices,
+\item{trunc_rep_tri_list}{List of truncated reporting matrices,
 containing all observations as of the latest reference time. Elements of
 list are paired with elements of \code{pt_nowcast_mat_list}.}
 
@@ -30,7 +30,8 @@ of the dispersion parameter for each delay d, starting at delay d=1.
 This function ingests a list of point nowcast matrices and a corresponding
 list of truncated reporting matrices and uses both to estimate a
 vector of negative binomial dispersion parameters from the observations
-and estimates at each delay, starting at delay = 1.
+and estimates at each horizon, starting at 0 up until the max delay
+number of horizons.
 }
 \examples{
 triangle <- matrix(
@@ -53,7 +54,7 @@ retro_rts <- generate_triangles(trunc_rts)
 retro_nowcasts <- generate_pt_nowcast_mat_list(retro_rts, n = 5)
 disp_params <- estimate_dispersion(
   pt_nowcast_mat_list = retro_nowcasts,
-  trunc_rep_mat_list = trunc_rts,
+  trunc_rep_tri_list = trunc_rts,
   n = 2
 )
 disp_params

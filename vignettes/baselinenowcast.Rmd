@@ -203,9 +203,14 @@ pobs <- enw_preprocess_data(
   max_delay = max_delay + 1
 )
 
-# as we only have one group here we only need referfence_date, delay,
+# as we only have one group here we only need reference_date, delay,
 # and new_confirm
-reporting_triangle_df <- select(pobs$new_confirm[[1]], reference_date, delay, new_confirm)
+reporting_triangle_df <- select(
+  pobs$new_confirm[[1]],
+  reference_date,
+  delay,
+  new_confirm
+)
 
 # we now pivot to wide format, dropping the reference_date column, and
 # convert to a matrix
@@ -219,6 +224,9 @@ tail(reporting_triangle, n = 20)
 ```
 
 To see what this looks like, we can plot it using `ggplot()`.
+In this figure, the grey indicates matrix elements that are `NA`, which we
+would expect to be the case in the bottom right portion of the reporting
+triangle where the counts have yet to be observed.
 ```{r make-heatmap-reporting-triangle}
 triangle_df <- as.data.frame(reporting_triangle) |>
   mutate(time = row_number()) |>
@@ -385,8 +393,8 @@ are needed to generate a nowcast of reporting triangle with 41 delay columns.
 
 
 ```{r generate-triangles}
-trunc_rep_mat_list <- truncate_triangles(reporting_triangle)
-retro_rep_tri_list <- generate_triangles(trunc_rep_mat_list)
+trunc_rep_tri_list <- truncate_triangles(reporting_triangle)
+retro_rep_tri_list <- generate_triangles(trunc_rep_tri_list)
 ```
 The `generate_triangles()` function returns a list of
 reporting triangles, in order from the most to least
@@ -395,8 +403,9 @@ rows that may not ultimately be used to generate the nowcast, which means
 that each triangle will have a different number of rows.
 
 Next we will pass this list of reporting triangles to the
-`generate_nowcasts()` alongside the specification of how many observations
-to use to estimate the delay
+`generate_pt_nowcast_mat_list()`. In this function, we can also specify
+`n`, the number of reference times to be used to estimate the delay for each
+nowcast.
 ```{r generate-nowcasts}
 retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
   reporting_triangle_list = retro_rep_tri_list
@@ -406,46 +415,49 @@ retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
 
 
 Next, we will use the list of retrospective reporting triangles to estimate
-the uncertainty at each delay $d$
+the uncertainty at each horizon, starting at horizon 0.
 
 ```{r estimate-dispersion}
 disp_params <- estimate_dispersion(
   pt_nowcast_mat_list = retro_pt_nowcast_mat_list,
-  trunc_rep_mat_list = trunc_rep_mat_list
+  trunc_rep_tri_list = trunc_rep_tri_list
 )
 ```
 
 # Generate probabilistic nowcast
 
 Now that we have estimated the dispersion, we take the point nowcast matrix we
-previously generated, `point_nowcast_matrix`, and generate many draws of the
-expected observed values to get a probabilistic nowcast.
-```{r generate-many-expected-observed-nowcasts}
-nowcast_matrix_list <- add_uncertainty(
-  point_nowcast_matrix = point_nowcast_matrix,
-  disp = disp_params,
-  n_draws = 1000
+previously generated, `point_nowcast_matrix`, extract only the components that
+we predicted, aggregate across delays, and apply the uncertainty to the
+point estimate of the final count by reference time.
+
+We will generate a long tidy dataframe containing draws of only the predicted
+counts as well as the sum of those predicted draws plus the observations, which
+becomes the probabilistic final count estimate.
+We'll first have to extract from the point nowcast matrix
+only the values that were predicted.
+```{r extract predictions}
+pt_nowcast_pred_matrix <- extract_predictions(
+  pt_nowcast_mat = point_nowcast_matrix,
+  rep_mat = reporting_triangle
 )
 ```
 
-Next, we will take the list of nowcast matrices and
-convert this into a long tidy dataframe, indexed by reference time `t`,
-delay `d`, and draws.
-
-```{r generate-nowcasted-draws-df}
-nowcast_draws <- nowcast_matrix_list_to_df(
-  nowcast_matrix_list = nowcast_matrix_list
+We will next take the point estimates of the prediction matrix and generate
+probabilistic draws of the predicted nowcast vectors. We will store these draws
+in a dataframe indexed by reference time and draw.
+```{r generate pobablistic draws of predictions}
+nowcast_draws_df <- get_nowcast_pred_draws(
+  point_nowcast_pred_matrix = pt_nowcast_pred_matrix,
+  disp = disp_params
 )
-head(nowcast_draws)
 ```
 
-The package also provides a helper function, `aggregate_df_by_ref_time()`
-which converts the draws indexed by `t` and `d` to one which contains the sum
-over all delays. We can then use this to plot the nowcasts compared to the
-data available as of the nowcast date, and the later observed data.
-```{r summarise-by-ref-time}
-summary_nowcast <- aggregate_df_by_ref_time(nowcast_draws)
-
+As a final step we will join the predictions for each reference date to the
+data available as of the final reference date. We will plot the probabilistic
+nowcast vectors (grey) compared to the final observed data (black) and the
+data available as of the nowcast time (red).
+```{r plot the nowcasts}
 # Join with the original data
 final_data <- data_long[location == "DE"][age_group == "00+"] |> # nolint
   enw_filter_report_dates(latest_date = "2021-10-01") |>
@@ -468,8 +480,8 @@ time_df <- data.frame(
       by = "day"
     )
 ) |> mutate(time = row_number())
-sampled_draws <- sample.int(max(summary_nowcast$draw), 100)
-summary_nowcast_w_data <- summary_nowcast |>
+sampled_draws <- sample.int(max(nowcast_draws_df$draw), 1000)
+summary_nowcast_w_data <- nowcast_draws_df |>
   left_join(time_df,
     by = "time"
   ) |>
@@ -479,6 +491,9 @@ summary_nowcast_w_data <- summary_nowcast |>
   filter(
     draw %in% sampled_draws,
     reference_date >= max(ymd(reference_date)) - days(max_delay)
+  ) |>
+  mutate(
+    total_count = pred_count + original_confirmed
   )
 
 

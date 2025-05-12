@@ -91,7 +91,7 @@ generate_triangles <- function(reporting_triangle_list, structure = 1) {
 #' rep_ragged
 #'
 #' # Custom structure with explicit column counts
-#' rep_custom <- generate_triangle(triangle, c(1, 2, 1))
+#' rep_custom <- generate_triangle(triangle, c(1, 2))
 #' rep_custom
 generate_triangle <- function(reporting_triangle, structure = 1) {
   # Get matrix dimensions

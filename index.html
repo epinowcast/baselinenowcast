@@ -77,7 +77,7 @@
 <div class="section level2">
 <h2 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
 </h2>
-<p>Provides functions for nowcasting right-truncated epidemiological data, based heavily on the method implemented in <a href="https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/code/baseline" class="external-link uri">https://github.com/KITmetricslab/RESPINOW-Hub/tree/main/code/baseline</a>.</p>
+<p>Nowcasting right-truncated epidemiological data is critical for timely public health decision-making, as reporting delays can create misleading impressions of declining trends in recent data. This package provides simple nowcasting methods for practical use based on using empirical delay distributions and uncertainty from past performance. It is also designed to be used as a baseline method for developers of new nowcasting methods. It supports standard data frame inputs with reference date, report date, and count columns, is compatible with ‘epinowcast’ objects, and also supports direct use of reporting triangles. Alongside an opinionated default workflow, it has a low-level pipe-friendly modular interface, allowing context-specific workflows. It can accommodate a wide spectrum of reporting schedules, including mixed patterns of reference and reporting (daily-weekly, weekly-daily). It also supports sharing delay distributions and uncertainty estimates between strata, as well as custom uncertainty models and delay estimation methods.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>

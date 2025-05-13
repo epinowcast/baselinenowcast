@@ -1,5 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
+-   Add support for passing in a restricted set of functions to the `estimate_dispersion()` function to transform the "target" dataset across reference dates.
 -   Replace function named`replace_lower_right_with_NA()` with `generate_triangle()`.
 -   Removes requirement that all elements of the reporting triangle are integers.
 -   Modify the method used to estimate dispersion. Instead of estimating dispersion on individual elements of the nowcast matrix, we now estimate dispersion on the predicted nowcasts summed across reporting dates as a function of forecast horizon.

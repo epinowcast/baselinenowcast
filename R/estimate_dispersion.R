@@ -86,7 +86,7 @@ estimate_dispersion <- function(
     )
   }
   if (!any(sapply(list_of_obs, anyNA))) {
-    cli_warning(
+    cli_warn(
       message =
         "`trunc_rep_tri_list` does not contain any NAs"
     )

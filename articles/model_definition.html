@@ -278,14 +278,31 @@
 </h3>
 <p>In the case where we have missing values in the bottom right (i.e. we have a reporting triangle), we need to use the multiplicative model to generate a point nowcast matrix containing a mixture of observed and imputed values. Then we can compute the delay distribution as described above for the reporting matrix case.</p>
 <p>The multiplicative model works by iteratively “filling in” the reporting triangle starting from the bottom left, and moving column by column from left to right until the bottom right of the triangle is filled in.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># nolint start</span></span>
-<span><span class="co">#| echo = FALSE,</span></span>
-<span><span class="co">#| fig.cap = 'Visual description of the iterative “completing” of the reporting triangle, moving from left to right and bottom to top. In this cases, we are imputing $x_{t=6, d = 2}$ and $x_{t=5, d= 2}$ assuming that the ratio between $x_{t=1:4, d = 2}$ (block top), and $x_{t=1:4, d=0:1}$ (block top left) holds for for $x_{t=5:6, d = 2}$ (block bottom) and $x_{t=5:6, d = 0:1}$ (block bottom left). In this example, $\\hat{x}_{t=6, d = 1}$ has already been imputed using the same approach, and we treat it as known going forward. This process is repeated across the reporting triangle to estimate all values outlined in the dashed lines.'</span></span>
-<span><span class="co"># nolint end</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">".."</span>, <span class="st">"man"</span>, <span class="st">"figures"</span>, <span class="st">"schematic_fig.png"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="../reference/figures/schematic_fig.png"><!-- --></p>
-<p>The method requires at least one observation, at delay <span class="math inline">\(d=0\)</span> for the most recent reference time, located at the bottom left of the reporting triangle in Figure <a href="#fig:squares"><strong>??</strong></a> above. The method assumes that the values at each delay <span class="math inline">\(d\)</span> for the recent times, <span class="math inline">\(t\)</span>, will consist of the same proportion of the values previously reported for earlier times <span class="math inline">\(t\)</span>. To fill in the missing values for each column <span class="math inline">\(d\)</span>, we sum over the rectangle of completely observed reference dates for all <span class="math inline">\(d-1\)</span> columns (block top left) and sum over the column of completely observed reference dates for all of the entries in column <span class="math inline">\(d\)</span> (block left). The ratio of these two sums is assumed to be the same in the missing entries in column <span class="math inline">\(d\)</span>, so we use the entries observed up to <span class="math inline">\(d-1\)</span> for each incomplete reference date (block bottom left), and scale by this ratio to get the missing entries in column <span class="math inline">\(d\)</span>. This process is repeated for each delay from <span class="math inline">\(d\)</span> up to the maximum delay <span class="math inline">\(D\)</span>. At each iteration an additional reference time entry is computed as the delay <span class="math inline">\(d\)</span> increases.</p>
+<div class="figure">
+<span style="display:block;" id="fig:squares"></span>
+<img src="../reference/figures/schematic_fig.png" alt="Visual description of the iterative “completing” of the reporting
+   triangle, moving from left to right and bottom to top. In this cases, we
+   are imputing $x_{t=6, d = 2}$ and $x_{t=5, d= 2}$ assuming that the ratio
+   between $x_{t=1:4, d = 2}$ (block top), and $x_{t=1:4, d=0:1}$
+   (block top left) holds for for $x_{t=5:6, d = 2}$ (block bottom) and
+   $x_{t=5:6, d = 0:1}$ (block bottom left). In this example,
+   $\hat{x}_{t=6, d = 1}$ has already been imputed using the same approach,
+   and we treat it as known going forward. This process is repeated across
+   the reporting triangle to estimate all values outlined in the dashed
+   lines."><p class="caption">
+Figure 2.1: Visual description of the iterative “completing” of the reporting
+triangle, moving from left to right and bottom to top. In this cases, we
+are imputing <span class="math inline">\(x_{t=6, d = 2}\)</span> and <span class="math inline">\(x_{t=5, d= 2}\)</span> assuming that the ratio
+between <span class="math inline">\(x_{t=1:4, d = 2}\)</span> (block top), and <span class="math inline">\(x_{t=1:4, d=0:1}\)</span>
+(block top left) holds for for <span class="math inline">\(x_{t=5:6, d = 2}\)</span> (block bottom) and
+<span class="math inline">\(x_{t=5:6, d = 0:1}\)</span> (block bottom left). In this example,
+<span class="math inline">\(\hat{x}_{t=6, d = 1}\)</span> has already been imputed using the same approach,
+and we treat it as known going forward. This process is repeated across
+the reporting triangle to estimate all values outlined in the dashed
+lines.
+</p>
+</div>
+<p>The method requires at least one observation, at delay <span class="math inline">\(d=0\)</span> for the most recent reference time, located at the bottom left of the reporting triangle in Figure <a href="#fig:squares">2.1</a> above. The method assumes that the values at each delay <span class="math inline">\(d\)</span> for the recent times, <span class="math inline">\(t\)</span>, will consist of the same proportion of the values previously reported for earlier times <span class="math inline">\(t\)</span>. To fill in the missing values for each column <span class="math inline">\(d\)</span>, we sum over the rectangle of completely observed reference dates for all <span class="math inline">\(d-1\)</span> columns (block top left) and sum over the column of completely observed reference dates for all of the entries in column <span class="math inline">\(d\)</span> (block left). The ratio of these two sums is assumed to be the same in the missing entries in column <span class="math inline">\(d\)</span>, so we use the entries observed up to <span class="math inline">\(d-1\)</span> for each incomplete reference date (block bottom left), and scale by this ratio to get the missing entries in column <span class="math inline">\(d\)</span>. This process is repeated for each delay from <span class="math inline">\(d\)</span> up to the maximum delay <span class="math inline">\(D\)</span>. At each iteration an additional reference time entry is computed as the delay <span class="math inline">\(d\)</span> increases.</p>
 <p>The delay distribution is then estimated from the filled in reporting matrix, using the same algorithm as described above for the case of the complete reporting square.</p>
 <p>The <code><a href="../reference/get_delay_estimate.html">get_delay_estimate()</a></code> function ingests either a reporting matrix, an incomplete reporting matrix, or a reporting triangle and uses the last <code>n</code> rows to compute an empirical delay probability mass function (returning a simplex vector indexed starting at delay 0).</p>
 </div>

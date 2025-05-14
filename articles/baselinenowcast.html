@@ -101,14 +101,17 @@ the most recent observations to estimate a delay distribution empirically, and
 apply that to the partially observed data to generate a nowcast.</p>
 <p>In the below section, we will describe an example of a nowcasting problem, and
 demonstrate how to use <code>baselinenowcast</code> to estimate a delay distribution from
-the data and apply that estimate to generate a probabilistic nowcast.</p>
+the data and apply that estimate to generate a probabilistic nowcast. This
+example will walk through the low-level functionality of the “default” model
+permutation. In future vignettes, we will demonstrate examples of how to
+create more complex model permutations.</p>
 </div>
 <div class="section level2" number="2">
 <h2 id="packages">
 <span class="header-section-number">2</span> Packages<a class="anchor" aria-label="anchor" href="#packages"></a>
 </h2>
 <p>As well as the <code>baselinenowcast</code> package this vignette also uses <code>epinowcast</code>,
-<code>ggplot2</code>, and <code>dplyr</code>.
+<code>ggplot2</code>, <code>lubridate</code>, <code>tidyr</code>, and <code>dplyr</code>.
 The installation of <code>epinowcast</code> is not required for using the package,
 however, its pre and post-processing functions provide a lot of the data
 wrangling needed to set up the nowcasting problem.
@@ -118,10 +121,12 @@ We will just be using the <code>R</code> components of <code>epinowcast</code>, 
 installed using the example lines of code below, so there is no need to
 additionally install <code>CmdStan</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Installing epinowcast</span></span>
-<span><span class="co"># install.packages( #nolint</span></span>
-<span><span class="co">#  "epinowcast", repos = "https://epinowcast.r-universe.dev" #nolint</span></span>
+<code class="sourceCode R"><span><span class="co"># nolint start</span></span>
+<span><span class="co"># Installing epinowcast</span></span>
+<span><span class="co"># install.packages(</span></span>
+<span><span class="co">#  "epinowcast", repos = "https://epinowcast.r-universe.dev"</span></span>
 <span><span class="co"># ) #nolint</span></span>
+<span><span class="co"># nolint end</span></span>
 <span><span class="co"># Load packages</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://baselinenowcast.epinowcast.org">baselinenowcast</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://package.epinowcast.org" class="external-link">epinowcast</a></span><span class="op">)</span></span>
@@ -139,7 +144,7 @@ additionally install <code>CmdStan</code>.</p>
 <p>Nowcasting of right-truncated case counts involves the estimation of reporting
 delays for recently reported data.
 For this, we need case counts indexed both by when they were diagnosed (often
-called “reference date”) and by when they were
+called the “reference date”) and by when they were
 reported (i.e. when administratively recorded via public health surveillance;
 often called “report date”). The difference between the reference date and the
 report date is the reporting delay.
@@ -154,14 +159,14 @@ of test report in Germany up to October 1, 2021.</p>
 </h2>
 <p>We will filter the data to just look at the national-level data, for all age
 groups.
-We will pretend that we are making a nowcast as of July 1, 2021, therefore we
-will exclude all reference dates and report dates after that date.
+We will pretend that we are making a nowcast as of August 1, 2021, therefore
+we will exclude all reference dates and report dates before that date.
 <code>germany_covid19_hosp</code> is provided as package data from <code>epinowcast</code>
 Let’s start by plotting the sum of the reports at each reference date,
-and then compare that to what we will eventually observe as of the final date
-in the complete dataset.
+and then compare that to what we will eventually observe as of the latest date
+in the complete dataset (data available through October 1, 2021)
 The red line shows the cumulative number of confirmed admissions on each report
-date, across all delays, using the data available as of July 1, 2021.
+date, across all delays, using the data available as of August 1, 2021.
 It demonstrates the characteristic behaviour of right-truncation.
 This is because we have not yet observed the data that will become available
 for the longer delays at recent time points.</p>
@@ -169,17 +174,20 @@ for the longer delays at recent time points.</p>
 at each reference date, observed as of the “fully observed” data on October
 2021.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data_long</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span> <span class="co"># import data from epinowcast</span></span>
+<code class="sourceCode R"><span><span class="va">nowcast_date</span> <span class="op">&lt;-</span> <span class="st">"2021-08-01"</span></span>
+<span><span class="va">eval_date</span> <span class="op">&lt;-</span> <span class="st">"2021-10-01"</span></span>
+<span></span>
+<span><span class="va">data_long</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span></span>
 <span><span class="va">data_filtered</span> <span class="op">&lt;-</span> <span class="va">data_long</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_report_dates.html" class="external-link">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-07-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_report_dates.html" class="external-link">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="va">nowcast_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>    <span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span>, <span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span>,</span>
-<span>    <span class="va">report_date</span> <span class="op">==</span> <span class="st">"2021-07-01"</span></span>
+<span>    <span class="va">report_date</span> <span class="op">==</span> <span class="va">nowcast_date</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="va">data_filtered_max</span> <span class="op">&lt;-</span> <span class="va">data_long</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>    <span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span>, <span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span>,</span>
-<span>    <span class="va">reference_date</span> <span class="op">&lt;=</span> <span class="st">"2021-07-01"</span></span>
+<span>    <span class="va">reference_date</span> <span class="op">&lt;=</span> <span class="va">nowcast_date</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>confirm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">confirm</span><span class="op">)</span><span class="op">)</span></span>
@@ -200,7 +208,7 @@ at each reference date, observed as of the “fully observed” data on October
 <p><img src="baselinenowcast_files/figure-html/plot-the-data-by-reference-date-1.png" width="672"></p>
 <p>Here the black line represents the quantity we will evaluate our nowcast
 against, the final observed cases, and the red line represents the observed
-cases we have observed up until July 1st, 2021.</p>
+cases we have observed up until August 1st, 2021.</p>
 </div>
 <div class="section level2" number="5">
 <h2 id="pre-processing">
@@ -222,31 +230,28 @@ scale of days to create the reporting triangle, but the delay and the reference
 date can have any temporal granularity.</p>
 <p>In this example, we will both fit our delay distribution, and apply it to
 generate a nowcast matrix using the same data, the national level data from
-Germany for all age groups.
-However, these components can be separated, so for example, we could use the
-national level data for all age groups to estimate a delay distribution, and
-then we could apply that elsewhere, for example to the data stratified by
-age group and location.
-This type of “borrowing” from another training dataset can be really useful
-when you have low counts or relatively sparse data, which is likely to be the
-case for smaller populations.</p>
-<p>In the below sections, we will specify our nowcast date, the maximum delay,
-and the number of reference time observations that we want to use to
-estimate the delay distribution.
-We recommend choosing the maximum delay and number of historical observations
+Germany for all age groups.</p>
+<p>In the below sections, we will specify the maximum delay,
+the number of reference times to use for delay estimation, and the number of
+reference times to use for uncertainty quantification. We will use 3 times the
+maximum delay for the total training volume, split into 50% used for delay
+delay estimation and 50% used for uncertainty estimation.</p>
+<p>We recommend choosing the maximum delay and number of historical observations
 based on an exploratory data analysis, as these specifications will change
 significantly depending on the dataset.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nowcast_date</span> <span class="op">&lt;-</span> <span class="st">"2021-07-01"</span></span>
-<span></span>
-<span><span class="co"># Specify the maximum delay, which will determine the length of your delay</span></span>
+<code class="sourceCode R"><span><span class="co"># Specify the maximum delay, which will determine the length of your delay</span></span>
 <span><span class="co"># distribution. Empirical data outside this delay window will not be used for</span></span>
 <span><span class="co"># training.</span></span>
-<span><span class="va">max_delay</span> <span class="op">&lt;-</span> <span class="fl">40</span></span>
+<span><span class="va">max_delay</span> <span class="op">&lt;-</span> <span class="fl">30</span></span>
+<span><span class="va">n_training_volume</span> <span class="op">&lt;-</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">max_delay</span></span>
 <span></span>
 <span><span class="co"># Specify the number of reference times to use to estimate the delay</span></span>
 <span><span class="co"># distribution. Note this assumes you want the most recent observations.</span></span>
-<span><span class="va">n_history_delay</span> <span class="op">&lt;-</span> <span class="fl">60</span></span></code></pre></div>
+<span><span class="va">n_history_delay</span> <span class="op">&lt;-</span> <span class="fl">0.5</span> <span class="op">*</span> <span class="va">n_training_volume</span></span>
+<span></span>
+<span><span class="co"># Specify the number of reference times to use for uncertainty estimation.</span></span>
+<span><span class="va">n_history_uncertainty</span> <span class="op">&lt;-</span> <span class="fl">0.5</span> <span class="op">*</span> <span class="va">n_training_volume</span></span></code></pre></div>
 <p>Next we will use the <code>epinowcast</code> function, <code><a href="https://package.epinowcast.org/reference/enw_preprocess_data.html" class="external-link">enw_preprocess_data()</a></code> and the
 data in the form of a long tidy dataframe indexed by reference date and
 report date and filtered to the strata we are interested in, to generate a
@@ -257,16 +262,16 @@ reporting triangle.</p>
 <span><span class="co"># observed long above.</span></span>
 <span><span class="va">observed_long</span> <span class="op">&lt;-</span> <span class="va">data_long</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="co"># nolint</span></span>
 <span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_report_dates.html" class="external-link">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="va">nowcast_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_reference_dates.html" class="external-link">enw_filter_reference_dates</a></span><span class="op">(</span>include_days <span class="op">=</span> <span class="va">n_history_delay</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_reference_dates.html" class="external-link">enw_filter_reference_dates</a></span><span class="op">(</span>include_days <span class="op">=</span> <span class="va">n_training_volume</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="co"># nolint</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">observed_long</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##    reference_date location age_group confirm report_date</span></span>
 <span><span class="co">##            &lt;IDat&gt;   &lt;fctr&gt;    &lt;fctr&gt;   &lt;int&gt;      &lt;IDat&gt;</span></span>
-<span><span class="co">## 1:     2021-05-03       DE       00+     107  2021-05-03</span></span>
-<span><span class="co">## 2:     2021-05-04       DE       00+     240  2021-05-04</span></span>
-<span><span class="co">## 3:     2021-05-05       DE       00+     245  2021-05-05</span></span>
-<span><span class="co">## 4:     2021-05-06       DE       00+     259  2021-05-06</span></span>
-<span><span class="co">## 5:     2021-05-07       DE       00+     263  2021-05-07</span></span>
-<span><span class="co">## 6:     2021-05-08       DE       00+     189  2021-05-08</span></span></code></pre>
+<span><span class="co">## 1:     2021-05-04       DE       00+     240  2021-05-04</span></span>
+<span><span class="co">## 2:     2021-05-05       DE       00+     245  2021-05-05</span></span>
+<span><span class="co">## 3:     2021-05-06       DE       00+     259  2021-05-06</span></span>
+<span><span class="co">## 4:     2021-05-07       DE       00+     263  2021-05-07</span></span>
+<span><span class="co">## 5:     2021-05-08       DE       00+     189  2021-05-08</span></span>
+<span><span class="co">## 6:     2021-05-09       DE       00+      97  2021-05-09</span></span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get the reporting triangle, adding an additional day because epinowcast</span></span>
 <span><span class="co"># we want the max_delay + 1 entries since 0 is a valid delay.</span></span>
@@ -294,47 +299,47 @@ reporting triangle.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">reporting_triangle</span>, n <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##        0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23</span></span>
-<span><span class="co">## [41,] 29 21  2 10  9  6  1  1  1  0  5  2  2  0  4  1  1  1  1  2 NA NA NA NA</span></span>
-<span><span class="co">## [42,] 14  7 16  4  0  1  3  0  0  3  2  1  1  1  0  0  2  0  0 NA NA NA NA NA</span></span>
-<span><span class="co">## [43,] 12 12  7  0  2  6  1  1  1  1  1  0  0  0  0  0  0  0 NA NA NA NA NA NA</span></span>
-<span><span class="co">## [44,] 41 28 10  6  0  0  0  2  1  1  3  0  3  0  0  1  0 NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [45,] 34 18  8  9  1  2  4  5  3  0  1  1  2  2  1  0 NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [46,] 36 16  4  6  2  7  5  0  1  2  1  0  3  2  1 NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [47,] 23  9  4  3  7  6  2  4  4  2  1  1  5  1 NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [48,] 26  7  3  4  3  3  2  3  2  0  0  0  1 NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [49,] 16  7  7  2  1  1  3  0  0  2  1  2 NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [50,]  4 11  5  1  0  2  0  0  0  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [51,] 24 18  4  5  2  1  0  0  2  2 NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [52,] 32 15 11  2  0  1  2  0  2 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [53,] 34 17  4  1  0  0  0  1 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [54,] 21 13  2  0  5  2  1 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [55,] 16  4  3  5  3  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [56,]  5  6  5  1  3 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [57,]  3  5  2  1 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [58,] 20 11  4 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [59,] 20 17 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [60,] 20 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">##       24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40</span></span>
-<span><span class="co">## [41,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [42,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [43,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [44,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [45,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [46,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [47,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [48,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [49,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [50,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [51,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [52,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [53,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [54,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [55,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [56,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [57,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [58,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [59,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## [60,] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span></code></pre>
+<span><span class="co">## [71,] 21 12  3  4  3  0  1  2  4  3  0  0  2  0  0  0  1  2  1  0 NA NA NA NA</span></span>
+<span><span class="co">## [72,] 22 12  4  5  0  1 10  2  5  3  0  1  0  3  1  0  1  0  0 NA NA NA NA NA</span></span>
+<span><span class="co">## [73,] 28 15  3  3  0  1  3  2  3  2  1  0  2  3  0  3  0  0 NA NA NA NA NA NA</span></span>
+<span><span class="co">## [74,] 19 13  0  0  0  4  2  2  2  1  1  1  0  1  0  0  1 NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [75,] 20  7  1  3 10  3  0  4  3  3  2  0  1  2  0  1 NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [76,]  9  6  6  0  4  5  4  0  1  4  0  0  1  1  1 NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [77,]  3 16  4  4  1  1  2  0  0  0  0  1  1  1 NA NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [78,] 36 19 10  4  2  3  0  3  2  3  0  2  1 NA NA NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [79,] 28 18  8  4  1  2  3  6  1  5  2  2 NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [80,] 34 19  2  1  5  2  4  3  7  3  1 NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [81,] 30 12  4  1 10  6  0  2  2  1 NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [82,] 31  8  4  9  8  2  5  2  1 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [83,]  8  4 14  8  6  5  1  3 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [84,]  9  6  2  3  0  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [85,] 35 11  6  4  4  1 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [86,] 51 28 25  3  5 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [87,] 47 37  9  2 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [88,] 36 20  2 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [89,] 38 16 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [90,]  7 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">##       24 25 26 27 28 29 30</span></span>
+<span><span class="co">## [71,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [72,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [73,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [74,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [75,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [76,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [77,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [78,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [79,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [80,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [81,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [82,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [83,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [84,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [85,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [86,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [87,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [88,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [89,] NA NA NA NA NA NA NA</span></span>
+<span><span class="co">## [90,] NA NA NA NA NA NA NA</span></span></code></pre>
 <p>To see what this looks like, we can plot it using <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot()</a></code>.
 In this figure, the grey indicates matrix elements that are <code>NA</code>, which we
 would expect to be the case in the bottom right portion of the reporting
@@ -383,9 +388,9 @@ need to be missing).
 - <code>max_delay</code>: an integer indicating the maximum delay to estimate. This must
 be less than or equal to the number of rows in <code>triangle</code> minus 1, since we
 assume <code>triangle</code> is indexed at 0.
-- <code>n_history_delay</code>: an integer indicating the number of observations by reference
+- <code>n</code>: an integer indicating the number of observations by reference
 date to use to fit the delay distribution. This must be less than or equal to
-the number of rows in <code>triangle</code>.</p>
+the number of rows in <code>triangle</code>. Here we will use <code>n_history_delay</code>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">delay_pmf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_delay_estimate.html">get_delay_estimate</a></span><span class="op">(</span></span>
 <span>  reporting_triangle <span class="op">=</span> <span class="va">reporting_triangle</span>,</span>
@@ -427,6 +432,10 @@ In this case, we will be applying the delay to the same reporting triangle we
 used to generate the estimate, but this doesn’t always have to be the case.
 The reporting triangle we are applying it to must have the same <code>max_delay</code>
 as the delay estimate.</p>
+<p>It is worth noting that we could also have estimated the delay and applied it
+in one single step by calling <code><a href="../reference/generate_pt_nowcast_mat.html">generate_pt_nowcast_mat()</a></code>. In subsequent steps
+to estimate the uncertainty, both delay estimation and generating a point
+nowcast matrix happen in a single step.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">point_nowcast_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apply_delay.html">apply_delay</a></span><span class="op">(</span></span>
 <span>  rep_tri_to_nowcast <span class="op">=</span> <span class="va">reporting_triangle</span>,</span>
@@ -437,10 +446,10 @@ July 1, 2021, from the observations up until October 1, 2021.
 We’ll compare this to the right-truncated data available up until July 1, 2021.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">final_data</span> <span class="op">&lt;-</span> <span class="va">data_long</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="co"># nolint</span></span>
-<span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_report_dates.html" class="external-link">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-10-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_report_dates.html" class="external-link">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="va">eval_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_reference_dates.html" class="external-link">enw_filter_reference_dates</a></span><span class="op">(</span></span>
-<span>    latest_date <span class="op">=</span> <span class="st">"2021-07-01"</span>,</span>
-<span>    include_days <span class="op">=</span> <span class="va">n_history_delay</span> <span class="op">-</span> <span class="fl">1</span></span>
+<span>    latest_date <span class="op">=</span> <span class="va">nowcast_date</span>,</span>
+<span>    include_days <span class="op">=</span> <span class="va">n_training_volume</span> <span class="op">-</span> <span class="fl">1</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
@@ -452,7 +461,7 @@ We’ll compare this to the right-truncated data available up until July 1, 2021
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>total_confirmed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">confirm</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span></span>
-<span>    <span class="co"># Plot the data summed across reporting days as of July 1,2021</span></span>
+<span>    <span class="co"># Plot the data summed across reporting days as of August 1,2021</span></span>
 <span>    data <span class="op">=</span> <span class="va">summary_data</span>,</span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">reference_date</span>, y <span class="op">=</span> <span class="va">total_confirmed</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"darkred"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
@@ -470,7 +479,7 @@ We’ll compare this to the right-truncated data available up until July 1, 2021
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>trans <span class="op">=</span> <span class="st">"log10"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Comparing real-time, nowcasted, and later observed cases"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="baselinenowcast_files/figure-html/unnamed-chunk-2-1.png" width="672"></p>
-<p>Here we can see that our point nowcast slightly overestimates what was
+<p>Here we can see that our point nowcast slightly underestimates what was
 eventually reported (black line), but does a decent overall job of correcting
 for the right-truncation observed in the red line (the data prior to the
 nowcast).</p>
@@ -481,27 +490,29 @@ nowcast).</p>
 </h2>
 <p>So far, we’ve demonstrated how to generate a point estimate of a nowcast.
 We would like to generate probabilistic nowcasts.
-To do so, we will use the error between the observations that we have and what
-we would have nowcasted retrospectively. We will assume that the observations
-follow a negative binomial observation model, and independently estimate the
-dispersion in the negative binomial at each delay <span class="math inline">\(d\)</span>.</p>
+To do so, we will use the error between the predicted components of
+retrospectively generated nowcasts (aggregated across the delays) and
+the corresponding observations that we have already observed.
+We will assume that the observations follow a negative binomial observation
+model, and independently estimate the
+dispersion in the negative binomial at each forecast horizon.</p>
 <p>The method used to estimate the uncertainty in the nowcast simulates exactly
 the iterative process, by generating retrospective reporting
-triangles using what would have been available as of the time, and then for
-each reporting triangle, estimating a delay distribution and generating
-a nowcast.</p>
+triangles using what would have been available as of each reference time,
+and then for each reporting triangle, estimating a delay distribution and
+generating a point nowcast matrix.</p>
 <p>To do this, we will first generate truncated reporting matrices from the
 latest reporting triangle, generate retrospective reporting triangles
 by removing observations that wouldn’t have been observed as of the latest time
 point, and lastly generate nowcasts from that list of retrospective reporting
-triangles.
-The function will default to assuming you want to generate
-as many retrospective reporting triangles that you will be able to generate
-nowcasts from. In this case, the function will return 18 retrospective
-reporting triangles, with the smallest one containing 42 rows, all of which
-are needed to generate a nowcast of reporting triangle with 41 delay columns.</p>
+triangles.</p>
+<p>We will repeat this iterative process for <code>n_history_uncertainty</code> reference
+times in the reporting triangle, which are treated as retrospective nowcast
+times. We start from the latest and work backwards.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trunc_rep_tri_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/truncate_triangles.html">truncate_triangles</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">trunc_rep_tri_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/truncate_triangles.html">truncate_triangles</a></span><span class="op">(</span><span class="va">reporting_triangle</span>,</span>
+<span>  n <span class="op">=</span> <span class="va">n_history_uncertainty</span></span>
+<span><span class="op">)</span></span>
 <span><span class="va">retro_rep_tri_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_triangles.html">generate_triangles</a></span><span class="op">(</span><span class="va">trunc_rep_tri_list</span><span class="op">)</span></span></code></pre></div>
 <p>The <code><a href="../reference/generate_triangles.html">generate_triangles()</a></code> function returns a list of
 reporting triangles, in order from the most to least
@@ -511,10 +522,11 @@ that each triangle will have a different number of rows.</p>
 <p>Next we will pass this list of reporting triangles to the
 <code><a href="../reference/generate_pt_nowcast_mat_list.html">generate_pt_nowcast_mat_list()</a></code>. In this function, we can also specify
 <code>n</code>, the number of reference times to be used to estimate the delay for each
-nowcast.</p>
+nowcast, which we will set as the <code>n_history_delay</code> previous specified.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">retro_pt_nowcast_mat_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_pt_nowcast_mat_list.html">generate_pt_nowcast_mat_list</a></span><span class="op">(</span></span>
-<span>  reporting_triangle_list <span class="op">=</span> <span class="va">retro_rep_tri_list</span></span>
+<span>  reporting_triangle_list <span class="op">=</span> <span class="va">retro_rep_tri_list</span>,</span>
+<span>  n <span class="op">=</span> <span class="va">n_history_delay</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Next, we will use the list of retrospective reporting triangles to estimate
 the uncertainty at each horizon, starting at horizon 0.</p>
@@ -557,10 +569,10 @@ data available as of the nowcast time (red).</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Join with the original data</span></span>
 <span><span class="va">final_data</span> <span class="op">&lt;-</span> <span class="va">data_long</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="co"># nolint</span></span>
-<span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_report_dates.html" class="external-link">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-10-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_report_dates.html" class="external-link">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="va">eval_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_reference_dates.html" class="external-link">enw_filter_reference_dates</a></span><span class="op">(</span></span>
-<span>    latest_date <span class="op">=</span> <span class="st">"2021-07-01"</span>,</span>
-<span>    include_days <span class="op">=</span> <span class="va">n_history_delay</span> <span class="op">-</span> <span class="fl">1</span></span>
+<span>    latest_date <span class="op">=</span> <span class="va">nowcast_date</span>,</span>
+<span>    include_days <span class="op">=</span> <span class="va">n_training_volume</span> <span class="op">-</span> <span class="fl">1</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>

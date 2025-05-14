@@ -102,13 +102,19 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
   # Print summary
   if (length(error_indices) == length(reporting_triangle_list)) {
     cli_abort(
-      message = c(sprintf("\nErrors occurred in all %s reporting triangles.", length(reporting_triangle_list)))
+      message = c(sprintf(
+        "\nErrors occurred in all %s reporting triangles.",
+        length(reporting_triangle_list)
+      ))
     )
   } else if (length(error_indices) > 0) {
-    cat(sprintf("\nErrors occurred at indices: %s\n", paste(error_indices, collapse = ", ")))
+    cat(sprintf("\nErrors occurred at indices: %s\n", toString(error_indices,
+      collapse = ", "
+    )))
     cat(sprintf(
       "Successfully processed %d out of %d matrices\n",
-      length(reporting_triangle_list) - length(error_indices), length(reporting_triangle_list)
+      length(reporting_triangle_list) - length(error_indices),
+      length(reporting_triangle_list)
     ))
   }
 

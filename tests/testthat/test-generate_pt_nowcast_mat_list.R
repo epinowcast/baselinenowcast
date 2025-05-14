@@ -160,14 +160,8 @@ test_that("Function handles a single triangle with 0s for first column appropria
 
   retro_rts_list <- list(test_triangle_1, test_triangle_2, triangle3)
 
-  result <- generate_pt_nowcast_mat_list(retro_rts_list)
-  expect_identical(result[[3]]$error_index, 3L)
-  expect_identical(result[[3]]$error_message, "Point nowcast matrix could not be generated from the reporting triangle at index 3.")
-  # Test that the message is correct.
-  expect_message(
-    generate_pt_nowcast_mat_list(retro_rts_list),
-    "Point nowcast matrix could not be generated from the reporting triangle at index 3"
-  )
+  result <- expect_message(generate_pt_nowcast_mat_list(retro_rts_list))
+  expect_null(result[[3]])
 })
 
 test_that("Function errors if only contains triangles with first column 0", { # nolint
@@ -211,5 +205,5 @@ test_that("Function errors if only contains triangles with first column 0", { # 
 
   retro_rts_list <- list(triangle1, triangle2, triangle3)
 
-  expect_error(generate_pt_nowcast_mat_list(retro_rts_list))
+  expect_error(expect_message(generate_pt_nowcast_mat_list(retro_rts_list)))
 })

@@ -78,10 +78,14 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
         max_delay = max_delay
       )
       if (!is.null(result$error)) {
-        # Return NULL if there was an error
-        msg <- sprintf("Point nowcast matrix could not be generated from the reporting triangle at index %i.", ind)
-        message(msg)
-        return(list(error_index = ind, error_message = msg, error = result$error))
+        # Print the index and the error message
+        error_msg <- sprintf(
+          "Error at index %d: Point nowcast matrix could not be generated - %s",
+          ind,
+          result$error$message
+        )
+        message(error_msg)
+        return(NULL)
       } else {
         # Return the result if successful
         return(result$result)
@@ -94,46 +98,20 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
   )
 
   # After running, filter the results to find error indices
-  error_indices <- sapply(pt_nowcast_mat_list, function(x) {
-    if (is.list(x) && !is.null(x$error_index)) {
-      return(x$error_index)
-    } else {
-      return(NA)
-    }
-  })
-
-  # Extract valid indices and error indices
-  valid_indices <- which(!sapply(pt_nowcast_mat_list, function(x) is.list(x) && !is.null(x$error_index)))
-  error_indices <- which(sapply(pt_nowcast_mat_list, function(x) is.list(x) && !is.null(x$error_index)))
-
+  error_indices <- which(sapply(pt_nowcast_mat_list, is.null))
   # Print summary
   if (length(error_indices) == length(reporting_triangle_list)) {
     cli_abort(
-      message = c(sprintf("Errors occurred in all %s reporting triangles.", length(reporting_triangle_list)))
+      message = c(sprintf("\nErrors occurred in all %s reporting triangles.", length(reporting_triangle_list)))
     )
   } else if (length(error_indices) > 0) {
-    cat(sprintf("Errors occurred at indices: %s\n", paste(error_indices, collapse = ", ")))
+    cat(sprintf("\nErrors occurred at indices: %s\n", paste(error_indices, collapse = ", ")))
     cat(sprintf(
       "Successfully processed %d out of %d matrices\n",
-      length(valid_indices), length(reporting_triangle_list)
+      length(reporting_triangle_list) - length(error_indices), length(reporting_triangle_list)
     ))
-  } else {
-    cat(sprintf("All %d matrices processed successfully\n", length(reporting_triangle_list)))
   }
 
-  # null_indices <- which(sapply(pt_nowcast_mat_list, is.null))
-  # n_rts <- length(pt_nowcast_mat_list)
-  # if (n_rts - length(null_indices) == 0) {
-  #   cli_abort(
-  #     message = c(
-  #       "No retrospective point nowcast matrices were generated from the ",
-  #       "`reporting_triangle_list`. Consider passing in separate delay PMFs."
-  #     )
-  #   )
-  # } else if (length(null_indices)  > 0 && n_rts - length(null_indices) > 0 ) {
-  #   message(sprintf("%d of %d retrospective point nowcast matrices are NULL.", length(null_indices), n_rts)) # nolint
-  #   message(sprintf("The following indices in the list are NULL: %d. Investigate the error at these indices to find out more information.", null_indices))
-  # }
 
   return(pt_nowcast_mat_list)
 }

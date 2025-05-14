@@ -197,9 +197,7 @@ test_that("Output of generate_pt_nowcast_mat_list is accepted", {
 
   retro_rts_list <- list(test_triangle_1, test_triangle_2, triangle3)
 
-  pt_nowcast_list <- generate_pt_nowcast_mat_list(retro_rts_list)
+  pt_nowcast_list <- expect_message(generate_pt_nowcast_mat_list(retro_rts_list))
   trunc_rep_tri_list <- truncate_triangles(base_tri)
-  # This will error because pt_nowcast_list doesn't contain the a NULL as is
-  # expected
-  result <- estimate_dispersion(pt_nowcast_list, trunc_rep_tri_list)
+  expect_no_error(estimate_dispersion(pt_nowcast_list, trunc_rep_tri_list))
 })

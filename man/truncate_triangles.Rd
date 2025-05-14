@@ -16,8 +16,9 @@ time points of reference and columns representing the delays.}
 
 \item{n}{Integer indicating the number of retrospective
 truncated triangles to be generated, always starting from the most
-recent reference time. Default is to generate triangles for 50\% of the
-reporting triangle}
+recent reference time. Default is to generate truncated matrices
+for all triangles that would have a sufficient number of rows to generate
+a nowcast from.}
 }
 \value{
 \code{trunc_rep_mat_list} List of \code{n} truncated reporting triangle

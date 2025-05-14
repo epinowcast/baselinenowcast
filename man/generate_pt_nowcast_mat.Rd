@@ -24,8 +24,9 @@ of the delay. The default is to use the whole reporting triangle,
 
 \item{n}{Integer indicating the number of reference times (observations) to
 be used in the estimate of the reporting delay, always starting from the
-most recent reporting delay. The default is to use the whole reporting
-triangle, so \code{nrow(triangle)}.}
+most recent reporting delay. The default is to use a minimum of the
+\code{max_delay} + 1 and a maximum of 50\% of the rows of the reporting
+triangle.}
 
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
 first delay column in \code{triangle_to_nowcast}.}

@@ -18,8 +18,9 @@
 #'   `ncol(triangle) -1`.
 #' @param n Integer indicating the number of reference times (observations) to
 #'   be used in the estimate of the reporting delay, always starting from the
-#'   most recent reporting delay. The default is to use the whole reporting
-#'   triangle, so `nrow(triangle)`.
+#'   most recent reporting delay. The default is to use a minimum of the
+#'    `max_delay` + 1 and a maximum of 50% of the rows of the reporting
+#'    triangle.
 #' @returns Vector indexed at 0 of length `max_delay + 1` with columns
 #'   indicating the point estimate of the empirical probability
 #'   mass on each delay.
@@ -46,7 +47,7 @@
 get_delay_estimate <- function(
     reporting_triangle,
     max_delay = ncol(reporting_triangle) - 1,
-    n = nrow(reporting_triangle)) {
+    n = max(max_delay:round(0.5 * nrow(reporting_triangle)))) {
   # Check that the input reporting triangle is formatted properly.
   .validate_triangle(
     triangle = reporting_triangle,

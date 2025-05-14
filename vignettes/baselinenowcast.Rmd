@@ -92,14 +92,14 @@ of test report in Germany up to October 1, 2021.
 
 We will filter the data to just look at the national-level data, for all age
 groups.
-We will pretend that we are making a nowcast as of July 1, 2021, therefore we
-will exclude all reference dates and report dates before that date.
+We will pretend that we are making a nowcast as of August 1, 2021, therefore
+we will exclude all reference dates and report dates before that date.
 `germany_covid19_hosp` is provided as package data from `epinowcast`
 Let's start by plotting the sum of the reports at each reference date,
-and then compare that to what we will eventually observe as of the final date
+and then compare that to what we will eventually observe as of the latest date
 in the complete dataset (data available through October 1, 2021)
 The red line shows the cumulative number of confirmed admissions on each report
-date, across all delays, using the data available as of July 1, 2021.
+date, across all delays, using the data available as of August 1, 2021.
 It demonstrates the characteristic behaviour of right-truncation.
 This is because we have not yet observed the data that will become available
 for the longer delays at recent time points.
@@ -108,17 +108,19 @@ Our task will be to estimate what the "final" cumulative number of cases
 at each reference date, observed as of the "fully observed" data on October
 2021.
 ```{r plot-the-data-by-reference-date}
-data_long <- germany_covid19_hosp # import data from epinowcast
+nowcast_date <- "2021-08-01"
+
+data_long <- germany_covid19_hosp
 data_filtered <- data_long |>
-  enw_filter_report_dates(latest_date = "2021-07-01") |>
+  enw_filter_report_dates(latest_date = nowcast_date) |>
   filter(
     location == "DE", age_group == "00+",
-    report_date == "2021-07-01"
+    report_date == nowcast_date
   )
 data_filtered_max <- data_long |>
   filter(
     location == "DE", age_group == "00+",
-    reference_date <= "2021-07-01"
+    reference_date <= nowcast_date
   ) |>
   group_by(reference_date) |>
   summarise(confirm = max(confirm))
@@ -140,7 +142,7 @@ ggplot() +
 
 Here the black line represents the quantity we will evaluate our nowcast
 against, the final observed cases, and the red line represents the observed
-cases we have observed up until July 1st, 2021.
+cases we have observed up until August 1st, 2021.
 
 # Pre-processing
 
@@ -163,7 +165,7 @@ In this example, we will both fit our delay distribution, and apply it to
 generate a nowcast matrix using the same data, the national level data from
 Germany for all age groups.
 
-In the below sections, we will specify our nowcast date, the maximum delay,
+In the below sections, we will specify the maximum delay,
 the number of reference times to use for delay estimation, and the number of
 reference times to use for uncertainty quantification. We will use 3 times the
 maximum delay for the total training volume, split into 50% used for delay
@@ -173,19 +175,17 @@ We recommend choosing the maximum delay and number of historical observations
 based on an exploratory data analysis, as these specifications will change
 significantly depending on the dataset.
 ```{r user-specificatons}
-nowcast_date <- "2021-07-01"
-
 # Specify the maximum delay, which will determine the length of your delay
 # distribution. Empirical data outside this delay window will not be used for
 # training.
-max_delay <- 40
+max_delay <- 30
 
 # Specify the number of reference times to use to estimate the delay
 # distribution. Note this assumes you want the most recent observations.
-n_history_delay <- 60
+n_history_delay <- 45
 
 # Specify the number of reference times to use for uncertainty estimation.
-n_history_uncertainty <- 60
+n_history_uncertainty <- 45
 ```
 
 Next we will use the `epinowcast` function, `enw_preprocess_data()` and the
@@ -198,7 +198,7 @@ reporting triangle.
 # observed long above.
 observed_long <- data_long[location == "DE"][age_group == "00+"] |> # nolint
   enw_filter_report_dates(latest_date = nowcast_date) |>
-  enw_filter_reference_dates(include_days = n_history_delay - 1)
+  enw_filter_reference_dates(include_days = n_history_delay + n_history_uncertainty - 1) # nolint
 head(observed_long)
 # Get the reporting triangle, adding an additional day because epinowcast
 # we want the max_delay + 1 entries since 0 is a valid delay.
@@ -331,8 +331,8 @@ We'll compare this to the right-truncated data available up until July 1, 2021.
 final_data <- data_long[location == "DE"][age_group == "00+"] |> # nolint
   enw_filter_report_dates(latest_date = "2021-10-01") |>
   enw_filter_reference_dates(
-    latest_date = "2021-07-01",
-    include_days = n_history_delay - 1
+    latest_date = nowcast_date,
+    include_days = n_history_delay + n_history_uncertainty - 1
   ) |>
   group_by(reference_date) |>
   summarise(
@@ -363,7 +363,7 @@ ggplot() +
   ggtitle("Comparing real-time, nowcasted, and later observed cases")
 ```
 
-Here we can see that our point nowcast slightly overestimates what was
+Here we can see that our point nowcast slightly underestimates what was
 eventually reported (black line), but does a decent overall job of correcting
 for the right-truncation observed in the red line (the data prior to the
 nowcast).
@@ -373,31 +373,34 @@ nowcast).
 
 So far, we've demonstrated how to generate a point estimate of a nowcast.
 We would like to generate probabilistic nowcasts.
-To do so, we will use the error between the observations that we have and what
-we would have nowcasted retrospectively. We will assume that the observations
-follow a negative binomial observation model, and independently estimate the
-dispersion in the negative binomial at each delay $d$.
+To do so, we will use the error between the predicted components of
+retrospectively generated nowcasts (aggregated across the delays) and
+the corresponding observations that we have already observed.
+We will assume that the observations follow a negative binomial observation
+model, and independently estimate the
+dispersion in the negative binomial at each forecast horizon.
 
 The method used to estimate the uncertainty in the nowcast simulates exactly
 the iterative process, by generating retrospective reporting
-triangles using what would have been available as of the time, and then for
-each reporting triangle, estimating a delay distribution and generating
-a nowcast.
+triangles using what would have been available as of each reference time,
+and then for each reporting triangle, estimating a delay distribution and
+generating a point nowcast matrix.
 
 To do this, we will first generate truncated reporting matrices from the
 latest reporting triangle, generate retrospective reporting triangles
 by removing observations that wouldn't have been observed as of the latest time
 point, and lastly generate nowcasts from that list of retrospective reporting
 triangles.
-The function will default to assuming you want to generate
-as many retrospective reporting triangles that you will be able to generate
-nowcasts from. In this case, the function will return 18 retrospective
-reporting triangles, with the smallest one containing 42 rows, all of which
-are needed to generate a nowcast of reporting triangle with 41 delay columns.
+
+We will repeat this iterative process for `n_history_uncertainty` reference
+times in the reporting triangle, which are treated as retrospective nowcast
+times. We start from the latest and work backwards.
 
 
 ```{r generate-triangles}
-trunc_rep_tri_list <- truncate_triangles(reporting_triangle)
+trunc_rep_tri_list <- truncate_triangles(reporting_triangle,
+  n = n_history_uncertainty
+)
 retro_rep_tri_list <- generate_triangles(trunc_rep_tri_list)
 ```
 The `generate_triangles()` function returns a list of
@@ -409,10 +412,11 @@ that each triangle will have a different number of rows.
 Next we will pass this list of reporting triangles to the
 `generate_pt_nowcast_mat_list()`. In this function, we can also specify
 `n`, the number of reference times to be used to estimate the delay for each
-nowcast.
+nowcast, which we will set as the `n_history_delay` previous specified.
 ```{r generate-nowcasts}
 retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
-  reporting_triangle_list = retro_rep_tri_list
+  reporting_triangle_list = retro_rep_tri_list,
+  n = n_history_delay
 )
 ```
 
@@ -466,8 +470,8 @@ data available as of the nowcast time (red).
 final_data <- data_long[location == "DE"][age_group == "00+"] |> # nolint
   enw_filter_report_dates(latest_date = "2021-10-01") |>
   enw_filter_reference_dates(
-    latest_date = "2021-07-01",
-    include_days = n_history_delay - 1
+    latest_date = nowcast_date,
+    include_days = n_history_delay + n_history_uncertainty - 1
   ) |>
   group_by(reference_date) |>
   summarise(

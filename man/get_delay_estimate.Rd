@@ -16,7 +16,7 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116
 get_delay_estimate(
   reporting_triangle,
   max_delay = ncol(reporting_triangle) - 1,
-  n = nrow(reporting_triangle)
+  n = max(max_delay:round(0.5 * nrow(reporting_triangle)))
 )
 }
 \arguments{
@@ -32,8 +32,9 @@ of the delay. The default is to use the whole reporting triangle,
 
 \item{n}{Integer indicating the number of reference times (observations) to
 be used in the estimate of the reporting delay, always starting from the
-most recent reporting delay. The default is to use the whole reporting
-triangle, so \code{nrow(triangle)}.}
+most recent reporting delay. The default is to use a minimum of the
+\code{max_delay} + 1 and a maximum of 50\% of the rows of the reporting
+triangle.}
 }
 \value{
 Vector indexed at 0 of length \code{max_delay + 1} with columns

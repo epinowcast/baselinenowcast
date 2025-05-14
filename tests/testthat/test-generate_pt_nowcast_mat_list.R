@@ -161,11 +161,12 @@ test_that("Function handles a single triangle with 0s for first column appropria
   retro_rts_list <- list(test_triangle_1, test_triangle_2, triangle3)
 
   result <- generate_pt_nowcast_mat_list(retro_rts_list)
-  expect_null(result[[3]])
+  expect_identical(result[[3]]$error_index, 3L)
+  expect_identical(result[[3]]$error_message, "Point nowcast matrix could not be generated from the reporting triangle at index 3.")
   # Test that the message is correct.
   expect_message(
     generate_pt_nowcast_mat_list(retro_rts_list),
-    "1 of 3 retrospective point nowcast matrices are NULL due to 0s"
+    "Point nowcast matrix could not be generated from the reporting triangle at index 3"
   )
 })
 

@@ -140,3 +140,66 @@ test_that("Passing in a NULL for a nowcast still returns an estimate", {
 test_that("Passing in only NULLs for nowcasts returns an error", {
   expect_error(estimate_dispersion(list(NULL, NULL), valid_trunc_rts))
 })
+
+test_that("Output of generate_pt_nowcast_mat_list is accepted", {
+  base_tri <- matrix(
+    c(
+      89, 54, 10, 5,
+      65, 46, 21, 7,
+      70, 40, 20, 5,
+      80, 50, 10, 10,
+      100, 40, 31, 20,
+      95, 45, 21, NA,
+      82, 42, NA, NA,
+      70, NA, NA, NA
+    ),
+    nrow = 8,
+    byrow = TRUE
+  )
+
+  test_triangle_1 <- matrix(
+    c(
+      65, 46, 21, 7,
+      70, 40, 20, 5,
+      80, 50, 10, 10,
+      100, 40, 31, 20,
+      95, 45, 21, NA,
+      82, 42, NA, NA,
+      70, NA, NA, NA
+    ),
+    nrow = 7,
+    byrow = TRUE
+  )
+
+  test_triangle_2 <- matrix(
+    c(
+      65, 46, 21, 7,
+      70, 40, 20, 5,
+      80, 50, 10, 10,
+      100, 40, 31, NA,
+      95, 45, NA, NA,
+      82, NA, NA, NA
+    ),
+    nrow = 6,
+    byrow = TRUE
+  )
+  triangle3 <- matrix(
+    c(
+      0, 40, 20, 5,
+      0, 50, 10, 10,
+      0, 40, 31, NA,
+      0, 45, NA, NA,
+      0, NA, NA, NA
+    ),
+    nrow = 5,
+    byrow = TRUE
+  )
+
+  retro_rts_list <- list(test_triangle_1, test_triangle_2, triangle3)
+
+  pt_nowcast_list <- generate_pt_nowcast_mat_list(retro_rts_list)
+  trunc_rep_tri_list <- truncate_triangles(base_tri)
+  # This will error because pt_nowcast_list doesn't contain the a NULL as is
+  # expected
+  result <- estimate_dispersion(pt_nowcast_list, trunc_rep_tri_list)
+})

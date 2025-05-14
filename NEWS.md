@@ -1,6 +1,7 @@
 # baselinenowcast 0.0.0.1000
 
 -   Implements a safe iterator in the step where retrospective point nowcasts are generated from a list of retrospective reporting triangles, ensuring that the iterations continue even if not all retrospective point nowcasts can be generated.
+-   Modify vignette to be consistent with the decided upon defaults for the number of reference times used for delay estimation and uncertainty.
 -   Replace function named`replace_lower_right_with_NA()` with `generate_triangle()`.
 -   Removes requirement that all elements of the reporting triangle are integers.
 -   Modify the method used to estimate dispersion. Instead of estimating dispersion on individual elements of the nowcast matrix, we now estimate dispersion on the predicted nowcasts summed across reporting dates as a function of forecast horizon.

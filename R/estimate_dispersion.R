@@ -18,8 +18,9 @@
 #'    mean, but for now since we are only providing a negative binomial
 #'    observation model, we can only allow sum (min or max would work but
 #'    wouldn't make much sense).
-#' @param k Integer indicating the number `width` of the call to `rollapply`.
-#'    Default is 1.
+#' @param k Integer indicating the number of reference times to apply the
+#'    `fun_to_aggregate` over to create target used to compute the nowcast
+#'    errors.
 #' @importFrom checkmate assert_integerish
 #' @returns Vector of length one less than the number of columns in the
 #'    latest reporting triangle, with each element representing the estimate

@@ -67,26 +67,28 @@ test_that("generate_pt_nowcast_mat_list takes in delay_pmf as vector or list", {
 })
 
 test_that(
-  "generate_pt_nowcast_mat_list default n_history_delay uses minimum rows", {
-  # Input matrices have 7 and 7 rows → min = 6
-  result_default <- generate_pt_nowcast_mat_list(
-    reporting_triangle_list = retro_rts_list
-  )
-  result_custom_w_def <- generate_pt_nowcast_mat_list(
-    reporting_triangle_list = retro_rts_list,
-    n = 6
-  )
-  result_custom <- generate_pt_nowcast_mat_list(
-    reporting_triangle_list = retro_rts_list,
-    n = 5
-  )
+  "generate_pt_nowcast_mat_list default n_history_delay uses minimum rows",
+  {
+    # Input matrices have 7 and 7 rows → min = 6
+    result_default <- generate_pt_nowcast_mat_list(
+      reporting_triangle_list = retro_rts_list
+    )
+    result_custom_w_def <- generate_pt_nowcast_mat_list(
+      reporting_triangle_list = retro_rts_list,
+      n = 6
+    )
+    result_custom <- generate_pt_nowcast_mat_list(
+      reporting_triangle_list = retro_rts_list,
+      n = 5
+    )
 
-  # Ensure default matches explicit use of min rows
-  expect_identical(result_default, result_custom_w_def)
-  # Because estimates are made from different observations, expect these
-  # not to be identical
-  expect_false(all(result_default[[1]] == result_custom[[1]]))
-})
+    # Ensure default matches explicit use of min rows
+    expect_identical(result_default, result_custom_w_def)
+    # Because estimates are made from different observations, expect these
+    # not to be identical
+    expect_false(all(result_default[[1]] == result_custom[[1]]))
+  }
+)
 
 test_that("generate_pt_nowcast_mat_list custom n_history_delay is respected", {
   result <- generate_pt_nowcast_mat_list(
@@ -140,4 +142,64 @@ test_that("generate_pt_nowcast_mat_list identical-sized matrices work", {
 
   # Number of rows of each matrix should be identical (6 and 6)
   expect_identical(sapply(result, nrow), c(6L, 6L))
+})
+
+test_that("ensure that the number of rows in n_history_delay is used", {
+  sim_delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
+
+  # Generate counts for each reference date
+  counts <- c(100, 150, 200, 250, 300, 100, 90)
+
+  # Create a complete triangle based on the known delay PMF
+  complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
+  complete_triangle <- do.call(rbind, complete_triangle)
+
+  check_pmf <- get_delay_estimate(complete_triangle, n = 7)
+  check_pmf
+
+  # Create a reporting triangle with NAs in the lower right
+  triangle <- generate_triangle(complete_triangle)
+  triangle
+
+  slight_dif_triangle <- generate_pt_nowcast_mat(triangle, n = 7)
+
+  expect_equal(slight_dif_triangle, complete_triangle, tol = 0.5)
+
+  # Change entry in first row so that when used it wont estimate same delay
+  triangle[1, 4] <- 3 * triangle[1, 4]
+  triangle
+
+
+  truncated_rts <- truncate_triangles(triangle, n = 2)
+  truncated_rts[1:2]
+  # These will always have the first row at the top. First one will be with
+  # last row cut off, second will be with last 2 rows cut off
+
+  retro_rts <- generate_triangles(truncated_rts)
+  retro_rts[1:2]
+  # These look the same but with NAs in bottom right
+
+  retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
+    reporting_triangle_list = retro_rts,
+    n = 5
+  )
+  # Get the empirical pmfs in your two pt nowcast matrices with the first row
+  # included
+  pmf_list <- lapply(retro_pt_nowcast_mat_list, get_delay_estimate)
+  expect_equal(pmf_list[[1]], sim_delay_pmf, tol = 0.02) # Here we get back
+  # what we put in bc it doesn't use the first row
+  expect_failure(expect_equal(pmf_list[[2]], sim_delay_pmf, tol = 0.02)) # Here
+  # we don't bc we use the first row
+
+  # Now change n_history_delay to only use last 4 rows, we should never use
+  # first row so both will be equal
+  retro_pt_nowcast_mat_list2 <- generate_pt_nowcast_mat_list(
+    reporting_triangle_list = retro_rts,
+    n = 4
+  )
+
+  pmf_list2 <- lapply(retro_pt_nowcast_mat_list2, get_delay_estimate)
+  # Both are returning the original pmf bc they dont use the modified one
+  expect_equal(pmf_list2[[1]], sim_delay_pmf, tol = 0.02)
+  expect_equal(pmf_list2[[2]], sim_delay_pmf, tol = 0.02)
 })

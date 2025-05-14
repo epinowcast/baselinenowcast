@@ -109,6 +109,7 @@ at each reference date, observed as of the "fully observed" data on October
 2021.
 ```{r plot-the-data-by-reference-date}
 nowcast_date <- "2021-08-01"
+eval_date <- "2021-10-01"
 
 data_long <- germany_covid19_hosp
 data_filtered <- data_long |>
@@ -179,13 +180,14 @@ significantly depending on the dataset.
 # distribution. Empirical data outside this delay window will not be used for
 # training.
 max_delay <- 30
+n_training_volume <- 3 * max_delay
 
 # Specify the number of reference times to use to estimate the delay
 # distribution. Note this assumes you want the most recent observations.
-n_history_delay <- 45
+n_history_delay <- 1.5 * n_training_volume
 
 # Specify the number of reference times to use for uncertainty estimation.
-n_history_uncertainty <- 45
+n_history_uncertainty <- 1.5 * n_training_volume
 ```
 
 Next we will use the `epinowcast` function, `enw_preprocess_data()` and the
@@ -198,7 +200,7 @@ reporting triangle.
 # observed long above.
 observed_long <- data_long[location == "DE"][age_group == "00+"] |> # nolint
   enw_filter_report_dates(latest_date = nowcast_date) |>
-  enw_filter_reference_dates(include_days = n_history_delay + n_history_uncertainty - 1) # nolint
+  enw_filter_reference_dates(include_days = n_training_volume - 1) # nolint
 head(observed_long)
 # Get the reporting triangle, adding an additional day because epinowcast
 # we want the max_delay + 1 entries since 0 is a valid delay.
@@ -278,6 +280,7 @@ The `get_delay_estimate()` function expects the following inputs:
   date to use to fit the delay distribution. This must be less than or equal to
   the number of rows in `triangle`. Here we will use `n_history_delay`.
 
+
 ```{r estimate-delay}
 delay_pmf <- get_delay_estimate(
   reporting_triangle = reporting_triangle,
@@ -317,6 +320,11 @@ used to generate the estimate, but this doesn't always have to be the case.
 The reporting triangle we are applying it to must have the same `max_delay`
 as the delay estimate.
 
+It is worth noting that we could also have estimated the delay and applied it
+in one single step by calling `generate_pt_nowcast_mat()`. In susbequent steps
+to estimate the uncertainty, both delay estimation and generating a point
+nowcast matrix happen in a single step.
+
 ```{r}
 point_nowcast_matrix <- apply_delay(
   rep_tri_to_nowcast = reporting_triangle,
@@ -329,10 +337,10 @@ July 1, 2021, from the observations up until October 1, 2021.
 We'll compare this to the right-truncated data available up until July 1, 2021.
 ```{r}
 final_data <- data_long[location == "DE"][age_group == "00+"] |> # nolint
-  enw_filter_report_dates(latest_date = "2021-10-01") |>
+  enw_filter_report_dates(latest_date = eval_date) |>
   enw_filter_reference_dates(
     latest_date = nowcast_date,
-    include_days = n_history_delay + n_history_uncertainty - 1
+    include_days = n_training_volume - 1
   ) |>
   group_by(reference_date) |>
   summarise(
@@ -344,7 +352,7 @@ summary_data <- observed_long |>
   summarise(total_confirmed = max(confirm))
 ggplot() +
   geom_line(
-    # Plot the data summed across reporting days as of July 1,2021
+    # Plot the data summed across reporting days as of August 1,2021
     data = summary_data,
     aes(x = reference_date, y = total_confirmed), color = "darkred"
   ) +
@@ -468,10 +476,10 @@ data available as of the nowcast time (red).
 ```{r plot the nowcasts}
 # Join with the original data
 final_data <- data_long[location == "DE"][age_group == "00+"] |> # nolint
-  enw_filter_report_dates(latest_date = "2021-10-01") |>
+  enw_filter_report_dates(latest_date = eval_date) |>
   enw_filter_reference_dates(
     latest_date = nowcast_date,
-    include_days = n_history_delay + n_history_uncertainty - 1
+    include_days = n_training_volume - 1
   ) |>
   group_by(reference_date) |>
   summarise(

@@ -321,7 +321,7 @@ The reporting triangle we are applying it to must have the same `max_delay`
 as the delay estimate.
 
 It is worth noting that we could also have estimated the delay and applied it
-in one single step by calling `generate_pt_nowcast_mat()`. In susbequent steps
+in one single step by calling `generate_pt_nowcast_mat()`. In subsequent steps
 to estimate the uncertainty, both delay estimation and generating a point
 nowcast matrix happen in a single step.
 

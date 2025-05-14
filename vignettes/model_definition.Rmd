@@ -93,7 +93,8 @@ The multiplicative model works by iteratively "filling in" the reporting triangl
 #|    $x_{t=5:6, d = 0:1}$ (block bottom left). In this example,
 #|    $\\hat{x}_{t=6, d = 1}$ has already been imputed using the same approach,
 #|    and we treat it as known going forward. This process is repeated across
-#|    the reporting triangle to estimate all values outlined in the dashed lines.'
+#|    the reporting triangle to estimate all values outlined in the dashed
+#|    lines.'
 knitr::include_graphics(file.path("..", "man", "figures", "schematic_fig.png"))
 ```
 

@@ -99,7 +99,13 @@ test_that("Error conditions are properly handled", {
 ### Test 4: Edge Cases ---------------------------------------------------------
 test_that("Edge cases are handled properly", {
   # Empty lists
-  expect_error(estimate_dispersion(list(), list(), n = 0))
+  expect_error(expect_warning(estimate_dispersion(list(), list(), n = 0)))
+
+  # No NAs---------------------------------------------------------------------
+  expect_warning(estimate_dispersion(
+    valid_nowcasts,
+    lapply(valid_nowcasts, round)
+  ))
 
   # NA-filled matrices (This should error!)
   na_nowcasts <- list(matrix(NA, 2, 3), matrix(NA, 1, 3))

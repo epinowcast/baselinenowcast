@@ -22,6 +22,7 @@
 #'    `fun_to_aggregate` over to create target used to compute the nowcast
 #'    errors.
 #' @importFrom checkmate assert_integerish
+#' @importFrom cli cli_abort cli_warn
 #' @returns Vector of length one less than the number of columns in the
 #'    latest reporting triangle, with each element representing the estimate
 #'    of the dispersion parameter for each delay d, starting at delay d=1.
@@ -116,7 +117,7 @@ estimate_dispersion <- function(
     )
   }
   if (!any(sapply(list_of_obs, anyNA))) {
-    cli_abort(
+    cli_warn(
       message =
         "`trunc_rep_tri_list` does not contain any NAs"
     )

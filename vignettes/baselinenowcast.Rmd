@@ -38,12 +38,15 @@ apply that to the partially observed data to generate a nowcast.
 
 In the below section, we will describe an example of a nowcasting problem, and
 demonstrate how to use `baselinenowcast` to estimate a delay distribution from
-the data and apply that estimate to generate a probabilistic nowcast.
+the data and apply that estimate to generate a probabilistic nowcast. This
+example will walk through the low-level functionality of the "default" model
+permutation. In future vignettes, we will demonstrate examples of how to
+create more complex model permutations.
 
 # Packages
 
 As well as the `baselinenowcast` package this vignette also uses `epinowcast`,
-`ggplot2`, and `dplyr`.
+`ggplot2`, `lubridate`, `tidyr`, and `dplyr`.
 The installation of `epinowcast` is not required for using the package,
 however, its pre and post-processing functions provide a lot of the data
 wrangling needed to set up the nowcasting problem.
@@ -53,10 +56,12 @@ We will just be using the `R` components of `epinowcast`, which can be
 installed using the example lines of code below, so there is no need to
 additionally install `CmdStan`.
 ```{r setup, message = FALSE}
+# nolint start
 # Installing epinowcast
-# install.packages( #nolint
-#  "epinowcast", repos = "https://epinowcast.r-universe.dev" #nolint
+# install.packages(
+#  "epinowcast", repos = "https://epinowcast.r-universe.dev"
 # ) #nolint
+# nolint end
 # Load packages
 library(baselinenowcast)
 library(epinowcast)
@@ -73,7 +78,7 @@ set.seed(123)
 Nowcasting of right-truncated case counts involves the estimation of reporting
 delays for recently reported data.
 For this, we need case counts indexed both by when they were diagnosed (often
-called "reference date") and by when they were
+called the "reference date") and by when they were
 reported (i.e. when administratively recorded via public health surveillance;
 often called "report date"). The difference between the reference date and the
 report date is the reporting delay.
@@ -88,11 +93,11 @@ of test report in Germany up to October 1, 2021.
 We will filter the data to just look at the national-level data, for all age
 groups.
 We will pretend that we are making a nowcast as of July 1, 2021, therefore we
-will exclude all reference dates and report dates after that date.
+will exclude all reference dates and report dates before that date.
 `germany_covid19_hosp` is provided as package data from `epinowcast`
 Let's start by plotting the sum of the reports at each reference date,
 and then compare that to what we will eventually observe as of the final date
-in the complete dataset.
+in the complete dataset (data available through October 1, 2021)
 The red line shows the cumulative number of confirmed admissions on each report
 date, across all delays, using the data available as of July 1, 2021.
 It demonstrates the characteristic behaviour of right-truncation.
@@ -157,17 +162,13 @@ date can have any temporal granularity.
 In this example, we will both fit our delay distribution, and apply it to
 generate a nowcast matrix using the same data, the national level data from
 Germany for all age groups.
-However, these components can be separated, so for example, we could use the
-national level data for all age groups to estimate a delay distribution, and
-then we could apply that elsewhere, for example to the data stratified by
-age group and location.
-This type of "borrowing" from another training dataset can be really useful
-when you have low counts or relatively sparse data, which is likely to be the
-case for smaller populations.
 
 In the below sections, we will specify our nowcast date, the maximum delay,
-and the number of reference time observations that we want to use to
-estimate the delay distribution.
+the number of reference times to use for delay estimation, and the number of
+reference times to use for uncertainty quantification. We will use 3 times the
+maximum delay for the total training volume, split into 50% used for delay
+delay estimation and 50% used for uncertainty estimation.
+
 We recommend choosing the maximum delay and number of historical observations
 based on an exploratory data analysis, as these specifications will change
 significantly depending on the dataset.
@@ -182,6 +183,9 @@ max_delay <- 40
 # Specify the number of reference times to use to estimate the delay
 # distribution. Note this assumes you want the most recent observations.
 n_history_delay <- 60
+
+# Specify the number of reference times to use for uncertainty estimation.
+n_history_uncertainty <- 60
 ```
 
 Next we will use the `epinowcast` function, `enw_preprocess_data()` and the
@@ -270,9 +274,9 @@ The `get_delay_estimate()` function expects the following inputs:
   - `max_delay`: an integer indicating the maximum delay to estimate. This must
   be less than or equal to the number of rows in `triangle` minus 1, since we
   assume `triangle` is indexed at 0.
-  - `n_history_delay`: an integer indicating the number of observations by reference
+  - `n`: an integer indicating the number of observations by reference
   date to use to fit the delay distribution. This must be less than or equal to
-  the number of rows in `triangle`.
+  the number of rows in `triangle`. Here we will use `n_history_delay`.
 
 ```{r estimate-delay}
 delay_pmf <- get_delay_estimate(

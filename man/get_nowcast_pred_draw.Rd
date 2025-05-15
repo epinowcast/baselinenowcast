@@ -7,6 +7,16 @@
 get_nowcast_pred_draw(point_nowcast_matrix, reporting_triangle, dispersion)
 }
 \arguments{
+\item{point_nowcast_matrix}{Matrix of point nowcast predictions and
+observations, with rows representing the reference times and columns
+representing the delays.}
+
+\item{reporting_triangle}{Matrix of the reporting triangle, with rows
+representing the time points of reference and columns representing the
+delays. Can be a reporting matrix or incomplete reporting matrix.
+Can also be a ragged reporting triangle, where multiple columns are
+reported for the same row. (e.g. weekly reporting of daily data).}
+
 \item{dispersion}{Vector of dispersion parameters indexed by horizon from
 minus one to the maximum delay.}
 }

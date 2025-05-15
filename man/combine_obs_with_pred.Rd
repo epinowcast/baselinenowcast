@@ -8,6 +8,12 @@ combine_obs_with_pred(predicted_counts, reporting_triangle)
 }
 \arguments{
 \item{predicted_counts}{Vector of predicted counts at each reference time}
+
+\item{reporting_triangle}{Matrix of the reporting triangle, with rows
+representing the time points of reference and columns representing the
+delays. Can be a reporting matrix or incomplete reporting matrix.
+Can also be a ragged reporting triangle, where multiple columns are
+reported for the same row. (e.g. weekly reporting of daily data).}
 }
 \value{
 A vector of predicted counts at each reference time

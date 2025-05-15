@@ -1,8 +1,11 @@
 #' Get a draw of only the predicted elements of the nowcast vector
 #'
+#' @param point_nowcast_matrix Matrix of point nowcast predictions and
+#'   observations, with rows representing the reference times and columns
+#'   representing the delays.
 #' @param dispersion Vector of dispersion parameters indexed by horizon from
 #'  minus one to the maximum delay.
-#' @inheritParams apply_delay
+#' @inheritParams get_delay_estimate
 #'
 #' @returns Vector of predicted draws at each reference time, for all reference
 #'    times in the input `point_nowcast_pred_matrix`.
@@ -170,7 +173,7 @@ get_nowcast_pred_draws <- function(point_nowcast_matrix,
 #' nowcast_draw <- get_nowcast_draw(
 #'   point_nowcast_matrix,
 #'   reporting_triangle,
-#'   dispersion
+#'   disp
 #' )
 #' nowcast_draw
 get_nowcast_draw <- function(point_nowcast_matrix,

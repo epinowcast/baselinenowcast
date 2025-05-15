@@ -70,7 +70,7 @@ test_that("get_nowcast_pred_draw: statistical properties are reasonable", {
   sample_means <- rowMeans(samples[2:3, ])
 
   # Means should be close (within 10% for large samples)
-  for (i in seq_along(length(expected_means))) {
+  for (i in seq_along(expected_means)) {
     relative_error <- abs(sample_means[i] - expected_means[i]) / expected_means[i] # nolint
     expect_lt(relative_error, 0.1)
   }

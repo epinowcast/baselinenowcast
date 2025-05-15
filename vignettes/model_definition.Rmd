@@ -32,23 +32,23 @@ $$X_{t,>d} = \sum_{i = d+1} ^{D} X_{t,i}$$
 
 is the number of cases still missing after $d$ delay. We refer to $X_t$ to describe a random variable, $x_t$ for the corresponding observation, and $\hat{x}_t$ for an estimated/imputed value. The matrix of $x_{t,d}$ available at a given time $t^*$ is referred to as a reporting matrix. In the case where all $t+d>t^*$ have yet to be observed (e.g. $t^*$ is the current time), this reporting matrix is referred to as the reporting triangle, with all values in the bottom right corner of the triangle being missing, except for the first entry at $x_{t=t*, d = 0}$.
 
-|   | $d = 0$ | $d = 1$ | $d=2$ | $...$ | $d= D-1$ | $d= D$ |
+|           | $d = 0$       | $d = 1$       | $d=2$          | $...$ | $d= D-1$         | $d= D$        |
 |-----------|-----------|-----------|-----------|-----------|-----------|-----------|
-| $t=1$ | $x_{1,0}$ | $x_{1,1}$ | $x_{1,2}$ | $...$ | $x_{1,D-1}$ | $x_{1, D}$ |
-| $t=2$ | $x_{2,0}$ | $x_{2,1}$ | $x_{2,2}$ | $...$ | $x_{2,D-1}$ | $x_{2, D}$ |
-| $t=3$ | $x_{3,0}$ | $x_{3,1}$ | $x_{3,2}$ | $...$ | $x_{3,D-1}$ | $x_{3, D}$ |
-| $...$ | $...$ | $...$ | $...$ | $...$ | $...$ | $...$ |
+| $t=1$     | $x_{1,0}$     | $x_{1,1}$     | $x_{1,2}$      | $...$ | $x_{1,D-1}$      | $x_{1, D}$    |
+| $t=2$     | $x_{2,0}$     | $x_{2,1}$     | $x_{2,2}$      | $...$ | $x_{2,D-1}$      | $x_{2, D}$    |
+| $t=3$     | $x_{3,0}$     | $x_{3,1}$     | $x_{3,2}$      | $...$ | $x_{3,D-1}$      | $x_{3, D}$    |
+| $...$     | $...$         | $...$         | $...$          | $...$ | $...$            | $...$         |
 | $t=t^*-1$ | $x_{t^*-1,0}$ | $x_{t^*-1,1}$ | $x_{t^*-1,,2}$ | $...$ | $x_{t^*-1,,D-1}$ | $x_{t^*-1,D}$ |
-| $t=t^*$ | $x_{t^*,0}$ | $x_{t^*,1}$ | $x_{t^*,2}$ | $...$ | $x_{t^*,D-1}$ | $x_{t^*, D}$ |
+| $t=t^*$   | $x_{t^*,0}$   | $x_{t^*,1}$   | $x_{t^*,2}$    | $...$ | $x_{t^*,D-1}$    | $x_{t^*, D}$  |
 
 Throughout this document and package, we will refer to these matrices, as well as their corresponding vectors, using the following table. In this table, "point" refers to a point estimate. When not indicated, we are referring to a probabilistic draw from an observation model.
 
-| **Data Structure** | **Observations Only** | **Mixed (Obs + Predictions)** | **Pure Predictions Only** |
+| **Data Structure**                       | **Observations Only**                                                                                           | **Mixed (Obs + Predictions)**              | **Pure Predictions Only**                                                                     |
 |------------------|------------------|------------------|------------------|
-| **Matrix Format** | `reporting_matrix` (complete with observations)<br>`reporting_triangle` (contains NAs for missing observations) | `point_nowcast_matrix`<br>`nowcast_matrix` | `point_pred_matrix`<br>`pred_matrix` (contains NAs in elements where there were observations) |
-| **List Format** | `reporting_matrix_list` (complete)<br>`reporting_triangle_list` (contains NAs for missing observations) | `nowcast_matrix_list` | `pred_matrix_list` |
-| **Vector Format (summed across delays)** | `observed_cases` | `point_nowcast`<br>`nowcast` | `point_pred`<br>`pred` |
-| **DataFrame Format** | \- | `nowcast_df` | `pred_df` |
+| **Matrix Format**                        | `reporting_matrix` (complete with observations)<br>`reporting_triangle` (contains NAs for missing observations) | `point_nowcast_matrix`<br>`nowcast_matrix` | `point_pred_matrix`<br>`pred_matrix` (contains NAs in elements where there were observations) |
+| **List Format**                          | `reporting_matrix_list` (complete)<br>`reporting_triangle_list` (contains NAs for missing observations)         | `nowcast_matrix_list`                      | `pred_matrix_list`                                                                            |
+| **Vector Format (summed across delays)** | `observed_cases`                                                                                                | `point_nowcast`<br>`nowcast`               | `point_pred`<br>`pred`                                                                        |
+| **DataFrame Format**                     | \-                                                                                                              | `nowcast_df`                               | `pred_df`                                                                                     |
 
 For example, we refer to the matrix with imputed point estimates for all $t+d>t^*$ as a point nowcast matrix, a matrix with a complete set of observations for all elements as a reporting matrix, and a matrix with only the predictions as a point prediction matrix.
 
@@ -130,7 +130,11 @@ To estimate the uncertainty in the nowcasts, we use past nowcast errors and assu
 
 We describe a method which generates retrospective reporting triangles to replicate what would have been available as of time $t^*=s^*$, where $s^* = t^*-m$ for $m = 1, 2, ... M$ to generate $M$ retrospective reporting triangles.
 
-To generate the set of $M$ reporting triangles, we simply remove the last $m$ rows of the existing reporting triangle (or reporting matrix), to generate $M$ truncated incomplete reporting matrices. These can be generated from a reporting triangle or matrix with the function `truncate_triangles()` which ingests a single reporting triangle (or matrix) and returns a list of `n` truncated (potentially incomplete) reporting matrices containing only observations and missing values if present. We then replace the bottom right triangle of each matrix with NAs, assuming these would not have been observed as of $s^*$, using the function `generate_triangles()` which returns a list of `n` retrospective reporting triangles. The method uses each retrospective reporting triangle to re-estimate a delay distribution using the $N$ preceding rows of the reporting triangle before $s^*$, and recomputes a retrospective nowcast, for $M$ realizations of the retrospective reporting triangle (so $M$ different $s^*$ values).
+To generate the set of $M$ reporting triangles, we work backwards from most recent to oldest, removing the last $m$ rows of the existing reporting triangle, to generate $M$ truncated incomplete reporting matrices. These can be generated from a reporting triangle with the function `truncate_triangles()` which ingests a single reporting triangle and returns a list of `n` truncated reporting matrices containing only observations and missing values if present. We then replace the bottom right triangle of each matrix with NAs, assuming these would not have been observed as of $s^*$, using the function `generate_triangles()` which returns a list of `n` retrospective reporting triangles, again in order from most recent to oldest.
+
+The method uses each retrospective reporting triangle to re-estimate a delay distribution using the $N$ preceding reference times of the retrospective reporting triangle before $s^*$, and recomputes a retrospective point nowcast matrix, for $M$ realizations of the retrospective reporting triangle (so $M$ different $s^*$ values).
+
+Thus in order to estimate uncertainty using $N$ reference times, the total training volume must meet or exceed $N+M$ so that the oldest retrospective nowcast dataset at $s^* = t^*-M$ can use $N$ reference times for its point nowcast.
 
 ## Generation of retrospective point nowcast matrices
 
@@ -138,9 +142,7 @@ From the $M$ reporting triangles, we apply the method described above to estimat
 
 ## Fit predicted point nowcast vectors and observed counts to a negative binomial observation model at each forecast horizon
 
-We take the list of point nowcast matrices, and the list of truncated incomplete reporting matrices (these do not necessarily contains NAs on the bottom right, the bottom right could be entirely or partially observed). For each retrospective nowcast time $s^*$, we identify the overlapping set of matrix elements that were estimated and the matrix elements that had been observed as of the most recent time point.
-
-We choose to quantify the uncertainty at the level of the target quantity which is in this case assumed to be the final count at each reference time, summed across reporting delays. We estimate the dispersion by comparing the predicted counts summed across delays to the observed counts summed across delays, conditioned on the counts having been observed as of time $t*$.
+We choose to quantify the uncertainty at the level of the target quantity which is in this case assumed to be the final count at each reference time, summed across reporting delays.
 
 At each retrospective nowcast time $s^*$, we compute the predicted and corresponding observed nowcast at each forecast horizon $j = 1, ..., D$ by summing across the reporting delays for all delays $d$ that have been observed as of time $t^*$, as indicated below by the indicator function. We define the predicted nowcast for forecast horizon $j$ at retrospective nowcast time $s^*$ $$
 \hat{X}_{t-j}(s^*) = \sum_{d=0}^{D} \hat{X}_{t-j,d}(s^*) \times I(t-j+d \leq t^*)
@@ -154,7 +156,7 @@ $$
 X_{t-j} | \hat{X}_{t-j}(t^* - j) \sim NegBin(\mu = \hat{X}_{t-j}(t^*-j) + 0.1, \phi = \phi_{t^*-t})
 $$ for all $s^* = 1, ..., M$.
 
-We add a small number (0.1) to the mean to avoid an ill-defined negative binomial. We note that to perform all these computations, data snapshots from at least $N + M$ past observations, or rows of the original reporting triangle (or matrix), are needed.
+We add a small number (0.1) to the mean to avoid an ill-defined negative binomial.
 
 The function `estimate_dispersion()` ingests a list of truncated reporting matrices representing the observations, and the list of point nowcast matrices, and returns a vector of negative binomial dispersion parameters indexed starting at forecast horizon $j = 1$.
 

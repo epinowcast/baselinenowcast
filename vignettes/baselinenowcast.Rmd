@@ -169,8 +169,12 @@ Germany for all age groups.
 In the below sections, we will specify the maximum delay,
 the number of reference times to use for delay estimation, and the number of
 reference times to use for uncertainty quantification. We will use 3 times the
-maximum delay for the total training volume, split into 50% used for delay
-delay estimation and 50% used for uncertainty estimation.
+maximum delay for the total training volume, with 50% of the reference times
+used for delay estimation. For uncertainty estimation, we will generate
+retrospective nowcast datasets with the latest 50% of the reference times. This
+means that in order to estimate the delay using the same amount of data, the
+oldest retrospective nowcast dataset will use the first 50% of the reference
+times.
 
 We recommend choosing the maximum delay and number of historical observations
 based on an exploratory data analysis, as these specifications will change
@@ -187,7 +191,7 @@ n_training_volume <- 3 * max_delay
 n_history_delay <- 0.5 * n_training_volume
 
 # Specify the number of reference times to use for uncertainty estimation.
-n_history_uncertainty <- 0.5 * n_training_volume
+n_ref_times_for_uncertainty <- 0.5 * n_training_volume
 ```
 
 Next we will use the `epinowcast` function, `enw_preprocess_data()` and the
@@ -390,24 +394,20 @@ dispersion in the negative binomial at each forecast horizon.
 
 The method used to estimate the uncertainty in the nowcast simulates exactly
 the iterative process, by generating retrospective reporting
-triangles using what would have been available as of each reference time,
-and then for each reporting triangle, estimating a delay distribution and
-generating a point nowcast matrix.
+triangles using what would have been available as of each retrospective nowcast
+time, then for each reporting triangle, estimating a delay
+distribution and generating a point nowcast matrix.
 
-To do this, we will first generate truncated reporting matrices from the
-latest reporting triangle, generate retrospective reporting triangles
-by removing observations that wouldn't have been observed as of the latest time
-point, and lastly generate nowcasts from that list of retrospective reporting
-triangles.
 
-We will repeat this iterative process for `n_history_uncertainty` reference
-times in the reporting triangle, which are treated as retrospective nowcast
-times. We start from the latest and work backwards.
+We will repeat this process for `n_ref_times_for_uncertainty`
+reference times in the reporting triangle, starting from the latest reference
+time and working backwards, ultimately using all `n_ref_times_for_uncertainty`
+and `n_history_delay` reference times in this process.
 
 
 ```{r generate-triangles}
 trunc_rep_tri_list <- truncate_triangles(reporting_triangle,
-  n = n_history_uncertainty
+  n = n_ref_times_for_uncertainty
 )
 retro_rep_tri_list <- generate_triangles(trunc_rep_tri_list)
 ```

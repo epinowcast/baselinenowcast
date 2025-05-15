@@ -22,7 +22,9 @@ reporting triangle matrices.
 \description{
 This function ingests a list of truncated reporting matrices and iteratively
 generates the reporting triangle that would have been available as of the
-maximum reference time, working from bottom to top for \code{n} snapshots.
+maximum reference time. It operates on each element in the list in order
+(from most recent retrospective nowcast time to oldest retrospective
+nowcast time).
 }
 \examples{
 triangle <- matrix(

@@ -206,4 +206,64 @@ test_that("Function errors if only contains triangles with first column 0", { # 
   retro_rts_list <- list(triangle1, triangle2, triangle3)
 
   expect_error(expect_message(generate_pt_nowcast_mat_list(retro_rts_list)))
+)}
+          
+test_that("ensure that the number of rows in n_history_delay is used", {
+  sim_delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
+
+  # Generate counts for each reference date
+  counts <- c(100, 150, 200, 250, 300, 100, 90)
+
+  # Create a complete triangle based on the known delay PMF
+  complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
+  complete_triangle <- do.call(rbind, complete_triangle)
+
+  check_pmf <- get_delay_estimate(complete_triangle, n = 7)
+  check_pmf
+
+  # Create a reporting triangle with NAs in the lower right
+  triangle <- generate_triangle(complete_triangle)
+  triangle
+
+  slight_dif_triangle <- generate_pt_nowcast_mat(triangle, n = 7)
+
+  expect_equal(slight_dif_triangle, complete_triangle, tol = 0.5)
+
+  # Change entry in first row so that when used it wont estimate same delay
+  triangle[1, 4] <- 3 * triangle[1, 4]
+  triangle
+
+
+  truncated_rts <- truncate_triangles(triangle, n = 2)
+  truncated_rts[1:2]
+  # These will always have the first row at the top. First one will be with
+  # last row cut off, second will be with last 2 rows cut off
+
+  retro_rts <- generate_triangles(truncated_rts)
+  retro_rts[1:2]
+  # These look the same but with NAs in bottom right
+
+  retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
+    reporting_triangle_list = retro_rts,
+    n = 5
+  )
+  # Get the empirical pmfs in your two pt nowcast matrices with the first row
+  # included
+  pmf_list <- lapply(retro_pt_nowcast_mat_list, get_delay_estimate)
+  expect_equal(pmf_list[[1]], sim_delay_pmf, tol = 0.02) # Here we get back
+  # what we put in bc it doesn't use the first row
+  expect_failure(expect_equal(pmf_list[[2]], sim_delay_pmf, tol = 0.02)) # Here
+  # we don't bc we use the first row
+
+  # Now change n_history_delay to only use last 4 rows, we should never use
+  # first row so both will be equal
+  retro_pt_nowcast_mat_list2 <- generate_pt_nowcast_mat_list(
+    reporting_triangle_list = retro_rts,
+    n = 4
+  )
+
+  pmf_list2 <- lapply(retro_pt_nowcast_mat_list2, get_delay_estimate)
+  # Both are returning the original pmf bc they dont use the modified one
+  expect_equal(pmf_list2[[1]], sim_delay_pmf, tol = 0.02)
+  expect_equal(pmf_list2[[2]], sim_delay_pmf, tol = 0.02)
 })

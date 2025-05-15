@@ -52,30 +52,12 @@ estimate_dispersion <- function(
     trunc_rep_tri_list,
     reporting_triangle_list,
     n = length(pt_nowcast_mat_list)) {
-  # Check that the length of the list of nowcasts is greater than
-  # or equal to the specified n
-  if (length(pt_nowcast_mat_list) < n) {
-    cli_abort(message = c(
-      "Insufficient elements in `pt_nowcast_mat_list` for the `n` desired ",
-      "number of nowcasted reporting triangles specified for dispersion ",
-      "estimation"
-    ))
-  }
-  if (length(trunc_rep_tri_list) < n) {
-    cli_abort(message = c(
-      "Insufficient elements in `trunc_rep_tri_list` for the `n` desired ",
-      "number of observed reporting triangles specified for dispersion ",
-      "estimation"
-    ))
-  }
-  if (length(pt_nowcast_mat_list) < 1) {
-    "`pt_nowcast_mat_list` is an empty list"
-  }
-  if (length(trunc_rep_tri_list) < 1) {
-    "`trunc_rep_tri_list` is an empty list"
-  }
-
+  
   assert_integerish(n, lower = 0)
+  
+  .check_list_length(pt_nowcast_mat_list, "pt_nowcast_mat_list", n)
+  .check_list_length(trunc_rep_tri_list, "trunc_rep_tri_list", n)
+  .check_list_length(reporting_triangle_list, "reporting_triangle_list", n, empty_check = FALSE)
 
   # Truncate to only n nowcasts
   list_of_ncs <- pt_nowcast_mat_list[1:n]
@@ -147,6 +129,19 @@ estimate_dispersion <- function(
 
   return(disp_params)
 }
+
+.check_list_length <- function(list_obj, name, required_length, custom_msg = NULL, empty_check = TRUE) {
+  if (length(list_obj) < required_length) {
+    cli_abort(message = c(
+      "Insufficient elements in `", name, "` for the `n` desired ",
+      custom_msg
+    ))
+  }
+  if (empty_check && length(list_obj) < 1) {
+    cli_abort(paste0("`", name, "` is an empty list"))
+  }
+}
+
 
 #' Compute the sum of entries of a column in a matrix where both sets of
 #'   matrices of booleans are TRUE

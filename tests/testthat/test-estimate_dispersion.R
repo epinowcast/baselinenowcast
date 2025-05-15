@@ -68,9 +68,32 @@ test_that("Function can handle rolling sum with k=2", {
     trunc_rep_tri_list = valid_trunc_rts,
     n = 2
   )
-
+  # Ensures that these are different 
   expect_failure(expect_equal(result1, result2, tol = 0.01))
 })
+
+test_that("estiamte_dispersion appropriately warns when k is too large for some of the triangles", { #
+  expect_warning(estimate_dispersion(
+    pt_nowcast_mat_list = valid_nowcasts,
+    trunc_rep_tri_list = valid_trunc_rts,
+    n = 2,
+    fun_to_aggregate = sum,
+    k = 4
+  ))
+  
+})
+
+test_that("estiamte_dispersion appropriately errors when k is too large for all the triangles", { #
+  expect_error(estimate_dispersion(
+    pt_nowcast_mat_list = valid_nowcasts,
+    trunc_rep_tri_list = valid_trunc_rts,
+    n = 2,
+    fun_to_aggregate = sum,
+    k = 5
+  ))
+  
+})
+
 
 test_that("Function throws an error if function to aggregate is not valid", {
   expect_error(estimate_dispersion(

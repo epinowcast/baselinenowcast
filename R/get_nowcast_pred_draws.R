@@ -43,6 +43,7 @@ get_nowcast_pred_draw <- function(point_nowcast_matrix,
       )
     )
   }
+  .validate_triangle(reporting_triangle)
   point_nowcast_pred_matrix <- .extract_predictions(
     point_nowcast_matrix,
     reporting_triangle

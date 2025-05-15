@@ -26,6 +26,7 @@
 #'    input `reporting_triangle_list`but with each reporting triangle filled
 #'    in based on the delay estimated in that reporting triangle.
 #' @export
+#' @importFrom cli cli_abort cli_alert_danger cli_alert_info
 #' @examples
 #' triangle <- matrix(
 #'   c(
@@ -80,7 +81,7 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
       if (!is.null(result$error)) {
         # Print the index and the error message
         error_msg <- sprintf(
-          "Error at index %d: Point nowcast matrix could not be generated - %s",
+          "Error at index %d: Point nowcast matrix could not be generated. This may be acceptable for a few point nowcast matrices used to estimate the uncertainty. \n%s", # nolint
           ind,
           result$error$message
         )
@@ -108,14 +109,18 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
       ))
     )
   } else if (length(error_indices) > 0) {
-    cat(sprintf("\nErrors occurred at indices: %s\n", toString(error_indices,
-      collapse = ", "
-    )))
-    cat(sprintf(
-      "Successfully processed %d out of %d matrices\n",
-      length(reporting_triangle_list) - length(error_indices),
-      length(reporting_triangle_list)
-    ))
+    cli_alert_danger(
+      text = sprintf("\nErrors occurred at indices: %s\n", toString(error_indices,
+        collapse = ", "
+      ))
+    )
+    cli_alert_info(
+      text = sprintf(
+        "Successfully processed %d out of %d matrices\n",
+        length(reporting_triangle_list) - length(error_indices),
+        length(reporting_triangle_list)
+      )
+    )
   }
 
 

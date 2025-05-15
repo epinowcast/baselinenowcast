@@ -42,7 +42,7 @@ valid_trunc_rts <- list(
   test_triangle[1:4, ]
 )
 
-test_that("Basic functionality with valid inputs", {
+test_that("estimate_dispersion works as expected with valid inputs", {
   result <- estimate_dispersion(
     pt_nowcast_mat_list = valid_nowcasts,
     trunc_rep_tri_list = valid_trunc_rts,
@@ -56,7 +56,7 @@ test_that("Basic functionality with valid inputs", {
 })
 
 
-test_that("Default n parameter works correctly", {
+test_that("estimate_dispersion works correctly with explicit n", {
   result_default <- estimate_dispersion(valid_nowcasts, valid_trunc_rts)
   result_explicit <- estimate_dispersion(valid_nowcasts, valid_trunc_rts, n = 2)
   expect_identical(result_default, result_explicit)

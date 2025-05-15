@@ -110,9 +110,12 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
     )
   } else if (length(error_indices) > 0) {
     cli_alert_danger(
-      text = sprintf("\nErrors occurred at indices: %s\n", toString(error_indices,
-        collapse = ", "
-      ))
+      text = sprintf(
+        "\nErrors occurred at indices: %s\n",
+        toString(error_indices,
+          collapse = ", "
+        )
+      )
     )
     cli_alert_info(
       text = sprintf(

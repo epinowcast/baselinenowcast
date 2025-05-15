@@ -29,7 +29,7 @@ number of columns as \code{triangle}.
 This function ingests a reporting triangle/matrix and the number of
 truncated reporting triangles we want to create, \code{n}, and iteratively
 truncated the reporting triangle, working from the latest reference time
-(bottom) to the older referces times (top) for \code{n}
+(bottom) to the older reference times (top) for \code{n}
 snapshots.
 }
 \examples{

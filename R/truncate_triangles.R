@@ -3,7 +3,7 @@
 #' This function ingests a reporting triangle/matrix and the number of
 #'   truncated reporting triangles we want to create, `n`, and iteratively
 #'   truncated the reporting triangle, working from the latest reference time
-#'   (bottom) to the older referces times (top) for `n`
+#'   (bottom) to the older reference times (top) for `n`
 #'   snapshots.
 #'
 #' @param reporting_triangle Matrix of the reporting triangle/rectangle

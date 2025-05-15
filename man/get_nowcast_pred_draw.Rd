@@ -24,8 +24,8 @@ across delays. Eventually, we can add things like mean, but for now since
 we are only providing a negative binomial observation model, we can only
 allow sum. Currently supported functions: \code{sum}.}
 
-\item{k}{Integer indicating the number \code{width} of the call to \code{rollapply}.
-Default is 1.}
+\item{k}{Integer indicating the number of reference times to apply the
+\code{fun_to_aggregate} over to create target used to compute the nowcast.}
 }
 \value{
 Vector of predicted draws at each reference time, for all reference

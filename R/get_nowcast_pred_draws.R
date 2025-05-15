@@ -9,8 +9,8 @@
 #'    across delays. Eventually, we can add things like mean, but for now since
 #'    we are only providing a negative binomial observation model, we can only
 #'    allow sum. Currently supported functions: `sum`.
-#' @param k Integer indicating the number `width` of the call to `rollapply`.
-#'    Default is 1.
+#' @param k Integer indicating the number of reference times to apply the
+#'    `fun_to_aggregate` over to create target used to compute the nowcast.
 #'
 #' @returns Vector of predicted draws at each reference time, for all reference
 #'    times in the input `point_nowcast_pred_matrix`.

@@ -72,12 +72,12 @@ disp_params <- estimate_dispersion(
 disp_params
 
 # Estimate dispersion parameters from rolling sum
- disp_params_agg <- estimate_dispersion(
- pt_nowcast_mat_list = retro_nowcasts,
- trunc_rep_tri_list = trunc_rts,
- n = 2,
- fun_to_aggregate = sum,
- k = 2
- )
- disp_params_agg
+disp_params_agg <- estimate_dispersion(
+  pt_nowcast_mat_list = retro_nowcasts,
+  trunc_rep_tri_list = trunc_rts,
+  n = 2,
+  fun_to_aggregate = sum,
+  k = 2
+)
+disp_params_agg
 }

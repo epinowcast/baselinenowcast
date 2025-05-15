@@ -11,7 +11,7 @@ point_nowcast_pred_matrix <- matrix(
 disp <- c(0.8, 12.4, 9.1)
 n_draws <- 10
 
-test_that("function returns a dataframe with correct structure", {
+test_that("get_nowcast_pred_draws returns a dataframe with correct structure", {
   # Setup test data
 
   result <- get_nowcast_pred_draws(point_nowcast_pred_matrix, disp, n_draws)
@@ -22,7 +22,7 @@ test_that("function returns a dataframe with correct structure", {
   expect_true(all(c("pred_count", "time", "draw") %in% names(result)))
 })
 
-test_that("function handles rolling sum appropriately", {
+test_that("get_nowcast_pred_draws handles rolling sum appropriately", {
   set.seed(123)
   k <- 2
   result2 <- get_nowcast_pred_draws(point_nowcast_pred_matrix,
@@ -39,7 +39,7 @@ test_that("function handles rolling sum appropriately", {
   expect_equal(avg_rolling_sum / avg_incidence, k, tol = 0.2)
 })
 
-test_that("Function throws an error if function to aggregate is not valid", {
+test_that("get_nowcast_pred_draws throws an error if function to aggregate is not valid", { # nolint
   expect_error(get_nowcast_pred_draws(
     point_nowcast_pred_matrix,
     disp,
@@ -57,7 +57,7 @@ test_that("Function throws an error if function to aggregate is not valid", {
   ))
 })
 
-test_that("function handles the default n_draws parameter", {
+test_that("get_nowcast_pred_draws handles the default n_draws parameter", {
   # Setup test data
   point_nowcast_pred_matrix <- matrix(
     c(
@@ -130,7 +130,7 @@ test_that("time index is correctly assigned", {
   }
 })
 
-test_that("function works with different number of draws", {
+test_that("get_nowcast_pred_draws works with different number of draws", {
   # Setup test data
   point_nowcast_pred_matrix <- matrix(
     c(
@@ -150,7 +150,7 @@ test_that("function works with different number of draws", {
   expect_identical(nrow(result), as.integer(n_draws * nrow(point_nowcast_pred_matrix))) # nolint
 })
 
-test_that("function handles single-row matrix", {
+test_that("get_nowcast_pred_draws handles single-row matrix", {
   # Setup test data with a single row
   point_nowcast_pred_matrix <- matrix(
     c(NA, NA, NA, 16.8),

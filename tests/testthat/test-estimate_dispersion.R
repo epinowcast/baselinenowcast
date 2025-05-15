@@ -54,7 +54,7 @@ test_that("Basic functionality with valid inputs", {
   expect_true(all(is.finite(result)))
 })
 
-test_that("Function can handle rolling sum with k=2", {
+test_that("estimate_dispersion can handle rolling sum with k=2", {
   result1 <- estimate_dispersion(
     pt_nowcast_mat_list = valid_nowcasts,
     trunc_rep_tri_list = valid_trunc_rts,

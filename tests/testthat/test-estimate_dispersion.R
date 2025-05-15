@@ -41,11 +41,14 @@ valid_trunc_rts <- list(
   test_triangle[1:5, ],
   test_triangle[1:4, ]
 )
+
+valid_rts <- generate_triangles(valid_trunc_rts)
 ### Test 1: Basic Functionality ------------------------------------------------
 test_that("Basic functionality with valid inputs", {
   result <- estimate_dispersion(
     pt_nowcast_mat_list = valid_nowcasts,
     trunc_rep_tri_list = valid_trunc_rts,
+    reporting_triangle_list = valid_rts,
     n = 2
   )
 

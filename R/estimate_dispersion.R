@@ -11,6 +11,7 @@
 #' @param trunc_rep_tri_list List of truncated reporting matrices,
 #'    containing all observations as of the latest reference time. Elements of
 #'    list are paired with elements of `pt_nowcast_mat_list`.
+#' @inheritParams generate_pt_nowcast_mat_list
 #' @param n Integer indicating the number of reporting matrices to use to
 #'    estimate the dispersion parameters.
 #' @importFrom checkmate assert_integerish
@@ -42,12 +43,14 @@
 #' disp_params <- estimate_dispersion(
 #'   pt_nowcast_mat_list = retro_nowcasts,
 #'   trunc_rep_tri_list = trunc_rts,
+#'   reporting_triangle_list = retro_rts,
 #'   n = 2
 #' )
 #' disp_params
 estimate_dispersion <- function(
     pt_nowcast_mat_list,
     trunc_rep_tri_list,
+    reporting_triangle_list,
     n = length(pt_nowcast_mat_list)) {
   # Check that the length of the list of nowcasts is greater than
   # or equal to the specified n
@@ -77,6 +80,7 @@ estimate_dispersion <- function(
   # Truncate to only n nowcasts
   list_of_ncs <- pt_nowcast_mat_list[1:n]
   list_of_obs <- trunc_rep_tri_list[1:n]
+  list_of_rts <- reporting_triangle_list[1:n]
 
   # Check that nowcasts has no NAs, trunc_rts has some NAs
   if (any(sapply(list_of_ncs, anyNA))) {
@@ -114,15 +118,14 @@ estimate_dispersion <- function(
     nowcast_i <- list_of_ncs[[i]]
     # Remove the last i observations
     trunc_matr_observed <- list_of_obs[[i]]
+    triangle_observed <- list_of_rts[[i]]
     max_t <- nrow(trunc_matr_observed)
     # Take the reporting triangle and look at one row at a time, which
     # corresponds to one horizon
     for (d in 1:n_horizons) {
       obs_row <- trunc_matr_observed[max_t - d + 1, ]
       nowcast_row <- nowcast_i[max_t - d + 1, ]
-      indices_nowcast <- is.na(generate_triangle(
-        trunc_matr_observed
-      ))[max_t - d + 1, ]
+      indices_nowcast <- is.na(triangle_observed)[max_t - d + 1, ]
       indices_observed <- !is.na(trunc_matr_observed)[max_t - d + 1, ]
       exp_to_add[i, d] <- sum(nowcast_row *
         indices_nowcast * indices_observed)

@@ -22,7 +22,7 @@ one to the maximum delay.}
 \code{rollapply}, which will operate along the nowcast vectors after summing
 across delays. Eventually, we can add things like mean, but for now since
 we are only providing a negative binomial observation model, we can only
-allow sum (min or max would work but wouldn't make much sense).}
+allow sum. Currently supported functions: \code{sum}.}
 
 \item{k}{Integer indicating the number \code{width} of the call to \code{rollapply}.
 Default is 1.}
@@ -53,4 +53,12 @@ nowcast_pred_draw <- get_nowcast_pred_draw(
   disp
 )
 nowcast_pred_draw
+
+# Get draws on the rolling sum
+nowcast_pred_draw <- get_nowcast_pred_draw(
+  point_nowcast_pred_matrix,
+  disp,
+  fun_to_aggregate = sum,
+  k = 2
+)
 }

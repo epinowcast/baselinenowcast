@@ -53,24 +53,22 @@
 #'   n = 2
 #' )
 #' disp_params
-#' 
+#'
 #' # Estimate dispersion parameters from rolling sum
-#'  Example with aggregation over 2 time points
-#'  disp_params_agg <- estimate_dispersion(
-#'  pt_nowcast_mat_list = retro_nowcasts,
-#'  trunc_rep_tri_list = trunc_rts,
-#'  n = 2,
-#'  fun_to_aggregate = sum,
-#'  k = 2
-#'  )
-#'  disp_params_agg
+#' disp_params_agg <- estimate_dispersion(
+#'   pt_nowcast_mat_list = retro_nowcasts,
+#'   trunc_rep_tri_list = trunc_rts,
+#'   n = 2,
+#'   fun_to_aggregate = sum,
+#'   k = 2
+#' )
+#' disp_params_agg
 estimate_dispersion <- function(
     pt_nowcast_mat_list,
     trunc_rep_tri_list,
     n = length(pt_nowcast_mat_list),
     fun_to_aggregate = sum,
     k = 1) {
-  
   .validate_aggregation_function(fun_to_aggregate)
 
   # Check that the length of the list of nowcasts is greater than
@@ -140,47 +138,51 @@ estimate_dispersion <- function(
     trunc_matr_observed <- list_of_obs[[i]]
     max_t <- nrow(trunc_matr_observed)
     n_horizons <- min(max_t - k + 1, n_possible_horizons)
-    if(i ==1 && n_horizons < n_possible_horizons ){
+    if (i == 1 && n_horizons < n_possible_horizons) {
       cli_abort(
         message = c(
-         sprintf("Requested window size k=%i is too large to generate sufficient nowcasts for the required forecast horizons for all available nowcast matrices.",
-                 k)
+          sprintf(
+            "Requested window size k=%i is too large to generate sufficient nowcasts for the required forecast horizons for all available nowcast matrices.",
+            k
+          )
         )
       )
     }
-    if(n_horizons < n_possible_horizons){
+    if (n_horizons < n_possible_horizons) {
       cli_warn(message = c(
-        sprintf("Requested window size k=%i is too large to generate nowcasts for all forecast horizons in matrix %i. ",
-        k,
-        i
-      )))
+        sprintf(
+          "Requested window size k=%i is too large to generate nowcasts for all forecast horizons in matrix %i. ",
+          k,
+          i
+        )
+      ))
     }
-      # Take the reporting triangle and look at one row at a time, which
-      # corresponds to one horizon
-      for (d in 1:n_horizons) {
-        start_row <- max_t - d - k + 2
-        end_row <- max_t - d + 1 
-        obs <- trunc_matr_observed[start_row:end_row, ]
-        nowcast <- nowcast_i[start_row:end_row, ]
-        indices_nowcast <- is.na(generate_triangle(
-          trunc_matr_observed
-        ))[start_row:end_row, ]
-        indices_observed <- !is.na(trunc_matr_observed)[start_row:end_row, ] # nolint
-        # Function to aggregate is always applied after the matrix has been
-        # summed across delays
-        exp_to_add[i, d] <- fun_to_aggregate(
-          rowSums(as.matrix(nowcast *
-                              indices_nowcast * indices_observed)),
-          na.rm = TRUE
-        )
-        to_add_already_observed[i, d] <- fun_to_aggregate(
-          rowSums(as.matrix(
-            obs * indices_nowcast * indices_observed
-          )),
-          na.rm = TRUE
-        )
-      } # end loop over forecast horizons
-  }# end loop over retrospective nowcast times
+    # Take the reporting triangle and look at one row at a time, which
+    # corresponds to one horizon
+    for (d in 1:n_horizons) {
+      start_row <- max_t - d - k + 2
+      end_row <- max_t - d + 1
+      obs <- trunc_matr_observed[start_row:end_row, ]
+      nowcast <- nowcast_i[start_row:end_row, ]
+      indices_nowcast <- is.na(generate_triangle(
+        trunc_matr_observed
+      ))[start_row:end_row, ]
+      indices_observed <- !is.na(trunc_matr_observed)[start_row:end_row, ] # nolint
+      # Function to aggregate is always applied after the matrix has been
+      # summed across delays
+      exp_to_add[i, d] <- fun_to_aggregate(
+        rowSums(as.matrix(nowcast *
+          indices_nowcast * indices_observed)),
+        na.rm = TRUE
+      )
+      to_add_already_observed[i, d] <- fun_to_aggregate(
+        rowSums(as.matrix(
+          obs * indices_nowcast * indices_observed
+        )),
+        na.rm = TRUE
+      )
+    } # end loop over forecast horizons
+  } # end loop over retrospective nowcast times
 
   # Estimate the dispersion as a function of horizon across retrospective
   # nowcast dates

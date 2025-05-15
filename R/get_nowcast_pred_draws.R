@@ -8,7 +8,7 @@
 #'    `rollapply`, which will operate along the nowcast vectors after summing
 #'    across delays. Eventually, we can add things like mean, but for now since
 #'    we are only providing a negative binomial observation model, we can only
-#'    allow sum (min or max would work but wouldn't make much sense).
+#'    allow sum. Currently supported functions: `sum`.
 #' @param k Integer indicating the number `width` of the call to `rollapply`.
 #'    Default is 1.
 #'
@@ -37,10 +37,19 @@
 #'   disp
 #' )
 #' nowcast_pred_draw
+#'
+#' # Get draws on the rolling sum
+#' nowcast_pred_draw <- get_nowcast_pred_draw(
+#'   point_nowcast_pred_matrix,
+#'   disp,
+#'   fun_to_aggregate = sum,
+#'   k = 2
+#' )
 get_nowcast_pred_draw <- function(point_nowcast_pred_matrix,
                                   disp,
                                   fun_to_aggregate = sum,
                                   k = 1) {
+  .validate_aggregation_function(fun_to_aggregate)
   if (length(disp) > nrow(point_nowcast_pred_matrix)) {
     cli_abort(
       message = c(
@@ -110,30 +119,22 @@ get_nowcast_pred_draw <- function(point_nowcast_pred_matrix,
 #'   500
 #' )
 #' nowcast_pred_draws_df
+#'
+#' # Get nowcast pred draws over rolling sum
+#' nowcast_pred_draws_rolling_df <- get_nowcast_pred_draws(
+#'   point_nowcast_pred_matrix,
+#'   disp,
+#'   500,
+#'   fun_to_aggregate = sum,
+#'   k = 2
+#' )
+#' nowcast_pred_draws_rolling_df
 get_nowcast_pred_draws <- function(point_nowcast_pred_matrix,
                                    disp,
                                    n_draws = 1000,
                                    fun_to_aggregate = sum,
                                    k = 1) {
-  # Define allowed functions
-  allowed_functions <- list(
-    sum = sum
-  )
-
-  # Validate function
-  fun_name <- deparse(substitute(fun_to_aggregate))
-  if (is.name(fun_to_aggregate)) {
-    fun_name <- as.character(fun_to_aggregate)
-  }
-
-  # Check if function is in allowed list
-  if (!identical(fun_to_aggregate, allowed_functions[[fun_name]]) &&
-    !any(sapply(allowed_functions, identical, fun_to_aggregate))) {
-    allowed_names <- toString(names(allowed_functions), collapse = ", ")
-    stop(sprintf("'fun_to_aggregate' should be one of: %s", allowed_names),
-      call. = FALSE
-    )
-  }
+  .validate_aggregation_function(fun_to_aggregate)
 
   assert_integerish(n_draws, lower = 1)
 

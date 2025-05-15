@@ -27,7 +27,7 @@ nowcast vector to generate. Default is \code{1000}.}
 \code{rollapply}, which will operate along the nowcast vectors after summing
 across delays. Eventually, we can add things like mean, but for now since
 we are only providing a negative binomial observation model, we can only
-allow sum (min or max would work but wouldn't make much sense).}
+allow sum. Currently supported functions: \code{sum}.}
 
 \item{k}{Integer indicating the number \code{width} of the call to \code{rollapply}.
 Default is 1.}
@@ -61,4 +61,14 @@ nowcast_pred_draws_df <- get_nowcast_pred_draws(
   500
 )
 nowcast_pred_draws_df
+
+# Get nowcast pred draws over rolling sum
+nowcast_pred_draws_rolling_df <- get_nowcast_pred_draws(
+  point_nowcast_pred_matrix,
+  disp,
+  500,
+  fun_to_aggregate = sum,
+  k = 2
+)
+nowcast_pred_draws_rolling_df
 }

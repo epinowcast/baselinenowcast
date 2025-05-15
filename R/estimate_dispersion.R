@@ -52,12 +52,16 @@ estimate_dispersion <- function(
     trunc_rep_tri_list,
     reporting_triangle_list,
     n = length(pt_nowcast_mat_list)) {
-  
   assert_integerish(n, lower = 0)
-  
+
   .check_list_length(pt_nowcast_mat_list, "pt_nowcast_mat_list", n)
   .check_list_length(trunc_rep_tri_list, "trunc_rep_tri_list", n)
-  .check_list_length(reporting_triangle_list, "reporting_triangle_list", n, empty_check = FALSE)
+  .check_list_length(
+    reporting_triangle_list,
+    "reporting_triangle_list",
+    n,
+    empty_check = FALSE
+  )
 
   # Truncate to only n nowcasts
   list_of_ncs <- pt_nowcast_mat_list[1:n]
@@ -130,7 +134,13 @@ estimate_dispersion <- function(
   return(disp_params)
 }
 
-.check_list_length <- function(list_obj, name, required_length, custom_msg = NULL, empty_check = TRUE) {
+.check_list_length <- function(list_obj, name, required_length, 
+                              custom_msg = NULL, empty_check = TRUE) {
+  # Validate input is a list
+  if (!is.list(list_obj)) {
+    cli_abort(paste0("`", name, "` must be a list"))
+  }
+
   if (length(list_obj) < required_length) {
     cli_abort(message = c(
       "Insufficient elements in `", name, "` for the `n` desired ",
@@ -140,6 +150,7 @@ estimate_dispersion <- function(
   if (empty_check && length(list_obj) < 1) {
     cli_abort(paste0("`", name, "` is an empty list"))
   }
+  return(invisible(NULL))
 }
 
 

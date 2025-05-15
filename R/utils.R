@@ -45,55 +45,26 @@
 
 #' Extract from one matrix only elements that are missing in another
 #'
-#' @param pt_nowcast_mat Matrix containing a mix of predicted and observed
-#'    values
-#' @param rep_mat Matrix containing only the observed elements of the
-#'    reporting triangle
-#'
-#' @returns `pred_mat` Matrix containing the elements from `pt_nowcast_mat`
-#'   for only the elements that are missing in `obs_mat`
-#' @export
-#'
-#' @examples
-#' pt_nowcast_mat <- matrix(
-#'   c(
-#'     1, 3, 5, 7,
-#'     4, 7, 8, 9,
-#'     9, 10, 3, 5,
-#'     3, 4, 8, 5
-#'   ),
-#'   nrow = 4,
-#'   byrow = TRUE
-#' )
-#'
-#' reporting_matrix <- matrix(
-#'   c(
-#'     1, 3, 5, 7,
-#'     4, 7, 8, NA,
-#'     9, 10, NA, NA,
-#'     3, NA, NA, NA
-#'   ),
-#'   nrow = 4,
-#'   byrow = TRUE
-#' )
-#'
-#' other_subset <- extract_predictions(pt_nowcast_mat, reporting_matrix)
-#' other_subset
-extract_predictions <- function(pt_nowcast_mat,
-                                rep_mat) {
-  assert_matrix(pt_nowcast_mat, any.missing = FALSE)
-  assert_matrix(rep_mat, all.missing = FALSE)
+#' @inheritParams get_nowcast_pred_draws
+#' @returns Matrix containing the elements from `point_nowcast_matrix` for
+#'    only the elements that are missing in `reporting_triangle`
+#' @keywords internal
+.extract_predictions <- function(point_nowcast_matrix,
+                                 reporting_triangle) {
+  assert_matrix(point_nowcast_matrix, any.missing = FALSE)
+  assert_matrix(reporting_triangle, all.missing = FALSE)
   # Check that the observations are the same
-  all_equal <- all(pt_nowcast_mat[!is.na(rep_mat)] == rep_mat[!is.na(rep_mat)]) # nolint
+  all_equal <- all(point_nowcast_matrix[!is.na(reporting_triangle)] == reporting_triangle[!is.na(reporting_triangle)]) # nolint
   if (isFALSE(all_equal)) {
     cli_abort(message = c(
-      " `rep_mat` is not a subset of `pt_nowcast_mat`. Check to make sure ",
-      "that the matrix combining predictions and observations aligns with the ",
-      "matrix containing only the observed values in the reporting matrix. "
+      "`reporting_triangle` is not a subset of `point_nowcast_matrix`. Check to
+       make sure that the matrix combining predictions and observations aligns
+       with the matrix containing only the observed values in the reporting
+       triangle. "
     ))
   }
 
-  pred_mat <- pt_nowcast_mat
-  pred_mat[!is.na(rep_mat)] <- NA
+  pred_mat <- point_nowcast_matrix
+  pred_mat[!is.na(reporting_triangle)] <- NA
   return(pred_mat)
 }

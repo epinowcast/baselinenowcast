@@ -70,11 +70,14 @@ test_that("estimate_dispersion: Default n parameter works correctly", {
 
 test_that("estimate_dispersion: Error conditions are properly handled", {
   # Invalid input types
-  expect_error(estimate_dispersion(list("not_a_matrix"), valid_trunc_rts, valid_rts))
-  expect_error(estimate_dispersion(valid_nowcasts, list("not_a_matrix"), valid_rts))
+  expect_error(estimate_dispersion(
+    list("not_a_matrix"), valid_trunc_rts, valid_rts))
+  expect_error(estimate_dispersion(
+    valid_nowcasts, list("not_a_matrix"), valid_rts))
 
   # Invalid reporting_triangle_list
-  expect_error(estimate_dispersion(valid_nowcasts, valid_trunc_rts, list("not_a_matrix")))
+  expect_error(estimate_dispersion(
+    valid_nowcasts, valid_trunc_rts, list("not_a_matrix")))
   expect_error(estimate_dispersion(valid_nowcasts, valid_trunc_rts, list()))
 
   # Mismatched list lengths
@@ -83,9 +86,12 @@ test_that("estimate_dispersion: Error conditions are properly handled", {
   )
 
   # Invalid n values
-  expect_error(estimate_dispersion(valid_nowcasts, valid_trunc_rts, valid_rts, n = -1))
-  expect_error(estimate_dispersion(valid_nowcasts, valid_trunc_rts, valid_rts, n = 1.5))
-  expect_error(estimate_dispersion(valid_nowcasts, valid_trunc_rts, valid_rts, n = 3))
+  expect_error(estimate_dispersion(
+    valid_nowcasts, valid_trunc_rts, valid_rts, n = -1))
+  expect_error(estimate_dispersion(
+    valid_nowcasts, valid_trunc_rts, valid_rts, n = 1.5))
+  expect_error(estimate_dispersion(
+    valid_nowcasts, valid_trunc_rts, valid_rts, n = 3))
 
   # pt nowcast contains NAs or is empty
   expect_error(estimate_dispersion(valid_trunc_rts, valid_trunc_rts, valid_rts))
@@ -100,7 +106,8 @@ test_that("estimate_dispersion: Error conditions are properly handled", {
     test_triangle_decimal[1:5, ],
     test_triangle_decimal[1:4, ]
   )
-  expect_error(estimate_dispersion(valid_nowcasts, non_integer_trunc_rts, valid_rts))
+  expect_error(estimate_dispersion(
+    valid_nowcasts, non_integer_trunc_rts, valid_rts))
 })
 
 test_that("estimate_dispersion: Edge cases are handled properly", {
@@ -140,27 +147,28 @@ test_that(".fit_nb: Passing in empty vector returns NA", {
 test_that("estimate_dispersion: Works with ragged reporting triangles", {
   # Create a triangle with known delay PMF
   sim_delay_pmf <- c(0.1, 0.2, 0.3, 0.1, 0.1, 0.1)
-  
+
   # Generate counts for each reference date
-  counts <- c(30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200)
-  
+  counts <- c(30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150,
+              160, 170, 180, 190, 200)
+
   # Create a complete triangle based on the known delay PMF
   complete_triangle <- lapply(counts, function(x) round(x * sim_delay_pmf))
   complete_triangle <- do.call(rbind, complete_triangle)
-  
+
   # Create a reporting triangle with every other day reporting
   ragged_triangle <- generate_triangle(
     complete_triangle,
     structure = 2
   )
-  
+
   # Create truncated triangles and retrospective triangles
   trunc_rts <- truncate_triangles(ragged_triangle)
   retro_rts <- generate_triangles(trunc_rts, structure = 2)
-  
+
   # Generate nowcasts from the ragged triangles
   retro_nowcasts <- generate_pt_nowcast_mat_list(retro_rts)
-  
+
   # Estimate dispersion parameters
   disp_params <- estimate_dispersion(
     pt_nowcast_mat_list = retro_nowcasts,
@@ -168,9 +176,9 @@ test_that("estimate_dispersion: Works with ragged reporting triangles", {
     reporting_triangle_list = retro_rts,
     n = 2
   )
-  
+
   # Test that the function returns the expected result
   expect_is(disp_params, "numeric")
-  expect_equal(length(disp_params), ncol(ragged_triangle) - 1)
+  expect_length(disp_params, ncol(ragged_triangle) - 1)
   expect_true(all(disp_params > 0))
 })

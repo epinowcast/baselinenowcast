@@ -134,7 +134,7 @@ estimate_dispersion <- function(
   return(disp_params)
 }
 
-.check_list_length <- function(list_obj, name, required_length, 
+.check_list_length <- function(list_obj, name, required_length,
                               custom_msg = NULL, empty_check = TRUE) {
   # Validate input is a list
   if (!is.list(list_obj)) {

@@ -194,8 +194,8 @@ get_nowcast_draw <- function(point_nowcast_matrix,
 #'
 #' @inheritParams get_nowcast_pred_draws
 #' @returns Dataframe containing information for multiple draws with columns
-#'  for the reference time, the observed counts, the predicted counts, the
-#'  total counts, and the draw number.
+#'  for the reference time (`time`), the predicted counts (`pred_count`), and
+#'  the draw number (`draw`).
 #' @export
 #' @examples
 #' point_nowcast_matrix <- matrix(

@@ -206,8 +206,8 @@ test_that("Function errors if only contains triangles with first column 0", { # 
   retro_rts_list <- list(triangle1, triangle2, triangle3)
 
   expect_error(expect_message(generate_pt_nowcast_mat_list(retro_rts_list)))
-)}
-          
+})
+
 test_that("ensure that the number of rows in n_history_delay is used", {
   sim_delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
 

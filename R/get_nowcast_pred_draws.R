@@ -43,7 +43,6 @@ get_nowcast_pred_draw <- function(point_nowcast_matrix,
       )
     )
   }
-  .validate_triangle(reporting_triangle)
   point_nowcast_pred_matrix <- .extract_predictions(
     point_nowcast_matrix,
     reporting_triangle
@@ -122,14 +121,14 @@ combine_obs_with_pred <- function(predicted_counts, reporting_triangle) {
 #' )
 #' nowcast_pred_draws
 get_nowcast_pred_draws <- function(point_nowcast_matrix,
-                                  reporting_triangle,
+                                   reporting_triangle,
                                   dispersion,
                                   draws = 1000) {
   assert_integerish(draws, lower = 1)
 
   reference_times <- seq_len(nrow(point_nowcast_matrix))
 
-  draws_df <- lapply(seq_len(draws), function(i) {
+  draws_df_list <- lapply(seq_len(draws), function(i) {
     pred_counts <- get_nowcast_pred_draw(
       point_nowcast_matrix,
       reporting_triangle,

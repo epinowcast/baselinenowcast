@@ -84,6 +84,13 @@ test_that("estimate_dispersion: Error conditions are properly handled", {
   expect_error(
     estimate_dispersion(valid_nowcasts[1], valid_trunc_rts, valid_rts, n = 2)
   )
+  expect_error(
+    estimate_dispersion(valid_nowcasts, valid_trunc_rts[1], valid_rts, n = 2)
+  )
+  expect_error(
+    estimate_dispersion(valid_nowcasts, valid_trunc_rts, valid_rts[1], n = 2)
+  )
+  
 
   # Invalid n values
   expect_error(estimate_dispersion(

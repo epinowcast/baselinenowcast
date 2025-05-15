@@ -103,7 +103,7 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
   if (length(error_indices) == length(reporting_triangle_list)) {
     cli_abort(
       message = c(sprintf(
-        "\nErrors occurred in all %s reporting triangles.",
+        "\nErrors occurred in all %s reporting triangles. Check if input triangles have valid data structure or contain zeros in the first column.", # nolint
         length(reporting_triangle_list)
       ))
     )

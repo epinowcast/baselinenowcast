@@ -67,3 +67,25 @@ test_that("safelydoesit works correctly", {
   expect_identical(safe_complex(1, 2, 3)$result, 6)
   expect_identical(safe_complex(1, 2, 3, 4, 5)$result, 15)
 })
+
+test_that("safelydoesit handles nested errors correctly", {
+  # Define a function that calls another function that might error
+  outer_fun <- function(x) {
+    inner_fun <- function(y) {
+      if (y < 0) stop("Negative value not allowed", call. = FALSE)
+      return(y * 2)
+    }
+    safe_inner <- .safelydoesit(inner_fun)
+    result <- safe_inner(x)
+
+    # Handle the inner error
+    if (!is.null(result$error)) {
+      return(0) # default value on error
+    }
+    return(result$result)
+  }
+
+  # Test with valid and invalid inputs
+  expect_identical(outer_fun(5), 10)
+  expect_identical(outer_fun(-5), 0)
+})

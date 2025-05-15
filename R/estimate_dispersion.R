@@ -83,7 +83,8 @@ estimate_dispersion <- function(
       message = c(
         "No retrospective nowcasts were generated, therefore ",
         "uncertainty can not be estimated using the reporting ",
-        "triangle passed in"
+        "triangle passed in. This may be due to invalid data ",
+        "in reporting triangles, such as zeros in the first column."
       )
     )
   }

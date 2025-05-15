@@ -144,7 +144,7 @@
   # Check if function is in allowed list
   if (!identical(fun_to_aggregate, allowed_functions[[fun_name]]) &&
     !any(sapply(allowed_functions, identical, fun_to_aggregate))) {
-    allowed_names <- paste(names(allowed_functions), collapse = ", ")
+    allowed_names <- toString(names(allowed_functions))
     stop(sprintf("'fun_to_aggregate' should be one of: %s", allowed_names),
       call. = FALSE
     )

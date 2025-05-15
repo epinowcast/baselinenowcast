@@ -142,7 +142,7 @@ estimate_dispersion <- function(
       cli_abort(
         message = c(
           sprintf(
-            "Requested window size k=%i is too large to generate sufficient nowcasts for the required forecast horizons for all available nowcast matrices.",
+            "Requested window size k=%i is too large to generate sufficient nowcasts for the required forecast horizons for all available nowcast matrices.", # nolint
             k
           )
         )
@@ -151,7 +151,7 @@ estimate_dispersion <- function(
     if (n_horizons < n_possible_horizons) {
       cli_warn(message = c(
         sprintf(
-          "Requested window size k=%i is too large to generate nowcasts for all forecast horizons in matrix %i. ",
+          "Requested window size k=%i is too large to generate nowcasts for all forecast horizons in matrix %i. ", # nolint
           k,
           i
         )

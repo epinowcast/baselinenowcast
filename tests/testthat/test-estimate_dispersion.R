@@ -72,7 +72,7 @@ test_that("Function can handle rolling sum with k=2", {
   expect_failure(expect_equal(result1, result2, tol = 0.01))
 })
 
-test_that("estiamte_dispersion appropriately warns when k is too large for some of the triangles", { #
+test_that("estiamte_dispersion appropriately warns when k is too large for some of the triangles", { # nolint
   expect_warning(estimate_dispersion(
     pt_nowcast_mat_list = valid_nowcasts,
     trunc_rep_tri_list = valid_trunc_rts,
@@ -82,7 +82,7 @@ test_that("estiamte_dispersion appropriately warns when k is too large for some 
   ))
 })
 
-test_that("estiamte_dispersion appropriately errors when k is too large for all the triangles", { #
+test_that("estiamte_dispersion appropriately errors when k is too large for all the triangles", { # nolint
   expect_error(estimate_dispersion(
     pt_nowcast_mat_list = valid_nowcasts,
     trunc_rep_tri_list = valid_trunc_rts,

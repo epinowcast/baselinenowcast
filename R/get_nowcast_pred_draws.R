@@ -116,7 +116,7 @@ combine_obs_with_pred <- function(predicted_counts, reporting_triangle) {
 #' )
 #' reporting_triangle <- generate_triangle(point_nowcast_matrix)
 #' disp <- c(0.8, 12.4, 9.1)
-#' nowcast_pred_draws <- get_nowcast_pred_draw(
+#' nowcast_pred_draws <- get_nowcast_pred_draws(
 #'   point_nowcast_matrix,
 #'   reporting_triangle,
 #'   disp,
@@ -211,11 +211,11 @@ get_nowcast_draw <- function(point_nowcast_matrix,
 #' )
 #' reporting_triangle <- generate_triangle(point_nowcast_matrix)
 #' disp <- c(0.8, 12.4, 9.1)
-#' nowcast_draws <- get_nowcast_draw(
+#' nowcast_draws <- get_nowcast_draws(
 #'   point_nowcast_matrix,
 #'   reporting_triangle,
 #'   disp,
-#'   draw = 5
+#'   draws = 5
 #' )
 #' nowcast_draws
 get_nowcast_draws <- function(point_nowcast_matrix,

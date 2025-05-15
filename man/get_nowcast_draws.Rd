@@ -50,11 +50,11 @@ point_nowcast_matrix <- matrix(
 )
 reporting_triangle <- generate_triangle(point_nowcast_matrix)
 disp <- c(0.8, 12.4, 9.1)
-nowcast_draws <- get_nowcast_draw(
+nowcast_draws <- get_nowcast_draws(
   point_nowcast_matrix,
   reporting_triangle,
   disp,
-  draw = 5
+  draws = 5
 )
 nowcast_draws
 }

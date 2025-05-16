@@ -28,7 +28,7 @@ number of columns as \code{triangle}.
 \description{
 This function ingests a reporting triangle/matrix and the number of
 truncated reporting triangles we want to create, \code{n}, and iteratively
-truncated the reporting triangle, working from the latest reference time
+truncates the reporting triangle, working from the latest reference time
 (bottom) to the older reference times (top) for \code{n}
 snapshots.
 }

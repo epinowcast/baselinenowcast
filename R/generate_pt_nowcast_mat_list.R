@@ -1,19 +1,18 @@
 #' Generate retrospective nowcasts
 #'
 #' This function ingests a list of incomplete reporting triangles and
-#'   generates a list of reporting squares, or "complete"
-#'   point estimates of reporting triangles based on the delay estimated in
-#'   each triangle. It uses the specified `n` number of
-#'   observations to estimate the empirical delay for each retrospective
+#'   generates a list of point nowcast matrices, based on the delay estimated in
+#'   each triangle or the corresponding delay passed in. It uses the specified
+#'   `n` number of reference times to estimate the delay in each retrospective
 #'   reporting triangle.
 #'
 #' @param reporting_triangle_list List of reporting triangle matrices, in order
-#'    from most recent (most complete) to least recent. Bottom right of the
+#'    from most recent to oldest. Bottom right of the
 #'    matrices should contain NAs.
 #' @param max_delay Integer indicating the maximum delay to estimate, in units
 #'   of the delay. The default is to use one less than the minimum number of
 #'   rows of all of the matrices in the `list_of_rts`.
-#' @param n Integer indicating the number of observations
+#' @param n Integer indicating the number of reference times
 #'    (number of rows) to use to estimate the delay distribution for each
 #'    reporting triangle. Default is the minimum of the number of rows of
 #'    all the matrices in the `list_of_rts`.

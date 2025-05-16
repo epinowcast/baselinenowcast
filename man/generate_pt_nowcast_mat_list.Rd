@@ -13,14 +13,14 @@ generate_pt_nowcast_mat_list(
 }
 \arguments{
 \item{reporting_triangle_list}{List of reporting triangle matrices, in order
-from most recent (most complete) to least recent. Bottom right of the
+from most recent to oldest. Bottom right of the
 matrices should contain NAs.}
 
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use one less than the minimum number of
 rows of all of the matrices in the \code{list_of_rts}.}
 
-\item{n}{Integer indicating the number of observations
+\item{n}{Integer indicating the number of reference times
 (number of rows) to use to estimate the delay distribution for each
 reporting triangle. Default is the minimum of the number of rows of
 all the matrices in the \code{list_of_rts}.}
@@ -37,10 +37,9 @@ in based on the delay estimated in that reporting triangle.
 }
 \description{
 This function ingests a list of incomplete reporting triangles and
-generates a list of reporting squares, or "complete"
-point estimates of reporting triangles based on the delay estimated in
-each triangle. It uses the specified \code{n} number of
-observations to estimate the empirical delay for each retrospective
+generates a list of point nowcast matrices, based on the delay estimated in
+each triangle or the corresponding delay passed in. It uses the specified
+\code{n} number of reference times to estimate the delay in each retrospective
 reporting triangle.
 }
 \examples{

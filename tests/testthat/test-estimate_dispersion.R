@@ -41,7 +41,7 @@ valid_trunc_rts <- list(
   test_triangle[1:5, ],
   test_triangle[1:4, ]
 )
-test_that("Basic functionality with valid inputs", {
+test_that("estimate_dispersion handles basic functionality with valid inputs", {
   result <- estimate_dispersion(
     pt_nowcast_mat_list = valid_nowcasts,
     trunc_rep_tri_list = valid_trunc_rts,
@@ -93,7 +93,7 @@ test_that("estimate_dispersion appropriately errors when k is too large for all 
 })
 
 
-test_that("Function throws an error if function to aggregate is not valid", {
+test_that("estimate_dispersion throws an error if function to aggregate is not valid", {
   expect_error(estimate_dispersion(
     pt_nowcast_mat_list = valid_nowcasts,
     trunc_rep_tri_list = valid_trunc_rts,
@@ -110,14 +110,14 @@ test_that("Function throws an error if function to aggregate is not valid", {
     k = 2
   ))
 })
-test_that("Default n parameter works correctly", {
+test_that("estimate_dispersion works correctly with default and n parameters", {
   result_default <- estimate_dispersion(valid_nowcasts, valid_trunc_rts)
   result_explicit <- estimate_dispersion(valid_nowcasts, valid_trunc_rts, n = 2)
   expect_identical(result_default, result_explicit)
 })
 
 ### Test 3: Error Conditions ---------------------------------------------------
-test_that("Error conditions are properly handled", {
+test_that("estimate_dispersion properly handles error conditions", {
   # Invalid input types
   expect_error(estimate_dispersion(list("not_a_matrix"), valid_trunc_rts))
   expect_error(estimate_dispersion(valid_nowcasts, list("not_a_matrix")))
@@ -151,7 +151,7 @@ test_that("Error conditions are properly handled", {
 })
 
 ### Test 4: Edge Cases ---------------------------------------------------------
-test_that("Edge cases are handled properly", {
+test_that("estimate_dispersion handles edge cases properly", {
   # Empty lists
   expect_error(expect_warning(estimate_dispersion(list(), list(), n = 0)))
 
@@ -168,7 +168,7 @@ test_that("Edge cases are handled properly", {
 })
 
 ### Test 5: Dimension Validation -----------------------------------------------
-test_that("Matrix dimension validation works", {
+test_that("estimate_dispersion checks matrix dimensions", {
   # Mismatched dimensions between nowcasts and trunc_rts
   bad_trunc_rts <- list(
     test_triangle[1:5, ],
@@ -180,7 +180,7 @@ test_that("Matrix dimension validation works", {
 })
 
 ## Test 6: fit_nb returns NA if nothing passed to it---------------------------
-test_that("Passing in empty vector returns NA", {
+test_that("estimate_dispersion returns NA if passing in empty vector ", {
   x <- NULL
   NA_result <- .fit_nb(x, mu = 1)
   expect_true(is.na(NA_result))

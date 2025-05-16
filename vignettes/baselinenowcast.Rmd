@@ -339,7 +339,7 @@ point_nowcast_matrix <- apply_delay(
 ```
 
 We'll make a quick plot to compare the nowcasted confirmed cases through
-July 1, 2021, from the observations up until October 1, 2021.
+August 1, 2021, from the observations up until October 1, 2021.
 We'll compare this to the right-truncated data available up until July 1, 2021.
 ```{r}
 point_nowcast_df <- target_data |>

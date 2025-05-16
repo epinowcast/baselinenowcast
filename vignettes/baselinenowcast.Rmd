@@ -436,13 +436,15 @@ retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
 
 
 
-Next, we will use the list of retrospective reporting triangles to estimate
-the uncertainty at each horizon, starting at horizon 0.
+Next, we will use the retrospective reporting triangles, the point nowcasted
+reporting triangles, and the truncated reporting triangles to estimate the
+uncertainty at each horizon, starting at horizon 0.
 
 ```{r estimate-dispersion}
 disp_params <- estimate_dispersion(
   pt_nowcast_mat_list = retro_pt_nowcast_mat_list,
   trunc_rep_tri_list = trunc_rep_tri_list,
+  reporting_triangle_list = retro_rep_tri_list
   n = n_history_delay
 )
 ```

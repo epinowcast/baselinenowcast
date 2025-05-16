@@ -63,7 +63,7 @@ test_that("estimate_dispersion works correctly with explicit n", {
 })
 
 
-test_that("Error conditions are properly handled", {
+test_that("estimate_dispersion properly handles error conditions", { # nolint
   # Invalid input types
   expect_error(estimate_dispersion(list("not_a_matrix"), valid_trunc_rts))
   expect_error(estimate_dispersion(valid_nowcasts, list("not_a_matrix")))
@@ -97,7 +97,7 @@ test_that("Error conditions are properly handled", {
 })
 
 
-test_that("Edge cases are handled properly", {
+test_that("estimate_dispersion properly handles edge cases", {
   # Empty lists
   expect_error(expect_warning(estimate_dispersion(list(), list(), n = 0)))
 
@@ -114,7 +114,7 @@ test_that("Edge cases are handled properly", {
 })
 
 
-test_that("Matrix dimension validation works", {
+test_that("estimate_dispersion validates matrix dimension", {
   # Mismatched dimensions between nowcasts and trunc_rts
   bad_trunc_rts <- list(
     test_triangle[1:5, ],
@@ -126,13 +126,13 @@ test_that("Matrix dimension validation works", {
 })
 
 
-test_that("Passing in empty vector returns NA", {
+test_that("estimate_dispersion returns NA if passing in empty vector", {
   x <- NULL
   NA_result <- .fit_nb(x, mu = 1)
   expect_true(is.na(NA_result))
 })
 
-test_that("Passing in a NULL for a nowcast still returns an estimate", {
+test_that("estimate_dispersion returns an estimate if Passing in a NULL for a nowcast", { # nolint
   nowcasts_with_null <- list(nowcast1, NULL)
   # This should work, using only the first nowcast and first valid_trunc_rts
   result1 <- estimate_dispersion(nowcasts_with_null, valid_trunc_rts)
@@ -143,11 +143,11 @@ test_that("Passing in a NULL for a nowcast still returns an estimate", {
   expect_identical(result1, result_to_compare)
 })
 
-test_that("Passing in only NULLs for nowcasts returns an error", {
+test_that("estimate_dispersion returns an error if passing in only NULLs", {
   expect_error(estimate_dispersion(list(NULL, NULL), valid_trunc_rts))
 })
 
-test_that("Output of generate_pt_nowcast_mat_list is accepted", {
+test_that("estimate_dispersion accepts output of generate_pt_nowcast_mat_list ", { # nolint
   base_tri <- matrix(
     c(
       89, 54, 10, 5,

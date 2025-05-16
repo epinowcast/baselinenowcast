@@ -144,7 +144,7 @@ test_that("generate_pt_nowcast_mat_list identical-sized matrices work", {
   expect_identical(sapply(result, nrow), c(6L, 6L))
 })
 
-test_that("Function handles a single triangle with 0s for first column appropriately", { # nolint
+test_that("generate_pt_nowcast_mat_list handles a single triangle with 0s for first column appropriately", { # nolint
 
   triangle3 <- matrix(
     c(
@@ -164,7 +164,7 @@ test_that("Function handles a single triangle with 0s for first column appropria
   expect_null(result[[3]])
 })
 
-test_that("Function errors if only contains triangles with first column 0", { # nolint
+test_that("generate_pt_nowcast_mat_list errors if only contains triangles with first column 0", { # nolint
   triangle1 <- matrix(
     c(
       0, 46, 21, 7,
@@ -208,7 +208,7 @@ test_that("Function errors if only contains triangles with first column 0", { # 
   expect_error(expect_message(generate_pt_nowcast_mat_list(retro_rts_list)))
 })
 
-test_that("ensure that the number of rows in n_history_delay is used", {
+test_that("generate_pt_nowcast_mat_list uses full number of rows in n_history_delay", { # nolint
   sim_delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
 
   # Generate counts for each reference date

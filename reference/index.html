@@ -68,16 +68,16 @@
         <dd>Apply the delay to generate a point nowcast</dd>
       </dl><dl><dt>
 
+          <code><a href="combine_obs_with_pred.html">combine_obs_with_pred()</a></code>
+
+        </dt>
+        <dd>Combine observed data with a single prediction draw</dd>
+      </dl><dl><dt>
+
           <code><a href="estimate_dispersion.html">estimate_dispersion()</a></code>
 
         </dt>
         <dd>Estimate dispersion parameters</dd>
-      </dl><dl><dt>
-
-          <code><a href="extract_predictions.html">extract_predictions()</a></code>
-
-        </dt>
-        <dd>Extract from one matrix only elements that are missing in another</dd>
       </dl><dl><dt>
 
           <code><a href="generate_pt_nowcast_mat.html">generate_pt_nowcast_mat()</a></code>
@@ -108,6 +108,18 @@
 
         </dt>
         <dd>Estimate a delay distribution from a reporting triangle Provides an estimate of the reporting delay as a function of the delay, based on the reporting triangle and the specified maximum delay and number of reference date observations to be used in the estimation. This point estimate of the delay is computed empirically, using an iterative algorithm starting from the most recent observations. This code was adapted from code written (under an MIT license) by the Karlsruhe Institute of Technology RESPINOW German Hospitalization Nowcasting Hub. Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_nowcast_draw.html">get_nowcast_draw()</a></code>
+
+        </dt>
+        <dd>Generate a single draw of a nowcast combining observed and predicted values</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_nowcast_draws.html">get_nowcast_draws()</a></code>
+
+        </dt>
+        <dd>Generate multiple draws of a nowcast combining observed and predicted values</dd>
       </dl><dl><dt>
 
           <code><a href="get_nowcast_pred_draw.html">get_nowcast_pred_draw()</a></code>

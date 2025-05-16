@@ -46,7 +46,7 @@ create more complex model permutations.
 # Packages
 
 As well as the `baselinenowcast` package this vignette also uses `epinowcast`,
-`ggplot2`, `lubridate`, `tidyr`, and `dplyr`.
+`ggplot2`, `tidyr`, and `dplyr`.
 The installation of `epinowcast` is not required for using the package,
 however, its pre and post-processing functions provide a lot of the data
 wrangling needed to set up the nowcasting problem.
@@ -67,7 +67,6 @@ library(baselinenowcast)
 library(epinowcast)
 library(ggplot2)
 library(dplyr)
-library(lubridate)
 library(tidyr)
 # Set seed for reproducibility
 set.seed(123)

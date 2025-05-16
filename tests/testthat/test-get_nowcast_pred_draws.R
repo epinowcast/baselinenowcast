@@ -1,4 +1,5 @@
-test_that("get_nowcast_pred_draws: returns a dataframe with correct structure", {
+test_that(
+  "get_nowcast_pred_draws: returns a dataframe with correct structure", {
   point_nowcast_matrix <- matrix(
     c(
       100, 50, 30, 20,
@@ -69,8 +70,8 @@ test_that("get_nowcast_pred_draws: draws are distinct and properly indexed", {
 
   # At least some of the draws should be different (with very high probability)
   distinct_draws <- 0
-  for (i in 1:(n_draws-1)) {
-    for (j in (i+1):n_draws) {
+  for (i in 1:(n_draws - 1)) {
+    for (j in (i + 1):n_draws) {
       if (!identical(draw_vals[[i]], draw_vals[[j]])) {
         distinct_draws <- distinct_draws + 1
       }
@@ -109,7 +110,7 @@ test_that("get_nowcast_pred_draws: time index is correctly assigned", {
     draw_data <- result[result$draw == i, ]
     expect_identical(
       as.integer(draw_data$time),
-      as.integer(1:nrow(point_nowcast_matrix))
+      as.integer(seq_len(nrow(point_nowcast_matrix)))
     )
     # Check data is ordered by time within each draw
     expect_identical(draw_data$time, sort(draw_data$time))

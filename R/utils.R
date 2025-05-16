@@ -56,12 +56,12 @@
   # Check that the observations are the same
   all_equal <- all(point_nowcast_matrix[!is.na(reporting_triangle)] == reporting_triangle[!is.na(reporting_triangle)]) # nolint
   if (isFALSE(all_equal)) {
-    cli_abort(message = c(
+    cli_abort(message =
       "`reporting_triangle` is not a subset of `point_nowcast_matrix`. Check to
        make sure that the matrix combining predictions and observations aligns
        with the matrix containing only the observed values in the reporting
        triangle. "
-    ))
+    )
   }
 
   pred_mat <- point_nowcast_matrix

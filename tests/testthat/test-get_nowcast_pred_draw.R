@@ -32,8 +32,6 @@ test_that("get_nowcast_pred_draw: function returns vector of correct length", {
   expect_true(any(result[(expected_zeros + 1):length(result)] != 0))
 })
 
-
-
 test_that("get_nowcast_pred_draw: statistical properties are reasonable", {
   # Setup test data with known properties
   point_nowcast_matrix <- matrix(

@@ -56,8 +56,7 @@ Suggests:
     testthat (>= 3.1.9),
     usethis,
     withr,
-    knitr,
-    lubridate
+    knitr
 Encoding: UTF-8
 Language: en-GB
 LazyData: true

@@ -491,12 +491,14 @@ nowcast, which we will set as the <code>n_history_delay</code> previous specifie
 <span>  reporting_triangle_list <span class="op">=</span> <span class="va">retro_rep_tri_list</span>,</span>
 <span>  n <span class="op">=</span> <span class="va">n_history_delay</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Next, we will use the list of retrospective reporting triangles to estimate
-the uncertainty at each horizon, starting at horizon 0.</p>
+<p>Next, we will use the retrospective reporting triangles, the point nowcasted
+reporting triangles, and the truncated reporting triangles to estimate the
+uncertainty at each horizon, starting at horizon 0.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">disp_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_dispersion.html">estimate_dispersion</a></span><span class="op">(</span></span>
 <span>  pt_nowcast_mat_list <span class="op">=</span> <span class="va">retro_pt_nowcast_mat_list</span>,</span>
 <span>  trunc_rep_tri_list <span class="op">=</span> <span class="va">trunc_rep_tri_list</span>,</span>
+<span>  reporting_triangle_list <span class="op">=</span> <span class="va">retro_rep_tri_list</span>,</span>
 <span>  n <span class="op">=</span> <span class="va">n_history_delay</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>

@@ -469,7 +469,7 @@ head(nowcast_draws_df)
 As we can see, the output dataframe from `get_nowcast_draws()` contains:
 - `time`: The reference time index
 - `draw`: The draw number
-- `pred_count`: The predicted count for this reference time and draw
+- `pred_count`: The predicted final count for this reference time and draw (combining observations and predictions when present)
 
 # Visualizing the nowcast
 

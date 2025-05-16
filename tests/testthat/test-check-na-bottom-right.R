@@ -126,15 +126,20 @@ test_that(".check_na_bottom_right rejects non-continuous NAs in single row", {
   expect_false(.check_na_bottom_right(invalid_row_matrix))
 })
 
-test_that(".check_na_bottom_right rejects non-continuous NAs in single column", {
-  invalid_col_matrix <- matrix(c(1, NA, 3, NA, 5), ncol = 1)
-  expect_false(.check_na_bottom_right(invalid_col_matrix))
-})
+test_that(
+  ".check_na_bottom_right rejects non-continuous NAs in single column",
+  {
+    invalid_col_matrix <- matrix(c(1, NA, 3, NA, 5), ncol = 1)
+    expect_false(.check_na_bottom_right(invalid_col_matrix))
+  }
+)
 
-test_that(".check_na_bottom_right rejects value where NA should be in ragged pattern", {
-  ragged_invalid <- matrix(
-    c(
-      1, 2, 3, 4, 5,
+test_that(
+  ".check_na_bottom_right rejects value where NA should be in ragged pattern",
+  {
+    ragged_invalid <- matrix(
+      c(
+        1, 2, 3, 4, 5,
       6, 7, 8, 9, NA,
       10, 11, 12, NA, NA,
       13, 14, NA, 20, NA,

@@ -4,14 +4,21 @@
 \alias{get_nowcast_pred_draw}
 \title{Get a draw of only the predicted elements of the nowcast vector}
 \usage{
-get_nowcast_pred_draw(point_nowcast_pred_matrix, disp)
+get_nowcast_pred_draw(point_nowcast_matrix, reporting_triangle, dispersion)
 }
 \arguments{
-\item{point_nowcast_pred_matrix}{Matrix containing only the elements that
-have not yet been observed as of the final reference date.}
+\item{point_nowcast_matrix}{Matrix of point nowcast predictions and
+observations, with rows representing the reference times and columns
+representing the delays.}
 
-\item{disp}{Vector of dispersion parameters indexed by horizon from minus
-one to the maximum delay.}
+\item{reporting_triangle}{Matrix of the reporting triangle, with rows
+representing the time points of reference and columns representing the
+delays. Can be a reporting matrix or incomplete reporting matrix.
+Can also be a ragged reporting triangle, where multiple columns are
+reported for the same row. (e.g. weekly reporting of daily data).}
+
+\item{dispersion}{Vector of dispersion parameters indexed by horizon from
+minus one to the maximum delay.}
 }
 \value{
 Vector of predicted draws at each reference time, for all reference
@@ -21,21 +28,22 @@ times in the input \code{point_nowcast_pred_matrix}.
 Get a draw of only the predicted elements of the nowcast vector
 }
 \examples{
-point_nowcast_pred_matrix <-
-  matrix(
-    c(
-      NA, NA, NA, NA,
-      NA, NA, NA, NA,
-      NA, NA, NA, 16.8,
-      NA, NA, 21.2, 19.5,
-      NA, 34.5, 15.4, 9.1
-    ),
-    nrow = 4,
-    byrow = TRUE
-  )
+point_nowcast_matrix <- matrix(
+  c(
+    80, 50, 25, 10,
+    100, 50, 30, 20,
+    90, 45, 25, 16.8,
+    80, 40, 21.2, 19.5,
+    70, 34.5, 15.4, 9.1
+  ),
+  nrow = 5,
+  byrow = TRUE
+)
+reporting_triangle <- generate_triangle(point_nowcast_matrix)
 disp <- c(0.8, 12.4, 9.1)
 nowcast_pred_draw <- get_nowcast_pred_draw(
-  point_nowcast_pred_matrix,
+  point_nowcast_matrix,
+  reporting_triangle,
   disp
 )
 nowcast_pred_draw

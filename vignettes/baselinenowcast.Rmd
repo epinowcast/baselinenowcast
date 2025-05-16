@@ -46,7 +46,7 @@ create more complex model permutations.
 # Packages
 
 As well as the `baselinenowcast` package this vignette also uses `epinowcast`,
-`ggplot2`, `lubridate`, `tidyr`, and `dplyr`.
+`ggplot2`, `tidyr`, and `dplyr`.
 The installation of `epinowcast` is not required for using the package,
 however, its pre and post-processing functions provide a lot of the data
 wrangling needed to set up the nowcasting problem.
@@ -67,7 +67,6 @@ library(baselinenowcast)
 library(epinowcast)
 library(ggplot2)
 library(dplyr)
-library(lubridate)
 library(tidyr)
 # Set seed for reproducibility
 set.seed(123)
@@ -111,27 +110,30 @@ at each reference date, observed as of the "fully observed" data on October
 nowcast_date <- "2021-08-01"
 eval_date <- "2021-10-01"
 
-data_long <- germany_covid19_hosp
-data_filtered <- data_long |>
-  enw_filter_report_dates(latest_date = nowcast_date) |>
-  filter(
-    location == "DE", age_group == "00+",
-    report_date == nowcast_date
+
+target_data <- germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
+  enw_filter_report_dates(latest_date = eval_date) |>
+  enw_filter_reference_dates(
+    latest_date = nowcast_date
   )
-data_filtered_max <- data_long |>
-  filter(
-    location == "DE", age_group == "00+",
-    reference_date <= nowcast_date
-  ) |>
-  group_by(reference_date) |>
-  summarise(confirm = max(confirm))
+
+latest_data <- enw_latest_data(target_data)
+
+observed_data <- enw_filter_report_dates(
+  target_data, latest_date = nowcast_date
+)
+
+head(observed_data)
+
+obs_data_by_reference_date <- enw_latest_data(observed_data)
+
 ggplot() +
   geom_line(
-    data = data_filtered,
+    data = obs_data_by_reference_date,
     aes(x = reference_date, y = confirm), color = "darkred"
   ) +
   geom_line(
-    data = data_filtered_max,
+    data = latest_data,
     aes(x = reference_date, y = confirm), color = "black"
   ) +
   theme_bw() +
@@ -195,17 +197,22 @@ data in the form of a long tidy dataframe indexed by reference date and
 report date and filtered to the strata we are interested in, to generate a
 reporting triangle.
 ```{r use-epinowcast-preprocessing}
-# Noting that this is the only way epinowcast preprocessing would work --
-# return to this later. IDate was throwing errors if we used the dplyr processed
-# observed long above.
-observed_long <- data_long[location == "DE"][age_group == "00+"] |> # nolint
-  enw_filter_report_dates(latest_date = nowcast_date) |>
-  enw_filter_reference_dates(include_days = n_training_volume - 1) # nolint
-head(observed_long)
+training_data <- enw_filter_reference_dates(
+    observed_data, include_days = n_training_volume - 1
+  )
+
+latest_training_data <- enw_latest_data(training_data)
+
+target_data <- enw_filter_reference_dates(
+    latest_data, include_days = n_training_volume - 1
+  )
+
 # Get the reporting triangle, adding an additional day because epinowcast
 # we want the max_delay + 1 entries since 0 is a valid delay.
+# This also validates that the data is in the correct format and
+# runs preprocessing see ?enw_preprocess_data for more details
 pobs <- enw_preprocess_data(
-  obs = observed_long,
+  obs = training_data,
   max_delay = max_delay + 1
 )
 
@@ -225,8 +232,6 @@ reporting_triangle <- reporting_triangle_df |>
   pivot_wider(names_from = delay, values_from = new_confirm) |>
   select(-reference_date) |>
   as.matrix()
-
-tail(reporting_triangle, n = 20)
 ```
 
 To see what this looks like, we can plot it using `ggplot()`.
@@ -333,42 +338,43 @@ point_nowcast_matrix <- apply_delay(
 ```
 
 We'll make a quick plot to compare the nowcasted confirmed cases through
-July 1, 2021, from the observations up until October 1, 2021.
-We'll compare this to the right-truncated data available up until July 1, 2021.
+August 1, 2021, from the observations up until October 1, 2021.
+We'll compare this to the right-truncated data available up until August 1, 2021.
 ```{r}
-final_data <- data_long[location == "DE"][age_group == "00+"] |> # nolint
-  enw_filter_report_dates(latest_date = eval_date) |>
-  enw_filter_reference_dates(
-    latest_date = nowcast_date,
-    include_days = n_training_volume - 1
-  ) |>
-  group_by(reference_date) |>
-  summarise(
-    total_confirmed = max(confirm)
-  ) |>
+point_nowcast_df <- target_data |>
   mutate(nowcast = rowSums(point_nowcast_matrix))
-summary_data <- observed_long |>
-  group_by(reference_date) |>
-  summarise(total_confirmed = max(confirm))
-ggplot() +
-  geom_line(
-    # Plot the data summed across reporting days as of August 1,2021
-    data = summary_data,
-    aes(x = reference_date, y = total_confirmed), color = "darkred"
-  ) +
-  geom_line(
-    data = final_data,
-    aes(x = reference_date, y = total_confirmed), color = "black"
-  ) +
-  geom_line(
-    data = final_data,
-    aes(x = reference_date, y = nowcast), color = "darkblue"
-  ) +
+
+prep_latest_data <- latest_training_data |>
+  mutate(type = "Real-time data") |>
+  select(type, reference_date, count = confirm)
+
+# Combine data into a single dataframe for plotting
+plot_data <- point_nowcast_df |>
+  pivot_longer(
+    cols = c(confirm, nowcast),
+    names_to = "type",
+    values_to = "count"
+  ) |>
+  mutate(type = case_when(
+    type == "confirm" ~ "Final observed data",
+    type == "nowcast" ~ "Point nowcast",
+    TRUE ~ type
+  )) |>
+  bind_rows(prep_latest_data)
+
+# Create plot with data type as a variable
+ggplot(plot_data, aes(x = reference_date, y = count, color = type)) +
+  geom_line() +
+  scale_color_manual(values = c("Real-time data" = "darkred",
+                               "Final observed data" = "black",
+                               "Point nowcast" = "darkblue")) +
   theme_bw() +
   xlab("Reference date") +
   ylab("Confirmed admissions") +
   scale_y_continuous(trans = "log10") +
-  ggtitle("Comparing real-time, nowcasted, and later observed cases")
+  ggtitle("Comparing real-time, nowcasted, and later observed cases") +
+  theme(legend.position = "bottom") +
+  labs(color = "Type")
 ```
 
 Here we can see that our point nowcast slightly underestimates what was
@@ -436,96 +442,95 @@ the uncertainty at each horizon, starting at horizon 0.
 ```{r estimate-dispersion}
 disp_params <- estimate_dispersion(
   pt_nowcast_mat_list = retro_pt_nowcast_mat_list,
-  trunc_rep_tri_list = trunc_rep_tri_list
+  trunc_rep_tri_list = trunc_rep_tri_list,
+  n = n_history_delay
 )
 ```
 
 # Generate probabilistic nowcast
 
-Now that we have estimated the dispersion, we take the point nowcast matrix we
-previously generated, `point_nowcast_matrix`, extract only the components that
-we predicted, aggregate across delays, and apply the uncertainty to the
-point estimate of the final count by reference time.
+Now that we have estimated the dispersion, we can generate a probabilistic
+nowcast. We can use the `get_nowcast_draws()` which:
+- generates draws from the nowcast distribution
+- combines the draws with the observed data to form a single draw of the nowcast
+- repeats this process for `draws` draws
 
-We will generate a long tidy dataframe containing draws of only the predicted
-counts as well as the sum of those predicted draws plus the observations, which
-becomes the probabilistic final count estimate.
-We'll first have to extract from the point nowcast matrix
-only the values that were predicted.
-```{r extract predictions}
-pt_nowcast_pred_matrix <- extract_predictions(
-  pt_nowcast_mat = point_nowcast_matrix,
-  rep_mat = reporting_triangle
+```{r generate_combined_nowcast}
+nowcast_draws_df <- get_nowcast_draws(
+  point_nowcast_matrix, reporting_triangle,
+  dispersion = disp_params,
+  draws = 100
 )
+
+head(nowcast_draws_df)
 ```
 
-We will next take the point estimates of the prediction matrix and generate
-probabilistic draws of the predicted nowcast vectors. We will store these draws
-in a dataframe indexed by reference time and draw.
-```{r generate pobablistic draws of predictions}
-nowcast_draws_df <- get_nowcast_pred_draws(
-  point_nowcast_pred_matrix = pt_nowcast_pred_matrix,
-  disp = disp_params
-)
-```
+As we can see, the output dataframe from `get_nowcast_draws()` contains:
+- `time`: The reference time index
+- `draw`: The draw number
+- `pred_count`: The predicted final count for this reference time and draw (combining observations and predictions when present)
 
-As a final step we will join the predictions for each reference date to the
-data available as of the final reference date. We will plot the probabilistic
-nowcast vectors (grey) compared to the final observed data (black) and the
-data available as of the nowcast time (red).
-```{r plot the nowcasts}
-# Join with the original data
-final_data <- data_long[location == "DE"][age_group == "00+"] |> # nolint
-  enw_filter_report_dates(latest_date = eval_date) |>
-  enw_filter_reference_dates(
-    latest_date = nowcast_date,
-    include_days = n_training_volume - 1
-  ) |>
-  group_by(reference_date) |>
-  summarise(
-    final_confirmed = max(confirm)
-  )
-original_data <- observed_long |>
-  group_by(reference_date) |>
-  summarise(original_confirmed = max(confirm))
-time_df <- data.frame(
-  reference_date =
-    seq(
-      from = min(original_data$reference_date),
-      to = max(original_data$reference_date),
-      by = "day"
-    )
-) |> mutate(time = row_number())
-sampled_draws <- sample.int(max(nowcast_draws_df$draw), 1000)
-summary_nowcast_w_data <- nowcast_draws_df |>
-  left_join(time_df,
-    by = "time"
-  ) |>
-  left_join(original_data, by = "reference_date") |>
-  left_join(final_data, by = "reference_date") |>
-  # Filter to a set of draws for plotting + zoom in on nowcast period
-  filter(
-    draw %in% sampled_draws,
-    reference_date >= max(ymd(reference_date)) - days(max_delay)
-  ) |>
-  mutate(
-    total_count = pred_count + original_confirmed
-  )
+# Visualizing the nowcast
 
+Let's visualize the nowcast compared to the final observed data. We first need
+to link our nowcast with the original data so we can see our nowcast by reference date.
 
+```{r plot_the_nowcasts}
+# Prepare the datasets for joining
+latest_data_prepped <- latest_training_data |>
+  mutate(time = row_number()) |>
+  rename(obs_confirm = confirm) |>
+  mutate(reference_date = as.Date(reference_date))
 
-ggplot(summary_nowcast_w_data) +
-  geom_line(aes(x = reference_date, y = total_count, group = draw),
-    alpha = 0.2, color = "gray", linewidth = 0.2
-  ) +
-  geom_line(aes(x = reference_date, y = original_confirmed),
-    color = "darkred"
-  ) +
-  geom_line(aes(x = reference_date, y = final_confirmed),
-    color = "black"
-  ) +
+final_data_prepped <- target_data |>
+  select(reference_date, final_confirm = confirm) |>
+  mutate(reference_date = as.Date(reference_date))
+
+# Join the datasets
+obs_with_nowcast_draws_df <- nowcast_draws_df |>
+  left_join(latest_data_prepped, by = "time") |>
+  left_join(final_data_prepped, by = "reference_date")
+head(obs_with_nowcast_draws_df)
+
+# Create a separate dataframe for observed and final data
+combined_data <- obs_with_nowcast_draws_df |>
+  select(reference_date, obs_confirm, final_confirm) |>
+  distinct() |>
+  pivot_longer(cols = c(obs_confirm, final_confirm),
+               names_to = "type",
+               values_to = "count") |>
+  mutate(type = case_when(
+    type == "obs_confirm" ~ "Observed data",
+    type == "final_confirm" ~ "Final observed data"
+  ))
+
+# Plot with draws for nowcast only
+ggplot() +
+  # Add nowcast draws as thin gray lines
+  geom_line(data = obs_with_nowcast_draws_df,
+            aes(x = reference_date, y = pred_count, group = draw,
+                color = "Nowcast draw", linewidth = "Nowcast draw")) +
+  # Add observed data and final data once
+  geom_line(data = combined_data,
+            aes(
+              x = reference_date,
+              y = count,
+              color = type,
+              linewidth = type
+            )) +
   theme_bw() +
+  scale_color_manual(values = c("Nowcast draw" = "gray",
+                               "Observed data" = "darkred",
+                               "Final observed data" = "black"),
+                     name = "") +
+  scale_linewidth_manual(values = c("Nowcast draw" = 0.2,
+                                   "Observed data" = 1,
+                                   "Final observed data" = 1),
+                        name = "") +
+  scale_y_continuous(trans = "log10") +
   xlab("Reference date") +
   ylab("Hospital admissions") +
+  theme(legend.position = "bottom") +
   ggtitle("Comparison of admissions as of the nowcast date, later observed counts, \n and probabilistic nowcasted counts") # nolint
 ```
+

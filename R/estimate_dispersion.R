@@ -11,6 +11,7 @@
 #' @param trunc_rep_tri_list List of truncated reporting matrices,
 #'    containing all observations as of the latest reference time. Elements of
 #'    list are paired with elements of `pt_nowcast_mat_list`.
+#' @inheritParams generate_pt_nowcast_mat_list
 #' @param n Integer indicating the number of reporting matrices to use to
 #'    estimate the dispersion parameters.
 #' @param fun_to_aggregate Function that will operate along the nowcast
@@ -50,6 +51,7 @@
 #' disp_params <- estimate_dispersion(
 #'   pt_nowcast_mat_list = retro_nowcasts,
 #'   trunc_rep_tri_list = trunc_rts,
+#'   reporting_triangle_list = retro_rts,
 #'   n = 2
 #' )
 #' disp_params
@@ -58,6 +60,7 @@
 #' disp_params_agg <- estimate_dispersion(
 #'   pt_nowcast_mat_list = retro_nowcasts,
 #'   trunc_rep_tri_list = trunc_rts,
+#'   reporting_triangle_list = retro_rts,
 #'   n = 2,
 #'   fun_to_aggregate = sum,
 #'   k = 2
@@ -66,39 +69,25 @@
 estimate_dispersion <- function(
     pt_nowcast_mat_list,
     trunc_rep_tri_list,
+    reporting_triangle_list,
     n = length(pt_nowcast_mat_list),
     fun_to_aggregate = sum,
     k = 1) {
   .validate_aggregation_function(fun_to_aggregate)
-
-  # Check that the length of the list of nowcasts is greater than
-  # or equal to the specified n
-  if (length(pt_nowcast_mat_list) < n) {
-    cli_abort(message = c(
-      "Insufficient elements in `pt_nowcast_mat_list` for the `n` desired ",
-      "number of nowcasted reporting triangles specified for dispersion ",
-      "estimation"
-    ))
-  }
-  if (length(trunc_rep_tri_list) < n) {
-    cli_abort(message = c(
-      "Insufficient elements in `trunc_rep_tri_list` for the `n` desired ",
-      "number of observed reporting triangles specified for dispersion ",
-      "estimation"
-    ))
-  }
-  if (length(pt_nowcast_mat_list) < 1) {
-    "`pt_nowcast_mat_list` is an empty list"
-  }
-  if (length(trunc_rep_tri_list) < 1) {
-    "`trunc_rep_tri_list` is an empty list"
-  }
-
   assert_integerish(n, lower = 0)
+  .check_list_length(pt_nowcast_mat_list, "pt_nowcast_mat_list", n)
+  .check_list_length(trunc_rep_tri_list, "trunc_rep_tri_list", n)
+  .check_list_length(
+    reporting_triangle_list,
+    "reporting_triangle_list",
+    n,
+    empty_check = FALSE
+  )
 
   # Truncate to only n nowcasts
   list_of_ncs <- pt_nowcast_mat_list[1:n]
   list_of_obs <- trunc_rep_tri_list[1:n]
+  list_of_rts <- reporting_triangle_list[1:n]
 
   # Check that nowcasts has no NAs, trunc_rts has some NAs
   if (any(sapply(list_of_ncs, anyNA))) {
@@ -136,6 +125,7 @@ estimate_dispersion <- function(
     nowcast_i <- list_of_ncs[[i]]
     # Remove the last i observations
     trunc_matr_observed <- list_of_obs[[i]]
+    triangle_observed <- list_of_rts[[i]]
     max_t <- nrow(trunc_matr_observed)
     n_horizons <- min(max_t - k + 1, n_possible_horizons)
     if (i == 1 && n_horizons < n_possible_horizons) {
@@ -164,9 +154,7 @@ estimate_dispersion <- function(
       end_row <- max_t - d + 1
       obs <- trunc_matr_observed[start_row:end_row, ]
       nowcast <- nowcast_i[start_row:end_row, ]
-      indices_nowcast <- is.na(generate_triangle(
-        trunc_matr_observed
-      ))[start_row:end_row, ]
+      indices_nowcast <- is.na(triangle_observed)[start_row:end_row, ]
       indices_observed <- !is.na(trunc_matr_observed)[start_row:end_row, ] # nolint
       # Function to aggregate is always applied after the matrix has been
       # summed across delays
@@ -195,6 +183,26 @@ estimate_dispersion <- function(
 
   return(disp_params)
 }
+
+.check_list_length <- function(list_obj, name, required_length,
+                               custom_msg = NULL, empty_check = TRUE) {
+  # Validate input is a list
+  if (!is.list(list_obj)) {
+    cli_abort(paste0("`", name, "` must be a list"))
+  }
+
+  if (length(list_obj) < required_length) {
+    cli_abort(message = c(
+      "Insufficient elements in `", name, "` for the `n` desired ",
+      custom_msg
+    ))
+  }
+  if (empty_check && length(list_obj) < 1) {
+    cli_abort(paste0("`", name, "` is an empty list"))
+  }
+  return(invisible(NULL))
+}
+
 
 #' Compute the sum of entries of a column in a matrix where both sets of
 #'   matrices of booleans are TRUE

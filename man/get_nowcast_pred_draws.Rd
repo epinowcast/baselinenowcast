@@ -6,31 +6,40 @@
 nowcast vector}
 \usage{
 get_nowcast_pred_draws(
-  point_nowcast_pred_matrix,
-  disp,
-  n_draws = 1000,
+  point_nowcast_matrix,
+  reporting_triangle,
+  dispersion,
+  draws = 1000,
   fun_to_aggregate = sum,
   k = 1
 )
 }
 \arguments{
-\item{point_nowcast_pred_matrix}{Matrix containing only the elements that
-have not yet been observed as of the final reference date.}
+\item{point_nowcast_matrix}{Matrix of point nowcast predictions and
+observations, with rows representing the reference times and columns
+representing the delays.}
 
-\item{disp}{Vector of dispersion parameters indexed by horizon from minus
-one to the maximum delay.}
+\item{reporting_triangle}{Matrix of the reporting triangle, with rows
+representing the time points of reference and columns representing the
+delays. Can be a reporting matrix or incomplete reporting matrix.
+Can also be a ragged reporting triangle, where multiple columns are
+reported for the same row. (e.g. weekly reporting of daily data).}
 
-\item{n_draws}{Integer indicating the number of draws of the predicted
+\item{dispersion}{Vector of dispersion parameters indexed by horizon from
+minus one to the maximum delay.}
+
+\item{draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}
 
-\item{fun_to_aggregate}{Function to pass to
-\code{rollapply}, which will operate along the nowcast vectors after summing
-across delays. Eventually, we can add things like mean, but for now since
-we are only providing a negative binomial observation model, we can only
-allow sum. Currently supported functions: \code{sum}.}
+\item{fun_to_aggregate}{Function that will operate along the nowcast
+vectors after summing across delays. Eventually, we can add things like
+mean, but for now since we are only providing a negative binomial
+observation model, we can only allow sum. Currently supported
+functions: \code{sum}.}
 
 \item{k}{Integer indicating the number of reference times to apply the
-\code{fun_to_aggregate} over to create target used to compute the nowcast.}
+\code{fun_to_aggregate} over to create target used to compute the nowcast
+errors.}
 }
 \value{
 Dataframe containing the predicted point nowcast vectors indexed by
@@ -42,29 +51,30 @@ Get a dataframe of multiple draws of only the predicted elements of the
 nowcast vector
 }
 \examples{
-point_nowcast_pred_matrix <-
-  matrix(
-    c(
-      NA, NA, NA, NA,
-      NA, NA, NA, NA,
-      NA, NA, NA, 16.8,
-      NA, NA, 21.2, 19.5,
-      NA, 34.5, 15.4, 9.1
-    ),
-    nrow = 4,
-    byrow = TRUE
-  )
-disp <- c(0.8, 12.4, 9.1)
-nowcast_pred_draws_df <- get_nowcast_pred_draws(
-  point_nowcast_pred_matrix,
-  disp,
-  500
+point_nowcast_matrix <- matrix(
+  c(
+    80, 50, 25, 10,
+    100, 50, 30, 20,
+    90, 45, 25, 16.8,
+    80, 40, 21.2, 19.5,
+    70, 34.5, 15.4, 9.1
+  ),
+  nrow = 5,
+  byrow = TRUE
 )
-nowcast_pred_draws_df
-
+reporting_triangle <- generate_triangle(point_nowcast_matrix)
+disp <- c(0.8, 12.4, 9.1)
+nowcast_pred_draws <- get_nowcast_pred_draws(
+  point_nowcast_matrix,
+  reporting_triangle,
+  disp,
+  draws = 5
+)
+nowcast_pred_draws
 # Get nowcast pred draws over rolling sum
 nowcast_pred_draws_rolling_df <- get_nowcast_pred_draws(
   point_nowcast_pred_matrix,
+  reporting_triangle,
   disp,
   500,
   fun_to_aggregate = sum,

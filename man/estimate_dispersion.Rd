@@ -7,6 +7,7 @@
 estimate_dispersion(
   pt_nowcast_mat_list,
   trunc_rep_tri_list,
+  reporting_triangle_list,
   n = length(pt_nowcast_mat_list),
   fun_to_aggregate = sum,
   k = 1
@@ -19,6 +20,10 @@ represent reference time points and columns represent delays.}
 \item{trunc_rep_tri_list}{List of truncated reporting matrices,
 containing all observations as of the latest reference time. Elements of
 list are paired with elements of \code{pt_nowcast_mat_list}.}
+
+\item{reporting_triangle_list}{List of reporting triangle matrices, in order
+from most recent (most complete) to least recent. Bottom right of the
+matrices should contain NAs.}
 
 \item{n}{Integer indicating the number of reporting matrices to use to
 estimate the dispersion parameters.}
@@ -67,6 +72,7 @@ retro_nowcasts <- generate_pt_nowcast_mat_list(retro_rts, n = 5)
 disp_params <- estimate_dispersion(
   pt_nowcast_mat_list = retro_nowcasts,
   trunc_rep_tri_list = trunc_rts,
+  reporting_triangle_list = retro_rts,
   n = 2
 )
 disp_params
@@ -75,6 +81,7 @@ disp_params
 disp_params_agg <- estimate_dispersion(
   pt_nowcast_mat_list = retro_nowcasts,
   trunc_rep_tri_list = trunc_rts,
+  reporting_triangle_list = retro_rts,
   n = 2,
   fun_to_aggregate = sum,
   k = 2

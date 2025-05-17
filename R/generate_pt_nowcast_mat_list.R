@@ -26,6 +26,7 @@
 #'    input `reporting_triangle_list`but with each reporting triangle filled
 #'    in based on the delay estimated in that reporting triangle.
 #' @export
+#' @importFrom cli cli_abort cli_alert_danger cli_alert_info
 #' @examples
 #' triangle <- matrix(
 #'   c(
@@ -64,15 +65,66 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
   } else { # create a list with the same pmf
     delay_pmf_list <- rep(list(delay_pmf), length(reporting_triangle_list))
   }
-  # Iterate through each item in both lists of reporting triangles
-  # and delay PMFs
+
+  safe_generate_pt_nowcast_mat <- .safelydoesit(generate_pt_nowcast_mat)
+
+  # Use the safe version in mapply, iterating through each item in both
+  # lists of reporting triangles and delay PMFs
   pt_nowcast_mat_list <- mapply(
-    generate_pt_nowcast_mat,
+    function(triangle, pmf, ind) {
+      result <- safe_generate_pt_nowcast_mat(
+        reporting_triangle = triangle,
+        delay_pmf = pmf,
+        n = n,
+        max_delay = max_delay
+      )
+      if (!is.null(result$error)) {
+        # Print the index and the error message
+        error_msg <- sprintf(
+          "Error at index %d: Point nowcast matrix could not be generated. This may be acceptable for a few point nowcast matrices used to estimate the uncertainty. \n%s", # nolint
+          ind,
+          result$error$message
+        )
+        message(error_msg)
+        return(NULL)
+      } else {
+        # Return the result if successful
+        return(result$result)
+      }
+    },
     reporting_triangle_list,
     delay_pmf_list,
-    MoreArgs = list(max_delay = max_delay, n = n),
+    seq_along(reporting_triangle_list),
     SIMPLIFY = FALSE
   )
+
+  # After running, filter the results to find error indices
+  error_indices <- which(sapply(pt_nowcast_mat_list, is.null))
+  # Print summary
+  if (length(error_indices) == length(reporting_triangle_list)) {
+    cli_abort(
+      message = c(sprintf(
+        "\nErrors occurred in all %s reporting triangles. Check if input triangles have valid data structure or contain zeros in the first column.", # nolint
+        length(reporting_triangle_list)
+      ))
+    )
+  } else if (length(error_indices) > 0) {
+    cli_alert_danger(
+      text = sprintf(
+        "\nErrors occurred at indices: %s\n",
+        toString(error_indices,
+          collapse = ", "
+        )
+      )
+    )
+    cli_alert_info(
+      text = sprintf(
+        "Successfully processed %d out of %d matrices\n",
+        length(reporting_triangle_list) - length(error_indices),
+        length(reporting_triangle_list)
+      )
+    )
+  }
 
 
   return(pt_nowcast_mat_list)

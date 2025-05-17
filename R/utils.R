@@ -43,6 +43,25 @@
   return(TRUE)
 }
 
+#' Safe iterator
+#'
+#' @param fun Function to wrap around
+#'
+#' @returns Function that will return a NULL if an error occurs
+.safelydoesit <- function(fun) {
+  stopifnot(is.function(fun))
+  return(
+    function(...) {
+      return(tryCatch(
+        list(result = fun(...), error = NULL),
+        error = function(e) {
+          return(list(result = NULL, error = e))
+        }
+      ))
+    }
+  )
+}
+
 #' Extract from one matrix only elements that are missing in another
 #'
 #' @inheritParams get_nowcast_pred_draws
@@ -56,11 +75,12 @@
   # Check that the observations are the same
   all_equal <- all(point_nowcast_matrix[!is.na(reporting_triangle)] == reporting_triangle[!is.na(reporting_triangle)]) # nolint
   if (isFALSE(all_equal)) {
-    cli_abort(message =
-      "`reporting_triangle` is not a subset of `point_nowcast_matrix`. Check to
-       make sure that the matrix combining predictions and observations aligns
-       with the matrix containing only the observed values in the reporting
-       triangle. "
+    cli_abort(
+      message =
+        "`reporting_triangle` is not a subset of `point_nowcast_matrix`. Check
+        to make sure that the matrix combining predictions and observations
+        aligns with the matrix containing only the observed values in the
+        reporting triangle. "
     )
   }
 

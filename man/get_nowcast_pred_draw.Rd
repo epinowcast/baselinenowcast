@@ -4,7 +4,13 @@
 \alias{get_nowcast_pred_draw}
 \title{Get a draw of only the predicted elements of the nowcast vector}
 \usage{
-get_nowcast_pred_draw(point_nowcast_matrix, reporting_triangle, dispersion)
+get_nowcast_pred_draw(
+  point_nowcast_matrix,
+  reporting_triangle,
+  dispersion,
+  fun_to_aggregate = sum,
+  k = 1
+)
 }
 \arguments{
 \item{point_nowcast_matrix}{Matrix of point nowcast predictions and
@@ -19,10 +25,20 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 
 \item{dispersion}{Vector of dispersion parameters indexed by horizon from
 minus one to the maximum delay.}
+
+\item{fun_to_aggregate}{Function that will operate along the nowcast
+vectors after summing across delays. Eventually, we can add things like
+mean, but for now since we are only providing a negative binomial
+observation model, we can only allow sum. Currently supported
+functions: \code{sum}.}
+
+\item{k}{Integer indicating the number of reference times to apply the
+\code{fun_to_aggregate} over to create target used to compute the nowcast
+errors.}
 }
 \value{
 Vector of predicted draws at each reference time, for all reference
-times in the input \code{point_nowcast_pred_matrix}.
+times in the input \code{point_nowcast_matrix}.
 }
 \description{
 Get a draw of only the predicted elements of the nowcast vector
@@ -47,4 +63,14 @@ nowcast_pred_draw <- get_nowcast_pred_draw(
   disp
 )
 nowcast_pred_draw
+
+# Get draws on the rolling sum
+nowcast_pred_draw_agg <- get_nowcast_pred_draw(
+  point_nowcast_matrix,
+  reporting_triangle,
+  disp,
+  fun_to_aggregate = sum,
+  k = 2
+)
+nowcast_pred_draw_agg
 }

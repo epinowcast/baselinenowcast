@@ -1,32 +1,35 @@
 test_that(
-  "get_nowcast_pred_draws: returns a dataframe with correct structure", {
-  point_nowcast_matrix <- matrix(
-    c(
-      100, 50, 30, 20,
-      90, 45, 25, 16.8,
-      80, 40, 21.2, 19.5,
-      70, 34.5, 15.4, 9.1
-    ),
-    nrow = 4,
-    byrow = TRUE
-  )
-  dispersion <- c(0.8, 12.4, 9.1)
-  reporting_triangle <- generate_triangle(point_nowcast_matrix)
+  "get_nowcast_pred_draws: returns a dataframe with correct structure",
+  {
+    point_nowcast_matrix <- matrix(
+      c(
+        100, 50, 30, 20,
+        90, 45, 25, 16.8,
+        80, 40, 21.2, 19.5,
+        70, 34.5, 15.4, 9.1
+      ),
+      nrow = 4,
+      byrow = TRUE
+    )
+    dispersion <- c(0.8, 12.4, 9.1)
+    reporting_triangle <- generate_triangle(point_nowcast_matrix)
 
-  result <- get_nowcast_pred_draws(
-    point_nowcast_matrix, reporting_triangle, dispersion, draws = 100
-  )
+    result <- get_nowcast_pred_draws(
+      point_nowcast_matrix, reporting_triangle, dispersion,
+      draws = 100
+    )
 
-  expect_is(result, "data.frame")
-  expect_identical(
-    nrow(result),
-    as.integer(100 * nrow(point_nowcast_matrix))
-  )
-  expect_identical(ncol(result), 3L)
-  expect_true(all(c("pred_count", "time", "draw") %in% names(result)))
-  expect_length(unique(result$draw), 100L)
-  expect_identical(nrow(result), as.integer(100 * nrow(point_nowcast_matrix)))
-})
+    expect_is(result, "data.frame")
+    expect_identical(
+      nrow(result),
+      as.integer(100 * nrow(point_nowcast_matrix))
+    )
+    expect_identical(ncol(result), 3L)
+    expect_true(all(c("pred_count", "time", "draw") %in% names(result)))
+    expect_length(unique(result$draw), 100L)
+    expect_identical(nrow(result), as.integer(100 * nrow(point_nowcast_matrix)))
+  }
+)
 
 test_that("get_nowcast_pred_draws: draws are distinct and properly indexed", {
   # Setup test data
@@ -117,7 +120,7 @@ test_that("get_nowcast_pred_draws: time index is correctly assigned", {
   }
 })
 
-test_that("function works with different number of draws", {
+test_that("get_nowcast_pred_draws works with different number of draws", {
   # Setup test data
   point_nowcast_matrix <- matrix(
     c(

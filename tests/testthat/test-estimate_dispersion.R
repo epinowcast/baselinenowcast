@@ -177,7 +177,7 @@ test_that("estimate_dispersion returns an estimate if passing in a NULL for a no
 })
 
 test_that("estimate_dispersion returns an error if passing in only NULLs", {
-  expect_error(estimate_dispersion(list(NULL, NULL), valid_trunc_rts))
+  expect_error(estimate_dispersion(list(NULL), valid_trunc_rts, valid_rts))
 })
 
 test_that("estimate_dispersion accepts output of generate_pt_nowcast_mat_list ", { # nolint
@@ -241,7 +241,11 @@ test_that("estimate_dispersion accepts output of generate_pt_nowcast_mat_list ",
   )
   trunc_rep_tri_list <- truncate_triangles(base_tri)
   rt_list <- generate_triangles(trunc_rep_tri_list)
-  expect_no_error(estimate_dispersion(pt_nowcast_list, trunc_rep_tri_list, rt_list))
+  expect_no_error(estimate_dispersion(
+    pt_nowcast_list,
+    trunc_rep_tri_list,
+    rt_list
+  ))
 })
 
 test_that("estimate_dispersion: Works with ragged reporting triangles", {

@@ -37,7 +37,7 @@
 #'
 #' # Get draws on the rolling sum
 #' nowcast_pred_draw_agg <- get_nowcast_pred_draw(
-#'   point_nowcast_pred_matrix,
+#'   point_nowcast_matrix,
 #'   reporting_triangle,
 #'   disp,
 #'   fun_to_aggregate = sum,

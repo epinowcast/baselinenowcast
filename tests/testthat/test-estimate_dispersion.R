@@ -102,7 +102,7 @@ test_that("estimate_dispersion appropriately errors when k is too large for all 
 })
 
 
-test_that("estimate_dispersion throws an error if function to aggregate is not valid", {
+test_that("estimate_dispersion throws an error if function to aggregate is not valid", { # nolint
   expect_error(estimate_dispersion(
     pt_nowcast_mat_list = valid_nowcasts,
     trunc_rep_tri_list = valid_trunc_rts,

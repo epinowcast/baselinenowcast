@@ -143,7 +143,7 @@ combine_obs_with_pred <- function(predicted_counts, reporting_triangle) {
 #' nowcast_pred_draws
 #' # Get nowcast pred draws over rolling sum
 #' nowcast_pred_draws_rolling_df <- get_nowcast_pred_draws(
-#'   point_nowcast_pred_matrix,
+#'   point_nowcast_matrix,
 #'   reporting_triangle,
 #'   disp,
 #'   500,

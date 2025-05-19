@@ -182,6 +182,7 @@ times.
 We recommend choosing the maximum delay and number of historical observations
 based on an exploratory data analysis, as these specifications will change
 significantly depending on the dataset.
+
 ```{r user-specificatons}
 # Specify the maximum delay, which will determine the length of your delay
 # distribution. Empirical data outside this delay window will not be used for
@@ -202,6 +203,7 @@ Next we will use the `epinowcast` function, `enw_preprocess_data()` and the
 data in the form of a long tidy dataframe indexed by reference date and
 report date and filtered to the strata we are interested in, to generate a
 reporting triangle.
+
 ```{r use-epinowcast-preprocessing}
 training_data <- enw_filter_reference_dates(
   observed_data,
@@ -246,6 +248,7 @@ To see what this looks like, we can plot it using `ggplot()`.
 In this figure, the grey indicates matrix elements that are `NA`, which we
 would expect to be the case in the bottom right portion of the reporting
 triangle where the counts have yet to be observed.
+
 ```{r make-heatmap-reporting-triangle}
 triangle_df <- as.data.frame(reporting_triangle) |>
   mutate(time = row_number()) |>
@@ -281,6 +284,7 @@ If reference date are repeated because the reporting triangle contains multiple
 strata, the function will throw an error.
 
 The `get_delay_estimate()` function expects the following inputs:
+
   - `reporting_triangle`: a matrix with the reporting triangle for a single
   strata. Here the rows represent the time points and the columns represent the
   observed delays, starting at 0. This can also be a reporting matrix or an
@@ -292,7 +296,6 @@ The `get_delay_estimate()` function expects the following inputs:
   - `n`: an integer indicating the number of observations by reference
   date to use to fit the delay distribution. This must be less than or equal to
   the number of rows in `triangle`. Here we will use `n_history_delay`.
-
 
 ```{r estimate-delay}
 delay_pmf <- get_delay_estimate(
@@ -321,7 +324,7 @@ ggplot(delay_df) +
   theme_bw()
 ```
 
-# Apply delay to generate point nowcast
+# Apply the delay to generate a point nowcast
 
 The next step in our workflow is to take the estimated delay distribution and
 apply it to the partially observed reporting triangle, generating an estimate
@@ -348,6 +351,7 @@ point_nowcast_matrix <- apply_delay(
 We'll make a quick plot to compare the nowcasted confirmed cases through
 August 1, 2021, from the observations up until October 1, 2021.
 We'll compare this to the right-truncated data available up until August 1, 2021.
+
 ```{r}
 point_nowcast_df <- target_data |>
   mutate(nowcast = rowSums(point_nowcast_matrix))
@@ -389,9 +393,8 @@ ggplot(plot_data, aes(x = reference_date, y = count, color = type)) +
 
 Here we can see that our point nowcast slightly underestimates what was
 eventually reported (black line), but does a decent overall job of correcting
-for the right-truncation observed in the red line (the data prior to the
+for the right-truncation observed in the red line (the data before the
 nowcast).
-
 
 # Estimate uncertainty
 
@@ -409,12 +412,10 @@ reporting triangles using what would have been available as of each
 retrospective nowcast time to estimate a delay distribution and
 generate a point nowcast matrix.
 
-
 We repeat this process for `n_retrospective_nowcasts` reference times in the
 current reporting triangle, starting from the latest reference
 time and working backwards, ultimately using all `n_retrospective_nowcasts`
 and `n_history_delay` reference times.
-
 
 ```{r generate-triangles}
 trunc_rep_tri_list <- truncate_triangles(reporting_triangle,
@@ -432,14 +433,13 @@ Next we will pass this list of reporting triangles to the
 `generate_pt_nowcast_mat_list()`. In this function, we can also specify
 `n`, the number of reference times to be used to estimate the delay for each
 nowcast, which we will set as the `n_history_delay` previous specified.
+
 ```{r generate-nowcasts}
 retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
   reporting_triangle_list = retro_rep_tri_list,
   n = n_history_delay
 )
 ```
-
-
 
 Next, we will use the retrospective reporting triangles, the point nowcasted
 reporting triangles, and the truncated reporting triangles to estimate the
@@ -458,6 +458,7 @@ disp_params <- estimate_dispersion(
 
 Now that we have estimated the dispersion, we can generate a probabilistic
 nowcast. We can use the `get_nowcast_draws()` which:
+
 - generates draws from the nowcast distribution
 - combines the draws with the observed data to form a single draw of the nowcast
 - repeats this process for `draws` draws
@@ -473,6 +474,7 @@ head(nowcast_draws_df)
 ```
 
 As we can see, the output dataframe from `get_nowcast_draws()` contains:
+
 - `time`: The reference time index
 - `draw`: The draw number
 - `pred_count`: The predicted final count for this reference time and draw (combining observations and predictions when present)

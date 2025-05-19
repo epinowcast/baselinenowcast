@@ -12,9 +12,12 @@ generate_pt_nowcast_mat_list(
 )
 }
 \arguments{
+\item{reporting_triangle_list}{List of \code{n} truncated reporting triangle
+matrices with as many rows as available given the truncation.}
+
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
-\code{ncol(triangle) -1}.}
+\code{ncol(reporting_triangle) -1}.}
 
 \item{n}{Integer indicating the number of reference times
 (number of rows) to use to estimate the delay distribution for each

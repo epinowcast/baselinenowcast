@@ -14,7 +14,7 @@
 #' @inheritParams get_delay_estimate
 #' @returns `trunc_rep_tri_list` List of `n` truncated reporting triangle
 #'   matrices with as many rows as available given the truncation, and the same
-#'   number of columns as `triangle`.
+#'   number of columns as `reporting_triangle`.
 #' @importFrom checkmate assert_integerish
 #' @export
 #' @examples

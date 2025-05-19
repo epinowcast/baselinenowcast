@@ -15,12 +15,12 @@ Various checks to make sure that the reporting triangle passed in to
 \arguments{
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
-\code{ncol(triangle) -1}.}
+\code{ncol(reporting_triangle) -1}.}
 
 \item{n}{Integer indicating the number of reference times (observations) to
 be used in the estimate of the reporting delay, always starting from the
 most recent reporting delay. The default is to use the whole reporting
-triangle, so \code{nrow(triangle)}}
+triangle, so \code{nrow(reporting_triangle)}}
 }
 \value{
 NULL, invisibly

@@ -19,8 +19,8 @@ Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row. (e.g. weekly reporting of daily data).}
 
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use one less than the minimum number of
-rows of all of the matrices in the \code{list_of_rts}.}
+of the delay. The default is to use the whole reporting triangle,
+\code{ncol(triangle) -1}.}
 
 \item{n}{Integer indicating the number of reference times
 (number of rows) to use to estimate the delay distribution for each

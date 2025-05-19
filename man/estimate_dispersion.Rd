@@ -19,10 +19,6 @@ represent reference time points and columns represent delays.}
 containing all observations as of the latest reference time. Elements of
 list are paired with elements of \code{pt_nowcast_mat_list}.}
 
-\item{reporting_triangle_list}{List of reporting triangle matrices, in order
-from most recent (most complete) to least recent. Bottom right of the
-matrices should contain NAs.}
-
 \item{n}{Integer indicating the number of reporting matrices to use to
 estimate the dispersion parameters.}
 }

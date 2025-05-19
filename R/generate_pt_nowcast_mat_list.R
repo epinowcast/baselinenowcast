@@ -6,12 +6,8 @@
 #'   `n` number of reference times to estimate the delay in each retrospective
 #'   reporting triangle.
 #'
-#' @param reporting_triangle_list List of reporting triangle matrices, in order
-#'    from most recent to oldest. Bottom right of the
-#'    matrices should contain NAs.
-#' @param max_delay Integer indicating the maximum delay to estimate, in units
-#'   of the delay. The default is to use one less than the minimum number of
-#'   rows of all of the matrices in the `list_of_rts`.
+#' @inheritParams estimate_dispersion
+#' @inheritParams get_delay_estimate
 #' @param n Integer indicating the number of reference times
 #'    (number of rows) to use to estimate the delay distribution for each
 #'    reporting triangle. Default is the minimum of the number of rows of

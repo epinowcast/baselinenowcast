@@ -12,13 +12,9 @@ generate_pt_nowcast_mat_list(
 )
 }
 \arguments{
-\item{reporting_triangle_list}{List of reporting triangle matrices, in order
-from most recent to oldest. Bottom right of the
-matrices should contain NAs.}
-
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use one less than the minimum number of
-rows of all of the matrices in the \code{list_of_rts}.}
+of the delay. The default is to use the whole reporting triangle,
+\code{ncol(triangle) -1}.}
 
 \item{n}{Integer indicating the number of reference times
 (number of rows) to use to estimate the delay distribution for each

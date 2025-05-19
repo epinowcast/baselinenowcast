@@ -10,9 +10,11 @@ truncate_triangles(
 )
 }
 \arguments{
-\item{reporting_triangle}{Matrix of the reporting triangle/rectangle
-to be used to generate retrospective triangles, with rows representing the
-time points of reference and columns representing the delays.}
+\item{reporting_triangle}{Matrix of the reporting triangle, with rows
+representing the time points of reference and columns representing the
+delays. Can be a reporting matrix or incomplete reporting matrix.
+Can also be a ragged reporting triangle, where multiple columns are
+reported for the same row. (e.g. weekly reporting of daily data).}
 
 \item{n}{Integer indicating the number of retrospective
 truncated triangles to be generated, always starting from the most
@@ -21,14 +23,15 @@ for all triangles that would have a sufficient number of rows to generate
 a nowcast from.}
 }
 \value{
-\code{trunc_rep_mat_list} List of \code{n} truncated reporting triangle
+\code{trunc_rep_tri_list} List of \code{n} truncated reporting triangle
 matrices with as many rows as available given the truncation, and the same
-number of columns as \code{triangle}.
+number of columns as \code{reporting_triangle}.
 }
 \description{
 This function ingests a reporting triangle/matrix and the number of
 truncated reporting triangles we want to create, \code{n}, and iteratively
-truncated the reporting triangle, working from bottom to top for \code{n}
+truncates the reporting triangle, working from the latest reference time
+(bottom) to the older reference times (top) for \code{n}
 snapshots.
 }
 \examples{

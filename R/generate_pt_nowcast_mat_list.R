@@ -84,8 +84,8 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
 #'   the point nowcast. If a delay distribution is specified, this will be
 #'   used to generate the nowcast, otherwise, a delay distribution will be
 #'   estimated from the `reporting_triangle`.
-#' @param delay_pmf Vector of delays assumed to be indexed starting at the
-#'   first delay column in `triangle_to_nowcast`.
+#'
+#' @inheritParams generate_pt_nowcast_mat_list
 #' @inheritParams get_delay_estimate
 #' @returns `point_nowcast_matrix` Matrix of the same number of rows and
 #'   columns as the `reporting_triangle` but with the missing values filled

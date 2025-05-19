@@ -57,12 +57,12 @@ apply_delay <- function(rep_tri_to_nowcast, delay_pmf) {
   # Iterates through each column (delay) and adds entries to the reporting
   # matrix to nowcast
   point_nowcast_matrix <- Reduce(
-    function(acc, delay_index) {
+    function(acc, index) {
       return(.calc_expectation(
-        delay_index,
+        index,
         acc,
-        delay_pmf[delay_index],
-        delay_cdf[delay_index - 1],
+        delay_pmf,
+        delay_cdf,
         n_rows
       ))
     },
@@ -74,22 +74,23 @@ apply_delay <- function(rep_tri_to_nowcast, delay_pmf) {
 
 #' Calculate the updated rows of the expected nowcasted triangle
 #'
-#' @param delay_index Integer indicating the delay index
+#' @param index Integer indicating the delay index
 #' @param expectation Matrix of the incomplete reporting matrix
-#' @param delay_prob Probability of a case being reported with the current delay
-#' @param delay_cdf_prev CDF of the delay PMF up to the previous delay
+#' @param delay_pmf Vector of delays assumed to be indexed starting at the
+#'   first delay column in `rep_mat_to_nowcast`
+#' @param delay_cdf Vector of cumulative probabilities of the delay PMF
 #' @param n_rows Number of rows in the expectation matrix
 #' @returns Matrix with another set of entries corresponding to the updated
 #'   values for the specified rows and column
 #' @keywords internal
 .calc_expectation <- function(
-    delay_index,
+    index,
     expectation,
-    delay_prob,
-    delay_cdf_prev,
+    delay_pmf,
+    delay_cdf,
     n_rows) {
   # Find rows with NA in this column that need to be filled
-  col_index <- delay_index
+  col_index <- index
   na_rows <- .where_is_na_in_col(expectation, col_index)
 
   while (length(na_rows) == 0) {
@@ -103,6 +104,8 @@ apply_delay <- function(rep_tri_to_nowcast, delay_pmf) {
 
   # Start with the first row that has NA
   row_start <- min(na_rows)
+  delay_prob <- delay_pmf[col_index]
+  delay_cdf_prev <- delay_cdf[col_index - 1]
 
   # Extract the left block for these rows
   block_bottom_left <- .extract_block_bottom_left(

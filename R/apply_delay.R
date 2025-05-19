@@ -61,8 +61,8 @@ apply_delay <- function(rep_tri_to_nowcast, delay_pmf) {
       return(.calc_expectation(
         delay_index,
         acc,
-        delay_pmf[delay_index],
-        delay_cdf[delay_index - 1],
+        delay_pmf,
+        delay_cdf,
         n_rows
       ))
     },
@@ -85,41 +85,46 @@ apply_delay <- function(rep_tri_to_nowcast, delay_pmf) {
 .calc_expectation <- function(
     delay_index,
     expectation,
-    delay_prob,
-    delay_cdf_prev,
+    delay_pmf,
+    delay_cdf,
     n_rows) {
   # Find rows with NA in this column that need to be filled
   col_index <- delay_index
-  na_rows <- .where_is_na_in_col(expectation, col_index)
 
-  while (length(na_rows) == 0) {
-    col_index <- col_index + 1
-    # Stop if we've reached the end of the matrix
-    if (col_index > ncol(expectation)) {
-      return(expectation)
-    }
+  while (col_index <= n_delays) {
     na_rows <- .where_is_na_in_col(expectation, col_index)
+
+    while (length(na_rows) == 0) {
+      col_index <- col_index + 1
+      # Stop if we've reached the end of the matrix
+      if (col_index > ncol(expectation)) {
+        return(expectation)
+      }
+      na_rows <- .where_is_na_in_col(expectation, col_index)
+    }
+    delay_prob <- delay_pmf[col_index]
+    delay_cdf_prev <- delay_cdf[col_index - 1]
+
+    # Start with the first row that has NA
+    row_start <- min(na_rows)
+
+    # Extract the left block for these rows
+    block_bottom_left <- .extract_block_bottom_left(
+      expectation,
+      col_index,
+      n_rows,
+      row_start
+    )
+
+    # Calculate row sums for the extracted block
+    x <- rowSums(block_bottom_left)
+
+    # Calculate expectations with support for zero values
+    exp_N <- .calc_modified_expectation(x, delay_cdf_prev)
+
+    # Update only the NA rows in the column
+    expectation[row_start:n_rows, col_index] <- exp_N * delay_prob
   }
-
-  # Start with the first row that has NA
-  row_start <- min(na_rows)
-
-  # Extract the left block for these rows
-  block_bottom_left <- .extract_block_bottom_left(
-    expectation,
-    col_index,
-    n_rows,
-    row_start
-  )
-
-  # Calculate row sums for the extracted block
-  x <- rowSums(block_bottom_left)
-
-  # Calculate expectations with support for zero values
-  exp_N <- .calc_modified_expectation(x, delay_cdf_prev)
-
-  # Update only the NA rows in the column
-  expectation[row_start:n_rows, col_index] <- exp_N * delay_prob
 
   return(expectation)
 }

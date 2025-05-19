@@ -29,7 +29,7 @@ triangle, so \code{nrow(reporting_triangle)}}
 
 \item{delay_pmf}{Vector of delays assumed to be indexed
 starting at the first delay column in \code{reporting_triangle}.
-Default is \code{NULL}, which will estiamte a delay from the
+Default is \code{NULL}, which will estimate a delay from the
 \code{reporting_triangle}.}
 }
 \value{

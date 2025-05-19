@@ -103,12 +103,13 @@ test_that("estimate_dispersion appropriately errors when k is too large for all 
 
 
 test_that("estimate_dispersion throws an error if function to aggregate is not valid", { # nolint
+  # Function shouldn't be a character
   expect_error(estimate_dispersion(
     pt_nowcast_mat_list = valid_nowcasts,
     trunc_rep_tri_list = valid_trunc_rts,
     reporting_triangle_list = valid_rts,
     n = 2,
-    fun_to_aggregate = summary,
+    fun_to_aggregate = "sum",
     k = 2
   ))
   # Mean doesn't work right now because we haven't added another error model
@@ -210,6 +211,14 @@ test_that("estimate_dispersion: Edge cases are handled properly", {
   na_nowcasts <- list(matrix(NA, 2, 3), matrix(NA, 1, 3))
   na_trunc <- list(matrix(NA, 2, 3), matrix(NA, 1, 3))
   expect_error(estimate_dispersion(na_nowcasts, na_trunc, valid_rts, n = 2))
+
+  # Invalid type passed, nowcasts, truncated reporting triangles, and reporting
+  # triangles must be lists
+  expect_error(estimate_dispersion(
+    valid_nowcasts[[1]],
+    valid_trunc_rts[[1]],
+    valid_rts[[1]]
+  ))
 })
 
 test_that("estimate_dispersion: Matrix dimension validation works", {

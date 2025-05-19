@@ -158,7 +158,7 @@ $$ for all $s^* = 1, ..., M$.
 
 We add a small number (0.1) to the mean to avoid an ill-defined negative binomial.
 
-The function `estimate_dispersion()` ingests a list of truncated reporting matrices representing the observations, and the list of point nowcast matrices, and returns a vector of negative binomial dispersion parameters indexed starting at forecast horizon $j = 1$.
+The function `estimate_dispersion()` ingests a list of reporting triangles representing the data available for each reference time, a list of point nowcast matrices representing the nowcasts for each reference time, and a list of truncated reporting matrices representing the observations for each reference time. It returns a vector of negative binomial dispersion parameters indexed starting at forecast horizon $j = 1$.
 
 # Generate probabilistic nowcasts
 

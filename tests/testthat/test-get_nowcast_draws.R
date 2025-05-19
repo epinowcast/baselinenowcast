@@ -1,5 +1,5 @@
 test_that(
-  "get_nowcast_pred_draws: returns a dataframe with correct structure", {
+  "get_nowcast_draws: returns a dataframe with correct structure", {
   point_nowcast_matrix <- matrix(
     c(
       100, 50, 30, 20,
@@ -13,7 +13,7 @@ test_that(
   dispersion <- c(0.8, 12.4, 9.1)
   reporting_triangle <- generate_triangle(point_nowcast_matrix)
 
-  result <- get_nowcast_pred_draws(
+  result <- get_nowcast_draws(
     point_nowcast_matrix, reporting_triangle, dispersion, draws = 100
   )
 
@@ -28,7 +28,7 @@ test_that(
   expect_identical(nrow(result), as.integer(100 * nrow(point_nowcast_matrix)))
 })
 
-test_that("get_nowcast_pred_draws: draws are distinct and properly indexed", {
+test_that("get_nowcast_draws: draws are distinct and properly indexed", {
   # Setup test data
   point_nowcast_matrix <- matrix(
     c(
@@ -45,7 +45,7 @@ test_that("get_nowcast_pred_draws: draws are distinct and properly indexed", {
 
   # Force seed for reproducibility
   set.seed(123)
-  result <- get_nowcast_pred_draws(
+  result <- get_nowcast_draws(
     point_nowcast_matrix,
     reporting_triangle,
     dispersion,
@@ -83,7 +83,7 @@ test_that("get_nowcast_pred_draws: draws are distinct and properly indexed", {
   expect_gt(distinct_draws, expected_pairs / 2)
 })
 
-test_that("get_nowcast_pred_draws: time index is correctly assigned", {
+test_that("get_nowcast_draws: time index is correctly assigned", {
   # Setup test data
   point_nowcast_matrix <- matrix(
     c(
@@ -98,7 +98,7 @@ test_that("get_nowcast_pred_draws: time index is correctly assigned", {
   reporting_triangle <- generate_triangle(point_nowcast_matrix, structure = 2)
   n_draws <- 3
 
-  result <- get_nowcast_pred_draws(
+  result <- get_nowcast_draws(
     point_nowcast_matrix,
     reporting_triangle,
     dispersion,
@@ -117,7 +117,7 @@ test_that("get_nowcast_pred_draws: time index is correctly assigned", {
   }
 })
 
-test_that("function works with different number of draws", {
+test_that("get_nowcast_draws: function works with different number of draws", {
   # Setup test data
   point_nowcast_matrix <- matrix(
     c(
@@ -131,7 +131,7 @@ test_that("function works with different number of draws", {
   reporting_triangle <- generate_triangle(point_nowcast_matrix, structure = 2)
   n_draws <- 100
 
-  result <- get_nowcast_pred_draws(
+  result <- get_nowcast_draws(
     point_nowcast_matrix,
     reporting_triangle,
     dispersion,

@@ -142,7 +142,7 @@ From the $M$ reporting triangles, we apply the method described above to estimat
 
 ## Fit predicted point nowcast vectors and observed counts to a negative binomial observation model at each forecast horizon
 
-We choose to quantify the uncertainty at the level of the target quantity which is in this case assumed to be the final count at each reference time, summed across reporting delays.
+We quantify the uncertainty at the target quantity level, which is assumed, by default, to be the final count at each reference time, summed across reporting delays.
 
 At each retrospective nowcast time $s^*$, we compute the predicted and corresponding observed nowcast at each forecast horizon $j = 1, ..., D$ by summing across the reporting delays for all delays $d$ that have been observed as of time $t^*$, as indicated below by the indicator function. We define the predicted nowcast for forecast horizon $j$ at retrospective nowcast time $s^*$ $$
 \hat{X}_{t-j}(s^*) = \sum_{d=0}^{D} \hat{X}_{t-j,d}(s^*) \times I(t-j+d \leq t^*)

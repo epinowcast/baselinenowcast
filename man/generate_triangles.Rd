@@ -7,13 +7,13 @@
 generate_triangles(trunc_rep_tri_list, structure = 1)
 }
 \arguments{
+\item{trunc_rep_tri_list}{List of \code{n} truncated reporting triangle
+matrices with as many rows as available given the truncation.}
+
 \item{structure}{Integer or vector specifying the reporting structure.
 If integer, divides columns evenly by that integer (with last possibly
 truncated).  If vector, must sum to number of columns.
 Default is 1 (standard triangular structure).}
-
-\item{`trunc_rep_tri_list`}{List of \code{n} truncated reporting triangle
-matrices with as many rows as available given the truncation.}
 }
 \value{
 \code{reporting_triangle_list} List of retrospective reporting triangles,

@@ -6,7 +6,7 @@
 #'   (from most recent retrospective nowcast time to oldest retrospective
 #'   nowcast time).
 #'
-#' @param `trunc_rep_tri_list` List of `n` truncated reporting triangle
+#' @param trunc_rep_tri_list List of `n` truncated reporting triangle
 #'   matrices with as many rows as available given the truncation.
 #' @inheritParams generate_triangle
 #' @returns `reporting_triangle_list` List of retrospective reporting triangles,

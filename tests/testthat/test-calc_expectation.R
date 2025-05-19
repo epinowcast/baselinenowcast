@@ -10,8 +10,8 @@ test_that(".calc_expectation has correct basic functionality", {
   result <- .calc_expectation(
     index = 3,
     expectation = expectation,
-    delay_pmf = delay_pmf,
-    delay_cdf = delay_cdf,
+    delay_prob = delay_pmf[3],
+    delay_cdf_prev = delay_cdf[2],
     n_rows = n_dates
   )
 
@@ -23,8 +23,8 @@ test_that(".calc_expectation modifies only the correct cells", {
   modified <- .calc_expectation(
     index = 2,
     expectation = expectation,
-    delay_pmf = delay_pmf,
-    delay_cdf = delay_cdf,
+    delay_prob = delay_pmf[2],
+    delay_cdf_prev = delay_cdf[1],
     n_rows = n_dates
   )
 
@@ -49,8 +49,8 @@ test_that(".calc_expectation calculates correct values", {
   modified_step1 <- .calc_expectation(
     index = 2,
     expectation = expectation,
-    delay_pmf = delay_pmf,
-    delay_cdf = delay_cdf,
+    delay_prob = delay_pmf[2],
+    delay_cdf_prev = delay_cdf[1],
     n_rows = n_dates
   )
 
@@ -58,8 +58,8 @@ test_that(".calc_expectation calculates correct values", {
   modified_step2 <- .calc_expectation(
     index = 3,
     expectation = modified_step1,
-    delay_pmf = delay_pmf,
-    delay_cdf = delay_cdf,
+    delay_prob = delay_pmf[3],
+    delay_cdf_prev = delay_cdf[2],
     n_rows = n_dates
   )
 

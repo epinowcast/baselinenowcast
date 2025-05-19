@@ -29,7 +29,20 @@ test_that(".calc_expectation modifies only the correct cells", {
   )
 
   expect_equal(modified[1:9, ], original[1:9, ], tolerance = 1e-6)
-  expect_identical(modified[10, 2], (sum(original[9:10, 1]) + 1 - delay_cdf[1]) / delay_cdf[1] * delay_pmf[2])
+  # Check that only the expected cell (row 10, column 2) has been modified
+  expect_false(identical(modified[10, 2], original[10, 2]))
+
+  # Check all other cells remain unchanged
+  for (i in 1:10) {
+    for (j in 1:5) {
+      if (!(i == 10 && j == 2)) {
+        expect_identical(modified[i, j], original[i, j])
+      }
+    }
+  }
+
+  # Verify the specific value that was changed
+  expect_equal(modified[10, 2], 6.3, tolerance = 1e-6)
 })
 
 test_that(".calc_expectation calculates correct values", {

@@ -2,20 +2,19 @@
 #'
 #' This function ingests a reporting triangle/matrix and the number of
 #'   truncated reporting triangles we want to create, `n`, and iteratively
-#'   truncated the reporting triangle, working from bottom to top for `n`
+#'   truncates the reporting triangle, working from the latest reference time
+#'   (bottom) to the older reference times (top) for `n`
 #'   snapshots.
 #'
-#' @param reporting_triangle Matrix of the reporting triangle/rectangle
-#'   to be used to generate retrospective triangles, with rows representing the
-#'   time points of reference and columns representing the delays.
 #' @param n Integer indicating the number of retrospective
 #'   truncated triangles to be generated, always starting from the most
 #'   recent reference time. Default is to generate truncated matrices
 #'   for all triangles that would have a sufficient number of rows to generate
 #'   a nowcast from.
-#' @returns `trunc_rep_mat_list` List of `n` truncated reporting triangle
+#' @inheritParams get_delay_estimate
+#' @returns `trunc_rep_tri_list` List of `n` truncated reporting triangle
 #'   matrices with as many rows as available given the truncation, and the same
-#'   number of columns as `triangle`.
+#'   number of columns as `reporting_triangle`.
 #' @importFrom checkmate assert_integerish
 #' @export
 #' @examples
@@ -48,12 +47,13 @@ truncate_triangles <- function(reporting_triangle,
     )
   }
 
-  results <- lapply(seq_len(n),
+  trunc_rep_tri_list <- lapply(
+    seq_len(n),
     truncate_triangle,
-    rep_tri = reporting_triangle
+    reporting_triangle
   )
 
-  return(results)
+  return(trunc_rep_tri_list)
 }
 
 #' Get a single truncated triangle
@@ -63,12 +63,9 @@ truncate_triangles <- function(reporting_triangle,
 #'
 #' @param t Integer indicating the number of timepoints to truncate off the
 #'   bottom of the original reporting triangle.
-#' @param rep_tri Matrix of the reporting triangle/matrix
-#'   to be used to generate retrospective nowcast matrices, with rows
-#'   representing the time points of reference and columns representing the
-#'   delays.
-#'
-#' @returns Matrix with `t` fewer rows than `rep_tri`.
+#' @inheritParams get_delay_estimate
+#' @returns `trunc_rep_tri` Matrix with `t` fewer rows than
+#'    `reporting_triangle`.
 #' @importFrom checkmate assert_integerish
 #' @importFrom cli cli_abort
 #' @export
@@ -88,11 +85,11 @@ truncate_triangles <- function(reporting_triangle,
 #'   byrow = TRUE
 #' )
 #'
-#' trunc_rep_tri <- truncate_triangle(t = 1, rep_tri = triangle)
+#' trunc_rep_tri <- truncate_triangle(t = 1, reporting_triangle = triangle)
 #' trunc_rep_tri
 truncate_triangle <- function(t,
-                              rep_tri) {
-  n_obs <- nrow(rep_tri)
+                              reporting_triangle) {
+  n_obs <- nrow(reporting_triangle)
   if (t >= n_obs) {
     cli_abort(
       message = c(
@@ -103,7 +100,7 @@ truncate_triangle <- function(t,
   }
   assert_integerish(t, lower = 0)
   rep_tri_trunc <- matrix(
-    rep_tri[1:(n_obs - t), ],
+    reporting_triangle[1:(n_obs - t), ],
     nrow = (n_obs - t)
   )
   return(rep_tri_trunc)

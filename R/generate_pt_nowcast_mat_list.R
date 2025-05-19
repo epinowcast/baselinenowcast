@@ -1,19 +1,14 @@
 #' Generate retrospective nowcasts
 #'
 #' This function ingests a list of incomplete reporting triangles and
-#'   generates a list of reporting squares, or "complete"
-#'   point estimates of reporting triangles based on the delay estimated in
-#'   each triangle. It uses the specified `n` number of
-#'   observations to estimate the empirical delay for each retrospective
+#'   generates a list of point nowcast matrices, based on the delay estimated in
+#'   each triangle or the corresponding delay passed in. It uses the specified
+#'   `n` number of reference times to estimate the delay in each retrospective
 #'   reporting triangle.
 #'
-#' @param reporting_triangle_list List of reporting triangle matrices, in order
-#'    from most recent (most complete) to least recent. Bottom right of the
-#'    matrices should contain NAs.
-#' @param max_delay Integer indicating the maximum delay to estimate, in units
-#'   of the delay. The default is to use one less than the minimum number of
-#'   rows of all of the matrices in the `list_of_rts`.
-#' @param n Integer indicating the number of observations
+#' @inheritParams estimate_dispersion
+#' @inheritParams get_delay_estimate
+#' @param n Integer indicating the number of reference times
 #'    (number of rows) to use to estimate the delay distribution for each
 #'    reporting triangle. Default is the minimum of the number of rows of
 #'    all the matrices in the `list_of_rts`.
@@ -137,8 +132,10 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
 #'   the point nowcast. If a delay distribution is specified, this will be
 #'   used to generate the nowcast, otherwise, a delay distribution will be
 #'   estimated from the `reporting_triangle`.
-#' @param delay_pmf Vector of delays assumed to be indexed starting at the
-#'   first delay column in `triangle_to_nowcast`.
+#' @param delay_pmf Vector of delays assumed to be indexed
+#'    starting at the first delay column in `reporting_triangle`.
+#'    Default is `NULL`, which will estimate a delay from the
+#'    `reporting_triangle`.
 #' @inheritParams get_delay_estimate
 #' @returns `point_nowcast_matrix` Matrix of the same number of rows and
 #'   columns as the `reporting_triangle` but with the missing values filled

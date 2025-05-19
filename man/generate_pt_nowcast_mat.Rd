@@ -20,15 +20,17 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
-\code{ncol(triangle) -1}.}
+\code{ncol(reporting_triangle) -1}.}
 
 \item{n}{Integer indicating the number of reference times (observations) to
 be used in the estimate of the reporting delay, always starting from the
 most recent reporting delay. The default is to use the whole reporting
-triangle, so \code{nrow(triangle)}}
+triangle, so \code{nrow(reporting_triangle)}}
 
-\item{delay_pmf}{Vector of delays assumed to be indexed starting at the
-first delay column in \code{triangle_to_nowcast}.}
+\item{delay_pmf}{Vector of delays assumed to be indexed
+starting at the first delay column in \code{reporting_triangle}.
+Default is \code{NULL}, which will estimate a delay from the
+\code{reporting_triangle}.}
 }
 \value{
 \code{point_nowcast_matrix} Matrix of the same number of rows and

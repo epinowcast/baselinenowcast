@@ -11,7 +11,8 @@
 #' @param trunc_rep_tri_list List of truncated reporting matrices,
 #'    containing all observations as of the latest reference time. Elements of
 #'    list are paired with elements of `pt_nowcast_mat_list`.
-#' @inheritParams generate_pt_nowcast_mat_list
+#' @param reporting_triangle_list List of `n` truncated reporting triangle
+#'   matrices with as many rows as available given the truncation.
 #' @param n Integer indicating the number of reporting matrices to use to
 #'    estimate the dispersion parameters.
 #' @importFrom checkmate assert_integerish

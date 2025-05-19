@@ -13,11 +13,11 @@ knitr::opts_chunk$set(
   message = FALSE, warning = FALSE
 )
 ```
-# Baseline nowcast (in development)
+# Baseline nowcast
 
 
 <!-- badges: start -->
-[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-yellow.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/epinowcast/baselinenowcast/workflows/R-CMD-check/badge.svg)](https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/epinowcast/baselinenowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epinowcast/baselinenowcast)
 [![MIT
 license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/epinowcast/baselinenowcast/blob/master/LICENSE.md/)
@@ -81,6 +81,7 @@ If you use `baselinenowcast` in your work, please consider citing it with `citat
 
 
 
+
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -90,8 +91,9 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 ### Code
 
 
-<a href="https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson">kaitejohnson</a>,
-<a href="https://github.com/epinowcast/baselinenowcast/commits?author=seabbs">seabbs</a>,
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson">kaitejohnson</a>, 
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=seabbs">seabbs</a>, 
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=TimTaylor">TimTaylor</a>, 
 <a href="https://github.com/epinowcast/baselinenowcast/commits?author=sbfnk">sbfnk</a>
 
 
@@ -106,13 +108,14 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 ### Issue Contributors
 
 
-<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher">jbracher</a>,
-<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3ATimTaylor">TimTaylor</a>
+<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajamesmbaazam">jamesmbaazam</a>, 
+<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher">jbracher</a>
 
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
 
 
 

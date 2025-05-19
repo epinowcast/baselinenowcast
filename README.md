@@ -1,12 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Baseline nowcast (in development)
+# Baseline nowcast
 
 <!-- badges: start -->
 
 [![Lifecycle:
-stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+experimental](https://img.shields.io/badge/lifecycle-experimental-yellow.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/epinowcast/baselinenowcast/workflows/R-CMD-check/badge.svg)](https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/epinowcast/baselinenowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epinowcast/baselinenowcast)
@@ -131,6 +131,7 @@ specification. Contributions of any kind are welcome!
 
 <a href="https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson">kaitejohnson</a>,
 <a href="https://github.com/epinowcast/baselinenowcast/commits?author=seabbs">seabbs</a>,
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=TimTaylor">TimTaylor</a>,
 <a href="https://github.com/epinowcast/baselinenowcast/commits?author=sbfnk">sbfnk</a>
 
 ### Issue Authors
@@ -139,8 +140,8 @@ specification. Contributions of any kind are welcome!
 
 ### Issue Contributors
 
-<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher">jbracher</a>,
-<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3ATimTaylor">TimTaylor</a>
+<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajamesmbaazam">jamesmbaazam</a>,
+<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher">jbracher</a>
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->

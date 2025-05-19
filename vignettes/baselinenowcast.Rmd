@@ -169,7 +169,7 @@ Germany for all age groups.
 In the below sections, we will specify the maximum delay,
 the number of reference times to use for delay estimation, and the number of
 reference times to use for uncertainty quantification. We will use 3 times the
-maximum delay for the total training volume, with 50% of the reference times
+maximum delay for the total training volume, with the latest 50% of the reference times
 used for delay estimation. For uncertainty estimation, we will generate
 retrospective nowcast datasets with the latest 50% of the reference times. This
 means that in order to estimate the delay using the same amount of data, the

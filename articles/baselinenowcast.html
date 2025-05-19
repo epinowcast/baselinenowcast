@@ -349,18 +349,23 @@ We only want to pass in the reporting triangle (for a single group!) to this
 function.
 If reference date are repeated because the reporting triangle contains multiple
 strata, the function will throw an error.</p>
-<p>The <code><a href="../reference/get_delay_estimate.html">get_delay_estimate()</a></code> function expects the following inputs:
-- <code>reporting_triangle</code>: a matrix with the reporting triangle for a single
+<p>The <code><a href="../reference/get_delay_estimate.html">get_delay_estimate()</a></code> function expects the following inputs:</p>
+<ul>
+<li>
+<code>reporting_triangle</code>: a matrix with the reporting triangle for a single
 strata. Here the rows represent the time points and the columns represent the
 observed delays, starting at 0. This can also be a reporting matrix or an
 incomplete reporting matrix (so not all elements of the bottom right triangle
-need to be missing).
-- <code>max_delay</code>: an integer indicating the maximum delay to estimate. This must
+need to be missing).</li>
+<li>
+<code>max_delay</code>: an integer indicating the maximum delay to estimate. This must
 be less than or equal to the number of rows in <code>triangle</code> minus 1, since we
-assume <code>triangle</code> is indexed at 0.
-- <code>n</code>: an integer indicating the number of observations by reference
+assume <code>triangle</code> is indexed at 0.</li>
+<li>
+<code>n</code>: an integer indicating the number of observations by reference
 date to use to fit the delay distribution. This must be less than or equal to
-the number of rows in <code>triangle</code>. Here we will use <code>n_history_delay</code>.</p>
+the number of rows in <code>triangle</code>. Here we will use <code>n_history_delay</code>.</li>
+</ul>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">delay_pmf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_delay_estimate.html">get_delay_estimate</a></span><span class="op">(</span></span>
 <span>  reporting_triangle <span class="op">=</span> <span class="va">reporting_triangle</span>,</span>
@@ -390,8 +395,8 @@ the number of rows in <code>triangle</code>. Here we will use <code>n_history_de
 <p><img src="baselinenowcast_files/figure-html/estimate-delay-2.png" width="672"></p>
 </div>
 <div class="section level2" number="7">
-<h2 id="apply-delay-to-generate-point-nowcast">
-<span class="header-section-number">7</span> Apply delay to generate point nowcast<a class="anchor" aria-label="anchor" href="#apply-delay-to-generate-point-nowcast"></a>
+<h2 id="apply-the-delay-to-generate-a-point-nowcast">
+<span class="header-section-number">7</span> Apply the delay to generate a point nowcast<a class="anchor" aria-label="anchor" href="#apply-the-delay-to-generate-a-point-nowcast"></a>
 </h2>
 <p>The next step in our workflow is to take the estimated delay distribution and
 apply it to the partially observed reporting triangle, generating an estimate
@@ -454,7 +459,7 @@ We’ll compare this to the right-truncated data available up until August 1, 20
 <p><img src="baselinenowcast_files/figure-html/unnamed-chunk-2-1.png" width="672"></p>
 <p>Here we can see that our point nowcast slightly underestimates what was
 eventually reported (black line), but does a decent overall job of correcting
-for the right-truncation observed in the red line (the data prior to the
+for the right-truncation observed in the red line (the data before the
 nowcast).</p>
 </div>
 <div class="section level2" number="8">
@@ -512,10 +517,12 @@ uncertainty at each horizon, starting at horizon 0.</p>
 <span class="header-section-number">9</span> Generate probabilistic nowcast<a class="anchor" aria-label="anchor" href="#generate-probabilistic-nowcast"></a>
 </h2>
 <p>Now that we have estimated the dispersion, we can generate a probabilistic
-nowcast. We can use the <code><a href="../reference/get_nowcast_draws.html">get_nowcast_draws()</a></code> which:
-- generates draws from the nowcast distribution
-- combines the draws with the observed data to form a single draw of the nowcast
-- repeats this process for <code>draws</code> draws</p>
+nowcast. We can use the <code><a href="../reference/get_nowcast_draws.html">get_nowcast_draws()</a></code> which:</p>
+<ul>
+<li>generates draws from the nowcast distribution</li>
+<li>combines the draws with the observed data to form a single draw of the nowcast</li>
+<li>repeats this process for <code>draws</code> draws</li>
+</ul>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast_draws_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_nowcast_draws.html">get_nowcast_draws</a></span><span class="op">(</span></span>
 <span>  <span class="va">point_nowcast_matrix</span>, <span class="va">reporting_triangle</span>,</span>
@@ -531,10 +538,15 @@ nowcast. We can use the <code><a href="../reference/get_nowcast_draws.html">get_
 <span><span class="co">## 4        804    4    1</span></span>
 <span><span class="co">## 5        722    5    1</span></span>
 <span><span class="co">## 6        492    6    1</span></span></code></pre>
-<p>As we can see, the output dataframe from <code><a href="../reference/get_nowcast_draws.html">get_nowcast_draws()</a></code> contains:
-- <code>time</code>: The reference time index
-- <code>draw</code>: The draw number
-- <code>pred_count</code>: The predicted final count for this reference time and draw (combining observations and predictions when present)</p>
+<p>As we can see, the output dataframe from <code><a href="../reference/get_nowcast_draws.html">get_nowcast_draws()</a></code> contains:</p>
+<ul>
+<li>
+<code>time</code>: The reference time index</li>
+<li>
+<code>draw</code>: The draw number</li>
+<li>
+<code>pred_count</code>: The predicted final count for this reference time and draw (combining observations and predictions when present)</li>
+</ul>
 </div>
 <div class="section level2" number="10">
 <h2 id="visualizing-the-nowcast">

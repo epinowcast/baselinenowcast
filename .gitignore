@@ -22,3 +22,4 @@ cache
 *.html
 CRAN-SUBMISSION
 claude.md
+.claude/

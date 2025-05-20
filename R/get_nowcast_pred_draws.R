@@ -95,6 +95,7 @@ get_nowcast_pred_draw <- function(point_nowcast_matrix,
 #' pred_counts <- c(10, 20, 30, 40)
 #' reporting_matrix <- matrix(
 #'   c(
+#'     7, 9, 4, 3,
 #'     1, 2, 3, 4,
 #'     5, 6, 7, 8,
 #'     9, 10, 11, 12
@@ -104,10 +105,14 @@ get_nowcast_pred_draw <- function(point_nowcast_matrix,
 #' )
 #' reporting_triangle <- generate_triangle(reporting_matrix)
 #' combine_obs_with_pred(pred_counts, reporting_triangle)
+#'
+#' # Another example with rolling sum
+#' combine_obs_with_pred(pred_counts, reporting_triangle, k = 2)
 combine_obs_with_pred <- function(predicted_counts,
                                   reporting_triangle,
                                   fun_to_aggregate = sum,
                                   k = 1) {
+  .validate_aggregation_function(fun_to_aggregate)
   obs_counts <- rollapply(
     rowSums(reporting_triangle, na.rm = TRUE),
     k,
@@ -193,6 +198,7 @@ get_nowcast_pred_draws <- function(point_nowcast_matrix,
 #' Generate a single draw of a nowcast combining observed and predicted values
 #'
 #' @inheritParams get_nowcast_pred_draws
+#' @param ... Additional arguments passed to `get_nowcast_pred_draws()`
 #' @returns Vector of predicted counts at each reference time based on combining
 #'    the observed counts and the predicted counts for the unobserved elements.
 #' @export

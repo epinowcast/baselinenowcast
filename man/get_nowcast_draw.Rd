@@ -19,6 +19,8 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 
 \item{dispersion}{Vector of dispersion parameters indexed by horizon from
 minus one to the maximum delay.}
+
+\item{...}{Additional arguments passed to \code{get_nowcast_pred_draws()}}
 }
 \value{
 Vector of predicted counts at each reference time based on combining

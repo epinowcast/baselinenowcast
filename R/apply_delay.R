@@ -58,7 +58,6 @@ apply_delay <- function(rep_tri_to_nowcast, delay_pmf) {
   # matrix to nowcast
   point_nowcast_matrix <- Reduce(
     function(acc, index) {
-      delay_cdf_prev <- delay_cdf[index - 1]
       return(.calc_expectation(
         index,
         acc,

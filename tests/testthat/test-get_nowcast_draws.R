@@ -1,32 +1,35 @@
 test_that(
-  "get_nowcast_draws: returns a dataframe with correct structure", {
-  point_nowcast_matrix <- matrix(
-    c(
-      100, 50, 30, 20,
-      90, 45, 25, 16.8,
-      80, 40, 21.2, 19.5,
-      70, 34.5, 15.4, 9.1
-    ),
-    nrow = 4,
-    byrow = TRUE
-  )
-  dispersion <- c(0.8, 12.4, 9.1)
-  reporting_triangle <- generate_triangle(point_nowcast_matrix)
+  "get_nowcast_draws: returns a dataframe with correct structure",
+  {
+    point_nowcast_matrix <- matrix(
+      c(
+        100, 50, 30, 20,
+        90, 45, 25, 16.8,
+        80, 40, 21.2, 19.5,
+        70, 34.5, 15.4, 9.1
+      ),
+      nrow = 4,
+      byrow = TRUE
+    )
+    dispersion <- c(0.8, 12.4, 9.1)
+    reporting_triangle <- generate_triangle(point_nowcast_matrix)
 
-  result <- get_nowcast_draws(
-    point_nowcast_matrix, reporting_triangle, dispersion, draws = 100
-  )
+    result <- get_nowcast_draws(
+      point_nowcast_matrix, reporting_triangle, dispersion,
+      draws = 100
+    )
 
-  expect_is(result, "data.frame")
-  expect_identical(
-    nrow(result),
-    as.integer(100 * nrow(point_nowcast_matrix))
-  )
-  expect_identical(ncol(result), 3L)
-  expect_true(all(c("pred_count", "time", "draw") %in% names(result)))
-  expect_length(unique(result$draw), 100L)
-  expect_identical(nrow(result), as.integer(100 * nrow(point_nowcast_matrix)))
-})
+    expect_is(result, "data.frame")
+    expect_identical(
+      nrow(result),
+      as.integer(100 * nrow(point_nowcast_matrix))
+    )
+    expect_identical(ncol(result), 3L)
+    expect_true(all(c("pred_count", "time", "draw") %in% names(result)))
+    expect_length(unique(result$draw), 100L)
+    expect_identical(nrow(result), as.integer(100 * nrow(point_nowcast_matrix)))
+  }
+)
 
 test_that("get_nowcast_draws: draws are distinct and properly indexed", {
   # Setup test data
@@ -145,3 +148,63 @@ test_that("get_nowcast_draws: function works with different number of draws", {
     as.integer(n_draws * nrow(point_nowcast_matrix))
   )
 })
+
+test_that(
+  "get_nowcast_draws: ingests k and fun to aggregate appropriately",
+  {
+    point_nowcast_matrix <- matrix(
+      c(
+        50, 80, 100, 40,
+        100, 50, 30, 20,
+        90, 45, 25, 16.8,
+        80, 40, 21.2, 19.5,
+        70, 34.5, 15.4, 9.1
+      ),
+      nrow = 5,
+      byrow = TRUE
+    )
+    dispersion <- c(0.8, 12.4, 9.1)
+    reporting_triangle <- generate_triangle(point_nowcast_matrix)
+
+    result_with_rolling_sum <- get_nowcast_draws(
+      point_nowcast_matrix,
+      reporting_triangle,
+      dispersion,
+      draws = 100,
+      fun_to_aggregate = sum,
+      k = 2
+    )
+    result <- get_nowcast_draws(
+      point_nowcast_matrix,
+      reporting_triangle,
+      dispersion,
+      draws = 100
+    )
+
+    # Test that result_with_rolling_sum is roughly double,
+    # which should be true for both the observations and the
+    # predictions
+    sum_result <- sum(result$pred_count[result$time != 1])
+    sum_result_rolling_sum <- sum(
+      result_with_rolling_sum$pred_count[result_with_rolling_sum$time != 1],
+      na.rm = TRUE
+    )
+    expect_equal(sum_result_rolling_sum / sum_result, 2, tol = 0.2)
+
+    # The sum of the first two time points should be the same as the value
+    # at t=2 for the rolling sum
+    expect_identical(
+      sum(result$pred_count[result$time <= 2]),
+      sum(result_with_rolling_sum$pred_count[result_with_rolling_sum$time == 2])
+    )
+    # All draws should be the same
+    expect_identical(
+      result_with_rolling_sum$pred_count[
+        result_with_rolling_sum$time == 2 & result_with_rolling_sum$draw == 2
+      ],
+      result_with_rolling_sum$pred_count[
+        result_with_rolling_sum$time == 2 & result_with_rolling_sum$draw == 1
+      ]
+    )
+  }
+)

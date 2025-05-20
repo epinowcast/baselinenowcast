@@ -8,7 +8,8 @@ get_nowcast_draws(
   point_nowcast_matrix,
   reporting_triangle,
   dispersion,
-  draws = 1000
+  draws = 1000,
+  ...
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ minus one to the maximum delay.}
 
 \item{draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}
+
+\item{...}{Additional arguments pass to \code{get_nowcast_pred_draws()}}
 }
 \value{
 Dataframe containing information for multiple draws with columns

@@ -4,7 +4,12 @@
 \alias{combine_obs_with_pred}
 \title{Combine observed data with a single prediction draw}
 \usage{
-combine_obs_with_pred(predicted_counts, reporting_triangle)
+combine_obs_with_pred(
+  predicted_counts,
+  reporting_triangle,
+  fun_to_aggregate = sum,
+  k = 1
+)
 }
 \arguments{
 \item{predicted_counts}{Vector of predicted counts at each reference time}
@@ -14,6 +19,16 @@ representing the time points of reference and columns representing the
 delays. Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row. (e.g. weekly reporting of daily data).}
+
+\item{fun_to_aggregate}{Function that will operate along the nowcast
+vectors after summing across delays. Eventually, we can add things like
+mean, but for now since we are only providing a negative binomial
+observation model, we can only allow sum. Currently supported
+functions: \code{sum}.}
+
+\item{k}{Integer indicating the number of reference times to apply the
+\code{fun_to_aggregate} over to create target used to compute the nowcast
+errors.}
 }
 \value{
 A vector of predicted counts at each reference time

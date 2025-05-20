@@ -219,8 +219,10 @@ test_that("get_nowcast_draws: longer k aggregates correctly", {
   pt_nowcast_mat <- generate_pt_nowcast_mat(triangle)
   dispersion <- c(10, 10, 10)
 
-  expected_mean <- rollsum(rowSums(pt_nowcast_mat),
-    k = 5, align = "right",
+  expected_mean <- rollapply(rowSums(pt_nowcast_mat),
+    5,
+    sum,
+    align = "right",
     fill = NA
   )
 

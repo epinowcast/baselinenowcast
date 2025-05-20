@@ -45,8 +45,9 @@ test_that("combine_obs_with_pred: handles aggregation function properly", {
 
   # Calculate expected result
   obs_counts <- rowSums(reporting_triangle, na.rm = TRUE)
-  expected <- rollsum(obs_counts,
+  expected <- rollapply(obs_counts,
     2,
+    sum,
     fill = NA,
     align = "right"
   ) + predicted_counts

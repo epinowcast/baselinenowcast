@@ -209,12 +209,14 @@ get_nowcast_pred_draws <- function(point_nowcast_matrix,
 #' nowcast_draw
 get_nowcast_draw <- function(point_nowcast_matrix,
                              reporting_triangle,
-                             dispersion) {
+                             dispersion,
+                             ...) {
   # Generate a single draw of the predictions
   pred_counts <- get_nowcast_pred_draw(
     point_nowcast_matrix,
     reporting_triangle,
-    dispersion
+    dispersion,
+    ...
   )
 
   # Combine with observations
@@ -226,6 +228,7 @@ get_nowcast_draw <- function(point_nowcast_matrix,
 #' Generate multiple draws of a nowcast combining observed and predicted values
 #'
 #' @inheritParams get_nowcast_pred_draws
+#' @param ... Additional arguments pass to `get_nowcast_pred_draws()`
 #' @returns Dataframe containing information for multiple draws with columns
 #'  for the reference time (`time`), the predicted counts (`pred_count`), and
 #'  the draw number (`draw`).
@@ -254,14 +257,16 @@ get_nowcast_draw <- function(point_nowcast_matrix,
 get_nowcast_draws <- function(point_nowcast_matrix,
                               reporting_triangle,
                               dispersion,
-                              draws = 1000) {
+                              draws = 1000,
+                              ...) {
   reference_times <- seq_len(nrow(point_nowcast_matrix))
 
   draws_df_list <- lapply(seq_len(draws), function(i) {
     pred_counts <- get_nowcast_draw(
       point_nowcast_matrix,
       reporting_triangle,
-      dispersion
+      dispersion,
+      ...
     )
 
     return(data.frame(

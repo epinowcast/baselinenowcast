@@ -4,7 +4,7 @@
 \alias{get_nowcast_draw}
 \title{Generate a single draw of a nowcast combining observed and predicted values}
 \usage{
-get_nowcast_draw(point_nowcast_matrix, reporting_triangle, dispersion)
+get_nowcast_draw(point_nowcast_matrix, reporting_triangle, dispersion, ...)
 }
 \arguments{
 \item{point_nowcast_matrix}{Matrix of point nowcast predictions and

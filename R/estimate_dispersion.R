@@ -168,9 +168,10 @@ estimate_dispersion <- function(
       start_row <- max_t - d - k + 2
       end_row <- max_t - d + 1
       obs <- trunc_matr_observed[start_row:end_row, ]
+      tri <- triangle_observed[start_row:end_row, ]
       nowcast <- nowcast_i[start_row:end_row, ]
-      indices_nowcast <- is.na(triangle_observed)[start_row:end_row, ]
-      indices_observed <- !is.na(trunc_matr_observed)[start_row:end_row, ] # nolint
+      indices_nowcast <- is.na(tri)
+      indices_observed <- !is.na(obs)
       # Function to aggregate is always applied after the matrix has been
       # summed across delays
       exp_to_add[i, d] <- fun_to_aggregate(
@@ -190,10 +191,10 @@ estimate_dispersion <- function(
   # Estimate the dispersion as a function of horizon across retrospective
   # nowcast dates
   disp_params <- vector(length = n_possible_horizons)
-  for (i in seq_len(n_possible_horizons)) {
-    obs_temp <- to_add_already_observed[, i]
-    mu_temp <- exp_to_add[, i] + 0.1
-    disp_params[i] <- .fit_nb(x = obs_temp, mu = mu_temp)
+  for (j in seq_len(n_possible_horizons)) {
+    obs_temp <- to_add_already_observed[, j]
+    mu_temp <- exp_to_add[, j] + 0.1
+    disp_params[j] <- .fit_nb(x = obs_temp, mu = mu_temp)
   }
 
   return(disp_params)

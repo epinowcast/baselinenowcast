@@ -104,8 +104,17 @@ get_nowcast_pred_draw <- function(point_nowcast_matrix,
 #' )
 #' reporting_triangle <- generate_triangle(reporting_matrix)
 #' combine_obs_with_pred(pred_counts, reporting_triangle)
-combine_obs_with_pred <- function(predicted_counts, reporting_triangle) {
-  obs_counts <- rowSums(reporting_triangle, na.rm = TRUE)
+combine_obs_with_pred <- function(predicted_counts,
+                                  reporting_triangle,
+                                  fun_to_aggregate = sum,
+                                  k = 1) {
+  obs_counts <- rollapply(
+    rowSums(reporting_triangle, na.rm = TRUE),
+    k,
+    fun_to_aggregate,
+    fill = NA,
+    align = "right"
+  )
   return(obs_counts + predicted_counts)
 }
 
@@ -220,7 +229,11 @@ get_nowcast_draw <- function(point_nowcast_matrix,
   )
 
   # Combine with observations
-  draw <- combine_obs_with_pred(pred_counts, reporting_triangle)
+  draw <- combine_obs_with_pred(
+    pred_counts,
+    reporting_triangle,
+    ...
+  )
 
   return(draw)
 }

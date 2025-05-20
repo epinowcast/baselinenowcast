@@ -366,3 +366,32 @@ test_that("estimate_dispersion: Works with ragged reporting triangles", {
   expect_length(disp_params, ncol(ragged_triangle) - 1)
   expect_true(all(disp_params > 0))
 })
+
+test_that("estimate_dispersion: works as expected with perfect data"{ #nolint
+  set.seed(123)
+  delay_pmf <- c(0.4, 0.3, 0.2, 0.05, 0.05)
+  partial_counts <- c(80, 100, 180, 80, 140)
+
+  # Create a complete triangle based on the known delay PMF
+  triangle <- lapply(partial_counts, function(x) x * delay_pmf)
+  triangle <- do.call(rbind, triangle)
+  triangle <- rbind(triangle, triangle)
+
+  pt_nowcast_mat <- generate_pt_nowcast_mat(triangle)
+  trunc_rts <- truncate_triangles(triangle)
+  retro_rts <- generate_triangles(trunc_rts)
+
+  pt_nowcast_list <- generate_pt_nowcast_mat_list(retro_rts_list)
+
+  dispersion <- estimate_dispersion(
+    pt_nowcast_list,
+    trunc_rep_tri_list,
+    rt_list
+  )
+
+  expect_equal(dispersion[1], 999, tol = 1)
+  expect_equal(dispersion[2], 999, tol = 1)
+  expect_equal(dispersion[3], 999, tol = 1)
+
+}
+)

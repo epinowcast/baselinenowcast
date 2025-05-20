@@ -227,11 +227,23 @@
       "identifier": "stats",
       "name": "stats"
     },
+    "5": {
+      "@type": "SoftwareApplication",
+      "identifier": "zoo",
+      "name": "zoo",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=zoo"
+    },
     "SystemRequirements": null
   },
-  "fileSize": "992.946KB",
+  "fileSize": "1012.937KB",
   "releaseNotes": "https://github.com/epinowcast/baselinenowcast/blob/master/NEWS.md",
   "readme": "https://github.com/epinowcast/baselinenowcast/blob/main/README.md",
   "contIntegration": ["https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/epinowcast/baselinenowcast"],
-  "developmentStatus": "https://lifecycle.r-lib.org/articles/stages.html#stable"
+  "developmentStatus": "https://lifecycle.r-lib.org/articles/stages.html#experimental"
 }

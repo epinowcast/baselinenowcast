@@ -57,14 +57,14 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.calc_expectation</span><span class="op">(</span><span class="va">delay_index</span>, <span class="va">expectation</span>, <span class="va">delay_prob</span>, <span class="va">delay_cdf_prev</span>, <span class="va">n_rows</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.calc_expectation</span><span class="op">(</span><span class="va">index</span>, <span class="va">expectation</span>, <span class="va">delay_prob</span>, <span class="va">delay_cdf_prev</span>, <span class="va">n_rows</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-delay-index">delay_index<a class="anchor" aria-label="anchor" href="#arg-delay-index"></a></dt>
+<dl><dt id="arg-index">index<a class="anchor" aria-label="anchor" href="#arg-index"></a></dt>
 <dd><p>Integer indicating the delay index</p></dd>
 
 
@@ -73,11 +73,11 @@
 
 
 <dt id="arg-delay-prob">delay_prob<a class="anchor" aria-label="anchor" href="#arg-delay-prob"></a></dt>
-<dd><p>Probability of a case being reported with the current delay</p></dd>
+<dd><p>Scalar probability for the current delay</p></dd>
 
 
 <dt id="arg-delay-cdf-prev">delay_cdf_prev<a class="anchor" aria-label="anchor" href="#arg-delay-cdf-prev"></a></dt>
-<dd><p>CDF of the delay PMF up to the previous delay</p></dd>
+<dd><p>Scalar cumulative probability up to previous delay</p></dd>
 
 
 <dt id="arg-n-rows">n_rows<a class="anchor" aria-label="anchor" href="#arg-n-rows"></a></dt>

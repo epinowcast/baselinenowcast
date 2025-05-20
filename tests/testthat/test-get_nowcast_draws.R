@@ -208,3 +208,49 @@ test_that(
     )
   }
 )
+
+test_that("get_nowcast_draws: longer k aggregates correctly", {
+  set.seed(123)
+  rep_mat <- matrix(sample(1:20, size = 4 * 10, replace = TRUE),
+    nrow = 10, ncol = 4
+  )
+  triangle <- generate_triangle(rep_mat)
+
+  pt_nowcast_mat <- generate_pt_nowcast_mat(triangle)
+  dispersion <- c(10, 10, 10)
+
+  expected_mean <- rollsum(rowSums(pt_nowcast_mat),
+    k = 5, align = "right",
+    fill = NA
+  )
+
+  result_with_rolling_sum <- get_nowcast_draws(
+    pt_nowcast_mat,
+    triangle,
+    dispersion,
+    draws = 100,
+    fun_to_aggregate = sum,
+    k = 5
+  )
+
+  # First 4 rows are NA because of right alignment
+  expect_true(all(is.na(result_with_rolling_sum$pred_count[1:4])))
+
+  # First two components of the rolling 5 day sum are the same for different
+  # draws because they are all based on observations
+  expect_identical(
+    result_with_rolling_sum$pred_count[7],
+    result_with_rolling_sum$pred_count[17]
+  )
+  expect_identical(
+    result_with_rolling_sum$pred_count[6],
+    result_with_rolling_sum$pred_count[16]
+  )
+  # in subsequent time points, the draws differ
+  expect_false(result_with_rolling_sum$pred_count[8] ==
+    result_with_rolling_sum$pred_count[18])
+
+  # Mean is about the same as a draw of the last time point
+  draw_of_result_last_time <- result_with_rolling_sum$pred_count[10]
+  expect_equal(expected_mean[10], draw_of_result_last_time, tol = 5)
+})

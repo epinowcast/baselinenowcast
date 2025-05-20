@@ -4,16 +4,16 @@
 \alias{.calc_expectation}
 \title{Calculate the updated rows of the expected nowcasted triangle}
 \usage{
-.calc_expectation(delay_index, expectation, delay_prob, delay_cdf_prev, n_rows)
+.calc_expectation(index, expectation, delay_prob, delay_cdf_prev, n_rows)
 }
 \arguments{
-\item{delay_index}{Integer indicating the delay index}
+\item{index}{Integer indicating the delay index}
 
 \item{expectation}{Matrix of the incomplete reporting matrix}
 
-\item{delay_prob}{Probability of a case being reported with the current delay}
+\item{delay_prob}{Scalar probability for the current delay}
 
-\item{delay_cdf_prev}{CDF of the delay PMF up to the previous delay}
+\item{delay_cdf_prev}{Scalar cumulative probability up to previous delay}
 
 \item{n_rows}{Number of rows in the expectation matrix}
 }

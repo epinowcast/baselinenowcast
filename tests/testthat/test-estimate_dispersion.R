@@ -60,16 +60,84 @@ test_that("estimate_dispersion: Basic functionality with valid inputs", {
 })
 
 
-test_that("estimate_dispersion: Default n parameter works correctly", {
-  result_default <- estimate_dispersion(
-    valid_nowcasts, valid_trunc_rts, valid_rts
+test_that("estimate_dispersion can handle rolling sum with k=2", {
+  result1 <- estimate_dispersion(
+    pt_nowcast_mat_list = valid_nowcasts,
+    trunc_rep_tri_list = valid_trunc_rts,
+    reporting_triangle_list = valid_rts,
+    n = 2,
+    fun_to_aggregate = sum,
+    k = 2
   )
-  result_explicit <- estimate_dispersion(
-    valid_nowcasts, valid_trunc_rts, valid_rts,
+
+  result2 <- estimate_dispersion(
+    pt_nowcast_mat_list = valid_nowcasts,
+    trunc_rep_tri_list = valid_trunc_rts,
+    reporting_triangle_list = valid_rts,
+    n = 2
+  )
+  # Ensures that these are different
+  expect_failure(expect_equal(result1, result2, tol = 0.01))
+})
+
+test_that("estimate_dispersion appropriately warns when k is too large for some of the triangles", { # nolint
+  expect_warning(estimate_dispersion(
+    pt_nowcast_mat_list = valid_nowcasts,
+    trunc_rep_tri_list = valid_trunc_rts,
+    reporting_triangle_list = valid_rts,
+    n = 2,
+    fun_to_aggregate = sum,
+    k = 4
+  ))
+})
+
+test_that("estimate_dispersion appropriately errors when k is too large for all the triangles", { # nolint
+  expect_error(estimate_dispersion(
+    pt_nowcast_mat_list = valid_nowcasts,
+    trunc_rep_tri_list = valid_trunc_rts,
+    reporting_triangle_list = valid_rts,
+    n = 2,
+    fun_to_aggregate = sum,
+    k = 5
+  ))
+})
+
+
+test_that("estimate_dispersion throws an error if function to aggregate is not valid", { # nolint
+  # Function shouldn't be a character
+  expect_error(estimate_dispersion(
+    pt_nowcast_mat_list = valid_nowcasts,
+    trunc_rep_tri_list = valid_trunc_rts,
+    reporting_triangle_list = valid_rts,
+    n = 2,
+    fun_to_aggregate = "sum",
+    k = 2
+  ))
+  # Mean doesn't work right now because we haven't added another error model
+  expect_error(estimate_dispersion(
+    pt_nowcast_mat_list = valid_nowcasts,
+    trunc_rep_tri_list = valid_trunc_rts,
+    reporting_triangle_list = valid_rts,
+    n = 2,
+    fun_to_aggregate = mean,
+    k = 2
+  ))
+})
+
+test_that("estimate_dispersion works correctly with default and n parameters", {
+  result_default <- estimate_dispersion(
+    valid_nowcasts,
+    valid_trunc_rts,
+    valid_rts
+  )
+  result_explicit <- estimate_dispersion(valid_nowcasts,
+    valid_trunc_rts,
+    valid_rts,
     n = 2
   )
   expect_identical(result_default, result_explicit)
 })
+
 
 test_that("estimate_dispersion: Error conditions are properly handled", {
   # Invalid input types
@@ -129,6 +197,7 @@ test_that("estimate_dispersion: Error conditions are properly handled", {
   ))
 })
 
+
 test_that("estimate_dispersion: Edge cases are handled properly", {
   # Empty lists
   expect_error(estimate_dispersion(list(), list(), list(), n = 0))
@@ -144,6 +213,14 @@ test_that("estimate_dispersion: Edge cases are handled properly", {
   na_nowcasts <- list(matrix(NA, 2, 3), matrix(NA, 1, 3))
   na_trunc <- list(matrix(NA, 2, 3), matrix(NA, 1, 3))
   expect_error(estimate_dispersion(na_nowcasts, na_trunc, valid_rts, n = 2))
+
+  # Invalid type passed, nowcasts, truncated reporting triangles, and reporting
+  # triangles must be lists
+  expect_error(estimate_dispersion(
+    valid_nowcasts[[1]],
+    valid_trunc_rts[[1]],
+    valid_rts[[1]]
+  ))
 })
 
 test_that("estimate_dispersion: Matrix dimension validation works", {
@@ -156,6 +233,7 @@ test_that("estimate_dispersion: Matrix dimension validation works", {
     estimate_dispersion(valid_nowcasts, bad_trunc_rts, valid_rts)
   )
 })
+
 
 test_that(".fit_nb: Passing in empty vector returns NA", {
   x <- NULL

@@ -6,12 +6,14 @@
 #' @param dispersion Vector of dispersion parameters indexed by horizon from
 #'  minus one to the maximum delay.
 #' @inheritParams get_delay_estimate
+#' @inheritParams estimate_dispersion
 #'
 #' @returns Vector of predicted draws at each reference time, for all reference
-#'    times in the input `point_nowcast_pred_matrix`.
+#'    times in the input `point_nowcast_matrix`.
 #' @export
 #' @importFrom cli cli_abort cli_warn
 #' @importFrom stats rnbinom
+#' @importFrom zoo rollapply
 #' @examples
 #' point_nowcast_matrix <- matrix(
 #'   c(
@@ -32,9 +34,22 @@
 #'   disp
 #' )
 #' nowcast_pred_draw
+#'
+#' # Get draws on the rolling sum
+#' nowcast_pred_draw_agg <- get_nowcast_pred_draw(
+#'   point_nowcast_matrix,
+#'   reporting_triangle,
+#'   disp,
+#'   fun_to_aggregate = sum,
+#'   k = 2
+#' )
+#' nowcast_pred_draw_agg
 get_nowcast_pred_draw <- function(point_nowcast_matrix,
                                   reporting_triangle,
-                                  dispersion) {
+                                  dispersion,
+                                  fun_to_aggregate = sum,
+                                  k = 1) {
+  .validate_aggregation_function(fun_to_aggregate)
   if (length(dispersion) > nrow(point_nowcast_matrix)) {
     cli_abort(
       message = c(
@@ -52,7 +67,11 @@ get_nowcast_pred_draw <- function(point_nowcast_matrix,
   )
   n_horizons <- length(dispersion)
   max_t <- nrow(point_nowcast_pred_matrix)
-  mean_pred <- rowSums(point_nowcast_pred_matrix, na.rm = TRUE)[(max_t - n_horizons + 1):max_t] # nolint
+  mean_pred <- rollapply(
+    rowSums(point_nowcast_pred_matrix, na.rm = TRUE)[(max_t - n_horizons + 1):max_t], # nolint
+    k,
+    fun_to_aggregate
+  ) # nolint
   # Nowcast predictions only (these are reversed, first element is horizon 0)
   draw_pred <- rnbinom(n = n_horizons, size = rev(dispersion), mu = mean_pred)
   # Pad with 0s for the fully observed rows, which are before
@@ -96,7 +115,6 @@ combine_obs_with_pred <- function(predicted_counts, reporting_triangle) {
 #'
 #' @param draws Integer indicating the number of draws of the predicted
 #'    nowcast vector to generate. Default is `1000`.
-#'
 #' @inheritParams get_nowcast_pred_draw
 #' @returns Dataframe containing the predicted point nowcast vectors indexed by
 #'    reference time (`pred_count`), reference time (`time`), and the draw index
@@ -123,11 +141,24 @@ combine_obs_with_pred <- function(predicted_counts, reporting_triangle) {
 #'   draws = 5
 #' )
 #' nowcast_pred_draws
+#' # Get nowcast pred draws over rolling sum
+#' nowcast_pred_draws_rolling_df <- get_nowcast_pred_draws(
+#'   point_nowcast_matrix,
+#'   reporting_triangle,
+#'   disp,
+#'   500,
+#'   fun_to_aggregate = sum,
+#'   k = 2
+#' )
+#' nowcast_pred_draws_rolling_df
 get_nowcast_pred_draws <- function(point_nowcast_matrix,
                                    reporting_triangle,
-                                  dispersion,
-                                  draws = 1000) {
+                                   dispersion,
+                                   draws = 1000,
+                                   fun_to_aggregate = sum,
+                                   k = 1) {
   assert_integerish(draws, lower = 1)
+  .validate_aggregation_function(fun_to_aggregate)
 
   reference_times <- seq_len(nrow(point_nowcast_matrix))
 
@@ -180,9 +211,11 @@ get_nowcast_draw <- function(point_nowcast_matrix,
                              reporting_triangle,
                              dispersion) {
   # Generate a single draw of the predictions
-  pred_counts <- get_nowcast_pred_draw(point_nowcast_matrix,
-                                       reporting_triangle,
-                                       dispersion)
+  pred_counts <- get_nowcast_pred_draw(
+    point_nowcast_matrix,
+    reporting_triangle,
+    dispersion
+  )
 
   # Combine with observations
   draw <- combine_obs_with_pred(pred_counts, reporting_triangle)
@@ -222,7 +255,6 @@ get_nowcast_draws <- function(point_nowcast_matrix,
                               reporting_triangle,
                               dispersion,
                               draws = 1000) {
-
   reference_times <- seq_len(nrow(point_nowcast_matrix))
 
   draws_df_list <- lapply(seq_len(draws), function(i) {

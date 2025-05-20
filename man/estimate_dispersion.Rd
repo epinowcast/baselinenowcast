@@ -8,7 +8,9 @@ estimate_dispersion(
   pt_nowcast_mat_list,
   trunc_rep_tri_list,
   reporting_triangle_list,
-  n = length(pt_nowcast_mat_list)
+  n = length(pt_nowcast_mat_list),
+  fun_to_aggregate = sum,
+  k = 1
 )
 }
 \arguments{
@@ -24,6 +26,16 @@ matrices with as many rows as available given the truncation.}
 
 \item{n}{Integer indicating the number of reporting matrices to use to
 estimate the dispersion parameters.}
+
+\item{fun_to_aggregate}{Function that will operate along the nowcast
+vectors after summing across delays. Eventually, we can add things like
+mean, but for now since we are only providing a negative binomial
+observation model, we can only allow sum. Currently supported
+functions: \code{sum}.}
+
+\item{k}{Integer indicating the number of reference times to apply the
+\code{fun_to_aggregate} over to create target used to compute the nowcast
+errors.}
 }
 \value{
 Vector of length one less than the number of columns in the
@@ -63,4 +75,15 @@ disp_params <- estimate_dispersion(
   n = 2
 )
 disp_params
+
+# Estimate dispersion parameters from rolling sum
+disp_params_agg <- estimate_dispersion(
+  pt_nowcast_mat_list = retro_nowcasts,
+  trunc_rep_tri_list = trunc_rts,
+  reporting_triangle_list = retro_rts,
+  n = 2,
+  fun_to_aggregate = sum,
+  k = 2
+)
+disp_params_agg
 }

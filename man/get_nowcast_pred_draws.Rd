@@ -9,7 +9,9 @@ get_nowcast_pred_draws(
   point_nowcast_matrix,
   reporting_triangle,
   dispersion,
-  draws = 1000
+  draws = 1000,
+  fun_to_aggregate = sum,
+  k = 1
 )
 }
 \arguments{
@@ -28,6 +30,16 @@ minus one to the maximum delay.}
 
 \item{draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}
+
+\item{fun_to_aggregate}{Function that will operate along the nowcast
+vectors after summing across delays. Eventually, we can add things like
+mean, but for now since we are only providing a negative binomial
+observation model, we can only allow sum. Currently supported
+functions: \code{sum}.}
+
+\item{k}{Integer indicating the number of reference times to apply the
+\code{fun_to_aggregate} over to create target used to compute the nowcast
+errors.}
 }
 \value{
 Dataframe containing the predicted point nowcast vectors indexed by
@@ -59,4 +71,14 @@ nowcast_pred_draws <- get_nowcast_pred_draws(
   draws = 5
 )
 nowcast_pred_draws
+# Get nowcast pred draws over rolling sum
+nowcast_pred_draws_rolling_df <- get_nowcast_pred_draws(
+  point_nowcast_matrix,
+  reporting_triangle,
+  disp,
+  500,
+  fun_to_aggregate = sum,
+  k = 2
+)
+nowcast_pred_draws_rolling_df
 }

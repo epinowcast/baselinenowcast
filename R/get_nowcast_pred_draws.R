@@ -67,12 +67,15 @@ get_nowcast_pred_draw <- function(point_nowcast_matrix,
   )
   n_horizons <- length(dispersion)
   max_t <- nrow(point_nowcast_pred_matrix)
-  mean_pred <- rollapply(
-    rowSums(point_nowcast_pred_matrix, na.rm = TRUE)[(max_t - n_horizons + 1):max_t], # nolint
+  mean_pred_long <- rollapply(
+    rowSums(point_nowcast_pred_matrix, na.rm = TRUE), # nolint
     k,
-    fun_to_aggregate
+    fun_to_aggregate,
+    align = "right",
+    fill = NA
   ) # nolint
   # Nowcast predictions only (these are reversed, first element is horizon 0)
+  mean_pred <- mean_pred_long[(max_t - n_horizons + 1):max_t]
   draw_pred <- rnbinom(n = n_horizons, size = rev(dispersion), mu = mean_pred)
   # Pad with 0s for the fully observed rows, which are before
   # the max_t - n_horizons

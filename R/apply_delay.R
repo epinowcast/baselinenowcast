@@ -57,12 +57,12 @@ apply_delay <- function(rep_tri_to_nowcast, delay_pmf) {
   # Iterates through each column (delay) and adds entries to the reporting
   # matrix to nowcast
   point_nowcast_matrix <- Reduce(
-    function(acc, delay_index) {
+    function(acc, index) {
       return(.calc_expectation(
-        delay_index,
+        index,
         acc,
-        delay_pmf[delay_index],
-        delay_cdf[delay_index - 1],
+        delay_pmf[index],
+        delay_cdf[index - 1],
         n_rows
       ))
     },
@@ -74,31 +74,25 @@ apply_delay <- function(rep_tri_to_nowcast, delay_pmf) {
 
 #' Calculate the updated rows of the expected nowcasted triangle
 #'
-#' @param delay_index Integer indicating the delay index
+#' @param index Integer indicating the delay index
 #' @param expectation Matrix of the incomplete reporting matrix
-#' @param delay_prob Probability of a case being reported with the current delay
-#' @param delay_cdf_prev CDF of the delay PMF up to the previous delay
+#' @param delay_prob Scalar probability for the current delay
+#' @param delay_cdf_prev Scalar cumulative probability up to previous delay
 #' @param n_rows Number of rows in the expectation matrix
 #' @returns Matrix with another set of entries corresponding to the updated
 #'   values for the specified rows and column
 #' @keywords internal
 .calc_expectation <- function(
-    delay_index,
+    index,
     expectation,
     delay_prob,
     delay_cdf_prev,
     n_rows) {
   # Find rows with NA in this column that need to be filled
-  col_index <- delay_index
-  na_rows <- .where_is_na_in_col(expectation, col_index)
+  na_rows <- .where_is_na_in_col(expectation, index)
 
-  while (length(na_rows) == 0) {
-    col_index <- col_index + 1
-    # Stop if we've reached the end of the matrix
-    if (col_index > ncol(expectation)) {
-      return(expectation)
-    }
-    na_rows <- .where_is_na_in_col(expectation, col_index)
+  if (length(na_rows) == 0) {
+    return(expectation)
   }
 
   # Start with the first row that has NA
@@ -107,7 +101,7 @@ apply_delay <- function(rep_tri_to_nowcast, delay_pmf) {
   # Extract the left block for these rows
   block_bottom_left <- .extract_block_bottom_left(
     expectation,
-    col_index,
+    index,
     n_rows,
     row_start
   )
@@ -119,7 +113,7 @@ apply_delay <- function(rep_tri_to_nowcast, delay_pmf) {
   exp_N <- .calc_modified_expectation(x, delay_cdf_prev)
 
   # Update only the NA rows in the column
-  expectation[row_start:n_rows, col_index] <- exp_N * delay_prob
+  expectation[row_start:n_rows, index] <- exp_N * delay_prob
 
   return(expectation)
 }

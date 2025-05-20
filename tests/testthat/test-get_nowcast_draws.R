@@ -193,14 +193,18 @@ test_that(
 
     # The sum of the first two time points should be the same as the value
     # at t=2 for the rolling sum
-    expect_equal(
+    expect_identical(
       sum(result$pred_count[result$time <= 2]),
       sum(result_with_rolling_sum$pred_count[result_with_rolling_sum$time == 2])
     )
     # All draws should be the same
-    expect_equal(
-      result_with_rolling_sum$pred_count[result_with_rolling_sum$time == 2 & result_with_rolling_sum$draw == 2],
-      result_with_rolling_sum$pred_count[result_with_rolling_sum$time == 2 & result_with_rolling_sum$draw == 1]
+    expect_identical(
+      result_with_rolling_sum$pred_count[
+        result_with_rolling_sum$time == 2 & result_with_rolling_sum$draw == 2
+      ],
+      result_with_rolling_sum$pred_count[
+        result_with_rolling_sum$time == 2 & result_with_rolling_sum$draw == 1
+      ]
     )
   }
 )

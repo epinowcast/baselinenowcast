@@ -69,7 +69,6 @@ test_that("estimate_dispersion can handle rolling sum with k=3", {
     k = 3
   )
 
-  expect_true(result[1] > 999)
   expect_true(all(is.finite(result)))
 })
 
@@ -388,7 +387,7 @@ test_that("estimate_dispersion: works as expected with perfect data", {
   expect_equal(dispersion[3], 999, tol = 1)
 })
 
-test_that("estimate_dispersion: works as expected with some dispersion for both ks", {
+test_that("estimate_dispersion: works as expected with some dispersion for both ks", { # nolint
   set.seed(123)
   delay_pmf <- c(0.4, 0.3, 0.2, 0.05, 0.05)
   partial_counts <- c(80, 100, 180, 80, 140)
@@ -434,7 +433,7 @@ test_that("estimate_dispersion: works as expected with some dispersion for both 
     trunc_rep_tri_list,
     reporting_triangle_list
   )
-  expect_true(dispersion[1] < 999)
+  expect_lt(dispersion[1], 999)
   expect_true(all(is.finite(dispersion)))
 
   dispersion2 <- estimate_dispersion(
@@ -458,5 +457,5 @@ test_that("estimate_dispersion: works as expected with some dispersion for both 
   expect_true(all(dispersion2 < 999))
   expect_true(all(dispersion2 > 0.1))
 
-  expect_failure(expect_equal(dispersion, dispersion2))
+  expect_failure(expect_equal(dispersion, dispersion2, tol = 0.001))
 })

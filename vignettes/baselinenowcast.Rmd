@@ -493,7 +493,10 @@ latest_data_prepped <- latest_training_data |>
 
 final_data_prepped <- target_data |>
   select(reference_date, final_confirm = confirm) |>
-  mutate(reference_date = as.Date(reference_date))
+  mutate(
+    reference_date = as.Date(reference_date),
+    nowcast = rowSums(point_nowcast_matrix)
+  )
 
 # Join the datasets
 obs_with_nowcast_draws_df <- nowcast_draws_df |>
@@ -503,16 +506,17 @@ head(obs_with_nowcast_draws_df)
 
 # Create a separate dataframe for observed and final data
 combined_data <- obs_with_nowcast_draws_df |>
-  select(reference_date, obs_confirm, final_confirm) |>
+  select(reference_date, obs_confirm, final_confirm, nowcast) |>
   distinct() |>
   pivot_longer(
-    cols = c(obs_confirm, final_confirm),
+    cols = c(obs_confirm, final_confirm, nowcast),
     names_to = "type",
     values_to = "count"
   ) |>
   mutate(type = case_when(
     type == "obs_confirm" ~ "Observed data",
-    type == "final_confirm" ~ "Final observed data"
+    type == "final_confirm" ~ "Final observed data",
+    type == "nowcast" ~ "Point nowcast"
   ))
 
 # Plot with draws for nowcast only
@@ -540,6 +544,107 @@ ggplot() +
     values = c(
       "Nowcast draw" = "gray",
       "Observed data" = "darkred",
+      "Final observed data" = "black",
+      "Point nowcast" = "blue"
+    ),
+    name = ""
+  ) +
+  scale_linewidth_manual(
+    values = c(
+      "Nowcast draw" = 0.2,
+      "Observed data" = 1,
+      "Final observed data" = 1,
+      "Point nowcast" = 0.5
+    ),
+    name = ""
+  ) +
+  scale_y_continuous(trans = "log10") +
+  xlab("Reference date") +
+  ylab("Hospital admissions") +
+  theme(legend.position = "bottom") +
+  ggtitle("Comparison of admissions as of the nowcast date, later observed counts, \n and probabilistic nowcasted counts") # nolint
+```
+Extension: compute a probabilstic nowcast on the 7 day rolling sum
+```{r}
+disp_params_7d <- estimate_dispersion(
+  pt_nowcast_mat_list = retro_pt_nowcast_mat_list,
+  trunc_rep_tri_list = trunc_rep_tri_list,
+  reporting_triangle_list = retro_rep_tri_list,
+  n = n_history_delay,
+  fun_to_aggregate = sum,
+  k = 7
+)
+
+nowcast_draws_df_7d <- get_nowcast_draws(
+  point_nowcast_matrix, reporting_triangle,
+  dispersion = disp_params,
+  draws = 100,
+  fun_to_aggregate = sum,
+  k = 7
+)
+
+head(nowcast_draws_df_7d)
+
+obs_with_nowcast_draws_df_7d <- nowcast_draws_df_7d |>
+  left_join(
+    latest_data_prepped |>
+      mutate(obs_confirm = rollapply(obs_confirm,
+        7,
+        sum,
+        align = "right",
+        fill = NA
+      )),
+    by = "time"
+  ) |>
+  left_join(
+    final_data_prepped |>
+      mutate(final_confirm = rollapply(final_confirm,
+        7,
+        sum,
+        align = "right",
+        fill = NA
+      )),
+    by = "reference_date"
+  )
+
+combined_data_7d <- obs_with_nowcast_draws_df_7d |>
+  select(reference_date, obs_confirm, final_confirm) |>
+  distinct() |>
+  pivot_longer(
+    cols = c(obs_confirm, final_confirm),
+    names_to = "type",
+    values_to = "count"
+  ) |>
+  mutate(type = case_when(
+    type == "obs_confirm" ~ "Observed data",
+    type == "final_confirm" ~ "Final observed data"
+  ))
+
+# Plot with draws for nowcast only
+ggplot() +
+  # Add nowcast draws as thin gray lines
+  geom_line(
+    data = obs_with_nowcast_draws_df_7d,
+    aes(
+      x = reference_date, y = pred_count, group = draw,
+      color = "Nowcast draw", linewidth = "Nowcast draw"
+    )
+  ) +
+  # Add observed data and final data once
+  geom_line(
+    data = combined_data_7d,
+    aes(
+      x = reference_date,
+      y = count,
+      color = type,
+      linewidth = type
+    )
+  ) +
+  theme_bw() +
+  scale_color_manual(
+    values = c(
+      "Nowcast draw" = "gray",
+      "Observed data" = "darkred",
       "Final observed data" = "black"
     ),
     name = ""
@@ -554,7 +659,66 @@ ggplot() +
   ) +
   scale_y_continuous(trans = "log10") +
   xlab("Reference date") +
-  ylab("Hospital admissions") +
+  ylab("7-day rolling sum hospital admissions") +
   theme(legend.position = "bottom") +
-  ggtitle("Comparison of admissions as of the nowcast date, later observed counts, \n and probabilistic nowcasted counts") # nolint
+  ggtitle("Comparison of 7-day sum of admissions as of the nowcast date, \n later observed counts, and probabilistic nowcasted counts") # nolint
+
+# Lets compute quantiles so that we can recreate the figure in Wolffram et al
+
+summary_estimates <- obs_with_nowcast_draws_df_7d |>
+  group_by(reference_date) |>
+  summarise(
+    q_50 = quantile(pred_count, 0.5, na.rm = TRUE),
+    q_lb_50th = quantile(pred_count, 0.25, na.rm = TRUE),
+    q_ub_50th = quantile(pred_count, 0.75, na.rm = TRUE),
+    q_lb_95th = quantile(pred_count, 0.025, na.rm = TRUE),
+    q_ub_95th = quantile(pred_count, 0.975, na.rm = TRUE)
+  )
+
+ggplot() +
+  # Add nowcast draws as thin gray lines
+  geom_line(
+    data = summary_estimates,
+    aes(
+      x = reference_date, y = q_50,
+      color = "Nowcast draw"
+    )
+  ) +
+  geom_ribbon(
+    data = summary_estimates,
+    aes(
+      x = reference_date, ymin = q_lb_50th, ymax = q_ub_50th,
+      color = "Nowcast draw", alpha = 0.2
+    )
+  ) +
+  geom_ribbon(
+    data = summary_estimates,
+    aes(
+      x = reference_date, ymin = q_lb_95th, ymax = q_ub_95th,
+      color = "Nowcast draw", alpha = 0.2
+    )
+  ) +
+  # Add observed data and final data once
+  geom_line(
+    data = combined_data_7d,
+    aes(
+      x = reference_date,
+      y = count,
+      color = type
+    )
+  ) +
+  theme_bw() +
+  scale_color_manual(
+    values = c(
+      "Nowcast draw" = "gray",
+      "Observed data" = "darkred",
+      "Final observed data" = "black"
+    ),
+    name = ""
+  ) +
+  scale_y_continuous(trans = "log10") +
+  xlab("Reference date") +
+  ylab("7-day rolling sum hospital admissions") +
+  theme(legend.position = "bottom") +
+  ggtitle("Comparison of 7-day sum of admissions as of the nowcast date, \n later observed counts, and probabilistic nowcasted counts") # nolint
 ```

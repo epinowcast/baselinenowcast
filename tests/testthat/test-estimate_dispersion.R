@@ -408,7 +408,7 @@ test_that("estimate_dispersion: works as expected with some dispersion for both 
   # Create a reporting triangle that is jumbled
   max_t <- nrow(reporting_triangle)
   rep_tri_new <- reporting_triangle
-  for (i in 1:length(disp_params)) {
+  for (i in seq_along(disp_params)) {
     rep_tri_new[(max_t - i + 1), 1:i] <- rnbinom(
       n = i,
       size = disp_params[i],

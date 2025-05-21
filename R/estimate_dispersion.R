@@ -168,10 +168,8 @@ estimate_dispersion <- function(
       start_row <- max_t - d - k + 2
       end_row <- max_t - d + 1
       obs <- trunc_matr_observed[start_row:end_row, ]
-      tri <- triangle_observed[start_row:end_row, ]
       nowcast <- nowcast_i[start_row:end_row, ]
-    indices_nowcast <- is.na(triangle_observed[start_row:end_row, ])
-    indices_observed <- !is.na(trunc_matr_observed[start_row:end_row, ])
+      indices_nowcast <- is.na(triangle_observed[start_row:end_row, ])
       indices_observed <- !is.na(obs)
       # Function to aggregate is always applied after the matrix has been
       # summed across delays

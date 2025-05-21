@@ -211,7 +211,7 @@ test_that(
 
 test_that("get_nowcast_draws: longer k aggregates correctly", {
   set.seed(123)
-  rep_mat <- matrix(sample(1:20, size = 4 * 10, replace = TRUE),
+  rep_mat <- matrix(sample.int(1, 20, size = 4 * 10, replace = TRUE),
     nrow = 10, ncol = 4
   )
   triangle <- generate_triangle(rep_mat)
@@ -220,7 +220,8 @@ test_that("get_nowcast_draws: longer k aggregates correctly", {
   dispersion <- c(10, 10, 10)
 
   expected_mean <- rollapply(rowSums(pt_nowcast_mat),
-    5, sum,
+    5,
+    sum,
     align = "right",
     fill = NA
   )

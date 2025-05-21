@@ -176,13 +176,13 @@ estimate_dispersion <- function(
       # summed across delays
       exp_to_add[i, d] <- fun_to_aggregate(
         rowSums(as.matrix(nowcast *
-          indices_nowcast * indices_observed)),
+          indices_nowcast * indices_observed), na.rm = TRUE),
         na.rm = TRUE
       )
       to_add_already_observed[i, d] <- fun_to_aggregate(
         rowSums(as.matrix(
           obs * indices_nowcast * indices_observed
-        )),
+        ), na.rm = TRUE),
         na.rm = TRUE
       )
     } # end loop over forecast horizons

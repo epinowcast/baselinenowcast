@@ -60,24 +60,17 @@ test_that("estimate_dispersion: Basic functionality with valid inputs", {
 })
 
 
-test_that("estimate_dispersion can handle rolling sum with k=2", {
-  result1 <- estimate_dispersion(
+test_that("estimate_dispersion can handle rolling sum with k=3", {
+  result <- estimate_dispersion(
     pt_nowcast_mat_list = valid_nowcasts,
     trunc_rep_tri_list = valid_trunc_rts,
     reporting_triangle_list = valid_rts,
-    n = 2,
     fun_to_aggregate = sum,
-    k = 2
+    k = 3
   )
 
-  result2 <- estimate_dispersion(
-    pt_nowcast_mat_list = valid_nowcasts,
-    trunc_rep_tri_list = valid_trunc_rts,
-    reporting_triangle_list = valid_rts,
-    n = 2
-  )
-  # Ensures that these are different
-  expect_failure(expect_equal(result1, result2, tol = 0.01))
+  expect_true(result[1] > 999)
+  expect_true(all(is.finite(result)))
 })
 
 test_that("estimate_dispersion appropriately warns when k is too large for some of the triangles", { # nolint
@@ -393,4 +386,77 @@ test_that("estimate_dispersion: works as expected with perfect data", {
   expect_equal(dispersion[1], 999, tol = 1)
   expect_equal(dispersion[2], 999, tol = 1)
   expect_equal(dispersion[3], 999, tol = 1)
+})
+
+test_that("estimate_dispersion: works as expected with some dispersion for both ks", {
+  set.seed(123)
+  delay_pmf <- c(0.4, 0.3, 0.2, 0.05, 0.05)
+  partial_counts <- c(80, 100, 180, 80, 140)
+
+  # Create a complete triangle based on the known delay PMF
+  rep_mat_rows <- lapply(partial_counts, function(x) x * delay_pmf)
+  rep_mat <- do.call(rbind, rep_mat_rows)
+  triangle <- generate_triangle(rep_mat)
+  reporting_triangle <- rbind(rep_mat, triangle)
+
+
+  pt_nowcast_mat <- generate_pt_nowcast_mat(reporting_triangle)
+
+
+  # in order from horizon 1 to 4
+  disp_params <- c(2, 2, 2, 2)
+
+  # Create a reporting triangle that is jumbled
+  max_t <- nrow(reporting_triangle)
+  rep_tri_new <- reporting_triangle
+  for (i in 1:length(disp_params)) {
+    rep_tri_new[(max_t - i + 1), 1:i] <- rnbinom(
+      n = i,
+      size = disp_params[i],
+      mu = reporting_triangle[(max_t - i + 1), 1:i]
+    )
+  }
+  for (i in 1:6) {
+    rep_tri_new[i, ] <- rnbinom(
+      n = 5,
+      size = disp_params[1],
+      mu = reporting_triangle[i, ]
+    )
+  }
+
+  trunc_rep_tri_list <- truncate_triangles(rep_tri_new)
+  reporting_triangle_list <- generate_triangles(trunc_rep_tri_list)
+
+  pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(reporting_triangle_list)
+
+  dispersion <- estimate_dispersion(
+    pt_nowcast_mat_list,
+    trunc_rep_tri_list,
+    reporting_triangle_list
+  )
+  expect_true(dispersion[1] < 999)
+  expect_true(all(is.finite(dispersion)))
+
+  dispersion2 <- estimate_dispersion(
+    pt_nowcast_mat_list,
+    trunc_rep_tri_list,
+    reporting_triangle_list,
+    fun_to_aggregate = sum,
+    k = 3
+  )
+  expect_true(all(dispersion2 < 999))
+  expect_true(all(dispersion2 > 0.1))
+  expect_true(all(is.finite(dispersion)))
+
+  dispersion2 <- estimate_dispersion(
+    pt_nowcast_mat_list,
+    trunc_rep_tri_list,
+    reporting_triangle_list,
+    fun_to_aggregate = sum,
+    k = 3
+  )
+  expect_true(all(dispersion2 < 999))
+  expect_true(all(dispersion2 > 0.1))
+
+  expect_failure(expect_equal(dispersion, dispersion2))
 })

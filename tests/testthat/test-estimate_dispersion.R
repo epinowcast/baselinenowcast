@@ -402,8 +402,8 @@ test_that("estimate_dispersion: works as expected with some dispersion for both 
   pt_nowcast_mat <- generate_pt_nowcast_mat(reporting_triangle)
 
 
-  # in order from horizon 1 to 4
-  disp_params <- c(2, 2, 2, 2)
+  # in order from horizon 1 to 4, set as a high value to approximate Poisson
+  disp_params <- c(500, 500, 500, 500)
 
   # Create a reporting triangle that is jumbled
   max_t <- nrow(reporting_triangle)
@@ -433,7 +433,7 @@ test_that("estimate_dispersion: works as expected with some dispersion for both 
     trunc_rep_tri_list,
     reporting_triangle_list
   )
-  expect_lt(dispersion[1], 999)
+  expect_lt(dispersion[1], 500)
   expect_true(all(is.finite(dispersion)))
 
   dispersion2 <- estimate_dispersion(
@@ -443,19 +443,10 @@ test_that("estimate_dispersion: works as expected with some dispersion for both 
     fun_to_aggregate = sum,
     k = 3
   )
-  expect_true(all(dispersion2 < 999))
+  expect_lt(dispersion2[1], 500)
   expect_true(all(dispersion2 > 0.1))
   expect_true(all(is.finite(dispersion)))
 
-  dispersion2 <- estimate_dispersion(
-    pt_nowcast_mat_list,
-    trunc_rep_tri_list,
-    reporting_triangle_list,
-    fun_to_aggregate = sum,
-    k = 3
-  )
-  expect_true(all(dispersion2 < 999))
-  expect_true(all(dispersion2 > 0.1))
 
   expect_failure(expect_equal(dispersion, dispersion2, tol = 0.001))
 })

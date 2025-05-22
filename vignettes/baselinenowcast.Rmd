@@ -450,7 +450,7 @@ disp_params <- estimate_dispersion(
   pt_nowcast_mat_list = retro_pt_nowcast_mat_list,
   trunc_rep_tri_list = trunc_rep_tri_list,
   reporting_triangle_list = retro_rep_tri_list,
-  n = n_history_delay
+  n = n_retrospective_nowcasts
 )
 ```
 

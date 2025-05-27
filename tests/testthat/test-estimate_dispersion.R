@@ -471,7 +471,7 @@ test_that("estimate_dispersion: returns known dispersion parameters", { # nolint
   trunc_rep_tri_list <- list()
   pt_nowcast_mat_list <- list()
   reporting_triangle_list <- list()
-  disp_params <- c(800, 500, 700, 1000)
+  disp_params <- c(800, 600, 700, 1000)
   for (i in 1:20) {
     trunc_rep_tri_orig <- reporting_triangle[1:(max_t - i), ]
     trunc_pt_nowcast_mat <- pt_nowcast_mat[1:(max_t - i), ]

@@ -453,8 +453,8 @@ test_that("estimate_dispersion: works as expected with some dispersion for both 
 
 test_that("estimate_dispersion: returns known dispersion parameters", { # nolint
   set.seed(123)
-  delay_pmf <- c(0.2, 0.2, 0.2, 0.2, 0.2)
-  partial_counts <- c(100, 100, 100, 100, 100)
+  delay_pmf <- c(0.2, 0.2, 0.2, 0.1, 0.3)
+  partial_counts <- c(500, 800, 600, 600, 800)
 
   # Create a complete triangle based on the known delay PMF
   rep_mat_rows <- lapply(partial_counts, function(x) x * delay_pmf)

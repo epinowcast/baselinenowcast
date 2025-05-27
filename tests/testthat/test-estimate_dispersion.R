@@ -453,7 +453,7 @@ test_that("estimate_dispersion: works as expected with some dispersion for both 
 
 test_that("estimate_dispersion: returns known dispersion parameters", { # nolint
   set.seed(123)
-  delay_pmf <- c(0.2, 0.2, 0.2, 0.1, 0.3)
+  delay_pmf <- c(0.2, 0.2, 0.2, 0.1, 0.2)
   partial_counts <- c(500, 800, 600, 600, 800)
 
   # Create a complete triangle based on the known delay PMF
@@ -471,6 +471,7 @@ test_that("estimate_dispersion: returns known dispersion parameters", { # nolint
   trunc_rep_tri_list <- list()
   pt_nowcast_mat_list <- list()
   reporting_triangle_list <- list()
+  disp_params <- c(800, 500, 700, 1000)
   for (i in 1:20) {
     trunc_rep_tri_orig <- reporting_triangle[1:(max_t - i), ]
     trunc_pt_nowcast_mat <- pt_nowcast_mat[1:(max_t - i), ]
@@ -480,9 +481,10 @@ test_that("estimate_dispersion: returns known dispersion parameters", { # nolint
     trunc_rep_tri <- trunc_rep_tri_orig
     for (j in 1:4) {
       max_t_loop <- nrow(trunc_rep_tri_orig)
-      trunc_rep_tri[max_t_loop - j + 1, ] <- rpois(
+      trunc_rep_tri[max_t_loop - j + 1, ] <- rnbinom(
         n = ncol(trunc_rep_tri_orig),
-        lambda = trunc_pt_nowcast_mat[max_t_loop - j + 1, ]
+        mu = trunc_pt_nowcast_mat[max_t_loop - j + 1, ],
+        size = disp_params[j]
       )
     }
     trunc_rep_tri[is.na(trunc_rep_tri_orig)] <- NA

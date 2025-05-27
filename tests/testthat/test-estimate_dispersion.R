@@ -450,3 +450,61 @@ test_that("estimate_dispersion: works as expected with some dispersion for both 
 
   expect_failure(expect_equal(dispersion, dispersion2, tol = 0.001))
 })
+
+test_that("estimate_dispersion: returns known dispersion parameters", { # nolint
+  set.seed(123)
+  delay_pmf <- c(0.4, 0.3, 0.2, 0.05, 0.05)
+  partial_counts <- c(80, 100, 180, 80, 140)
+
+  # Create a complete triangle based on the known delay PMF
+  rep_mat_rows <- lapply(partial_counts, function(x) x * delay_pmf)
+  rep_mat <- do.call(rbind, rep_mat_rows)
+  triangle <- generate_triangle(rep_mat)
+  reporting_triangle <- rbind(rep_mat, triangle)
+
+
+  pt_nowcast_mat <- generate_pt_nowcast_mat(reporting_triangle)
+
+
+  # in order from horizon 1 to 4, set as a high value to approximate Poisson
+  disp_params <- c(800, 500, 800, 500)
+
+  # Create truncated reporting triangles with a known dispersion
+  max_t <- nrow(reporting_triangle)
+  trunc_rep_tri_list <- list()
+  pt_nowcast_mat_list <- list()
+  for (i in 1:4) {
+    trunc_rep_tri <- reporting_triangle[1:(max_t - i), ]
+    trunc_pt_nowcast_mat <- pt_nowcast_mat[1:(max_t - i), ]
+    retro_rep_tri <- generate_triangle(trunc_rep_tri)
+    # For the last 4 horizons, replace each row with negative binomial draws
+    # with a mean of the point nowcast matrix
+    for (j in 1:4) {
+      max_t_loop <- nrow(trunc_rep_tri)
+      trunc_rep_tri[max_t_loop - j + 1, ] <- rnbinom(
+        n = ncol(trunc_rep_tri),
+        mu = trunc_pt_nowcast_mat[max_t_loop - j + 1, ],
+        size = disp_params[j]
+      )
+    }
+
+    trunc_rep_tri_list <- append(
+      trunc_rep_tri_list,
+      list(trunc_rep_tri)
+    )
+    pt_nowcast_mat_list <- append(
+      pt_nowcast_mat_list,
+      list(trunc_pt_nowcast_mat)
+    )
+    reporting_triangle_list <- append(
+      reporting_triangle_list,
+      list(retro_rep_tri)
+    )
+  }
+
+  dispersion <- estimate_dispersion(
+    pt_nowcast_mat_list,
+    trunc_rep_tri_list,
+    reporting_triangle_list
+  )
+})

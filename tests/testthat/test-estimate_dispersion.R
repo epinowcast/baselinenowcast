@@ -452,6 +452,8 @@ test_that("estimate_dispersion: works as expected with some dispersion for both 
 })
 
 test_that("estimate_dispersion: returns known dispersion parameters", { # nolint
+  # Note, this test covers that we can approximately recover high dispersion,
+  # it will not be able to distinguish between high dispersion values.
   set.seed(123)
   delay_pmf <- c(0.2, 0.2, 0.2, 0.1, 0.2)
   partial_counts <- c(500, 800, 600, 900, 800)
@@ -509,5 +511,6 @@ test_that("estimate_dispersion: returns known dispersion parameters", { # nolint
     reporting_triangle_list
   )
 
-  expect_true(all(dispersion > 450))
+  expect_true(all(dispersion > 450)) # Can't distinguish more specific
+  # dispersion values
 })

@@ -72,10 +72,10 @@ We will use the following to abbreviations to shorten names in the code:
 We can use a reporting matrix to compute an empirical estimate of the delay distribution, $\pi(d)$. The empirical delay distribution, $\pi(d)$ can be computed directly from the reporting matrix $X$
 
 $$
-\pi(d)= \frac{\sum_{t=1}^{t=t^*} X_{t,d}}{\sum_{d=0}^{D} \sum_{t=1}^{t=t^*} X_{t,d}}
+\pi(d)= \frac{\sum_{t=1}^{t=t^*} X_{t,d}}{\sum_{d'=0}^{D} \sum_{t=1}^{t=t^*} X_{t,d'}}
 $$
 
-Where the numerator is the sum of all the observations across reference times $t$ for a particular delay $d$, and the denominator is the sum across all reference times $t$ and delays $d$.
+Where the numerator is the sum of all the observations across reference times $t$ for a particular delay $d$ of interest, and the denominator is the sum across all reference times $t$ and indexed delays in the reporting matrix $d'$.
 
 ## Estimate of the delay distribution from a reporting triangle
 

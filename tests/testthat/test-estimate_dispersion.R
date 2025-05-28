@@ -473,7 +473,7 @@ test_that("estimate_dispersion: returns known dispersion parameters", { # nolint
   trunc_rep_tri_list <- list()
   pt_nowcast_mat_list <- list()
   reporting_triangle_list <- list()
-  disp_params <- c(800, 600, 700, 1000)
+  disp_param <- 10000
   for (i in 1:20) {
     trunc_rep_tri_orig <- reporting_triangle[1:(max_t - i), ]
     trunc_pt_nowcast_mat <- pt_nowcast_mat[1:(max_t - i), ]
@@ -481,12 +481,13 @@ test_that("estimate_dispersion: returns known dispersion parameters", { # nolint
     # For the last 4 horizons, replace each row with negative binomial draws
     # with a mean of the point nowcast matrix
     trunc_rep_tri <- trunc_rep_tri_orig
+    # Add uncertainty to each horizon 1:4
     for (j in 1:4) {
       max_t_loop <- nrow(trunc_rep_tri_orig)
       trunc_rep_tri[max_t_loop - j + 1, ] <- rnbinom(
         n = ncol(trunc_rep_tri_orig),
         mu = trunc_pt_nowcast_mat[max_t_loop - j + 1, ],
-        size = disp_params[j]
+        size = disp_param
       )
     }
     trunc_rep_tri[is.na(trunc_rep_tri_orig)] <- NA
@@ -511,6 +512,6 @@ test_that("estimate_dispersion: returns known dispersion parameters", { # nolint
     reporting_triangle_list
   )
 
-  expect_true(all(dispersion > 450)) # Can't distinguish more specific
+  expect_true(all(dispersion > 700)) # Can't distinguish more specific
   # dispersion values
 })

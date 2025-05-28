@@ -450,3 +450,68 @@ test_that("estimate_dispersion: works as expected with some dispersion for both 
 
   expect_failure(expect_equal(dispersion, dispersion2, tol = 0.001))
 })
+
+test_that("estimate_dispersion: returns known dispersion parameters", { # nolint
+  # Note, this test covers that we can approximately recover high dispersion,
+  # it will not be able to distinguish between high dispersion values.
+  set.seed(123)
+  delay_pmf <- c(0.2, 0.2, 0.2, 0.1, 0.2)
+  partial_counts <- c(500, 800, 600, 900, 800)
+
+  # Create a complete triangle based on the known delay PMF
+  rep_mat_rows <- lapply(partial_counts, function(x) x * delay_pmf)
+  rep_mat <- do.call(rbind, rep_mat_rows)
+  triangle <- generate_triangle(rep_mat)
+  reporting_triangle <- rbind(rep_mat, rep_mat, rep_mat, rep_mat, triangle)
+
+
+  pt_nowcast_mat <- generate_pt_nowcast_mat(reporting_triangle)
+
+  # Create truncated reporting triangles by sampling elements of triangle
+  # from Poisson distribution
+  max_t <- nrow(reporting_triangle)
+  trunc_rep_tri_list <- list()
+  pt_nowcast_mat_list <- list()
+  reporting_triangle_list <- list()
+  disp_param <- 10000
+  for (i in 1:20) {
+    trunc_rep_tri_orig <- reporting_triangle[1:(max_t - i), ]
+    trunc_pt_nowcast_mat <- pt_nowcast_mat[1:(max_t - i), ]
+    retro_rep_tri <- generate_triangle(trunc_rep_tri_orig)
+    # For the last 4 horizons, replace each row with negative binomial draws
+    # with a mean of the point nowcast matrix
+    trunc_rep_tri <- trunc_rep_tri_orig
+    # Add uncertainty to each horizon 1:4
+    for (j in 1:4) {
+      max_t_loop <- nrow(trunc_rep_tri_orig)
+      trunc_rep_tri[max_t_loop - j + 1, ] <- rnbinom(
+        n = ncol(trunc_rep_tri_orig),
+        mu = trunc_pt_nowcast_mat[max_t_loop - j + 1, ],
+        size = disp_param
+      )
+    }
+    trunc_rep_tri[is.na(trunc_rep_tri_orig)] <- NA
+
+    trunc_rep_tri_list <- append(
+      trunc_rep_tri_list,
+      list(trunc_rep_tri)
+    )
+    pt_nowcast_mat_list <- append(
+      pt_nowcast_mat_list,
+      list(trunc_pt_nowcast_mat)
+    )
+    reporting_triangle_list <- append(
+      reporting_triangle_list,
+      list(retro_rep_tri)
+    )
+  }
+
+  dispersion <- estimate_dispersion(
+    pt_nowcast_mat_list,
+    trunc_rep_tri_list,
+    reporting_triangle_list
+  )
+
+  expect_true(all(dispersion > 700)) # Can't distinguish more specific
+  # dispersion values
+})

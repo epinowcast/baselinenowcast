@@ -268,9 +268,9 @@
 </h3>
 <p>We can use a reporting matrix to compute an empirical estimate of the delay distribution, <span class="math inline">\(\pi(d)\)</span>. The empirical delay distribution, <span class="math inline">\(\pi(d)\)</span> can be computed directly from the reporting matrix <span class="math inline">\(X\)</span></p>
 <p><span class="math display">\[
-\pi(d)= \frac{\sum_{t=1}^{t=t^*} X_{t,d}}{\sum_{d=0}^{D} \sum_{t=1}^{t=t^*} X_{t,d}}
+\pi(d)= \frac{\sum_{t=1}^{t=t^*} X_{t,d}}{\sum_{d'=0}^{D} \sum_{t=1}^{t=t^*} X_{t,d'}}
 \]</span></p>
-<p>Where the numerator is the sum of all the observations across reference times <span class="math inline">\(t\)</span> for a particular delay <span class="math inline">\(d\)</span>, and the denominator is the sum across all reference times <span class="math inline">\(t\)</span> and delays <span class="math inline">\(d\)</span>.</p>
+<p>Where the numerator is the sum of all the observations across reference times <span class="math inline">\(t\)</span> for a particular delay <span class="math inline">\(d\)</span> of interest, and the denominator is the sum across all reference times <span class="math inline">\(t\)</span> and indexed delays in the reporting matrix <span class="math inline">\(d'\)</span>.</p>
 </div>
 <div class="section level3" number="2.2">
 <h3 id="estimate-of-the-delay-distribution-from-a-reporting-triangle">

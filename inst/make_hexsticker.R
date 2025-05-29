@@ -229,33 +229,23 @@ sticker(
 
 # Make outside of hex sticker transparent
 pp <- image_read(here("man", "figures", "logo.png"))
+
+# Helper function to fill corners with transparency
+fill_corner <- function(img, x, y, fuzz = 30) {
+  image_fill(img, 
+             color = "transparent",
+             refcolor = "white", 
+             fuzz = fuzz,
+             point = paste0("+", x, "+", y)
+  )
+}
+
 fuzz <- 30
 
-logo <- pp |>
-  image_fill(
-    color = "transparent",
-    refcolor = "white",
-    fuzz = fuzz,
-    point = "+1+2"
-  ) |>
-  image_fill(
-    color = "transparent",
-    refcolor = "white",
-    fuzz = fuzz,
-    point = paste0("+", image_info(pp)$width - 1, "+2")
-  ) |>
-  image_fill(
-    color = "transparent",
-    refcolor = "white",
-    fuzz = fuzz,
-    point = paste0("+1", "+", image_info(pp)$height - 1)
-  ) |>
-  image_fill(
-    color = "transparent",
-    refcolor = "white",
-    fuzz = fuzz,
-    point = paste0("+", image_info(pp)$width - 1, "+", image_info(pp)$height - 1)
-  )
+logo <- fill_corner(pp , 1, 2, fuzz = fuzz) |>
+  fill_corner(image_info(pp)$width - 1, 2, fuzz = fuzz) |>
+  fill_corner(1, image_info(pp)$height - 1, fuzz = fuzz) |>
+  fill_corner(image_info(pp)$width - 1, image_info(pp)$height - 1, fuzz = fuzz)
 
 image_write(image = logo, path = here("man", "figures", "logo.png"))
 

@@ -110,12 +110,12 @@ generate_triangle <- function(trunc_rep_tri, structure = 1) {
   } else {
     # Vector case
     structure_vec <- structure
-    if (any(structure_vec <= 0) || !all(is.finite(structure_vec))) {
+    if (any(structure_vec < 0) || !all(is.finite(structure_vec))) {
       cli_abort("All elements of `structure` must be positive integers")
     }
     if (sum(structure_vec) > (cols - 1)) {
       cli_abort(
-        message = "Sum of structure vector must be less than or equal to one less than the number of columns in matrix" # nolint
+        message = "Sum of structure vector must not be greater than one less than the number of columns in matrix" # nolint
       )
     }
   }

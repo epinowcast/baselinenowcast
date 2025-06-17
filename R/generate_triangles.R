@@ -113,7 +113,7 @@ generate_triangle <- function(trunc_rep_tri, structure = 1) {
 
     if (sum(structure_vec) > (cols - 1)) {
       cli_abort(
-        message = "Sum of structure vector must less than or equal to one less than the number of columns in matrix", # nolint
+        message = "Sum of structure vector must less than or equal to one less than the number of columns in matrix" # nolint
       )
     }
   }

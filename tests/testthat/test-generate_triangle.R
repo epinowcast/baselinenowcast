@@ -246,4 +246,7 @@ test_that("generate_triangle validates structure parameter", {
   expect_error(
     generate_triangle(test_matrix, c(1, 1, 1))
   )
+  expect_error(
+    generate_triangle(test_matrix, c(-1, 1))
+  )
 })

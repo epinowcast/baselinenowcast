@@ -42,6 +42,7 @@ nowcast for the final counts by reference time.
 pred_counts <- c(10, 20, 30, 40)
 reporting_matrix <- matrix(
   c(
+    7, 9, 4, 3,
     1, 2, 3, 4,
     5, 6, 7, 8,
     9, 10, 11, 12
@@ -51,4 +52,7 @@ reporting_matrix <- matrix(
 )
 reporting_triangle <- generate_triangle(reporting_matrix)
 combine_obs_with_pred(pred_counts, reporting_triangle)
+
+# Another example with rolling sum
+combine_obs_with_pred(pred_counts, reporting_triangle, k = 2)
 }

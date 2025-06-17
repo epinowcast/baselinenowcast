@@ -65,7 +65,7 @@ generate_triangles <- function(trunc_rep_tri_list, structure = 1) {
 #'    not contain NAs.
 #' @param structure Integer or vector specifying the reporting structure.
 #'   If integer, divides columns evenly by that integer (with last possibly
-#'   truncated).  If vector, must sum to number of columns.
+#'   truncated).  If vector, be less than one less than the number of columns.
 #'   Default is 1 (standard triangular structure).
 #' @returns A single retrospective reporting triangle matrix with NAs in the
 #'   appropriate positions.
@@ -111,11 +111,10 @@ generate_triangle <- function(trunc_rep_tri, structure = 1) {
     # Vector case
     structure_vec <- structure
 
-    if (sum(structure_vec) != (cols - 1)) {
-      cli_abort(c(
-        "Sum of structure vector must equal the number of columns in matrix",
-        " minus 1"
-      ))
+    if (sum(structure_vec) > (cols - 1)) {
+      cli_abort(
+        "Sum of structure vector must less than or equal to one less than the number of columns in matrix", # nolint
+      )
     }
   }
 

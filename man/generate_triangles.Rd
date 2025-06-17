@@ -12,7 +12,7 @@ matrices with as many rows as available given the truncation.}
 
 \item{structure}{Integer or vector specifying the reporting structure.
 If integer, divides columns evenly by that integer (with last possibly
-truncated).  If vector, must sum to number of columns.
+truncated).  If vector, be less than one less than the number of columns.
 Default is 1 (standard triangular structure).}
 }
 \value{

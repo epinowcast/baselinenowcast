@@ -195,7 +195,7 @@ test_that("generate_triangle handles custom structure with vector", {
     nrow = 5,
     byrow = TRUE
   )
-  result_custom <- generate_triangle(test_matrix, c(1, 2, 2))
+  result_custom <- generate_triangle(test_matrix, c(1, 2, 1))
   expect_identical(result_custom, expected_custom)
 })
 

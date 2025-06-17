@@ -195,8 +195,36 @@ test_that("generate_triangle handles custom structure with vector", {
     nrow = 5,
     byrow = TRUE
   )
-  result_custom <- generate_triangle(test_matrix, c(1, 2, 1))
+  result_custom <- generate_triangle(test_matrix, c(1, 2, 2))
   expect_identical(result_custom, expected_custom)
+})
+
+test_that("generate_triangle can generate something with all NAs at end", {
+  exp_result <- matrix(
+    c(
+      1, 3, 5, 7, 9,
+      4, 5, 9, 4, 3,
+      1, 6, 4, NA, NA,
+      3, NA, NA, NA, NA
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+
+  trunc_rt <- matrix(
+    c(
+      1, 3, 5, 7, 9,
+      4, 5, 9, 4, 3,
+      1, 6, 4, 4, 3,
+      3, 8, 4, 6, 1
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  actual_result <- generate_triangle(trunc_rt,
+    structure = c(1, 2)
+  )
+  expect_identical(exp_result, actual_result)
 })
 
 test_that("generate_triangle validates structure parameter", {

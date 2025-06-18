@@ -227,7 +227,7 @@ test_that("generate_triangle can generate something with all NAs at end", {
   expect_identical(exp_result, actual_result)
 })
 
-test_that("generate_triangle can handle a structure not starting with 1", {
+test_that("generate_triangle can handle a structure where first row has more than one NA", { # nolint
   exp_result <- matrix(
     c(
       1, 3, 5, 7, 9,

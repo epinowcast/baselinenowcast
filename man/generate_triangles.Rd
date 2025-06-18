@@ -12,8 +12,8 @@ matrices with as many rows as available given the truncation.}
 
 \item{structure}{Integer or vector specifying the reporting structure.
 If integer, divides columns evenly by that integer (with last possibly
-truncated).  If vector, be less than one less than the number of columns.
-Default is 1 (standard triangular structure).}
+truncated).  If vector, the sum must not be greater than one less than the
+number of columns. Default is 1 (standard triangular structure).}
 }
 \value{
 \code{reporting_triangle_list} List of retrospective reporting triangles,

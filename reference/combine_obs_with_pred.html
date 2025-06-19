@@ -111,6 +111,7 @@ errors.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pred_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">30</span>, <span class="fl">40</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">reporting_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fl">7</span>, <span class="fl">9</span>, <span class="fl">4</span>, <span class="fl">3</span>,</span></span>
 <span class="r-in"><span>    <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>,</span></span>
 <span class="r-in"><span>    <span class="fl">5</span>, <span class="fl">6</span>, <span class="fl">7</span>, <span class="fl">8</span>,</span></span>
 <span class="r-in"><span>    <span class="fl">9</span>, <span class="fl">10</span>, <span class="fl">11</span>, <span class="fl">12</span></span></span>
@@ -120,7 +121,11 @@ errors.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">reporting_triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="generate_triangle.html">generate_triangle</a></span><span class="op">(</span><span class="va">reporting_matrix</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">combine_obs_with_pred</span><span class="op">(</span><span class="va">pred_counts</span>, <span class="va">reporting_triangle</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 16 35 45 50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 33 26 41 49</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Another example with rolling sum</span></span></span>
+<span class="r-in"><span><span class="fu">combine_obs_with_pred</span><span class="op">(</span><span class="va">pred_counts</span>, <span class="va">reporting_triangle</span>, k <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] NA 49 47 60</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

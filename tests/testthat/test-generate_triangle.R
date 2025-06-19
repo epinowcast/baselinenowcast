@@ -199,6 +199,90 @@ test_that("generate_triangle handles custom structure with vector", {
   expect_identical(result_custom, expected_custom)
 })
 
+test_that("generate_triangle can generate something with all NAs at end", {
+  exp_result <- matrix(
+    c(
+      1, 3, 5, 7, 9,
+      4, 5, 9, 4, 3,
+      1, 6, 4, NA, NA,
+      3, NA, NA, NA, NA
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+
+  trunc_rt <- matrix(
+    c(
+      1, 3, 5, 7, 9,
+      4, 5, 9, 4, 3,
+      1, 6, 4, 4, 3,
+      3, 8, 4, 6, 1
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  actual_result <- generate_triangle(trunc_rt,
+    structure = c(1, 2)
+  )
+  expect_identical(exp_result, actual_result)
+})
+
+test_that("generate_triangle can handle case when first element is not 1", { # nolint
+  exp_result <- matrix(
+    c(
+      1, 3, 5, 7, 9, 4, 5,
+      4, 5, 9, 4, NA, NA, NA,
+      1, 6, 4, NA, NA, NA, NA,
+      3, 8, NA, NA, NA, NA, NA
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+
+  trunc_rt <- matrix(
+    c(
+      1, 3, 5, 7, 9, 4, 5,
+      4, 5, 9, 4, 3, 6, 7,
+      1, 6, 4, 4, 3, 5, 7,
+      3, 8, 4, 6, 1, 3, 4
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  actual_result <- generate_triangle(trunc_rt,
+    structure = c(2, 1, 1)
+  )
+  expect_identical(exp_result, actual_result)
+})
+
+test_that("generate_triangle can handle a structure ending with 2 NAs", {
+  exp_result <- matrix(
+    c(
+      1, 3, 5, 7, 9, 7,
+      4, 5, 9, 4, NA, NA,
+      1, 6, NA, NA, NA, NA,
+      3, NA, NA, NA, NA, NA
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+
+  trunc_rt <- matrix(
+    c(
+      1, 3, 5, 7, 9, 7,
+      4, 5, 9, 4, 3, 3,
+      1, 6, 4, 4, 3, 2,
+      3, 8, 4, 6, 1, 6
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  actual_result <- generate_triangle(trunc_rt,
+    structure = c(1, 1, 2)
+  )
+  expect_identical(exp_result, actual_result)
+})
+
 test_that("generate_triangle validates structure parameter", {
   test_matrix <- matrix(1:9, nrow = 3)
 
@@ -217,5 +301,8 @@ test_that("generate_triangle validates structure parameter", {
   # Test with invalid vector structure
   expect_error(
     generate_triangle(test_matrix, c(1, 1, 1))
+  )
+  expect_error(
+    generate_triangle(test_matrix, c(-1, 1))
   )
 })

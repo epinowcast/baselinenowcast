@@ -258,10 +258,10 @@ test_that("generate_triangle can handle case when first element is not 1", { # n
 test_that("generate_triangle can handle a structure ending with 2 NAs", {
   exp_result <- matrix(
     c(
-      1, 3, 5, 7, 9, 7,
-      4, 5, 9, 4, NA, NA,
-      1, 6, NA, NA, NA, NA,
-      3, NA, NA, NA, NA, NA
+      1, 3, 5, 7, 9, 7, NA, NA,
+      4, 5, 9, 4, NA, NA, NA, NA,
+      1, 6, NA, NA, NA, NA, NA, NA,
+      3, NA, NA, NA, NA, NA, NA, NA
     ),
     nrow = 4,
     byrow = TRUE
@@ -269,16 +269,16 @@ test_that("generate_triangle can handle a structure ending with 2 NAs", {
 
   trunc_rt <- matrix(
     c(
-      1, 3, 5, 7, 9, 7,
-      4, 5, 9, 4, 3, 3,
-      1, 6, 4, 4, 3, 2,
-      3, 8, 4, 6, 1, 6
+      1, 3, 5, 7, 9, 7, 10, 5,
+      4, 5, 9, 4, 3, 3, 4, 2,
+      1, 6, 4, 4, 3, 2, 4, 6,
+      3, 8, 4, 6, 1, 6, 1, 7
     ),
     nrow = 4,
     byrow = TRUE
   )
   actual_result <- generate_triangle(trunc_rt,
-    structure = c(1, 1, 2)
+    structure = c(1, 1, 2, 2)
   )
   expect_identical(exp_result, actual_result)
 })

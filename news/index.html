@@ -52,7 +52,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.0.1000" id="baselinenowcast-0001000">baselinenowcast 0.0.0.1000<a class="anchor" aria-label="anchor" href="#baselinenowcast-0001000"></a></h2>
-<ul><li>Bug fix to change the requirement so that the sum of the elements in the <code>structure</code> vector must not be greater than the number of columns.</li>
+<ul><li>Change the requirement so that the number of rows used for delay estimation need not be greater than or equal to the number of columns, but instead that at least one row contains a full set of observations.</li>
+<li>Bug fix to change the requirement so that the sum of the elements in the <code>structure</code> vector must not be greater than the number of columns.</li>
 <li>Add support for passing in a restricted set of functions to the <code><a href="../reference/estimate_dispersion.html">estimate_dispersion()</a></code> function to transform the “target” dataset across reference dates.</li>
 <li>Implements a safe iterator in the step where retrospective point nowcasts are generated from a list of retrospective reporting triangles, ensuring that the iterations continue even if not all retrospective point nowcasts can be generated.</li>
 <li>Modify vignette to be consistent with the decided upon defaults for the number of reference times used for delay estimation and uncertainty.</li>

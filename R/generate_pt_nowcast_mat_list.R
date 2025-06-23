@@ -166,19 +166,30 @@ generate_pt_nowcast_mat <- function(reporting_triangle,
     cli_abort(
       message = c(
         "The number of observations specified for delay estimation is greater ",
-        "than the minimum number of rows in all of the retrospective ",
-        "reporting triangles. Either remove the reporting triangles that do ",
-        "not contain sufficient data, or lower `n_history_delay`"
+        "than the minimum number of rows in the ",
+        "reporting triangle. Either remove the reporting triangles that do ",
+        "not contain sufficient data, or lower `n`."
       )
     )
   }
-  if (n < ncol(reporting_triangle)) {
+  if (n > nrow(reporting_triangle)) {
     cli_abort(
       message = c(
-        "The number of observations specified for delay estimation is less ",
-        "than one plus the number of columns in the retrospective reporting ",
-        "triangles. The delay distribution can only be estimated from at ",
-        "at least the number of columns in the reporting triangle."
+        "The number of observations (rows) specified for delay estimation ",
+        "must be less than or equal to the number of rows of the reporting ",
+        "triangle."
+      )
+    )
+  }
+  n_rows <- nrow(reporting_triangle)
+  has_complete_row <- any(
+    rowSums(is.na(reporting_triangle[(n_rows - n + 1):n_rows, ])) == 0
+  )
+  if (isFALSE(has_complete_row)) {
+    cli_abort(
+      message = c(
+        "The rows used for delay estimation in the reporting triangle must ",
+        "contain at least one row with no missing observations."
       )
     )
   }

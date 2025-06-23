@@ -1,5 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
+-   Change the requirement so that the number of rows used for delay estimation need not be greater than or equal to the number of columns, but instead that at least one row contains a full set of observations.
 -   Bug fix to change the requirement so that the sum of the elements in the `structure` vector must not be greater than the number of columns.
 -   Add support for passing in a restricted set of functions to the `estimate_dispersion()` function to transform the "target" dataset across reference dates.
 -   Implements a safe iterator in the step where retrospective point nowcasts are generated from a list of retrospective reporting triangles, ensuring that the iterations continue even if not all retrospective point nowcasts can be generated.

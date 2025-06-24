@@ -44,8 +44,8 @@
   if (nrow(triangle) < n) {
     cli_abort(
       message = c(
-        "Number of observations in input reporting triangle is insufficient for",
-        "user specified number of historical observations to use",
+        "Number of observations in input reporting triangle is insufficient",
+        "for the user specified number of historical observations to use",
         "for delay estimaton."
       )
     )

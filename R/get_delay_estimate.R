@@ -1,5 +1,6 @@
 #' Estimate a delay distribution from a reporting triangle
-#' Provides an estimate of the reporting delay as a function
+#'
+#' @description Provides an estimate of the reporting delay as a function
 #'   of the delay, based on the reporting triangle and the specified maximum
 #'   delay and number of reference date observations to be used in the
 #'   estimation. This point estimate of the delay is computed empirically,

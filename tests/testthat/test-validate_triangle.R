@@ -11,9 +11,32 @@ test_that(".validate_triangle accepts non-integer values in triangle", {
   expect_no_error(
     .validate_triangle(non_integer_triangle,
       max_delay = 1,
-      n = 1
+      n = 2
     )
   )
+})
+
+test_that(".validate_triangle errors if `n` is too low", {
+  valid_triangle <- matrix(
+    c(
+      80, 50, 10, 10,
+      100, 40, 31, 20,
+      95, 45, 21, NA,
+      82, 42, NA, NA,
+      70, NA, NA, NA
+    ),
+    nrow = 5,
+    byrow = TRUE
+  )
+  # Errors if user specified n is too low
+  expect_error(.validate_triangle(valid_triangle,
+    max_delay = 3,
+    n = 3
+  ))
+  # Doesn't error on default behavior
+  expect_no_error(.validate_triangle(valid_triangle,
+    max_delay = 3
+  ))
 })
 
 test_that(".validate_triangle requires input to be a matrix", {

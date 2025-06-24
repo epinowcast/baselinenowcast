@@ -54,29 +54,6 @@ get_delay_estimate <- function(
     max_delay = max_delay,
     n = n
   )
-  if (n > nrow(reporting_triangle)) {
-    cli_abort(
-      message = c(
-        "The number of observations (rows) specified for delay estimation ",
-        "must be less than or equal to the number of rows of the reporting ",
-        "triangle. Either remove the reporting triangles that do ",
-        "not contain sufficient data, or lower `n`."
-      )
-    )
-  }
-
-  n_rows <- nrow(reporting_triangle)
-  has_complete_row <- any(
-    rowSums(is.na(reporting_triangle[(n_rows - n + 1):n_rows, ])) == 0
-  )
-  if (isFALSE(has_complete_row)) {
-    cli_abort(
-      message = c(
-        "The rows used for delay estimation in the reporting triangle must ",
-        "contain at least one row with no missing observations."
-      )
-    )
-  }
 
   # Filter the reporting_triangle down to relevant rows and columns
   trunc_triangle <- .prepare_triangle(reporting_triangle, max_delay, n)

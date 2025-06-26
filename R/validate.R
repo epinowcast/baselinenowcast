@@ -93,6 +93,19 @@
       )
     )
   }
+
+  if (isFALSE(.check_lhs_before_na_vectorized(triangle[(n_rows - n + 1):n_rows, ]))) { # nolint
+    cli_abort(
+      message = c(
+        "The values for the recent reference times and delays only contain 0s,",
+        "which means the method to iteratively complete the reporting triangle",
+        "and estimate a delay PMF will be invalid. Consider increasing `n` to ",
+        "capture reference times that contain observations for early delays",
+        "or truncating to an earlier referene time to ensure a nowcast, ",
+        "not a forecast, is being produced. "
+      )
+    )
+  }
   return(NULL)
 }
 

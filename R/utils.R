@@ -100,7 +100,7 @@
   first_na <- which(is.na(mat[nrow(mat), ]))[1]
   if (!is.na(first_na)) {
     if (first_na == 1) {
-      has_nonzeros <- TRUE # No columns to check
+      has_non_zeros <- TRUE # No columns to check
     } else {
       mat_LHS <- mat[, 1:(first_na) - 1]
       has_non_zeros <- !all(mat_LHS == 0)

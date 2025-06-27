@@ -95,22 +95,15 @@
 #'
 #' @returns Boolean indicating whether or not there are only 0s on the LHS
 #'    of the first NA
-.check_lhs_before_na_vectorized <- function(mat) {
+.check_lhs_for_zeros <- function(mat) {
   # Find first NA
   first_na <- which(is.na(mat[nrow(mat), ]))[1]
-  apply(mat, 1, function(row) {
-    if (is.na(first_na)) {
-      # No NAs - check entire row
-      lhs <- row
-    } else if (first_na == 1) {
-      # First element is NA - skip this row
-      return(TRUE)
-    } else {
-      # Check elements before first NA
-      lhs <- row[1:(first_na - 1)]
-    }
 
-    # Return FALSE if all zeros, TRUE otherwise
-    !(length(lhs) > 0 && all(lhs == 0, na.rm = TRUE))
-  }) |> any()
+  if (!is.na(first_na)) {
+    mat_LHS <- mat[, 1:(first_na) - 1]
+    boolean_zeros <- !all(mat_LHS == 0)
+  } else {
+    boolean_zeros <- TRUE
+  }
+  return(boolean_zeros)
 }

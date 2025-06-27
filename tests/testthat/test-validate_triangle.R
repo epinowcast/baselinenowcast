@@ -169,7 +169,7 @@ test_that(".validate_triangle errors when only 0s in LHS of NAs", {
   ))
   expect_no_error(.validate_triangle(zero_triangle,
     max_delay = 3,
-    n = 4
+    n = 5
   ))
 
   invalid_mat <- matrix(
@@ -180,17 +180,22 @@ test_that(".validate_triangle errors when only 0s in LHS of NAs", {
     byrow = TRUE,
     nrow = 2
   )
-  invalid_mat2 <- matrix(
-    c(
-      0, 0, 1, 2, 3,
-      0, 1, NA, NA, NA
-    )
-  )
+
   valid_mat <- matrix(
     c(
       0, 0, 1, 2, 3,
       1, 0, NA, NA, NA
-    )
+    ),
+    byrow = TRUE,
+    nrow = 2
+  )
+  valid_mat2 <- matrix(
+    c(
+      0, 0, 1, 2, 3,
+      0, 1, NA, NA, NA
+    ),
+    byrow = TRUE,
+    nrow = 2
   )
 
   could_be_valid_mat <- matrix(
@@ -207,14 +212,9 @@ test_that(".validate_triangle errors when only 0s in LHS of NAs", {
     max_delay = 3,
     n = 4
   ))
-  expect_error(.validate_triangle(invalid_mat2,
-    max_delay = 3,
-    n = 4
-  ))
-  expect_no_error(.validate_triangle(valid_mat,
-    max_delay = 3,
-    n = 4
-  ))
+  expect_no_error(.validate_triangle(valid_mat))
+  expect_no_error(.validate_triangle(valid_mat2))
+
   expect_no_error(.validate_triangle(could_be_valid_mat,
     max_delay = 4,
     n = 3

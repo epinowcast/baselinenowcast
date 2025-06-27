@@ -94,7 +94,7 @@
     )
   }
 
-  if (isFALSE(.check_lhs_before_na_vectorized(triangle[(n_rows - n + 1):n_rows, ]))) { # nolint
+  if (isFALSE(.check_lhs_for_zeros(triangle[(n_rows - n + 1):n_rows, ]))) { # nolint
     cli_abort(
       message = c(
         "The values for the recent reference times and delays only contain 0s,",

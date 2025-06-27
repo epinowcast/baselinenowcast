@@ -42,6 +42,8 @@ the data and apply that estimate to generate a probabilistic nowcast. This
 example will walk through the low-level functionality of the "default" model
 permutation. In future vignettes, we will demonstrate examples of how to
 create more complex model permutations.
+More details on the mathematical methods are provided in the
+[mathematical model](model_definition.html) vignette.
 
 # Packages
 
@@ -83,9 +85,6 @@ For this quick start, we use daily level data from the
 [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence).
 These data represent hospital admission counts by date of positive test and date
 of test report in Germany up to October 1, 2021.
-
-
-# Filtering and plotting the data
 
 We will filter the data to just look at the national-level data, for all age
 groups.
@@ -158,39 +157,29 @@ the bottom right of the triangle missing as the data reported with longer
 delays has yet to be observed for recent reference times.
 The reporting triangle will be used to estimate the delay distribution, or the
 proportion of the final number of cases reported on a particular delay.
-Since this data is both reported and referenced daily, we will use the time
-scale of days to create the reporting triangle.
-In general the delay and the reference times can have any temporal granularity.
 
 In this example, we will both fit our delay distribution, and apply it to
 generate a nowcast matrix using the same data, the national level data from
 Germany for all age groups.
 
-In the below sections, we will specify the maximum delay,
-the number of reference times to use for delay estimation, and the number of
-reference times to use for uncertainty quantification. We will use 3 times the
-maximum delay for the total training volume, with the most recent 50% of the
-reference times used for delay estimation.
+We recommend choosing the maximum delay and number of historical observations
+based on an exploratory data analysis, as these specifications will change
+significantly depending on the dataset.
+
+Empirical data outside this delay window will not be used for
+training.
+```{r specify-max-delay}
+max_delay <- 30
+```
+
+We will use 3 times the maximum delay for the total training volume, with the
+most recent 50% of the reference times used for delay estimation.
 For uncertainty estimation, we will generate retrospective nowcast datasets
 with the most recent 50% of the reference times.
 This means that in order to estimate the delay using the same amount of data,
 the oldest retrospective nowcast dataset will use the first 50% of the reference
 times.
-
-We recommend choosing the maximum delay and number of historical observations
-based on an exploratory data analysis, as these specifications will change
-significantly depending on the dataset.
-
-Specify the maximum delay, which will determine the length of your delay
-distribution. Empirical data outside this delay window will not be used for
-training.
-```{r specify-max-delay}
-max_delay <- 30
-```
-Specify the total amount of training volume, the number of reference times to
-use to estimate the delay distribution and the number of retrospective nowcast
-datasets to use for uncertainty estimation.
-Note this assumes you want the most recent observations.
+Note this uses the most recent observations.
 ```{r specify-training-data}
 n_training_volume <- 3 * max_delay
 n_history_delay <- 0.5 * n_training_volume
@@ -249,11 +238,6 @@ reporting_triangle <- reporting_triangle_df |>
   as.matrix()
 ```
 
-We can plot the reporting triangle.
-Here, the grey indicates matrix elements that are `NA`, which we
-would expect to be the case in the bottom right portion of the reporting
-triangle where the counts have yet to be observed.
-
 ```{r make-heatmap-reporting-triangle, echo = FALSE}
 triangle_df <- as.data.frame(reporting_triangle) |>
   mutate(time = row_number()) |>
@@ -274,6 +258,10 @@ ggplot(
   theme_bw() +
   scale_y_reverse()
 ```
+
+Here, the grey indicates matrix elements that are `NA`, which we
+would expect to be the case in the bottom right portion of the reporting
+triangle where the counts have yet to be observed.
 
 # Estimate delay
 
@@ -321,8 +309,8 @@ of the number of new cases confirmed at each reference date and delay.
 This will generate a point estimate of complete the reporting matrix.
 In this case, we will be applying the delay to the same reporting triangle we
 used to generate the estimate, but this doesn't always have to be the case.
-The reporting triangle we are applying it to must have the same `max_delay`
-as the delay estimate.
+See the documentation for `apply_delay()` for a full description of the
+input requirements.
 
 It is worth noting that we could also have estimated the delay and applied it
 in one single step by calling `generate_pt_nowcast_mat()`. In subsequent steps
@@ -390,18 +378,15 @@ for the right-truncation observed in the the data as of the nowcast date (red).
 
 So far, we've demonstrated how to generate a point estimate of a nowcast.
 We would like to generate probabilistic nowcasts.
-To do so, we will use the error between the predicted components of
-retrospectively generated nowcasts (aggregated across the delays) and
-the corresponding observations that we have already observed.
-We will assume that the observations follow a negative binomial observation
-model, and independently estimate the
-dispersion in the negative binomial at each forecast horizon.
 
 The method used to estimate the uncertainty works by generating retrospective
 reporting triangles using what would have been available as of each
 retrospective nowcast time to estimate a delay distribution,
 generate a point nowcast matrix, and compare the estimated counts at each
 reference time to those that have been observed at each nowcast horizon.
+It assumes that the observations follow a negative binomial observation
+model, and independently estimates the
+dispersion in the negative binomial at each forecast horizon.
 
 We repeat this process for `n_retrospective_nowcasts` reference times in the
 current reporting triangle, starting from the latest reference
@@ -414,17 +399,14 @@ trunc_rep_tri_list <- truncate_triangles(reporting_triangle,
 )
 retro_rep_tri_list <- generate_triangles(trunc_rep_tri_list)
 ```
-The `generate_triangles()` function returns a list of
-reporting triangles, in order from the most to least
-recent, starting from the most recent.
-It is not filtered to exclude any rows that may not ultimately be used to
-generate the nowcast, which means that each triangle will have a different
-number of rows.
+This results in a list of retrospective reporting triangles.
+See the documentation for `truncate_triangles()` and `generate_triangles()` for
+more information on the inputs and outputs of these functions.
 
 Next we will pass this list of reporting triangles to the
-`generate_pt_nowcast_mat_list()`. In this function, we can also specify
-`n`, the number of reference times to be used to estimate the delay for each
-nowcast, which we will set as the `n_history_delay` previous specified.
+`generate_pt_nowcast_mat_list()` and specify `n`, the number of reference times
+to be used to estimate the delay for each nowcast, which we will set as
+the `n_history_delay` previous specified.
 
 ```{r generate-nowcasts}
 retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
@@ -433,9 +415,10 @@ retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
 )
 ```
 
-Next, we will use the retrospective reporting triangles, the point nowcasted
-reporting triangles, and the truncated reporting triangles to estimate the
-uncertainty at each horizon, starting at horizon 0.
+Next, we will use the retrospective reporting triangles, the point nowcast
+matrices, and the truncated reporting triangles to estimate the
+uncertainty at each horizon, starting at horizon 0 using the
+`estimate_dispersion()` function.
 
 ```{r estimate-dispersion}
 disp_params <- estimate_dispersion(
@@ -465,16 +448,13 @@ nowcast_draws_df <- get_nowcast_draws(
 head(nowcast_draws_df)
 ```
 
-As we can see, the output dataframe from `get_nowcast_draws()` contains:
-
-- `time`: The reference time index
-- `draw`: The draw number
-- `pred_count`: The predicted final count for this reference time and draw (combining observations and predictions when present)
+See documentation for `get_nowcast_draws()`for further details.
 
 # Visualizing the nowcast
 
-Let's visualize the nowcast compared to the final observed data. We first need
-to link our nowcast with the original data so we can see our nowcast by reference date.
+Let's visualize the nowcast compared to the final observed data.
+We first need to join our nowcast with the original data so we can see our
+nowcast by reference date.
 
 Prepare the data as of the nowcast date, `latest_training_data` so that we
 can map the nowcast draws onto it.

@@ -53,10 +53,10 @@ valid_mat4 <- matrix(
 
 
 test_that(".check_lhs_for_zeros correctly handles matrix with 0s", {
-  expect_false(.check_lhs_for_zeros(invalid_mat))
-  expect_false(.check_lhs_for_zeros(invalid_mat2))
-  expect_true(.check_lhs_for_zeros(valid_mat1))
-  expect_true(.check_lhs_for_zeros(valid_mat2))
-  expect_true(.check_lhs_for_zeros(valid_mat3))
-  expect_true(.check_lhs_for_zeros(valid_mat4))
+  expect_false(.check_lhs_not_only_zeros(invalid_mat))
+  expect_false(.check_lhs_not_only_zeros(invalid_mat2))
+  expect_true(.check_lhs_not_only_zeros(valid_mat1))
+  expect_true(.check_lhs_not_only_zeros(valid_mat2))
+  expect_true(.check_lhs_not_only_zeros(valid_mat3))
+  expect_true(.check_lhs_not_only_zeros(valid_mat4))
 })

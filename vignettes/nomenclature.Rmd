@@ -3,8 +3,8 @@ title: "Nowcasting nomenclature"
 description: "Description of different nowcasting components and corresponding abbreviations"
 output:
   bookdown::html_document2:
-  fig_caption: yes
-code_folding: show
+    fig_caption: yes
+    code_folding: show
 pkgdown:
   as_is: true
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl

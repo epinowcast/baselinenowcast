@@ -1,5 +1,5 @@
 ---
-title: "Nomenclature for `baselinenowcast`"
+title: "Nowcasting nomenclature`"
 description: "Description of different nowcasting components and corresponding abbreviations"
 output:
   bookdown::html_document2:
@@ -40,4 +40,3 @@ We will use the following to abbreviations to shorten names in the code:
   | matrix        | `mat`                 |
   | point         | `pt`                  |
   | error         | `err`                 |
-

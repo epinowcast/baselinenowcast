@@ -101,7 +101,7 @@
         "which means the method to iteratively complete the reporting triangle",
         "and estimate a delay PMF will be invalid. Consider increasing `n` to ",
         "capture reference times that contain observations for early delays",
-        "or truncating to an earlier referene time to ensure a nowcast, ",
+        "or truncating to an earlier reference time to ensure a nowcast, ",
         "not a forecast, is being produced. "
       )
     )

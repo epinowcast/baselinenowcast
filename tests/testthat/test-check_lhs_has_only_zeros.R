@@ -50,6 +50,14 @@ valid_mat4 <- matrix(
   byrow = TRUE,
   nrow = 3
 )
+edge_case_mat <- matrix(
+  c(
+    1, 2, 3, 4, 5,
+    NA, NA, NA, NA, NA
+  ),
+  byrow = TRUE,
+  nrow = 2
+)
 
 
 test_that(".check_lhs_for_zeros correctly handles matrix with 0s", {
@@ -59,4 +67,5 @@ test_that(".check_lhs_for_zeros correctly handles matrix with 0s", {
   expect_true(.check_lhs_not_only_zeros(valid_mat2))
   expect_true(.check_lhs_not_only_zeros(valid_mat3))
   expect_true(.check_lhs_not_only_zeros(valid_mat4))
+  expect_true(.check_lhs_not_only_zeros(edge_case_mat))
 })

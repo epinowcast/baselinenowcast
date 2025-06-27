@@ -1,5 +1,5 @@
 ---
-title: "Nowcasting nomenclature`"
+title: "Nowcasting nomenclature"
 description: "Description of different nowcasting components and corresponding abbreviations"
 output:
   bookdown::html_document2:
@@ -10,8 +10,8 @@ pkgdown:
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 vignette: >
   %\VignetteIndexEntry{Nowcasting nomenclature}
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 # Nomenclature

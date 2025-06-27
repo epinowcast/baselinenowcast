@@ -280,7 +280,7 @@ ggplot(
 Now that we have the reporting triangle, we are now ready to pass it in to the
 `baselinenowcast` package to estimate the delay distribution.
 We will tell the function the maximum delay and the number of observations we
-want to use for estiamtion.
+want to use for estimation.
 We only want to pass in the reporting triangle (for a single group!) to this
 function.
 See documentation for `get_delay_estimate()` for a full description of the
@@ -336,7 +336,7 @@ point_nowcast_matrix <- apply_delay(
 )
 ```
 
-We'll make a quick plot to compare our point estiamte of the nowcasted
+We'll make a quick plot to compare our point estimate of the nowcasted
 confirmed cases through August 1, 2021, to the "final" observations
 from October 1, 2021 and to the right-truncated data available up until
 August 1, 2021.
@@ -417,8 +417,8 @@ retro_rep_tri_list <- generate_triangles(trunc_rep_tri_list)
 The `generate_triangles()` function returns a list of
 reporting triangles, in order from the most to least
 recent, starting from the most recent.
-It is not filtered to exclude anymrows that may not ultimately be used to
-generate the nowcast, which meansmthat each triangle will have a different
+It is not filtered to exclude any rows that may not ultimately be used to
+generate the nowcast, which means that each triangle will have a different
 number of rows.
 
 Next we will pass this list of reporting triangles to the

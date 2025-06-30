@@ -206,7 +206,7 @@ target_data <- enw_filter_reference_dates(
 
 Next we obtain the reporting triangle, adding an additional day to the
 `max_delay` because we want the `max_delay + 1` entries since 0 is a valid
-delay.This also validates that the data is in the correct format and
+delay. This also validates that the data is in the correct format and
 runs preprocessing see ?enw_preprocess_data for more details.
 ```{r reporting-triangle}
 pobs <- enw_preprocess_data(

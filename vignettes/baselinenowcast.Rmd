@@ -66,7 +66,7 @@ For this quick start, we use daily level data from the [Robert Koch Institute vi
 These data represent hospital admission counts by date of positive test and date of test report in Germany up to October 1, 2021.
 
 We will filter the data to just look at the national-level data, for all age groups.
-We will pretend that we are making a nowcast as of August 1, 2021, thereforewe will exclude all reference dates and report dates from before that date.
+We will pretend that we are making a nowcast as of August 1, 2021, therefore we will exclude all reference dates and report dates from before that date.
 `germany_covid19_hosp` is provided as package data from `epinowcast`.
 Let's start by plotting the sum of the reports at each reference date, and then compare that to what we will eventually observe as of the latest date in the complete dataset (data available through October 1, 2021).
 ```{r create-data-to-plot}
@@ -130,7 +130,7 @@ The reporting triangle will be used to estimate the delay distribution, or the p
 
 In this example, we will both fit our delay distribution, and apply it to generate a nowcast matrix using the same data, the national level data from Germany for all age groups.
 
-We recommend choosing the maximum delay and number of historical observations based on an exploratory data analysis, as these specifications will changesignificantly depending on the dataset.
+We recommend choosing the maximum delay and number of historical observations based on an exploratory data analysis, as these specifications will change significantly depending on the dataset.
 
 Empirical data outside this delay window will not be used for training.
 ```{r specify-max-delay}
@@ -268,7 +268,7 @@ In this case, we will be applying the delay to the same reporting triangle we us
 See the documentation for `apply_delay()` for a full description of the input requirements.
 
 It is worth noting that we could also have estimated the delay and applied it in one single step by calling `generate_pt_nowcast_mat()`.
-In subsequent steps to estimate the uncertainty, both delay estimation and generating a pointnowcast matrix happen in a single step.
+In subsequent steps to estimate the uncertainty, both delay estimation and generating a point nowcast matrix happen in a single step.
 ```{r generate-pt-nowcast-matrix}
 point_nowcast_matrix <- apply_delay(
   rep_tri_to_nowcast = reporting_triangle,

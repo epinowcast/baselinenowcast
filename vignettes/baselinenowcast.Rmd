@@ -104,19 +104,28 @@ target_data <- germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
   enw_filter_reference_dates(
     latest_date = nowcast_date
   )
-
+```
+The `epinowcast` function `enw_latest_data()` will be used to filter observations
+to the latest available reported total counts for each reference date.
+```{r get-latest-data}
 latest_data <- enw_latest_data(target_data)
-
+```
+The `epinowcast` function `enw_filter_report_dates()` will be used to create a
+truncated dataset for generating a retrospective nowcast, using the data that
+would have been available as of the nowcast date.
+```{r get-observed-data-as-of-nowcast-date}
 observed_data <- enw_filter_report_dates(
   target_data,
   latest_date = nowcast_date
 )
 
 head(observed_data)
-
-obs_data_by_reference_date <- enw_latest_data(observed_data)
 ```
+
+Using the observed data as of the nowcast date (`observed_data`) and the `enw_latest_data()` function,
+we will make a plot of the latest total number of confirmed cases at each reference date.
 ```{r, plot-data, echo = FALSE}
+obs_data_by_reference_date <- enw_latest_data(observed_data)
 ggplot() +
   geom_line(
     data = obs_data_by_reference_date,
@@ -172,34 +181,43 @@ training.
 max_delay <- 30
 ```
 
-We will use 3 times the maximum delay for the total training volume, with the
-most recent 50% of the reference times used for delay estimation.
+We will use 3 times the maximum delay for the total training volume.
+```{r specify-training-data}
+n_training_volume <- 3 * max_delay
+```
+We'll use the most recent 50% of the reference times for delay estimation.
+```{r specify-delay-estiamte-training-volume}
+n_history_delay <- as.integer(0.5 * n_training_volume)
+```
 For uncertainty estimation, we will generate retrospective nowcast datasets
 with the most recent 50% of the reference times.
+```{r specify-uncertainty-estimate-training-volume}
+n_retrospective_nowcasts <- as.integer(0.5 * n_training_volume)
+```
 This means that in order to estimate the delay using the same amount of data,
 the oldest retrospective nowcast dataset will use the first 50% of the reference
 times.
 Note this uses the most recent observations.
-```{r specify-training-data}
-n_training_volume <- 3 * max_delay
-n_history_delay <- 0.5 * n_training_volume
-n_retrospective_nowcasts <- 0.5 * n_training_volume
-```
 
-Next we will use the `epinowcast` function, `enw_preprocess_data()` and the
-data in the form of a long tidy dataframe indexed by reference date and
-report date and filtered to the strata we are interested in, to generate a
-reporting triangle.
-
-```{r use-epinowcast-preprocessing}
+Next we will use the `epinowcast` function, `enw_filter_reference_dates()` to
+filter to only include `n_training_volume` days of historical data.
+```{r filter-reference-dates}
 training_data <- enw_filter_reference_dates(
   observed_data,
   include_days = n_training_volume - 1
 )
+```
 
+The `epinowcast` function `enw_latest_data()` will be used to filter for the
+latest available reported total counts for each reference date.
+```{r get-latest-training-data}
 latest_training_data <- enw_latest_data(training_data)
-
-target_data <- enw_filter_reference_dates(
+```
+To obtain the data we want to evaluate the forecasts against, we will use
+`enw_filter_reference_dates()` applied to the `target_data`, to filter it for
+only the `n_training_volume` days of historical data.
+```{r get-eval-data}
+eval_data <- enw_filter_reference_dates(
   latest_data,
   include_days = n_training_volume - 1
 )
@@ -330,7 +348,7 @@ from October 1, 2021 and to the right-truncated data available up until
 August 1, 2021.
 
 ```{r, echo = FALSE}
-point_nowcast_df <- target_data |>
+point_nowcast_df <- eval_data |>
   mutate(nowcast = rowSums(point_nowcast_matrix))
 
 prep_latest_data <- latest_training_data |>
@@ -464,9 +482,9 @@ latest_data_prepped <- latest_training_data |>
   rename(obs_confirm = confirm) |>
   mutate(reference_date = as.Date(reference_date))
 ```
-Prepare the final data, `target_data` so we can combine the datasets.
+Prepare the final evaluation data so we can combine the datasets.
 ```{r prepare-final-eval-data}
-final_data_prepped <- target_data |>
+final_data_prepped <- eval_data |>
   select(reference_date, final_confirm = confirm) |>
   mutate(reference_date = as.Date(reference_date))
 ```

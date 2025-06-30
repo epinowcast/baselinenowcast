@@ -14,7 +14,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# Nomenclature
 
 Throughout this package, we will refer to different nowcasting object lists, matrices, and vectors using the following table.
 In this table, "point" refers to a point estimate. When not indicated, we are referring to a probabilistic draw from an observation model.

@@ -52,9 +52,8 @@ As well as the `baselinenowcast` package this vignette also uses `epinowcast`,
 The installation of `epinowcast` is not required for using the package,
 however, its pre and post-processing functions provide a lot of the data
 wrangling needed to set up the nowcasting problem.
-We note that we will just be using the `R` components of `epinowcast`, which
-can be installed using the example lines of code below, so there is no need to
-additionally install `CmdStan`.
+We note that we will just be using components of `epinowcast`, which
+can be installed using the following:
 ```{r setup, message = FALSE}
 # nolint start
 # Installing epinowcast
@@ -225,7 +224,7 @@ eval_data <- enw_filter_reference_dates(
 
 Next we obtain the reporting triangle, adding an additional day to the
 `max_delay` because we want the `max_delay + 1` entries since 0 is a valid
-delay.This also validates that the data is in the correct format and
+delay. This also validates that the data is in the correct format and
 runs preprocessing see ?enw_preprocess_data for more details.
 ```{r reporting-triangle}
 pobs <- enw_preprocess_data(

@@ -31,8 +31,7 @@ The purpose of `baselinenowcast` is to provide a nowcast computed directly from 
 In the below section, we will describe an example of a nowcasting problem, and demonstrate how to use `baselinenowcast` to estimate a delay distribution from the data and apply that estimate to generate a probabilistic nowcast.
 This example will walk through the low-level functionality of the "default" model permutation.
 In future vignettes, we will demonstrate examples of how to create more complex model permutations.
-More details on the mathematical methods are provided in the
-[mathematical model](model_definition.html) vignette.
+More details on the mathematical methods are provided in the [mathematical model](model_definition.html) vignette.
 
 # Packages
 
@@ -124,6 +123,7 @@ Our task will be to estimate, from the data available up until August 1, 2021, t
 # Pre-processing
 
 In order to compute a nowcast for this data, we will need to start by creating what we call a reporting triangle.
+See the [nomenclature](nomenclature.html) vignette for more details on the structure and naming of different components used in the package.
 
 The entries in the reporting triangle represent the number of new cases assigned to that reference time point with a particular delay, with entries in the bottom right of the triangle missing as the data reported with longer delays has yet to be observed for recent reference times.
 The reporting triangle will be used to estimate the delay distribution, or the proportion of the final number of cases reported on a particular delay.
@@ -176,7 +176,7 @@ eval_data <- enw_filter_reference_dates(
 ```
 
 Next we obtain the reporting triangle, adding an additional day to the `max_delay` because we want the `max_delay + 1` entries since 0 is a valid delay.
-This also validates that the data is in the correct format and runs preprocessing see `?enw_preprocess_data()` for more details.
+This also validates that the data is in the correct format and runs preprocessing see `enw_preprocess_data()` for more details.
 ```{r reporting-triangle}
 pobs <- enw_preprocess_data(
   obs = training_data,

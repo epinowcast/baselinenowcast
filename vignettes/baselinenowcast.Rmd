@@ -53,7 +53,7 @@ The installation of `epinowcast` is not required for using the package,
 however, its pre and post-processing functions provide a lot of the data
 wrangling needed to set up the nowcasting problem.
 We note that we will just be using components of `epinowcast`, which
-can be installed using the example lines of code below, so there is no need to
+can be installed using the following:
 additionally install `CmdStan`.
 ```{r setup, message = FALSE}
 # nolint start

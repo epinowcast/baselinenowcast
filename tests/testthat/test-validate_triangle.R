@@ -159,6 +159,10 @@ test_that(".validate_triangle errors when only 0s in LHS of NAs", {
     byrow = TRUE,
     nrow = 2
   )
+  expect_error(.validate_triangle(invalid_mat,
+    max_delay = 4,
+    n = 2
+  ))
   invalid_mat2 <- matrix(
     c(
       0, 0, 4, 5, 6,
@@ -168,6 +172,10 @@ test_that(".validate_triangle errors when only 0s in LHS of NAs", {
     byrow = TRUE,
     nrow = 3
   )
+  expect_error(.validate_triangle(invalid_mat2,
+    max_delay = 4,
+    n = 3
+  ))
   invalid_mat3 <- matrix(
     c(
       0, 1, 3,
@@ -177,6 +185,13 @@ test_that(".validate_triangle errors when only 0s in LHS of NAs", {
     byrow = TRUE,
     nrow = 3
   )
+  expect_error(.validate_triangle(invalid_mat3,
+    max_delay = 2,
+    n = 3
+  ))
+})
+
+test_that(".validate_triangle doesn't error when matrix is valid", {
   valid_mat <- matrix(
     c(
       0, 0, 1, 2, 3,
@@ -185,6 +200,7 @@ test_that(".validate_triangle errors when only 0s in LHS of NAs", {
     byrow = TRUE,
     nrow = 2
   )
+  expect_no_error(.validate_triangle(valid_mat))
   valid_mat2 <- matrix(
     c(
       0, 0, 1, 2, 3,
@@ -193,6 +209,7 @@ test_that(".validate_triangle errors when only 0s in LHS of NAs", {
     byrow = TRUE,
     nrow = 2
   )
+  expect_no_error(.validate_triangle(valid_mat2))
   valid_mat3 <- matrix(
     c(
       0, 0, 4, 5, 6,
@@ -202,6 +219,7 @@ test_that(".validate_triangle errors when only 0s in LHS of NAs", {
     byrow = TRUE,
     nrow = 3
   )
+  expect_no_error(.validate_triangle(valid_mat3))
   valid_mat4 <- matrix(
     c(
       4, 1, 4, 5, 6,
@@ -211,17 +229,21 @@ test_that(".validate_triangle errors when only 0s in LHS of NAs", {
     byrow = TRUE,
     nrow = 3
   )
+  expect_no_error(.validate_triangle(valid_mat4))
 
   valid_mat5 <- matrix(
     c(
       4, 2, 4, 5, 6,
       1, 3, 1, 2, 3,
-      5, 4, 1, 2, 3
+      NA, NA, NA, NA, NA
     ),
     byrow = TRUE,
     nrow = 3
   )
+  expect_no_error(.validate_triangle(valid_mat5))
+})
 
+test_that(".validate_triangle errors appropriately based on rows used in matrix", { # nolint
   could_be_valid_mat <- matrix(
     c(
       1, 4, 5, 7, 1,
@@ -231,6 +253,14 @@ test_that(".validate_triangle errors when only 0s in LHS of NAs", {
     byrow = TRUE,
     nrow = 3
   )
+  expect_no_error(.validate_triangle(could_be_valid_mat,
+    max_delay = 4,
+    n = 3
+  ))
+  expect_error(.validate_triangle(could_be_valid_mat,
+    max_delay = 4,
+    n = 2
+  ))
   could_be_valid_mat2 <- matrix(
     c(
       1, 4, 5, 6,
@@ -242,29 +272,6 @@ test_that(".validate_triangle errors when only 0s in LHS of NAs", {
     nrow = 5,
     byrow = TRUE
   )
-
-  # Test invalid matrices
-  expect_error(.validate_triangle(invalid_mat,
-    max_delay = 4,
-    n = 2
-  ))
-  expect_error(.validate_triangle(invalid_mat2,
-    max_delay = 4,
-    n = 3
-  ))
-  expect_error(.validate_triangle(invalid_mat3,
-    max_delay = 2,
-    n = 3
-  ))
-
-  # Test valid matrices
-  expect_no_error(.validate_triangle(valid_mat))
-  expect_no_error(.validate_triangle(valid_mat2))
-  expect_no_error(.validate_triangle(valid_mat3))
-  expect_no_error(.validate_triangle(valid_mat4))
-  expect_no_error(.validate_triangle(valid_mat5))
-
-  # Test the ones that depend on number of rows used
   expect_error(.validate_triangle(could_be_valid_mat2,
     max_delay = 3,
     n = 4
@@ -272,13 +279,5 @@ test_that(".validate_triangle errors when only 0s in LHS of NAs", {
   expect_no_error(.validate_triangle(could_be_valid_mat2,
     max_delay = 3,
     n = 5
-  ))
-  expect_no_error(.validate_triangle(could_be_valid_mat,
-    max_delay = 4,
-    n = 3
-  ))
-  expect_error(.validate_triangle(could_be_valid_mat,
-    max_delay = 4,
-    n = 2
   ))
 })

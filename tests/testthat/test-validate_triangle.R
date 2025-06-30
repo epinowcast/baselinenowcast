@@ -212,6 +212,16 @@ test_that(".validate_triangle errors when only 0s in LHS of NAs", {
     nrow = 3
   )
 
+  valid_mat5 <- matrix(
+    c(
+      4, 2, 4, 5, 6,
+      1, 3, 1, 2, 3,
+      5, 4, 1, 2, 3
+    ),
+    byrow = TRUE,
+    nrow = 3
+  )
+
   could_be_valid_mat <- matrix(
     c(
       1, 4, 5, 7, 1,
@@ -252,6 +262,7 @@ test_that(".validate_triangle errors when only 0s in LHS of NAs", {
   expect_no_error(.validate_triangle(valid_mat2))
   expect_no_error(.validate_triangle(valid_mat3))
   expect_no_error(.validate_triangle(valid_mat4))
+  expect_no_error(.validate_triangle(valid_mat5))
 
   # Test the ones that depend on number of rows used
   expect_error(.validate_triangle(could_be_valid_mat2,

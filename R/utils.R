@@ -88,3 +88,23 @@
   pred_mat[!is.na(reporting_triangle)] <- NA
   return(pred_mat)
 }
+
+#' Check if there are non-zero-values on the LHS of NAs
+#'
+#' @param mat Matrix to check
+#'
+#' @returns Boolean indicating whether or not there are non-zero values on the
+#'    LHS of the first NA (TRUE = has non-zeros, FALSE = only zeros)
+.check_lhs_not_only_zeros <- function(mat) {
+  # Find first NA
+  first_na <- which(is.na(mat[nrow(mat), ]))[1]
+  if (is.na(first_na)) {
+    has_non_zeros <- TRUE
+  } else if (first_na == 1) {
+    has_non_zeros <- TRUE # No columns to check
+  } else {
+    mat_LHS <- mat[, 1:(first_na) - 1]
+    has_non_zeros <- !all(mat_LHS == 0)
+  }
+  return(has_non_zeros)
+}

@@ -1,5 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
+-   Add a check to ensure that there are sufficient non-zero values in the reporting triangle.
 -   Add a check to ensure that sufficient `n` are specified for the delay estimate.
 -   Change the requirement so that the number of rows used for delay estimation need not be greater than or equal to the number of columns, but instead that at least one row contains a full set of observations.
 -   Bug fix to change the requirement so that the sum of the elements in the `structure` vector must not be greater than the number of columns.

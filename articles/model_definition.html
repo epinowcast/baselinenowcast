@@ -44,6 +44,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/baselinenowcast.html">Getting started</a></li>
     <li><a class="dropdown-item" href="../articles/model_definition.html">Mathematical model</a></li>
+    <li><a class="dropdown-item" href="../articles/nomenclature.html">Nomenclature</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -94,7 +95,8 @@
 <p><span class="math display">\[X_{t, \le d} = \sum_{i=0}^d X_{t,i} \]</span></p>
 <p>Such that <span class="math inline">\(X_t = X_{t, \le D}\)</span> is the “final” number of reported cases on time <span class="math inline">\(t\)</span>. Conversely, for <span class="math inline">\(d &lt; D\)</span></p>
 <p><span class="math display">\[X_{t,&gt;d} = \sum_{i = d+1} ^{D} X_{t,i}\]</span></p>
-<p>is the number of cases still missing after <span class="math inline">\(d\)</span> delay. We refer to <span class="math inline">\(X_t\)</span> to describe a random variable, <span class="math inline">\(x_t\)</span> for the corresponding observation, and <span class="math inline">\(\hat{x}_t\)</span> for an estimated/imputed value. The matrix of <span class="math inline">\(x_{t,d}\)</span> available at a given time <span class="math inline">\(t^*\)</span> is referred to as a reporting matrix. In the case where all <span class="math inline">\(t+d&gt;t^*\)</span> have yet to be observed (e.g. <span class="math inline">\(t^*\)</span> is the current time), this reporting matrix is referred to as the reporting triangle, with all values in the bottom right corner of the triangle being missing, except for the first entry at <span class="math inline">\(x_{t=t*, d = 0}\)</span>.</p>
+<p>is the number of cases still missing after <span class="math inline">\(d\)</span> delay. We refer to <span class="math inline">\(X_t\)</span> to describe a random variable, <span class="math inline">\(x_t\)</span> for the corresponding observation, and <span class="math inline">\(\hat{x}_t\)</span> for an estimated/imputed value. The matrix of <span class="math inline">\(x_{t,d}\)</span> available at a given time <span class="math inline">\(t^*\)</span> is referred to as a reporting matrix. In the case where all <span class="math inline">\(t+d&gt;t^*\)</span> have yet to be observed (e.g. <span class="math inline">\(t^*\)</span> is the current time), this reporting matrix is referred to as the reporting triangle, with all values in the bottom right corner of the triangle being missing, except for the first entry at <span class="math inline">\(x_{t=t*, d = 0}\)</span>.
+For a description of the nowcasting terms being used in this document (e.g. reporting triangle) and their corresponding abbreviations in the package, please consult the <a href="nomenclature.html">nowcasting nomenclature</a> vignette.</p>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="14%">
@@ -168,91 +170,6 @@
 <td><span class="math inline">\(...\)</span></td>
 <td><span class="math inline">\(x_{t^*,D-1}\)</span></td>
 <td><span class="math inline">\(x_{t^*, D}\)</span></td>
-</tr>
-</tbody>
-</table>
-<p>Throughout this document and package, we will refer to these matrices, as well as their corresponding vectors, using the following table. In this table, “point” refers to a point estimate. When not indicated, we are referring to a probabilistic draw from an observation model.</p>
-<table class="table">
-<colgroup>
-<col width="25%">
-<col width="25%">
-<col width="25%">
-<col width="25%">
-</colgroup>
-<thead><tr class="header">
-<th><strong>Data Structure</strong></th>
-<th><strong>Observations Only</strong></th>
-<th><strong>Mixed (Obs + Predictions)</strong></th>
-<th><strong>Pure Predictions Only</strong></th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><strong>Matrix Format</strong></td>
-<td>
-<code>reporting_matrix</code> (complete with observations)<br><code>reporting_triangle</code> (contains NAs for missing observations)</td>
-<td>
-<code>point_nowcast_matrix</code><br><code>nowcast_matrix</code>
-</td>
-<td>
-<code>point_pred_matrix</code><br><code>pred_matrix</code> (contains NAs in elements where there were observations)</td>
-</tr>
-<tr class="even">
-<td><strong>List Format</strong></td>
-<td>
-<code>reporting_matrix_list</code> (complete)<br><code>reporting_triangle_list</code> (contains NAs for missing observations)</td>
-<td><code>nowcast_matrix_list</code></td>
-<td><code>pred_matrix_list</code></td>
-</tr>
-<tr class="odd">
-<td><strong>Vector Format (summed across delays)</strong></td>
-<td><code>observed_cases</code></td>
-<td>
-<code>point_nowcast</code><br><code>nowcast</code>
-</td>
-<td>
-<code>point_pred</code><br><code>pred</code>
-</td>
-</tr>
-<tr class="even">
-<td><strong>DataFrame Format</strong></td>
-<td>-</td>
-<td><code>nowcast_df</code></td>
-<td><code>pred_df</code></td>
-</tr>
-</tbody>
-</table>
-<p>For example, we refer to the matrix with imputed point estimates for all <span class="math inline">\(t+d&gt;t^*\)</span> as a point nowcast matrix, a matrix with a complete set of observations for all elements as a reporting matrix, and a matrix with only the predictions as a point prediction matrix.</p>
-<p>In package documentation, we will generally use a reporting triangle to refer to a diagonal reporting triangle, which is the special case of a reporting triangle where the reporting delays and reference times are indexed on the same scale. An example of a diagonal reporting triangle is one with daily reporting of daily data. The package also supports what we refer to as a ragged reporting triangle, an example of which would be daily reporting of data referenced only once per week.</p>
-<p>We will use the following to abbreviations to shorten names in the code:</p>
-<table class="table">
-<thead><tr class="header">
-<th><strong>Long Name</strong></th>
-<th><strong>Code Abbreviation</strong></th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td>reporting</td>
-<td><code>rep</code></td>
-</tr>
-<tr class="even">
-<td>observed</td>
-<td><code>obs</code></td>
-</tr>
-<tr class="odd">
-<td>incomplete</td>
-<td><code>inc</code></td>
-</tr>
-<tr class="even">
-<td>matrix</td>
-<td><code>mat</code></td>
-</tr>
-<tr class="odd">
-<td>point</td>
-<td><code>pt</code></td>
-</tr>
-<tr class="even">
-<td>error</td>
-<td><code>err</code></td>
 </tr>
 </tbody>
 </table>

@@ -31,6 +31,7 @@ Such that $X_t = X_{t, \le D}$ is the “final” number of reported cases on ti
 $$X_{t,>d} = \sum_{i = d+1} ^{D} X_{t,i}$$
 
 is the number of cases still missing after $d$ delay. We refer to $X_t$ to describe a random variable, $x_t$ for the corresponding observation, and $\hat{x}_t$ for an estimated/imputed value. The matrix of $x_{t,d}$ available at a given time $t^*$ is referred to as a reporting matrix. In the case where all $t+d>t^*$ have yet to be observed (e.g. $t^*$ is the current time), this reporting matrix is referred to as the reporting triangle, with all values in the bottom right corner of the triangle being missing, except for the first entry at $x_{t=t*, d = 0}$.
+For a description of the nowcasting terms being used in this document (e.g. reporting triangle) and their corresponding abbreviations in the package, please consult the [nowcasting nomenclature](nomenclature.html) vignette.
 
 |           | $d = 0$       | $d = 1$       | $d=2$          | $...$ | $d= D-1$         | $d= D$        |
 |-----------|-----------|-----------|-----------|-----------|-----------|-----------|
@@ -41,30 +42,6 @@ is the number of cases still missing after $d$ delay. We refer to $X_t$ to descr
 | $t=t^*-1$ | $x_{t^*-1,0}$ | $x_{t^*-1,1}$ | $x_{t^*-1,,2}$ | $...$ | $x_{t^*-1,,D-1}$ | $x_{t^*-1,D}$ |
 | $t=t^*$   | $x_{t^*,0}$   | $x_{t^*,1}$   | $x_{t^*,2}$    | $...$ | $x_{t^*,D-1}$    | $x_{t^*, D}$  |
 
-Throughout this document and package, we will refer to these matrices, as well as their corresponding vectors, using the following table. In this table, "point" refers to a point estimate. When not indicated, we are referring to a probabilistic draw from an observation model.
-
-| **Data Structure**                       | **Observations Only**                                                                                           | **Mixed (Obs + Predictions)**              | **Pure Predictions Only**                                                                     |
-|------------------|------------------|------------------|------------------|
-| **Matrix Format**                        | `reporting_matrix` (complete with observations)<br>`reporting_triangle` (contains NAs for missing observations) | `point_nowcast_matrix`<br>`nowcast_matrix` | `point_pred_matrix`<br>`pred_matrix` (contains NAs in elements where there were observations) |
-| **List Format**                          | `reporting_matrix_list` (complete)<br>`reporting_triangle_list` (contains NAs for missing observations)         | `nowcast_matrix_list`                      | `pred_matrix_list`                                                                            |
-| **Vector Format (summed across delays)** | `observed_cases`                                                                                                | `point_nowcast`<br>`nowcast`               | `point_pred`<br>`pred`                                                                        |
-| **DataFrame Format**                     | \-                                                                                                              | `nowcast_df`                               | `pred_df`                                                                                     |
-
-For example, we refer to the matrix with imputed point estimates for all $t+d>t^*$ as a point nowcast matrix, a matrix with a complete set of observations for all elements as a reporting matrix, and a matrix with only the predictions as a point prediction matrix.
-
-In package documentation, we will generally use a reporting triangle to refer to a diagonal reporting triangle, which is the special case of a reporting triangle where the reporting delays and reference times are indexed on the same scale. An example of a diagonal reporting triangle is one with daily reporting of daily data. The package also supports what we refer to as a ragged reporting triangle, an example of which would be daily reporting of data referenced only once per week.
-
-We will use the following to abbreviations to shorten names in the code:
-
-| **Long Name** | **Code Abbreviation** |
-|---------------|-----------------------|
-| reporting     | `rep`                 |
-| observed      | `obs`                 |
-| incomplete    | `inc`                 |
-| matrix        | `mat`                 |
-| point         | `pt`                  |
-| error         | `err`                 |
-
 # Point estimate of the delay distribution
 
 ## Estimate of the delay distribution from a reporting matrix
@@ -72,10 +49,10 @@ We will use the following to abbreviations to shorten names in the code:
 We can use a reporting matrix to compute an empirical estimate of the delay distribution, $\pi(d)$. The empirical delay distribution, $\pi(d)$ can be computed directly from the reporting matrix $X$
 
 $$
-\pi(d)= \frac{\sum_{t=1}^{t=t^*} X_{t,d}}{\sum_{d=0}^{D} \sum_{t=1}^{t=t^*} X_{t,d}}
+\pi(d)= \frac{\sum_{t=1}^{t=t^*} X_{t,d}}{\sum_{d'=0}^{D} \sum_{t=1}^{t=t^*} X_{t,d'}}
 $$
 
-Where the numerator is the sum of all the observations across reference times $t$ for a particular delay $d$, and the denominator is the sum across all reference times $t$ and delays $d$.
+Where the numerator is the sum of all the observations across reference times $t$ for a particular delay $d$ of interest, and the denominator is the sum across all reference times $t$ and indexed delays in the reporting matrix $d'$.
 
 ## Estimate of the delay distribution from a reporting triangle
 

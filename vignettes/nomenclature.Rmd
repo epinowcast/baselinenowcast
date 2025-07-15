@@ -1,0 +1,41 @@
+---
+title: "Nowcasting nomenclature"
+description: "Description of different nowcasting components and corresponding abbreviations"
+output:
+  bookdown::html_document2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+vignette: >
+  %\VignetteIndexEntry{Nowcasting nomenclature}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+Throughout this package, we will refer to different nowcasting object lists, matrices, and vectors using the following table.
+In this table, "point" refers to a point estimate. When not indicated, we are referring to a probabilistic draw from an observation model.
+
+| **Data Structure**                       | **Observations Only**                                                                                           | **Mixed (Obs + Predictions)**              | **Pure Predictions Only**                                                                     |
+  |------------------|------------------|------------------|------------------|
+  | **Matrix Format**                        | `reporting_matrix` (complete with observations)<br>`reporting_triangle` (contains NAs for missing observations) | `point_nowcast_matrix`<br>`nowcast_matrix` | `point_pred_matrix`<br>`pred_matrix` (contains NAs in elements where there were observations) |
+  | **List Format**                          | `reporting_matrix_list` (complete)<br>`reporting_triangle_list` (contains NAs for missing observations)         | `nowcast_matrix_list`                      | `pred_matrix_list`                                                                            |
+  | **Vector Format (summed across delays)** | `observed_cases`                                                                                                | `point_nowcast`<br>`nowcast`               | `point_pred`<br>`pred`                                                                        |
+  | **DataFrame Format**                     | \-                                                                                                              | `nowcast_df`                               | `pred_df`                                                                                     |
+
+  For example, we refer to the matrix with imputed point estimates for all $t+d>t^*$ as a point nowcast matrix, a matrix with a complete set of observations for all elements as a reporting matrix, and a matrix with only the predictions as a point prediction matrix.
+
+In package documentation, we will generally use a reporting triangle to refer to a diagonal reporting triangle, which is the special case of a reporting triangle where the reporting delays and reference times are indexed on the same scale. An example of a diagonal reporting triangle is one with daily reporting of daily data. The package also supports what we refer to as a ragged reporting triangle, an example of which would be daily reporting of data referenced only once per week.
+
+We will use the following to abbreviations to shorten names in the code:
+
+  | **Long Name** | **Code Abbreviation** |
+  |---------------|-----------------------|
+  | reporting     | `rep`                 |
+  | observed      | `obs`                 |
+  | incomplete    | `inc`                 |
+  | matrix        | `mat`                 |
+  | point         | `pt`                  |
+  | error         | `err`                 |

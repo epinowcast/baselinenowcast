@@ -44,9 +44,9 @@
   if (nrow(triangle) < n) {
     cli_abort(
       message = c(
-        "Number of observations in input data not sufficient for",
-        "user specified number of historical observations to use",
-        "for estimaton."
+        "Number of observations in input reporting triangle is insufficient",
+        "for the user specified number of historical observations to use",
+        "for delay estimaton."
       )
     )
   }
@@ -75,6 +75,34 @@
         "Reporting triangle contains NA values in elements other than ",
         "the bottom right of the matrix. Cannot produce nowcasts from this ",
         "triangle."
+      )
+    )
+  }
+
+  n_rows <- nrow(triangle)
+  has_complete_row <- any(
+    rowSums(is.na(triangle[(n_rows - n + 1):n_rows, ])) == 0
+  )
+  if (isFALSE(has_complete_row)) {
+    cli_abort(
+      message = c(
+        "The rows used for delay estimation in the reporting triangle must ",
+        "contain at least one row with no missing observations. Consider ",
+        "increasing `n` to ensure a complete row of the reporting triangle is ",
+        "being used for delay estimation."
+      )
+    )
+  }
+
+  if (isFALSE(.check_lhs_not_only_zeros(triangle[(n_rows - n + 1):n_rows, ]))) { # nolint
+    cli_abort(
+      message = c(
+        "The values for the recent reference times and delays only contain 0s,",
+        "which means the method to iteratively complete the reporting triangle",
+        "and estimate a delay PMF will be invalid. Consider increasing `n` to ",
+        "capture reference times that contain observations for early delays",
+        "or truncating to an earlier reference time to ensure a nowcast, ",
+        "not a forecast, is being produced. "
       )
     )
   }

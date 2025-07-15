@@ -1,10 +1,14 @@
 # baselinenowcast 0.0.0.1000
 
 -   Add new logo
+-   Add a check to ensure that there are sufficient non-zero values in the reporting triangle.
+-   Add a check to ensure that sufficient `n` are specified for the delay estimate.
+-   Change the requirement so that the number of rows used for delay estimation need not be greater than or equal to the number of columns, but instead that at least one row contains a full set of observations.
+-   Bug fix to change the requirement so that the sum of the elements in the `structure` vector must not be greater than the number of columns.
 -   Add support for passing in a restricted set of functions to the `estimate_dispersion()` function to transform the "target" dataset across reference dates.
 -   Implements a safe iterator in the step where retrospective point nowcasts are generated from a list of retrospective reporting triangles, ensuring that the iterations continue even if not all retrospective point nowcasts can be generated.
 -   Modify vignette to be consistent with the decided upon defaults for the number of reference times used for delay estimation and uncertainty.
--   Replace function named`replace_lower_right_with_NA()` with `generate_triangle()`.
+-   Replace function named `replace_lower_right_with_NA()` with `generate_triangle()`.
 -   Removes requirement that all elements of the reporting triangle are integers.
 -   Modify the method used to estimate dispersion. Instead of estimating dispersion on individual elements of the nowcast matrix, we now estimate dispersion on the predicted nowcasts summed across reporting dates as a function of forecast horizon.
 -   Standardises naming of objects that are matrices vs vectors and objects that contain observations, point estimates, and probabilistic draws.

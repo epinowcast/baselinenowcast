@@ -107,7 +107,7 @@
     )
   }
   first_na <- which(is.na(triangle[nrow(triangle), ]))[1]
-  if (!is.na(first_na) & first_na == 1) {
+  if (!is.na(first_na) && first_na == 1) {
     cli_abort(
       message = c(
         "The last row of the reporting triangle contains an NA in the first",

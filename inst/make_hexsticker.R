@@ -182,7 +182,8 @@ hex_plot <- ggplot() +
       y = pred_count,
       group = draw,
       color = "Nowcast draw"
-    )
+    ),
+    linewidth = 0.2
   ) +
   # Add observed data and final data once
   geom_line(

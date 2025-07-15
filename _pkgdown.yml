@@ -2,6 +2,7 @@ url: https://baselinenowcast.epinowcast.org/
 template:
   package: enwtheme
   math-rendering: mathjax
+  bootstrap: 5
 
 
 development:
@@ -21,6 +22,11 @@ navbar:
           href: articles/model_definition.html
         - text: "Nomenclature"
           href: articles/nomenclature.html
+
+# Code folding configuration
+code:
+  width: 72
+
 
 
 home:

@@ -2,9 +2,10 @@
 title: "Mathematical methods for `baselinenowcast`"
 description: "Description of mathematical methods used in the package"
 output:
-  bookdown::html_document2:
+  html_document:
     fig_caption: yes
     code_folding: show
+    toc: true
 pkgdown:
   as_is: true
 bibliography: library.bib

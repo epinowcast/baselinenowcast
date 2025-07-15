@@ -19,7 +19,7 @@ target_data <- germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
     latest_date = nowcast_date
   )
 
-# Filter observations for the latest available reported data 
+# Filter observations for the latest available reported data
 latest_data <- enw_latest_data(target_data)
 
 # Filter the observed data to include only the nowcast date
@@ -76,9 +76,9 @@ reporting_triangle <- reporting_triangle_df |>
 triangle_df <- as.data.frame(reporting_triangle) |>
   mutate(time = row_number()) |>
   pivot_longer(!time,
-               values_to = "count",
-               names_prefix = "V",
-               names_to = "delay"
+    values_to = "count",
+    names_prefix = "V",
+    names_to = "delay"
   ) |>
   mutate(delay = as.numeric(delay))
 
@@ -156,14 +156,13 @@ final_data_prepped <- target_data |>
 obs_with_nowcast_draws_df <- nowcast_draws_df |>
   left_join(latest_data_prepped, by = "time") |>
   left_join(final_data_prepped, by = "reference_date") |>
-   filter(reference_date >= "2021-07-01") 
+  filter(reference_date >= "2021-07-01")
 
 # Combine the nowcast draws with the observed and final confirmed counts
 combined_data <- obs_with_nowcast_draws_df |>
   select(reference_date, obs_confirm, final_confirm) |>
   distinct() |>
-  filter(reference_date >= "2021-07-01")
-  filter(reference_date >= "2021-07-01"
+  filter(reference_date >= "2021-07-01") |>
   pivot_longer(
     cols = c(obs_confirm, final_confirm),
     names_to = "type",
@@ -236,17 +235,17 @@ pp <- image_read(here("man", "figures", "logo.png"))
 
 # Helper function to fill corners with transparency
 fill_corner <- function(img, x, y, fuzz = 30) {
-  image_fill(img, 
-             color = "transparent",
-             refcolor = "white", 
-             fuzz = fuzz,
-             point = paste0("+", x, "+", y)
+  image_fill(img,
+    color = "transparent",
+    refcolor = "white",
+    fuzz = fuzz,
+    point = paste0("+", x, "+", y)
   )
 }
 
 fuzz <- 30
 
-logo <- fill_corner(pp , 1, 2, fuzz = fuzz) |>
+logo <- fill_corner(pp, 1, 2, fuzz = fuzz) |>
   fill_corner(image_info(pp)$width - 1, 2, fuzz = fuzz) |>
   fill_corner(1, image_info(pp)$height - 1, fuzz = fuzz) |>
   fill_corner(image_info(pp)$width - 1, image_info(pp)$height - 1, fuzz = fuzz)

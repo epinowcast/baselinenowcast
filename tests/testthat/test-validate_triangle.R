@@ -230,17 +230,6 @@ test_that(".validate_triangle doesn't error when matrix is valid", {
     nrow = 3
   )
   expect_no_error(.validate_triangle(valid_mat4))
-
-  valid_mat5 <- matrix(
-    c(
-      4, 2, 4, 5, 6,
-      1, 3, 1, 2, 3,
-      NA, NA, NA, NA, NA
-    ),
-    byrow = TRUE,
-    nrow = 3
-  )
-  expect_no_error(.validate_triangle(valid_mat5))
 })
 
 test_that(".validate_triangle errors appropriately based on rows used in matrix", { # nolint
@@ -280,4 +269,17 @@ test_that(".validate_triangle errors appropriately based on rows used in matrix"
     max_delay = 3,
     n = 5
   ))
+})
+
+test_that("valide_triangle errors if first NA is in the first column", {
+  invalid_mat5 <- matrix(
+    c(
+      4, 2, 4, 5, 6,
+      1, 3, 1, 2, 3,
+      NA, NA, NA, NA, NA
+    ),
+    byrow = TRUE,
+    nrow = 3
+  )
+  expect_error(.validate_triangle(invalid_mat5))
 })

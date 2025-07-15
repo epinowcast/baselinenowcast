@@ -162,7 +162,6 @@ obs_with_nowcast_draws_df <- nowcast_draws_df |>
 combined_data <- obs_with_nowcast_draws_df |>
   select(reference_date, obs_confirm, final_confirm) |>
   distinct() |>
-  filter(reference_date >= "2021-07-01") |>
   pivot_longer(
     cols = c(obs_confirm, final_confirm),
     names_to = "type",

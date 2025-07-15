@@ -155,7 +155,8 @@ final_data_prepped <- target_data |>
 # Join the nowcast draws with the latest observed data and final confirmed counts
 obs_with_nowcast_draws_df <- nowcast_draws_df |>
   left_join(latest_data_prepped, by = "time") |>
-  left_join(final_data_prepped, by = "reference_date")
+  left_join(final_data_prepped, by = "reference_date") |>
+   filter(reference_date >= "2021-07-01") 
 
 # Combine the nowcast draws with the observed and final confirmed counts
 combined_data <- obs_with_nowcast_draws_df |>

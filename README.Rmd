@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
   message = FALSE, warning = FALSE
 )
 ```
-# Baseline nowcast
+# Baseline nowcast <a href="https://baselinenowcast.epinowcast.org/"><img src="man/figures/logo.png" align="right" height="139" alt="baselinenowcast website" /></a>
 
 
 <!-- badges: start -->
@@ -92,9 +92,9 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 ### Code
 
 
-<a href="https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson">kaitejohnson</a>, 
-<a href="https://github.com/epinowcast/baselinenowcast/commits?author=seabbs">seabbs</a>, 
-<a href="https://github.com/epinowcast/baselinenowcast/commits?author=TimTaylor">TimTaylor</a>, 
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson">kaitejohnson</a>,
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=seabbs">seabbs</a>,
+<a href="https://github.com/epinowcast/baselinenowcast/commits?author=TimTaylor">TimTaylor</a>,
 <a href="https://github.com/epinowcast/baselinenowcast/commits?author=sbfnk">sbfnk</a>
 
 
@@ -102,7 +102,7 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 ### Issue Authors
 
 
-<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Ajonathonmellor">jonathonmellor</a>, 
+<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Ajonathonmellor">jonathonmellor</a>,
 <a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Aswo">swo</a>
 
 
@@ -110,7 +110,7 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 ### Issue Contributors
 
 
-<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajamesmbaazam">jamesmbaazam</a>, 
+<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajamesmbaazam">jamesmbaazam</a>,
 <a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher">jbracher</a>
 
 

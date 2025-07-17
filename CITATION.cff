@@ -9,6 +9,14 @@ type: software
 license: MIT
 title: 'baselinenowcast: Baseline nowcast from right-truncated epidemiological data'
 version: 0.1.0.1000
+logo: "man/figures/logo.png"
+keywords:
+  - epidemiology
+  - nowcasting
+  - public-health
+  - surveillance
+  - forecasting
+  - r-package
 doi: 10.5281/zenodo.13632839
 identifiers:
 - type: url

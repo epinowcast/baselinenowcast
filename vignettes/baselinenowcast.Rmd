@@ -5,6 +5,8 @@ output:
   bookdown::html_vignette2:
     fig_caption: yes
     code_folding: show
+    fig_width: 8
+    fig_height: 5
 pkgdown:
   as_is: true
 bibliography: library.bib
@@ -15,6 +17,20 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+```{r setup-chunk-options, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 5,
+  fig.align = "center",
+  out.width = "100%",
+  dpi = 150,
+  message = FALSE,
+  warning = FALSE
+)
+```
 
 # Introduction
 

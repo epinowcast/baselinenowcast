@@ -1,0 +1,61 @@
+---
+title: "Nowcasting NSSP data vignette"
+description: "A nowcasting example applied to data from NSSP"
+output:
+  bookdown::html_document2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{Getting Started with baselinenowcast}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+- Incorporate language from Rosa's description of Syndrome Selection for Nowcasting (explaining how the NSSP ESSENCE visit records dataset works)
+- How diseases are defined (diagnosis codes + clinical notes or a combination + exclusion criteria)
+- syndromic surveillance relying solely on presence of diangosis codes are best for this
+
+
+# NSSP data cleaning
+
+ - Explain that we are pulling in data that looks like what you might query from the ESSENCE API (actually represents a small number of simulated records that mirror NSSP update fields)
+ - Goal is to turn the line list's time stamp and update columns into a long format with one row per update
+ - Filter through the updates to find the first "hit" that corresponds to the pathogen/syndrome of interest (this might be one ICD10 or a list of ICD10s)
+ - The first update time represents the date of reporting of the diagnosis, and the visit time represents the data in which the reference event, in this case the date of the visit, occurred.
+ - Summarise the data in long format, obtaining a cleaned long tidy dataframe containing the counts of admissions on each reference date (visit date) and report date (update date).
+ - Explain that we will be pretending to make a nowcast as of some nowcast date in the past ( so we will filter for all report dates before that time).
+
+# Pre-processing
+
+ - Explain that we will be using data that looks just like the cleaned long tidy dataframe above, but is much larger. If following along with real-data, its not necessary to load in another dataset here.
+ - Calculate the delay time by taking the difference between the report date and the reference date
+
+# Exploratory data analysis to identify an appropriate maximum delay
+
+ - Estimate the delay distribution across all the data and plot the PDF/CDF
+ - Find the maximum but getting the 99th quantile or eyeballing it
+
+# Run baselinenowcast to generate a probabilistic nowcast
+
+ - Pass the long tidy dataframe and the maximum delay into the `baselinenowcast()` function.
+ - Generate a probabilistic nowcast
+
+# Plot and summarise the nowcast
+
+ - Compute the median and 50th and 95th percent quantiles
+ - Make a plot of the nowcast compared to the unadjusted data
+
+# Evaluate against later observed "final" data
+
+ - Generate the final data in the correct format and plot this alongside the nowcast.
+
+ # Compare to what was later observed
+
+ - Load in a dataset that contains data out beyond the max delay + the nowcast date

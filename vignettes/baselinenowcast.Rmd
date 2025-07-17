@@ -95,7 +95,7 @@ head(observed_data)
 ```
 
 Using the observed data as of the nowcast date (`observed_data`) and the `enw_latest_data()` function, we will make a plot of the latest total number of confirmed cases at each reference date.
-```{r, plot-data, height = 5, width = 9, class.source = "fold-hide"}
+```{r, plot-data, out.width = '100%', class.source = "fold-hide"}
 obs_data_by_reference_date <- enw_latest_data(observed_data)
 ggplot() +
   geom_line(
@@ -203,7 +203,7 @@ reporting_triangle <- reporting_triangle_df |>
   as.matrix()
 ```
 
-```{r make-heatmap-reporting-triangle, height = 9, width = 9, class.source = "fold-hide"}
+```{r make-heatmap-reporting-triangle, out.width = '100%', class.source = "fold-hide"}
 triangle_df <- as.data.frame(reporting_triangle) |>
   mutate(time = row_number()) |>
   pivot_longer(!time,
@@ -239,7 +239,7 @@ delay_pmf <- get_delay_estimate(
   n = n_history_delay
 )
 ```
-```{r plot-delay, height = 18, width = 9, class.source = "fold-hide"}
+```{r plot-delay, out.width = '100%', class.source = "fold-hide"}
 delay_df <- data.frame(
   delay = 0:(length(delay_pmf) - 1),
   pmf = delay_pmf
@@ -278,7 +278,7 @@ point_nowcast_matrix <- apply_delay(
 
 We'll make a quick plot to compare our point estimate of the nowcasted confirmed cases through August 1, 2021, to the "final" observations from October 1, 2021 and to the right-truncated data available up until August 1, 2021.
 
-```{r, height = 5, width = 9, class.source = "fold-hide"}
+```{r, out.width = '100%', class.source = "fold-hide"}
 point_nowcast_df <- eval_data |>
   mutate(nowcast = rowSums(point_nowcast_matrix))
 
@@ -420,7 +420,7 @@ combined_data <- obs_with_nowcast_draws_df |>
     type == "final_confirm" ~ "Final observed data"
   ))
 ```
-```{r plot-probablistic-nowcasts, height = 5, width = 9, class.source = "fold-hide"}
+```{r plot-probablistic-nowcasts, out.width = '100%', class.source = "fold-hide"}
 # Plot with draws for nowcast only
 ggplot() +
   # Add nowcast draws as thin gray lines

@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Baseline nowcast
+# Baseline nowcast <a href="https://baselinenowcast.epinowcast.org/"><img src="man/figures/logo.png" align="right" height="139" alt="baselinenowcast website" /></a>
 
 <!-- badges: start -->
 

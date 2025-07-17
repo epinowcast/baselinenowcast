@@ -8,6 +8,7 @@ output:
     toc: true
 pkgdown:
   as_is: true
+  extension: html
 bibliography: library.bib
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 link-citations: true

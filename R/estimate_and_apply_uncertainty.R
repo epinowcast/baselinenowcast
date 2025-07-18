@@ -1,7 +1,7 @@
 #' Estimate and apply uncertainty to a point nowcast matrix
 #'
 #' @inheritParams estimate_delay
-#' @inheritParams estimate_uncertainty
+#' @inheritParams sample_nowcasts
 #' @param n_retrospective_nowcasts Integer indicating the number of reference
 #'    times to use as retrospective nowcast time. Default is 1.5* the maximum
 #'    delay

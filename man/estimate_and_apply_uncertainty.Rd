@@ -16,6 +16,10 @@ estimate_and_apply_uncertainty(
 )
 }
 \arguments{
+\item{point_nowcast_matrix}{Matrix of point nowcast predictions and
+observations, with rows representing the reference times and columns
+representing the delays.}
+
 \item{reporting_triangle}{Matrix of the reporting triangle, with rows
 representing the time points of reference and columns representing the
 delays. Can be a reporting matrix or incomplete reporting matrix.
@@ -29,6 +33,9 @@ of the delay. The default is to use the whole reporting triangle,
 \item{n_retrospective_nowcasts}{Integer indicating the number of reference
 times to use as retrospective nowcast time. Default is 1.5* the maximum
 delay}
+
+\item{draws}{Integer indicating the number of draws of the predicted
+nowcast vector to generate. Default is \code{1000}.}
 
 \item{error_model}{Character string indicating what error model to use.
 Default is \code{"negative binomial"}}

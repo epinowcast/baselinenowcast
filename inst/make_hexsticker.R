@@ -117,7 +117,7 @@ trunc_rep_tri_list <- truncate_triangles(
 )
 
 # Generate reporting triangles
-retro_rep_tri_list <- construnct_triangles(trunc_rep_tri_list)
+retro_rep_tri_list <- construct_triangles(trunc_rep_tri_list)
 
 # Generate retrospective point nowcasts
 retro_pt_nowcast_mat_list <- sample_predictions(

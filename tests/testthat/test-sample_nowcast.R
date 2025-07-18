@@ -1,4 +1,4 @@
-test_that("get_nowcast_draw: returns a vector of correct length", {
+test_that("sample_nowcast: returns a vector of correct length", {
   point_nowcast_matrix <- matrix(
     c(
       100, 50, 30, 20,
@@ -11,7 +11,7 @@ test_that("get_nowcast_draw: returns a vector of correct length", {
   dispersion <- c(0.8, 12.4)
   reporting_triangle <- generate_triangle(point_nowcast_matrix)
 
-  result <- get_nowcast_draw(
+  result <- sample_nowcast(
     point_nowcast_matrix,
     reporting_triangle,
     dispersion

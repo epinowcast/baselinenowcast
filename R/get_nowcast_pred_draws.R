@@ -218,16 +218,16 @@ get_nowcast_pred_draws <- function(point_nowcast_matrix,
 #' )
 #' reporting_triangle <- generate_triangle(point_nowcast_matrix)
 #' disp <- c(0.8, 12.4, 9.1)
-#' nowcast_draw <- get_nowcast_draw(
+#' nowcast_draw <- sample_nowcast(
 #'   point_nowcast_matrix,
 #'   reporting_triangle,
 #'   disp
 #' )
 #' nowcast_draw
-get_nowcast_draw <- function(point_nowcast_matrix,
-                             reporting_triangle,
-                             dispersion,
-                             ...) {
+sample_nowcast <- function(point_nowcast_matrix,
+                           reporting_triangle,
+                           dispersion,
+                           ...) {
   # Generate a single draw of the predictions
   pred_counts <- get_nowcast_pred_draw(
     point_nowcast_matrix,
@@ -268,22 +268,22 @@ get_nowcast_draw <- function(point_nowcast_matrix,
 #' )
 #' reporting_triangle <- generate_triangle(point_nowcast_matrix)
 #' disp <- c(0.8, 12.4, 9.1)
-#' nowcast_draws <- get_nowcast_draws(
+#' nowcast_draws <- sample_nowcasts(
 #'   point_nowcast_matrix,
 #'   reporting_triangle,
 #'   disp,
 #'   draws = 5
 #' )
 #' nowcast_draws
-get_nowcast_draws <- function(point_nowcast_matrix,
-                              reporting_triangle,
-                              dispersion,
-                              draws = 1000,
-                              ...) {
+sample_nowcasts <- function(point_nowcast_matrix,
+                            reporting_triangle,
+                            dispersion,
+                            draws = 1000,
+                            ...) {
   reference_times <- seq_len(nrow(point_nowcast_matrix))
 
   draws_df_list <- lapply(seq_len(draws), function(i) {
-    pred_counts <- get_nowcast_draw(
+    pred_counts <- sample_nowcast(
       point_nowcast_matrix,
       reporting_triangle,
       dispersion,

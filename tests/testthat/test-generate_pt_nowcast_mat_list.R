@@ -97,7 +97,7 @@ test_that("generate_pt_nowcast_mat_list custom n_history_delay is respected", {
   )
   # Compare to estimate using n=5
   first_triangle <- result[[1]]
-  delay_pmf <- get_delay_estimate(retro_rts_list[[1]],
+  delay_pmf <- estimate_delay(retro_rts_list[[1]],
     n = 5
   )
   exp_first_triangle <- apply_delay(retro_rts_list[[1]], delay_pmf)
@@ -218,7 +218,7 @@ test_that("generate_pt_nowcast_mat_list uses full number of rows in n_history_de
   complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
   complete_triangle <- do.call(rbind, complete_triangle)
 
-  check_pmf <- get_delay_estimate(complete_triangle, n = 7)
+  check_pmf <- estimate_delay(complete_triangle, n = 7)
   check_pmf
 
   # Create a reporting triangle with NAs in the lower right
@@ -249,7 +249,7 @@ test_that("generate_pt_nowcast_mat_list uses full number of rows in n_history_de
   )
   # Get the empirical pmfs in your two pt nowcast matrices with the first row
   # included
-  pmf_list <- lapply(retro_pt_nowcast_mat_list, get_delay_estimate)
+  pmf_list <- lapply(retro_pt_nowcast_mat_list, estimate_delay)
   expect_equal(pmf_list[[1]], sim_delay_pmf, tol = 0.02) # Here we get back
   # what we put in bc it doesn't use the first row
   expect_failure(expect_equal(pmf_list[[2]], sim_delay_pmf, tol = 0.02)) # Here
@@ -262,7 +262,7 @@ test_that("generate_pt_nowcast_mat_list uses full number of rows in n_history_de
     n = 4
   )
 
-  pmf_list2 <- lapply(retro_pt_nowcast_mat_list2, get_delay_estimate)
+  pmf_list2 <- lapply(retro_pt_nowcast_mat_list2, estimate_delay)
   # Both are returning the original pmf bc they dont use the modified one
   expect_equal(pmf_list2[[1]], sim_delay_pmf, tol = 0.02)
   expect_equal(pmf_list2[[2]], sim_delay_pmf, tol = 0.02)

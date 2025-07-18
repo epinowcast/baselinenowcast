@@ -269,10 +269,10 @@ Here, the grey indicates matrix elements that are `NA`, which we would expect to
 Now that we have the reporting triangle, we are now ready to pass it in to the `baselinenowcast` package to estimate the delay distribution.
 We will tell the function the maximum delay and the number of observations we want to use for estimation.
 We only want to pass in the reporting triangle (for a single group!) to this function.
-See documentation for `get_delay_estimate()` for a full description of the function inputs.
+See documentation for `estimate_delay()` for a full description of the function inputs.
 
 ``` r
-delay_pmf <- get_delay_estimate(
+delay_pmf <- estimate_delay(
   reporting_triangle = reporting_triangle,
   max_delay = max_delay,
   n = n_history_delay

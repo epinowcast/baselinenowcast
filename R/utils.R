@@ -64,7 +64,7 @@
 
 #' Extract from one matrix only elements that are missing in another
 #'
-#' @inheritParams get_nowcast_pred_draws
+#' @inheritParams sample_predictions
 #' @returns Matrix containing the elements from `point_nowcast_matrix` for
 #'    only the elements that are missing in `reporting_triangle`
 #' @keywords internal

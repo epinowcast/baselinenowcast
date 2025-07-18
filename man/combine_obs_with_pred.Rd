@@ -80,7 +80,7 @@ reporting_matrix <- matrix(
   nrow = 4,
   byrow = TRUE
 )
-reporting_triangle <- generate_triangle(reporting_matrix)
+reporting_triangle <- construct_triangle(reporting_matrix)
 combine_obs_with_pred(pred_counts, reporting_triangle)
 
 # Another example with rolling sum

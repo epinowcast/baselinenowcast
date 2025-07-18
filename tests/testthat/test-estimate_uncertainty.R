@@ -116,7 +116,7 @@ test_that("estimate_uncertainty throws an error if function to aggregate is not 
   ))
 })
 
-test_that("estimate_uncertainty works correctly with default and n parameters", {
+test_that("estimate_uncertainty works correctly with default and n parameters", { # nolint
   result_default <- estimate_uncertainty(
     valid_nowcasts,
     valid_trunc_rts,
@@ -172,7 +172,11 @@ test_that("estimate_uncertainty: Error conditions are properly handled", {
   ))
 
   # pt nowcast contains NAs or is empty
-  expect_error(estimate_uncertainty(valid_trunc_rts, valid_trunc_rts, valid_rts))
+  expect_error(estimate_uncertainty(
+    valid_trunc_rts,
+    valid_trunc_rts,
+    valid_rts
+  ))
   expect_error(estimate_uncertainty(list(), valid_trunc_rts, valid_rts))
 
   # trunc rep mat list is empty
@@ -237,7 +241,11 @@ test_that(".fit_nb: Passing in empty vector returns NA", {
 test_that("estimate_uncertainty returns an estimate if passing in a NULL for a nowcast", { # nolint
   nowcasts_with_null <- list(nowcast1, NULL)
   # This should work, using only the first nowcast and first valid_trunc_rts
-  result1 <- estimate_uncertainty(nowcasts_with_null, valid_trunc_rts, valid_rts)
+  result1 <- estimate_uncertainty(
+    nowcasts_with_null,
+    valid_trunc_rts,
+    valid_rts
+  )
   result_to_compare <- estimate_uncertainty(
     list(nowcast1),
     list(valid_trunc_rts[[1]]),

@@ -258,7 +258,7 @@ test_that("estimate_uncertainty returns an error if passing in only NULLs", {
   expect_error(estimate_uncertainty(list(NULL), valid_trunc_rts, valid_rts))
 })
 
-test_that("estimate_uncertainty accepts output of generate_pt_nowcast_mat_list ", { # nolint
+test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
   base_tri <- matrix(
     c(
       89, 54, 10, 5,
@@ -315,7 +315,7 @@ test_that("estimate_uncertainty accepts output of generate_pt_nowcast_mat_list "
   retro_rts_list <- list(test_triangle_1, test_triangle_2, triangle3)
 
   pt_nowcast_list <- expect_message(
-    generate_pt_nowcast_mat_list(retro_rts_list)
+    fill_triangles(retro_rts_list)
   )
   trunc_rep_tri_list <- truncate_triangles(base_tri)
   rt_list <- generate_triangles(trunc_rep_tri_list)
@@ -351,7 +351,7 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
   retro_rts <- generate_triangles(trunc_rts, structure = 2)
 
   # Generate nowcasts from the ragged triangles
-  retro_nowcasts <- generate_pt_nowcast_mat_list(retro_rts)
+  retro_nowcasts <- fill_triangles(retro_rts)
 
   # Estimate dispersion parameters
   disp_params <- estimate_uncertainty(
@@ -378,11 +378,11 @@ test_that("estimate_uncertainty: works as expected with perfect data", {
   triangle <- generate_triangle(rep_mat)
   reporting_triangle <- rbind(rep_mat, triangle)
 
-  pt_nowcast_mat <- generate_pt_nowcast_mat(reporting_triangle)
+  pt_nowcast_mat <- fill_triangle(reporting_triangle)
   trunc_rep_tri_list <- truncate_triangles(reporting_triangle)
   reporting_triangle_list <- generate_triangles(trunc_rep_tri_list)
 
-  pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(reporting_triangle_list)
+  pt_nowcast_mat_list <- fill_triangles(reporting_triangle_list)
 
   dispersion <- estimate_uncertainty(
     pt_nowcast_mat_list,
@@ -407,7 +407,7 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
   reporting_triangle <- rbind(rep_mat, triangle)
 
 
-  pt_nowcast_mat <- generate_pt_nowcast_mat(reporting_triangle)
+  pt_nowcast_mat <- fill_triangle(reporting_triangle)
 
 
   # in order from horizon 1 to 4, set as a high value to approximate Poisson
@@ -434,7 +434,7 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
   trunc_rep_tri_list <- truncate_triangles(rep_tri_new)
   reporting_triangle_list <- generate_triangles(trunc_rep_tri_list)
 
-  pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(reporting_triangle_list)
+  pt_nowcast_mat_list <- fill_triangles(reporting_triangle_list)
 
   dispersion <- estimate_uncertainty(
     pt_nowcast_mat_list,
@@ -473,7 +473,7 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
   reporting_triangle <- rbind(rep_mat, rep_mat, rep_mat, rep_mat, triangle)
 
 
-  pt_nowcast_mat <- generate_pt_nowcast_mat(reporting_triangle)
+  pt_nowcast_mat <- fill_triangle(reporting_triangle)
 
   # Create truncated reporting triangles by sampling elements of triangle
   # from Poisson distribution

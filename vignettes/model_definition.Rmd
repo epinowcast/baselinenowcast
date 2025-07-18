@@ -80,7 +80,7 @@ The method requires at least one observation, at delay $d=0$ for the most recent
 
 The delay distribution is then estimated from the filled in reporting matrix, using the same algorithm as described above for the case of the complete reporting square.
 
-The `get_delay_estimate()` function ingests either a reporting matrix, an incomplete reporting matrix, or a reporting triangle and uses the last `n` rows to compute an empirical delay probability mass function (returning a simplex vector indexed starting at delay 0).
+The `estimate_delay()` function ingests either a reporting matrix, an incomplete reporting matrix, or a reporting triangle and uses the last `n` rows to compute an empirical delay probability mass function (returning a simplex vector indexed starting at delay 0).
 
 # Generation of a point nowcast matrix from a delay distribution and a reporting triangle
 
@@ -108,7 +108,7 @@ To estimate the uncertainty in the nowcasts, we use past nowcast errors and assu
 
 We describe a method which generates retrospective reporting triangles to replicate what would have been available as of time $t^*=s^*$, where $s^* = t^*-m$ for $m = 1, 2, ... M$ to generate $M$ retrospective reporting triangles.
 
-To generate the set of $M$ reporting triangles, we work backwards from most recent to oldest, removing the last $m$ rows of the existing reporting triangle, to generate $M$ truncated reporting triangles. These can be generated from a reporting triangle with the function `truncate_triangles()` which ingests a single reporting triangle and returns a list of `n` truncated reporting containing only observations and missing values if present. We then replace the bottom right triangle with NAs, assuming these would not have been observed as of $s^*$, using the function `generate_triangles()` which returns a list of `n` retrospective reporting triangles, again in order from most recent to oldest.
+To generate the set of $M$ reporting triangles, we work backwards from most recent to oldest, removing the last $m$ rows of the existing reporting triangle, to generate $M$ truncated reporting triangles. These can be generated from a reporting triangle with the function `truncate_triangles()` which ingests a single reporting triangle and returns a list of `n` truncated reporting containing only observations and missing values if present. We then replace the bottom right triangle with NAs, assuming these would not have been observed as of $s^*$, using the function `construct_triangles()` which returns a list of `n` retrospective reporting triangles, again in order from most recent to oldest.
 
 The method uses each retrospective reporting triangle to re-estimate a delay distribution using the $N$ preceding reference times of the retrospective reporting triangle before $s^*$, and recomputes a retrospective point nowcast matrix, for $M$ realizations of the retrospective reporting triangle (so $M$ different $s^*$ values).
 
@@ -116,7 +116,7 @@ Thus in order to estimate uncertainty using $N$ reference times, the total train
 
 ## Generation of retrospective point nowcast matrices
 
-From the $M$ reporting triangles, we apply the method described above to estimate a delay distribution from a reporting triangle and generate a point nowcast for each reporting triangle, to generate $M$ point nowcasts. The function `generate_point_nowcasts()` ingests the list of reporting triangles, estimates a delay distribution for each, and generates a list of point nowcast matrices.
+From the $M$ reporting triangles, we apply the method described above to estimate a delay distribution from a reporting triangle and generate a point nowcast for each reporting triangle, to generate $M$ point nowcasts. The function `fill_triangles()` ingests the list of reporting triangles, estimates a delay distribution for each, and generates a list of point nowcast matrices.
 
 ## Fit predicted point nowcast vectors and observed counts to a negative binomial observation model at each forecast horizon
 
@@ -136,7 +136,7 @@ $$ for all $s^* = 1, ..., M$.
 
 We add a small number (0.1) to the mean to avoid an ill-defined negative binomial.
 
-The function `estimate_dispersion()` ingests a list of reporting triangles representing the data available for each reference time, a list of point nowcast matrices representing the nowcasts for each reference time, and a list of truncated reporting matrices representing the observations for each reference time. It returns a vector of negative binomial dispersion parameters indexed starting at forecast horizon $j = 1$.
+The function `estimate_uncertainty()` ingests a list of reporting triangles representing the data available for each reference time, a list of point nowcast matrices representing the nowcasts for each reference time, and a list of truncated reporting matrices representing the observations for each reference time. It returns a vector of negative binomial dispersion parameters indexed starting at forecast horizon $j = 1$.
 
 # Generate probabilistic nowcasts
 
@@ -148,4 +148,4 @@ $$
 
 We can sample for any number of draws, and then use the draws to compute any desired quantiles to summarize the outputs.
 
-The function `get_nowcast_pred_draws()` ingests a point nowcast prediction matrix (containing only the predicted elements, not the observations in the reporting triangle), the dispersion parameters, and the number of draws to sample and generates a dataframe of predicted point nowcasts for each reference time. We can then join this to the original data in long form by reference date and reporting date in order to generate the probabilistic nowcasts as the sum of the predicted total count from each draw and the observed count for each reference time as of the final reference time.
+The function `sample_predictions()` ingests a point nowcast prediction matrix (containing only the predicted elements, not the observations in the reporting triangle), the dispersion parameters, and the number of draws to sample and generates a dataframe of predicted point nowcasts for each reference time. We can then join this to the original data in long form by reference date and reporting date in order to generate the probabilistic nowcasts as the sum of the predicted total count from each draw and the observed count for each reference time as of the final reference time.

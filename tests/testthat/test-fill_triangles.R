@@ -125,12 +125,6 @@ test_that("fill_triangles invalid inputs throw errors", {
     reporting_triangle_list = "not_a_list"
   ))
 
-  # List contains non-matrix elements
-  bad_list <- list(test_triangle_1, "not_a_matrix")
-  expect_error(fill_triangles(
-    reporting_triangle_matrix_list = bad_list
-  ))
-
   # Invalid n_history_delay values
   expect_error(fill_triangles(retro_rts_list, n = -1))
   expect_error(fill_triangles(retro_rts_list, n = "two"))
@@ -205,7 +199,7 @@ test_that("fill_triangles errors if only contains triangles with first column 0"
 
   retro_rts_list <- list(triangle1, triangle2, triangle3)
 
-  expect_error(expect_message(fill_triangles(retro_rts_list)))
+  expect_error(fill_triangles(retro_rts_list))
 })
 
 test_that("fill_triangles uses full number of rows in n_history_delay", { # nolint

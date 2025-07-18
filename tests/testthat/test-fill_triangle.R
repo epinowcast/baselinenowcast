@@ -118,7 +118,7 @@ test_that("fill_triangle generates the correct result on a ragged triangle", { #
   # Create a complete triangle based on the known delay PMF
   triangle <- lapply(partial_counts, function(x) x * delay_pmf)
   triangle <- do.call(rbind, triangle)
-  triangle <- generate_triangle(triangle, structure = c(1, 2))
+  triangle <- construct_triangle(triangle, structure = c(1, 2))
 
   result <- fill_triangle(
     triangle
@@ -135,7 +135,7 @@ test_that("fill_triangle generates the correct result on a ragged triangle with 
   # Create a complete triangle based on the known delay PMF
   triangle <- lapply(partial_counts, function(x) x * delay_pmf)
   triangle <- do.call(rbind, triangle)
-  triangle <- generate_triangle(triangle, structure = c(1, 2))
+  triangle <- construct_triangle(triangle, structure = c(1, 2))
 
   result <- fill_triangle(
     triangle
@@ -152,7 +152,7 @@ test_that("fill_triangle errors when there are insufficient observations", { # n
   # Create a complete triangle based on the known delay PMF
   triangle <- lapply(partial_counts, function(x) x * delay_pmf)
   triangle <- do.call(rbind, triangle)
-  triangle <- generate_triangle(triangle, structure = c(1, 2))
+  triangle <- construct_triangle(triangle, structure = c(1, 2))
 
   expect_error(fill_triangle(
     triangle

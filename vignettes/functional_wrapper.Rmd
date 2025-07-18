@@ -12,7 +12,7 @@ bibliography: library.bib
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 link-citations: true
 vignette: >
-  %\VignetteIndexEntry{Getting Started with baselinenowcast}
+  %\VignetteIndexEntry{Wrapper functions for baselinenowcast}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -95,4 +95,3 @@ nowcast_draws_df <- estimate_and_apply_uncertainty(
   max_delay
 )
 ```
-

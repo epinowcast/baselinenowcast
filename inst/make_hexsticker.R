@@ -120,7 +120,7 @@ trunc_rep_tri_list <- truncate_triangles(
 retro_rep_tri_list <- construct_triangles(trunc_rep_tri_list)
 
 # Generate retrospective point nowcasts
-retro_pt_nowcast_mat_list <- sample_predictions(
+retro_pt_nowcast_mat_list <- fill_triangles(
   reporting_triangle_list = retro_rep_tri_list,
   n = n_history_delay
 )
@@ -134,7 +134,7 @@ disp_params <- estimate_uncertainty(
 )
 
 # Generate multiple draws of a nowcast combining observed and predicted values
-nowcast_draws_df <- get_nowcast_draws(
+nowcast_draws_df <- sample_nowcasts(
   point_nowcast_matrix,
   reporting_triangle,
   dispersion = disp_params,

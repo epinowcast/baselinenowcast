@@ -3,7 +3,7 @@
 export(apply_delay)
 export(combine_obs_with_pred)
 export(estimate_delay)
-export(estimate_dispersion)
+export(estimate_uncertainty)
 export(generate_pt_nowcast_mat)
 export(generate_pt_nowcast_mat_list)
 export(generate_triangle)

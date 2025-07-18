@@ -325,7 +325,7 @@ In subsequent steps to estimate the uncertainty, both delay estimation and gener
 
 ``` r
 point_nowcast_matrix <- apply_delay(
-  rep_tri_to_nowcast = reporting_triangle,
+  reporting_triangle = reporting_triangle,
   delay_pmf = delay_pmf
 )
 ```

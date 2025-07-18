@@ -287,7 +287,7 @@ It is worth noting that we could also have estimated the delay and applied it in
 In subsequent steps to estimate the uncertainty, both delay estimation and generating a point nowcast matrix happen in a single step.
 ```{r generate-pt-nowcast-matrix}
 point_nowcast_matrix <- apply_delay(
-  rep_tri_to_nowcast = reporting_triangle,
+  reporting_triangle = reporting_triangle,
   delay_pmf = delay_pmf
 )
 ```

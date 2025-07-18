@@ -25,7 +25,7 @@
 #'   nrow = 5,
 #'   byrow = TRUE
 #' )
-#' reporting_triangle <- generate_triangle(point_nowcast_matrix)
+#' reporting_triangle <- construct_triangle(point_nowcast_matrix)
 #' disp <- c(0.8, 12.4, 9.1)
 #' nowcast_pred_draw <- sample_prediction(
 #'   point_nowcast_matrix,
@@ -148,7 +148,7 @@ combine_obs_with_pred <- function(predicted_counts,
 #'   nrow = 5,
 #'   byrow = TRUE
 #' )
-#' reporting_triangle <- generate_triangle(point_nowcast_matrix)
+#' reporting_triangle <- construct_triangle(point_nowcast_matrix)
 #' disp <- c(0.8, 12.4, 9.1)
 #' nowcast_pred_draws <- sample_predictions(
 #'   point_nowcast_matrix,
@@ -216,7 +216,7 @@ sample_predictions <- function(point_nowcast_matrix,
 #'   nrow = 5,
 #'   byrow = TRUE
 #' )
-#' reporting_triangle <- generate_triangle(point_nowcast_matrix)
+#' reporting_triangle <- construct_triangle(point_nowcast_matrix)
 #' disp <- c(0.8, 12.4, 9.1)
 #' nowcast_draw <- sample_nowcast(
 #'   point_nowcast_matrix,
@@ -266,7 +266,7 @@ sample_nowcast <- function(point_nowcast_matrix,
 #'   nrow = 5,
 #'   byrow = TRUE
 #' )
-#' reporting_triangle <- generate_triangle(point_nowcast_matrix)
+#' reporting_triangle <- construct_triangle(point_nowcast_matrix)
 #' disp <- c(0.8, 12.4, 9.1)
 #' nowcast_draws <- sample_nowcasts(
 #'   point_nowcast_matrix,

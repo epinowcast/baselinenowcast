@@ -41,7 +41,7 @@ point_nowcast_matrix <- matrix(
   nrow = 5,
   byrow = TRUE
 )
-reporting_triangle <- generate_triangle(point_nowcast_matrix)
+reporting_triangle <- construct_triangle(point_nowcast_matrix)
 disp <- c(0.8, 12.4, 9.1)
 nowcast_draw <- sample_nowcast(
   point_nowcast_matrix,

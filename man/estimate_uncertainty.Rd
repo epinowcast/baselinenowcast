@@ -65,7 +65,7 @@ triangle <- matrix(
 )
 
 trunc_rts <- truncate_triangles(triangle, n = 2)
-retro_rts <- generate_triangles(trunc_rts)
+retro_rts <- construct_triangles(trunc_rts)
 
 retro_nowcasts <- generate_pt_nowcast_mat_list(retro_rts, n = 5)
 disp_params <- estimate_uncertainty(

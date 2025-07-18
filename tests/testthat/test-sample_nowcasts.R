@@ -216,7 +216,7 @@ test_that("sample_nowcasts: longer k aggregates correctly", {
   )
   triangle <- generate_triangle(rep_mat)
 
-  pt_nowcast_mat <- generate_pt_nowcast_mat(triangle)
+  pt_nowcast_mat <- fill_triangle(triangle)
   dispersion <- c(10, 10, 10)
 
   expected_mean <- rollapply(rowSums(pt_nowcast_mat),

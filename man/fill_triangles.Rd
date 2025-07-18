@@ -57,7 +57,7 @@ triangle <- matrix(
 )
 
 trunc_rts <- truncate_triangles(triangle)
-retro_rts <- generate_triangles(trunc_rts)
+retro_rts <- construct_triangles(trunc_rts)
 retro_pt_nowcast_mat_list <- fill_triangles(retro_rts)
 retro_pt_nowcast_mat_list[1:3]
 }

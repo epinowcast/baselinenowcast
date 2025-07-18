@@ -5,7 +5,7 @@
 #'   representing the delays.
 #' @param dispersion Vector of dispersion parameters indexed by horizon from
 #'  minus one to the maximum delay.
-#' @inheritParams get_delay_estimate
+#' @inheritParams estimate_delay
 #' @inheritParams estimate_dispersion
 #'
 #' @returns Vector of predicted draws at each reference time, for all reference

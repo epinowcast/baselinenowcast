@@ -5,7 +5,7 @@
 #' @importFrom checkmate assert_integerish
 #' @importFrom checkmate assert_matrix
 #' @importFrom cli cli_abort
-#' @inheritParams get_delay_estimate
+#' @inheritParams estimate_delay
 #' @returns NULL, invisibly
 #' @keywords internal
 .validate_triangle <- function(

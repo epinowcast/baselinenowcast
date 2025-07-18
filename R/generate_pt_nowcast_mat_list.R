@@ -7,7 +7,7 @@
 #'   reporting triangle.
 #'
 #' @inheritParams estimate_dispersion
-#' @inheritParams get_delay_estimate
+#' @inheritParams estimate_delay
 #' @param n Integer indicating the number of reference times
 #'    (number of rows) to use to estimate the delay distribution for each
 #'    reporting triangle. Default is the minimum of the number of rows of
@@ -136,7 +136,7 @@ generate_pt_nowcast_mat_list <- function(reporting_triangle_list,
 #'    starting at the first delay column in `reporting_triangle`.
 #'    Default is `NULL`, which will estimate a delay from the
 #'    `reporting_triangle`.
-#' @inheritParams get_delay_estimate
+#' @inheritParams estimate_delay
 #' @returns `point_nowcast_matrix` Matrix of the same number of rows and
 #'   columns as the `reporting_triangle` but with the missing values filled
 #'   in as point estimates.
@@ -186,7 +186,7 @@ generate_pt_nowcast_mat <- function(reporting_triangle,
   }
   .validate_triangle(reporting_triangle)
   if (is.null(delay_pmf)) {
-    delay_pmf <- get_delay_estimate(
+    delay_pmf <- estimate_delay(
       reporting_triangle = reporting_triangle,
       max_delay = max_delay,
       n = n

@@ -1,5 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
+-   Replace argument names with more complete versions where possible.
 -   Replace most function names with action-oriented function naming.
 -   Add new logo.
 -   Add a check to ensure that there are sufficient non-zero values in the reporting triangle.

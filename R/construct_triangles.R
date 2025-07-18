@@ -6,7 +6,7 @@
 #'   (from most recent retrospective nowcast time to oldest retrospective
 #'   nowcast time).
 #'
-#' @param trunc_rep_tri_list List of `n` truncated reporting triangle
+#' @param truncated_reporting_triangles List of `n` truncated reporting triangle
 #'   matrices with as many rows as available given the truncation.
 #' @inheritParams construct_triangle
 #' @returns `reporting_triangle_list` List of retrospective reporting triangles,
@@ -38,16 +38,16 @@
 #'   structure = 2
 #' )
 #' retro_rts_custom
-construct_triangles <- function(trunc_rep_tri_list, structure = 1) {
+construct_triangles <- function(truncated_reporting_triangles, structure = 1) {
   # Check that input is a list of matrices
-  if (!is.matrix(trunc_rep_tri_list[[1]])) {
+  if (!is.matrix(truncated_reporting_triangles[[1]])) {
     cli_abort(
       message = "The elements of `reporting_triangle_list` must be matrices"
     )
   }
 
   reporting_triangle_list <- lapply(
-    trunc_rep_tri_list,
+    truncated_reporting_triangles,
     construct_triangle,
     structure = structure
   )

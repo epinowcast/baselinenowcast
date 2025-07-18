@@ -4,10 +4,10 @@
 \alias{construct_triangles}
 \title{Generate retrospective reporting triangles}
 \usage{
-construct_triangles(trunc_rep_tri_list, structure = 1)
+construct_triangles(truncated_reporting_triangles, structure = 1)
 }
 \arguments{
-\item{trunc_rep_tri_list}{List of \code{n} truncated reporting triangle
+\item{truncated_reporting_triangles}{List of \code{n} truncated reporting triangle
 matrices with as many rows as available given the truncation.}
 
 \item{structure}{Integer or vector specifying the reporting structure.

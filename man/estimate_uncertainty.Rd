@@ -6,7 +6,7 @@
 \usage{
 estimate_uncertainty(
   pt_nowcast_matrices,
-  trunc_retro_reporting_triangles,
+  trunc_reporting_triangles,
   retro_reporting_triangles,
   n = length(pt_nowcast_matrices),
   fun_to_aggregate = sum,
@@ -17,7 +17,7 @@ estimate_uncertainty(
 \item{pt_nowcast_matrices}{List of point nowcast matrices where rows
 represent reference time points and columns represent delays.}
 
-\item{trunc_retro_reporting_triangles}{List of truncated reporting matrices,
+\item{trunc_reporting_triangles}{List of truncated reporting matrices,
 containing all observations as of the latest reference time. Elements of
 list are paired with elements of \code{pt_nowcast_matrices}.}
 
@@ -70,7 +70,7 @@ retro_rts <- construct_triangles(trunc_rts)
 retro_nowcasts <- fill_triangles(retro_rts, n = 5)
 disp_params <- estimate_uncertainty(
   pt_nowcast_matrices = retro_nowcasts,
-  trunc_retro_retro_reporting_triangles = trunc_rts,
+  trunc_reporting_triangles = trunc_rts,
   retro_reporting_triangles = retro_rts,
   n = 2
 )
@@ -79,7 +79,7 @@ disp_params
 # Estimate dispersion parameters from rolling sum
 disp_params_agg <- estimate_uncertainty(
   pt_nowcast_matrices = retro_nowcasts,
-  trunc_retro_reporting_triangles = trunc_rts,
+  trunc_reporting_triangles = trunc_rts,
   retro_reporting_triangles = retro_rts,
   n = 2,
   fun_to_aggregate = sum,

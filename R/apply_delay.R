@@ -32,7 +32,7 @@
 #'   nrow = 5,
 #'   byrow = TRUE
 #' )
-#' delay_pmf <- get_delay_estimate(
+#' delay_pmf <- estimate_delay(
 #'   reporting_triangle = triangle,
 #'   max_delay = 3,
 #'   n = 4

@@ -183,7 +183,7 @@ test_that("apply_delay function works correctly with larger triangle", {
 
 test_that("apply_delay function works the same as the more verbose for loop", {
   triangle <- matrix(nrow = 5, ncol = 4, data = 1)
-  triangle <- generate_triangle(triangle)
+  triangle <- construct_triangle(triangle)
   delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
   result <- apply_delay(
     rep_tri_to_nowcast = triangle,
@@ -212,7 +212,7 @@ test_that("apply_delay works with ragged reporting triangles", {
   # Create a complete triangle based on the known delay PMF
   triangle <- lapply(partial_counts, function(x) x * delay_pmf)
   triangle <- do.call(rbind, triangle)
-  triangle <- generate_triangle(triangle, structure = c(1, 2, 1))
+  triangle <- construct_triangle(triangle, structure = c(1, 2, 1))
 
   result <- apply_delay(
     rep_tri_to_nowcast = triangle,
@@ -230,7 +230,7 @@ test_that("apply_delay works with structure=2 ragged reporting triangles", {
   # Create a complete triangle based on the known delay PMF
   triangles <- lapply(partial_counts, function(x) x * delay_pmf)
   complete_triangle <- do.call(rbind, triangles)
-  ragged_triangle <- generate_triangle(complete_triangle, structure = 2)
+  ragged_triangle <- construct_triangle(complete_triangle, structure = 2)
 
   result <- apply_delay(
     rep_tri_to_nowcast = ragged_triangle,

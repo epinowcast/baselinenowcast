@@ -11,7 +11,7 @@ test_that("combine_obs_with_pred: correctly combines observed and predicted", {
     nrow = 4,
     byrow = TRUE
   )
-  reporting_triangle <- generate_triangle(reporting_matrix)
+  reporting_triangle <- construct_triangle(reporting_matrix)
 
   result <- combine_obs_with_pred(predicted_counts, reporting_triangle)
 
@@ -36,7 +36,7 @@ test_that("combine_obs_with_pred: handles aggregation function properly", {
     nrow = 5,
     byrow = TRUE
   )
-  reporting_triangle <- generate_triangle(reporting_matrix)
+  reporting_triangle <- construct_triangle(reporting_matrix)
 
   result <- combine_obs_with_pred(predicted_counts,
     reporting_triangle,
@@ -69,7 +69,7 @@ test_that("combine_obs_with_pred: errors if invalid `fun_to_aggregate` is passed
     nrow = 5,
     byrow = TRUE
   )
-  reporting_triangle <- generate_triangle(reporting_matrix)
+  reporting_triangle <- construct_triangle(reporting_matrix)
 
   expect_error(combine_obs_with_pred(predicted_counts,
     reporting_triangle,

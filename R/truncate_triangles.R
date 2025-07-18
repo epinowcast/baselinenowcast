@@ -11,7 +11,7 @@
 #'   recent reference time. Default is to generate truncated matrices
 #'   for all triangles that would have a sufficient number of rows to generate
 #'   a nowcast from.
-#' @inheritParams get_delay_estimate
+#' @inheritParams estimate_delay
 #' @returns `trunc_rep_tri_list` List of `n` truncated reporting triangle
 #'   matrices with as many rows as available given the truncation, and the same
 #'   number of columns as `reporting_triangle`.
@@ -63,7 +63,7 @@ truncate_triangles <- function(reporting_triangle,
 #'
 #' @param t Integer indicating the number of timepoints to truncate off the
 #'   bottom of the original reporting triangle.
-#' @inheritParams get_delay_estimate
+#' @inheritParams estimate_delay
 #' @returns `trunc_rep_tri` Matrix with `t` fewer rows than
 #'    `reporting_triangle`.
 #' @importFrom checkmate assert_integerish

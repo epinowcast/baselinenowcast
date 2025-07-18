@@ -9,11 +9,11 @@ complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
 complete_triangle <- do.call(rbind, complete_triangle)
 
 # Create a reporting triangle with NAs in the lower right
-reporting_triangle <- generate_triangle(complete_triangle)
+reporting_triangle <- construct_triangle(complete_triangle)
 
 test_that("get_delay_estimate returns a valid probability mass function", {
   # Get delay estimate
-  result <- get_delay_estimate(reporting_triangle)
+  result <- estimate_delay(reporting_triangle)
 
   # Test that the result is a numeric vector
   expect_is(result, "numeric")
@@ -35,12 +35,12 @@ test_that("get_delay_estimate returns a valid probability mass function", {
 
 test_that("get_delay_estimate handles custom max_delay parameter", {
   # Test with max_delay = 3 (full delay)
-  result_full <- get_delay_estimate(reporting_triangle, max_delay = 3)
+  result_full <- estimate_delay(reporting_triangle, max_delay = 3)
   expect_identical(as.integer(length(result_full)), 4L)
   expect_equal(result_full, sim_delay_pmf, tolerance = 1e-6)
 
   # Test with max_delay = 2 (truncated delay)
-  result_truncated <- get_delay_estimate(reporting_triangle, max_delay = 2)
+  result_truncated <- estimate_delay(reporting_triangle, max_delay = 2)
   expect_identical(as.integer(length(result_truncated)), 3L)
 
   expected_truncated <- sim_delay_pmf[1:3] / sum(sim_delay_pmf[1:3])
@@ -49,8 +49,8 @@ test_that("get_delay_estimate handles custom max_delay parameter", {
 
 test_that("get_delay_estimate handles custom n_history parameter", {
   # Test with different n values
-  result_full <- get_delay_estimate(reporting_triangle, n = 5)
-  result_partial <- get_delay_estimate(reporting_triangle, n = 4)
+  result_full <- estimate_delay(reporting_triangle, n = 5)
+  result_partial <- estimate_delay(reporting_triangle, n = 4)
 
   # Both should return the correct PMF
   expect_equal(result_full, sim_delay_pmf, tolerance = 1e-6)
@@ -59,16 +59,16 @@ test_that("get_delay_estimate handles custom n_history parameter", {
 
 test_that("get_delay_estimate validates input parameters correctly", {
   # Test invalid max_delay
-  expect_error(get_delay_estimate(reporting_triangle, max_delay = 0))
+  expect_error(estimate_delay(reporting_triangle, max_delay = 0))
 
   # Test invalid n
-  expect_error(get_delay_estimate(reporting_triangle, n = 0))
+  expect_error(estimate_delay(reporting_triangle, n = 0))
 
   # Test n > nrow(reporting_triangle)
-  expect_error(get_delay_estimate(reporting_triangle, n = 10))
+  expect_error(estimate_delay(reporting_triangle, n = 10))
 
   # Test max_delay >= ncol(reporting_triangle)
-  expect_error(get_delay_estimate(reporting_triangle, max_delay = 5))
+  expect_error(estimate_delay(reporting_triangle, max_delay = 5))
 })
 
 test_that(
@@ -78,14 +78,14 @@ test_that(
     triangle_with_na <- reporting_triangle
     triangle_with_na[1, 2] <- NA
 
-    expect_error(get_delay_estimate(triangle_with_na))
+    expect_error(estimate_delay(triangle_with_na))
   }
 )
 
 test_that("get_delay_estimate errors if not passed a matrix", {
   # Create a vector instead of a matrix
   triangle_single_day <- reporting_triangle[1, ]
-  expect_error(get_delay_estimate(triangle_single_day))
+  expect_error(estimate_delay(triangle_single_day))
 })
 
 test_that("get_delay_estimate calculates correct PMF with complete matrix", {
@@ -99,7 +99,7 @@ test_that("get_delay_estimate calculates correct PMF with complete matrix", {
   full_triangle <- lapply(complete_counts, function(x) round(x * complete_pmf))
   full_triangle <- do.call(rbind, full_triangle)
 
-  delay_pmf <- get_delay_estimate(
+  delay_pmf <- estimate_delay(
     reporting_triangle = full_triangle,
     max_delay = 3,
     n = 5
@@ -118,13 +118,13 @@ test_that(
     complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
     complete_triangle <- do.call(rbind, complete_triangle)
 
-    reporting_triangle <- generate_triangle(
+    reporting_triangle <- construct_triangle(
       complete_triangle,
       structure = 2
     )
 
     # Get delay estimate
-    delay_pmf <- get_delay_estimate(
+    delay_pmf <- estimate_delay(
       reporting_triangle = reporting_triangle
     )
     # Test that the function returns the expected PMF
@@ -144,12 +144,12 @@ test_that("get_delay_estimate handles diagonal reporting triangles", {
   partial_complete <- do.call(rbind, partial_complete)
 
   # Create a reporting triangle with NAs in the lower right
-  partial_triangle <- generate_triangle(
+  partial_triangle <- construct_triangle(
     partial_complete,
     structure = 1
   )
 
-  delay_pmf <- get_delay_estimate(
+  delay_pmf <- estimate_delay(
     reporting_triangle = partial_triangle,
     max_delay = 3,
     n = 4

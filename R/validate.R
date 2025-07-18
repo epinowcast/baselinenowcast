@@ -1,11 +1,11 @@
 #' Validate triangle
 #' Various checks to make sure that the reporting triangle passed in to
-#'   [get_delay_estimate()] is formatted properly.
+#'   [estimate_delay()] is formatted properly.
 #' @importFrom checkmate assert_class
 #' @importFrom checkmate assert_integerish
 #' @importFrom checkmate assert_matrix
 #' @importFrom cli cli_abort
-#' @inheritParams get_delay_estimate
+#' @inheritParams estimate_delay
 #' @returns NULL, invisibly
 #' @keywords internal
 .validate_triangle <- function(

@@ -4,7 +4,7 @@
 \alias{.validate_triangle}
 \title{Validate triangle
 Various checks to make sure that the reporting triangle passed in to
-\code{\link[=get_delay_estimate]{get_delay_estimate()}} is formatted properly.}
+\code{\link[=estimate_delay]{estimate_delay()}} is formatted properly.}
 \usage{
 .validate_triangle(
   triangle,
@@ -28,6 +28,6 @@ NULL, invisibly
 \description{
 Validate triangle
 Various checks to make sure that the reporting triangle passed in to
-\code{\link[=get_delay_estimate]{get_delay_estimate()}} is formatted properly.
+\code{\link[=estimate_delay]{estimate_delay()}} is formatted properly.
 }
 \keyword{internal}

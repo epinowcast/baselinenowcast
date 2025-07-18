@@ -6,8 +6,7 @@
 #' @param dispersion Vector of dispersion parameters indexed by horizon from
 #'  minus one to the maximum delay.
 #' @inheritParams estimate_delay
-#' @inheritParams estimate_dispersion
-#'
+#' @inheritParams estimate_uncertainty
 #' @returns Vector of predicted draws at each reference time, for all reference
 #'    times in the input `point_nowcast_matrix`.
 #' @export

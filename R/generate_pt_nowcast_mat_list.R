@@ -6,7 +6,7 @@
 #'   `n` number of reference times to estimate the delay in each retrospective
 #'   reporting triangle.
 #'
-#' @inheritParams estimate_dispersion
+#' @inheritParams estimate_uncertainty
 #' @inheritParams estimate_delay
 #' @param n Integer indicating the number of reference times
 #'    (number of rows) to use to estimate the delay distribution for each

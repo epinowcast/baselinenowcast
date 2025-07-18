@@ -12,7 +12,7 @@
 #' @param ... Additional arguments
 #'
 #' @returns `nowcast_draws_df` Dataframe containing draws of combined
-#'    observations and probablistic predictions at each reference time.
+#'    observations and probabilistic predictions at each reference time.
 #' @export
 #'
 #' @examples

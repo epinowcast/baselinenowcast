@@ -40,7 +40,7 @@ Default is \code{sum}.}
 }
 \value{
 \code{nowcast_draws_df} Dataframe containing draws of combined
-observations and probablistic predictions at each reference time.
+observations and probabilistic predictions at each reference time.
 }
 \description{
 Estimate and apply uncertainty to a point nowcast matrix
@@ -67,6 +67,6 @@ nowcast_draws_df <- estimate_and_apply_uncertainty(
   reporting_triangle,
   max_delay,
   n_retrospective_nowcasts = 1
-  )
-  nowcast_draws_df
+)
+nowcast_draws_df
 }

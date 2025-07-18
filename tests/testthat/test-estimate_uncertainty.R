@@ -43,7 +43,7 @@ valid_trunc_rts <- list(
 )
 
 
-valid_rts <- generate_triangles(valid_trunc_rts)
+valid_rts <- construct_triangles(valid_trunc_rts)
 
 test_that("estimate_uncertainty: Basic functionality with valid inputs", {
   result <- estimate_uncertainty(
@@ -318,7 +318,7 @@ test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
     fill_triangles(retro_rts_list)
   )
   trunc_rep_tri_list <- truncate_triangles(base_tri)
-  rt_list <- generate_triangles(trunc_rep_tri_list)
+  rt_list <- construct_triangles(trunc_rep_tri_list)
   expect_no_error(estimate_uncertainty(
     pt_nowcast_list,
     trunc_rep_tri_list,
@@ -341,14 +341,14 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
   complete_triangle <- do.call(rbind, complete_triangle)
 
   # Create a reporting triangle with every other day reporting
-  ragged_triangle <- generate_triangle(
+  ragged_triangle <- construct_triangle(
     complete_triangle,
     structure = 2
   )
 
   # Create truncated triangles and retrospective triangles
   trunc_rts <- truncate_triangles(ragged_triangle)
-  retro_rts <- generate_triangles(trunc_rts, structure = 2)
+  retro_rts <- construct_triangles(trunc_rts, structure = 2)
 
   # Generate nowcasts from the ragged triangles
   retro_nowcasts <- fill_triangles(retro_rts)
@@ -375,12 +375,12 @@ test_that("estimate_uncertainty: works as expected with perfect data", {
   # Create a complete triangle based on the known delay PMF
   rep_mat_rows <- lapply(partial_counts, function(x) x * delay_pmf)
   rep_mat <- do.call(rbind, rep_mat_rows)
-  triangle <- generate_triangle(rep_mat)
+  triangle <- construct_triangle(rep_mat)
   reporting_triangle <- rbind(rep_mat, triangle)
 
   pt_nowcast_mat <- fill_triangle(reporting_triangle)
   trunc_rep_tri_list <- truncate_triangles(reporting_triangle)
-  reporting_triangle_list <- generate_triangles(trunc_rep_tri_list)
+  reporting_triangle_list <- construct_triangles(trunc_rep_tri_list)
 
   pt_nowcast_mat_list <- fill_triangles(reporting_triangle_list)
 
@@ -403,7 +403,7 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
   # Create a complete triangle based on the known delay PMF
   rep_mat_rows <- lapply(partial_counts, function(x) x * delay_pmf)
   rep_mat <- do.call(rbind, rep_mat_rows)
-  triangle <- generate_triangle(rep_mat)
+  triangle <- construct_triangle(rep_mat)
   reporting_triangle <- rbind(rep_mat, triangle)
 
 
@@ -432,7 +432,7 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
   }
 
   trunc_rep_tri_list <- truncate_triangles(rep_tri_new)
-  reporting_triangle_list <- generate_triangles(trunc_rep_tri_list)
+  reporting_triangle_list <- construct_triangles(trunc_rep_tri_list)
 
   pt_nowcast_mat_list <- fill_triangles(reporting_triangle_list)
 
@@ -469,7 +469,7 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
   # Create a complete triangle based on the known delay PMF
   rep_mat_rows <- lapply(partial_counts, function(x) x * delay_pmf)
   rep_mat <- do.call(rbind, rep_mat_rows)
-  triangle <- generate_triangle(rep_mat)
+  triangle <- construct_triangle(rep_mat)
   reporting_triangle <- rbind(rep_mat, rep_mat, rep_mat, rep_mat, triangle)
 
 
@@ -485,7 +485,7 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
   for (i in 1:20) {
     trunc_rep_tri_orig <- reporting_triangle[1:(max_t - i), ]
     trunc_pt_nowcast_mat <- pt_nowcast_mat[1:(max_t - i), ]
-    retro_rep_tri <- generate_triangle(trunc_rep_tri_orig)
+    retro_rep_tri <- construct_triangle(trunc_rep_tri_orig)
     # For the last 4 horizons, replace each row with negative binomial draws
     # with a mean of the point nowcast matrix
     trunc_rep_tri <- trunc_rep_tri_orig

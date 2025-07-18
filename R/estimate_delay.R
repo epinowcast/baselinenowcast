@@ -67,6 +67,7 @@ estimate_delay <- function(
   return(pmf)
 }
 
+
 #' Prepare the triangle by truncating and handling negative values
 #'
 #' @param reporting_triangle The original reporting triangle

@@ -6,12 +6,12 @@
 #'    and estimates at each horizon, starting at 0 up until the max delay
 #'    number of horizons.
 #'
-#' @param pt_nowcast_mat_list List of point nowcast matrices where rows
+#' @param pt_nowcast_matrices List of point nowcast matrices where rows
 #'    represent reference time points and columns represent delays.
-#' @param trunc_rep_tri_list List of truncated reporting matrices,
+#' @param trunc_reporting_triangles List of truncated reporting matrices,
 #'    containing all observations as of the latest reference time. Elements of
-#'    list are paired with elements of `pt_nowcast_mat_list`.
-#' @param reporting_triangle_list List of `n` truncated reporting triangle
+#'    list are paired with elements of `pt_nowcast_matrices`.
+#' @param retro_reporting_triangles List of `n` truncated reporting triangle
 #'   matrices with as many rows as available given the truncation.
 #' @param n Integer indicating the number of reporting matrices to use to
 #'    estimate the dispersion parameters.
@@ -50,47 +50,47 @@
 #'
 #' retro_nowcasts <- fill_triangles(retro_rts, n = 5)
 #' disp_params <- estimate_uncertainty(
-#'   pt_nowcast_mat_list = retro_nowcasts,
-#'   trunc_rep_tri_list = trunc_rts,
-#'   reporting_triangle_list = retro_rts,
+#'   pt_nowcast_matrices = retro_nowcasts,
+#'   trunc_reporting_triangles = trunc_rts,
+#'   retro_reporting_triangles = retro_rts,
 #'   n = 2
 #' )
 #' disp_params
 #'
 #' # Estimate dispersion parameters from rolling sum
 #' disp_params_agg <- estimate_uncertainty(
-#'   pt_nowcast_mat_list = retro_nowcasts,
-#'   trunc_rep_tri_list = trunc_rts,
-#'   reporting_triangle_list = retro_rts,
+#'   pt_nowcast_matrices = retro_nowcasts,
+#'   trunc_reporting_triangles = trunc_rts,
+#'   retro_reporting_triangles = retro_rts,
 #'   n = 2,
 #'   fun_to_aggregate = sum,
 #'   k = 2
 #' )
 #' disp_params_agg
 estimate_uncertainty <- function(
-    pt_nowcast_mat_list,
-    trunc_rep_tri_list,
-    reporting_triangle_list,
-    n = length(pt_nowcast_mat_list),
+    pt_nowcast_matrices,
+    trunc_reporting_triangles,
+    retro_reporting_triangles,
+    n = length(pt_nowcast_matrices),
     fun_to_aggregate = sum,
     k = 1) {
   .validate_aggregation_function(fun_to_aggregate)
   assert_integerish(n, lower = 0)
-  .check_list_length(pt_nowcast_mat_list, "pt_nowcast_mat_list", n)
-  .check_list_length(trunc_rep_tri_list, "trunc_rep_tri_list", n)
+  .check_list_length(pt_nowcast_matrices, "pt_nowcast_matrices", n)
+  .check_list_length(trunc_reporting_triangles, "trunc_reporting_triangles", n)
   .check_list_length(
-    reporting_triangle_list,
-    "reporting_triangle_list",
+    retro_reporting_triangles,
+    "retro_reporting_triangles",
     n,
     empty_check = FALSE
   )
 
   # Truncate to only n nowcasts and extract only non-null elements of both lists
-  non_null_indices <- which(!sapply(pt_nowcast_mat_list[1:n], is.null))
+  non_null_indices <- which(!sapply(pt_nowcast_matrices[1:n], is.null))
   n_iters <- length(non_null_indices)
-  list_of_ncs <- pt_nowcast_mat_list[non_null_indices]
-  list_of_obs <- trunc_rep_tri_list[non_null_indices]
-  list_of_rts <- reporting_triangle_list[non_null_indices]
+  list_of_ncs <- pt_nowcast_matrices[non_null_indices]
+  list_of_obs <- trunc_reporting_triangles[non_null_indices]
+  list_of_rts <- retro_reporting_triangles[non_null_indices]
   if (n_iters == 0) {
     cli_abort(
       message = c(
@@ -108,13 +108,13 @@ estimate_uncertainty <- function(
   if (any(sapply(list_of_ncs, anyNA))) {
     cli_abort(
       message =
-        "`pt_nowcast_mat_list` contains NAs"
+        "`pt_nowcast_matrices` contains NAs"
     )
   }
   if (!any(sapply(list_of_obs, anyNA))) {
     cli_warn(
       message =
-        "`trunc_rep_tri_list` does not contain any NAs"
+        "`trunc_reporting_triangles` does not contain any NAs"
     )
   }
   # Check that the sets of matrices are the same dimensions
@@ -123,8 +123,8 @@ estimate_uncertainty <- function(
   all_identical <- all(mapply(identical, dims_ncs, dims_obs))
   if (!all_identical) {
     cli_abort(message = c(
-      "Dimensions of the first `n` matrices in `pt_nowcast_mat_list` and ",
-      "`trunc_rep_tri_list` are not the same."
+      "Dimensions of the first `n` matrices in `pt_nowcast_matrices` and ",
+      "`trunc_reporting_triangles` are not the same."
     ))
   }
 

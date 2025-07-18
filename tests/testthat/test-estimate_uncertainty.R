@@ -47,9 +47,9 @@ valid_rts <- construct_triangles(valid_trunc_rts)
 
 test_that("estimate_uncertainty: Basic functionality with valid inputs", {
   result <- estimate_uncertainty(
-    pt_nowcast_mat_list = valid_nowcasts,
-    trunc_rep_tri_list = valid_trunc_rts,
-    reporting_triangle_list = valid_rts,
+    pt_nowcast_matrices = valid_nowcasts,
+    trunc_reporting_triangles = valid_trunc_rts,
+    retro_reporting_triangles = valid_rts,
     n = 2
   )
 
@@ -62,9 +62,9 @@ test_that("estimate_uncertainty: Basic functionality with valid inputs", {
 
 test_that("estimate_uncertainty can handle rolling sum with k=3", {
   result <- estimate_uncertainty(
-    pt_nowcast_mat_list = valid_nowcasts,
-    trunc_rep_tri_list = valid_trunc_rts,
-    reporting_triangle_list = valid_rts,
+    pt_nowcast_matrices = valid_nowcasts,
+    trunc_reporting_triangles = valid_trunc_rts,
+    retro_reporting_triangles = valid_rts,
     fun_to_aggregate = sum,
     k = 3
   )
@@ -74,9 +74,9 @@ test_that("estimate_uncertainty can handle rolling sum with k=3", {
 
 test_that("estimate_uncertainty appropriately warns when k is too large for some of the triangles", { # nolint
   expect_warning(estimate_uncertainty(
-    pt_nowcast_mat_list = valid_nowcasts,
-    trunc_rep_tri_list = valid_trunc_rts,
-    reporting_triangle_list = valid_rts,
+    pt_nowcast_matrices = valid_nowcasts,
+    trunc_reporting_triangles = valid_trunc_rts,
+    retro_reporting_triangles = valid_rts,
     n = 2,
     fun_to_aggregate = sum,
     k = 4
@@ -85,9 +85,9 @@ test_that("estimate_uncertainty appropriately warns when k is too large for some
 
 test_that("estimate_uncertainty appropriately errors when k is too large for all the triangles", { # nolint
   expect_error(estimate_uncertainty(
-    pt_nowcast_mat_list = valid_nowcasts,
-    trunc_rep_tri_list = valid_trunc_rts,
-    reporting_triangle_list = valid_rts,
+    pt_nowcast_matrices = valid_nowcasts,
+    trunc_reporting_triangles = valid_trunc_rts,
+    retro_reporting_triangles = valid_rts,
     n = 2,
     fun_to_aggregate = sum,
     k = 5
@@ -98,18 +98,18 @@ test_that("estimate_uncertainty appropriately errors when k is too large for all
 test_that("estimate_uncertainty throws an error if function to aggregate is not valid", { # nolint
   # Function shouldn't be a character
   expect_error(estimate_uncertainty(
-    pt_nowcast_mat_list = valid_nowcasts,
-    trunc_rep_tri_list = valid_trunc_rts,
-    reporting_triangle_list = valid_rts,
+    pt_nowcast_matrices = valid_nowcasts,
+    trunc_reporting_triangles = valid_trunc_rts,
+    retro_reporting_triangles = valid_rts,
     n = 2,
     fun_to_aggregate = "sum",
     k = 2
   ))
   # Mean doesn't work right now because we haven't added another error model
   expect_error(estimate_uncertainty(
-    pt_nowcast_mat_list = valid_nowcasts,
-    trunc_rep_tri_list = valid_trunc_rts,
-    reporting_triangle_list = valid_rts,
+    pt_nowcast_matrices = valid_nowcasts,
+    trunc_reporting_triangles = valid_trunc_rts,
+    retro_reporting_triangles = valid_rts,
     n = 2,
     fun_to_aggregate = mean,
     k = 2
@@ -140,7 +140,7 @@ test_that("estimate_uncertainty: Error conditions are properly handled", {
     valid_nowcasts, list("not_a_matrix"), valid_rts
   ))
 
-  # Invalid reporting_triangle_list
+  # Invalid retro_reporting_triangles
   expect_error(estimate_uncertainty(
     valid_nowcasts, valid_trunc_rts, list("not_a_matrix")
   ))
@@ -317,11 +317,11 @@ test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
   pt_nowcast_list <- expect_message(
     fill_triangles(retro_rts_list)
   )
-  trunc_rep_tri_list <- truncate_triangles(base_tri)
-  rt_list <- construct_triangles(trunc_rep_tri_list)
+  trunc_reporting_triangles <- truncate_triangles(base_tri)
+  rt_list <- construct_triangles(trunc_reporting_triangles)
   expect_no_error(estimate_uncertainty(
     pt_nowcast_list,
-    trunc_rep_tri_list,
+    trunc_reporting_triangles,
     rt_list
   ))
 })
@@ -355,9 +355,9 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
 
   # Estimate dispersion parameters
   disp_params <- estimate_uncertainty(
-    pt_nowcast_mat_list = retro_nowcasts,
-    trunc_rep_tri_list = trunc_rts,
-    reporting_triangle_list = retro_rts,
+    pt_nowcast_matrices = retro_nowcasts,
+    trunc_reporting_triangles = trunc_rts,
+    retro_reporting_triangles = retro_rts,
     n = 2
   )
 
@@ -379,15 +379,15 @@ test_that("estimate_uncertainty: works as expected with perfect data", {
   reporting_triangle <- rbind(rep_mat, triangle)
 
   pt_nowcast_mat <- fill_triangle(reporting_triangle)
-  trunc_rep_tri_list <- truncate_triangles(reporting_triangle)
-  reporting_triangle_list <- construct_triangles(trunc_rep_tri_list)
+  trunc_reporting_triangles <- truncate_triangles(reporting_triangle)
+  retro_reporting_triangles <- construct_triangles(trunc_reporting_triangles)
 
-  pt_nowcast_mat_list <- fill_triangles(reporting_triangle_list)
+  pt_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
 
   dispersion <- estimate_uncertainty(
-    pt_nowcast_mat_list,
-    trunc_rep_tri_list,
-    reporting_triangle_list
+    pt_nowcast_matrices,
+    trunc_reporting_triangles,
+    retro_reporting_triangles
   )
 
   expect_equal(dispersion[1], 999, tol = 1)
@@ -431,23 +431,23 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
     )
   }
 
-  trunc_rep_tri_list <- truncate_triangles(rep_tri_new)
-  reporting_triangle_list <- construct_triangles(trunc_rep_tri_list)
+  trunc_reporting_triangles <- truncate_triangles(rep_tri_new)
+  retro_reporting_triangles <- construct_triangles(trunc_reporting_triangles)
 
-  pt_nowcast_mat_list <- fill_triangles(reporting_triangle_list)
+  pt_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
 
   dispersion <- estimate_uncertainty(
-    pt_nowcast_mat_list,
-    trunc_rep_tri_list,
-    reporting_triangle_list
+    pt_nowcast_matrices,
+    trunc_reporting_triangles,
+    retro_reporting_triangles
   )
   expect_lt(dispersion[1], 500)
   expect_true(all(is.finite(dispersion)))
 
   dispersion2 <- estimate_uncertainty(
-    pt_nowcast_mat_list,
-    trunc_rep_tri_list,
-    reporting_triangle_list,
+    pt_nowcast_matrices,
+    trunc_reporting_triangles,
+    retro_reporting_triangles,
     fun_to_aggregate = sum,
     k = 3
   )
@@ -478,9 +478,9 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
   # Create truncated reporting triangles by sampling elements of triangle
   # from Poisson distribution
   max_t <- nrow(reporting_triangle)
-  trunc_rep_tri_list <- list()
-  pt_nowcast_mat_list <- list()
-  reporting_triangle_list <- list()
+  trunc_reporting_triangles <- list()
+  pt_nowcast_matrices <- list()
+  retro_reporting_triangles <- list()
   disp_param <- 10000
   for (i in 1:20) {
     trunc_rep_tri_orig <- reporting_triangle[1:(max_t - i), ]
@@ -500,24 +500,24 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
     }
     trunc_rep_tri[is.na(trunc_rep_tri_orig)] <- NA
 
-    trunc_rep_tri_list <- append(
-      trunc_rep_tri_list,
+    trunc_reporting_triangles <- append(
+      trunc_reporting_triangles,
       list(trunc_rep_tri)
     )
-    pt_nowcast_mat_list <- append(
-      pt_nowcast_mat_list,
+    pt_nowcast_matrices <- append(
+      pt_nowcast_matrices,
       list(trunc_pt_nowcast_mat)
     )
-    reporting_triangle_list <- append(
-      reporting_triangle_list,
+    retro_reporting_triangles <- append(
+      retro_reporting_triangles,
       list(retro_rep_tri)
     )
   }
 
   dispersion <- estimate_uncertainty(
-    pt_nowcast_mat_list,
-    trunc_rep_tri_list,
-    reporting_triangle_list
+    pt_nowcast_matrices,
+    trunc_reporting_triangles,
+    retro_reporting_triangles
   )
 
   expect_true(all(dispersion > 700)) # Can't distinguish more specific

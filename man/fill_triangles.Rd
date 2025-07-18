@@ -12,6 +12,9 @@ fill_triangles(
 )
 }
 \arguments{
+\item{retro_reporting_triangles}{List of \code{n} truncated reporting triangle
+matrices with as many rows as available given the truncation.}
+
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
 \code{ncol(reporting_triangle) -1}.}

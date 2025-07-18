@@ -5,23 +5,23 @@
 \title{Estimate dispersion parameters}
 \usage{
 estimate_uncertainty(
-  pt_nowcast_mat_list,
-  trunc_rep_tri_list,
-  reporting_triangle_list,
-  n = length(pt_nowcast_mat_list),
+  pt_nowcast_matrices,
+  trunc_retro_reporting_triangles,
+  retro_reporting_triangles,
+  n = length(pt_nowcast_matrices),
   fun_to_aggregate = sum,
   k = 1
 )
 }
 \arguments{
-\item{pt_nowcast_mat_list}{List of point nowcast matrices where rows
+\item{pt_nowcast_matrices}{List of point nowcast matrices where rows
 represent reference time points and columns represent delays.}
 
-\item{trunc_rep_tri_list}{List of truncated reporting matrices,
+\item{trunc_retro_reporting_triangles}{List of truncated reporting matrices,
 containing all observations as of the latest reference time. Elements of
-list are paired with elements of \code{pt_nowcast_mat_list}.}
+list are paired with elements of \code{pt_nowcast_matrices}.}
 
-\item{reporting_triangle_list}{List of \code{n} truncated reporting triangle
+\item{retro_reporting_triangles}{List of \code{n} truncated reporting triangle
 matrices with as many rows as available given the truncation.}
 
 \item{n}{Integer indicating the number of reporting matrices to use to
@@ -69,18 +69,18 @@ retro_rts <- construct_triangles(trunc_rts)
 
 retro_nowcasts <- fill_triangles(retro_rts, n = 5)
 disp_params <- estimate_uncertainty(
-  pt_nowcast_mat_list = retro_nowcasts,
-  trunc_rep_tri_list = trunc_rts,
-  reporting_triangle_list = retro_rts,
+  pt_nowcast_matrices = retro_nowcasts,
+  trunc_retro_retro_reporting_triangles = trunc_rts,
+  retro_reporting_triangles = retro_rts,
   n = 2
 )
 disp_params
 
 # Estimate dispersion parameters from rolling sum
 disp_params_agg <- estimate_uncertainty(
-  pt_nowcast_mat_list = retro_nowcasts,
-  trunc_rep_tri_list = trunc_rts,
-  reporting_triangle_list = retro_rts,
+  pt_nowcast_matrices = retro_nowcasts,
+  trunc_retro_reporting_triangles = trunc_rts,
+  retro_reporting_triangles = retro_rts,
   n = 2,
   fun_to_aggregate = sum,
   k = 2

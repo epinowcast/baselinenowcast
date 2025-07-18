@@ -30,7 +30,7 @@ delay_pmf <- c(0.1, 0.1, 0.5, 0.3)
 
 test_that("fill_triangles returns correctly structured output", {
   result <- fill_triangles(
-    reporting_triangle_list = retro_rts_list
+    retro_reporting_triangles = retro_rts_list
   )
 
   # Output has same number of elements as input
@@ -49,19 +49,19 @@ test_that("fill_triangles returns correctly structured output", {
 
 test_that("fill_triangles takes in delay_pmf as vector or list", {
   result1 <- fill_triangles(
-    reporting_triangle_list = retro_rts_list,
+    retro_reporting_triangles = retro_rts_list,
     delay_pmf = delay_pmf
   )
 
   result2 <- fill_triangles(
-    reporting_triangle_list = retro_rts_list,
+    retro_reporting_triangles = retro_rts_list,
     delay_pmf = rep(list(delay_pmf), length(retro_rts_list))
   )
 
   expect_identical(result1, result2)
 
   expect_error(fill_triangles(
-    reporting_triangle_list = retro_rts_list,
+    retro_reporting_triangles = retro_rts_list,
     delay_pmf = rep(list(delay_pmf), length(retro_rts_list) - 1)
   ))
 })
@@ -71,14 +71,14 @@ test_that(
   {
     # Input matrices have 7 and 7 rows → min = 6
     result_default <- fill_triangles(
-      reporting_triangle_list = retro_rts_list
+      retro_reporting_triangles = retro_rts_list
     )
     result_custom_w_def <- fill_triangles(
-      reporting_triangle_list = retro_rts_list,
+      retro_reporting_triangles = retro_rts_list,
       n = 6
     )
     result_custom <- fill_triangles(
-      reporting_triangle_list = retro_rts_list,
+      retro_reporting_triangles = retro_rts_list,
       n = 5
     )
 
@@ -92,7 +92,7 @@ test_that(
 
 test_that("fill_triangles custom n_history_delay is respected", {
   result <- fill_triangles(
-    reporting_triangle_list = retro_rts_list,
+    retro_reporting_triangles = retro_rts_list,
     n = 5
   )
   # Compare to estimate using n=5
@@ -106,14 +106,14 @@ test_that("fill_triangles custom n_history_delay is respected", {
   # Custom n_history_delay is too high
   expect_error(
     fill_triangles(
-      reporting_triangle_list = retro_rts_list,
+      retro_reporting_triangles = retro_rts_list,
       n = 8
     )
   ) # nolint
   # Custom n_history_delay is too low
   expect_error(
     fill_triangles(
-      reporting_triangle_list = retro_rts_list,
+      retro_reporting_triangles = retro_rts_list,
       n = 3
     )
   )
@@ -122,7 +122,7 @@ test_that("fill_triangles custom n_history_delay is respected", {
 test_that("fill_triangles invalid inputs throw errors", {
   # Non-list input
   expect_error(fill_triangles(
-    reporting_triangle_list = "not_a_list"
+    retro_reporting_triangles = "not_a_list"
   ))
 
   # List contains non-matrix elements
@@ -244,7 +244,7 @@ test_that("fill_triangles uses full number of rows in n_history_delay", { # noli
   # These look the same but with NAs in bottom right
 
   retro_pt_nowcast_mat_list <- fill_triangles(
-    reporting_triangle_list = retro_rts,
+    retro_reporting_triangles = retro_rts,
     n = 5
   )
   # Get the empirical pmfs in your two pt nowcast matrices with the first row
@@ -258,7 +258,7 @@ test_that("fill_triangles uses full number of rows in n_history_delay", { # noli
   # Now change n_history_delay to only use last 4 rows, we should never use
   # first row so both will be equal
   retro_pt_nowcast_mat_list2 <- fill_triangles(
-    reporting_triangle_list = retro_rts,
+    retro_reporting_triangles = retro_rts,
     n = 4
   )
 

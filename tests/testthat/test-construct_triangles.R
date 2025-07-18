@@ -106,7 +106,9 @@ test_that(
 
     trunc_triangles <- list(triangle1, triangle2)
 
-    retro_triangles_custom <- construct_triangles(trunc_triangles, structure = 2)
+    retro_triangles_custom <- construct_triangles(trunc_triangles,
+      structure = 2
+    )
 
     expected_triangle1_struct2 <- matrix(
       c(

@@ -70,7 +70,7 @@ pt_nowcast_matrix <- estimate_and_apply_delay(
   n = 4
 )
 nowcast_draws_df <- estimate_and_apply_uncertainty(
-  point_nowcast_matrix,
+  pt_nowcast_matrix,
   triangle,
   max_delay,
   n_retrospective_nowcasts = 1

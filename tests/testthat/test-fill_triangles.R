@@ -28,9 +28,9 @@ test_triangle_2 <- matrix(
 retro_rts_list <- list(test_triangle_1, test_triangle_2)
 delay_pmf <- c(0.1, 0.1, 0.5, 0.3)
 
-test_that("generate_pt_nowcast_mat_list returns correctly structured output", {
-  result <- generate_pt_nowcast_mat_list(
-    reporting_triangle_list = retro_rts_list
+test_that("fill_triangles returns correctly structured output", {
+  result <- fill_triangles(
+    retro_reporting_triangles = retro_rts_list
   )
 
   # Output has same number of elements as input
@@ -47,38 +47,38 @@ test_that("generate_pt_nowcast_mat_list returns correctly structured output", {
   expect_false(anyNA(result[[2]]))
 })
 
-test_that("generate_pt_nowcast_mat_list takes in delay_pmf as vector or list", {
-  result1 <- generate_pt_nowcast_mat_list(
-    reporting_triangle_list = retro_rts_list,
+test_that("fill_triangles takes in delay_pmf as vector or list", {
+  result1 <- fill_triangles(
+    retro_reporting_triangles = retro_rts_list,
     delay_pmf = delay_pmf
   )
 
-  result2 <- generate_pt_nowcast_mat_list(
-    reporting_triangle_list = retro_rts_list,
+  result2 <- fill_triangles(
+    retro_reporting_triangles = retro_rts_list,
     delay_pmf = rep(list(delay_pmf), length(retro_rts_list))
   )
 
   expect_identical(result1, result2)
 
-  expect_error(generate_pt_nowcast_mat_list(
-    reporting_triangle_list = retro_rts_list,
+  expect_error(fill_triangles(
+    retro_reporting_triangles = retro_rts_list,
     delay_pmf = rep(list(delay_pmf), length(retro_rts_list) - 1)
   ))
 })
 
 test_that(
-  "generate_pt_nowcast_mat_list default n_history_delay uses minimum rows",
+  "fill_triangles default n_history_delay uses minimum rows",
   {
     # Input matrices have 7 and 7 rows → min = 6
-    result_default <- generate_pt_nowcast_mat_list(
-      reporting_triangle_list = retro_rts_list
+    result_default <- fill_triangles(
+      retro_reporting_triangles = retro_rts_list
     )
-    result_custom_w_def <- generate_pt_nowcast_mat_list(
-      reporting_triangle_list = retro_rts_list,
+    result_custom_w_def <- fill_triangles(
+      retro_reporting_triangles = retro_rts_list,
       n = 6
     )
-    result_custom <- generate_pt_nowcast_mat_list(
-      reporting_triangle_list = retro_rts_list,
+    result_custom <- fill_triangles(
+      retro_reporting_triangles = retro_rts_list,
       n = 5
     )
 
@@ -90,14 +90,14 @@ test_that(
   }
 )
 
-test_that("generate_pt_nowcast_mat_list custom n_history_delay is respected", {
-  result <- generate_pt_nowcast_mat_list(
-    reporting_triangle_list = retro_rts_list,
+test_that("fill_triangles custom n_history_delay is respected", {
+  result <- fill_triangles(
+    retro_reporting_triangles = retro_rts_list,
     n = 5
   )
   # Compare to estimate using n=5
   first_triangle <- result[[1]]
-  delay_pmf <- get_delay_estimate(retro_rts_list[[1]],
+  delay_pmf <- estimate_delay(retro_rts_list[[1]],
     n = 5
   )
   exp_first_triangle <- apply_delay(retro_rts_list[[1]], delay_pmf)
@@ -105,46 +105,40 @@ test_that("generate_pt_nowcast_mat_list custom n_history_delay is respected", {
 
   # Custom n_history_delay is too high
   expect_error(
-    generate_pt_nowcast_mat_list(
-      reporting_triangle_list = retro_rts_list,
+    fill_triangles(
+      retro_reporting_triangles = retro_rts_list,
       n = 8
     )
   ) # nolint
   # Custom n_history_delay is too low
   expect_error(
-    generate_pt_nowcast_mat_list(
-      reporting_triangle_list = retro_rts_list,
+    fill_triangles(
+      retro_reporting_triangles = retro_rts_list,
       n = 3
     )
   )
 })
 
-test_that("generate_pt_nowcast_mat_list invalid inputs throw errors", {
+test_that("fill_triangles invalid inputs throw errors", {
   # Non-list input
-  expect_error(generate_pt_nowcast_mat_list(
-    reporting_triangle_list = "not_a_list"
-  ))
-
-  # List contains non-matrix elements
-  bad_list <- list(test_triangle_1, "not_a_matrix")
-  expect_error(generate_pt_nowcast_mat_list(
-    reporting_triangle_matrix_list = bad_list
+  expect_error(fill_triangles(
+    retro_reporting_triangles = "not_a_list"
   ))
 
   # Invalid n_history_delay values
-  expect_error(generate_pt_nowcast_mat_list(retro_rts_list, n = -1))
-  expect_error(generate_pt_nowcast_mat_list(retro_rts_list, n = "two"))
+  expect_error(fill_triangles(retro_rts_list, n = -1))
+  expect_error(fill_triangles(retro_rts_list, n = "two"))
 })
 
-test_that("generate_pt_nowcast_mat_list identical-sized matrices work", {
+test_that("fill_triangles identical-sized matrices work", {
   same_size_list <- list(test_triangle_1[2:7, ], test_triangle_2)
-  result <- generate_pt_nowcast_mat_list(same_size_list)
+  result <- fill_triangles(same_size_list)
 
   # Number of rows of each matrix should be identical (6 and 6)
   expect_identical(sapply(result, nrow), c(6L, 6L))
 })
 
-test_that("generate_pt_nowcast_mat_list handles a single triangle with 0s for first column appropriately", { # nolint
+test_that("fill_triangles handles a single triangle with 0s for first column appropriately", { # nolint
 
   triangle3 <- matrix(
     c(
@@ -160,11 +154,11 @@ test_that("generate_pt_nowcast_mat_list handles a single triangle with 0s for fi
 
   retro_rts_list <- list(test_triangle_1, test_triangle_2, triangle3)
 
-  result <- expect_message(generate_pt_nowcast_mat_list(retro_rts_list))
+  result <- expect_message(fill_triangles(retro_rts_list))
   expect_null(result[[3]])
 })
 
-test_that("generate_pt_nowcast_mat_list errors if only contains triangles with first column 0", { # nolint
+test_that("fill_triangles errors if only contains triangles with first column 0", { # nolint
   triangle1 <- matrix(
     c(
       0, 46, 21, 7,
@@ -205,10 +199,10 @@ test_that("generate_pt_nowcast_mat_list errors if only contains triangles with f
 
   retro_rts_list <- list(triangle1, triangle2, triangle3)
 
-  expect_error(expect_message(generate_pt_nowcast_mat_list(retro_rts_list)))
+  expect_error(fill_triangles(retro_rts_list))
 })
 
-test_that("generate_pt_nowcast_mat_list uses full number of rows in n_history_delay", { # nolint
+test_that("fill_triangles uses full number of rows in n_history_delay", { # nolint
   sim_delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
 
   # Generate counts for each reference date
@@ -218,14 +212,14 @@ test_that("generate_pt_nowcast_mat_list uses full number of rows in n_history_de
   complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
   complete_triangle <- do.call(rbind, complete_triangle)
 
-  check_pmf <- get_delay_estimate(complete_triangle, n = 7)
+  check_pmf <- estimate_delay(complete_triangle, n = 7)
   check_pmf
 
   # Create a reporting triangle with NAs in the lower right
-  triangle <- generate_triangle(complete_triangle)
+  triangle <- construct_triangle(complete_triangle)
   triangle
 
-  slight_dif_triangle <- generate_pt_nowcast_mat(triangle, n = 7)
+  slight_dif_triangle <- fill_triangle(triangle, n = 7)
 
   expect_equal(slight_dif_triangle, complete_triangle, tol = 0.5)
 
@@ -239,17 +233,17 @@ test_that("generate_pt_nowcast_mat_list uses full number of rows in n_history_de
   # These will always have the first row at the top. First one will be with
   # last row cut off, second will be with last 2 rows cut off
 
-  retro_rts <- generate_triangles(truncated_rts)
+  retro_rts <- construct_triangles(truncated_rts)
   retro_rts[1:2]
   # These look the same but with NAs in bottom right
 
-  retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
-    reporting_triangle_list = retro_rts,
+  retro_pt_nowcast_mat_list <- fill_triangles(
+    retro_reporting_triangles = retro_rts,
     n = 5
   )
   # Get the empirical pmfs in your two pt nowcast matrices with the first row
   # included
-  pmf_list <- lapply(retro_pt_nowcast_mat_list, get_delay_estimate)
+  pmf_list <- lapply(retro_pt_nowcast_mat_list, estimate_delay)
   expect_equal(pmf_list[[1]], sim_delay_pmf, tol = 0.02) # Here we get back
   # what we put in bc it doesn't use the first row
   expect_failure(expect_equal(pmf_list[[2]], sim_delay_pmf, tol = 0.02)) # Here
@@ -257,12 +251,12 @@ test_that("generate_pt_nowcast_mat_list uses full number of rows in n_history_de
 
   # Now change n_history_delay to only use last 4 rows, we should never use
   # first row so both will be equal
-  retro_pt_nowcast_mat_list2 <- generate_pt_nowcast_mat_list(
-    reporting_triangle_list = retro_rts,
+  retro_pt_nowcast_mat_list2 <- fill_triangles(
+    retro_reporting_triangles = retro_rts,
     n = 4
   )
 
-  pmf_list2 <- lapply(retro_pt_nowcast_mat_list2, get_delay_estimate)
+  pmf_list2 <- lapply(retro_pt_nowcast_mat_list2, estimate_delay)
   # Both are returning the original pmf bc they dont use the modified one
   expect_equal(pmf_list2[[1]], sim_delay_pmf, tol = 0.02)
   expect_equal(pmf_list2[[2]], sim_delay_pmf, tol = 0.02)

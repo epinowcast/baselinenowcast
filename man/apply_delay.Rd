@@ -4,10 +4,10 @@
 \alias{apply_delay}
 \title{Apply the delay to generate a point nowcast}
 \usage{
-apply_delay(rep_tri_to_nowcast, delay_pmf)
+apply_delay(reporting_triangle, delay_pmf)
 }
 \arguments{
-\item{rep_tri_to_nowcast}{Matrix of the reporting triangle to be
+\item{reporting_triangle}{Matrix of the reporting triangle to be
 nowcasted, with rows representing the time points of reference and columns
 representing the delays}
 
@@ -44,13 +44,13 @@ triangle <- matrix(
   nrow = 5,
   byrow = TRUE
 )
-delay_pmf <- get_delay_estimate(
+delay_pmf <- estimate_delay(
   reporting_triangle = triangle,
   max_delay = 3,
   n = 4
 )
 point_nowcast_matrix <- apply_delay(
-  rep_tri_to_nowcast = triangle,
+  reporting_triangle = triangle,
   delay_pmf = delay_pmf
 )
 print(point_nowcast_matrix)

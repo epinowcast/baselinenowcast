@@ -11,7 +11,7 @@
 #'   by the Karlsruhe Institute of Technology RESPINOW
 #'   German Hospitalization Nowcasting Hub.
 #'   Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
-#' @param rep_tri_to_nowcast Matrix of the reporting triangle to be
+#' @param reporting_triangle Matrix of the reporting triangle to be
 #'   nowcasted, with rows representing the time points of reference and columns
 #'   representing the delays
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
@@ -32,24 +32,24 @@
 #'   nrow = 5,
 #'   byrow = TRUE
 #' )
-#' delay_pmf <- get_delay_estimate(
+#' delay_pmf <- estimate_delay(
 #'   reporting_triangle = triangle,
 #'   max_delay = 3,
 #'   n = 4
 #' )
 #' point_nowcast_matrix <- apply_delay(
-#'   rep_tri_to_nowcast = triangle,
+#'   reporting_triangle = triangle,
 #'   delay_pmf = delay_pmf
 #' )
 #' print(point_nowcast_matrix)
-apply_delay <- function(rep_tri_to_nowcast, delay_pmf) {
+apply_delay <- function(reporting_triangle, delay_pmf) {
   # Checks that the delay df and the triangle are compatible
   .validate_delay_and_triangle(
-    rep_tri_to_nowcast,
+    reporting_triangle,
     delay_pmf
   )
   n_delays <- length(delay_pmf)
-  n_rows <- nrow(rep_tri_to_nowcast)
+  n_rows <- nrow(reporting_triangle)
 
   # Precompute CDFs for the delay PMF
   delay_cdf <- cumsum(delay_pmf)
@@ -67,7 +67,7 @@ apply_delay <- function(rep_tri_to_nowcast, delay_pmf) {
       ))
     },
     2:n_delays,
-    init = rep_tri_to_nowcast
+    init = reporting_triangle
   )
   return(point_nowcast_matrix)
 }

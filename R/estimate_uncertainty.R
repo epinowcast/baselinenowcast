@@ -189,12 +189,17 @@ estimate_uncertainty <- function(
 
   # Estimate the dispersion as a function of horizon across retrospective
   # nowcast dates
-  disp_params <- vector(length = n_possible_horizons)
-  for (j in seq_len(n_possible_horizons)) {
-    obs_temp <- to_add_already_observed[, j]
-    mu_temp <- exp_to_add[, j] + 0.1
-    disp_params[j] <- .fit_nb(x = obs_temp, mu = mu_temp)
-  }
+  disp_params <- fit_obs_vs_pred(
+    obs = to_add_already_observed,
+    pred = exp_to_add,
+    density_function = dnbinom
+  )
+  # disp_params <- vector(length = n_possible_horizons)
+  # for (j in seq_len(n_possible_horizons)) {
+  #   obs_temp <- to_add_already_observed[, j]
+  #   mu_temp <- exp_to_add[, j] + 0.1
+  #   disp_params[j] <- .fit_nb(x = obs_temp, mu = mu_temp)
+  # }
 
   return(disp_params)
 }

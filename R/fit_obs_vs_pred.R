@@ -4,9 +4,9 @@
 #'    and horizons as columns.
 #' @param pred Matrix of predictions with retrospective nowcast dates as rows
 #'    and horizons as columns.
-#' @param observation_model Character string indicating the choice of observation model
-#'   to fit to the predicted nowcasts versus the observations. Default is
-#'   `negative binomial`.
+#' @param observation_model Character string indicating the choice of
+#'   observation model to fit to the predicted nowcasts versus the
+#'   observations. Default is `negative binomial`.
 #'
 #' @returns Vector of parameters corresponding to the chosen
 #'    `observation_model` of length of the number of columns in `obs` and
@@ -76,8 +76,8 @@ fit_obs_vs_pred <- function(obs,
         nll <- -sum(
           dgamma(
             x = obs_this_horizon,
-            shape = disp_var[1],
-            scale = pred_this_horizon / disp_var[1],
+            shape = pred_this_horizon^2 / disp_var[1]^2,
+            scale = disp_var[1]^2 / pred_this_horizon,
             log = TRUE
           ),
           na.rm = TRUE

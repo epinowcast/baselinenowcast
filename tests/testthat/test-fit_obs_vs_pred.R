@@ -21,7 +21,7 @@ test_that("fit_obs_vs_pred: works with all three options for error functions", {
   result <- fit_obs_vs_pred(
     obs = test_obs,
     pred = test_pred,
-    density_function = "dnbinom"
+    observation_model = "dnbinom"
   )
   expect_type(result, "double")
   expect_length(result, ncol(test_obs))
@@ -31,7 +31,7 @@ test_that("fit_obs_vs_pred: works with all three options for error functions", {
   result <- fit_obs_vs_pred(
     obs = test_obs,
     pred = test_pred,
-    density_function = "dnorm"
+    observation_model = "dnorm"
   )
   expect_type(result, "double")
   expect_length(result, ncol(test_obs))
@@ -41,7 +41,7 @@ test_that("fit_obs_vs_pred: works with all three options for error functions", {
   result <- fit_obs_vs_pred(
     obs = test_obs,
     pred = test_pred,
-    density_function = "dgamma"
+    observation_model = "dgamma"
   )
   expect_type(result, "double")
   expect_length(result, ncol(test_obs))

@@ -31,6 +31,103 @@ test_that(
   }
 )
 
+test_that(
+  "sample_predictions: can handle different observation models",
+  {
+    point_nowcast_matrix <- matrix(
+      c(
+        100, 50, 30, 20,
+        90, 45, 25, 16.8,
+        80, 40, 21.2, 19.5,
+        70, 34.5, 15.4, 9.1
+      ),
+      nrow = 4,
+      byrow = TRUE
+    )
+    sd<- c(0.8, 12.4, 9.1)
+    reporting_triangle <- construct_triangle(point_nowcast_matrix)
+    
+    result_normal <- sample_predictions(
+      point_nowcast_matrix, 
+      reporting_triangle, 
+      sd,
+      observation_model = "normal",
+      draws = 100
+    )
+    
+    expect_is(result_normal, "data.frame")
+    expect_identical(
+      nrow(result_normal),
+      as.integer(100 * nrow(point_nowcast_matrix))
+    )
+    expect_identical(ncol(result_normal), 3L)
+    expect_true(all(c("pred_count", "time", "draw") %in% names(result_normal)))
+    expect_length(unique(result_normal$draw), 100L)
+    expect_identical(nrow(result_normal), 
+                     as.integer(100 * nrow(point_nowcast_matrix)))
+    
+    result_gamma <- sample_predictions(
+      point_nowcast_matrix, 
+      reporting_triangle, 
+      sd,
+      observation_model = "gamma",
+      draws = 100
+    )
+    
+    expect_is(result_gamma, "data.frame")
+    expect_identical(
+      nrow(result_gamma),
+      as.integer(100 * nrow(point_nowcast_matrix))
+    )
+    expect_identical(ncol(result_gamma), 3L)
+    expect_true(all(c("pred_count", "time", "draw") %in% names(result_gamma)))
+    expect_length(unique(result_gamma$draw), 100L)
+    expect_identical(nrow(result_gamma), as.integer(100 * nrow(point_nowcast_matrix)))
+    
+    result_nb <- sample_predictions(
+      point_nowcast_matrix, 
+      reporting_triangle, 
+      sd,
+      observation_model = "negative binomial",
+      draws = 100
+    )
+    
+    expect_is(result_nb, "data.frame")
+    expect_identical(
+      nrow(result_nb),
+      as.integer(100 * nrow(point_nowcast_matrix))
+    )
+    expect_identical(ncol(result_nb), 3L)
+    expect_true(all(c("pred_count", "time", "draw") %in% names(result_nb)))
+    expect_length(unique(result_nb$draw), 100L)
+    expect_identical(nrow(result_nb), 
+                     as.integer(100 * nrow(point_nowcast_matrix)))
+    
+    expect_true(!all(result_nb == result_normal))
+    expect_true(!all(result_normal == result_gamma))
+    expect_true(!all(result_gamma == result_nb))
+    
+    # I think its okay that these aren't the same? 
+    mean_normal <- mean(result_normal$pred_count[result_normal$time ==4])
+    mean_gamma <- mean(result_gamma$pred_count[result_gamma$time ==4])
+    mean_nb <- mean(result_nb$pred_count[result_nb$time ==4])
+    
+    median_normal <- quantile(result_normal$pred_count[result_normal$time ==4],
+                              0.5)
+    median_gamma <- quantile(result_gamma$pred_count[result_gamma$time ==4],
+                              0.5)
+    median_nb <- quantile(result_nb$pred_count[result_nb$time ==4],
+                           0.5)
+    expect_equal(mean_normal, mean_gamma, tolerance = 20)
+    expect_equal(mean_normal, mean_nb, tolerance = 20)
+    expect_equal(mean_nb, mean_gamma, tolerance = 20)
+    expect_equal(median_normal, median_gamma, tolerance = 10)
+    expect_equal(median_normal, median_nb, tolerance = 10)
+    expect_equal(median_nb, median_gamma, tolerance = 10)
+    
+  }
+)
+
 test_that("sample_predictions: draws are distinct and properly indexed", {
   # Setup test data
   point_nowcast_matrix <- matrix(

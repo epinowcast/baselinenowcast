@@ -5,6 +5,9 @@
 #'   representing the delays.
 #' @param dispersion Vector of dispersion parameters indexed by horizon from
 #'  minus one to the maximum delay.
+#' @param observation_model Character string indicating the choice of
+#'   observation model to fit to the predicted nowcasts versus the
+#'   observations. Default is `negative binomial`.
 #' @inheritParams estimate_delay
 #' @inheritParams estimate_uncertainty
 #' @returns Vector of predicted draws at each reference time, for all reference
@@ -46,6 +49,7 @@
 sample_prediction <- function(point_nowcast_matrix,
                               reporting_triangle,
                               dispersion,
+                              observation_model = "negative binomial",
                               fun_to_aggregate = sum,
                               k = 1) {
   .validate_aggregation_function(fun_to_aggregate)
@@ -59,6 +63,9 @@ sample_prediction <- function(point_nowcast_matrix,
         "the matrix."
       )
     )
+  }
+  if (!is.character(observation_model)) {
+    observation_model <- as.character(observation_model)
   }
   point_nowcast_pred_matrix <- .extract_predictions(
     point_nowcast_matrix,
@@ -75,7 +82,29 @@ sample_prediction <- function(point_nowcast_matrix,
   ) # nolint
   # Nowcast predictions only (these are reversed, first element is horizon 0)
   mean_pred <- mean_pred_long[(max_t - n_horizons + 1):max_t]
-  draw_pred <- rnbinom(n = n_horizons, size = rev(dispersion), mu = mean_pred)
+
+  if (observation_model %in% c(
+    "dnbinom", "negative binomial", "neg_binom",
+    "negative_binomial", "nbinom",
+    "Negative Binomial", "Negative binomial"
+  )) {
+    draw_pred <- rnbinom(
+      n = n_horizons,
+      size = rev(dispersion),
+      mu = mean_pred
+    )
+  } else if (observation_model %in% c(
+    "dnorm", "Normal",
+    "normal", "norm"
+  )) {
+    draw_pred <- rnorm(n = n_horizons, sd = rev(dispersion), mean = mean_pred)
+  } else if (observation_model %in% c("dgamma", "Gamma", "gamma")) {
+    rgamma(
+      n = n_horizons,
+      shape = mean_pred^2 / dispersion^2,
+      scale = dispersion^2 / mean_pred
+    )
+  }
   # Pad with 0s for the fully observed rows, which are before
   # the max_t - n_horizons
   draw_pred_long <- c(rep(0, max_t - n_horizons), draw_pred)
@@ -171,6 +200,7 @@ sample_predictions <- function(point_nowcast_matrix,
                                reporting_triangle,
                                dispersion,
                                draws = 1000,
+                               observation_model = "negative binomial",
                                fun_to_aggregate = sum,
                                k = 1) {
   assert_integerish(draws, lower = 1)

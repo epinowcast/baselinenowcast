@@ -154,16 +154,6 @@ test_that("extract_obs_and_pred: Error conditions are properly handled", {
 
   # trunc rep mat list is empty
   expect_error(extract_obs_and_pred(valid_nowcasts, list(), valid_rts))
-
-  # observations contain non-integers
-  test_triangle_decimal <- test_triangle + 0.1
-  non_integer_trunc_rts <- list(
-    test_triangle_decimal[1:5, ],
-    test_triangle_decimal[1:4, ]
-  )
-  expect_error(extract_obs_and_pred(
-    valid_nowcasts, non_integer_trunc_rts, valid_rts
-  ))
 })
 
 

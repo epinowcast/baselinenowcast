@@ -8,6 +8,7 @@ sample_prediction(
   point_nowcast_matrix,
   reporting_triangle,
   dispersion,
+  observation_model = "negative binomial",
   fun_to_aggregate = sum,
   k = 1
 )
@@ -25,6 +26,10 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 
 \item{dispersion}{Vector of dispersion parameters indexed by horizon from
 minus one to the maximum delay.}
+
+\item{observation_model}{Character string indicating the choice of
+observation model to fit to the predicted nowcasts versus the
+observations. Default is \verb{negative binomial}.}
 
 \item{fun_to_aggregate}{Function that will operate along the nowcast
 vectors after summing across delays. Eventually, we can add things like

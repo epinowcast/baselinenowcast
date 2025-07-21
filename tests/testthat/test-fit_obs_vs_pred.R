@@ -2,7 +2,7 @@
 test_obs <- matrix(
   c(
     4, 15, 10,
-    8, 16, 6
+    8, 10, 6
   ),
   nrow = 2,
   byrow = TRUE
@@ -17,10 +17,34 @@ test_pred <- matrix(
   byrow = TRUE
 )
 
-test_that("fit_obs_vs_pred: Basic functionality with valid inputs", {
+test_that("fit_obs_vs_pred: works with all three options for error functions", {
   result <- fit_obs_vs_pred(
     obs = test_obs,
     pred = test_pred,
-    density_function = dnbinom
+    density_function = "dnbinom"
   )
+  expect_type(result, "double")
+  expect_length(result, ncol(test_obs))
+  expect_true(all(is.finite(result)))
+  expect_true(all(result < 1000) & all(result > 0.1))
+
+  result <- fit_obs_vs_pred(
+    obs = test_obs,
+    pred = test_pred,
+    density_function = "dnorm"
+  )
+  expect_type(result, "double")
+  expect_length(result, ncol(test_obs))
+  expect_true(all(is.finite(result)))
+  expect_true(all(result < 1000) & all(result > 0.1))
+
+  result <- fit_obs_vs_pred(
+    obs = test_obs,
+    pred = test_pred,
+    density_function = "dgamma"
+  )
+  expect_type(result, "double")
+  expect_length(result, ncol(test_obs))
+  expect_true(all(is.finite(result)))
+  expect_true(all(result < 1000) & all(result > 0.1))
 })

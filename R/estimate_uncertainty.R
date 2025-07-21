@@ -15,6 +15,9 @@
 #'   matrices with as many rows as available given the truncation.
 #' @param n Integer indicating the number of reporting matrices to use to
 #'    estimate the dispersion parameters.
+#' @param obs_model Character string indicating the choice of observation model
+#'   to fit to the predicted nowcasts versus the observations. Default is
+#'   `negative binomial`.
 #' @param fun_to_aggregate Function that will operate along the nowcast
 #'    vectors after summing across delays. Eventually, we can add things like
 #'    mean, but for now since we are only providing a negative binomial
@@ -72,6 +75,7 @@ estimate_uncertainty <- function(
     trunc_reporting_triangles,
     retro_reporting_triangles,
     n = length(pt_nowcast_matrices),
+    obs_model = "negative binomial",
     fun_to_aggregate = sum,
     k = 1) {
   .validate_aggregation_function(fun_to_aggregate)
@@ -192,15 +196,8 @@ estimate_uncertainty <- function(
   disp_params <- fit_obs_vs_pred(
     obs = to_add_already_observed,
     pred = exp_to_add,
-    density_function = dnbinom
+    obs_model = "dnbinom"
   )
-  # disp_params <- vector(length = n_possible_horizons)
-  # for (j in seq_len(n_possible_horizons)) {
-  #   obs_temp <- to_add_already_observed[, j]
-  #   mu_temp <- exp_to_add[, j] + 0.1
-  #   disp_params[j] <- .fit_nb(x = obs_temp, mu = mu_temp)
-  # }
-
   return(disp_params)
 }
 

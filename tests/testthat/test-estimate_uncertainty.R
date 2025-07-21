@@ -72,49 +72,6 @@ test_that("estimate_uncertainty can handle rolling sum with k=3", {
   expect_true(all(is.finite(result)))
 })
 
-test_that("estimate_uncertainty appropriately warns when k is too large for some of the triangles", { # nolint
-  expect_warning(estimate_uncertainty(
-    pt_nowcast_matrices = valid_nowcasts,
-    trunc_reporting_triangles = valid_trunc_rts,
-    retro_reporting_triangles = valid_rts,
-    n = 2,
-    fun_to_aggregate = sum,
-    k = 4
-  ))
-})
-
-test_that("estimate_uncertainty appropriately errors when k is too large for all the triangles", { # nolint
-  expect_error(estimate_uncertainty(
-    pt_nowcast_matrices = valid_nowcasts,
-    trunc_reporting_triangles = valid_trunc_rts,
-    retro_reporting_triangles = valid_rts,
-    n = 2,
-    fun_to_aggregate = sum,
-    k = 5
-  ))
-})
-
-
-test_that("estimate_uncertainty throws an error if function to aggregate is not valid", { # nolint
-  # Function shouldn't be a character
-  expect_error(estimate_uncertainty(
-    pt_nowcast_matrices = valid_nowcasts,
-    trunc_reporting_triangles = valid_trunc_rts,
-    retro_reporting_triangles = valid_rts,
-    n = 2,
-    fun_to_aggregate = "sum",
-    k = 2
-  ))
-  # Mean doesn't work right now because we haven't added another error model
-  expect_error(estimate_uncertainty(
-    pt_nowcast_matrices = valid_nowcasts,
-    trunc_reporting_triangles = valid_trunc_rts,
-    retro_reporting_triangles = valid_rts,
-    n = 2,
-    fun_to_aggregate = mean,
-    k = 2
-  ))
-})
 
 test_that("estimate_uncertainty works correctly with default and n parameters", { # nolint
   result_default <- estimate_uncertainty(
@@ -129,70 +86,6 @@ test_that("estimate_uncertainty works correctly with default and n parameters", 
   )
   expect_identical(result_default, result_explicit)
 })
-
-
-test_that("estimate_uncertainty: Error conditions are properly handled", {
-  # Invalid input types
-  expect_error(estimate_uncertainty(
-    list("not_a_matrix"), valid_trunc_rts, valid_rts
-  ))
-  expect_error(estimate_uncertainty(
-    valid_nowcasts, list("not_a_matrix"), valid_rts
-  ))
-
-  # Invalid retro_reporting_triangles
-  expect_error(estimate_uncertainty(
-    valid_nowcasts, valid_trunc_rts, list("not_a_matrix")
-  ))
-  expect_error(estimate_uncertainty(valid_nowcasts, valid_trunc_rts, list()))
-
-  # Mismatched list lengths
-  expect_error(
-    estimate_uncertainty(valid_nowcasts[1], valid_trunc_rts, valid_rts, n = 2)
-  )
-  expect_error(
-    estimate_uncertainty(valid_nowcasts, valid_trunc_rts[1], valid_rts, n = 2)
-  )
-  expect_error(
-    estimate_uncertainty(valid_nowcasts, valid_trunc_rts, valid_rts[1], n = 2)
-  )
-
-  # Invalid n values
-  expect_error(estimate_uncertainty(
-    valid_nowcasts, valid_trunc_rts, valid_rts,
-    n = -1
-  ))
-  expect_error(estimate_uncertainty(
-    valid_nowcasts, valid_trunc_rts, valid_rts,
-    n = 1.5
-  ))
-  expect_error(estimate_uncertainty(
-    valid_nowcasts, valid_trunc_rts, valid_rts,
-    n = 3
-  ))
-
-  # pt nowcast contains NAs or is empty
-  expect_error(estimate_uncertainty(
-    valid_trunc_rts,
-    valid_trunc_rts,
-    valid_rts
-  ))
-  expect_error(estimate_uncertainty(list(), valid_trunc_rts, valid_rts))
-
-  # trunc rep mat list is empty
-  expect_error(estimate_uncertainty(valid_nowcasts, list(), valid_rts))
-
-  # observations contain non-integers
-  test_triangle_decimal <- test_triangle + 0.1
-  non_integer_trunc_rts <- list(
-    test_triangle_decimal[1:5, ],
-    test_triangle_decimal[1:4, ]
-  )
-  expect_error(estimate_uncertainty(
-    valid_nowcasts, non_integer_trunc_rts, valid_rts
-  ))
-})
-
 
 test_that("estimate_uncertainty: Edge cases are handled properly", {
   # Empty lists

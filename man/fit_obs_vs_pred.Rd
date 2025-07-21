@@ -27,18 +27,20 @@ Fit observations vs predictions to an observation model
 }
 \examples{
 obs <- matrix(
-c(4, 15, 10,
- 8, 10, 6
- ),
- nrow = 2,
- byrow = TRUE
- )
-pred <- matrix(
- c(11, 21, 8,
- 10, 15.3, 3.5
- ),
+  c(
+    4, 15, 10,
+    8, 10, 6
+  ),
   nrow = 2,
   byrow = TRUE
- )
+)
+pred <- matrix(
+  c(
+    11, 21, 8,
+    10, 15.3, 3.5
+  ),
+  nrow = 2,
+  byrow = TRUE
+)
 disp <- fit_obs_vs_pred(obs, pred, observation_model = "negative binomial")
 }

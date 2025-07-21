@@ -10,7 +10,8 @@ fit_obs_vs_pred <- function(obs,
     pred_this_horizon <- obs[, i]
     nllik <- function(disp_var) {
       nll <- -sum(
-        density_function(obs_this_horizon,
+        density_function(
+          obs_this_horizon,
           pred_this_horizon,
           disp_var,
           log = TRUE

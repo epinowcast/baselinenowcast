@@ -39,7 +39,7 @@ functions: \code{sum}.}
 errors.}
 }
 \value{
-List of matrices labeled as \code{obs} and \code{pred} corresponding to the
+List of matrices labelled as \code{obs} and \code{pred} corresponding to the
 observed components that had yet to be observed as of the retrospective
 nowcast time.
 }

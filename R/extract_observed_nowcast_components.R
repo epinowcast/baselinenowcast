@@ -1,4 +1,4 @@
-extract_observed_nowcast_components <- function(
+extract_obs_nowcast_comps <- function(
     pt_nowcast_matrices,
     trunc_reporting_triangles,
     retro_reporting_triangles,
@@ -42,8 +42,6 @@ extract_observed_nowcast_components <- function(
       "`trunc_reporting_triangles` are not the same."
     ))
   }
-
-  n_possible_horizons <- ncol(list_of_ncs[[1]]) - 1
   # each item is a retrospective nowcast date
   nowcast_list <- list()
   obs_list <- list()
@@ -91,7 +89,7 @@ extract_observed_nowcast_components <- function(
 #'    `fun_to_aggregate` over to create target used to compute the nowcast
 #'    errors.
 #'
-#' @returns List of matrices labeled as `obs` and `pred` corresponding to the
+#' @returns List of matrices labelled as `obs` and `pred` corresponding to the
 #'    observed components that had yet to be observed as of the retrospective
 #'    nowcast time.
 #'

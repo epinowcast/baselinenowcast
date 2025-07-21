@@ -10,6 +10,7 @@ sample_predictions(
   reporting_triangle,
   dispersion,
   draws = 1000,
+  observation_model = "negative binomial",
   fun_to_aggregate = sum,
   k = 1
 )
@@ -30,6 +31,10 @@ minus one to the maximum delay.}
 
 \item{draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}
+
+\item{observation_model}{Character string indicating the choice of
+observation model to fit to the predicted nowcasts versus the
+observations. Default is \verb{negative binomial}.}
 
 \item{fun_to_aggregate}{Function that will operate along the nowcast
 vectors after summing across delays. Eventually, we can add things like

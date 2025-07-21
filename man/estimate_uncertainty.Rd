@@ -28,9 +28,9 @@ matrices with as many rows as available given the truncation.}
 \item{n}{Integer indicating the number of reporting matrices to use to
 estimate the dispersion parameters.}
 
-\item{observation_model}{Character string indicating the choice of observation model
-to fit to the predicted nowcasts versus the observations. Default is
-\verb{negative binomial}.}
+\item{observation_model}{Character string indicating the choice of
+observation model to fit to the predicted nowcasts versus the
+observations. Default is \verb{negative binomial}.}
 
 \item{fun_to_aggregate}{Function that will operate along the nowcast
 vectors after summing across delays. Eventually, we can add things like

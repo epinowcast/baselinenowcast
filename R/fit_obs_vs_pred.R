@@ -7,6 +7,7 @@
 #' @param observation_model Character string indicating the choice of
 #'   observation model to fit to the predicted nowcasts versus the
 #'   observations. Default is `negative binomial`.
+#'  @importFrom stats dnorm dnbinom dgamma
 #'
 #' @returns Vector of parameters corresponding to the chosen
 #'    `observation_model` of length of the number of columns in `obs` and

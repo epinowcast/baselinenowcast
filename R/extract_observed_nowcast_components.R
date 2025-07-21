@@ -88,7 +88,8 @@ extract_obs_nowcast_comps <- function(
 #' @param k Integer indicating the number of reference times to apply the
 #'    `fun_to_aggregate` over to create target used to compute the nowcast
 #'    errors.
-#'
+#' @importFrom stats rnorm rnbinom rgamma
+#' @export
 #' @returns List of matrices labelled as `obs` and `pred` corresponding to the
 #'    observed components that had yet to be observed as of the retrospective
 #'    nowcast time.

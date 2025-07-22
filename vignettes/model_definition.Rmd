@@ -114,7 +114,7 @@ $$
 
 subject to the constrain that $\sum_{d = 0}^D \pi_d = 1$.
 
-We note that this method is equivalent to the so-called chainladder method @Friedland2010, adapted to our notation in terms of reporting triangles (rather than *development triangles* as used in accounting).
+We note that this method is equivalent to the so-called chain ladder method @Friedland2010, adapted to our notation in terms of reporting triangles (rather than *development triangles* as used in accounting).
 The intuition behind the method is described below in Figure \@ref(fig:squares), where the basic assumption is that the ratio between the delays in the complete observations (navy and orange elements of the matrix) is equivalent to the ratio between the delays in the partially observed components of the matrix (blue and yellow elements of the matrix).
 
 
@@ -125,7 +125,10 @@ The intuition behind the method is described below in Figure \@ref(fig:squares),
 #|    delays for fully observed reference times is
 #|    consistent with the ratio between those same delays in the partially
 #|    observed data.  '
-knitr::include_graphics(file.path("..", "man", "figures", "reporting_triangle.png"))
+knitr::include_graphics(file.path(
+  "..", "man", "figures",
+  "reporting_triangle.png"
+))
 ```
 
 The `delay_estimate()` function ingests either a reporting matrix or a reporting triangle and uses the last `n` rows to compute an empirical delay probability mass function (PMF), returning a simplex vector indexed starting at delay 0.
@@ -254,7 +257,10 @@ This is described in the schematic Figure \@ref(fig:predicted_prob_nowcasts) whi
 #|    nowcasts generated via sampling from the observation model with the
 #|    estimted uncertainty parameters and a mean given by the sum of the
 #|    predicted components at each reference time (white squares).'
-knitr::include_graphics(file.path("..", "man", "figures", "pred_prob_nowcasts.png"))
+knitr::include_graphics(file.path(
+  "..", "man", "figures",
+  "pred_prob_nowcasts.png"
+))
 ```
 
 ### Combine with observations to obtain probabilistic nowcasts
@@ -320,7 +326,7 @@ $$
 $$ which corresponds to the corrected point estimate provided in equation @eq-correction.
 
 # Default `baselinenowcast()` settings
-To guide practitioners, we set default behaviors that are based on the maximum delay observed in the data.
+To guide practitioners, we set default behaviours that are based on the maximum delay observed in the data.
 We use the partial reporting triangle for delay estimation, derive delay estimates and uncertainty estimates from only the reporting triangle being nowcasted, and use three times the maximum delay number ($V=3 \times D$) reference times for  the total training volume $V$ used by the model (in line with [@Wolffram2023]).
 
 Within each step there are additional defaults:
@@ -328,7 +334,7 @@ Within each step there are additional defaults:
 *Delay distribution estimation*: 50% of the reference times in the training volume $V$ are used for delay estimation, $N$, with a minimum requirement of at least one more than the maximum delay.
 If less data than this is available, this is indicated to the user, only producing an error when less data than the theoretically minimum is available for any given modelling step.
 *Point nowcast generation*: Delay estimation occurs using the reporting triangle being nowcasted.
-*Uncertainty Estimation*: 50% of the reference times in the training volumme $V$ are used as retrospective point nowcast times, $M$.
+*Uncertainty Estimation*: 50% of the reference times in the training volume $V$ are used as retrospective point nowcast times, $M$.
 If there is insufficient data, the method uses the oldest retrospective nowcast date with at least the same amount of historical data for delay estimation as is used for the point nowcast at the current nowcast date, and requires that there are at least two retrospective nowcasts containing sufficient data.
 By default we do not sum the predicted components of each row across rows as this is context specific (diverging from [@Wolffram2023]. who sum by week due to their target data being a rolling 7 day sum).
 

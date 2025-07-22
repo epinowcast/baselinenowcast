@@ -1,5 +1,9 @@
 #' @title Create a reporting triangle from a dataframe
 #'
+#' @param data Data.frame to be converted to a reporting triangle matrix.
+#'    Can either be in the long tidy format of counts by reference date
+#'    and report date or line list data with individual observations
+#'    indexed by their reference date and report date.
 #' @details
 #'  The input needs to be a data.frame or similar with the following columns:
 #'  - `reference_date`: Column of type `date` or character with the dates of
@@ -43,6 +47,7 @@ as_reporting_triangle <- function(data, ...) {
 #' @param ... Additional arguments
 #'
 #' @export
+#' @importFrom lubridate ymd
 #' @method as_reporting_triangle data.frame
 as_reporting_triangle.data.frame <- function(
     data,
@@ -55,12 +60,14 @@ as_reporting_triangle.data.frame <- function(
   # Order dataframe elements by reference date?
 
   # Compute delay
-  data$delay <- as.integer(data$report_date - data$reference_date)
+  data$delay <- as.integer(ymd(data$report_date) - ymd(data$reference_date))
 
   # Filter to delays less than maximum delay
   if (!is.null(max_delay)) {
     data <- data[data$delay <= max_delay, ]
   }
+  # Remove report date
+  data <- data[, !names(data) == "report_date"]
   wide_data <- reshape(
     data,
     direction = "wide",
@@ -70,9 +77,12 @@ as_reporting_triangle.data.frame <- function(
   )
   cols_to_remove <- c("reference_date", "report_date")
   matrix_cols <- !names(wide_data) %in% cols_to_remove
-  reporting_triangle <- as.matrix(wide_data[, ..matrix_cols])
+  reporting_triangle <- as.matrix(wide_data[, matrix_cols])
 
-  colnames(reporting_triangle) <- gsub("count\\.", "", colnames(reporting_triangle))
+  colnames(reporting_triangle) <- gsub("count.", "",
+    colnames(reporting_triangle),
+    fixed = TRUE
+  )
 
   return(reporting_triangle)
 }

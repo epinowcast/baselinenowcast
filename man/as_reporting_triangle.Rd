@@ -16,6 +16,11 @@ as_reporting_triangle(data, ...)
 )
 }
 \arguments{
+\item{data}{Data.frame to be converted to a reporting triangle matrix.
+Can either be in the long tidy format of counts by reference date
+and report date or line list data with individual observations
+indexed by their reference date and report date.}
+
 \item{...}{Additional arguments}
 
 \item{reference_date}{Name of the column in \code{data} that contains the
@@ -48,11 +53,15 @@ pertaining to that reference and report date.
 }
 \examples{
 long_data <- data.frame(
-reference_date = c("2025-01-01", "2025-01-01", "2025-01-01",
-  "2025-01-02", "2025-01-02", "2025-01-03"),
-report_date = c("2025-01-01", "2025-01-02", "2025-01-03",
-   "2025-01-02", "2025-01-03", "2025-01-03"),
-count = c(10, 2, 1, 12, 3, 13)
-  )
+  reference_date = c(
+    "2025-01-01", "2025-01-01", "2025-01-01",
+    "2025-01-02", "2025-01-02", "2025-01-03"
+  ),
+  report_date = c(
+    "2025-01-01", "2025-01-02", "2025-01-03",
+    "2025-01-02", "2025-01-03", "2025-01-03"
+  ),
+  count = c(10, 2, 1, 12, 3, 13)
+)
 as_reporting_triangle(long_data)
 }

@@ -15,8 +15,7 @@ and horizons as columns.}
 
 \item{observation_model}{Character string indicating the choice of
 observation model to fit to the predicted nowcasts versus the
-observations. Default is \verb{negative binomial}.
-@importFrom stats dnorm dnbinom dgamma}
+observations. Default is \verb{negative binomial}.}
 }
 \value{
 Vector of parameters corresponding to the chosen

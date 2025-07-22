@@ -137,7 +137,8 @@ The `apply_delay()` function ingests a reporting triangle and a delay PMF and re
 
 ```{r pt_nowcast}
 #| echo = FALSE,
-#| fig.cap = '*Figure 1.* Visual description of the generation of a point nowcast matrix
+#| fig.cap = '*Figure 1.* Visual description of the generation of a point
+#|     nowcast matrix
 #|     (filled in matrix elements in the bottom right of the reporting matrix)
 #|     and corresponding point nowcast vector (black). '
 knitr::include_graphics(file.path("..", "man", "figures", "point_nowcast.png"))

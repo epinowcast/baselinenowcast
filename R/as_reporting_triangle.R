@@ -1,28 +1,32 @@
 #' @title Create a reporting triangle from a dataframe
-#' 
+#'
 #' @details
 #'  The input needs to be a data.frame or similar with the following columns:
 #'  - `reference_date`: Column of type `date` or character with the dates of
 #'     the reference event.
-#'  - `report_date`: Column of type `date` or character with the dates of 
+#'  - `report_date`: Column of type `date` or character with the dates of
 #'     report of the reference event.
 #'  - `count`: Column of numeric or integer indicating the new confirmed counts
-#'     pertaining to that reference and report date. 
+#'     pertaining to that reference and report date.
 #'
 #'
-#' @returns Matrix containing reference times as rows and delays as columns 
-#'    with entries for the number of new counts at each reference time and 
-#'    delay. 
+#' @returns Matrix containing reference times as rows and delays as columns
+#'    with entries for the number of new counts at each reference time and
+#'    delay.
 #' @export
 #'
 #' @examples
 #' long_data <- data.frame(
-#' reference_date = c("2025-01-01", "2025-01-01", "2025-01-01",
-#'   "2025-01-02", "2025-01-02", "2025-01-03"),
-#' report_date = c("2025-01-01", "2025-01-02", "2025-01-03", 
-#'    "2025-01-02", "2025-01-03", "2025-01-03"),
-#' count = c(10, 2, 1, 12, 3, 13)
-#'   )
+#'   reference_date = c(
+#'     "2025-01-01", "2025-01-01", "2025-01-01",
+#'     "2025-01-02", "2025-01-02", "2025-01-03"
+#'   ),
+#'   report_date = c(
+#'     "2025-01-01", "2025-01-02", "2025-01-03",
+#'     "2025-01-02", "2025-01-03", "2025-01-03"
+#'   ),
+#'   count = c(10, 2, 1, 12, 3, 13)
+#' )
 #' as_reporting_triangle(long_data)
 as_reporting_triangle <- function(data, ...) {
   UseMethod("as_reporting_triangle")
@@ -44,15 +48,21 @@ as_reporting_triangle.data.frame <- function(
     data,
     reference_date = NULL,
     report_date = NULL,
-    max_delay = NULL, 
-    ...
-){
+    max_delay = NULL,
+    ...) {
+  # Fill in all combos of reference date and report dates
+
+  # Order dataframe elements by reference date?
+
+  # Compute delay
   data$delay <- as.integer(data$report_date - data$reference_date)
+
+  # Filter to delays less than maximum delay
   if (!is.null(max_delay)) {
     data <- data[data$delay <= max_delay, ]
   }
   wide_data <- reshape(
-    data, 
+    data,
     direction = "wide",
     idvar = "reference_date",
     timevar = "delay",
@@ -61,9 +71,8 @@ as_reporting_triangle.data.frame <- function(
   cols_to_remove <- c("reference_date", "report_date")
   matrix_cols <- !names(wide_data) %in% cols_to_remove
   reporting_triangle <- as.matrix(wide_data[, ..matrix_cols])
-  
+
   colnames(reporting_triangle) <- gsub("count\\.", "", colnames(reporting_triangle))
- 
+
   return(reporting_triangle)
-  
 }

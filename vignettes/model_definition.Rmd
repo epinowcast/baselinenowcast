@@ -31,7 +31,7 @@ $$
 
 A special case of this is the "final" number of reported cases at time $t$, denoted by $$
 X_t = X_{t, \le D} = \sum_{i=0}^D X_{t,i}
-$${eq:Xltd}
+$${#eq:Xltd}
 
 For delays $d < D$ we define the notation
 
@@ -50,11 +50,11 @@ representing the number of cases still missing after $d$ delay. In the following
 
 In the case where $t^*$ corresponds to the present date, all entries with $t+d>t^*$ have yet to be observed and are thus still missing. As the available entries at its bottom form a triangle, this incomplete reporting matrix is referred to as the *reporting triangle*.
 
-|   | $d = 0$ | $d = 1$ | $d=2$ | $...$ | $d= D-1$ | $d= D$ |
-|-----------|---------------|---------------|---------------|-------|-----|-----|
-| $t=t^*-2$ | $x_{t^*-2,0}$ | $x_{t^*-2,1}$ | $x_{t^*-2,2}$ | $...$ |     |     |
-| $t=t^*-1$ | $x_{t^*-1,0}$ | $x_{t^*-1,1}$ |               | $...$ |     |     |
-| $t=t^*$   | $x_{t^*,0}$   |               |               | $...$ |     |     |
+|           | $d = 0$       | $d = 1$       | $d=2$         | $...$ | $d= D-1$ | $d= D$ |
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
+| $t=t^*-2$ | $x_{t^*-2,0}$ | $x_{t^*-2,1}$ | $x_{t^*-2,2}$ | $...$ |          |        |
+| $t=t^*-1$ | $x_{t^*-1,0}$ | $x_{t^*-1,1}$ |               | $...$ |          |        |
+| $t=t^*$   | $x_{t^*,0}$   |               |               | $...$ |          |        |
 
 ### Pre-processing of the reporting triangle {#preprocessing}
 
@@ -181,18 +181,15 @@ $$
 X_{s^* - j, > j} \sim \text{NegBin}[\hat{x}_{s^* - j, > j}(s^*), \phi_j],
 $${#eq:negbin}
 
-with independence assumed across the different $s^*$. This, however, is not directly feasible as again some of the $x_{s^* - j, > j}$ are not yet observed at time $t^*$. We could discard these instances, but this would considerably reduce our number of available observations. We therefore use partial observations as available at time $t^*$ and assume
-$$
+with independence assumed across the different $s^*$. This, however, is not directly feasible as again some of the $x_{s^* - j, > j}$ are not yet observed at time $t^*$. We could discard these instances, but this would considerably reduce our number of available observations. We therefore use partial observations as available at time $t^*$ and assume $$
 \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \sim \text{NegBin}\left[\sum_{d = j + 1}^{\min(D, t^* - s^*)} \hat{x}_{s^* - j, d}, \phi_j \right].
 $${#eq-negbin2}
 
 We quantify the uncertainty at the target quantity level, which is assumed, by default, to be the final count at each reference time, summed across reporting delays.
 
-Here, the use of a constant dispersion parameter $\phi_j$ despite some of the values in the fitting procedure being yet incomplete is justified by the fact that the negative binomial distribution is closed to binomial subsampling, with the overdispersion parameter preserved. If equation @eq-negbin holds in combination with
-$$
+Here, the use of a constant dispersion parameter $\phi_j$ despite some of the values in the fitting procedure being yet incomplete is justified by the fact that the negative binomial distribution is closed to binomial subsampling, with the overdispersion parameter preserved. If equation @eq-negbin holds in combination with $$
 \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \ | \ X_{s^* - j, > j} \sim \text{Bin}\left[X_{s^* - j, > j}, \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} \pi_{d}\right) / \pi_{> j} \right],
-$$
-we thus obtain @eq-negbin2. Estimated dispersion parameters $\hat{\phi}_0, \dots, \hat{\phi}_D$ are obtained by maximum likelihood estimation. The `estimate_uncertainty()` function ingests the truncated reporting triangles, retrospective reporting triangles, and the retrospective point nowcasts and returns a set of uncertainty parameters corresponding to the specified observation model. The uncertainty quantification procedure is described schematically in Figure \@ref(fig:uncertainty_quantification).
+$$ we thus obtain @eq-negbin2. Estimated dispersion parameters $\hat{\phi}_0, \dots, \hat{\phi}_D$ are obtained by maximum likelihood estimation. The `estimate_uncertainty()` function ingests the truncated reporting triangles, retrospective reporting triangles, and the retrospective point nowcasts and returns a set of uncertainty parameters corresponding to the specified observation model. The uncertainty quantification procedure is described schematically in Figure \@ref(fig:uncertainty_quantification).
 
 ```{r uncertainty_quantification}
 #| echo = FALSE,
@@ -261,27 +258,21 @@ $$
 X_t \sim \text{DiscreteUniform}(0, 1, 2, \dots).
 $$
 
-For notational simplicity and readability for the following, we substitute $N = X_{t}$, $Y = X_{t, \geq d}$ and $p = \sum_{d = 0}^D \pi_d$ and are thus looking for $\mathbb{E}(N | Y = y)$ if $Y \sim \text{Bin}(N, p)$ with a discrete uniform prior on $N$. This expectation can be written out as:
-$$
+For notational simplicity and readability for the following, we substitute $N = X_{t}$, $Y = X_{t, \geq d}$ and $p = \sum_{d = 0}^D \pi_d$ and are thus looking for $\mathbb{E}(N | Y = y)$ if $Y \sim \text{Bin}(N, p)$ with a discrete uniform prior on $N$. This expectation can be written out as: $$
 \mathbb{E}(N \ | \ Y = y) = \sum_{n=0}^{\infty}\text{Pr}(N = n | Y = y) \times n
 $${#eq:expectation}
 
 Applying Bayes Theorem we have $$
 \text{Pr}(N = n \ |\ Y = y)  = \frac{\text{Pr}(Y = y \ | \ N = n) \times \text{Pr}(N=n)}{\sum_{i=0}^{\infty}\text{Pr}( Y = y \ |\ N= i) \times \text{Pr}(N = i)}.
-$$
-Because $\text{Pr}(N=n)$ is a constant this simplifies to
-$$
+$$ Because $\text{Pr}(N=n)$ is a constant this simplifies to $$
 \text{Pr}(N = n \ |\ Y = y)  = \frac{\text{Pr}(Y = y \ |\ N = n)}{\sum_{i=0}^{\infty}\text{Pr}( Y = y \ |\ N= i)}.
-$$
-Now substituting the probability mass function of the binomial distribution
-$$
+$$ Now substituting the probability mass function of the binomial distribution $$
 \text{Pr}(Y = y\ |\ N = n) =\binom{n}{y} p^y(1-p)^{n-y}
-$$ we get
-$$
+$$ we get $$
 \text{Pr}(N = n \ |\ Y = y) = \frac{\binom{n}{y} p^y(1-p)^{n-y}}{\sum_{i=1}^\infty \binom{1}{y}p^y(1-p)^{i-y}}
 $$
 
-Plugging this into \ref{#eq:expectation} we get the following (omitting terms for $n<y$, which are 0):
+Plugging this into @eq-expectation we get the following (omitting terms for $n<y$, which are 0):
 
 $$
 \mathbb{E}(N \ |\ Y = y) = \sum_{n=y}^{\infty}n \frac{\binom{n}{y} p^y(1-p)^{n-y}}{\sum_{i=y}^\infty \binom{i}{y}p^y(1-p)^{i-y}}

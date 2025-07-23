@@ -5,15 +5,9 @@
 \alias{as_reporting_triangle.data.frame}
 \title{Create a reporting triangle from a dataframe}
 \usage{
-as_reporting_triangle(data, ...)
+as_reporting_triangle(data, max_delay = NULL, ...)
 
-\method{as_reporting_triangle}{data.frame}(
-  data,
-  reference_date = NULL,
-  report_date = NULL,
-  max_delay = NULL,
-  ...
-)
+\method{as_reporting_triangle}{data.frame}(data, max_delay = NULL, ...)
 }
 \arguments{
 \item{data}{Data.frame to be converted to a reporting triangle matrix.
@@ -21,16 +15,10 @@ Can either be in the long tidy format of counts by reference date
 and report date or line list data with individual observations
 indexed by their reference date and report date.}
 
-\item{...}{Additional arguments}
-
-\item{reference_date}{Name of the column in \code{data} that contains the
-reference date.}
-
-\item{report_date}{Name of the column in \code{data} that contains the report
-date.}
-
 \item{max_delay}{Integer indicating the maximum delay of the process which
 will dictate the number of columns in the resulting reporting triangle.}
+
+\item{...}{Additional arguments}
 }
 \value{
 Matrix containing reference times as rows and delays as columns

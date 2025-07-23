@@ -4,6 +4,12 @@
 #'    with counts by reference and report date. Can either be a matrix or a
 #'    dataframe but should be in wide format where rows are reference times and
 #'    columns are delays plus any additional metadata.
+#' @param reference_dates Vector of dates or character strings indicating the
+#'    dates that each of the reference times correspond to, ordered from
+#'    row 1 to the last row of the reporting matrix. Must be of the same length
+#'    as the number of rows of the reporting matrix.
+#' @param delays Vector of integers indicating the delays that each column of
+#'    the reporting matrix corresponds to.
 #' @param ... Additional arguments
 #' @details
 #'   The input needs to be a matrix or data.frame with numeric or NA entries
@@ -30,28 +36,23 @@
 #'   reference_dates,
 #'   delays
 #' )
-as_data_frame <- function(data, ...) {
+as_data_frame <- function(data,
+                          reference_dates = NULL,
+                          delays = NULL,
+                          ...) {
   UseMethod("as_data_frame")
 }
 
 #' @rdname as_data_frame
-#' @param reference_dates Vector of dates or character strings indicating the
-#'    dates that each of the reference times correspond to, ordered from
-#'    row 1 to the last row of the reporting matrix. Must be of the same length
-#'    as the number of rows of the reporting matrix.
-#' @param delays Vector of integers indicating the delays that each column of
-#'    the reporting matrix corresponds to.
-#' @param ... Additional arguments
 #'
 #' @export
 #' @importFrom lubridate ymd
 #' @method as_data_frame matrix
 as_data_frame.matrix <- function(
     data,
+    reference_dates,
+    delays,
     ...) {
-  args <- list(...)
-  reference_dates <- args$reference_dates
-  delays <- args$delays
   data_df <- data.frame(data)
   colnames(data_df) <- delays
   data_df$reference_date <- reference_dates

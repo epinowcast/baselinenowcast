@@ -67,7 +67,7 @@ as_reporting_triangle.data.frame <- function(
     data <- data[data$delay <= max_delay, ]
   }
   # Remove report date
-  data <- data[, !ames(data) != "report_date"]
+  data$report_date <- NULL
   wide_data <- reshape(
     data,
     direction = "wide",

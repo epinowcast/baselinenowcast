@@ -1,4 +1,4 @@
-#' @title Create a long tiday dataframe from a reporting triangle
+#' @title Create a long tidy dataframe from a reporting triangle
 #'
 #' @param data Reporting triangle to be converted to a long tidy dataframe
 #'    with counts by reference and report date. Can either be a matrix or a

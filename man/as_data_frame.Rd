@@ -3,7 +3,7 @@
 \name{as_data_frame}
 \alias{as_data_frame}
 \alias{as_data_frame.matrix}
-\title{Create a long tiday dataframe from a reporting triangle}
+\title{Create a long tidy dataframe from a reporting triangle}
 \usage{
 as_data_frame(data, ...)
 
@@ -30,7 +30,7 @@ Data.frame containing the counts by reference date and report
 date
 }
 \description{
-Create a long tiday dataframe from a reporting triangle
+Create a long tidy dataframe from a reporting triangle
 }
 \details{
 The input needs to be a matrix or data.frame with numeric or NA entries

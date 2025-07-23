@@ -15,6 +15,11 @@
 #'   matrices with as many rows as available given the truncation.
 #' @param n Integer indicating the number of reporting matrices to use to
 #'    estimate the dispersion parameters.
+#' @param error_model Function that ingests a matrix of observations and a
+#'    matrix of predictions and returns a vector that can be used to
+#'    apply uncertainty using the same error model. Default is `NULL`.
+#' @param aggregator Function that operates along the rows of the retrospective
+#'    point nowcast matrix after it has been aggregated across columns (delays).
 #' @param observation_model Character string indicating the choice of
 #'   observation model to fit to the predicted nowcasts versus the
 #'   observations. Default is `negative binomial`.
@@ -66,7 +71,8 @@
 #'   trunc_reporting_triangles = trunc_rts,
 #'   retro_reporting_triangles = retro_rts,
 #'   n = 2,
-#'   fun_to_aggregate = sum,
+#'   error_model = fit_obs_vs_pred
+#'   aggregator = sum,
 #'   k = 2
 #' )
 #' disp_params_agg
@@ -75,27 +81,113 @@ estimate_uncertainty <- function(
     trunc_reporting_triangles,
     retro_reporting_triangles,
     n = length(pt_nowcast_matrices),
-    observation_model = "negative binomial",
-    fun_to_aggregate = sum,
-    k = 1) {
-  # Get the two matrices of observations and predictions where rows are
-  # retrospective nowcast dates and columns are horizons
-  obs_and_pred_list <- extract_obs_and_pred(
-    pt_nowcast_matrices,
-    trunc_reporting_triangles,
+    error_model = fit_obs_vs_pred, # these each have arguments (this would be the parameteric form)
+    error_args = list(observation_model = "negative binomial"),
+    aggregator = zoo::rollsum, # this would be the args to rollsum. How do we handle this?
+    aggregator_args = list(k = 1,
+                           align = "right")
+    ) {
+  #.validate_aggregation_function(fun_to_aggregate)
+  assert_integerish(n, lower = 0)
+  .check_list_length(pt_nowcast_matrices, "pt_nowcast_matrices", n)
+  .check_list_length(trunc_reporting_triangles, "trunc_reporting_triangles", n)
+  .check_list_length(
     retro_reporting_triangles,
-    n = length(pt_nowcast_matrices),
-    fun_to_aggregate = fun_to_aggregate,
-    k = k
+    "retro_reporting_triangles",
+    n,
+    empty_check = FALSE
   )
-  # Estimate the dispersion as a function of horizon across retrospective
-  # nowcast dates
-  disp_params <- fit_obs_vs_pred(
-    obs = obs_and_pred_list$obs,
-    pred = obs_and_pred_list$pred,
-    observation_model = observation_model
+
+  # Truncate to only n nowcasts and extract only non-null elements of both lists
+  non_null_indices <- which(!sapply(pt_nowcast_matrices[1:n], is.null))
+  n_iters <- length(non_null_indices)
+  list_of_ncs <- pt_nowcast_matrices[non_null_indices]
+  list_of_obs <- trunc_reporting_triangles[non_null_indices]
+  list_of_rts <- retro_reporting_triangles[non_null_indices]
+  if (n_iters == 0) {
+    cli_abort(
+      message = c(
+        "No valid retrospective nowcasts were found, therefore ",
+        "uncertainty can not be estimated using the reporting ",
+        "triangle passed in. This may be due to invalid data ",
+        "in reporting triangles, such as zeros in the first column."
+      )
+    )
+  }
+
+
+
+  # Check that nowcasts has no NAs, trunc_rts has some NAs
+  if (any(sapply(list_of_ncs, anyNA))) {
+    cli_abort(
+      message =
+        "`pt_nowcast_matrices` contains NAs"
+    )
+  }
+  if (!any(sapply(list_of_obs, anyNA))) {
+    cli_warn(
+      message =
+        "`trunc_reporting_triangles` does not contain any NAs"
+    )
+  }
+  # Check that the sets of matrices are the same dimensions
+  dims_ncs <- lapply(list_of_ncs, dim)
+  dims_obs <- lapply(list_of_obs, dim)
+  all_identical <- all(mapply(identical, dims_ncs, dims_obs))
+  if (!all_identical) {
+    cli_abort(message = c(
+      "Dimensions of the first `n` matrices in `pt_nowcast_matrices` and ",
+      "`trunc_reporting_triangles` are not the same."
+    ))
+  }
+
+
+  n_possible_horizons <- ncol(list_of_ncs[[1]]) - 1
+  # Each row is retrospective nowcast date, each column is a horizon (i.e
+  # columns are not delays, but hoirzons, and each cell contains a total
+  # value corresponding to that horizon -- the total expected value to add
+  exp_to_add <-
+    to_add_already_observed <- matrix(NA, nrow = n, ncol = n_possible_horizons)
+  for (i in seq_len(n_iters)) {
+    # For each individual retrospective nowcast, extract matrices we need:
+    nowcast_i <- list_of_ncs[[i]]
+    trunc_matr_observed <- list_of_obs[[i]]
+    triangle_observed <- list_of_rts[[i]]
+    # Get the number of rows
+    max_t <- nrow(trunc_matr_observed)
+
+    # Apply the aggregation
+    aggr_obs <- do.call(aggregator, c(list(trunc_matr_observed), aggregator_args))
+    aggr_nowcast <- do.call(aggregator, c(list( nowcast_i), aggregator_args))
+    aggr_rt_obs <- do.call(aggregator, c(list(triangle_observed), aggregator_args))
+    n_horizons <- nrow(aggr_obs)
+    for (d in 1:n_horizons) {
+      indices_nowcast <- is.na(aggr_rt_obs)
+      indices_obs <- !is.na(aggr_obs)
+      masked_nowcast <- .apply_mask(aggr_nowcast, indices_nowcast, indices_obs)
+      masked_obs <- .apply_mask(aggr_obs, indices_nowcast, indices_obs)
+      exp_to_add[i,d] <- sum(masked_nowcast, na.rm = TRUE)
+      to_add_alread_observed[i,d] <- sum(masked_obs, na.rm = TRUE)
+    }
+  }
+  # Take matrix of observations and predictions and get uncertainty parameters
+
+  uncertainty_params <- do.call(error_model,
+                                c(obs = to_add_already_observed,
+                                  pred = exp_to_add,
+                                  error_args)
+                                )
+  return(uncertainty_params)
+}
+
+.apply_mask <- function(mat,
+                        indices_1,
+                        indices_2){
+
+  mat_masked <- as.matrix(
+    mat * indices_1 * indices_2
   )
-  return(disp_params)
+  return(mat_masked)
 }
 
 .check_list_length <- function(list_obj, name, required_length,

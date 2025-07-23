@@ -9,9 +9,10 @@ estimate_uncertainty(
   trunc_reporting_triangles,
   retro_reporting_triangles,
   n = length(pt_nowcast_matrices),
-  observation_model = "negative binomial",
-  fun_to_aggregate = sum,
-  k = 1
+  error_model = fit_obs_vs_pred,
+  error_args = list(observation_model = "negative binomial"),
+  aggregator = zoo::rollsum,
+  aggregator_args = list(k = 1, align = "right")
 )
 }
 \arguments{
@@ -27,6 +28,13 @@ matrices with as many rows as available given the truncation.}
 
 \item{n}{Integer indicating the number of reporting matrices to use to
 estimate the dispersion parameters.}
+
+\item{error_model}{Function that ingests a matrix of observations and a
+matrix of predictions and returns a vector that can be used to
+apply uncertainty using the same error model. Default is \code{NULL}.}
+
+\item{aggregator}{Function that operates along the rows of the retrospective
+point nowcast matrix after it has been aggregated across columns (delays).}
 
 \item{observation_model}{Character string indicating the choice of
 observation model to fit to the predicted nowcasts versus the
@@ -87,7 +95,8 @@ disp_params_agg <- estimate_uncertainty(
   trunc_reporting_triangles = trunc_rts,
   retro_reporting_triangles = retro_rts,
   n = 2,
-  fun_to_aggregate = sum,
+  error_model = fit_obs_vs_pred
+  aggregator = sum,
   k = 2
 )
 disp_params_agg

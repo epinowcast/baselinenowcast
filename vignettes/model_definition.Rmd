@@ -39,14 +39,14 @@ $$X_{t,>d} = \sum_{i = d+1} ^{D} X_{t,i}$$
 
 representing the number of cases still missing after $d$ delay. In the following we use uppercase letters ($X_t$) for random variables, lower case ($x_t$) for the corresponding observations, and hats ($\hat{x}_t$) for estimated/imputed values. We refer to $X_t$ to describe a random variable, $x_t$ for the corresponding observation, and $\hat{x}_t$ for an estimated/imputed value. The matrix $\mathbf{x}$ with entries $x_{t,d}, t = 1, \dots, t^*, d = 1, \dots, D$ is referred to as the *reporting matrix*. For a description of the nowcasting terms being used in this document (e.g. reporting triangle) and their corresponding abbreviations in the package, please consult the [nowcasting nomenclature](nomenclature.html) vignette.
 
-|   | $d = 0$ | $d = 1$ | $d=2$ | $...$ | $d= D-1$ | $d= D$ |
+|           | $d = 0$       | $d = 1$       | $d=2$          | $...$ | $d= D-1$         | $d= D$        |
 |-----------|-----------|-----------|-----------|-----------|-----------|-----------|
-| $t=1$ | $x_{1,0}$ | $x_{1,1}$ | $x_{1,2}$ | $...$ | $x_{1,D-1}$ | $x_{1, D}$ |
-| $t=2$ | $x_{2,0}$ | $x_{2,1}$ | $x_{2,2}$ | $...$ | $x_{2,D-1}$ | $x_{2, D}$ |
-| $t=3$ | $x_{3,0}$ | $x_{3,1}$ | $x_{3,2}$ | $...$ | $x_{3,D-1}$ | $x_{3, D}$ |
-| $...$ | $...$ | $...$ | $...$ | $...$ | $...$ | $...$ |
+| $t=1$     | $x_{1,0}$     | $x_{1,1}$     | $x_{1,2}$      | $...$ | $x_{1,D-1}$      | $x_{1, D}$    |
+| $t=2$     | $x_{2,0}$     | $x_{2,1}$     | $x_{2,2}$      | $...$ | $x_{2,D-1}$      | $x_{2, D}$    |
+| $t=3$     | $x_{3,0}$     | $x_{3,1}$     | $x_{3,2}$      | $...$ | $x_{3,D-1}$      | $x_{3, D}$    |
+| $...$     | $...$         | $...$         | $...$          | $...$ | $...$            | $...$         |
 | $t=t^*-1$ | $x_{t^*-1,0}$ | $x_{t^*-1,1}$ | $x_{t^*-1,,2}$ | $...$ | $x_{t^*-1,,D-1}$ | $x_{t^*-1,D}$ |
-| $t=t^*$ | $x_{t^*,0}$ | $x_{t^*,1}$ | $x_{t^*,2}$ | $...$ | $x_{t^*,D-1}$ | $x_{t^*, D}$ |
+| $t=t^*$   | $x_{t^*,0}$   | $x_{t^*,1}$   | $x_{t^*,2}$    | $...$ | $x_{t^*,D-1}$    | $x_{t^*, D}$  |
 
 In the case where $t^*$ corresponds to the present date, all entries with $t+d>t^*$ have yet to be observed and are thus still missing. As the available entries at its bottom form a triangle, this incomplete reporting matrix is referred to as the *reporting triangle*.
 
@@ -68,11 +68,11 @@ If a complete reporting matrix is available, estimating the discrete-time delay 
 
 $$
 \hat{\pi}_d= \frac{\sum_{t=t^*-N+1}^{t=t^*} x_{t,d}}{\sum_{t=t^*-N+1}^{t=t^*} x_{t}},
-$${#eq:pi_d} which is simply the relative frequency of a delay of $d$ days among all cases in the reporting matrix.
+$${#eq-pi_d} which is simply the relative frequency of a delay of $d$ days among all cases in the reporting matrix.
 
 ### Estimating the delay distribution from a reporting triangle
 
-In the case where $t^*$ is the present day, such that only a reporting triangle with missing entries is available, the estimator $\hat{\pi}_d$ from \@ref(eq:pi_d) can only be evaluated after discarding all data from the last $D-1$ time points. In order to use these partial observations, we use a different representation of the delay distribution via terms of the form
+In the case where $t^*$ is the present day, such that only a reporting triangle with missing entries is available, the estimator $\hat{\pi}_d$ from \@eq-pi_d can only be evaluated after discarding all data from the last $D-1$ time points. In order to use these partial observations, we use a different representation of the delay distribution via terms of the form
 
 $$
 \theta_d = \frac{\pi_d}{\pi_{\le d-1}}
@@ -98,7 +98,7 @@ $$
 
 subject to the constrain that $\sum_{d = 0}^D \pi_d = 1$.
 
-We note that this method is equivalent to the so-called chain ladder method @Friedland2010, adapted to our notation in terms of reporting triangles (rather than *development triangles* as used in accounting). The intuition behind the method is described below in Figure \@ref(fig:squares), where the basic assumption is that the ratio between the delays in the complete observations (navy and orange elements of the matrix) is equivalent to the ratio between the delays in the partially observed components of the matrix (blue and yellow elements of the matrix).
+We note that this method is equivalent to the so-called chain ladder method @Friedland2010, adapted to our notation in terms of reporting triangles (rather than *development triangles* as used in accounting). The intuition behind the method is described below in Figure @fig-squares, where the basic assumption is that the ratio between the delays in the complete observations (navy and orange elements of the matrix) is equivalent to the ratio between the delays in the partially observed components of the matrix (blue and yellow elements of the matrix).
 
 ```{r squares, echo = FALSE, fig.cap = 'Visual description of the iterative “completing” of the reportingtriangle, which relies on the assumption that the ratio between delays for fully observed reference times is consistent with the ratio between those same delays in the partially observed data.'}
 knitr::include_graphics(file.path(
@@ -133,7 +133,7 @@ $$
 \hat{x}_{t,d} = \hat{\pi}_d \times \hat{x}_t.
 $$
 
-The `apply_delay()` function ingests a reporting triangle and a delay PMF and returns a point nowcast matrix. The generation of a point nowcast is described in the schematic below \@ref(fig:pt_nowcast), describing how the missing elements of the reporting triangle are estimated and can then be used to generate a point estimate of the final counts at each reference time.
+The `apply_delay()` function ingests a reporting triangle and a delay PMF and returns a point nowcast matrix. The generation of a point nowcast is described in the schematic below @fig-pt_nowcast, describing how the missing elements of the reporting triangle are estimated and can then be used to generate a point estimate of the final counts at each reference time.
 
 ```{r pt_nowcast}
 #| echo = FALSE,
@@ -180,7 +180,7 @@ Assuming a negative binomial observation model, if all observations were complet
 
 $$
 X_{s^* - j, > j} \sim \text{NegBin}[\hat{x}_{s^* - j, > j}(s^*), \phi_j],
-$${#eq:negbin}
+$${#eq-negbin}
 
 with independence assumed across the different $s^*$. This, however, is not directly feasible as again some of the $x_{s^* - j, > j}$ are not yet observed at time $t^*$. We could discard these instances, but this would considerably reduce our number of available observations. We therefore use partial observations as available at time $t^*$ and assume $$
 \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \sim \text{NegBin}\left[\sum_{d = j + 1}^{\min(D, t^* - s^*)} \hat{x}_{s^* - j, d}, \phi_j \right].
@@ -190,7 +190,7 @@ We quantify the uncertainty at the target quantity level, which is assumed, by d
 
 Here, the use of a constant dispersion parameter $\phi_j$ despite some of the values in the fitting procedure being yet incomplete is justified by the fact that the negative binomial distribution is closed to binomial subsampling, with the overdispersion parameter preserved. If equation @eq-negbin holds in combination with $$
 \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \ | \ X_{s^* - j, > j} \sim \text{Bin}\left[X_{s^* - j, > j}, \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} \pi_{d}\right) / \pi_{> j} \right],
-$$ we thus obtain @eq-negbin2. Estimated dispersion parameters $\hat{\phi}_0, \dots, \hat{\phi}_D$ are obtained by maximum likelihood estimation. The `estimate_uncertainty()` function ingests the truncated reporting triangles, retrospective reporting triangles, and the retrospective point nowcasts and returns a set of uncertainty parameters corresponding to the specified observation model. The uncertainty quantification procedure is described schematically in Figure \@ref(fig:uncertainty_quantification).
+$$ we thus obtain @eq-negbin2. Estimated dispersion parameters $\hat{\phi}_0, \dots, \hat{\phi}_D$ are obtained by maximum likelihood estimation. The `estimate_uncertainty()` function ingests the truncated reporting triangles, retrospective reporting triangles, and the retrospective point nowcasts and returns a set of uncertainty parameters corresponding to the specified observation model. The uncertainty quantification procedure is described schematically in Figure @fig-uncertainty_quantification.
 
 ```{r uncertainty_quantification}
 #| echo = FALSE,
@@ -211,7 +211,7 @@ $$
 X_{t, > t^* - t} \sim \text{NegBin}(\hat{x}_{t, > t^* - t}, \phi_{t^* - t}).
 $$
 
-This is described in the schematic Figure \@ref(fig:predicted_prob_nowcasts) which describes sampling from the observation model with a mean given by the sum of the predicted components in the point nowcast matrix (the white squares).
+This is described in the schematic Figure @fig-predicted_prob_nowcasts which describes sampling from the observation model with a mean given by the sum of the predicted components in the point nowcast matrix (the white squares).
 
 ```{r predicted_prob_nowcasts}
 #| echo = FALSE,
@@ -229,7 +229,7 @@ knitr::include_graphics(file.path(
 
 The predictive distribution for $X_{t}$ then results by shifting this distribution by the already known value $x_{t, \leq t^* - t}$.
 
-This is described by the schematic Figure \@ref(fig:comb_w_obs) which describes the combining of the right-truncated partial observed data summed across reference times and the predicted probabilistic nowcast components to generate probabilistic nowcasts.
+This is described by the schematic Figure @fig-comb_w_obs which describes the combining of the right-truncated partial observed data summed across reference times and the predicted probabilistic nowcast components to generate probabilistic nowcasts.
 
 ```{r comb_w_obs}
 #| echo = FALSE,
@@ -261,7 +261,7 @@ $$
 
 For notational simplicity and readability for the following, we substitute $N = X_{t}$, $Y = X_{t, \geq d}$ and $p = \sum_{d = 0}^D \pi_d$ and are thus looking for $\mathbb{E}(N | Y = y)$ if $Y \sim \text{Bin}(N, p)$ with a discrete uniform prior on $N$. This expectation can be written out as: $$
 \mathbb{E}(N \ | \ Y = y) = \sum_{n=0}^{\infty}\text{Pr}(N = n | Y = y) \times n
-$${#eq:expectation}
+$${#eq-expectation}
 
 Applying Bayes Theorem we have $$
 \text{Pr}(N = n \ |\ Y = y)  = \frac{\text{Pr}(Y = y \ | \ N = n) \times \text{Pr}(N=n)}{\sum_{i=0}^{\infty}\text{Pr}( Y = y \ |\ N= i) \times \text{Pr}(N = i)}.

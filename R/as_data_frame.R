@@ -4,6 +4,7 @@
 #'    with counts by reference and report date. Can either be a matrix or a
 #'    dataframe but should be in wide format where rows are reference times and
 #'    columns are delays plus any additional metadata.
+#' @param ... Additional arguments
 #' @details
 #'   The input needs to be a matrix or data.frame with numeric or NA entries
 #'
@@ -47,8 +48,10 @@ as_data_frame <- function(data, ...) {
 #' @method as_data_frame matrix
 as_data_frame.matrix <- function(
     data,
-    reference_dates,
-    delays) {
+    ...) {
+  args <- list(...)
+  reference_dates <- args$reference_dates
+  delays <- args$delays
   data_df <- data.frame(data)
   colnames(data_df) <- delays
   data_df$reference_date <- reference_dates

@@ -7,7 +7,7 @@
 \usage{
 as_data_frame(data, ...)
 
-\method{as_data_frame}{matrix}(data, reference_dates, delays)
+\method{as_data_frame}{matrix}(data, ...)
 }
 \arguments{
 \item{data}{Reporting triangle to be converted to a long tidy dataframe

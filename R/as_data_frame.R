@@ -1,14 +1,14 @@
-#' @title Create a long tidaya dataframe from a reporting triangle
+#' @title Create a long tiday dataframe from a reporting triangle
 #'
 #' @param data Reporting triangle to be converted to a long tidy dataframe
 #'    with counts by reference and report date. Can either be a matrix or a
 #'    dataframe but should be in wide format where rows are reference times and
-#'    columns are delays plus any additional metdata.
+#'    columns are delays plus any additional metadata.
 #' @details
 #'   The input needs to be a matrix or data.frame with numeric or NA entries
 #'
 #'
-#' @returns Data.frame containing the counts by refereence date and report
+#' @returns Data.frame containing the counts by reference date and report
 #'    date
 #' @export
 #'
@@ -35,7 +35,7 @@ as_data_frame <- function(data, ...) {
 
 #' @rdname as_data_frame
 #' @param reference_dates Vector of dates or character strings indicating the
-#'    dates that each of the refererence times correspond to, ordered from
+#'    dates that each of the reference times correspond to, ordered from
 #'    row 1 to the last row of the reporting matrix. Must be of the same length
 #'    as the number of rows of the reporting matrix.
 #' @param delays Vector of integers indicating the delays that each column of

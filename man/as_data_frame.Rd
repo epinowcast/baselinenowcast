@@ -3,7 +3,7 @@
 \name{as_data_frame}
 \alias{as_data_frame}
 \alias{as_data_frame.matrix}
-\title{Create a long tidaya dataframe from a reporting triangle}
+\title{Create a long tiday dataframe from a reporting triangle}
 \usage{
 as_data_frame(data, ...)
 
@@ -13,12 +13,12 @@ as_data_frame(data, ...)
 \item{data}{Reporting triangle to be converted to a long tidy dataframe
 with counts by reference and report date. Can either be a matrix or a
 dataframe but should be in wide format where rows are reference times and
-columns are delays plus any additional metdata.}
+columns are delays plus any additional metadata.}
 
 \item{...}{Additional arguments}
 
 \item{reference_dates}{Vector of dates or character strings indicating the
-dates that each of the refererence times correspond to, ordered from
+dates that each of the reference times correspond to, ordered from
 row 1 to the last row of the reporting matrix. Must be of the same length
 as the number of rows of the reporting matrix.}
 
@@ -26,26 +26,30 @@ as the number of rows of the reporting matrix.}
 the reporting matrix corresponds to.}
 }
 \value{
-Data.frame containing the counts by refereence date and report
+Data.frame containing the counts by reference date and report
 date
 }
 \description{
-Create a long tidaya dataframe from a reporting triangle
+Create a long tiday dataframe from a reporting triangle
 }
 \details{
 The input needs to be a matrix or data.frame with numeric or NA entries
 }
 \examples{
 rep_tri <- matrix(
-c(10, 2, 1,
-12, 3, NA,
-13, NA, NA),
-byrow = TRUE,
-nrow =3
+  c(
+    10, 2, 1,
+    12, 3, NA,
+    13, NA, NA
+  ),
+  byrow = TRUE,
+  nrow = 3
 )
 reference_dates <- c("2025-01-01", "2025-01-02", "2025-01-03")
 delays <- c(0, 1, 2)
-as_data_frame(rep_tri,
+as_data_frame(
+  rep_tri,
   reference_dates,
-  delays)
+  delays
+)
 }

@@ -83,7 +83,7 @@ triangle_df <- as.data.frame(reporting_triangle) |>
   mutate(delay = as.numeric(delay))
 
 # Estimate the delay probability mass function (PMF)
-delay_pmf <- get_delay_estimate(
+delay_pmf <- estimate_delay(
   reporting_triangle = reporting_triangle,
   max_delay = max_delay,
   n = n_history_delay
@@ -117,16 +117,16 @@ trunc_rep_tri_list <- truncate_triangles(
 )
 
 # Generate reporting triangles
-retro_rep_tri_list <- generate_triangles(trunc_rep_tri_list)
+retro_rep_tri_list <- construct_triangles(trunc_rep_tri_list)
 
 # Generate retrospective point nowcasts
-retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
+retro_pt_nowcast_mat_list <- fill_triangles(
   reporting_triangle_list = retro_rep_tri_list,
   n = n_history_delay
 )
 
 # Estimate a vector of negative binomial dispersion parameters from the observations and estimates at each horizon
-disp_params <- estimate_dispersion(
+disp_params <- estimate_uncertainty(
   pt_nowcast_mat_list = retro_pt_nowcast_mat_list,
   trunc_rep_tri_list = trunc_rep_tri_list,
   reporting_triangle_list = retro_rep_tri_list,
@@ -134,7 +134,7 @@ disp_params <- estimate_dispersion(
 )
 
 # Generate multiple draws of a nowcast combining observed and predicted values
-nowcast_draws_df <- get_nowcast_draws(
+nowcast_draws_df <- sample_nowcasts(
   point_nowcast_matrix,
   reporting_triangle,
   dispersion = disp_params,

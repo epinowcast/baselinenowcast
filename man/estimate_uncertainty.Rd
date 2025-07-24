@@ -81,23 +81,25 @@ trunc_rts <- truncate_triangles(triangle, n = 2)
 retro_rts <- construct_triangles(trunc_rts)
 
 retro_nowcasts <- fill_triangles(retro_rts, n = 5)
+# Estimate dispersion parameters using default (negative binomial error
+# model on the sums
 disp_params <- estimate_uncertainty(
   pt_nowcast_matrices = retro_nowcasts,
   trunc_reporting_triangles = trunc_rts,
   retro_reporting_triangles = retro_rts,
-  n = 2
 )
 disp_params
 
-# Estimate dispersion parameters from rolling sum
+# Estimate dispersion parameters from rolling mean with a normal error model
 disp_params_agg <- estimate_uncertainty(
   pt_nowcast_matrices = retro_nowcasts,
   trunc_reporting_triangles = trunc_rts,
   retro_reporting_triangles = retro_rts,
   n = 2,
-  error_model = fit_obs_vs_pred
-  aggregator = sum,
-  k = 2
+  error_model = .fit_distrib,
+  error_args = list(observation_model = "normal"
+  aggregator = zoo::rollmean,
+  aggregator_args = list(k = 1, align = "right")
 )
 disp_params_agg
 }

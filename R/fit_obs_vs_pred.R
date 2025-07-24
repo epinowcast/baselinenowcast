@@ -12,27 +12,8 @@
 #' @returns Vector of parameters corresponding to the chosen
 #'    `observation_model` of length of the number of columns in `obs` and
 #'    `pred`, with each element corresponding to a horizon.
-#' @export
-#'
-#' @examples
-#' obs <- matrix(
-#'   c(
-#'     4, 15, 10,
-#'     8, 10, 6
-#'   ),
-#'   nrow = 2,
-#'   byrow = TRUE
-#' )
-#' pred <- matrix(
-#'   c(
-#'     11, 21, 8,
-#'     10, 15.3, 3.5
-#'   ),
-#'   nrow = 2,
-#'   byrow = TRUE
-#' )
-#' disp <- fit_obs_vs_pred(obs, pred, observation_model = "negative binomial")
-fit_obs_vs_pred <- function(obs,
+#' disp <- .fit_distrib(obs, pred, observation_model = "negative binomial")
+.fit_distrib <- function(obs,
                             pred,
                             observation_model = "dnbinom") {
   n_horizons <- ncol(obs)

@@ -57,23 +57,25 @@
 #' retro_rts <- construct_triangles(trunc_rts)
 #'
 #' retro_nowcasts <- fill_triangles(retro_rts, n = 5)
+#' # Estimate dispersion parameters using default (negative binomial error
+#' # model on the sums
 #' disp_params <- estimate_uncertainty(
 #'   pt_nowcast_matrices = retro_nowcasts,
 #'   trunc_reporting_triangles = trunc_rts,
 #'   retro_reporting_triangles = retro_rts,
-#'   n = 2
 #' )
 #' disp_params
 #'
-#' # Estimate dispersion parameters from rolling sum
+#' # Estimate dispersion parameters from rolling mean with a normal error model
 #' disp_params_agg <- estimate_uncertainty(
 #'   pt_nowcast_matrices = retro_nowcasts,
 #'   trunc_reporting_triangles = trunc_rts,
 #'   retro_reporting_triangles = retro_rts,
 #'   n = 2,
-#'   error_model = fit_obs_vs_pred
-#'   aggregator = sum,
-#'   k = 2
+#'   error_model = .fit_distrib,
+#'   error_args = list(observation_model = "normal"
+#'   aggregator = zoo::rollmean,
+#'   aggregator_args = list(k = 1, align = "right")
 #' )
 #' disp_params_agg
 estimate_uncertainty <- function(
@@ -81,9 +83,9 @@ estimate_uncertainty <- function(
     trunc_reporting_triangles,
     retro_reporting_triangles,
     n = length(pt_nowcast_matrices),
-    error_model = fit_obs_vs_pred, # these each have arguments (this would be the parameteric form)
+    error_model = .fit_distrib,
     error_args = list(observation_model = "negative binomial"),
-    aggregator = zoo::rollsum, # this would be the args to rollsum. How do we handle this?
+    aggregator = zoo::rollsum,
     aggregator_args = list(k = 1,
                            align = "right")
     ) {
@@ -144,42 +146,59 @@ estimate_uncertainty <- function(
 
   n_possible_horizons <- ncol(list_of_ncs[[1]]) - 1
   # Each row is retrospective nowcast date, each column is a horizon (i.e
-  # columns are not delays, but hoirzons, and each cell contains a total
+  # columns are not delays, but horizons, and each cell contains a total
   # value corresponding to that horizon -- the total expected value to add
   exp_to_add <-
     to_add_already_observed <- matrix(NA, nrow = n, ncol = n_possible_horizons)
   for (i in seq_len(n_iters)) {
-    # For each individual retrospective nowcast, extract matrices we need:
+    # For each individual retrospective nowcast, extract matrices we need from
+    # the corresponding elements in the list.
     nowcast_i <- list_of_ncs[[i]]
     trunc_matr_observed <- list_of_obs[[i]]
     triangle_observed <- list_of_rts[[i]]
-    # Get the number of rows
-    max_t <- nrow(trunc_matr_observed)
 
-    # Apply the aggregation
+    # Apply the aggregation to the truncated observations, the nowcast,
+    # and the reporting triangle.
     aggr_obs <- do.call(aggregator, c(list(trunc_matr_observed), aggregator_args))
     aggr_nowcast <- do.call(aggregator, c(list( nowcast_i), aggregator_args))
     aggr_rt_obs <- do.call(aggregator, c(list(triangle_observed), aggregator_args))
-    n_horizons <- nrow(aggr_obs)
-    for (d in 1:n_horizons) {
-      indices_nowcast <- is.na(aggr_rt_obs)
-      indices_obs <- !is.na(aggr_obs)
-      masked_nowcast <- .apply_mask(aggr_nowcast, indices_nowcast, indices_obs)
-      masked_obs <- .apply_mask(aggr_obs, indices_nowcast, indices_obs)
+    max_t <- nrow(aggr_obs)
+    # For each horizon, take the partial sum of the nowcasted and already
+    # observed components.
+    for (d in 1:n_possible_horizons) {
+      row_number <- max_t- d + 1
+      indices_nowcast <- is.na(aggr_rt_obs[row_number,])
+      indices_obs <- !is.na(aggr_obs[row_number,])
+      masked_nowcast <- .apply_mask(aggr_nowcast[row_number,],
+                                    indices_nowcast,
+                                    indices_obs)
+      masked_obs <- .apply_mask(aggr_obs[row_number,],
+                                indices_nowcast,
+                                indices_obs)
       exp_to_add[i,d] <- sum(masked_nowcast, na.rm = TRUE)
-      to_add_alread_observed[i,d] <- sum(masked_obs, na.rm = TRUE)
+      to_add_already_observed[i,d] <- sum(masked_obs, na.rm = TRUE)
     }
   }
-  # Take matrix of observations and predictions and get uncertainty parameters
 
+  # Take matrix of observations and predictions and get uncertainty parameters
   uncertainty_params <- do.call(error_model,
-                                c(obs = to_add_already_observed,
-                                  pred = exp_to_add,
-                                  error_args)
+                                c(list(to_add_already_observed),
+                                  list(exp_to_add),
+                                  error_args
                                 )
+  )
+
   return(uncertainty_params)
 }
 
+#' Apply mask to extract the elements of the matrix that are both true
+#'
+#' @param mat Matrix containing elements for extraction.
+#' @param indices_1 Matrix of bools of the same dimensions of `mat`.
+#' @param indices_2 Matrix of bools of the same dimensions of `mat`
+#'
+#' @returns Matrix of same dimensions of `mat` with the overlapping `TRUE`
+#'   elements only.
 .apply_mask <- function(mat,
                         indices_1,
                         indices_2){

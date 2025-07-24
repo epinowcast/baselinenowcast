@@ -285,9 +285,9 @@ plot of chunk make-heatmap-reporting-triangle
 <p>Now that we have the reporting triangle, we are now ready to pass it in to the <code>baselinenowcast</code> package to estimate the delay distribution.
 We will tell the function the maximum delay and the number of observations we want to use for estimation.
 We only want to pass in the reporting triangle (for a single group!) to this function.
-See documentation for <code><a href="../reference/get_delay_estimate.html">get_delay_estimate()</a></code> for a full description of the function inputs.</p>
+See documentation for <code><a href="../reference/estimate_delay.html">estimate_delay()</a></code> for a full description of the function inputs.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">delay_pmf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_delay_estimate.html">get_delay_estimate</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">delay_pmf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_delay.html">estimate_delay</a></span><span class="op">(</span></span>
 <span>  reporting_triangle <span class="op">=</span> <span class="va">reporting_triangle</span>,</span>
 <span>  max_delay <span class="op">=</span> <span class="va">max_delay</span>,</span>
 <span>  n <span class="op">=</span> <span class="va">n_history_delay</span></span>
@@ -330,7 +330,7 @@ plot of chunk plot-delay
 This will generate a point estimate of complete the reporting matrix.
 In this case, we will be applying the delay to the same reporting triangle we used to generate the estimate, but this doesn’t always have to be the case.
 See the documentation for <code><a href="../reference/apply_delay.html">apply_delay()</a></code> for a full description of the input requirements.</p>
-<p>It is worth noting that we could also have estimated the delay and applied it in one single step by calling <code><a href="../reference/generate_pt_nowcast_mat.html">generate_pt_nowcast_mat()</a></code>.
+<p>It is worth noting that we could also have estimated the delay and applied it in one single step by calling <code>generate_pt_nowcast_mat()</code>.
 In subsequent steps to estimate the uncertainty, both delay estimation and generating a point nowcast matrix happen in a single step.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">point_nowcast_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apply_delay.html">apply_delay</a></span><span class="op">(</span></span>
@@ -393,18 +393,18 @@ It assumes that the observations follow a negative binomial observation model, a
 <code class="sourceCode R"><span><span class="va">trunc_rep_tri_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/truncate_triangles.html">truncate_triangles</a></span><span class="op">(</span><span class="va">reporting_triangle</span>,</span>
 <span>  n <span class="op">=</span> <span class="va">n_retrospective_nowcasts</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">retro_rep_tri_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_triangles.html">generate_triangles</a></span><span class="op">(</span><span class="va">trunc_rep_tri_list</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">retro_rep_tri_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/construct_triangles.html">construct_triangles</a></span><span class="op">(</span><span class="va">trunc_rep_tri_list</span><span class="op">)</span></span></code></pre></div>
 </details><p>This results in a list of retrospective reporting triangles.
-See the documentation for <code><a href="../reference/truncate_triangles.html">truncate_triangles()</a></code> and <code><a href="../reference/generate_triangles.html">generate_triangles()</a></code> for more information on the inputs and outputs of these functions.</p>
-<p>Next we will pass this list of reporting triangles to the <code><a href="../reference/generate_pt_nowcast_mat_list.html">generate_pt_nowcast_mat_list()</a></code> and specify <code>n</code>, the number of reference times to be used to estimate the delay for each nowcast, which we will set as the <code>n_history_delay</code> previous specified.</p>
+See the documentation for <code><a href="../reference/truncate_triangles.html">truncate_triangles()</a></code> and <code><a href="../reference/construct_triangles.html">construct_triangles()</a></code> for more information on the inputs and outputs of these functions.</p>
+<p>Next we will pass this list of reporting triangles to the <code><a href="../reference/fill_triangles.html">fill_triangles()</a></code> and specify <code>n</code>, the number of reference times to be used to estimate the delay for each nowcast, which we will set as the <code>n_history_delay</code> previous specified.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">retro_pt_nowcast_mat_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_pt_nowcast_mat_list.html">generate_pt_nowcast_mat_list</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">retro_pt_nowcast_mat_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fill_triangles.html">fill_triangles</a></span><span class="op">(</span></span>
 <span>  reporting_triangle_list <span class="op">=</span> <span class="va">retro_rep_tri_list</span>,</span>
 <span>  n <span class="op">=</span> <span class="va">n_history_delay</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</details><p>Next, we will use the retrospective reporting triangles, the point nowcast matrices, and the truncated reporting triangles to estimate the uncertainty at each horizon, starting at horizon 0 using the <code><a href="../reference/estimate_dispersion.html">estimate_dispersion()</a></code> function.</p>
+</details><p>Next, we will use the retrospective reporting triangles, the point nowcast matrices, and the truncated reporting triangles to estimate the uncertainty at each horizon, starting at horizon 0 using the <code><a href="../reference/estimate_uncertainty.html">estimate_uncertainty()</a></code> function.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">disp_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_dispersion.html">estimate_dispersion</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">disp_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_uncertainty.html">estimate_uncertainty</a></span><span class="op">(</span></span>
 <span>  pt_nowcast_mat_list <span class="op">=</span> <span class="va">retro_pt_nowcast_mat_list</span>,</span>
 <span>  trunc_rep_tri_list <span class="op">=</span> <span class="va">trunc_rep_tri_list</span>,</span>
 <span>  reporting_triangle_list <span class="op">=</span> <span class="va">retro_rep_tri_list</span>,</span>
@@ -415,14 +415,14 @@ See the documentation for <code><a href="../reference/truncate_triangles.html">t
 <div class="section level2">
 <h2 id="generate-probabilistic-nowcast">Generate probabilistic nowcast<a class="anchor" aria-label="anchor" href="#generate-probabilistic-nowcast"></a>
 </h2>
-<p>Now that we have estimated the dispersion, we can generate a probabilistic nowcast using the <code><a href="../reference/get_nowcast_draws.html">get_nowcast_draws()</a></code> function which:</p>
+<p>Now that we have estimated the dispersion, we can generate a probabilistic nowcast using the <code><a href="../reference/sample_nowcasts.html">sample_nowcasts()</a></code> function which:</p>
 <ul>
 <li>generates draws from the nowcast distribution</li>
 <li>combines the draws with the observed data to form a single draw of the nowcast</li>
 <li>repeats this process for <code>draws</code> draws</li>
 </ul>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nowcast_draws_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_nowcast_draws.html">get_nowcast_draws</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">nowcast_draws_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_nowcasts.html">sample_nowcasts</a></span><span class="op">(</span></span>
 <span>  <span class="va">point_nowcast_matrix</span>, <span class="va">reporting_triangle</span>,</span>
 <span>  dispersion <span class="op">=</span> <span class="va">disp_params</span>,</span>
 <span>  draws <span class="op">=</span> <span class="fl">100</span></span>
@@ -436,7 +436,7 @@ See the documentation for <code><a href="../reference/truncate_triangles.html">t
 <span><span class="co">#&gt; 4        804    4    1</span></span>
 <span><span class="co">#&gt; 5        722    5    1</span></span>
 <span><span class="co">#&gt; 6        492    6    1</span></span></code></pre></div>
-</details><p>See documentation for <code><a href="../reference/get_nowcast_draws.html">get_nowcast_draws()</a></code>for further details.</p>
+</details><p>See documentation for <code><a href="../reference/sample_nowcasts.html">sample_nowcasts()</a></code>for further details.</p>
 </div>
 <div class="section level2">
 <h2 id="visualizing-the-nowcast">Visualizing the nowcast<a class="anchor" aria-label="anchor" href="#visualizing-the-nowcast"></a>

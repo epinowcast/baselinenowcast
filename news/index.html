@@ -52,15 +52,16 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.0.1000" id="baselinenowcast-0001000">baselinenowcast 0.0.0.1000<a class="anchor" aria-label="anchor" href="#baselinenowcast-0001000"></a></h2>
-<ul><li>Add new logo</li>
+<ul><li>Replace most function names with action-oriented function naming.</li>
+<li>Add new logo.</li>
 <li>Add a check to ensure that there are sufficient non-zero values in the reporting triangle.</li>
 <li>Add a check to ensure that sufficient <code>n</code> are specified for the delay estimate.</li>
 <li>Change the requirement so that the number of rows used for delay estimation need not be greater than or equal to the number of columns, but instead that at least one row contains a full set of observations.</li>
 <li>Bug fix to change the requirement so that the sum of the elements in the <code>structure</code> vector must not be greater than the number of columns.</li>
-<li>Add support for passing in a restricted set of functions to the <code><a href="../reference/estimate_dispersion.html">estimate_dispersion()</a></code> function to transform the “target” dataset across reference dates.</li>
+<li>Add support for passing in a restricted set of functions to the <code>estimate_dispersion()</code> function to transform the “target” dataset across reference dates.</li>
 <li>Implements a safe iterator in the step where retrospective point nowcasts are generated from a list of retrospective reporting triangles, ensuring that the iterations continue even if not all retrospective point nowcasts can be generated.</li>
 <li>Modify vignette to be consistent with the decided upon defaults for the number of reference times used for delay estimation and uncertainty.</li>
-<li>Replace function named <code>replace_lower_right_with_NA()</code> with <code><a href="../reference/generate_triangle.html">generate_triangle()</a></code>.</li>
+<li>Replace function named <code>replace_lower_right_with_NA()</code> with <code>generate_triangle()</code>.</li>
 <li>Removes requirement that all elements of the reporting triangle are integers.</li>
 <li>Modify the method used to estimate dispersion. Instead of estimating dispersion on individual elements of the nowcast matrix, we now estimate dispersion on the predicted nowcasts summed across reporting dates as a function of forecast horizon.</li>
 <li>Standardises naming of objects that are matrices vs vectors and objects that contain observations, point estimates, and probabilistic draws.</li>

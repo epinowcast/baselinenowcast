@@ -65,8 +65,9 @@ test_that("estimate_uncertainty can handle rolling sum with k=3", {
     pt_nowcast_matrices = valid_nowcasts,
     trunc_reporting_triangles = valid_trunc_rts,
     retro_reporting_triangles = valid_rts,
-    fun_to_aggregate = sum,
-    k = 3
+    aggregator = zoo::rollsum,
+    aggregator_args = list(k = 3,
+                           align = "right")
   )
 
   expect_true(all(is.finite(result)))
@@ -123,12 +124,6 @@ test_that("estimate_uncertainty: Matrix dimension validation works", {
   )
 })
 
-
-test_that(".fit_nb: Passing in empty vector returns NA", {
-  x <- NULL
-  NA_result <- .fit_nb(x, mu = 1)
-  expect_true(is.na(NA_result))
-})
 
 
 test_that("estimate_uncertainty returns an estimate if passing in a NULL for a nowcast", { # nolint
@@ -341,8 +336,9 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
     pt_nowcast_matrices,
     trunc_reporting_triangles,
     retro_reporting_triangles,
-    fun_to_aggregate = sum,
-    k = 3
+    aggregator = zoo::rollsum,
+    aggregator_args = list(k = 3,
+                           align = "right")
   )
   expect_lt(dispersion2[1], 500)
   expect_true(all(dispersion2 > 0.1))
@@ -415,4 +411,52 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
 
   expect_true(all(dispersion > 700)) # Can't distinguish more specific
   # dispersion values
+})
+
+test_that("estimate_uncertainty: works with normal observation model", {
+  result <- estimate_uncertainty(
+    pt_nowcast_matrices = valid_nowcasts,
+    trunc_reporting_triangles = valid_trunc_rts,
+    retro_reporting_triangles = valid_rts,
+    n = 2,
+    error_args = list(observation_model = "normal"),
+    aggregator = zoo::rollmean,
+    aggregator_args = list(k = 2, align = "right")
+  )
+
+  # Verify output structure
+  expect_type(result, "double")
+  expect_length(result, ncol(valid_nowcasts[[1]]) - 1)
+  expect_true(all(is.finite(result)))
+  expect_true(!any(result>20))
+})
+
+test_that("estimate_uncertainty: works with gamma observation model", {
+  result <- estimate_uncertainty(
+    pt_nowcast_matrices = valid_nowcasts,
+    trunc_reporting_triangles = valid_trunc_rts,
+    retro_reporting_triangles = valid_rts,
+    n = 2,
+    error_args = list(observation_model = "gamma"),
+    aggregator = zoo::rollmean,
+    aggregator_args = list(k = 2, align = "right")
+  )
+
+  # Verify output structure
+  expect_type(result, "double")
+  expect_length(result, ncol(valid_nowcasts[[1]]) - 1)
+  expect_true(all(is.finite(result)))
+  expect_true(!any(result>20))
+})
+
+test_that("estimate_uncertainty errors when k is too large for data", {
+  expect_error(estimate_uncertainty(
+    pt_nowcast_matrices = valid_nowcasts,
+    trunc_reporting_triangles = valid_trunc_rts,
+    retro_reporting_triangles = valid_rts,
+    n = 2,
+    error_args = list(observation_model = "gamma"),
+    aggregator = zoo::rollmean,
+    aggregator_args = list(k = 8, align = "right")
+  ))
 })

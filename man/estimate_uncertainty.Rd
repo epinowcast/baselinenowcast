@@ -9,7 +9,7 @@ estimate_uncertainty(
   trunc_reporting_triangles,
   retro_reporting_triangles,
   n = length(pt_nowcast_matrices),
-  error_model = fit_obs_vs_pred,
+  error_model = .fit_distrib,
   error_args = list(observation_model = "negative binomial"),
   aggregator = zoo::rollsum,
   aggregator_args = list(k = 1, align = "right")

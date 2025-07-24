@@ -17,8 +17,8 @@ test_pred <- matrix(
   byrow = TRUE
 )
 
-test_that("fit_obs_vs_pred: works with all three options for error functions", {
-  result <- fit_obs_vs_pred(
+test_that(".fit_distrib: works with all three options for error functions", {
+  result <- .fit_distrib(
     obs = test_obs,
     pred = test_pred,
     observation_model = "dnbinom"
@@ -28,7 +28,7 @@ test_that("fit_obs_vs_pred: works with all three options for error functions", {
   expect_true(all(is.finite(result)))
   expect_true(all(result < 1000) & all(result > 0.1))
 
-  result <- fit_obs_vs_pred(
+  result <- .fit_distrib(
     obs = test_obs,
     pred = test_pred,
     observation_model = "dnorm"
@@ -38,7 +38,7 @@ test_that("fit_obs_vs_pred: works with all three options for error functions", {
   expect_true(all(is.finite(result)))
   expect_true(all(result < 1000) & all(result > 0.1))
 
-  result <- fit_obs_vs_pred(
+  result <- .fit_distrib(
     obs = test_obs,
     pred = test_pred,
     observation_model = "dgamma"

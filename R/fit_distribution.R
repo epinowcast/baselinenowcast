@@ -4,30 +4,37 @@
 #'    and horizons as columns.
 #' @param pred Matrix of predictions with retrospective nowcast dates as rows
 #'    and horizons as columns.
-#' @param observation_model Character string indicating the choice of
+#' @param observation_model_name Character string indicating the choice of
 #'   observation model to fit to the predicted nowcasts versus the
-#'   observations. Default is `negative binomial`.
+#'   observations. Default is `"negative binomial"`.
 #' @importFrom stats dnorm dnbinom dgamma
 #'
 #' @returns Vector of parameters corresponding to the chosen
 #'    `observation_model` of length of the number of columns in `obs` and
 #'    `pred`, with each element corresponding to a horizon.
-#' disp <- .fit_distrib(obs, pred, observation_model = "negative binomial")
-.fit_distrib <- function(obs,
+#' @examples
+#' obs <- matrix(c(4, 5,
+#'                6, 7), byrow = 2, nrow =2)
+#' pred <- matrix(c(3.7, 6.1,
+#'                5.2, 10.4), byrow = 2, nrow =2)
+#' disp <- fit_distribution(obs, pred,
+#'  observation_model_name = "negative binomial")
+#'  disp
+fit_distribution <- function(obs,
                          pred,
-                         observation_model = "dnbinom") {
+                         observation_model_name = "dnbinom") {
   n_horizons <- ncol(obs)
   param_vector <- vector(length = n_horizons)
 
   # convert to character
-  if (!is.character(observation_model)) {
-    observation_model <- as.character(observation_model)
+  if (!is.character(observation_model_name)) {
+    observation_model <- as.character(observation_model_name)
   }
   for (i in seq_len(n_horizons)) {
     obs_this_horizon <- obs[, i]
     pred_this_horizon <- pred[, i]
     objective_func <- function(disp_var, ...) {
-      if (observation_model %in% c(
+      if (observation_model_name %in% c(
         "dnbinom", "negative binomial", "neg_binom",
         "negative_binomial", "nbinom",
         "Negative Binomial", "Negative binomial"
@@ -41,7 +48,7 @@
           ),
           na.rm = TRUE
         )
-      } else if (observation_model %in% c(
+      } else if (observation_model_name %in% c(
         "dnorm", "Normal",
         "normal", "norm"
       )) {
@@ -54,7 +61,7 @@
           ),
           na.rm = TRUE
         )
-      } else if (observation_model %in% c("dgamma", "Gamma", "gamma")) {
+      } else if (observation_model_name %in% c("dgamma", "Gamma", "gamma")) {
         nll <- -sum(
           dgamma(
             x = obs_this_horizon,

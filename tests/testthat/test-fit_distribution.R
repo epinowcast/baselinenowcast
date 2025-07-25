@@ -17,31 +17,31 @@ test_pred <- matrix(
   byrow = TRUE
 )
 
-test_that(".fit_distrib: works with all three options for error functions", {
-  result <- .fit_distrib(
+test_that("fit_distribution: works with all three options for error functions", {
+  result <- fit_distribution(
     obs = test_obs,
     pred = test_pred,
-    observation_model = "dnbinom"
+    observation_model_name_name = "dnbinom"
   )
   expect_type(result, "double")
   expect_length(result, ncol(test_obs))
   expect_true(all(is.finite(result)))
   expect_true(all(result < 1000) & all(result > 0.1))
 
-  result <- .fit_distrib(
+  result <- fit_distribution(
     obs = test_obs,
     pred = test_pred,
-    observation_model = "dnorm"
+    observation_model_name = "dnorm"
   )
   expect_type(result, "double")
   expect_length(result, ncol(test_obs))
   expect_true(all(is.finite(result)))
   expect_true(all(result < 1000) & all(result > 0.1))
 
-  result <- .fit_distrib(
+  result <- fit_distribution(
     obs = test_obs,
     pred = test_pred,
-    observation_model = "dgamma"
+    observation_model_name = "dgamma"
   )
   expect_type(result, "double")
   expect_length(result, ncol(test_obs))

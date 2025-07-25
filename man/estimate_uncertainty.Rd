@@ -9,8 +9,8 @@ estimate_uncertainty(
   trunc_reporting_triangles,
   retro_reporting_triangles,
   n = length(pt_nowcast_matrices),
-  error_model = .fit_distrib,
-  error_args = list(observation_model = "negative binomial"),
+  error_model = fit_distribution,
+  error_args = list(observation_model_name = "negative binomial"),
   aggregator = zoo::rollsum,
   aggregator_args = list(k = 1, align = "right")
 )
@@ -31,29 +31,23 @@ estimate the dispersion parameters.}
 
 \item{error_model}{Function that ingests a matrix of observations and a
 matrix of predictions and returns a vector that can be used to
-apply uncertainty using the same error model. Default is \code{NULL}.}
+apply uncertainty using the same error model. Default is fit_distribution.}
+
+\item{error_args}{List of arguments needed for the specified error model.
+Default is \verb{list(observation_model_name = "negative_binomial").}}
 
 \item{aggregator}{Function that operates along the rows of the retrospective
-point nowcast matrix after it has been aggregated across columns (delays).}
+point nowcast matrix after it has been aggregated across columns (delays)
+Default is \code{zoo::rollsum}.}
 
-\item{observation_model}{Character string indicating the choice of
-observation model to fit to the predicted nowcasts versus the
-observations. Default is \verb{negative binomial}.}
-
-\item{fun_to_aggregate}{Function that will operate along the nowcast
-vectors after summing across delays. Eventually, we can add things like
-mean, but for now since we are only providing a negative binomial
-observation model, we can only allow sum. Currently supported
-functions: \code{sum}.}
-
-\item{k}{Integer indicating the number of reference times to apply the
-\code{fun_to_aggregate} over to create target used to compute the nowcast
-errors.}
+\item{aggregator_args}{List of arguments needed for the specified aggregator.
+Default is \code{list(k=1, align = "right")}.}
 }
 \value{
-Vector of length one less than the number of columns in the
-latest reporting triangle, with each element representing the estimate
-of the dispersion parameter for each delay d, starting at delay d=1.
+\code{uncertainty_params} Vector of length one less than the number of
+columns in the latest reporting triangle, with each element
+representing the estimate of the dispersion parameter for each delay d,
+starting at delay d=1.
 }
 \description{
 This function ingests a list of point nowcast matrices and a corresponding

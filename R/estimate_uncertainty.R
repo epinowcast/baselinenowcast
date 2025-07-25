@@ -67,7 +67,7 @@
 #'   truncated_reporting_triangles = trunc_rts,
 #'   retro_reporting_triangles = retro_rts,
 #'   n = 2,
-#'   error_model = .fit_distrib,
+#'   error_model = fit_distribution,
 #'   error_args = list(observation_model = "normal"),
 #'   aggregator = zoo::rollmean,
 #'   aggregator_args = list(k = 1, align = "right")

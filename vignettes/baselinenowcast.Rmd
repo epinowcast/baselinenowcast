@@ -269,10 +269,10 @@ Here, the grey indicates matrix elements that are `NA`, which we would expect to
 Now that we have the reporting triangle, we are now ready to pass it in to the `baselinenowcast` package to estimate the delay distribution.
 We will tell the function the maximum delay and the number of observations we want to use for estimation.
 We only want to pass in the reporting triangle (for a single group!) to this function.
-See documentation for `get_delay_estimate()` for a full description of the function inputs.
+See documentation for `estimate_delay()` for a full description of the function inputs.
 
 ``` r
-delay_pmf <- get_delay_estimate(
+delay_pmf <- estimate_delay(
   reporting_triangle = reporting_triangle,
   max_delay = max_delay,
   n = n_history_delay
@@ -393,26 +393,26 @@ We repeat this process for `n_retrospective_nowcasts` reference times in the cur
 trunc_rep_tri_list <- truncate_triangles(reporting_triangle,
   n = n_retrospective_nowcasts
 )
-retro_rep_tri_list <- generate_triangles(trunc_rep_tri_list)
+retro_rep_tri_list <- construct_triangles(trunc_rep_tri_list)
 ```
 This results in a list of retrospective reporting triangles.
-See the documentation for `truncate_triangles()` and `generate_triangles()` for more information on the inputs and outputs of these functions.
+See the documentation for `truncate_triangles()` and `construct_triangles()` for more information on the inputs and outputs of these functions.
 
-Next we will pass this list of reporting triangles to the `generate_pt_nowcast_mat_list()` and specify `n`, the number of reference times to be used to estimate the delay for each nowcast, which we will set as the `n_history_delay` previous specified.
+Next we will pass this list of reporting triangles to the `fill_triangles()` and specify `n`, the number of reference times to be used to estimate the delay for each nowcast, which we will set as the `n_history_delay` previous specified.
 
 
 ``` r
-retro_pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
+retro_pt_nowcast_mat_list <- fill_triangles(
   reporting_triangle_list = retro_rep_tri_list,
   n = n_history_delay
 )
 ```
 
-Next, we will use the retrospective reporting triangles, the point nowcast matrices, and the truncated reporting triangles to estimate the uncertainty at each horizon, starting at horizon 0 using the `estimate_dispersion()` function.
+Next, we will use the retrospective reporting triangles, the point nowcast matrices, and the truncated reporting triangles to estimate the uncertainty at each horizon, starting at horizon 0 using the `estimate_uncertainty()` function.
 
 
 ``` r
-disp_params <- estimate_dispersion(
+disp_params <- estimate_uncertainty(
   pt_nowcast_mat_list = retro_pt_nowcast_mat_list,
   trunc_rep_tri_list = trunc_rep_tri_list,
   reporting_triangle_list = retro_rep_tri_list,
@@ -422,7 +422,7 @@ disp_params <- estimate_dispersion(
 
 # Generate probabilistic nowcast
 
-Now that we have estimated the dispersion, we can generate a probabilistic nowcast using the `get_nowcast_draws()` function which:
+Now that we have estimated the dispersion, we can generate a probabilistic nowcast using the `sample_nowcasts()` function which:
 
 - generates draws from the nowcast distribution
 - combines the draws with the observed data to form a single draw of the nowcast
@@ -430,7 +430,7 @@ Now that we have estimated the dispersion, we can generate a probabilistic nowca
 
 
 ``` r
-nowcast_draws_df <- get_nowcast_draws(
+nowcast_draws_df <- sample_nowcasts(
   point_nowcast_matrix, reporting_triangle,
   dispersion = disp_params,
   draws = 100
@@ -446,7 +446,7 @@ head(nowcast_draws_df)
 #> 6        492    6    1
 ```
 
-See documentation for `get_nowcast_draws()`for further details.
+See documentation for `sample_nowcasts()`for further details.
 
 # Visualizing the nowcast
 

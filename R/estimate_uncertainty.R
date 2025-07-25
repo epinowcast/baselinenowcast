@@ -46,10 +46,10 @@
 #' )
 #'
 #' trunc_rts <- truncate_triangles(triangle, n = 2)
-#' retro_rts <- generate_triangles(trunc_rts)
+#' retro_rts <- construct_triangles(trunc_rts)
 #'
-#' retro_nowcasts <- generate_pt_nowcast_mat_list(retro_rts, n = 5)
-#' disp_params <- estimate_dispersion(
+#' retro_nowcasts <- fill_triangles(retro_rts, n = 5)
+#' disp_params <- estimate_uncertainty(
 #'   pt_nowcast_mat_list = retro_nowcasts,
 #'   trunc_rep_tri_list = trunc_rts,
 #'   reporting_triangle_list = retro_rts,
@@ -58,7 +58,7 @@
 #' disp_params
 #'
 #' # Estimate dispersion parameters from rolling sum
-#' disp_params_agg <- estimate_dispersion(
+#' disp_params_agg <- estimate_uncertainty(
 #'   pt_nowcast_mat_list = retro_nowcasts,
 #'   trunc_rep_tri_list = trunc_rts,
 #'   reporting_triangle_list = retro_rts,
@@ -67,7 +67,7 @@
 #'   k = 2
 #' )
 #' disp_params_agg
-estimate_dispersion <- function(
+estimate_uncertainty <- function(
     pt_nowcast_mat_list,
     trunc_rep_tri_list,
     reporting_triangle_list,

@@ -150,7 +150,7 @@ To estimate the uncertainty in the nowcasts, we use the nowcast errors from $M$ 
 
 ### Generation of retrospective reporting triangles
 
-We first obtain "vintage'' reporting triangles of the raw reporting triangle (i.e., before pre-processing) to replicate the data which would have been available as of times $s^* = t^*-1, ..., t^*-M$, i.e., the last $M$ time points on which nowcasts could have been generated. This simply corresponds to the stepwise omission of all entries with $t + d > s^*$, which for each $s^*$ is a diagonal from the bottom left to the top right. The same pre-processing step as in Section [Preprocessing of the reporting triangle](#preprocessing) is applied to each vintage reporting triangle.
+We first obtain "vintage" reporting triangles of the raw reporting triangle (i.e., before pre-processing) to replicate the data which would have been available as of times $s^* = t^*-1, ..., t^*-M$, i.e., the last $M$ time points on which nowcasts could have been generated. This simply corresponds to the stepwise omission of all entries with $t + d > s^*$, which for each $s^*$ is a diagonal from the bottom left to the top right. The same pre-processing step as in Section [Preprocessing of the reporting triangle](#preprocessing) is applied to each vintage reporting triangle.
 
 This can be achieved in a stepwise manner using the functions `truncate_triangles()` and `construct_triangles()` which return a list of `n` retrospective reporting triangles in order from most recent to oldest.
 
@@ -210,6 +210,7 @@ Predictive distributions for $X_{t^*}, \dots, X_{t^* - D + 1}$ are obtained by g
 $$
 X_{t, > t^* - t} \sim \text{NegBin}(\hat{x}_{t, > t^* - t}, \phi_{t^* - t}).
 $$
+
 
 This is described in the schematic Figure @fig-predicted_prob_nowcasts which describes sampling from the observation model with a mean given by the sum of the predicted components in the point nowcast matrix (the white squares).
 
@@ -300,3 +301,4 @@ Within each step there are additional defaults:
 *Delay distribution estimation*: 50% of the reference times in the training volume $V$ are used for delay estimation, $N$, with a minimum requirement of at least one more than the maximum delay. If less data than this is available, this is indicated to the user, only producing an error when less data than the theoretically minimum is available for any given modelling step. *Point nowcast generation*: Delay estimation occurs using the reporting triangle being nowcasted. *Uncertainty Estimation*: 50% of the reference times in the training volume $V$ are used as retrospective point nowcast times, $M$. If there is insufficient data, the method uses the oldest retrospective nowcast date with at least the same amount of historical data for delay estimation as is used for the point nowcast at the current nowcast date, and requires that there are at least two retrospective nowcasts containing sufficient data. By default we do not sum the predicted components of each row across rows as this is context specific (diverging from [@Wolffram2023]. who sum by week due to their target data being a rolling 7 day sum).
 
 # References
+

@@ -1,5 +1,5 @@
 test_that(
-  "generate_triangles constructs retrospective triangles with structure 1",
+  "construct_triangles constructs retrospective triangles with structure 1",
   {
     # Setup
     triangle1 <- matrix(
@@ -32,14 +32,14 @@ test_that(
     trunc_triangles <- list(triangle1, triangle2)
 
     # Test 1: Check if the function returns a list
-    expect_type(generate_triangles(trunc_triangles), "list")
+    expect_type(construct_triangles(trunc_triangles), "list")
 
     # Test 2: Check if the number of retrospective triangles is correct
-    expect_length(generate_triangles(trunc_triangles), 2)
+    expect_length(construct_triangles(trunc_triangles), 2)
 
     # Test 3: Check that the dimensions of the returned triangles are as
     # expected
-    retro_triangles <- generate_triangles(trunc_triangles)
+    retro_triangles <- construct_triangles(trunc_triangles)
     expect_identical(dim(retro_triangles[[1]]), c(7L, 4L))
     expect_identical(dim(retro_triangles[[2]]), c(6L, 4L))
 
@@ -47,7 +47,7 @@ test_that(
     # correct
     expect_identical(
       retro_triangles[[1]],
-      generate_triangle(triangle1)
+      construct_triangle(triangle1)
     )
 
     # Test 5: Check if the content of the last retrospective triangle is correct
@@ -67,14 +67,14 @@ test_that(
 
 
     expect_error(
-      generate_triangles(data.frame(trunc_triangles[1])),
+      construct_triangles(data.frame(trunc_triangles[1])),
       "The elements of"
     )
   }
 )
 
 test_that(
-  "generate_triangles structure parameter is passed through correctly",
+  "construct_triangles structure parameter is passed through correctly",
   {
     # Create test triangles
     triangle1 <- matrix(
@@ -106,7 +106,9 @@ test_that(
 
     trunc_triangles <- list(triangle1, triangle2)
 
-    retro_triangles_custom <- generate_triangles(trunc_triangles, structure = 2)
+    retro_triangles_custom <- construct_triangles(trunc_triangles,
+      structure = 2
+    )
 
     expected_triangle1_struct2 <- matrix(
       c(

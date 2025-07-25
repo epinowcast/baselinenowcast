@@ -4,10 +4,10 @@
 \alias{construct_triangle}
 \title{Generate a single retrospective reporting triangle}
 \usage{
-construct_triangle(trunc_rep_tri, structure = 1)
+construct_triangle(truncated_reporting_triangle, structure = 1)
 }
 \arguments{
-\item{trunc_rep_tri}{A single truncated reporting triangle. May or may
+\item{truncated_reporting_triangle}{A single truncated reporting triangle. May or may
 not contain NAs.}
 
 \item{structure}{Integer or vector specifying the reporting structure.

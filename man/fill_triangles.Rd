@@ -30,7 +30,7 @@ starting at the first delay column in each of the matrices in
 \code{retro_reporting_triangles}, with elements aligning. Default is \code{NULL}}
 }
 \value{
-\code{pt_nowcast_matr_list} List of the same number of elements as the
+\code{point_nowcast_matrices} List of the same number of elements as the
 input \code{retro_reporting_triangles}but with each reporting triangle filled
 in based on the delay estimated in that reporting triangle.
 }

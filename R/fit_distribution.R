@@ -7,22 +7,27 @@
 #' @param observation_model_name Character string indicating the choice of
 #'   observation model to fit to the predicted nowcasts versus the
 #'   observations. Default is `"negative binomial"`.
-#' @importFrom stats dnorm dnbinom dgamma
+#' @importFrom stats dnorm dnbinom dgamma optimize
 #'
 #' @returns Vector of parameters corresponding to the chosen
 #'    `observation_model` of length of the number of columns in `obs` and
 #'    `pred`, with each element corresponding to a horizon.
 #' @examples
-#' obs <- matrix(c(4, 5,
-#'                6, 7), byrow = 2, nrow =2)
-#' pred <- matrix(c(3.7, 6.1,
-#'                5.2, 10.4), byrow = 2, nrow =2)
+#' obs <- matrix(c(
+#'   4, 5,
+#'   6, 7
+#' ), byrow = 2, nrow = 2)
+#' pred <- matrix(c(
+#'   3.7, 6.1,
+#'   5.2, 10.4
+#' ), byrow = 2, nrow = 2)
 #' disp <- fit_distribution(obs, pred,
-#'  observation_model_name = "negative binomial")
-#'  disp
+#'   observation_model_name = "negative binomial"
+#' )
+#' disp
 fit_distribution <- function(obs,
-                         pred,
-                         observation_model_name = "dnbinom") {
+                             pred,
+                             observation_model_name = "dnbinom") {
   n_horizons <- ncol(obs)
   param_vector <- vector(length = n_horizons)
 

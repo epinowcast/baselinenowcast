@@ -7,7 +7,7 @@
 sample_distribution(
   pred,
   uncertainty_params,
-  observation_model_name = "dnbinom"
+  observation_model_name = "negative binomial"
 )
 }
 \arguments{

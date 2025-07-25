@@ -22,10 +22,10 @@
 #' sampled_preds
 sample_distribution <- function(pred,
                                 uncertainty_params,
-                                observation_model_name = "dnbinom") {
+                                observation_model_name = "negative binomial") {
   # convert to character
   if (!is.character(observation_model_name)) {
-    observation_model <- as.character(observation_model_name)
+    observation_model_name <- as.character(observation_model_name)
   }
 
   if (observation_model_name %in% c(

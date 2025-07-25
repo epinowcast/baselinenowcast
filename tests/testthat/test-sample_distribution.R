@@ -13,7 +13,7 @@ test_that("sample_distribution: works with all three options for error functions
   result <- sample_distribution(
     pred = test_pred,
     uncertainty_params = uncertainty_params,
-    observation_model_name = "dnbinom"
+    observation_model_name = "negative binomial"
   )
   expect_type(result, "double")
   expect_length(result, length(test_pred))
@@ -23,7 +23,7 @@ test_that("sample_distribution: works with all three options for error functions
   result <- sample_distribution(
     pred = test_pred,
     uncertainty_params = uncertainty_params,
-    observation_model_name = "dnorm"
+    observation_model_name = "rnorm"
   )
   expect_type(result, "double")
   expect_length(result, length(test_pred))
@@ -32,7 +32,7 @@ test_that("sample_distribution: works with all three options for error functions
   result <- sample_distribution(
     pred = test_pred,
     uncertainty_params = uncertainty_params,
-    observation_model_name = "dgamma"
+    observation_model_name = "rgamma"
   )
   expect_type(result, "double")
   expect_length(result, length(test_pred))

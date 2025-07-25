@@ -8,7 +8,7 @@ estimate_uncertainty(
   point_nowcast_matrices,
   truncated_reporting_triangles,
   retro_reporting_triangles,
-  n = length(pt_nowcast_matrices),
+  n = length(point_nowcast_matrices),
   fun_to_aggregate = sum,
   k = 1
 )
@@ -19,7 +19,7 @@ represent reference time points and columns represent delays.}
 
 \item{truncated_reporting_triangles}{List of truncated reporting matrices,
 containing all observations as of the latest reference time. Elements of
-list are paired with elements of \code{pt_nowcast_matrices}.}
+list are paired with elements of \code{point_nowcast_matrices}.}
 
 \item{retro_reporting_triangles}{List of \code{n} truncated reporting triangle
 matrices with as many rows as available given the truncation.}

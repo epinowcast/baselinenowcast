@@ -26,11 +26,16 @@ Vector of parameters corresponding to the chosen
 Fit observations vs predictions to an observation model
 }
 \examples{
-obs <- matrix(c(4, 5,
-               6, 7), byrow = 2, nrow =2)
-pred <- matrix(c(3.7, 6.1,
-               5.2, 10.4), byrow = 2, nrow =2)
+obs <- matrix(c(
+  4, 5,
+  6, 7
+), byrow = 2, nrow = 2)
+pred <- matrix(c(
+  3.7, 6.1,
+  5.2, 10.4
+), byrow = 2, nrow = 2)
 disp <- fit_distribution(obs, pred,
- observation_model_name = "negative binomial")
- disp
+  observation_model_name = "negative binomial"
+)
+disp
 }

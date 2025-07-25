@@ -8,7 +8,7 @@
 #'   observation model to fit to the predicted nowcasts versus the
 #'   observations. Default is `"negative binomial"`.
 #' @importFrom stats dnorm dnbinom dgamma optimize
-#'
+#' @export
 #' @returns Vector of parameters corresponding to the chosen
 #'    `observation_model` of length of the number of columns in `obs` and
 #'    `pred`, with each element corresponding to a horizon.

@@ -9,9 +9,9 @@
 \arguments{
 \item{mat}{Matrix containing elements for extraction.}
 
-\item{indices_1}{Matrix of bools of the same dimensions of \code{mat}.}
+\item{indices_1}{Matrix of booleans of the same dimensions of \code{mat}.}
 
-\item{indices_2}{Matrix of bools of the same dimensions of \code{mat}}
+\item{indices_2}{Matrix of booleans of the same dimensions of \code{mat}}
 }
 \value{
 Matrix of same dimensions of \code{mat} with the overlapping \code{TRUE}

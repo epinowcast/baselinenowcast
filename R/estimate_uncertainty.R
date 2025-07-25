@@ -68,7 +68,7 @@
 #'   retro_reporting_triangles = retro_rts,
 #'   n = 2,
 #'   error_model = .fit_distrib,
-#'   error_args = list(observation_model = "normal"
+#'   error_args = list(observation_model = "normal"),
 #'   aggregator = zoo::rollmean,
 #'   aggregator_args = list(k = 1, align = "right")
 #' )
@@ -81,9 +81,10 @@ estimate_uncertainty <- function(
     error_model = fit_distribution,
     error_args = list(observation_model_name = "negative binomial"),
     aggregator = zoo::rollsum,
-    aggregator_args = list(k = 1,
-                           align = "right")
-    ) {
+    aggregator_args = list(
+      k = 1,
+      align = "right"
+    )) {
   assert_integerish(n, lower = 0)
   .check_list_length(
     point_nowcast_matrices,
@@ -160,41 +161,49 @@ estimate_uncertainty <- function(
     # Apply the aggregation to the truncated observations, the nowcast,
     # and the reporting triangle.
     aggr_obs <- do.call(aggregator, c(list(trunc_matr_observed), aggregator_args))
-    aggr_nowcast <- do.call(aggregator, c(list( nowcast_i), aggregator_args))
+    aggr_nowcast <- do.call(aggregator, c(list(nowcast_i), aggregator_args))
     aggr_rt_obs <- do.call(aggregator, c(list(triangle_observed), aggregator_args))
     max_t <- nrow(aggr_obs)
     # For each horizon, take the partial sum of the nowcasted and already
     # observed components.
     for (d in 1:n_possible_horizons) {
-      row_number <- max_t- d + 1
-      indices_nowcast <- is.na(aggr_rt_obs[row_number,])
-      indices_obs <- !is.na(aggr_obs[row_number,])
-      masked_nowcast <- .apply_mask(aggr_nowcast[row_number,],
-                                    indices_nowcast,
-                                    indices_obs)
-      masked_obs <- .apply_mask(aggr_obs[row_number,],
-                                indices_nowcast,
-                                indices_obs)
-      exp_to_add[i,d] <- sum(masked_nowcast, na.rm = TRUE)
-      to_add_already_observed[i,d] <- sum(masked_obs, na.rm = TRUE)
+      row_number <- max_t - d + 1
+      indices_nowcast <- is.na(aggr_rt_obs[row_number, ])
+      indices_obs <- !is.na(aggr_obs[row_number, ])
+      masked_nowcast <- .apply_mask(
+        aggr_nowcast[row_number, ],
+        indices_nowcast,
+        indices_obs
+      )
+      masked_obs <- .apply_mask(
+        aggr_obs[row_number, ],
+        indices_nowcast,
+        indices_obs
+      )
+      exp_to_add[i, d] <- sum(masked_nowcast, na.rm = TRUE)
+      to_add_already_observed[i, d] <- sum(masked_obs, na.rm = TRUE)
     }
   }
 
-  if(!any(exp_to_add !=0 & !is.na(exp_to_add))){
+  if (!any(exp_to_add != 0 & !is.na(exp_to_add))) {
     cli_abort(
-      message = c("Insufficient data for uncertainty estimation. Check to ",
-                  "ensure that input matrices contain sufficient number of ",
-                  "rows for the specified aggregator model and corresponding",
-                  "arguments")
+      message = c(
+        "Insufficient data for uncertainty estimation. Check to ",
+        "ensure that input matrices contain sufficient number of ",
+        "rows for the specified aggregator model and corresponding",
+        "arguments"
+      )
     )
   }
 
   # Take matrix of observations and predictions and get uncertainty parameters
-  uncertainty_params <- do.call(error_model,
-                                c(list(to_add_already_observed),
-                                  list(exp_to_add),
-                                  error_args
-                                )
+  uncertainty_params <- do.call(
+    error_model,
+    c(
+      list(to_add_already_observed),
+      list(exp_to_add),
+      error_args
+    )
   )
 
   return(uncertainty_params)
@@ -203,15 +212,14 @@ estimate_uncertainty <- function(
 #' Apply mask to extract the elements of the matrix that are both true
 #'
 #' @param mat Matrix containing elements for extraction.
-#' @param indices_1 Matrix of bools of the same dimensions of `mat`.
-#' @param indices_2 Matrix of bools of the same dimensions of `mat`
+#' @param indices_1 Matrix of booleans of the same dimensions of `mat`.
+#' @param indices_2 Matrix of booleans of the same dimensions of `mat`
 #'
 #' @returns Matrix of same dimensions of `mat` with the overlapping `TRUE`
 #'   elements only.
 .apply_mask <- function(mat,
                         indices_1,
-                        indices_2){
-
+                        indices_2) {
   mat_masked <- as.matrix(
     mat * indices_1 * indices_2
   )

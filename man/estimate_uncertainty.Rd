@@ -91,7 +91,7 @@ disp_params_agg <- estimate_uncertainty(
   retro_reporting_triangles = retro_rts,
   n = 2,
   error_model = .fit_distrib,
-  error_args = list(observation_model = "normal"
+  error_args = list(observation_model = "normal"),
   aggregator = zoo::rollmean,
   aggregator_args = list(k = 1, align = "right")
 )

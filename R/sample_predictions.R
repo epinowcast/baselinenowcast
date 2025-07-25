@@ -250,7 +250,6 @@ sample_predictions <- function(point_nowcast_matrix,
 #' Generate a single draw of a nowcast combining observed and predicted values
 #'
 #' @inheritParams sample_predictions
-#' @param ... Additional arguments passed to `sample_predictions()`
 #' @returns Vector of predicted counts at each reference time based on combining
 #'    the observed counts and the predicted counts for the unobserved elements.
 #' @export
@@ -312,7 +311,6 @@ sample_nowcast <- function(point_nowcast_matrix,
 #' Generate multiple draws of a nowcast combining observed and predicted values
 #'
 #' @inheritParams sample_predictions
-#' @param ... Additional arguments pass to `sample_predictions()`
 #' @returns Dataframe containing information for multiple draws with columns
 #'  for the reference time (`time`), the predicted counts (`pred_count`), and
 #'  the draw number (`draw`).

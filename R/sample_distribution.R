@@ -29,7 +29,7 @@ sample_distribution <- function(pred,
   }
 
   if (observation_model_name %in% c(
-    "dnbinom", "negative binomial", "neg_binom",
+    "rnbinom", "negative binomial", "neg_binom",
     "negative_binomial", "nbinom",
     "Negative Binomial", "Negative binomial"
   )) {
@@ -39,7 +39,7 @@ sample_distribution <- function(pred,
       mu = pred
     )
   } else if (observation_model_name %in% c(
-    "dnorm", "Normal",
+    "rnorm", "Normal",
     "normal", "norm"
   )) {
     sampled_pred <- rnorm(
@@ -47,7 +47,7 @@ sample_distribution <- function(pred,
       mean = pred,
       sd = uncertainty_params
     )
-  } else if (observation_model_name %in% c("dgamma", "Gamma", "gamma")) {
+  } else if (observation_model_name %in% c("rgamma", "Gamma", "gamma")) {
     sampled_pred <- rgamma(
       n = length(pred),
       shape = pred^2 / uncertainty_params^2,

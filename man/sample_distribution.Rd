@@ -28,10 +28,13 @@ with the specified \verb{uncertainty params}.
 Fit observations vs predictions to an observation model
 }
 \examples{
-pred <- matrix(c(3.7, 6.1,
-               5.2, 10.4), byrow = 2, nrow =2)
+pred <- matrix(c(
+  3.7, 6.1,
+  5.2, 10.4
+), byrow = 2, nrow = 2)
 sampled_preds <- sample_distribution(pred,
- uncertainty_params = c(50, 100),
- observation_model_name = "negative binomial")
- sampled_preds
+  uncertainty_params = c(50, 100),
+  observation_model_name = "negative binomial"
+)
+sampled_preds
 }

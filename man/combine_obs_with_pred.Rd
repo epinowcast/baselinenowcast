@@ -19,7 +19,9 @@ combine_obs_with_pred(
 )
 }
 \arguments{
-\item{predicted_counts}{Vector of predicted counts at each reference time}
+\item{predicted_counts}{Vector of predicted counts at each reference time.
+Note that if using an aggregator function, this is assumed to have
+already been aggregated.}
 
 \item{reporting_triangle}{Matrix of the reporting triangle, with rows
 representing the time points of reference and columns representing the
@@ -81,8 +83,8 @@ combine_obs_with_pred(pred_counts, reporting_triangle)
 
 # Another example with rolling sum
 combine_obs_with_pred(pred_counts,
-    reporting_triangle,
-    aggregator = zoo::rollsum,
-    aggregator_args = list(k = 2, align = "right")
-    )
+  reporting_triangle,
+  aggregator = zoo::rollsum,
+  aggregator_args = list(k = 2, align = "right")
+)
 }

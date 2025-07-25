@@ -50,7 +50,7 @@
 #' nowcast_pred_draw_agg
 sample_prediction <- function(point_nowcast_matrix,
                               reporting_triangle,
-                              uncertainty_parameters,
+                              uncertainty_params,
                               error_model = sample_distribution,
                               error_args = list(
                                 observation_model_name =
@@ -70,24 +70,29 @@ sample_prediction <- function(point_nowcast_matrix,
       )
     )
   }
-
-  point_nowcast_pred_matrix <- .extract_predictions(
-    point_nowcast_matrix,
-    reporting_triangle
-  )
-  n_horizons <- length(is.na(rowSums(reporting_triangle)))
   aggr_nowcast <- do.call(aggregator, c(
-    list(point_nowcast_pred_matrix),
+    list(point_nowcast_matrix),
     aggregator_args
   ))
+  aggr_rt <- do.call(aggregator, c(
+    list(reporting_triangle),
+    aggregator_args
+  ))
+  aggr_nowcast_pred_matrix <- .extract_predictions(
+    aggr_nowcast,
+    aggr_rt
+  )
+  n_horizons <- sum(is.na(rowSums(reporting_triangle)))
+
   max_t <- nrow(aggr_nowcast)
-  mean_pred_long <- rowSums(aggr_nowcast)
-  # Get only the predictions
+  mean_pred_long <- rowSums(aggr_nowcast_pred_matrix, na.rm = TRUE)
+  # Get only the predictions, these are ordered by reference time,
+  # so horizon = 0 is last.
   mean_pred <- mean_pred_long[(max_t - n_horizons + 1):max_t]
 
   draw_pred <- error_model(
     pred = mean_pred,
-    uncertainty_params = rev(uncertainty_parameters)
+    uncertainty_params = rev(uncertainty_params)
   )
 
   # Pad with 0s for the fully observed rows, which are before
@@ -102,7 +107,9 @@ sample_prediction <- function(point_nowcast_matrix,
 #' time and adds them to the predicted counts to form a single draw of the
 #' nowcast for the final counts by reference time.
 #'
-#' @param predicted_counts Vector of predicted counts at each reference time
+#' @param predicted_counts Vector of predicted counts at each reference time.
+#'    Note that if using an aggregator function, this is assumed to have
+#'    already been aggregated.
 #' @inheritParams sample_prediction
 #'
 #' @returns A vector of predicted counts at each reference time
@@ -135,14 +142,16 @@ combine_obs_with_pred <- function(predicted_counts,
                                     k = 1,
                                     align = "right"
                                   )) {
-  obs_counts <- do.call(
+  aggr_reporting_triangle <- do.call(
     aggregator,
     c(
       list(reporting_triangle),
       aggregator_args
     )
   )
-  return(obs_counts + predicted_counts)
+  obs_counts_agg <- rowSums(aggr_reporting_triangle, na.rm = TRUE)
+
+  return(obs_counts_agg + predicted_counts)
 }
 
 
@@ -218,8 +227,16 @@ sample_predictions <- function(point_nowcast_matrix,
       aggregator_args
     )
 
+    # If aggregating, we need to pad with NAs
+    pred_counts_padded <- c(
+      rep(
+        NA,
+        length(reference_times) - length(pred_counts)
+      ),
+      pred_counts
+    )
     return(data.frame(
-      pred_count = pred_counts,
+      pred_count = pred_counts_padded,
       time = reference_times,
       draw = i
     ))
@@ -260,20 +277,33 @@ sample_predictions <- function(point_nowcast_matrix,
 sample_nowcast <- function(point_nowcast_matrix,
                            reporting_triangle,
                            uncertainty_params,
-                           ...) {
+                           error_model = sample_distribution,
+                           error_args = list(
+                             observation_model_name =
+                               "negative binomial"
+                           ),
+                           aggregator = zoo::rollsum,
+                           aggregator_args = list(
+                             k = 1,
+                             align = "right"
+                           )) {
   # Generate a single draw of the predictions
   pred_counts <- sample_prediction(
     point_nowcast_matrix,
     reporting_triangle,
     uncertainty_params,
-    ...
+    error_model,
+    error_args,
+    aggregator,
+    aggregator_args
   )
 
   # Combine with observations
   draw <- combine_obs_with_pred(
     pred_counts,
     reporting_triangle,
-    ...
+    aggregator,
+    aggregator_args
   )
 
   return(draw)
@@ -312,7 +342,16 @@ sample_nowcasts <- function(point_nowcast_matrix,
                             reporting_triangle,
                             uncertainty_params,
                             draws = 1000,
-                            ...) {
+                            error_model = sample_distribution,
+                            error_args = list(
+                              observation_model_name =
+                                "negative binomial"
+                            ),
+                            aggregator = zoo::rollsum,
+                            aggregator_args = list(
+                              k = 1,
+                              align = "right"
+                            )) {
   reference_times <- seq_len(nrow(point_nowcast_matrix))
 
   draws_df_list <- lapply(seq_len(draws), function(i) {
@@ -320,11 +359,22 @@ sample_nowcasts <- function(point_nowcast_matrix,
       point_nowcast_matrix,
       reporting_triangle,
       uncertainty_params,
-      ...
+      error_model,
+      error_args,
+      aggregator,
+      aggregator_args
+    )
+    # If aggregating, we need to pad with NAs
+    pred_counts_padded <- c(
+      rep(
+        NA,
+        length(reference_times) - length(pred_counts)
+      ),
+      pred_counts
     )
 
     return(data.frame(
-      pred_count = pred_counts,
+      pred_count = pred_counts_padded,
       time = reference_times,
       draw = i
     ))

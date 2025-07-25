@@ -132,8 +132,10 @@ nowcast_pred_draws_rolling_df <- sample_predictions(
   disp,
   500,
   aggregator = zoo::rollsum,
-  aggregator_args = list(k = 2,
-     align = "right")
+  aggregator_args = list(
+    k = 2,
+    align = "right"
+  )
 )
 nowcast_pred_draws_rolling_df
 }

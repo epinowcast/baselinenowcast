@@ -28,6 +28,7 @@ test_that(
     expect_true(all(c("pred_count", "time", "draw") %in% names(result)))
     expect_length(unique(result$draw), 100L)
     expect_identical(nrow(result), as.integer(100 * nrow(point_nowcast_matrix)))
+    expect_true(all(is.finite(result$pred_count)))
   }
 )
 
@@ -171,8 +172,8 @@ test_that(
       reporting_triangle,
       dispersion,
       draws = 100,
-      fun_to_aggregate = sum,
-      k = 2
+      aggregator = zoo::rollsum,
+      aggregator_args = list(k = 2, align = "right")
     )
     result <- sample_nowcasts(
       point_nowcast_matrix,
@@ -219,20 +220,20 @@ test_that("sample_nowcasts: longer k aggregates correctly", {
   pt_nowcast_mat <- fill_triangle(triangle)
   dispersion <- c(10, 10, 10)
 
-  expected_mean <- rollapply(rowSums(pt_nowcast_mat),
-    5,
-    sum,
-    align = "right",
-    fill = NA
+  expected_mean_mat <- zoo::rollsum(pt_nowcast_mat,
+    k = 5,
+    fill = NA,
+    align = "right"
   )
+  expected_mean <- rowSums(expected_mean_mat, na.rm = TRUE)
 
   result_with_rolling_sum <- sample_nowcasts(
-    pt_nowcast_mat,
-    triangle,
-    dispersion,
+    point_nowcast_matrix = pt_nowcast_mat,
+    reporting_triangle = triangle,
+    uncertainty_params = dispersion,
     draws = 100,
-    fun_to_aggregate = sum,
-    k = 5
+    aggregator = zoo::rollsum,
+    aggregator_args = list(k = 5, align = "right")
   )
 
   # First 4 rows are NA because of right alignment

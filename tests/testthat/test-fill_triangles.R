@@ -223,6 +223,28 @@ test_that("fill_triangles uses full number of rows in n_history_delay", { # noli
 
   expect_equal(slight_dif_triangle, complete_triangle, tol = 0.5)
 
+
+  # repeat with all 1s
+  sim_delay_pmf <- c(0.25, 0.25, 0.25, 0.25)
+
+  # Generate counts for each reference date
+  counts <- c(4, 4, 4, 4, 4, 4, 4)
+
+  # Create a complete triangle based on the known delay PMF
+  complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
+  complete_triangle <- do.call(rbind, complete_triangle)
+
+  check_pmf <- estimate_delay(complete_triangle, n = 7)
+  check_pmf
+
+  # Create a reporting triangle with NAs in the lower right
+  triangle <- construct_triangle(complete_triangle)
+  triangle
+
+  slight_dif_triangle <- fill_triangle(triangle)
+
+  expect_equal(slight_dif_triangle, complete_triangle, tol = 0.5)
+
   # Change entry in first row so that when used it wont estimate same delay
   triangle[1, 4] <- 3 * triangle[1, 4]
   triangle

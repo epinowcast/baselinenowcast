@@ -7,7 +7,7 @@
 sample_prediction(
   point_nowcast_matrix,
   reporting_triangle,
-  uncertainty_parameters,
+  uncertainty_params,
   error_model = sample_distribution,
   error_args = list(observation_model_name = "negative binomial"),
   aggregator = zoo::rollsum,
@@ -17,7 +17,7 @@ sample_prediction(
 sample_prediction(
   point_nowcast_matrix,
   reporting_triangle,
-  uncertainty_parameters,
+  uncertainty_params,
   error_model = sample_distribution,
   error_args = list(observation_model_name = "negative binomial"),
   aggregator = zoo::rollsum,
@@ -35,6 +35,9 @@ delays. Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row. (e.g. weekly reporting of daily data).}
 
+\item{uncertainty_params}{Vector of uncertainty parameters ordered from
+horizon 1 to the maximum horizon.}
+
 \item{error_model}{Function that ingests a matrix of predictions and a vector
 of uncertainty parameters and generates draws from the error model.
 Default is \code{sample_distribution}.}
@@ -48,9 +51,6 @@ Default is \code{zoo::rollsum}.}
 
 \item{aggregator_args}{List of arguments needed for the specified aggregator.
 Default is \code{list(k=1, align = "right")}.}
-
-\item{uncertainty_params}{Vector of uncertainty parameters ordered from
-horizon 1 to the maximum horizon.}
 }
 \value{
 Vector of predicted draws at each reference time, for all reference

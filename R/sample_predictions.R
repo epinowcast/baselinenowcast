@@ -128,7 +128,6 @@ sample_prediction <- function(point_nowcast_matrix,
 #' )
 #' reporting_triangle <- construct_triangle(reporting_matrix)
 #' combine_obs_with_pred(pred_counts, reporting_triangle)
-#'
 #' # Another example with rolling sum
 #' combine_obs_with_pred(pred_counts,
 #'   reporting_triangle,

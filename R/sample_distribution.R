@@ -6,7 +6,7 @@
 #'   observation model to sample to the predicted nowcasts.
 #'   Default is `"negative binomial"`.
 #' @importFrom stats rnorm rnbinom rgamma
-#'
+#' @export
 #' @returns `sampled_pred` Object of the same dimensions as `pred` representing
 #'    a single draw from the `observation_model_name` distribution
 #'    with the specified `uncertainty params`.

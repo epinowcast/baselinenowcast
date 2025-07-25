@@ -7,8 +7,8 @@
 construct_triangle(truncated_reporting_triangle, structure = 1)
 }
 \arguments{
-\item{truncated_reporting_triangle}{A single truncated reporting triangle. May or may
-not contain NAs.}
+\item{truncated_reporting_triangle}{A single truncated reporting triangle.
+May or may not contain NAs.}
 
 \item{structure}{Integer or vector specifying the reporting structure.
 If integer, divides columns evenly by that integer (with last possibly

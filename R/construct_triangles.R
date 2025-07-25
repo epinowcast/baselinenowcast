@@ -61,8 +61,8 @@ construct_triangles <- function(truncated_reporting_triangles, structure = 1) {
 #'   right observations from a truncated reporting triangle matrix. It is the
 #'   singular version of `construct_triangles()`.
 #'
-#' @param truncated_reporting_triangle A single truncated reporting triangle. May or may
-#'    not contain NAs.
+#' @param truncated_reporting_triangle A single truncated reporting triangle.
+#'    May or may not contain NAs.
 #' @param structure Integer or vector specifying the reporting structure.
 #'   If integer, divides columns evenly by that integer (with last possibly
 #'   truncated).  If vector, the sum must not be greater than or equal to the

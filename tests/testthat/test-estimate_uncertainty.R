@@ -380,7 +380,7 @@ test_that("estimate_uncertainty: works as expected with perfect data", {
 
   pt_nowcast_mat <- fill_triangle(reporting_triangle)
   truncated_reporting_triangles <- truncate_triangles(reporting_triangle)
-  retro_reporting_triangles <- construct_triangles(truncated_reporting_triangles)
+  retro_reporting_triangles <- construct_triangles(truncated_reporting_triangles) # nolint
 
   point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
 
@@ -432,7 +432,7 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
   }
 
   truncated_reporting_triangles <- truncate_triangles(rep_tri_new)
-  retro_reporting_triangles <- construct_triangles(truncated_reporting_triangles)
+  retro_reporting_triangles <- construct_triangles(truncated_reporting_triangles) # nolint
 
   point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
 

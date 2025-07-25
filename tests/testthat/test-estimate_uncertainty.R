@@ -47,8 +47,8 @@ valid_rts <- construct_triangles(valid_trunc_rts)
 
 test_that("estimate_uncertainty: Basic functionality with valid inputs", {
   result <- estimate_uncertainty(
-    pt_nowcast_matrices = valid_nowcasts,
-    trunc_reporting_triangles = valid_trunc_rts,
+    point_nowcast_matrices = valid_nowcasts,
+    truncated_reporting_triangles = valid_trunc_rts,
     retro_reporting_triangles = valid_rts,
     n = 2
   )
@@ -62,8 +62,8 @@ test_that("estimate_uncertainty: Basic functionality with valid inputs", {
 
 test_that("estimate_uncertainty can handle rolling sum with k=3", {
   result <- estimate_uncertainty(
-    pt_nowcast_matrices = valid_nowcasts,
-    trunc_reporting_triangles = valid_trunc_rts,
+    point_nowcast_matrices = valid_nowcasts,
+    truncated_reporting_triangles = valid_trunc_rts,
     retro_reporting_triangles = valid_rts,
     aggregator = zoo::rollsum,
     aggregator_args = list(k = 3,
@@ -205,11 +205,11 @@ test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
   pt_nowcast_list <- expect_message(
     fill_triangles(retro_rts_list)
   )
-  trunc_reporting_triangles <- truncate_triangles(base_tri)
-  rt_list <- construct_triangles(trunc_reporting_triangles)
+  truncated_reporting_triangles <- truncate_triangles(base_tri)
+  rt_list <- construct_triangles(truncated_reporting_triangles)
   expect_no_error(estimate_uncertainty(
     pt_nowcast_list,
-    trunc_reporting_triangles,
+    truncated_reporting_triangles,
     rt_list
   ))
 })
@@ -243,8 +243,8 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
 
   # Estimate dispersion parameters
   disp_params <- estimate_uncertainty(
-    pt_nowcast_matrices = retro_nowcasts,
-    trunc_reporting_triangles = trunc_rts,
+    point_nowcast_matrices = retro_nowcasts,
+    truncated_reporting_triangles = trunc_rts,
     retro_reporting_triangles = retro_rts,
     n = 2
   )
@@ -267,14 +267,14 @@ test_that("estimate_uncertainty: works as expected with perfect data", {
   reporting_triangle <- rbind(rep_mat, triangle)
 
   pt_nowcast_mat <- fill_triangle(reporting_triangle)
-  trunc_reporting_triangles <- truncate_triangles(reporting_triangle)
-  retro_reporting_triangles <- construct_triangles(trunc_reporting_triangles)
+  truncated_reporting_triangles <- truncate_triangles(reporting_triangle)
+  retro_reporting_triangles <- construct_triangles(truncated_reporting_triangles) # nolint
 
-  pt_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
+  point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
 
   dispersion <- estimate_uncertainty(
-    pt_nowcast_matrices,
-    trunc_reporting_triangles,
+    point_nowcast_matrices,
+    truncated_reporting_triangles,
     retro_reporting_triangles
   )
 
@@ -319,22 +319,22 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
     )
   }
 
-  trunc_reporting_triangles <- truncate_triangles(rep_tri_new)
-  retro_reporting_triangles <- construct_triangles(trunc_reporting_triangles)
+  truncated_reporting_triangles <- truncate_triangles(rep_tri_new)
+  retro_reporting_triangles <- construct_triangles(truncated_reporting_triangles) # nolint
 
-  pt_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
+  point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
 
   dispersion <- estimate_uncertainty(
-    pt_nowcast_matrices,
-    trunc_reporting_triangles,
+    point_nowcast_matrices,
+    truncated_reporting_triangles,
     retro_reporting_triangles
   )
   expect_lt(dispersion[1], 500)
   expect_true(all(is.finite(dispersion)))
 
   dispersion2 <- estimate_uncertainty(
-    pt_nowcast_matrices,
-    trunc_reporting_triangles,
+    point_nowcast_matrices,
+    truncated_reporting_triangles,
     retro_reporting_triangles,
     aggregator = zoo::rollsum,
     aggregator_args = list(k = 3,
@@ -367,8 +367,8 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
   # Create truncated reporting triangles by sampling elements of triangle
   # from Poisson distribution
   max_t <- nrow(reporting_triangle)
-  trunc_reporting_triangles <- list()
-  pt_nowcast_matrices <- list()
+  truncated_reporting_triangles <- list()
+  point_nowcast_matrices <- list()
   retro_reporting_triangles <- list()
   disp_param <- 10000
   for (i in 1:20) {
@@ -389,12 +389,12 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
     }
     trunc_rep_tri[is.na(trunc_rep_tri_orig)] <- NA
 
-    trunc_reporting_triangles <- append(
-      trunc_reporting_triangles,
+    truncated_reporting_triangles <- append(
+      truncated_reporting_triangles,
       list(trunc_rep_tri)
     )
-    pt_nowcast_matrices <- append(
-      pt_nowcast_matrices,
+    point_nowcast_matrices <- append(
+      point_nowcast_matrices,
       list(trunc_pt_nowcast_mat)
     )
     retro_reporting_triangles <- append(
@@ -404,8 +404,8 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
   }
 
   dispersion <- estimate_uncertainty(
-    pt_nowcast_matrices,
-    trunc_reporting_triangles,
+    point_nowcast_matrices,
+    truncated_reporting_triangles,
     retro_reporting_triangles
   )
 
@@ -415,11 +415,11 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
 
 test_that("estimate_uncertainty: works with normal observation model", {
   result <- estimate_uncertainty(
-    pt_nowcast_matrices = valid_nowcasts,
-    trunc_reporting_triangles = valid_trunc_rts,
+    point_nowcast_matrices = valid_nowcasts,
+    truncated_reporting_triangles = valid_trunc_rts,
     retro_reporting_triangles = valid_rts,
     n = 2,
-    error_args = list(observation_model = "normal"),
+    error_args = list(observation_model_name = "normal"),
     aggregator = zoo::rollmean,
     aggregator_args = list(k = 2, align = "right")
   )
@@ -433,11 +433,11 @@ test_that("estimate_uncertainty: works with normal observation model", {
 
 test_that("estimate_uncertainty: works with gamma observation model", {
   result <- estimate_uncertainty(
-    pt_nowcast_matrices = valid_nowcasts,
-    trunc_reporting_triangles = valid_trunc_rts,
+    point_nowcast_matrices = valid_nowcasts,
+    truncated_reporting_triangles = valid_trunc_rts,
     retro_reporting_triangles = valid_rts,
     n = 2,
-    error_args = list(observation_model = "gamma"),
+    error_args = list(observation_model_name = "gamma"),
     aggregator = zoo::rollmean,
     aggregator_args = list(k = 2, align = "right")
   )
@@ -451,11 +451,11 @@ test_that("estimate_uncertainty: works with gamma observation model", {
 
 test_that("estimate_uncertainty errors when k is too large for data", {
   expect_error(estimate_uncertainty(
-    pt_nowcast_matrices = valid_nowcasts,
-    trunc_reporting_triangles = valid_trunc_rts,
+    point_nowcast_matrices = valid_nowcasts,
+    truncated_reporting_triangles = valid_trunc_rts,
     retro_reporting_triangles = valid_rts,
     n = 2,
-    error_args = list(observation_model = "gamma"),
+    error_args = list(observation_model_name = "gamma"),
     aggregator = zoo::rollmean,
     aggregator_args = list(k = 8, align = "right")
   ))

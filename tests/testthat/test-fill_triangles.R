@@ -222,13 +222,33 @@ test_that("fill_triangles uses full number of rows in n_history_delay", { # noli
   slight_dif_triangle <- fill_triangle(triangle, n = 7)
 
   expect_equal(slight_dif_triangle, complete_triangle, tol = 0.5)
+  truncated_rts <- truncate_triangles(triangle, n = 2)
+  truncated_rts[1:2]
+  # These will always have the first row at the top. First one will be with
+  # last row cut off, second will be with last 2 rows cut off
+
+  retro_rts <- construct_triangles(truncated_rts)
 
 
-  # repeat with all 1s
+  # Now change n_history_delay to only use last 4 rows, we should never use
+  # first row so both will be equal
+  retro_pt_nowcast_mat_list <- fill_triangles(
+    retro_reporting_triangles = retro_rts,
+    n = 4
+  )
+
+  pmf_list <- lapply(retro_pt_nowcast_mat_list, estimate_delay)
+  # Both are returning the original pmf bc they dont use the modified one
+  expect_equal(pmf_list[[1]], sim_delay_pmf, tol = 0.02)
+  expect_equal(pmf_list[[2]], sim_delay_pmf, tol = 0.02)
+})
+
+test_that("fill_triangles uses correct rows", {
+  # repeat with smaller number
   sim_delay_pmf <- c(0.25, 0.25, 0.25, 0.25)
 
   # Generate counts for each reference date
-  counts <- c(4, 4, 4, 4, 4, 4, 4)
+  counts <- 10*c(4, 4, 4, 4, 4, 4, 4)
 
   # Create a complete triangle based on the known delay PMF
   complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
@@ -245,13 +265,13 @@ test_that("fill_triangles uses full number of rows in n_history_delay", { # noli
 
   expect_equal(slight_dif_triangle, complete_triangle, tol = 0.5)
 
-  # Change entry in first row so that when used it wont estimate same delay
-  triangle[1, 4] <- 3 * triangle[1, 4]
+  # Change entry in last row so that when used it wont estimate same delay
+  triangle[1, 3] <- 3 * triangle[1, 3]
   triangle
 
 
   truncated_rts <- truncate_triangles(triangle, n = 2)
-  truncated_rts[1:2]
+  truncated_rts[1:2] # check that these all have 1s
   # These will always have the first row at the top. First one will be with
   # last row cut off, second will be with last 2 rows cut off
 
@@ -266,20 +286,8 @@ test_that("fill_triangles uses full number of rows in n_history_delay", { # noli
   # Get the empirical pmfs in your two pt nowcast matrices with the first row
   # included
   pmf_list <- lapply(retro_pt_nowcast_mat_list, estimate_delay)
-  expect_equal(pmf_list[[1]], sim_delay_pmf, tol = 0.02) # Here we get back
+  expect_equal(pmf_list[[1]], sim_delay_pmf, tol = 0.06) # Here we get back
   # what we put in bc it doesn't use the first row
-  expect_failure(expect_equal(pmf_list[[2]], sim_delay_pmf, tol = 0.02)) # Here
-  # we don't bc we use the first row
-
-  # Now change n_history_delay to only use last 4 rows, we should never use
-  # first row so both will be equal
-  retro_pt_nowcast_mat_list2 <- fill_triangles(
-    retro_reporting_triangles = retro_rts,
-    n = 4
-  )
-
-  pmf_list2 <- lapply(retro_pt_nowcast_mat_list2, estimate_delay)
-  # Both are returning the original pmf bc they dont use the modified one
-  expect_equal(pmf_list2[[1]], sim_delay_pmf, tol = 0.02)
-  expect_equal(pmf_list2[[2]], sim_delay_pmf, tol = 0.02)
+  expect_failure(expect_equal(pmf_list[[2]], sim_delay_pmf, tol = 0.06)) # Here
+  # we don't bc we use the first row with the larger value
 })

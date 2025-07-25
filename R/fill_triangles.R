@@ -17,7 +17,7 @@
 #'     `retro_reporting_triangles`. If a list, must of the same length as
 #'     `retro_reporting_triangles`, with elements aligning. Default is `NULL`
 #'
-#' @returns `pt_nowcast_matr_list` List of the same number of elements as the
+#' @returns `point_nowcast_matrices` List of the same number of elements as the
 #'    input `retro_reporting_triangles`but with each reporting triangle filled
 #'    in based on the delay estimated in that reporting triangle.
 #' @export
@@ -65,7 +65,7 @@ fill_triangles <- function(retro_reporting_triangles,
 
   # Use the safe version in mapply, iterating through each item in both
   # lists of reporting triangles and delay PMFs
-  pt_nowcast_mat_list <- mapply(
+  point_nowcast_matrices <- mapply(
     function(triangle, pmf, ind) {
       result <- safe_fill_triangle(
         reporting_triangle = triangle,
@@ -94,7 +94,7 @@ fill_triangles <- function(retro_reporting_triangles,
   )
 
   # After running, filter the results to find error indices
-  error_indices <- which(sapply(pt_nowcast_mat_list, is.null))
+  error_indices <- which(sapply(point_nowcast_matrices, is.null))
   # Print summary
   if (length(error_indices) == length(retro_reporting_triangles)) {
     cli_abort(
@@ -122,7 +122,7 @@ fill_triangles <- function(retro_reporting_triangles,
   }
 
 
-  return(pt_nowcast_mat_list)
+  return(point_nowcast_matrices)
 }
 
 #' Generate point nowcast

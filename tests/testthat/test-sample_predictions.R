@@ -89,7 +89,7 @@ test_that(
     expect_true(all(c("pred_count", "time", "draw") %in% names(result_gamma)))
     expect_length(unique(result_gamma$draw), 100L)
     expect_identical(nrow(result_gamma), as.integer(100 * nrow(point_nowcast_matrix)))
-    expect_true(!all(is.na(result$pred_count)))
+    expect_true(!all(is.na(result_gamma$pred_count)))
 
     result_nb <- sample_predictions(
       point_nowcast_matrix,
@@ -111,7 +111,7 @@ test_that(
       nrow(result_nb),
       as.integer(100 * nrow(point_nowcast_matrix))
     )
-    expect_true(!all(is.na(result$pred_count)))
+    expect_true(!all(is.na(result_nb$pred_count)))
 
     expect_true(!all(result_nb == result_normal))
     expect_true(!all(result_normal == result_gamma))

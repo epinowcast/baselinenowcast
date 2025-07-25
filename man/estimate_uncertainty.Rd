@@ -5,10 +5,10 @@
 \title{Estimate dispersion parameters}
 \usage{
 estimate_uncertainty(
-  pt_nowcast_matrices,
-  trunc_reporting_triangles,
+  point_nowcast_matrices,
+  truncated_reporting_triangles,
   retro_reporting_triangles,
-  n = length(pt_nowcast_matrices),
+  n = length(point_nowcast_matrices),
   error_model = fit_distribution,
   error_args = list(observation_model_name = "negative binomial"),
   aggregator = zoo::rollsum,
@@ -16,12 +16,12 @@ estimate_uncertainty(
 )
 }
 \arguments{
-\item{pt_nowcast_matrices}{List of point nowcast matrices where rows
+\item{point_nowcast_matrices}{List of point nowcast matrices where rows
 represent reference time points and columns represent delays.}
 
-\item{trunc_reporting_triangles}{List of truncated reporting matrices,
+\item{truncated_reporting_triangles}{List of truncated reporting matrices,
 containing all observations as of the latest reference time. Elements of
-list are paired with elements of \code{pt_nowcast_matrices}.}
+list are paired with elements of \code{point_nowcast_matrices}.}
 
 \item{retro_reporting_triangles}{List of \code{n} truncated reporting triangle
 matrices with as many rows as available given the truncation.}
@@ -78,16 +78,16 @@ retro_nowcasts <- fill_triangles(retro_rts, n = 5)
 # Estimate dispersion parameters using default (negative binomial error
 # model on the sums
 disp_params <- estimate_uncertainty(
-  pt_nowcast_matrices = retro_nowcasts,
-  trunc_reporting_triangles = trunc_rts,
+  point_nowcast_matrices = retro_nowcasts,
+  truncated_reporting_triangles = trunc_rts,
   retro_reporting_triangles = retro_rts,
 )
 disp_params
 
 # Estimate dispersion parameters from rolling mean with a normal error model
 disp_params_agg <- estimate_uncertainty(
-  pt_nowcast_matrices = retro_nowcasts,
-  trunc_reporting_triangles = trunc_rts,
+  point_nowcast_matrices = retro_nowcasts,
+  truncated_reporting_triangles = trunc_rts,
   retro_reporting_triangles = retro_rts,
   n = 2,
   error_model = .fit_distrib,

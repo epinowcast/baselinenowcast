@@ -87,8 +87,7 @@
 
     
     
-<p>Throughout this package, we will refer to different nowcasting object lists, matrices, and vectors using the following table.
-In this table, “point” refers to a point estimate. When not indicated, we are referring to a probabilistic draw from an observation model.</p>
+<p>Throughout this package, we will refer to different nowcasting object lists, matrices, and vectors using the following table. In this table, “point” refers to a point estimate. When not indicated, we are referring to a probabilistic draw from an observation model.</p>
 <table class="table">
 <colgroup>
 <col width="25%">
@@ -114,11 +113,11 @@ In this table, “point” refers to a point estimate. When not indicated, we ar
 <code>point_pred_matrix</code><br><code>pred_matrix</code> (contains NAs in elements where there were observations)</td>
 </tr>
 <tr class="even">
-<td><strong>List Format</strong></td>
+<td><strong>List Format (multiple matrices)</strong></td>
 <td>
-<code>reporting_matrix_list</code> (complete)<br><code>reporting_triangle_list</code> (contains NAs for missing observations)</td>
-<td><code>nowcast_matrix_list</code></td>
-<td><code>pred_matrix_list</code></td>
+<code>reporting_matrices</code> (complete)<br><code>reporting_triangles</code> (contains NAs for missing observations)</td>
+<td><code>nowcast_matrices</code></td>
+<td><code>pred_matrices</code></td>
 </tr>
 <tr class="odd">
 <td><strong>Vector Format (summed across delays)</strong></td>
@@ -140,7 +139,7 @@ In this table, “point” refers to a point estimate. When not indicated, we ar
 </table>
 <p>For example, we refer to the matrix with imputed point estimates for all <span class="math inline">\(t+d&gt;t^*\)</span> as a point nowcast matrix, a matrix with a complete set of observations for all elements as a reporting matrix, and a matrix with only the predictions as a point prediction matrix.</p>
 <p>In package documentation, we will generally use a reporting triangle to refer to a diagonal reporting triangle, which is the special case of a reporting triangle where the reporting delays and reference times are indexed on the same scale. An example of a diagonal reporting triangle is one with daily reporting of daily data. The package also supports what we refer to as a ragged reporting triangle, an example of which would be daily reporting of data referenced only once per week.</p>
-<p>We will use the following to abbreviations to shorten names in the code:</p>
+<p>We will use the following to abbreviations to shorten names in the code when necessary:</p>
 <table class="table">
 <thead><tr class="header">
 <th><strong>Long Name</strong></th>
@@ -148,26 +147,30 @@ In this table, “point” refers to a point estimate. When not indicated, we ar
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td>reporting</td>
-<td><code>rep</code></td>
+<td>truncated</td>
+<td><code>trunc</code></td>
 </tr>
 <tr class="even">
+<td>retrospective</td>
+<td><code>retro</code></td>
+</tr>
+<tr class="odd">
 <td>observed</td>
 <td><code>obs</code></td>
 </tr>
-<tr class="odd">
-<td>incomplete</td>
-<td><code>inc</code></td>
-</tr>
 <tr class="even">
+<td>predicted</td>
+<td><code>pred</code></td>
+</tr>
+<tr class="odd">
 <td>matrix</td>
 <td><code>mat</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>point</td>
 <td><code>pt</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>error</td>
 <td><code>err</code></td>
 </tr>

@@ -70,10 +70,10 @@ number of horizons.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">estimate_uncertainty</span><span class="op">(</span></span>
-<span>  <span class="va">pt_nowcast_mat_list</span>,</span>
-<span>  <span class="va">trunc_rep_tri_list</span>,</span>
-<span>  <span class="va">reporting_triangle_list</span>,</span>
-<span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">pt_nowcast_mat_list</span><span class="op">)</span>,</span>
+<span>  <span class="va">point_nowcast_matrices</span>,</span>
+<span>  <span class="va">truncated_reporting_triangles</span>,</span>
+<span>  <span class="va">retro_reporting_triangles</span>,</span>
+<span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">point_nowcast_matrices</span><span class="op">)</span>,</span>
 <span>  fun_to_aggregate <span class="op">=</span> <span class="va">sum</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -83,18 +83,18 @@ number of horizons.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-pt-nowcast-mat-list">pt_nowcast_mat_list<a class="anchor" aria-label="anchor" href="#arg-pt-nowcast-mat-list"></a></dt>
+<dl><dt id="arg-point-nowcast-matrices">point_nowcast_matrices<a class="anchor" aria-label="anchor" href="#arg-point-nowcast-matrices"></a></dt>
 <dd><p>List of point nowcast matrices where rows
 represent reference time points and columns represent delays.</p></dd>
 
 
-<dt id="arg-trunc-rep-tri-list">trunc_rep_tri_list<a class="anchor" aria-label="anchor" href="#arg-trunc-rep-tri-list"></a></dt>
+<dt id="arg-truncated-reporting-triangles">truncated_reporting_triangles<a class="anchor" aria-label="anchor" href="#arg-truncated-reporting-triangles"></a></dt>
 <dd><p>List of truncated reporting matrices,
 containing all observations as of the latest reference time. Elements of
-list are paired with elements of <code>pt_nowcast_mat_list</code>.</p></dd>
+list are paired with elements of <code>point_nowcast_matrices</code>.</p></dd>
 
 
-<dt id="arg-reporting-triangle-list">reporting_triangle_list<a class="anchor" aria-label="anchor" href="#arg-reporting-triangle-list"></a></dt>
+<dt id="arg-retro-reporting-triangles">retro_reporting_triangles<a class="anchor" aria-label="anchor" href="#arg-retro-reporting-triangles"></a></dt>
 <dd><p>List of <code>n</code> truncated reporting triangle
 matrices with as many rows as available given the truncation.</p></dd>
 
@@ -146,9 +146,9 @@ of the dispersion parameter for each delay d, starting at delay d=1.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">retro_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="fill_triangles.html">fill_triangles</a></span><span class="op">(</span><span class="va">retro_rts</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">disp_params</span> <span class="op">&lt;-</span> <span class="fu">estimate_uncertainty</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  pt_nowcast_mat_list <span class="op">=</span> <span class="va">retro_nowcasts</span>,</span></span>
-<span class="r-in"><span>  trunc_rep_tri_list <span class="op">=</span> <span class="va">trunc_rts</span>,</span></span>
-<span class="r-in"><span>  reporting_triangle_list <span class="op">=</span> <span class="va">retro_rts</span>,</span></span>
+<span class="r-in"><span>  point_nowcast_matrices <span class="op">=</span> <span class="va">retro_nowcasts</span>,</span></span>
+<span class="r-in"><span>  truncated_reporting_triangles <span class="op">=</span> <span class="va">trunc_rts</span>,</span></span>
+<span class="r-in"><span>  retro_reporting_triangles <span class="op">=</span> <span class="va">retro_rts</span>,</span></span>
 <span class="r-in"><span>  n <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">disp_params</span></span></span>
@@ -156,9 +156,9 @@ of the dispersion parameter for each delay d, starting at delay d=1.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Estimate dispersion parameters from rolling sum</span></span></span>
 <span class="r-in"><span><span class="va">disp_params_agg</span> <span class="op">&lt;-</span> <span class="fu">estimate_uncertainty</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  pt_nowcast_mat_list <span class="op">=</span> <span class="va">retro_nowcasts</span>,</span></span>
-<span class="r-in"><span>  trunc_rep_tri_list <span class="op">=</span> <span class="va">trunc_rts</span>,</span></span>
-<span class="r-in"><span>  reporting_triangle_list <span class="op">=</span> <span class="va">retro_rts</span>,</span></span>
+<span class="r-in"><span>  point_nowcast_matrices <span class="op">=</span> <span class="va">retro_nowcasts</span>,</span></span>
+<span class="r-in"><span>  truncated_reporting_triangles <span class="op">=</span> <span class="va">trunc_rts</span>,</span></span>
+<span class="r-in"><span>  retro_reporting_triangles <span class="op">=</span> <span class="va">retro_rts</span>,</span></span>
 <span class="r-in"><span>  n <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  fun_to_aggregate <span class="op">=</span> <span class="va">sum</span>,</span></span>
 <span class="r-in"><span>  k <span class="op">=</span> <span class="fl">2</span></span></span>

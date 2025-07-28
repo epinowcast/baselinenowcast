@@ -70,9 +70,9 @@ reporting triangle.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fill_triangles</span><span class="op">(</span></span>
-<span>  <span class="va">reporting_triangle_list</span>,</span>
-<span>  max_delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">reporting_triangle_list</span>, <span class="va">ncol</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
-<span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">reporting_triangle_list</span>, <span class="va">nrow</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="va">retro_reporting_triangles</span>,</span>
+<span>  max_delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">retro_reporting_triangles</span>, <span class="va">ncol</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
+<span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">retro_reporting_triangles</span>, <span class="va">nrow</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  delay_pmf <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -81,7 +81,7 @@ reporting triangle.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-reporting-triangle-list">reporting_triangle_list<a class="anchor" aria-label="anchor" href="#arg-reporting-triangle-list"></a></dt>
+<dl><dt id="arg-retro-reporting-triangles">retro_reporting_triangles<a class="anchor" aria-label="anchor" href="#arg-retro-reporting-triangles"></a></dt>
 <dd><p>List of <code>n</code> truncated reporting triangle
 matrices with as many rows as available given the truncation.</p></dd>
 
@@ -102,14 +102,14 @@ all the matrices in the <code>list_of_rts</code>.</p></dd>
 <dt id="arg-delay-pmf">delay_pmf<a class="anchor" aria-label="anchor" href="#arg-delay-pmf"></a></dt>
 <dd><p>Vector or list of vectors of delays assumed to be indexed
 starting at the first delay column in each of the matrices in
-<code>reporting_triangle_list</code>. If a list, must of the same length as
-<code>reporting_triangle_list</code>, with elements aligning. Default is <code>NULL</code></p></dd>
+<code>retro_reporting_triangles</code>. If a list, must of the same length as
+<code>retro_reporting_triangles</code>, with elements aligning. Default is <code>NULL</code></p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>pt_nowcast_matr_list</code> List of the same number of elements as the
-input <code>reporting_triangle_list</code>but with each reporting triangle filled
+    <p><code>point_nowcast_matrices</code> List of the same number of elements as the
+input <code>retro_reporting_triangles</code>but with each reporting triangle filled
 in based on the delay estimated in that reporting triangle.</p>
     </div>
 

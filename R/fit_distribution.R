@@ -28,6 +28,16 @@
 fit_distribution <- function(obs,
                              pred,
                              observation_model_name = "dnbinom") {
+  if (any(dim(as.matrix(obs)) != dim(as.matrix(pred)))) {
+    cli_abort(
+      message = "Dimensions of observations and predictions do not match."
+    )
+  }
+  if (any(dim(as.matrix(obs)) == 0) || any(dim(as.matrix(pred)) == 0)) {
+    cli_abort(
+      message = "Empty observations or predictions passed in."
+    )
+  }
   n_horizons <- ncol(obs)
   param_vector <- vector(length = n_horizons)
 
@@ -36,6 +46,7 @@ fit_distribution <- function(obs,
     observation_model <- as.character(observation_model_name)
   }
   .validate_fit_obs_model(observation_model_name)
+
   for (i in seq_len(n_horizons)) {
     obs_this_horizon <- obs[, i]
     pred_this_horizon <- pred[, i]
@@ -45,6 +56,14 @@ fit_distribution <- function(obs,
         "negative_binomial", "nbinom",
         "Negative Binomial", "Negative binomial"
       )) {
+        if (!all(obs_this_horizon >= 0 | is.na(obs_this_horizon)) ||
+          !all(pred_this_horizon >= 0 | is.na(pred_this_horizon))) {
+          cli_abort(message = c(
+            "Observations and/or predictions must be",
+            "greater than 0 for negative binomial",
+            "observation model"
+          ))
+        }
         nll <- -sum(
           dnbinom(
             x = obs_this_horizon,
@@ -68,6 +87,13 @@ fit_distribution <- function(obs,
           na.rm = TRUE
         )
       } else if (observation_model_name %in% c("dgamma", "Gamma", "gamma")) {
+        if (!all(obs_this_horizon >= 0 | is.na(obs_this_horizon)) ||
+          !all(pred_this_horizon >= 0 | is.na(pred_this_horizon))) {
+          cli_abort(message = c(
+            "Observations and/or predictions must be ",
+            "greater than 0 for Gamma observation model"
+          ))
+        }
         nll <- -sum(
           dgamma(
             x = obs_this_horizon,

@@ -14,11 +14,11 @@
 #'    all the matrices in the `list_of_rts`.
 #' @param delay_pmf Vector or list of vectors of delays assumed to be indexed
 #'    starting at the first delay column in each of the matrices in
-#'     `reporting_triangle_list`. If a list, must of the same length as
-#'     `reporting_triangle_list`, with elements aligning. Default is `NULL`
+#'     `retro_reporting_triangles`. If a list, must of the same length as
+#'     `retro_reporting_triangles`, with elements aligning. Default is `NULL`
 #'
-#' @returns `pt_nowcast_matr_list` List of the same number of elements as the
-#'    input `reporting_triangle_list`but with each reporting triangle filled
+#' @returns `point_nowcast_matrices` List of the same number of elements as the
+#'    input `retro_reporting_triangles`but with each reporting triangle filled
 #'    in based on the delay estimated in that reporting triangle.
 #' @export
 #' @importFrom cli cli_abort cli_alert_danger cli_alert_info
@@ -41,31 +41,31 @@
 #' retro_rts <- construct_triangles(trunc_rts)
 #' retro_pt_nowcast_mat_list <- fill_triangles(retro_rts)
 #' retro_pt_nowcast_mat_list[1:3]
-fill_triangles <- function(reporting_triangle_list,
+fill_triangles <- function(retro_reporting_triangles,
                            max_delay = min(
-                             sapply(reporting_triangle_list, ncol)
+                             sapply(retro_reporting_triangles, ncol)
                            ) - 1,
                            n = min(
-                             sapply(reporting_triangle_list, nrow)
+                             sapply(retro_reporting_triangles, nrow)
                            ),
                            delay_pmf = NULL) {
   if (is.list(delay_pmf)) { # name as a list and check length of elements
     delay_pmf_list <- delay_pmf
-    if (length(delay_pmf_list) != length(reporting_triangle_list)) {
+    if (length(delay_pmf_list) != length(retro_reporting_triangles)) {
       cli_abort(message = c(
         "List of `delay_pmf` is not the same length as ",
-        "`reporting_triangle_list`."
+        "`retro_reporting_triangles`."
       ))
     }
   } else { # create a list with the same pmf
-    delay_pmf_list <- rep(list(delay_pmf), length(reporting_triangle_list))
+    delay_pmf_list <- rep(list(delay_pmf), length(retro_reporting_triangles))
   }
 
   safe_fill_triangle <- .safelydoesit(fill_triangle)
 
   # Use the safe version in mapply, iterating through each item in both
   # lists of reporting triangles and delay PMFs
-  pt_nowcast_mat_list <- mapply(
+  point_nowcast_matrices <- mapply(
     function(triangle, pmf, ind) {
       result <- safe_fill_triangle(
         reporting_triangle = triangle,
@@ -87,20 +87,20 @@ fill_triangles <- function(reporting_triangle_list,
         return(result$result)
       }
     },
-    reporting_triangle_list,
+    retro_reporting_triangles,
     delay_pmf_list,
-    seq_along(reporting_triangle_list),
+    seq_along(retro_reporting_triangles),
     SIMPLIFY = FALSE
   )
 
   # After running, filter the results to find error indices
-  error_indices <- which(sapply(pt_nowcast_mat_list, is.null))
+  error_indices <- which(sapply(point_nowcast_matrices, is.null))
   # Print summary
-  if (length(error_indices) == length(reporting_triangle_list)) {
+  if (length(error_indices) == length(retro_reporting_triangles)) {
     cli_abort(
       message = c(sprintf(
         "\nErrors occurred in all %s reporting triangles. Check if input triangles have valid data structure or contain zeros in the first column.", # nolint
-        length(reporting_triangle_list)
+        length(retro_reporting_triangles)
       ))
     )
   } else if (length(error_indices) > 0) {
@@ -115,14 +115,14 @@ fill_triangles <- function(reporting_triangle_list,
     cli_alert_info(
       text = sprintf(
         "Successfully processed %d out of %d matrices\n",
-        length(reporting_triangle_list) - length(error_indices),
-        length(reporting_triangle_list)
+        length(retro_reporting_triangles) - length(error_indices),
+        length(retro_reporting_triangles)
       )
     )
   }
 
 
-  return(pt_nowcast_mat_list)
+  return(point_nowcast_matrices)
 }
 
 #' Generate point nowcast

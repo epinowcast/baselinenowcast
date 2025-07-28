@@ -5,14 +5,14 @@
 \title{Generate retrospective nowcasts}
 \usage{
 fill_triangles(
-  reporting_triangle_list,
-  max_delay = min(sapply(reporting_triangle_list, ncol)) - 1,
-  n = min(sapply(reporting_triangle_list, nrow)),
+  retro_reporting_triangles,
+  max_delay = min(sapply(retro_reporting_triangles, ncol)) - 1,
+  n = min(sapply(retro_reporting_triangles, nrow)),
   delay_pmf = NULL
 )
 }
 \arguments{
-\item{reporting_triangle_list}{List of \code{n} truncated reporting triangle
+\item{retro_reporting_triangles}{List of \code{n} truncated reporting triangle
 matrices with as many rows as available given the truncation.}
 
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
@@ -26,12 +26,12 @@ all the matrices in the \code{list_of_rts}.}
 
 \item{delay_pmf}{Vector or list of vectors of delays assumed to be indexed
 starting at the first delay column in each of the matrices in
-\code{reporting_triangle_list}. If a list, must of the same length as
-\code{reporting_triangle_list}, with elements aligning. Default is \code{NULL}}
+\code{retro_reporting_triangles}. If a list, must of the same length as
+\code{retro_reporting_triangles}, with elements aligning. Default is \code{NULL}}
 }
 \value{
-\code{pt_nowcast_matr_list} List of the same number of elements as the
-input \code{reporting_triangle_list}but with each reporting triangle filled
+\code{point_nowcast_matrices} List of the same number of elements as the
+input \code{retro_reporting_triangles}but with each reporting triangle filled
 in based on the delay estimated in that reporting triangle.
 }
 \description{

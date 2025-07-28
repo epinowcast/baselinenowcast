@@ -403,7 +403,6 @@ test_that("fit_distribution handles perfect predictions", {
 })
 
 test_that("fit_distribution handles horizon-specific fitting correctly", {
-  # Create data where different horizons have different dispersion
   set.seed(123)
   n_obs <- 30
   obs_multi <- matrix(0, nrow = n_obs, ncol = 3)

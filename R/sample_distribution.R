@@ -34,6 +34,12 @@ sample_distribution <- function(pred,
     "negative_binomial", "nbinom",
     "Negative Binomial", "Negative binomial"
   )) {
+    if (any(uncertainty_params <= 0)) {
+      cli_abort(message = c(
+        "'uncertainty_params' must be greater than 0 for ",
+        " negative binomial sampling model."
+      ))
+    }
     sampled_pred <- rnbinom(
       n = length(pred),
       size = uncertainty_params,

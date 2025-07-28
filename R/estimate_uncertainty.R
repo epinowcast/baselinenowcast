@@ -166,23 +166,20 @@ estimate_uncertainty <- function(
     max_t <- nrow(aggr_obs)
     # For each horizon, take the partial sum of the nowcasted and already
     # observed components.
-    for (d in 1:n_possible_horizons) {
-      row_number <- max_t - d + 1
-      indices_nowcast <- is.na(aggr_rt_obs[row_number, ])
-      indices_obs <- !is.na(aggr_obs[row_number, ])
-      masked_nowcast <- .apply_mask(
-        aggr_nowcast[row_number, ],
-        indices_nowcast,
-        indices_obs
-      )
-      masked_obs <- .apply_mask(
-        aggr_obs[row_number, ],
-        indices_nowcast,
-        indices_obs
-      )
-      exp_to_add[i, d] <- sum(masked_nowcast, na.rm = TRUE)
-      to_add_already_observed[i, d] <- sum(masked_obs, na.rm = TRUE)
-    }
+    indices_nowcast <- is.na(aggr_rt_obs[(max_t - n_possible_horizons + 1):max_t, ])
+    indices_obs <- !is.na(aggr_obs[(max_t - n_possible_horizons + 1):max_t, ])
+    masked_nowcast <- .apply_mask(
+      aggr_nowcast[(max_t - n_possible_horizons + 1):max_t, ],
+      indices_nowcast,
+      indices_obs
+    )
+    masked_obs <- .apply_mask(
+      aggr_obs[(max_t - n_possible_horizons + 1):max_t, ],
+      indices_nowcast,
+      indices_obs
+    )
+    exp_to_add[i, ] <- rev(rowSums(masked_nowcast, na.rm = TRUE))
+    to_add_already_observed[i, ] <- rev(rowSums(masked_obs, na.rm = TRUE))
   }
 
   if (!any(exp_to_add != 0 & !is.na(exp_to_add))) {

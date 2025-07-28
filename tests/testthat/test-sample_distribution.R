@@ -37,5 +37,15 @@ test_that("sample_distribution: works with all three options for error functions
   expect_type(result, "double")
   expect_length(result, length(test_pred))
   expect_true(all(is.finite(result)))
-  expect_true(all(result < 1000) & all(result > 0.1))
+})
+
+test_that("sample_distribution: errors appropriately if observation model not supported", { # nolint
+  expect_error(
+    sample_distribution(
+      pred = test_pred,
+      uncertainty_params = uncertainty_params,
+      observation_model_name = "bernoulli"
+    ),
+    regexp = "not supported by `sample_distribution` error model."
+  )
 })

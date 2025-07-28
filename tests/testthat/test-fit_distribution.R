@@ -48,3 +48,14 @@ test_that("fit_distribution: works with all three options for error functions", 
   expect_true(all(is.finite(result)))
   expect_true(all(result < 1000) & all(result > 0.1))
 })
+
+test_that("fit_distribution: errors appropriately if observation model not supported", { # nolint
+  expect_error(
+    fit_distribution(
+      obs = test_obs,
+      pred = test_pred,
+      observation_model_name = "bernoulli"
+    ),
+    regexp = "not supported by `fit_distribution` error model."
+  )
+})

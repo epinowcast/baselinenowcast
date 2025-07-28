@@ -168,26 +168,65 @@
   return(NULL)
 }
 
-.validate_aggregation_function <- function(fun_to_aggregate) {
-  # Define allowed functions
-  allowed_functions <- list(
-    sum = sum
+#' Validate observation model name
+#'
+#' @inheritParams fit_distribution
+#' @importFrom cli cli_abort
+#' @returns NULL or error message
+.validate_fit_obs_model <- function(observation_model_name) {
+  # Define the set of parametric models and their names the
+  # function supports
+  allowed_model_names <- c(
+    "dnbinom", "negative binomial", "neg_binom",
+    "negative_binomial", "nbinom",
+    "Negative Binomial", "Negative binomial",
+    "dnorm", "Normal", "normal", "norm",
+    "dgamma", "Gamma", "gamma"
   )
+  allowed_models <- c("Gamma", "Normal", "Negative binomial")
 
-  # Validate function
-  fun_name <- deparse(substitute(fun_to_aggregate))
-  if (is.name(fun_to_aggregate)) {
-    fun_name <- as.character(fun_to_aggregate)
-  }
 
-  # Check if function is in allowed list
-  if (!identical(fun_to_aggregate, allowed_functions[[fun_name]]) &&
-    !any(sapply(allowed_functions, identical, fun_to_aggregate))) {
-    allowed_names <- toString(names(allowed_functions))
-    stop(sprintf("'fun_to_aggregate' should be one of: %s", allowed_names),
-      call. = FALSE
+  if (!observation_model_name %in% allowed_model_names) {
+    cli_abort(
+      c("{.val {observation_model_name}} not supported by `fit_distribution` error model. ", # nolint
+        "i" = "'observation_model_name' should be one of {.val {allowed_models}}.", # nolint
+        "i" = "Consider using a custom built function for fitting and applying uncertainty if needed."
+      ) # nolint
     )
   }
+
+
+  return(NULL)
+}
+
+#' Validate observation model name
+#'
+#' @inheritParams fit_distribution
+#' @importFrom cli cli_abort
+#' @returns NULL or error message
+.validate_sample_obs_model <- function(observation_model_name) {
+  # Define the set of parametric models and their names the
+  # function supports
+  allowed_model_names <- c(
+    "negative binomial", "neg_binom",
+    "negative_binomial", "nbinom",
+    "Negative Binomial", "Negative binomial",
+    "Normal", "normal", "norm",
+    "Gamma", "gamma",
+    "rgamma", "rnorm", "rnbinom"
+  )
+  allowed_models <- c("Gamma", "Normal", "Negative binomial")
+
+
+  if (!observation_model_name %in% allowed_model_names) {
+    cli_abort(
+      c("{.val {observation_model_name}} not supported by `sample_distribution` error model.", # nolint
+        "i" = "'observation_model_name' should be one of {.val {allowed_models}}.", # nolint
+        "i" = "Consider using a custom built function for fitting and applying uncertainty if needed."
+      ) # nolint
+    )
+  }
+
 
   return(NULL)
 }

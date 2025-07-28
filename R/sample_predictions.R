@@ -90,10 +90,14 @@ sample_prediction <- function(point_nowcast_matrix,
   # so horizon = 0 is last.
   mean_pred <- mean_pred_long[(max_t - n_horizons + 1):max_t]
 
-  draw_pred <- error_model(
-    pred = mean_pred,
-    uncertainty_params = rev(uncertainty_params)
-  )
+  draw_pred <- do.call(error_model, c(
+    list(
+      mean_pred,
+      rev(uncertainty_params)
+    ),
+    error_args
+  ))
+
 
   # Pad with 0s for the fully observed rows, which are before
   # the max_t - n_horizons

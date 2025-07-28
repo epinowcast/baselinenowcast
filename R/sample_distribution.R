@@ -27,6 +27,7 @@ sample_distribution <- function(pred,
   if (!is.character(observation_model_name)) {
     observation_model_name <- as.character(observation_model_name)
   }
+  .validate_sample_obs_model(observation_model_name)
 
   if (observation_model_name %in% c(
     "rnbinom", "negative binomial", "neg_binom",

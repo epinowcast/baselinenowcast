@@ -35,6 +35,7 @@ fit_distribution <- function(obs,
   if (!is.character(observation_model_name)) {
     observation_model <- as.character(observation_model_name)
   }
+  .validate_fit_obs_model(observation_model_name)
   for (i in seq_len(n_horizons)) {
     obs_this_horizon <- obs[, i]
     pred_this_horizon <- pred[, i]

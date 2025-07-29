@@ -357,11 +357,7 @@ Next we will pass this list of reporting triangles to the `fill_triangles()` and
 
 ```{r generate-nowcasts}
 retro_pt_nowcast_mat_list <- fill_triangles(
-<<<<<<< HEAD
   retro_reporting_triangles = retro_rep_tri_list,
-=======
-  reporting_triangle_list = retro_rep_tri_list,
->>>>>>> main
   n = n_history_delay
 )
 ```
@@ -370,15 +366,9 @@ Next, we will use the retrospective reporting triangles, the point nowcast matri
 
 ```{r estimate-dispersion}
 disp_params <- estimate_uncertainty(
-<<<<<<< HEAD
   pt_nowcast_matrices = retro_pt_nowcast_mat_list,
   trunc_reporting_triangles = trunc_rep_tri_list,
   reporting_triangles = retro_rep_tri_list,
-=======
-  pt_nowcast_mat_list = retro_pt_nowcast_mat_list,
-  trunc_rep_tri_list = trunc_rep_tri_list,
-  reporting_triangle_list = retro_rep_tri_list,
->>>>>>> main
   n = n_retrospective_nowcasts
 )
 ```

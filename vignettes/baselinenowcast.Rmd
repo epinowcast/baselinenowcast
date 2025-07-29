@@ -404,7 +404,6 @@ Next we will pass this list of reporting triangles to the `fill_triangles()` and
 ``` r
 retro_pt_nowcast_mat_list <- fill_triangles(
   retro_reporting_triangles = retro_rep_tri_list,
-  reporting_triangle_list = retro_rep_tri_list,
   n = n_history_delay
 )
 ```

@@ -418,6 +418,7 @@ disp_params <- estimate_uncertainty(
   reporting_triangles = retro_rep_tri_list,
   n = n_retrospective_nowcasts
 )
+#> Error in estimate_uncertainty(pt_nowcast_matrices = retro_pt_nowcast_mat_list, : unused arguments (pt_nowcast_matrices = retro_pt_nowcast_mat_list, trunc_reporting_triangles = trunc_rep_tri_list, reporting_triangles = retro_rep_tri_list)
 ```
 
 # Generate probabilistic nowcast
@@ -435,15 +436,10 @@ nowcast_draws_df <- sample_nowcasts(
   dispersion = disp_params,
   draws = 100
 )
+#> Error: object 'disp_params' not found
 
 head(nowcast_draws_df)
-#>   pred_count time draw
-#> 1        736    1    1
-#> 2        897    2    1
-#> 3        893    3    1
-#> 4        804    4    1
-#> 5        722    5    1
-#> 6        492    6    1
+#> Error: object 'nowcast_draws_df' not found
 ```
 
 See documentation for `sample_nowcasts()`for further details.
@@ -476,21 +472,9 @@ Join the nowcasts, data as of the nowcast date, and the final data.
 obs_with_nowcast_draws_df <- nowcast_draws_df |>
   left_join(latest_data_prepped, by = "time") |>
   left_join(final_data_prepped, by = "reference_date")
+#> Error: object 'nowcast_draws_df' not found
 head(obs_with_nowcast_draws_df)
-#>   pred_count time draw reference_date location age_group obs_confirm
-#> 1        736    1    1     2021-05-04       DE       00+         823
-#> 2        897    2    1     2021-05-05       DE       00+        1028
-#> 3        893    3    1     2021-05-06       DE       00+        1016
-#> 4        804    4    1     2021-05-07       DE       00+         892
-#> 5        722    5    1     2021-05-08       DE       00+         822
-#> 6        492    6    1     2021-05-09       DE       00+         561
-#>   report_date final_confirm
-#> 1  2021-07-24           823
-#> 2  2021-07-25          1028
-#> 3  2021-07-26          1016
-#> 4  2021-07-27           892
-#> 5  2021-07-28           822
-#> 6  2021-07-29           561
+#> Error: object 'obs_with_nowcast_draws_df' not found
 ```
 
 Create a separate dataframe for only the observed and final data, to make plotting easier.
@@ -508,6 +492,7 @@ combined_data <- obs_with_nowcast_draws_df |>
     type == "obs_confirm" ~ "Observed data",
     type == "final_confirm" ~ "Final observed data"
   ))
+#> Error: object 'obs_with_nowcast_draws_df' not found
 ```
 
 ```{.r .fold-hide}
@@ -553,12 +538,8 @@ ggplot() +
   ylab("Hospital admissions") +
   theme(legend.position = "bottom") +
   ggtitle("Comparison of admissions as of the nowcast date, later observed counts, \n and probabilistic nowcasted counts") # nolint
+#> Error: object 'obs_with_nowcast_draws_df' not found
 ```
-
-<div class="figure" style="text-align: center">
-<img src="figure/plot-probablistic-nowcasts-1.png" alt="plot of chunk plot-probablistic-nowcasts" width="100%" />
-<p class="caption">plot of chunk plot-probablistic-nowcasts</p>
-</div>
 
 Gray lines indicate the probabilistic nowcast draws, which are a combination of the already observed data at each reference date and the predicted nowcast draws at each reference date.
 Black lines show the "final" data from October 1, 2021.

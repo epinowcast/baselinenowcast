@@ -533,7 +533,7 @@ test_that("estimate_uncertainty: can handle weekday filter with large ragged tri
   covid_data <- readRDS(test_path("fixtures", "covid_data.rds")) |>
     dplyr::filter(
       age_group == "00+",
-      wday(reference_date) == 1
+      lubridate::wday(reference_date) == 1
     )
 
   # Create a ragged triangle

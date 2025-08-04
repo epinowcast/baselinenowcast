@@ -44,7 +44,7 @@ The installation of `epinowcast` is not required for using the package.
 however, its pre and post-processing functions provide a lot of the data wrangling needed to set up the nowcasting problem.
 We note that we will just be using components of `epinowcast`, which can be installed using the following:
 
-```{r}
+```{r setup, message = FALSE, warning = FALSE, results = 'hide'}
 # nolint start
 # Installing epinowcast
 # install.packages(
@@ -104,9 +104,11 @@ head(observed_data)
 
 Using the observed data as of the nowcast date (`observed_data`) and the `enw_latest_data()` function, we will make a plot of the latest total number of confirmed cases at each reference date.
 
-```{.r .fold-hide}
+<details><summary>Click to expand code to create the plot of the latest data</summary>
+
+```{r}
 obs_data_by_reference_date <- enw_latest_data(observed_data)
-ggplot() +
+plot_data <- ggplot() +
   geom_line(
     data = obs_data_by_reference_date,
     aes(x = reference_date, y = confirm), color = "darkred"
@@ -120,6 +122,10 @@ ggplot() +
   ylab("Confirmed admissions") +
   scale_y_continuous(trans = "log10") +
   ggtitle("Comparing real-time and later observed cases")
+```
+</details>
+```{r}
+plot_data
 ```
 
 The red line shows the total number of confirmed admissions on each reference date, across all delays, using the data available as of August 1, 2021.
@@ -222,8 +228,8 @@ reporting_triangle <- reporting_triangle_df |>
   as.matrix()
 ```
 
-
-```{.r .fold-hide}
+<details><summary>Click to expand code to create the plot of the reporting triangle</summary>
+```{r}
 triangle_df <- as.data.frame(reporting_triangle) |>
   mutate(time = row_number()) |>
   pivot_longer(!time,
@@ -233,7 +239,7 @@ triangle_df <- as.data.frame(reporting_triangle) |>
   ) |>
   mutate(delay = as.numeric(delay))
 
-ggplot(
+plot_triangle <- ggplot(
   triangle_df,
   aes(x = delay, y = time, fill = count)
 ) +
@@ -243,7 +249,11 @@ ggplot(
   theme_bw() +
   scale_y_reverse()
 ```
+</details>
 
+```{r}
+plot_triangle
+```
 Here, the grey indicates matrix elements that are `NA`, which we would expect to be the case in the bottom right portion of the reporting triangle where the counts have yet to be observed.
 
 # Estimate delay
@@ -260,31 +270,32 @@ delay_pmf <- estimate_delay(
   n = n_history_delay
 )
 ```
-
-```{.r .fold-hide}
+<details><summary>Click to expand code to create the plot of the delay distribution</summary>
+```{r}
 delay_df <- data.frame(
   delay = 0:(length(delay_pmf) - 1),
   pmf = delay_pmf
 )
 
-ggplot(delay_df) +
+delay_cdf_plot <- ggplot(delay_df) +
   geom_line(aes(x = delay, y = cumsum(pmf))) +
   xlab("Delay") +
   ylab("Cumulative proportion reported") +
   ggtitle("Empirical point estimate of cumulative proportion reported by delay") + # nolint
   theme_bw()
-```
 
-```{.r .fold-hide}
-
-ggplot(delay_df) +
+delay_pmf_plot <- ggplot(delay_df) +
   geom_line(aes(x = delay, y = pmf)) +
   xlab("Delay") +
   ylab("Proportion reported") +
   ggtitle("Empirical point estimate of proportion reported by delay") +
   theme_bw()
 ```
-
+</details>
+```{r}
+delay_cdf_plot
+delay_pmf_plot
+```
 
 # Apply the delay to generate a point nowcast
 
@@ -305,8 +316,8 @@ point_nowcast_matrix <- apply_delay(
 
 We'll make a quick plot to compare our point estimate of the nowcasted confirmed cases through August 1, 2021, to the "final" observations from October 1, 2021 and to the right-truncated data available up until August 1, 2021.
 
-
-```{.r .fold-hide}
+<details><summary>Click to expand code to create the plot of the point nowcast</summary>
+```{r}
 point_nowcast_df <- eval_data |>
   mutate(nowcast = rowSums(point_nowcast_matrix))
 
@@ -328,7 +339,7 @@ plot_data <- point_nowcast_df |>
   bind_rows(prep_latest_data)
 
 # Create plot with data type as a variable
-ggplot(plot_data, aes(x = reference_date, y = count, color = type)) +
+plot_pt_nowcast <- ggplot(plot_data, aes(x = reference_date, y = count, color = type)) +
   geom_line() +
   scale_color_manual(values = c(
     "Real-time data" = "darkred",
@@ -342,6 +353,10 @@ ggplot(plot_data, aes(x = reference_date, y = count, color = type)) +
   ggtitle("Comparing real-time, nowcasted, and later observed cases") +
   theme(legend.position = "bottom") +
   labs(color = "Type")
+```
+</details>
+```{r}
+plot_pt_nowcast
 ```
 
 
@@ -456,10 +471,10 @@ combined_data <- obs_with_nowcast_draws_df |>
     type == "final_confirm" ~ "Final observed data"
   ))
 ```
-
-```{.r .fold-hide}
+<details><summary>Click to expand code to create the plot of the probabilistic nowcast</summary>
+```{r}
 # Plot with draws for nowcast only
-ggplot() +
+plot_prob_nowcast <- ggplot() +
   # Add nowcast draws as thin gray lines
   geom_line(
     data = obs_with_nowcast_draws_df,
@@ -500,6 +515,10 @@ ggplot() +
   ylab("Hospital admissions") +
   theme(legend.position = "bottom") +
   ggtitle("Comparison of admissions as of the nowcast date, later observed counts, \n and probabilistic nowcasted counts") # nolint
+```
+</details>
+```{r}
+plot_prob_nowcast
 ```
 
 

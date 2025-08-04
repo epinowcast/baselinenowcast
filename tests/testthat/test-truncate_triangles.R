@@ -92,5 +92,5 @@ test_that("truncate_triangles: default works well for ragged triangle", {
   )
 
   truncated_triangles <- truncate_triangles(ragged_triangle)
-  expect_identical(length(truncated_triangles), 4L)
+  expect_length(truncated_triangles, 4L)
 })

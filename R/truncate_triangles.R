@@ -8,9 +8,9 @@
 #'
 #' @param n Integer indicating the number of retrospective
 #'   truncated triangles to be generated, always starting from the most
-#'   recent reference time. Default is to generate truncated matrices
-#'   for all triangles that would have a sufficient number of rows to generate
-#'   a nowcast from.
+#'   recent reference time. Default is to generate truncated matrices for
+#'   the maximum delay (number of columns - 1) or one less than the number of
+#'   available rows.
 #' @inheritParams estimate_delay
 #' @returns `trunc_rep_tri_list` List of `n` truncated reporting triangle
 #'   matrices with as many rows as available given the truncation, and the same

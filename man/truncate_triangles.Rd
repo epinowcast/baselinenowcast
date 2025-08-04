@@ -6,7 +6,7 @@
 \usage{
 truncate_triangles(
   reporting_triangle,
-  n = nrow(reporting_triangle) - ncol(reporting_triangle) - 1
+  n = min(ncol(reporting_triangle) - 1, nrow(reporting_triangle) - 1)
 )
 }
 \arguments{
@@ -18,9 +18,9 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 
 \item{n}{Integer indicating the number of retrospective
 truncated triangles to be generated, always starting from the most
-recent reference time. Default is to generate truncated matrices
-for all triangles that would have a sufficient number of rows to generate
-a nowcast from.}
+recent reference time. Default is to generate truncated matrices for
+the maximum delay (number of columns - 1) or one less than the number of
+available rows.}
 }
 \value{
 \code{trunc_rep_tri_list} List of \code{n} truncated reporting triangle

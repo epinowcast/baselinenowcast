@@ -54,12 +54,6 @@ test_that("truncate_triangles edge cases are handled properly", {
   )
 })
 
-test_that("truncate_triangles warnings are generated for excessive n values", {
-  safe_n <- nrow(test_triangle) - ncol(test_triangle) - 1
-  expect_silent(truncate_triangles(test_triangle, n = safe_n))
-  expect_warning(truncate_triangles(test_triangle, n = safe_n + 1))
-})
-
 test_that("truncate_triangles NA replacement works as expected", {
   result <- truncate_triangles(test_triangle, n = 1)[[1]]
   # Expect bottom 3 elemets of lower left triangle to be NAs

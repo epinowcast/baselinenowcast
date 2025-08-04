@@ -135,7 +135,8 @@ estimate_uncertainty <- function(
   }
 
 
-  n_possible_horizons <- ncol(list_of_ncs[[1]]) - 1
+  # n_possible_horizons <- ncol(list_of_ncs[[1]]) - 1
+  n_possible_horizons <- sum(is.na(rowSums(list_of_rts[[1]])))
   # Each row is retrospective nowcast date, each column is a horizon (i.e
   # columns are not delays, but hoirzons, and each cell contains a total
   # value corresponding to that horizon -- the total expected value to add

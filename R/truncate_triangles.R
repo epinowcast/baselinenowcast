@@ -38,14 +38,6 @@ truncate_triangles <- function(reporting_triangle,
                                n = nrow(reporting_triangle) - ncol(reporting_triangle) - 1) { # nolint
   .validate_triangle(reporting_triangle)
   assert_integerish(n, lower = 0)
-  if (n > (nrow(reporting_triangle) - ncol(reporting_triangle) - 1)) {
-    cli::cli_warn(
-      message = c(
-        "Not all of the triangles generated will contain sufficient ",
-        "observations to generate a nowcast from"
-      )
-    )
-  }
 
   trunc_rep_tri_list <- lapply(
     seq_len(n),

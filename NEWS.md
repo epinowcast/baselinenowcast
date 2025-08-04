@@ -1,5 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
+-   Fix internal checks that ensure there is sufficient data for the specified target choice, using the number of NA rows rather than the number of columns as a proxy for the number of horizons.
 -   Replace argument names with more complete versions where possible.
 -   Replace most function names with action-oriented function naming.
 -   Add new logo.

@@ -366,9 +366,9 @@ Next, we will use the retrospective reporting triangles, the point nowcast matri
 
 ```{r estimate-dispersion}
 disp_params <- estimate_uncertainty(
-  pt_nowcast_matrices = retro_pt_nowcast_mat_list,
-  trunc_reporting_triangles = trunc_rep_tri_list,
-  reporting_triangles = retro_rep_tri_list,
+  point_nowcast_matrices = retro_pt_nowcast_mat_list,
+  truncated_reporting_triangles = trunc_rep_tri_list,
+  retro_reporting_triangles = retro_rep_tri_list,
   n = n_retrospective_nowcasts
 )
 ```

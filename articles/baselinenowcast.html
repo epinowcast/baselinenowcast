@@ -405,9 +405,9 @@ See the documentation for <code><a href="../reference/truncate_triangles.html">t
 </details><p>Next, we will use the retrospective reporting triangles, the point nowcast matrices, and the truncated reporting triangles to estimate the uncertainty at each horizon, starting at horizon 0 using the <code><a href="../reference/estimate_uncertainty.html">estimate_uncertainty()</a></code> function.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">disp_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_uncertainty.html">estimate_uncertainty</a></span><span class="op">(</span></span>
-<span>  pt_nowcast_matrices <span class="op">=</span> <span class="va">retro_pt_nowcast_mat_list</span>,</span>
-<span>  trunc_reporting_triangles <span class="op">=</span> <span class="va">trunc_rep_tri_list</span>,</span>
-<span>  reporting_triangles <span class="op">=</span> <span class="va">retro_rep_tri_list</span>,</span>
+<span>  point_nowcast_matrices <span class="op">=</span> <span class="va">retro_pt_nowcast_mat_list</span>,</span>
+<span>  truncated_reporting_triangles <span class="op">=</span> <span class="va">trunc_rep_tri_list</span>,</span>
+<span>  retro_reporting_triangles <span class="op">=</span> <span class="va">retro_rep_tri_list</span>,</span>
 <span>  n <span class="op">=</span> <span class="va">n_retrospective_nowcasts</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details>

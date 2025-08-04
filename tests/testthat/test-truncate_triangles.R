@@ -54,6 +54,16 @@ test_that("truncate_triangles edge cases are handled properly", {
   )
 })
 
+test_that("truncate_triangles can handle a range of ns", {
+  ncols <- ncol(test_triangle) - 1
+  nrows <- nrow(test_triangle) - 1
+
+  expect_silent(truncate_triangles(test_triangle, n = ncols))
+  expect_silent(truncate_triangles(test_triangle, n = nrows))
+  expect_silent(truncate_triangles(test_triangle, n = 2))
+  expect_error(truncate_triangles(test_triangle, n = -1))
+})
+
 test_that("truncate_triangles NA replacement works as expected", {
   result <- truncate_triangles(test_triangle, n = 1)[[1]]
   # Expect bottom 3 elemets of lower left triangle to be NAs

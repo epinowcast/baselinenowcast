@@ -528,12 +528,15 @@ test_that("estimate_uncertainty: can handle weekday filter with large ragged tri
   skip_if_not_installed("dplyr") # Is in Suggests so CI should have installed
   skip_if_not_installed("tidyr")
   skip_if_not_installed("lubridate")
+  library(dplyr)
+  library(tidyr)
+  library(lubridate)
   # Use the covid data to test, using only one age group and filtering to
   # a single weekday
   covid_data <- readRDS(test_path("fixtures", "covid_data.rds")) |>
-    dplyr::filter(
+    filter(
       age_group == "00+",
-      lubridate::wday(reference_date) == 1
+      wday(reference_date) == 1
     )
 
   # Create a ragged triangle

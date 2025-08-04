@@ -339,7 +339,11 @@ plot_data <- point_nowcast_df |>
   bind_rows(prep_latest_data)
 
 # Create plot with data type as a variable
-plot_pt_nowcast <- ggplot(plot_data, aes(x = reference_date, y = count, color = type)) +
+plot_pt_nowcast <- ggplot(plot_data, aes(
+  x = reference_date,
+  y = count,
+  color = type
+)) +
   geom_line() +
   scale_color_manual(values = c(
     "Real-time data" = "darkred",

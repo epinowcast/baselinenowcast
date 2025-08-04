@@ -51,6 +51,7 @@ Suggests:
     bookdown,
     dplyr,
     tidyr,
+    readr,
     ggplot2,
     spelling,
     rmarkdown,

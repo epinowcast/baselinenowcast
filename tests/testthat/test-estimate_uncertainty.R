@@ -527,6 +527,7 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
 test_that("estimate_uncertainty: can handle weekday filter with large ragged triangle", { # nolint
   skip_if_not_installed("dplyr") # Is in Suggests so CI should have installed
   skip_if_not_installed("tidyr")
+  skip_if_not_installed("lubridate")
   # Use the covid data to test, using only one age group and filtering to
   # a single weekday
   covid_data <- readRDS(test_path("fixtures", "covid_data.rds")) |>

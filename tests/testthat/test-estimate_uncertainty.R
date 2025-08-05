@@ -250,10 +250,10 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
     retro_reporting_triangles = retro_rts,
     n = 2
   )
-
+  n_horizons <- sum(is.na(rowSums(ragged_triangle)))
   # Test that the function returns the expected result
   expect_is(disp_params, "numeric")
-  expect_length(disp_params, ncol(ragged_triangle) - 1)
+  expect_length(disp_params, n_horizons)
   expect_true(all(disp_params > 0))
 })
 
@@ -510,4 +510,91 @@ test_that("estimate_uncertainty produces different parameters with different fit
     error_args = list(observation_model_name = "gamma")
   )
   expect_true(all(result_gamma == result_gamma2))
+})
+test_that("estimate_uncertainty: can handle weekday filter with large ragged triangle", { # nolint
+  skip_if_not_installed("dplyr") # Is in Suggests so CI should have installed
+  skip_if_not_installed("tidyr")
+  skip_if_not_installed("lubridate")
+  library(dplyr)
+  library(tidyr)
+  library(lubridate)
+  # Use the covid data to test, using only one age group and filtering to
+  # a single weekday
+  covid_data <- readRDS(test_path("fixtures", "covid_data.rds")) |>
+    filter(
+      age_group == "00+",
+      wday(reference_date) == 1
+    )
+
+  # Create a ragged triangle
+  ragged_triangle <- covid_data |>
+    select(reference_date, delay, count) |>
+    pivot_wider(
+      names_from = delay,
+      values_from = count
+    ) |>
+    select(-reference_date) |>
+    as.matrix()
+
+  short_ragged_triangle <- ragged_triangle[(nrow(ragged_triangle) - 15):nrow(ragged_triangle), ] # nolint
+
+  # Create truncated and retrospective reporting triangles
+  trunc_rts <- truncate_triangles(short_ragged_triangle, n = 5)
+  retro_rts <- construct_triangles(trunc_rts,
+    structure = c(2, 7, 7, 7, 7, 7)
+  )
+
+  retro_nowcasts <- fill_triangles(retro_rts, n = 10) # Use 10 reference times
+
+  disp_params <- estimate_uncertainty(
+    point_nowcast_matrices = retro_nowcasts,
+    truncated_reporting_triangles = trunc_rts,
+    retro_reporting_triangles = retro_rts,
+    n = 5
+  )
+  expect_true(all(is.finite(disp_params)))
+  expect_true(all(disp_params > 0.01))
+})
+
+test_that("estimate_uncertainty: can handle weekday filter with small ragged triangle", { # nolint
+  sim_delay_pmf <- c(0.1, 0.2, 0.3, 0.1, 0.1, 0.1)
+
+  # Generate counts for each reference date
+  counts <- c(
+    150,
+    160, 170, 200, 100, 400
+  )
+
+  # Create a complete triangle based on the known delay PMF and add some noise
+  complete_triangle <- lapply(counts, function(x) round(x * sim_delay_pmf))
+  complete_triangle <- do.call(rbind, complete_triangle)
+  complete_triangle <- complete_triangle + rnbinom(length(complete_triangle),
+    size = 20,
+    mu = 10
+  )
+
+  # Create a reporting triangle with every other day reporting
+  ragged_triangle <- construct_triangle(
+    complete_triangle,
+    structure = 2
+  )
+
+  # Create truncated triangles and retrospective triangles
+  trunc_rts <- truncate_triangles(ragged_triangle, n = 2)
+  retro_rts <- construct_triangles(trunc_rts, structure = 2)
+
+  # Generate nowcasts from the ragged triangles
+  retro_nowcasts <- fill_triangles(retro_rts, n = 4)
+
+  # No longer errors due to ncol > nrow
+  disp_params <- estimate_uncertainty(
+    point_nowcast_matrices = retro_nowcasts,
+    truncated_reporting_triangles = trunc_rts,
+    retro_reporting_triangles = retro_rts,
+    n = 2
+  )
+
+  expect_true(all(is.finite(disp_params)))
+  expect_true(all(disp_params > 0.01))
+
 })

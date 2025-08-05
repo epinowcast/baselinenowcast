@@ -2,7 +2,7 @@
 % Please edit documentation in R/sample_distribution.R
 \name{sample_distribution}
 \alias{sample_distribution}
-\title{Fit observations vs predictions to an observation model}
+\title{Sample from observations model given predictions}
 \usage{
 sample_distribution(
   pred,
@@ -25,7 +25,7 @@ a single draw from the \code{observation_model_name} distribution
 with the specified \verb{uncertainty params}.
 }
 \description{
-Fit observations vs predictions to an observation model
+Sample from observations model given predictions
 }
 \examples{
 pred <- matrix(c(

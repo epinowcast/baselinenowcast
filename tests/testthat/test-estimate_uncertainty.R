@@ -432,7 +432,7 @@ test_that("estimate_uncertainty: works with normal observation model", {
   expect_type(result, "double")
   expect_length(result, ncol(valid_nowcasts[[1]]) - 1)
   expect_true(all(is.finite(result)))
-  expect_true(!any(result > 20))
+  expect_false(any(result > 20))
 })
 
 test_that("estimate_uncertainty: works with gamma observation model", {
@@ -596,5 +596,4 @@ test_that("estimate_uncertainty: can handle weekday filter with small ragged tri
 
   expect_true(all(is.finite(disp_params)))
   expect_true(all(disp_params > 0.01))
-
 })

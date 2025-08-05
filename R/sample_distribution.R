@@ -1,4 +1,4 @@
-#' Fit observations vs predictions to an observation model
+#' Sample from observations model given predictions
 #'
 #' @param pred Matrix or vector of predictions.
 #' @param uncertainty_params Vector of uncertainty parameters.

@@ -190,7 +190,7 @@
     cli_abort(
       c("{.val {observation_model_name}} not supported by `fit_distribution` error model. ", # nolint
         "i" = "'observation_model_name' should be one of {.val {allowed_models}}.", # nolint
-        "i" = "Consider using a custom built function for fitting and applying uncertainty if needed."
+        "i" = "Consider using a custom built function for fitting and applying uncertainty if needed." # nolint
       ) # nolint
     )
   }
@@ -222,7 +222,7 @@
     cli_abort(
       c("{.val {observation_model_name}} not supported by `sample_distribution` error model.", # nolint
         "i" = "'observation_model_name' should be one of {.val {allowed_models}}.", # nolint
-        "i" = "Consider using a custom built function for fitting and applying uncertainty if needed."
+        "i" = "Consider using a custom built function for fitting and applying uncertainty if needed." # nolint
       ) # nolint
     )
   }

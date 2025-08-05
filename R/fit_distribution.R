@@ -27,7 +27,7 @@
 #' disp
 fit_distribution <- function(obs,
                              pred,
-                             observation_model_name = "dnbinom") {
+                             observation_model_name = "negative binomial") {
   if (any(dim(as.matrix(obs)) != dim(as.matrix(pred)))) {
     cli_abort(
       message = "Dimensions of observations and predictions do not match."
@@ -106,7 +106,18 @@ fit_distribution <- function(obs,
       }
       return(nll)
     }
-    param_vector[i] <- optimize(objective_func, c(0.1, 1000))$minimum
+    tryCatch(
+      {
+        result <- optimize(objective_func, c(0.1, 1000))
+        if (result$objective == Inf || is.na(result$minimum)) {
+          cli_abort(message = paste("Optimization failed for horizon", i))
+        }
+        param_vector[i] <- result$minimum
+      },
+      error = function(e) {
+        cli_abort(message = paste("Optimization error for horizon", i, ":", e$message)) # nolint
+      }
+    )
   }
   return(param_vector)
 }

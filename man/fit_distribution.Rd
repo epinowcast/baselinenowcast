@@ -4,7 +4,7 @@
 \alias{fit_distribution}
 \title{Fit observations vs predictions to an observation model}
 \usage{
-fit_distribution(obs, pred, observation_model_name = "dnbinom")
+fit_distribution(obs, pred, observation_model_name = "negative binomial")
 }
 \arguments{
 \item{obs}{Matrix of observations with retrospective nowcast dates as rows

@@ -42,10 +42,10 @@ test_that(".apply_mask works with a single row matrix", {
 
   expect_is(result, "matrix")
   expect_identical(dim(result), dim(mat))
-  expect_true(result[1] > 0)
-  expect_true(result[4] > 0)
-  expect_true(result[9] > 0)
-  expect_true(result[2] == 0)
+  expect_gt(result[1], 0)
+  expect_gt(result[4], 0)
+  expect_gt(result[9], 0)
+  expect_identical(result[2], 0L)
 })
 
 test_that(".apply_mask correctly applies logical AND operation", {

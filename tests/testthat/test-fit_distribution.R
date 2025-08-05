@@ -31,7 +31,7 @@ test_that("fit_distribution: works with all three options for error functions", 
   # works with default identically
   result2 <- fit_distribution(
     obs = test_obs,
-    pred = test_pred,
+    pred = test_pred
   )
   expect_identical(result, result2)
 

@@ -30,10 +30,11 @@ test_that("truncate_triangles returns correct number of truncated matrices with 
 })
 
 test_that("truncate_triangles default n calculation works correctly", {
-  expected_default <- ncol(test_triangle) - 1
+  expected_default <- nrow(test_triangle) - sum(is.na(rowSums(test_triangle))) - 1
   result <- truncate_triangles(test_triangle)
   expect_length(result, expected_default)
 })
+
 
 test_that("truncate_triangles edge cases are handled properly", {
   # n = 0 returns empty list
@@ -102,5 +103,5 @@ test_that("truncate_triangles: default works well for ragged triangle", {
   )
 
   truncated_triangles <- truncate_triangles(ragged_triangle)
-  expect_length(truncated_triangles, 4L)
+  expect_length(truncated_triangles, 1L)
 })

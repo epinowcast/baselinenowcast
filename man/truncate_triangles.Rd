@@ -6,7 +6,7 @@
 \usage{
 truncate_triangles(
   reporting_triangle,
-  n = min(ncol(reporting_triangle) - 1, nrow(reporting_triangle) - 1)
+  n = nrow(reporting_triangle) - sum(is.na(rowSums(reporting_triangle))) - 1
 )
 }
 \arguments{
@@ -19,8 +19,9 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 \item{n}{Integer indicating the number of retrospective
 truncated triangles to be generated, always starting from the most
 recent reference time. Default is to generate truncated matrices for
-the maximum delay (number of columns - 1) or one less than the number of
-available rows.}
+each row up until there are insufficient rows to generate nowcasts
+from, where the minimum requirement is one more than the  number of
+horizon rows (rows containing NAs).}
 }
 \value{
 \code{trunc_rep_tri_list} List of \code{n} truncated reporting triangle

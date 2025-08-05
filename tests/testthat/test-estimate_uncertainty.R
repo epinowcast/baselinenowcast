@@ -444,10 +444,12 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
   expect_lt(dispersion[1], 500)
   expect_true(all(is.finite(dispersion)))
 
+  # Few reporting matrices can be included here because we are summing.
+
   dispersion2 <- estimate_uncertainty(
-    point_nowcast_matrices,
-    truncated_reporting_triangles,
-    retro_reporting_triangles,
+    point_nowcast_matrices[1:3],
+    truncated_reporting_triangles[1:3],
+    retro_reporting_triangles[1:3],
     fun_to_aggregate = sum,
     k = 3
   )
@@ -457,6 +459,15 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
 
 
   expect_failure(expect_equal(dispersion, dispersion2, tol = 0.001))
+
+  # We'll get a warning if we are trying to use all of them
+  expect_warning(estimate_uncertainty(
+    point_nowcast_matrices,
+    truncated_reporting_triangles,
+    retro_reporting_triangles,
+    fun_to_aggregate = sum,
+    k = 3
+  ))
 })
 
 test_that("estimate_uncertainty: returns known dispersion parameters", { # nolint

@@ -30,7 +30,8 @@ test_that("truncate_triangles returns correct number of truncated matrices with 
 })
 
 test_that("truncate_triangles default n calculation works correctly", {
-  expected_default <- nrow(test_triangle) - sum(is.na(rowSums(test_triangle))) - 1
+  expected_default <- nrow(test_triangle) -
+    sum(is.na(rowSums(test_triangle))) - 1
   result <- truncate_triangles(test_triangle)
   expect_length(result, expected_default)
 })

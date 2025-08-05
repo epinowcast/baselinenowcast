@@ -39,9 +39,9 @@ More details on the mathematical methods are provided in the [mathematical model
 
 # Packages
 
-As well as the `baselinenowcast` package this vignette also uses `epinowcast`,`ggplot2`, `tidyr`, and `dplyr`.
+As well as the `baselinenowcast` package this vignette also uses `epinowcast`, `ggplot2`, `tidyr`, and `dplyr`.
 The installation of `epinowcast` is not required for using the package.
-however, its pre and post-processing functions provide a lot of the data wrangling needed to set up the nowcasting problem.
+However, its pre and post-processing functions provide a lot of the data wrangling needed to set up the nowcasting problem.
 We note that we will just be using components of `epinowcast`, which can be installed using the following:
 
 ```{r setup, message = FALSE, warning = FALSE, results = 'hide'}

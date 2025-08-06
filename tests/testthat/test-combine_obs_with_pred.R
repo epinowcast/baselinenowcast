@@ -56,8 +56,8 @@ test_that("combine_obs_with_pred: handles aggregation function properly", {
   # Use function
   result <- combine_obs_with_pred(pred_counts,
     reporting_triangle,
-    aggregator = zoo::rollsum,
-    aggregator_args = list(k = 2, align = "right")
+    ref_time_aggregator = zoo::rollsum,
+    ref_time_aggregator_args = list(k = 2, align = "right")
   )
 
 

@@ -11,8 +11,10 @@ sample_nowcasts(
   draws = 1000,
   error_model = sample_distribution,
   error_args = list(observation_model_name = "negative binomial"),
-  aggregator = zoo::rollsum,
-  aggregator_args = list(k = 1, align = "right")
+  ref_time_aggregator = zoo::rollsum,
+  ref_time_aggregator_args = list(k = 1, align = "right"),
+  delay_aggregator = rowSums,
+  delay_aggregator_args = list(na.rm = TRUE)
 )
 }
 \arguments{
@@ -40,6 +42,20 @@ Default is \code{sample_distribution}.}
 
 \item{error_args}{List of arguments needed for the specified error model.
 Default is \verb{list(observation_model_name = "negative_binomial").}}
+
+\item{ref_time_aggregator}{Function that operates along the rows (reference
+times) of the retrospective point nowcast matrix before it has been
+aggregated across columns (delays). Default is \code{zoo::rollsum}.}
+
+\item{ref_time_aggregator_args}{List of arguments needed for the specified
+\code{ref_time_aggregator}. Default is \code{list(k=1, align = "right")}.}
+
+\item{delay_aggregator}{Function that operates along the columns (delays)
+of the retrospective point nowcast matrix after it has been aggregated
+across reference times. Default is \code{rowSums}.}
+
+\item{delay_aggregator_args}{List of arguments needed for the specified
+\code{delay_aggregator}. Default is \code{list(na.rm = TRUE)}.}
 }
 \value{
 Dataframe containing information for multiple draws with columns

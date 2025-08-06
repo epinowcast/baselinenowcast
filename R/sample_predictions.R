@@ -46,8 +46,8 @@
 #'   point_nowcast_matrix,
 #'   reporting_triangle,
 #'   disp,
-#'   aggregator = zoo::rollsum,
-#'   aggregator_args = list(k = 2, align = "right")
+#'   ref_time_aggregator = zoo::rollsum,
+#'   ref_time_aggregator_args = list(k = 2, align = "right")
 #' )
 #' nowcast_pred_draw_agg
 sample_prediction <- function(point_nowcast_matrix,
@@ -58,11 +58,13 @@ sample_prediction <- function(point_nowcast_matrix,
                                 observation_model_name =
                                   "negative binomial"
                               ),
-                              aggregator = zoo::rollsum,
-                              aggregator_args = list(
+                              ref_time_aggregator = zoo::rollsum,
+                              ref_time_aggregator_args = list(
                                 k = 1,
                                 align = "right"
-                              )) {
+                              ),
+                              delay_aggregator = rowSums,
+                              delay_aggregator_args = list(na.rm = TRUE)) {
   if (length(uncertainty_params) > nrow(point_nowcast_matrix)) {
     cli_abort(
       message = c(
@@ -81,13 +83,13 @@ sample_prediction <- function(point_nowcast_matrix,
       )
     )
   }
-  aggr_nowcast <- do.call(aggregator, c(
+  aggr_nowcast <- do.call(ref_time_aggregator, c(
     list(point_nowcast_matrix),
-    aggregator_args
+    ref_time_aggregator_args
   ))
-  aggr_rt <- do.call(aggregator, c(
+  aggr_rt <- do.call(ref_time_aggregator, c(
     list(reporting_triangle),
-    aggregator_args
+    ref_time_aggregator_args
   ))
   aggr_nowcast_pred_matrix <- .extract_predictions(
     aggr_nowcast,
@@ -96,7 +98,15 @@ sample_prediction <- function(point_nowcast_matrix,
   n_horizons <- sum(is.na(rowSums(reporting_triangle)))
 
   max_t <- nrow(aggr_nowcast)
-  mean_pred_long <- rowSums(aggr_nowcast_pred_matrix, na.rm = TRUE)
+  mean_pred_long <- do.call(
+    delay_aggregator,
+    c(
+      list(aggr_nowcast_pred_matrix),
+      delay_aggregator_args
+    )
+  )
+
+  # rowSums(aggr_nowcast_pred_matrix, na.rm = TRUE)
   # Get only the predictions, these are ordered by reference time,
   # so horizon = 0 is last.
   mean_pred <- mean_pred_long[(max_t - n_horizons + 1):max_t]
@@ -146,24 +156,33 @@ sample_prediction <- function(point_nowcast_matrix,
 #' # Another example with rolling sum
 #' combine_obs_with_pred(pred_counts,
 #'   reporting_triangle,
-#'   aggregator = zoo::rollsum,
-#'   aggregator_args = list(k = 2, align = "right")
+#'   ref_time_aggregator = zoo::rollsum,
+#'   ref_time_aggregator_args = list(k = 2, align = "right")
 #' )
 combine_obs_with_pred <- function(predicted_counts,
                                   reporting_triangle,
-                                  aggregator = zoo::rollsum,
-                                  aggregator_args = list(
+                                  ref_time_aggregator = zoo::rollsum,
+                                  ref_time_aggregator_args = list(
                                     k = 1,
                                     align = "right"
-                                  )) {
+                                  ),
+                                  delay_aggregator = rowSums,
+                                  delay_aggregator_args = list(na.rm = TRUE)) {
   aggr_reporting_triangle <- do.call(
-    aggregator,
+    ref_time_aggregator,
     c(
       list(reporting_triangle),
-      aggregator_args
+      ref_time_aggregator_args
     )
   )
-  obs_counts_agg <- rowSums(aggr_reporting_triangle, na.rm = TRUE)
+  obs_counts_agg <- do.call(
+    delay_aggregator,
+    c(
+      list(aggr_reporting_triangle),
+      delay_aggregator_args
+    )
+  )
+  # rowSums(aggr_reporting_triangle, na.rm = TRUE)
 
   return(obs_counts_agg + predicted_counts)
 }
@@ -206,8 +225,8 @@ combine_obs_with_pred <- function(predicted_counts,
 #'   reporting_triangle,
 #'   disp,
 #'   500,
-#'   aggregator = zoo::rollsum,
-#'   aggregator_args = list(
+#'   ref_time_aggregator = zoo::rollsum,
+#'   ref_time_aggregator_args = list(
 #'     k = 2,
 #'     align = "right"
 #'   )
@@ -222,11 +241,13 @@ sample_predictions <- function(point_nowcast_matrix,
                                  observation_model_name =
                                    "negative binomial"
                                ),
-                               aggregator = zoo::rollsum,
-                               aggregator_args = list(
+                               ref_time_aggregator = zoo::rollsum,
+                               ref_time_aggregator_args = list(
                                  k = 1,
                                  align = "right"
-                               )) {
+                               ),
+                               delay_aggregator = rowSums,
+                               delay_aggregator_args = list(na.rm = TRUE)) {
   assert_integerish(draws, lower = 1)
   reference_times <- seq_len(nrow(point_nowcast_matrix))
 
@@ -237,8 +258,8 @@ sample_predictions <- function(point_nowcast_matrix,
       uncertainty_params,
       error_model,
       error_args,
-      aggregator,
-      aggregator_args
+      ref_time_aggregator,
+      ref_time_aggregator_args
     )
 
     # If aggregating, we need to pad with NAs
@@ -295,11 +316,13 @@ sample_nowcast <- function(point_nowcast_matrix,
                              observation_model_name =
                                "negative binomial"
                            ),
-                           aggregator = zoo::rollsum,
-                           aggregator_args = list(
+                           ref_time_aggregator = zoo::rollsum,
+                           ref_time_aggregator_args = list(
                              k = 1,
                              align = "right"
-                           )) {
+                           ),
+                           delay_aggregator = rowSums,
+                           delay_aggregator_args = list(na.rm = TRUE)) {
   # Generate a single draw of the predictions
   pred_counts <- sample_prediction(
     point_nowcast_matrix,
@@ -307,16 +330,20 @@ sample_nowcast <- function(point_nowcast_matrix,
     uncertainty_params,
     error_model,
     error_args,
-    aggregator,
-    aggregator_args
+    ref_time_aggregator,
+    ref_time_aggregator_args,
+    delay_aggregator,
+    delay_aggregator_args
   )
 
   # Combine with observations
   draw <- combine_obs_with_pred(
     pred_counts,
     reporting_triangle,
-    aggregator,
-    aggregator_args
+    ref_time_aggregator,
+    ref_time_aggregator_args,
+    delay_aggregator,
+    delay_aggregator_args
   )
 
   return(draw)
@@ -359,11 +386,13 @@ sample_nowcasts <- function(point_nowcast_matrix,
                               observation_model_name =
                                 "negative binomial"
                             ),
-                            aggregator = zoo::rollsum,
-                            aggregator_args = list(
+                            ref_time_aggregator = zoo::rollsum,
+                            ref_time_aggregator_args = list(
                               k = 1,
                               align = "right"
-                            )) {
+                            ),
+                            delay_aggregator = rowSums,
+                            delay_aggregator_args = list(na.rm = TRUE)) {
   reference_times <- seq_len(nrow(point_nowcast_matrix))
 
   draws_df_list <- lapply(seq_len(draws), function(i) {
@@ -373,8 +402,10 @@ sample_nowcasts <- function(point_nowcast_matrix,
       uncertainty_params,
       error_model,
       error_args,
-      aggregator,
-      aggregator_args
+      ref_time_aggregator,
+      ref_time_aggregator_args,
+      delay_aggregator,
+      delay_aggregator_args
     )
     # If aggregating, we need to pad with NAs
     pred_counts_padded <- c(

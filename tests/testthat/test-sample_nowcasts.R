@@ -155,8 +155,8 @@ test_that(
       reporting_triangle,
       dispersion,
       draws = 100,
-      aggregator = zoo::rollsum,
-      aggregator_args = list(k = 2, align = "right")
+      ref_time_aggregator = zoo::rollsum,
+      ref_time_aggregator_args = list(k = 2, align = "right")
     )
     result <- sample_nowcasts(
       point_nowcast_matrix,
@@ -215,8 +215,8 @@ test_that("sample_nowcasts: longer k aggregates correctly", {
     reporting_triangle = triangle,
     uncertainty_params = dispersion,
     draws = 100,
-    aggregator = zoo::rollsum,
-    aggregator_args = list(k = 5, align = "right")
+    ref_time_aggregator = zoo::rollsum,
+    ref_time_aggregator_args = list(k = 5, align = "right")
   )
 
   # First 4 rows are NA because of right alignment

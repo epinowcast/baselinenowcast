@@ -17,7 +17,8 @@
 #'    estimate the dispersion parameters.
 #' @param error_model Function that ingests a matrix of observations and a
 #'     matrix of predictions and returns a vector that can be used to
-#'     apply uncertainty using the same error model. Default is fit_distribution.
+#'     apply uncertainty using the same error model. Default is
+#'     fit_distribution.
 #' @param error_args List of arguments needed for the specified error model.
 #'     Default is `list(observation_model_name = "negative_binomial").`
 #' @param aggregator Function that operates along the rows of the retrospective
@@ -159,13 +160,21 @@ estimate_uncertainty <- function(
 
     # Apply the aggregation to the truncated observations, the nowcast,
     # and the reporting triangle.
-    aggr_obs <- do.call(aggregator, c(list(trunc_matr_observed), aggregator_args))
+    aggr_obs <- do.call(aggregator, c(
+      list(trunc_matr_observed),
+      aggregator_args
+    ))
     aggr_nowcast <- do.call(aggregator, c(list(nowcast_i), aggregator_args))
-    aggr_rt_obs <- do.call(aggregator, c(list(triangle_observed), aggregator_args))
+    aggr_rt_obs <- do.call(aggregator, c(
+      list(triangle_observed),
+      aggregator_args
+    ))
     max_t <- nrow(aggr_obs)
     # For each horizon, take the partial sum of the nowcasted and already
     # observed components.
-    indices_nowcast <- is.na(aggr_rt_obs[(max_t - n_possible_horizons + 1):max_t, ])
+    indices_nowcast <- is.na(
+      aggr_rt_obs[(max_t - n_possible_horizons + 1):max_t, ]
+    )
     indices_obs <- !is.na(aggr_obs[(max_t - n_possible_horizons + 1):max_t, ])
     masked_nowcast <- .apply_mask(
       aggr_nowcast[(max_t - n_possible_horizons + 1):max_t, ],

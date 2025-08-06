@@ -41,9 +41,8 @@ fit_distribution <- function(obs,
   n_horizons <- ncol(obs)
   param_vector <- vector(length = n_horizons)
 
-  # convert to character
   if (!is.character(observation_model_name)) {
-    observation_model <- as.character(observation_model_name)
+    cli_abort(message = "`observation_model_name` must be a character string")
   }
   .validate_fit_obs_model(observation_model_name)
 
@@ -58,11 +57,10 @@ fit_distribution <- function(obs,
       )) {
         if (!all(obs_this_horizon >= 0 | is.na(obs_this_horizon)) ||
           !all(pred_this_horizon >= 0 | is.na(pred_this_horizon))) {
-          cli_abort(message = c(
-            "Observations and/or predictions must be",
-            "greater than 0 for negative binomial",
-            "observation model"
-          ))
+          cli_abort(
+            message =
+              "Observations and/or predictions must be greater than 0 for negative binomial observation model" # nolint
+          )
         }
         nll <- -sum(
           dnbinom(
@@ -89,10 +87,10 @@ fit_distribution <- function(obs,
       } else if (observation_model_name %in% c("dgamma", "Gamma", "gamma")) {
         if (!all(obs_this_horizon >= 0 | is.na(obs_this_horizon)) ||
           !all(pred_this_horizon >= 0 | is.na(pred_this_horizon))) {
-          cli_abort(message = c(
-            "Observations and/or predictions must be ",
-            "greater than 0 for Gamma observation model"
-          ))
+          cli_abort(
+            message =
+              "Observations and/or predictions must be greater than 0 for Gamma observation model" # nolint
+          )
         }
         nll <- -sum(
           dgamma(

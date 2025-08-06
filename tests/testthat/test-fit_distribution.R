@@ -17,7 +17,7 @@ test_pred <- matrix(
   byrow = TRUE
 )
 
-test_that("fit_distribution: works with all three options for error functions", {
+test_that("fit_distribution: works with all three options for error functions", { # nolint
   result <- fit_distribution(
     obs = test_obs,
     pred = test_pred,
@@ -55,6 +55,16 @@ test_that("fit_distribution: works with all three options for error functions", 
   expect_true(all(is.finite(result)))
   expect_true(all(result < 1000) & all(result > 0.1))
 })
+test_that("fit_distribution: errors with non character", {
+  expect_error(
+    fit_distribution(
+      obs = test_obs,
+      pred = test_pred,
+      observation_model_name = dnbinom
+    ),
+    regexp = "`observation_model_name` must be a character string"
+  )
+})
 
 test_that("fit_distribution: errors appropriately if observation model not supported", { # nolint
   expect_error(
@@ -62,15 +72,6 @@ test_that("fit_distribution: errors appropriately if observation model not suppo
       obs = test_obs,
       pred = test_pred,
       observation_model_name = "bernoulli"
-    ),
-    regexp = "not supported by `fit_distribution` error model."
-  )
-
-  expect_error(
-    fit_distribution(
-      obs = test_obs,
-      pred = test_pred,
-      observation_model_name = 123
     ),
     regexp = "not supported by `fit_distribution` error model."
   )
@@ -396,9 +397,10 @@ test_that("fit_distribution handles perfect predictions", {
     observation_model_name = "negative binomial"
   )
 
-  # Should still return valid parameters (might be large for NB indicating low dispersion)
+  # Should still return valid parameters
+  # (might be large for NB indicating low dispersion)
   expect_true(all(is.finite(result)))
-  expect_true(all(result > 0))
+  expect_true(all(result > 0)) # nolint
   expect_length(result, ncol(perfect_obs))
 })
 
@@ -430,6 +432,6 @@ test_that("fit_distribution handles horizon-specific fitting correctly", {
 
   # Results should be in increasing order (roughly matching true dispersions)
   # Allow for estimation uncertainty
-  expect_true(result[1] < result[2] * 2) # First should be smaller than second
-  expect_true(result[2] < result[3] * 2) # Second should be smaller than third
+  expect_lt(result[1], result[2] * 2) # First should be smaller than second
+  expect_lt(result[2], result[3] * 2) # Second should be smaller than third
 })

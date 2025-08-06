@@ -23,9 +23,8 @@
 sample_distribution <- function(pred,
                                 uncertainty_params,
                                 observation_model_name = "negative binomial") {
-  # convert to character
   if (!is.character(observation_model_name)) {
-    observation_model_name <- as.character(observation_model_name)
+    cli_abort(message = "`observation_model_name` must be a character string")
   }
   .validate_sample_obs_model(observation_model_name)
 

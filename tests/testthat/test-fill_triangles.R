@@ -248,7 +248,7 @@ test_that("fill_triangles uses correct rows", {
   sim_delay_pmf <- c(0.25, 0.25, 0.25, 0.25)
 
   # Generate counts for each reference date
-  counts <- 10*c(4, 4, 4, 4, 4, 4, 4)
+  counts <- 10 * c(4, 4, 4, 4, 4, 4, 4)
 
   # Create a complete triangle based on the known delay PMF
   complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)

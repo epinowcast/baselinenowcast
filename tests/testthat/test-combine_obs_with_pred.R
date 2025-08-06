@@ -48,7 +48,7 @@ test_that("combine_obs_with_pred: handles aggregation function properly", {
   obs_counts <- rowSums(aggr_reporting_triangle, na.rm = TRUE)
   # First test that the logic of the function works as we'd expect, without
   # using the function
-  expect_equal(obs_counts + pred_counts, rowSums(aggr_reporting_matrix))
+  expect_identical(obs_counts + pred_counts, rowSums(aggr_reporting_matrix))
 
   # Calculate expected results
   expected <- obs_counts + pred_counts

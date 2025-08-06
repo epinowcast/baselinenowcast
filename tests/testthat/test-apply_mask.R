@@ -137,8 +137,12 @@ test_that(".apply_mask handles decimal values", {
 
 test_that(".apply_mask preserves matrix class and structure", {
   mat <- matrix(1:9, nrow = 3, ncol = 3)
-  indices_1 <- matrix(sample(c(TRUE, FALSE), 9, replace = TRUE), nrow = 3, ncol = 3)
-  indices_2 <- matrix(sample(c(TRUE, FALSE), 9, replace = TRUE), nrow = 3, ncol = 3)
+  indices_1 <- matrix(sample(c(TRUE, FALSE), 9, replace = TRUE),
+    nrow = 3, ncol = 3
+  )
+  indices_2 <- matrix(sample(c(TRUE, FALSE), 9, replace = TRUE),
+    nrow = 3, ncol = 3
+  )
 
   result <- .apply_mask(mat, indices_1, indices_2)
 

@@ -450,7 +450,7 @@ test_that("estimate_uncertainty: works with gamma observation model", {
   expect_type(result, "double")
   expect_length(result, ncol(valid_nowcasts[[1]]) - 1)
   expect_true(all(is.finite(result)))
-  expect_true(!any(result > 20))
+  expect_false(any(result > 20))
 })
 
 test_that("estimate_uncertainty errors when k is too large for data", {
@@ -477,7 +477,7 @@ test_that("estimate_uncertainty: errors appropriately if observation model not s
   )
 })
 
-test_that("estimate_uncertainty produces different parameters with different fitting models", {
+test_that("estimate_uncertainty produces different parameters with different fitting models", { # nolint
   set.seed(123)
   result_nb <- estimate_uncertainty(
     point_nowcast_matrices = valid_nowcasts,

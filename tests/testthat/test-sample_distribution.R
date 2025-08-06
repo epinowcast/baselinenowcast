@@ -3,7 +3,7 @@ test_matrix <- matrix(c(3.7, 6.1, 5.2, 10.4), byrow = TRUE, nrow = 2)
 test_vector <- c(3.7, 6.1, 5.2, 10.4)
 uncertainty_params <- c(50, 100)
 
-test_that("sample_distribution: works with all three options for error functions", {
+test_that("sample_distribution: works with all three options for error functions", { # nolint
   result <- sample_distribution(
     pred = test_matrix,
     uncertainty_params = uncertainty_params,
@@ -54,7 +54,7 @@ test_that("sample_distribution: errors appropriately if observation model not su
   )
 })
 
-test_that("sample_distribution produces different results with different seeds", {
+test_that("sample_distribution produces different results with different seeds", { # nolint
   set.seed(123)
   result1 <- sample_distribution(
     test_vector,
@@ -259,4 +259,15 @@ test_that("sample_distribution works in realistic scenarios", {
 
   # Should be reasonably close to input means
   expect_true(all(abs(nowcast_samples - nowcast_preds) < 100))
+})
+
+test_that("sample_distribution: errors with non character", { # nolint
+  expect_error(
+    sample_distribution(
+      pred = test_matrix,
+      uncertainty_params = uncertainty_params,
+      observation_model_name = dnbinom
+    ),
+    regexp = "`observation_model_name` must be a character string"
+  )
 })

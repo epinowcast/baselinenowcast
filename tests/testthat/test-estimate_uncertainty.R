@@ -339,7 +339,7 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
   dispersion2 <- estimate_uncertainty(
     point_nowcast_matrices[1:3],
     truncated_reporting_triangles[1:3],
-    retro_reporting_triangles[1:3,
+    retro_reporting_triangles[1:3],
     aggregator = zoo::rollsum,
     aggregator_args = list(
       k = 3,

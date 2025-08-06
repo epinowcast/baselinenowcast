@@ -106,7 +106,6 @@ sample_prediction <- function(point_nowcast_matrix,
     )
   )
 
-  # rowSums(aggr_nowcast_pred_matrix, na.rm = TRUE)
   # Get only the predictions, these are ordered by reference time,
   # so horizon = 0 is last.
   mean_pred <- mean_pred_long[(max_t - n_horizons + 1):max_t]
@@ -182,7 +181,6 @@ combine_obs_with_pred <- function(predicted_counts,
       delay_aggregator_args
     )
   )
-  # rowSums(aggr_reporting_triangle, na.rm = TRUE)
 
   return(obs_counts_agg + predicted_counts)
 }

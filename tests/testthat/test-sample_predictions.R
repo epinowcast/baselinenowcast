@@ -1,19 +1,18 @@
+point_nowcast_matrix <- matrix(
+  c(
+    100, 50, 30, 20,
+    90, 45, 25, 16.8,
+    80, 40, 21.2, 19.5,
+    70, 34.5, 15.4, 9.1
+  ),
+  nrow = 4,
+  byrow = TRUE
+)
+dispersion <- c(0.8, 12.4, 9.1)
+reporting_triangle <- construct_triangle(point_nowcast_matrix)
 test_that(
   "sample_predictions: returns a dataframe with correct structure",
   {
-    point_nowcast_matrix <- matrix(
-      c(
-        100, 50, 30, 20,
-        90, 45, 25, 16.8,
-        80, 40, 21.2, 19.5,
-        70, 34.5, 15.4, 9.1
-      ),
-      nrow = 4,
-      byrow = TRUE
-    )
-    dispersion <- c(0.8, 12.4, 9.1)
-    reporting_triangle <- construct_triangle(point_nowcast_matrix)
-
     result <- sample_predictions(
       point_nowcast_matrix,
       reporting_triangle,
@@ -37,16 +36,6 @@ test_that(
 test_that(
   "sample_predictions: can handle different observation models",
   {
-    point_nowcast_matrix <- matrix(
-      c(
-        100, 50, 30, 20,
-        90, 45, 25, 16.8,
-        80, 40, 21.2, 19.5,
-        70, 34.5, 15.4, 9.1
-      ),
-      nrow = 4,
-      byrow = TRUE
-    )
     sd <- c(0.8, 12.4, 9.1)
     reporting_triangle <- construct_triangle(point_nowcast_matrix)
 
@@ -262,4 +251,23 @@ test_that("sample_predictions works with different number of draws", {
     nrow(result),
     as.integer(n_draws * nrow(point_nowcast_matrix))
   )
+})
+
+test_that("sample_predictions: errors when too many or too few uncertainty parameters", { # nolint
+  expect_error(
+    sample_predictions(
+      point_nowcast_matrix,
+      reporting_triangle,
+      dispersion[1:2],
+      draws = 10
+    ),
+    regexp = "Vector of uncertainty parameter is less than the number "
+  )
+
+  expect_error(sample_predictions(
+    point_nowcast_matrix,
+    reporting_triangle,
+    c(dispersion, rep(3, 3)),
+    draws = 10
+  ))
 })

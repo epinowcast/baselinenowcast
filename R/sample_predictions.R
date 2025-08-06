@@ -4,7 +4,9 @@
 #'   observations, with rows representing the reference times and columns
 #'   representing the delays.
 #' @param uncertainty_params Vector of uncertainty parameters ordered from
-#'   horizon 1 to the maximum horizon.
+#'   horizon 1 to the maximum horizon. Note that these will be reversed
+#'   internally to match the ordering of the `point_nowcast_matrix` (where
+#'   a horizon of 1 is the last entry).
 #' @param error_model Function that ingests a matrix of predictions and a vector
 #'    of uncertainty parameters and generates draws from the error model.
 #'    Default is `sample_distribution`.
@@ -18,6 +20,7 @@
 #' @importFrom cli cli_abort cli_warn
 #' @importFrom stats rnbinom
 #' @importFrom zoo rollapply
+#' @importFrom glue glue
 #' @examples
 #' point_nowcast_matrix <- matrix(
 #'   c(
@@ -67,6 +70,15 @@ sample_prediction <- function(point_nowcast_matrix,
         "Vector of uncertainty parameters is greater than the number ",
         "of reference times in `point_nowcast_matrix`. Check ",
         "to make sure this is expected behavior."
+      )
+    )
+  }
+  n_horizons <- sum(is.na(rowSums(reporting_triangle)))
+  if (length(uncertainty_params) < n_horizons) {
+    cli_abort(
+      message = c(
+        "Vector of uncertainty parameter is less than the number of",
+        "horizons in the `reporting_triangle`."
       )
     )
   }

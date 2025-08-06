@@ -419,7 +419,7 @@ Now that we have estimated the dispersion, we can generate a probabilistic nowca
 ```{r}
 nowcast_draws_df <- sample_nowcasts(
   point_nowcast_matrix, reporting_triangle,
-  dispersion = disp_params,
+  uncertainty_params = disp_params,
   draws = 100
 )
 

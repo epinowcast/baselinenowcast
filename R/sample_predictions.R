@@ -20,7 +20,6 @@
 #' @importFrom cli cli_abort cli_warn
 #' @importFrom stats rnbinom
 #' @importFrom zoo rollapply
-#' @importFrom glue glue
 #' @examples
 #' point_nowcast_matrix <- matrix(
 #'   c(

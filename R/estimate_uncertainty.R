@@ -33,10 +33,10 @@
 #'    `delay_aggregator`. Default is `list(na.rm = TRUE)`.
 #' @importFrom checkmate assert_integerish
 #' @importFrom cli cli_abort cli_warn
-#' @returns `uncertainty_params` Vector of length one less than the number of
-#'    columns in the latest reporting triangle, with each element
-#'    representing the estimate of the dispersion parameter for each delay d,
-#'    starting at delay d=1.
+#' @returns `uncertainty_params` Vector of length of the number of horizons,
+#'    with each element representing the estimate of the uncertainty parameter
+#'    for each horizon. The specific parameter type depends on the chosen error
+#'    model.
 #' @export
 #'
 #' @examples
@@ -173,9 +173,8 @@ estimate_uncertainty <- function(
   n_iters <- length(filtered_list_obs)
   if (n_iters < n) {
     cli_warn(
-      message = c(
+      message =
         "Only the first {n_iters} retrospective nowcast times were used."
-      )
     )
   }
 

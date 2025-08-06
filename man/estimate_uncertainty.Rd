@@ -54,10 +54,10 @@ across reference times. Default is \code{rowSums}.}
 \code{delay_aggregator}. Default is \code{list(na.rm = TRUE)}.}
 }
 \value{
-\code{uncertainty_params} Vector of length one less than the number of
-columns in the latest reporting triangle, with each element
-representing the estimate of the dispersion parameter for each delay d,
-starting at delay d=1.
+\code{uncertainty_params} Vector of length of the number of horizons,
+with each element representing the estimate of the uncertainty parameter
+for each horizon. The specific parameter type depends on the chosen error
+model.
 }
 \description{
 This function ingests a list of point nowcast matrices and a corresponding

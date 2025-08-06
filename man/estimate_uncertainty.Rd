@@ -9,8 +9,12 @@ estimate_uncertainty(
   truncated_reporting_triangles,
   retro_reporting_triangles,
   n = length(point_nowcast_matrices),
-  fun_to_aggregate = sum,
-  k = 1
+  error_model = fit_distribution,
+  error_args = list(observation_model_name = "negative binomial"),
+  ref_time_aggregator = zoo::rollsum,
+  ref_time_aggregator_args = list(k = 1, align = "right"),
+  delay_aggregator = rowSums,
+  delay_aggregator_args = list(na.rm = TRUE)
 )
 }
 \arguments{
@@ -27,20 +31,33 @@ matrices with as many rows as available given the truncation.}
 \item{n}{Integer indicating the number of reporting matrices to use to
 estimate the dispersion parameters.}
 
-\item{fun_to_aggregate}{Function that will operate along the nowcast
-vectors after summing across delays. Eventually, we can add things like
-mean, but for now since we are only providing a negative binomial
-observation model, we can only allow sum. Currently supported
-functions: \code{sum}.}
+\item{error_model}{Function that ingests a matrix of observations and a
+matrix of predictions and returns a vector that can be used to
+apply uncertainty using the same error model. Default is
+fit_distribution.}
 
-\item{k}{Integer indicating the number of reference times to apply the
-\code{fun_to_aggregate} over to create target used to compute the nowcast
-errors.}
+\item{error_args}{List of arguments needed for the specified error model.
+Default is \verb{list(observation_model_name = "negative_binomial").}}
+
+\item{ref_time_aggregator}{Function that operates along the rows (reference
+times) of the retrospective point nowcast matrix before it has been
+aggregated across columns (delays). Default is \code{zoo::rollsum}.}
+
+\item{ref_time_aggregator_args}{List of arguments needed for the specified
+\code{ref_time_aggregator}. Default is \code{list(k=1, align = "right")}.}
+
+\item{delay_aggregator}{Function that operates along the columns (delays)
+of the retrospective point nowcast matrix after it has been aggregated
+across reference times. Default is \code{rowSums}.}
+
+\item{delay_aggregator_args}{List of arguments needed for the specified
+\code{delay_aggregator}. Default is \code{list(na.rm = TRUE)}.}
 }
 \value{
-Vector of length one less than the number of columns in the
-latest reporting triangle, with each element representing the estimate
-of the dispersion parameter for each delay d, starting at delay d=1.
+\code{uncertainty_params} Vector of length of the number of horizons,
+with each element representing the estimate of the uncertainty parameter
+for each horizon. The specific parameter type depends on the chosen error
+model.
 }
 \description{
 This function ingests a list of point nowcast matrices and a corresponding
@@ -68,22 +85,25 @@ trunc_rts <- truncate_triangles(triangle, n = 2)
 retro_rts <- construct_triangles(trunc_rts)
 
 retro_nowcasts <- fill_triangles(retro_rts, n = 5)
+# Estimate dispersion parameters using default (negative binomial error
+# model on the sums
 disp_params <- estimate_uncertainty(
   point_nowcast_matrices = retro_nowcasts,
   truncated_reporting_triangles = trunc_rts,
   retro_reporting_triangles = retro_rts,
-  n = 2
 )
 disp_params
 
-# Estimate dispersion parameters from rolling sum
+# Estimate dispersion parameters from rolling mean with a normal error model
 disp_params_agg <- estimate_uncertainty(
   point_nowcast_matrices = retro_nowcasts,
   truncated_reporting_triangles = trunc_rts,
   retro_reporting_triangles = retro_rts,
   n = 2,
-  fun_to_aggregate = sum,
-  k = 2
+  error_model = fit_distribution,
+  error_args = list(observation_model_name = "normal"),
+  ref_time_aggregator = zoo::rollmean,
+  ref_time_aggregator_args = list(k = 1, align = "right")
 )
 disp_params_agg
 }

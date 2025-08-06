@@ -1,14 +1,15 @@
 test_that("sample_nowcast: returns a vector of correct length", {
   point_nowcast_matrix <- matrix(
     c(
+      10, 70, 90, 6,
       100, 50, 30, 20,
       90, 45, 25, 16.8,
       80, 40, 21.2, 19.5
     ),
-    nrow = 3,
+    nrow = 4,
     byrow = TRUE
   )
-  dispersion <- c(0.8, 12.4)
+  dispersion <- c(0.8, 12.4, 8)
   reporting_triangle <- construct_triangle(point_nowcast_matrix)
 
   result <- sample_nowcast(

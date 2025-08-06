@@ -7,9 +7,14 @@
 sample_nowcasts(
   point_nowcast_matrix,
   reporting_triangle,
-  dispersion,
+  uncertainty_params,
   draws = 1000,
-  ...
+  error_model = sample_distribution,
+  error_args = list(observation_model_name = "negative binomial"),
+  ref_time_aggregator = zoo::rollsum,
+  ref_time_aggregator_args = list(k = 1, align = "right"),
+  delay_aggregator = rowSums,
+  delay_aggregator_args = list(na.rm = TRUE)
 )
 }
 \arguments{
@@ -23,13 +28,34 @@ delays. Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row. (e.g. weekly reporting of daily data).}
 
-\item{dispersion}{Vector of dispersion parameters indexed by horizon from
-minus one to the maximum delay.}
+\item{uncertainty_params}{Vector of uncertainty parameters ordered from
+horizon 1 to the maximum horizon. Note that these will be reversed
+internally to match the ordering of the \code{point_nowcast_matrix} (where
+a horizon of 1 is the last entry).}
 
 \item{draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}
 
-\item{...}{Additional arguments pass to \code{sample_predictions()}}
+\item{error_model}{Function that ingests a matrix of predictions and a vector
+of uncertainty parameters and generates draws from the error model.
+Default is \code{sample_distribution}.}
+
+\item{error_args}{List of arguments needed for the specified error model.
+Default is \verb{list(observation_model_name = "negative_binomial").}}
+
+\item{ref_time_aggregator}{Function that operates along the rows (reference
+times) of the retrospective point nowcast matrix before it has been
+aggregated across columns (delays). Default is \code{zoo::rollsum}.}
+
+\item{ref_time_aggregator_args}{List of arguments needed for the specified
+\code{ref_time_aggregator}. Default is \code{list(k=1, align = "right")}.}
+
+\item{delay_aggregator}{Function that operates along the columns (delays)
+of the retrospective point nowcast matrix after it has been aggregated
+across reference times. Default is \code{rowSums}.}
+
+\item{delay_aggregator_args}{List of arguments needed for the specified
+\code{delay_aggregator}. Default is \code{list(na.rm = TRUE)}.}
 }
 \value{
 Dataframe containing information for multiple draws with columns

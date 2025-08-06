@@ -132,7 +132,7 @@ test_that("fit_distribution handles edge cases", {
   )
 
   expect_length(result, 1)
-  expect_true(result > 0)
+  expect_gt(result, 0)
   expect_true(is.finite(result))
 
   # Single row matrices
@@ -352,7 +352,7 @@ test_that("fit_distribution gamma distribution handles parameter constraints", {
       pred = -positive_pred,
       observation_model_name = "gamma"
     ),
-    regexp = "Observations and/or predictions must be"
+    regexp = "Observations and/or predictions must be" # nolint
   )
 })
 
@@ -382,7 +382,7 @@ test_that("fit_distribution negative binomial errors with negative values", {
       pred = mixed_pred,
       observation_model_name = "negative binomial"
     ),
-    regexp = "Observations and/or predictions must be"
+    regexp = "Observations and/or predictions must be" # nolint
   )
 })
 

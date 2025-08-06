@@ -90,7 +90,7 @@ test_that("sample_distribution produces consistent results with same seed", {
   expect_identical(result1, result2)
 })
 
-test_that("sample_distribution negative binomial has reasonable statistical properties", {
+test_that("sample_distribution negative binomial has reasonable statistical properties", { # nolint
   set.seed(123)
   mu_vals <- rep(100, 1000)
   size_vals <- rep(10, 1000)
@@ -163,7 +163,7 @@ test_that("sample_distribution handles edge cases", {
     observation_model_name = "negative binomial"
   )
   expect_length(zero_result, 3)
-  expect_true(zero_result[1] >= 0) # Can sample 0 from negative binomial with mu=0
+  expect_gte(zero_result[1], 0) # Can sample 0 from negative binomial with mu=0
 })
 
 test_that("sample_distribution handles large values", {

@@ -29,7 +29,7 @@ test_that(
     expect_true(all(c("pred_count", "time", "draw") %in% names(result)))
     expect_length(unique(result$draw), 100L)
     expect_identical(nrow(result), as.integer(100 * nrow(point_nowcast_matrix)))
-    expect_true(!all(is.na(result$pred_count)))
+    expect_false(all(is.na(result$pred_count)))
   }
 )
 

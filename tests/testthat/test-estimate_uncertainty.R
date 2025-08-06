@@ -65,8 +65,8 @@ test_that("estimate_uncertainty can handle rolling sum with k=3", {
     point_nowcast_matrices = valid_nowcasts,
     truncated_reporting_triangles = valid_trunc_rts,
     retro_reporting_triangles = valid_rts,
-    aggregator = zoo::rollsum,
-    aggregator_args = list(
+    ref_time_aggregator = zoo::rollsum,
+    ref_time_aggregator_args = list(
       k = 3,
       align = "right"
     )
@@ -131,11 +131,12 @@ test_that("estimate_uncertainty: Matrix dimension validation works", {
 test_that("estimate_uncertainty returns an estimate if passing in a NULL for a nowcast", { # nolint
   nowcasts_with_null <- list(nowcast1, NULL)
   # This should work, using only the first nowcast and first valid_trunc_rts
-  result1 <- estimate_uncertainty(
+  # Will warn that only the first one is being used
+  result1 <- expect_warning(estimate_uncertainty(
     nowcasts_with_null,
     valid_trunc_rts,
     valid_rts
-  )
+  ))
   result_to_compare <- estimate_uncertainty(
     list(nowcast1),
     list(valid_trunc_rts[[1]]),
@@ -201,7 +202,7 @@ test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
     nrow = 5,
     byrow = TRUE
   )
-
+  # Triangle 3 can't be used to generate a point nowcast
   retro_rts_list <- list(test_triangle_1, test_triangle_2, triangle3)
 
   pt_nowcast_list <- expect_message(
@@ -209,7 +210,8 @@ test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
   )
   truncated_reporting_triangles <- truncate_triangles(base_tri)
   rt_list <- construct_triangles(truncated_reporting_triangles)
-  expect_no_error(estimate_uncertainty(
+  # Since only two point nowcasts are non-null, this will warn
+  expect_warning(estimate_uncertainty(
     pt_nowcast_list,
     truncated_reporting_triangles,
     rt_list
@@ -334,14 +336,13 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
   expect_lt(dispersion[1], 500)
   expect_true(all(is.finite(dispersion)))
 
-  # Few reporting matrices can be included here because we are summing.
-
+  # Fewer reporting matrices can be included here because we are summing.
   dispersion2 <- estimate_uncertainty(
-    point_nowcast_matrices[1:3],
-    truncated_reporting_triangles[1:3],
-    retro_reporting_triangles[1:3],
-    aggregator = zoo::rollsum,
-    aggregator_args = list(
+    point_nowcast_matrices[1:4],
+    truncated_reporting_triangles[1:4],
+    retro_reporting_triangles[1:4],
+    ref_time_aggregator = zoo::rollsum,
+    ref_time_aggregator_args = list(
       k = 3,
       align = "right"
     )
@@ -354,13 +355,19 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
   expect_failure(expect_equal(dispersion, dispersion2, tol = 0.001))
 
   # We'll get a warning if we are trying to use all of them
-  expect_warning(estimate_uncertainty(
-    point_nowcast_matrices,
-    truncated_reporting_triangles,
-    retro_reporting_triangles,
-    fun_to_aggregate = sum,
-    k = 3
-  ))
+  expect_warning(
+    estimate_uncertainty(
+      point_nowcast_matrices,
+      truncated_reporting_triangles,
+      retro_reporting_triangles,
+      ref_time_aggregator = zoo::rollsum,
+      ref_time_aggregator_args = list(
+        k = 3,
+        align = "right"
+      )
+    ),
+    regexp = "Only the first 4 retrospective nowcast times were used."
+  )
 })
 
 test_that("estimate_uncertainty: returns known dispersion parameters", { # nolint
@@ -435,8 +442,8 @@ test_that("estimate_uncertainty: works with normal observation model", {
     retro_reporting_triangles = valid_rts,
     n = 2,
     error_args = list(observation_model_name = "normal"),
-    aggregator = zoo::rollmean,
-    aggregator_args = list(k = 2, align = "right")
+    ref_time_aggregator = zoo::rollmean,
+    ref_time_aggregator_args = list(k = 2, align = "right")
   )
 
   # Verify output structure
@@ -453,8 +460,8 @@ test_that("estimate_uncertainty: works with gamma observation model", {
     retro_reporting_triangles = valid_rts,
     n = 2,
     error_args = list(observation_model_name = "gamma"),
-    aggregator = zoo::rollmean,
-    aggregator_args = list(k = 2, align = "right")
+    ref_time_aggregator = zoo::rollmean,
+    ref_time_aggregator_args = list(k = 2, align = "right")
   )
 
   # Verify output structure
@@ -465,15 +472,15 @@ test_that("estimate_uncertainty: works with gamma observation model", {
 })
 
 test_that("estimate_uncertainty errors when k is too large for data", {
-  expect_error(estimate_uncertainty(
+  expect_warning(expect_error(estimate_uncertainty(
     point_nowcast_matrices = valid_nowcasts,
     truncated_reporting_triangles = valid_trunc_rts,
     retro_reporting_triangles = valid_rts,
     n = 2,
     error_args = list(observation_model_name = "gamma"),
-    aggregator = zoo::rollmean,
-    aggregator_args = list(k = 8, align = "right")
-  ))
+    ref_time_aggregator = zoo::rollmean,
+    ref_time_aggregator_args = list(k = 8, align = "right")
+  )))
 })
 test_that("estimate_uncertainty: errors appropriately if observation model not supported", { # nolint
   expect_error(

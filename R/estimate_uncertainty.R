@@ -21,11 +21,16 @@
 #'     fit_distribution.
 #' @param error_args List of arguments needed for the specified error model.
 #'     Default is `list(observation_model_name = "negative_binomial").`
-#' @param aggregator Function that operates along the rows of the retrospective
-#'    point nowcast matrix after it has been aggregated across columns (delays)
-#'    Default is `zoo::rollsum`.
-#' @param aggregator_args List of arguments needed for the specified aggregator.
-#'    Default is `list(k=1, align = "right")`.
+#' @param ref_time_aggregator Function that operates along the rows (reference
+#'    times) of the retrospective point nowcast matrix before it has been
+#'    aggregated across columns (delays). Default is `zoo::rollsum`.
+#' @param ref_time_aggregator_args List of arguments needed for the specified
+#'     `ref_time_aggregator`. Default is `list(k=1, align = "right")`.
+#' @param delay_aggregator Function that operates along the columns (delays)
+#'    of the retrospective point nowcast matrix after it has been aggregated
+#'    across reference times. Default is `rowSums`.
+#' @param delay_aggregator_args List of arguments needed for the specified
+#'    `delay_aggregator`. Default is `list(na.rm = TRUE)`.
 #' @importFrom checkmate assert_integerish
 #' @importFrom cli cli_abort cli_warn
 #' @returns `uncertainty_params` Vector of length one less than the number of
@@ -70,8 +75,8 @@
 #'   n = 2,
 #'   error_model = fit_distribution,
 #'   error_args = list(observation_model_name = "normal"),
-#'   aggregator = zoo::rollmean,
-#'   aggregator_args = list(k = 1, align = "right")
+#'   ref_time_aggregator = zoo::rollmean,
+#'   ref_time_aggregator_args = list(k = 1, align = "right")
 #' )
 #' disp_params_agg
 estimate_uncertainty <- function(
@@ -81,11 +86,13 @@ estimate_uncertainty <- function(
     n = length(point_nowcast_matrices),
     error_model = fit_distribution,
     error_args = list(observation_model_name = "negative binomial"),
-    aggregator = zoo::rollsum,
-    aggregator_args = list(
+    ref_time_aggregator = zoo::rollsum,
+    ref_time_aggregator_args = list(
       k = 1,
       align = "right"
-    )) {
+    ),
+    delay_aggregator = rowSums,
+    delay_aggregator_args = list(na.rm = TRUE)) {
   assert_integerish(n, lower = 0)
   .check_list_length(
     point_nowcast_matrices,
@@ -146,11 +153,44 @@ estimate_uncertainty <- function(
   }
 
   n_possible_horizons <- sum(is.na(rowSums(list_of_rts[[1]])))
+  # Only use the matrices that have sufficient data once aggregated,
+  # and warn user that not everything is being used
+  nrow_orig <- nrow(list_of_obs[[1]])
+  nrow_agg <- nrow(do.call(
+    ref_time_aggregator,
+    c(
+      list(list_of_obs[[1]]),
+      ref_time_aggregator_args
+    )
+  ))
+  # Rows to lose
+  rows_to_lose <- nrow_orig - nrow_agg
+  # Only use the rows that have enough rows
+  n_rows_required <- n_possible_horizons + rows_to_lose
+  filtered_list_obs <- list_of_obs[sapply(
+    list_of_obs, function(mat) nrow(mat) >= n_rows_required
+  )]
+  n_iters <- length(filtered_list_obs)
+  if (n_iters < n) {
+    cli_warn(
+      message = c(
+        "Only the first {n_iters} retrospective nowcast times were used."
+      )
+    )
+  }
+
+
   # Each row is retrospective nowcast date, each column is a horizon (i.e
   # columns are not delays, but horizons, and each cell contains a total
   # value corresponding to that horizon -- the total expected value to add
   exp_to_add <-
-    to_add_already_observed <- matrix(NA, nrow = n, ncol = n_possible_horizons)
+    to_add_already_observed <- matrix(NA,
+      nrow = n_iters,
+      ncol = n_possible_horizons
+    )
+
+
+
   for (i in seq_len(n_iters)) {
     # For each individual retrospective nowcast, extract matrices we need from
     # the corresponding elements in the list.
@@ -160,15 +200,27 @@ estimate_uncertainty <- function(
 
     # Apply the aggregation to the truncated observations, the nowcast,
     # and the reporting triangle.
-    aggr_obs <- do.call(aggregator, c(
-      list(trunc_matr_observed),
-      aggregator_args
-    ))
-    aggr_nowcast <- do.call(aggregator, c(list(nowcast_i), aggregator_args))
-    aggr_rt_obs <- do.call(aggregator, c(
-      list(triangle_observed),
-      aggregator_args
-    ))
+    aggr_obs <- do.call(
+      ref_time_aggregator,
+      c(
+        list(trunc_matr_observed),
+        ref_time_aggregator_args
+      )
+    )
+    aggr_nowcast <- do.call(
+      ref_time_aggregator,
+      c(
+        list(nowcast_i),
+        ref_time_aggregator_args
+      )
+    )
+    aggr_rt_obs <- do.call(
+      ref_time_aggregator,
+      c(
+        list(triangle_observed),
+        ref_time_aggregator_args
+      )
+    )
     max_t <- nrow(aggr_obs)
     # For each horizon, take the partial sum of the nowcasted and already
     # observed components.
@@ -186,8 +238,22 @@ estimate_uncertainty <- function(
       indices_nowcast,
       indices_obs
     )
-    exp_to_add[i, ] <- rev(rowSums(masked_nowcast, na.rm = TRUE))
-    to_add_already_observed[i, ] <- rev(rowSums(masked_obs, na.rm = TRUE))
+    # Reverse because the indices are horizons which are ordered opposite to
+    # reference times (last reference time = first horizon)
+    exp_to_add[i, ] <- rev(do.call(
+      delay_aggregator,
+      c(
+        list(masked_nowcast),
+        delay_aggregator_args
+      )
+    ))
+    to_add_already_observed[i, ] <- rev(do.call(
+      delay_aggregator,
+      c(
+        list(masked_obs),
+        delay_aggregator_args
+      )
+    ))
   }
 
   if (!any(exp_to_add != 0 & !is.na(exp_to_add))) {

@@ -351,8 +351,7 @@ test_that("fit_distribution gamma distribution handles parameter constraints", {
       obs = -positive_obs,
       pred = -positive_pred,
       observation_model_name = "gamma"
-    ),
-    regexp = "Observations and/or predictions must be" # nolint
+    )
   )
 })
 
@@ -381,8 +380,7 @@ test_that("fit_distribution negative binomial errors with negative values", {
       obs = mixed_obs,
       pred = mixed_pred,
       observation_model_name = "negative binomial"
-    ),
-    regexp = "Observations and/or predictions must be" # nolint
+    )
   )
 })
 

@@ -21,13 +21,6 @@ representing the time points of reference and columns representing the
 delays. Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row. (e.g. weekly reporting of daily data).}
-
-\item{aggregator}{Function that operates along the rows of the retrospective
-point nowcast matrix after it has been aggregated across columns (delays)
-Default is \code{zoo::rollsum}.}
-
-\item{aggregator_args}{List of arguments needed for the specified aggregator.
-Default is \code{list(k=1, align = "right")}.}
 }
 \value{
 A vector of predicted counts at each reference time

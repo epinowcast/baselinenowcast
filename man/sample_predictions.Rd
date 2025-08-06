@@ -28,7 +28,9 @@ Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row. (e.g. weekly reporting of daily data).}
 
 \item{uncertainty_params}{Vector of uncertainty parameters ordered from
-horizon 1 to the maximum horizon.}
+horizon 1 to the maximum horizon. Note that these will be reversed
+internally to match the ordering of the \code{point_nowcast_matrix} (where
+a horizon of 1 is the last entry).}
 
 \item{draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}
@@ -39,13 +41,6 @@ Default is \code{sample_distribution}.}
 
 \item{error_args}{List of arguments needed for the specified error model.
 Default is \verb{list(observation_model_name = "negative_binomial").}}
-
-\item{aggregator}{Function that operates along the rows of the retrospective
-point nowcast matrix after it has been aggregated across columns (delays)
-Default is \code{zoo::rollsum}.}
-
-\item{aggregator_args}{List of arguments needed for the specified aggregator.
-Default is \code{list(k=1, align = "right")}.}
 }
 \value{
 Dataframe containing the predicted point nowcast vectors indexed by

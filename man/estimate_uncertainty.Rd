@@ -11,8 +11,10 @@ estimate_uncertainty(
   n = length(point_nowcast_matrices),
   error_model = fit_distribution,
   error_args = list(observation_model_name = "negative binomial"),
-  aggregator = zoo::rollsum,
-  aggregator_args = list(k = 1, align = "right")
+  ref_time_aggregator = zoo::rollsum,
+  ref_time_aggregator_args = list(k = 1, align = "right"),
+  delay_aggregator = rowSums,
+  delay_aggregator_args = list(na.rm = TRUE)
 )
 }
 \arguments{
@@ -31,17 +33,25 @@ estimate the dispersion parameters.}
 
 \item{error_model}{Function that ingests a matrix of observations and a
 matrix of predictions and returns a vector that can be used to
-apply uncertainty using the same error model. Default is fit_distribution.}
+apply uncertainty using the same error model. Default is
+fit_distribution.}
 
 \item{error_args}{List of arguments needed for the specified error model.
 Default is \verb{list(observation_model_name = "negative_binomial").}}
 
-\item{aggregator}{Function that operates along the rows of the retrospective
-point nowcast matrix after it has been aggregated across columns (delays)
-Default is \code{zoo::rollsum}.}
+\item{ref_time_aggregator}{Function that operates along the rows (reference
+times) of the retrospective point nowcast matrix before it has been
+aggregated across columns (delays). Default is \code{zoo::rollsum}.}
 
-\item{aggregator_args}{List of arguments needed for the specified aggregator.
-Default is \code{list(k=1, align = "right")}.}
+\item{ref_time_aggregator_args}{List of arguments needed for the specified
+\code{ref_time_aggregator}. Default is \code{list(k=1, align = "right")}.}
+
+\item{delay_aggregator}{Function that operates along the columns (delays)
+of the retrospective point nowcast matrix after it has been aggregated
+across reference times. Default is \code{rowSums}.}
+
+\item{delay_aggregator_args}{List of arguments needed for the specified
+\code{delay_aggregator}. Default is \code{list(na.rm = TRUE)}.}
 }
 \value{
 \code{uncertainty_params} Vector of length one less than the number of
@@ -92,8 +102,8 @@ disp_params_agg <- estimate_uncertainty(
   n = 2,
   error_model = fit_distribution,
   error_args = list(observation_model_name = "normal"),
-  aggregator = zoo::rollmean,
-  aggregator_args = list(k = 1, align = "right")
+  ref_time_aggregator = zoo::rollmean,
+  ref_time_aggregator_args = list(k = 1, align = "right")
 )
 disp_params_agg
 }

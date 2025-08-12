@@ -215,7 +215,8 @@ estimate_uncertainty <- function(
 
     indices_nowcast <- is.na(aggr_rt_obs |>
       .filter_to_recent_horizons(n_possible_horizons))
-    indices_obs <- !is.na(.filter_to_recent_horizons(n_possible_horizons))
+    indices_obs <- !is.na(aggr_obs |>
+      .filter_to_recent_horizons(n_possible_horizons))
     masked_nowcast <- aggr_nowcast |>
       .filter_to_recent_horizons(n_possible_horizons) |>
       .apply_mask(indices_nowcast, indices_obs)

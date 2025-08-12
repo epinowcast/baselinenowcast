@@ -63,7 +63,7 @@
 #' disp_params <- estimate_uncertainty(
 #'   point_nowcast_matrices = retro_nowcasts,
 #'   truncated_reporting_triangles = trunc_rts,
-#'   retro_reporting_triangles = retro_rts,
+#'   retro_reporting_triangles = retro_rts
 #' )
 #' disp_params
 #'
@@ -86,13 +86,8 @@ estimate_uncertainty <- function(
     n = length(point_nowcast_matrices),
     error_model = fit_distribution,
     error_args = list(observation_model_name = "negative binomial"),
-    ref_time_aggregator = zoo::rollsum,
-    ref_time_aggregator_args = list(
-      k = 1,
-      align = "right"
-    ),
-    delay_aggregator = rowSums,
-    delay_aggregator_args = list(na.rm = TRUE)) {
+    ref_time_aggregator = ref_time_aggregator(),
+    delay_aggregator = delay_aggregator()) {
   assert_integerish(n, lower = 0)
   .check_list_length(
     point_nowcast_matrices,
@@ -156,8 +151,7 @@ estimate_uncertainty <- function(
   n_iters <- .calc_n_retro_nowcast_times(
     list_of_obs,
     n_possible_horizons,
-    ref_time_aggregator,
-    ref_time_aggregator_args
+    ref_time_aggregator
   )
 
   if (n_iters < n) {
@@ -188,27 +182,9 @@ estimate_uncertainty <- function(
 
     # Apply the aggregation to the truncated observations, the nowcast,
     # and the reporting triangle.
-    aggr_obs <- do.call(
-      ref_time_aggregator,
-      c(
-        list(trunc_matr_observed),
-        ref_time_aggregator_args
-      )
-    )
-    aggr_nowcast <- do.call(
-      ref_time_aggregator,
-      c(
-        list(nowcast_i),
-        ref_time_aggregator_args
-      )
-    )
-    aggr_rt_obs <- do.call(
-      ref_time_aggregator,
-      c(
-        list(triangle_observed),
-        ref_time_aggregator_args
-      )
-    )
+    aggr_obs <- .apply_aggregator(ref_time_aggregator, trunc_matr_observed)
+    aggr_nowcast <- .apply_aggregator(ref_time_aggregator, nowcast_i)
+    aggr_rt_obs <- .apply_aggregator(ref_time_aggregator, triangle_observed)
 
     # For each horizon, take the partial sum of the nowcasted and already
     # observed components.
@@ -225,19 +201,14 @@ estimate_uncertainty <- function(
       .apply_mask(indices_nowcast, indices_obs)
     # Reverse because the indices are horizons which are ordered opposite to
     # reference times (last reference time = first horizon)
-    exp_to_add[i, ] <- rev(do.call(
+    exp_to_add[i, ] <- rev(.apply_aggregator(
       delay_aggregator,
-      c(
-        list(masked_nowcast),
-        delay_aggregator_args
-      )
+      masked_nowcast
     ))
-    to_add_already_observed[i, ] <- rev(do.call(
+
+    to_add_already_observed[i, ] <- rev(.apply_aggregator(
       delay_aggregator,
-      c(
-        list(masked_obs),
-        delay_aggregator_args
-      )
+      masked_obs
     ))
   }
 
@@ -265,6 +236,56 @@ estimate_uncertainty <- function(
   return(uncertainty_params)
 }
 
+
+
+delay_aggregator <- function(fun = rowSums, ...) {
+  args <- list(...)
+  if (identical(fun, rowSums) && !"na.rm" %in% names(args)) {
+    args$na.rm <- TRUE
+  }
+
+  # Return a list containing the function and its arguments
+  list_w_fxn <- structure(
+    list(
+      fun = fun,
+      args = args
+    ),
+    class = "aggregator"
+  )
+  return(list_w_fxn)
+}
+
+# Pass-through aggregator functions
+ref_time_aggregator <- function(fun = .no_aggregation, ...) {
+  # Store the function and its arguments
+  args <- list(...)
+
+  # Return a list containing the function and its arguments
+  list_w_fxn <- structure(
+    list(
+      fun = fun,
+      args = args
+    ),
+    class = "aggregator"
+  )
+  return(list_w_fxn)
+}
+
+.no_aggregation <- function(x, ...) {
+  return(x)
+}
+
+# Helper function to apply aggregator objects
+.apply_aggregator <- function(aggregator, data) {
+  if (inherits(aggregator, "aggregator")) {
+    do.call(aggregator$fun, c(list(data), aggregator$args))
+  } else {
+    # Fallback for backward compatibility
+    aggregator(data)
+  }
+}
+
+
 #' Calculate the number of retrospective nowcast times that can be used after
 #'    aggregating
 #'
@@ -278,17 +299,14 @@ estimate_uncertainty <- function(
 #'    aggregated to be used to generate a retrospective point nowcast.
 .calc_n_retro_nowcast_times <- function(list_of_obs,
                                         n_possible_horizons,
-                                        ref_time_aggregator,
-                                        ref_time_aggregator_args) {
+                                        ref_time_aggregator) {
   # Only use the matrices that have sufficient data once aggregated
   nrow_orig <- nrow(list_of_obs[[1]])
-  nrow_agg <- nrow(do.call(
+  nrow_agg <- nrow(.apply_aggregator(
     ref_time_aggregator,
-    c(
-      list(list_of_obs[[1]]),
-      ref_time_aggregator_args
-    )
+    list_of_obs[[1]]
   ))
+
   # Rows to lose
   rows_to_lose <- nrow_orig - nrow_agg
   # Only use the rows that have enough rows

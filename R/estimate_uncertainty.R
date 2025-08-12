@@ -220,23 +220,19 @@ estimate_uncertainty <- function(
         ref_time_aggregator_args
       )
     )
-    max_t <- nrow(aggr_obs)
+
     # For each horizon, take the partial sum of the nowcasted and already
     # observed components.
-    indices_nowcast <- is.na(
-      aggr_rt_obs[(max_t - n_possible_horizons + 1):max_t, ]
-    )
-    indices_obs <- !is.na(aggr_obs[(max_t - n_possible_horizons + 1):max_t, ])
-    masked_nowcast <- .apply_mask(
-      aggr_nowcast[(max_t - n_possible_horizons + 1):max_t, ],
-      indices_nowcast,
-      indices_obs
-    )
-    masked_obs <- .apply_mask(
-      aggr_obs[(max_t - n_possible_horizons + 1):max_t, ],
-      indices_nowcast,
-      indices_obs
-    )
+
+    indices_nowcast <- is.na(aggr_rt_obs |>
+      .filter_to_recent_horizons(n_possible_horizons))
+    indices_obs <- !is.na(.filter_to_recent_horizons(n_possible_horizons))
+    masked_nowcast <- aggr_nowcast |>
+      .filter_to_recent_horizons(n_possible_horizons) |>
+      .apply_mask(indices_nowcast, indices_obs)
+    masked_obs <- aggr_obs |>
+      .filter_to_recent_horizons(n_possible_horizons) |>
+      .apply_mask(indices_nowcast, indices_obs)
     # Reverse because the indices are horizons which are ordered opposite to
     # reference times (last reference time = first horizon)
     exp_to_add[i, ] <- rev(do.call(
@@ -277,6 +273,21 @@ estimate_uncertainty <- function(
   )
 
   return(uncertainty_params)
+}
+
+#' Filter to recent horizons
+#'
+#' @param matrix Matrix containing all the rows
+#' @param n_possible_horizons Number of rows we want starting from the final
+#'    row
+#'
+#' @returns `bottom_matrix` Matrix containing the last `n_possible_horizons`
+#'    rows of the matrix.
+.filter_to_recent_horizons <- function(matrix,
+                                       n_possible_horizons) {
+  max_t <- nrow(matrix)
+  bottom_matrix <- matrix[(max_t - n_possible_horizons + 1):max_t, ]
+  return(bottom_matrix)
 }
 
 #' Apply mask to extract the elements of the matrix that are both true

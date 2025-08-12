@@ -45,7 +45,9 @@ Imports:
   cli,
   checkmate,
   stats,
-  zoo
+  zoo,
+  lubridate,
+  utils
 Suggests:
     epinowcast,
     bookdown,

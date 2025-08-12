@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimate_uncertainty.R
 \name{estimate_uncertainty}
 \alias{estimate_uncertainty}
-\title{Estimate dispersion parameters}
+\title{Estimate uncertainty parameters}
 \usage{
 estimate_uncertainty(
   point_nowcast_matrices,
@@ -62,7 +62,7 @@ model.
 \description{
 This function ingests a list of point nowcast matrices and a corresponding
 list of truncated reporting matrices and uses both to estimate a
-vector of negative binomial dispersion parameters from the observations
+vector of uncertainty parameters from the observations
 and estimates at each horizon, starting at 0 up until the max delay
 number of horizons.
 }

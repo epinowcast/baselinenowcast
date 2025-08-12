@@ -1,8 +1,8 @@
-#' Estimate dispersion parameters
+#' Estimate uncertainty parameters
 #'
 #' This function ingests a list of point nowcast matrices and a corresponding
 #'    list of truncated reporting matrices and uses both to estimate a
-#'    vector of negative binomial dispersion parameters from the observations
+#'    vector of uncertainty parameters from the observations
 #'    and estimates at each horizon, starting at 0 up until the max delay
 #'    number of horizons.
 #'
@@ -153,24 +153,13 @@ estimate_uncertainty <- function(
   }
 
   n_possible_horizons <- sum(is.na(rowSums(list_of_rts[[1]])))
-  # Only use the matrices that have sufficient data once aggregated,
-  # and warn user that not everything is being used
-  nrow_orig <- nrow(list_of_obs[[1]])
-  nrow_agg <- nrow(do.call(
+  n_iters <- .calc_n_retro_nowcast_times(
+    list_of_obs,
+    n_possible_horizons,
     ref_time_aggregator,
-    c(
-      list(list_of_obs[[1]]),
-      ref_time_aggregator_args
-    )
-  ))
-  # Rows to lose
-  rows_to_lose <- nrow_orig - nrow_agg
-  # Only use the rows that have enough rows
-  n_rows_required <- n_possible_horizons + rows_to_lose
-  filtered_list_obs <- list_of_obs[sapply(
-    list_of_obs, function(mat) nrow(mat) >= n_rows_required
-  )]
-  n_iters <- length(filtered_list_obs)
+    ref_time_aggregator_args
+  )
+
   if (n_iters < n) {
     cli_warn(
       message =
@@ -273,6 +262,41 @@ estimate_uncertainty <- function(
   )
 
   return(uncertainty_params)
+}
+
+#' Calculate the number of retrospective nowcast times that can be used after
+#'    aggregating
+#'
+#' @param list_of_obs List of matrices of truncated reporting triangles
+#' @param n_possible_horizons Integer indicating the number of horizons in the
+#'     retrospective reporting triangle.
+#' @inheritParams estimate_uncertainty
+#'
+#' @returns `n_iters` Integer indicating the number of iterations, or
+#'    number of retrospective nowcast times, that have sufficient data once
+#'    aggregated to be used to generate a retrospective point nowcast.
+.calc_n_retro_nowcast_times <- function(list_of_obs,
+                                        n_possible_horizons,
+                                        ref_time_aggregator,
+                                        ref_time_aggregator_args) {
+  # Only use the matrices that have sufficient data once aggregated
+  nrow_orig <- nrow(list_of_obs[[1]])
+  nrow_agg <- nrow(do.call(
+    ref_time_aggregator,
+    c(
+      list(list_of_obs[[1]]),
+      ref_time_aggregator_args
+    )
+  ))
+  # Rows to lose
+  rows_to_lose <- nrow_orig - nrow_agg
+  # Only use the rows that have enough rows
+  n_rows_required <- n_possible_horizons + rows_to_lose
+  filtered_list_obs <- list_of_obs[sapply(
+    list_of_obs, function(mat) nrow(mat) >= n_rows_required
+  )]
+  n_iters <- length(filtered_list_obs)
+  return(n_iters)
 }
 
 #' Filter to recent horizons

@@ -75,8 +75,11 @@
 #'   n = 2,
 #'   error_model = fit_distribution,
 #'   error_args = list(observation_model_name = "normal"),
-#'   ref_time_aggregator = zoo::rollmean,
-#'   ref_time_aggregator_args = list(k = 1, align = "right")
+#'   ref_time_aggregator = ref_time_aggregator_default(
+#'     fun = zoo::rollmean,
+#'     k = 1,
+#'     align = "right"
+#'   )
 #' )
 #' disp_params_agg
 estimate_uncertainty <- function(
@@ -86,8 +89,8 @@ estimate_uncertainty <- function(
     n = length(point_nowcast_matrices),
     error_model = fit_distribution,
     error_args = list(observation_model_name = "negative binomial"),
-    ref_time_aggregator = ref_time_aggregator(),
-    delay_aggregator = delay_aggregator()) {
+    ref_time_aggregator = ref_time_aggregator_default(),
+    delay_aggregator = delay_aggregator_default()) {
   assert_integerish(n, lower = 0)
   .check_list_length(
     point_nowcast_matrices,
@@ -238,7 +241,18 @@ estimate_uncertainty <- function(
 
 
 
-delay_aggregator <- function(fun = rowSums, ...) {
+#' Delay aggregator default function
+#'
+#' @param fun Function to aggregate across columns (delays) of the reporting
+#'    triangle. Default is `rowSums`.
+#' @param ... Additional arguments passed to the function
+#'
+#' @returns Object of class aggregator containing functions and arguments
+#' @export
+#'
+#' @examples
+#' delay_aggregator()
+delay_aggregator_default <- function(fun = rowSums, ...) {
   args <- list(...)
   if (identical(fun, rowSums) && !"na.rm" %in% names(args)) {
     args$na.rm <- TRUE
@@ -255,8 +269,19 @@ delay_aggregator <- function(fun = rowSums, ...) {
   return(list_w_fxn)
 }
 
-# Pass-through aggregator functions
-ref_time_aggregator <- function(fun = .no_aggregation, ...) {
+#' Reference time aggregator default function
+#'
+#' @param fun Function to aggregate across reference times of the reporting
+#'    triangle, default is `identity` which returns what is passed in.
+#' @param ... Additional arguments passed to the function
+#'
+#' @returns Object of class aggregator containing functions and arguments
+#' @export
+#'
+#' @examples
+#' ref_time_aggregator()
+ref_time_aggregator_default <- function(fun = identity,
+                                        ...) {
   # Store the function and its arguments
   args <- list(...)
 
@@ -271,11 +296,13 @@ ref_time_aggregator <- function(fun = .no_aggregation, ...) {
   return(list_w_fxn)
 }
 
-.no_aggregation <- function(x, ...) {
-  return(x)
-}
 
-# Helper function to apply aggregator objects
+#' Internal helper function to apply aggregator to data
+#'
+#' @param aggregator Object of class aggregator.
+#' @param data Vector or matrix to be aggregates
+#'
+#' @returns Aggregated data
 .apply_aggregator <- function(aggregator, data) {
   if (inherits(aggregator, "aggregator")) {
     do.call(aggregator$fun, c(list(data), aggregator$args))

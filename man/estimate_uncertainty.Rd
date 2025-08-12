@@ -11,10 +11,8 @@ estimate_uncertainty(
   n = length(point_nowcast_matrices),
   error_model = fit_distribution,
   error_args = list(observation_model_name = "negative binomial"),
-  ref_time_aggregator = zoo::rollsum,
-  ref_time_aggregator_args = list(k = 1, align = "right"),
-  delay_aggregator = rowSums,
-  delay_aggregator_args = list(na.rm = TRUE)
+  ref_time_aggregator = ref_time_aggregator_default(),
+  delay_aggregator = delay_aggregator_default()
 )
 }
 \arguments{
@@ -43,12 +41,12 @@ Default is \verb{list(observation_model_name = "negative_binomial").}}
 times) of the retrospective point nowcast matrix before it has been
 aggregated across columns (delays). Default is \code{zoo::rollsum}.}
 
-\item{ref_time_aggregator_args}{List of arguments needed for the specified
-\code{ref_time_aggregator}. Default is \code{list(k=1, align = "right")}.}
-
 \item{delay_aggregator}{Function that operates along the columns (delays)
 of the retrospective point nowcast matrix after it has been aggregated
 across reference times. Default is \code{rowSums}.}
+
+\item{ref_time_aggregator_args}{List of arguments needed for the specified
+\code{ref_time_aggregator}. Default is \code{list(k=1, align = "right")}.}
 
 \item{delay_aggregator_args}{List of arguments needed for the specified
 \code{delay_aggregator}. Default is \code{list(na.rm = TRUE)}.}
@@ -90,7 +88,7 @@ retro_nowcasts <- fill_triangles(retro_rts, n = 5)
 disp_params <- estimate_uncertainty(
   point_nowcast_matrices = retro_nowcasts,
   truncated_reporting_triangles = trunc_rts,
-  retro_reporting_triangles = retro_rts,
+  retro_reporting_triangles = retro_rts
 )
 disp_params
 
@@ -102,8 +100,11 @@ disp_params_agg <- estimate_uncertainty(
   n = 2,
   error_model = fit_distribution,
   error_args = list(observation_model_name = "normal"),
-  ref_time_aggregator = zoo::rollmean,
-  ref_time_aggregator_args = list(k = 1, align = "right")
+  ref_time_aggregator = ref_time_aggregator_default(
+    fun = zoo::rollmean,
+    k = 1,
+    align = "right"
+  )
 )
 disp_params_agg
 }

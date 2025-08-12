@@ -8,8 +8,7 @@ aggregating}
 .calc_n_retro_nowcast_times(
   list_of_obs,
   n_possible_horizons,
-  ref_time_aggregator,
-  ref_time_aggregator_args
+  ref_time_aggregator
 )
 }
 \arguments{
@@ -21,9 +20,6 @@ retrospective reporting triangle.}
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
 aggregated across columns (delays). Default is \code{zoo::rollsum}.}
-
-\item{ref_time_aggregator_args}{List of arguments needed for the specified
-\code{ref_time_aggregator}. Default is \code{list(k=1, align = "right")}.}
 }
 \value{
 \code{n_iters} Integer indicating the number of iterations, or

@@ -1,5 +1,5 @@
 test_that(
-  "get_nowcast_pred_draws: returns a dataframe with correct structure",
+  "sample_predictions: returns a dataframe with correct structure",
   {
     point_nowcast_matrix <- matrix(
       c(
@@ -12,9 +12,9 @@ test_that(
       byrow = TRUE
     )
     dispersion <- c(0.8, 12.4, 9.1)
-    reporting_triangle <- generate_triangle(point_nowcast_matrix)
+    reporting_triangle <- construct_triangle(point_nowcast_matrix)
 
-    result <- get_nowcast_pred_draws(
+    result <- sample_predictions(
       point_nowcast_matrix, reporting_triangle, dispersion,
       draws = 100
     )
@@ -31,7 +31,7 @@ test_that(
   }
 )
 
-test_that("get_nowcast_pred_draws: draws are distinct and properly indexed", {
+test_that("sample_predictions: draws are distinct and properly indexed", {
   # Setup test data
   point_nowcast_matrix <- matrix(
     c(
@@ -43,12 +43,12 @@ test_that("get_nowcast_pred_draws: draws are distinct and properly indexed", {
     byrow = TRUE
   )
   dispersion <- c(0.8, 12.4)
-  reporting_triangle <- generate_triangle(point_nowcast_matrix, structure = 2)
+  reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
   n_draws <- 5
 
   # Force seed for reproducibility
   set.seed(123)
-  result <- get_nowcast_pred_draws(
+  result <- sample_predictions(
     point_nowcast_matrix,
     reporting_triangle,
     dispersion,
@@ -86,7 +86,7 @@ test_that("get_nowcast_pred_draws: draws are distinct and properly indexed", {
   expect_gt(distinct_draws, expected_pairs / 2)
 })
 
-test_that("get_nowcast_pred_draws: time index is correctly assigned", {
+test_that("sample_predictions: time index is correctly assigned", {
   # Setup test data
   point_nowcast_matrix <- matrix(
     c(
@@ -98,10 +98,10 @@ test_that("get_nowcast_pred_draws: time index is correctly assigned", {
     byrow = TRUE
   )
   dispersion <- c(0.8, 12.4)
-  reporting_triangle <- generate_triangle(point_nowcast_matrix, structure = 2)
+  reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
   n_draws <- 3
 
-  result <- get_nowcast_pred_draws(
+  result <- sample_predictions(
     point_nowcast_matrix,
     reporting_triangle,
     dispersion,
@@ -120,7 +120,7 @@ test_that("get_nowcast_pred_draws: time index is correctly assigned", {
   }
 })
 
-test_that("get_nowcast_pred_draws works with different number of draws", {
+test_that("sample_predictions works with different number of draws", {
   # Setup test data
   point_nowcast_matrix <- matrix(
     c(
@@ -131,10 +131,10 @@ test_that("get_nowcast_pred_draws works with different number of draws", {
     byrow = TRUE
   )
   dispersion <- c(0.8, 0.2)
-  reporting_triangle <- generate_triangle(point_nowcast_matrix, structure = 2)
+  reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
   n_draws <- 100
 
-  result <- get_nowcast_pred_draws(
+  result <- sample_predictions(
     point_nowcast_matrix,
     reporting_triangle,
     dispersion,

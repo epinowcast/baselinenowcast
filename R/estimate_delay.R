@@ -38,13 +38,13 @@
 #'   nrow = 5,
 #'   byrow = TRUE
 #' )
-#' delay_pmf <- get_delay_estimate(
+#' delay_pmf <- estimate_delay(
 #'   reporting_triangle = triangle,
 #'   max_delay = 3,
 #'   n = 4
 #' )
 #' delay_pmf
-get_delay_estimate <- function(
+estimate_delay <- function(
     reporting_triangle,
     max_delay = ncol(reporting_triangle) - 1,
     n = nrow(reporting_triangle)) {
@@ -59,13 +59,14 @@ get_delay_estimate <- function(
   trunc_triangle <- .prepare_triangle(reporting_triangle, max_delay, n)
 
   # Fill in missing values in the triangle
-  expectation <- .fill_triangle(trunc_triangle)
+  expectation <- .chainladder_fill_triangle(trunc_triangle)
 
   # Calculate probability mass function from filled triangle
   pmf <- .calculate_pmf(expectation)
 
   return(pmf)
 }
+
 
 #' Prepare the triangle by truncating and handling negative values
 #'
@@ -81,12 +82,13 @@ get_delay_estimate <- function(
   return(rep_tri)
 }
 
-#' Fill in missing values in the reporting triangle
+#' Fill in missing values in the reporting triangle using the iterative
+#'    "chainladder" method
 #'
 #' @param rep_tri Prepared reporting triangle
 #' @return Matrix with imputed values for missing entries
 #' @noRd
-.fill_triangle <- function(rep_tri) {
+.chainladder_fill_triangle <- function(rep_tri) {
   n_delays <- ncol(rep_tri)
   n_dates <- nrow(rep_tri)
   expectation <- rep_tri

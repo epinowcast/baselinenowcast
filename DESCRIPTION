@@ -53,12 +53,14 @@ Suggests:
     bookdown,
     dplyr,
     tidyr,
+    readr,
     ggplot2,
     spelling,
     rmarkdown,
     testthat (>= 3.1.9),
     usethis,
     withr,
+    lubridate,
     knitr
 Encoding: UTF-8
 Language: en-GB

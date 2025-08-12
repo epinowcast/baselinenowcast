@@ -6,12 +6,12 @@
 #'    and estimates at each horizon, starting at 0 up until the max delay
 #'    number of horizons.
 #'
-#' @param pt_nowcast_mat_list List of point nowcast matrices where rows
+#' @param point_nowcast_matrices List of point nowcast matrices where rows
 #'    represent reference time points and columns represent delays.
-#' @param trunc_rep_tri_list List of truncated reporting matrices,
+#' @param truncated_reporting_triangles List of truncated reporting matrices,
 #'    containing all observations as of the latest reference time. Elements of
-#'    list are paired with elements of `pt_nowcast_mat_list`.
-#' @param reporting_triangle_list List of `n` truncated reporting triangle
+#'    list are paired with elements of `point_nowcast_matrices`.
+#' @param retro_reporting_triangles List of `n` truncated reporting triangle
 #'   matrices with as many rows as available given the truncation.
 #' @param n Integer indicating the number of reporting matrices to use to
 #'    estimate the dispersion parameters.
@@ -46,51 +46,57 @@
 #' )
 #'
 #' trunc_rts <- truncate_triangles(triangle, n = 2)
-#' retro_rts <- generate_triangles(trunc_rts)
+#' retro_rts <- construct_triangles(trunc_rts)
 #'
-#' retro_nowcasts <- generate_pt_nowcast_mat_list(retro_rts, n = 5)
-#' disp_params <- estimate_dispersion(
-#'   pt_nowcast_mat_list = retro_nowcasts,
-#'   trunc_rep_tri_list = trunc_rts,
-#'   reporting_triangle_list = retro_rts,
+#' retro_nowcasts <- fill_triangles(retro_rts, n = 5)
+#' disp_params <- estimate_uncertainty(
+#'   point_nowcast_matrices = retro_nowcasts,
+#'   truncated_reporting_triangles = trunc_rts,
+#'   retro_reporting_triangles = retro_rts,
 #'   n = 2
 #' )
 #' disp_params
 #'
 #' # Estimate dispersion parameters from rolling sum
-#' disp_params_agg <- estimate_dispersion(
-#'   pt_nowcast_mat_list = retro_nowcasts,
-#'   trunc_rep_tri_list = trunc_rts,
-#'   reporting_triangle_list = retro_rts,
+#' disp_params_agg <- estimate_uncertainty(
+#'   point_nowcast_matrices = retro_nowcasts,
+#'   truncated_reporting_triangles = trunc_rts,
+#'   retro_reporting_triangles = retro_rts,
 #'   n = 2,
 #'   fun_to_aggregate = sum,
 #'   k = 2
 #' )
 #' disp_params_agg
-estimate_dispersion <- function(
-    pt_nowcast_mat_list,
-    trunc_rep_tri_list,
-    reporting_triangle_list,
-    n = length(pt_nowcast_mat_list),
+estimate_uncertainty <- function(
+    point_nowcast_matrices,
+    truncated_reporting_triangles,
+    retro_reporting_triangles,
+    n = length(point_nowcast_matrices),
     fun_to_aggregate = sum,
     k = 1) {
   .validate_aggregation_function(fun_to_aggregate)
   assert_integerish(n, lower = 0)
-  .check_list_length(pt_nowcast_mat_list, "pt_nowcast_mat_list", n)
-  .check_list_length(trunc_rep_tri_list, "trunc_rep_tri_list", n)
   .check_list_length(
-    reporting_triangle_list,
-    "reporting_triangle_list",
+    point_nowcast_matrices,
+    "point_nowcast_matrices", n
+  )
+  .check_list_length(
+    truncated_reporting_triangles,
+    "truncated_reporting_triangles", n
+  )
+  .check_list_length(
+    retro_reporting_triangles,
+    "retro_reporting_triangles",
     n,
     empty_check = FALSE
   )
 
   # Truncate to only n nowcasts and extract only non-null elements of both lists
-  non_null_indices <- which(!sapply(pt_nowcast_mat_list[1:n], is.null))
+  non_null_indices <- which(!sapply(point_nowcast_matrices[1:n], is.null))
   n_iters <- length(non_null_indices)
-  list_of_ncs <- pt_nowcast_mat_list[non_null_indices]
-  list_of_obs <- trunc_rep_tri_list[non_null_indices]
-  list_of_rts <- reporting_triangle_list[non_null_indices]
+  list_of_ncs <- point_nowcast_matrices[non_null_indices]
+  list_of_obs <- truncated_reporting_triangles[non_null_indices]
+  list_of_rts <- retro_reporting_triangles[non_null_indices]
   if (n_iters == 0) {
     cli_abort(
       message = c(
@@ -108,13 +114,13 @@ estimate_dispersion <- function(
   if (any(sapply(list_of_ncs, anyNA))) {
     cli_abort(
       message =
-        "`pt_nowcast_mat_list` contains NAs"
+        "`point_nowcast_matrices` contains NAs"
     )
   }
   if (!any(sapply(list_of_obs, anyNA))) {
     cli_warn(
       message =
-        "`trunc_rep_tri_list` does not contain any NAs"
+        "`truncated_reporting_triangles` does not contain any NAs"
     )
   }
   # Check that the sets of matrices are the same dimensions
@@ -123,15 +129,14 @@ estimate_dispersion <- function(
   all_identical <- all(mapply(identical, dims_ncs, dims_obs))
   if (!all_identical) {
     cli_abort(message = c(
-      "Dimensions of the first `n` matrices in `pt_nowcast_mat_list` and ",
-      "`trunc_rep_tri_list` are not the same."
+      "Dimensions of the first `n` matrices in `point_nowcast_matrices` and ",
+      "`truncated_reporting_triangles` are not the same."
     ))
   }
 
-
-  n_possible_horizons <- ncol(list_of_ncs[[1]]) - 1
+  n_possible_horizons <- sum(is.na(rowSums(list_of_rts[[1]])))
   # Each row is retrospective nowcast date, each column is a horizon (i.e
-  # columns are not delays, but hoirzons, and each cell contains a total
+  # columns are not delays, but horizons, and each cell contains a total
   # value corresponding to that horizon -- the total expected value to add
   exp_to_add <-
     to_add_already_observed <- matrix(NA, nrow = n, ncol = n_possible_horizons)

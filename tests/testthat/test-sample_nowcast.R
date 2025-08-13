@@ -1,4 +1,4 @@
-test_that("sample_nowcast: returns a vector of correct length", {
+test_that("sample_nowcast: returns a matrix of correct length", {
   point_nowcast_matrix <- matrix(
     c(
       10, 70, 90, 6,
@@ -18,6 +18,8 @@ test_that("sample_nowcast: returns a vector of correct length", {
     dispersion
   )
 
+  # Result is a matrix not a vector, since delay aggregator will not
+  # always turn this into a vector (at least it doesn't have to)
   expect_length(result, nrow(point_nowcast_matrix))
-  expect_is(result, "numeric")
+  expect_is(result, "matrix")
 })

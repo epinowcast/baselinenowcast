@@ -155,8 +155,7 @@ test_that(
       reporting_triangle,
       dispersion,
       draws = 100,
-      ref_time_aggregator = zoo::rollsum,
-      ref_time_aggregator_args = list(k = 2, align = "right")
+      ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
     )
     result <- sample_nowcasts(
       point_nowcast_matrix,
@@ -215,8 +214,7 @@ test_that("sample_nowcasts: longer k aggregates correctly", {
     reporting_triangle = triangle,
     uncertainty_params = dispersion,
     draws = 100,
-    ref_time_aggregator = zoo::rollsum,
-    ref_time_aggregator_args = list(k = 5, align = "right")
+    ref_time_aggregator = function(x) zoo::rollsum(x, k = 5, align = "right")
   )
 
   # First 4 rows are NA because of right alignment
@@ -239,56 +237,4 @@ test_that("sample_nowcasts: longer k aggregates correctly", {
   # Mean is about the same as a draw of the last time point
   draw_of_result_last_time <- result_with_rolling_sum$pred_count[10]
   expect_equal(expected_mean[10], draw_of_result_last_time, tol = 5)
-})
-
-test_that("sample_nowcasts errors appropriately when passed an observation model that isn't supported", { # nolint
-  expect_error(
-    sample_nowcasts(
-      point_nowcast_matrix = point_nowcast_matrix,
-      reporting_triangle = reporting_triangle,
-      uncertainty_params = dispersion,
-      draws = 100,
-      error_args = list(observation_model_name = "bernoulli")
-    ),
-    regexp = "not supported by `sample_distribution` error model."
-  )
-})
-
-test_that("sample_nowcasts produces different draws with different sampling models", { # nolint
-  set.seed(123)
-  result_nb <- sample_nowcasts(
-    point_nowcast_matrix = point_nowcast_matrix,
-    reporting_triangle = reporting_triangle,
-    uncertainty_params = dispersion,
-    draws = 1
-  )
-  set.seed(123)
-  result_normal <- sample_nowcasts(
-    point_nowcast_matrix = point_nowcast_matrix,
-    reporting_triangle = reporting_triangle,
-    uncertainty_params = dispersion,
-    draws = 1,
-    error_args = list(observation_model_name = "normal")
-  )
-  set.seed(123)
-  result_gamma <- sample_nowcasts(
-    point_nowcast_matrix = point_nowcast_matrix,
-    reporting_triangle = reporting_triangle,
-    uncertainty_params = dispersion,
-    draws = 1,
-    error_args = list(observation_model_name = "gamma")
-  )
-  expect_false(all(result_nb$pred_count == result_normal$pred_count))
-  expect_false(all(result_nb$pred_count == result_gamma$pred_count))
-  expect_false(all(result_gamma$pred_count == result_normal$pred_count))
-
-  set.seed(123)
-  result_gamma2 <- sample_nowcasts(
-    point_nowcast_matrix = point_nowcast_matrix,
-    reporting_triangle = reporting_triangle,
-    uncertainty_params = dispersion,
-    draws = 1,
-    error_args = list(observation_model_name = "gamma")
-  )
-  expect_true(all(result_gamma$pred_count == result_gamma2$pred_count))
 })

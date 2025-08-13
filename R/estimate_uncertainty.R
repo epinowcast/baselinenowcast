@@ -148,8 +148,7 @@ estimate_uncertainty <- function(
 
   if (n_iters < n) {
     cli_warn(
-      message =
-        "Only the first {n_iters} retrospective nowcast times were used."
+      "Only the first {n_iters} retrospective nowcast times were used."
     )
   }
 

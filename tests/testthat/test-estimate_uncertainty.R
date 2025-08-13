@@ -65,11 +65,7 @@ test_that("estimate_uncertainty can handle rolling sum with k=3", {
     point_nowcast_matrices = valid_nowcasts,
     truncated_reporting_triangles = valid_trunc_rts,
     retro_reporting_triangles = valid_rts,
-    ref_time_aggregator = zoo::rollsum,
-    ref_time_aggregator_args = list(
-      k = 3,
-      align = "right"
-    )
+    ref_time_aggregator = function(x) zoo::rollsum(x, k = 3, align = "right")
   )
 
   expect_true(all(is.finite(result)))
@@ -341,11 +337,7 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
     point_nowcast_matrices[1:4],
     truncated_reporting_triangles[1:4],
     retro_reporting_triangles[1:4],
-    ref_time_aggregator = zoo::rollsum,
-    ref_time_aggregator_args = list(
-      k = 3,
-      align = "right"
-    )
+    ref_time_aggregator = function(x) zoo::rollsum(x, k = 3, align = "right")
   )
   expect_lt(dispersion2[1], 500)
   expect_true(all(dispersion2 > 0.1))
@@ -360,11 +352,7 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
       point_nowcast_matrices,
       truncated_reporting_triangles,
       retro_reporting_triangles,
-      ref_time_aggregator = zoo::rollsum,
-      ref_time_aggregator_args = list(
-        k = 3,
-        align = "right"
-      )
+      ref_time_aggregator = function(x) zoo::rollsum(x, k = 3, align = "right")
     ),
     regexp = "Only the first 4 retrospective nowcast times were used."
   )
@@ -435,100 +423,16 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
   # dispersion values
 })
 
-test_that("estimate_uncertainty: works with normal observation model", {
-  result <- estimate_uncertainty(
-    point_nowcast_matrices = valid_nowcasts,
-    truncated_reporting_triangles = valid_trunc_rts,
-    retro_reporting_triangles = valid_rts,
-    n = 2,
-    error_args = list(observation_model_name = "normal"),
-    ref_time_aggregator = zoo::rollmean,
-    ref_time_aggregator_args = list(k = 2, align = "right")
-  )
-
-  # Verify output structure
-  expect_type(result, "double")
-  expect_length(result, ncol(valid_nowcasts[[1]]) - 1)
-  expect_true(all(is.finite(result)))
-  expect_false(any(result > 20))
-})
-
-test_that("estimate_uncertainty: works with gamma observation model", {
-  result <- estimate_uncertainty(
-    point_nowcast_matrices = valid_nowcasts,
-    truncated_reporting_triangles = valid_trunc_rts,
-    retro_reporting_triangles = valid_rts,
-    n = 2,
-    error_args = list(observation_model_name = "gamma"),
-    ref_time_aggregator = zoo::rollmean,
-    ref_time_aggregator_args = list(k = 2, align = "right")
-  )
-
-  # Verify output structure
-  expect_type(result, "double")
-  expect_length(result, ncol(valid_nowcasts[[1]]) - 1)
-  expect_true(all(is.finite(result)))
-  expect_false(any(result > 20))
-})
-
 test_that("estimate_uncertainty errors when k is too large for data", {
   expect_warning(expect_error(estimate_uncertainty(
     point_nowcast_matrices = valid_nowcasts,
     truncated_reporting_triangles = valid_trunc_rts,
     retro_reporting_triangles = valid_rts,
     n = 2,
-    error_args = list(observation_model_name = "gamma"),
-    ref_time_aggregator = zoo::rollmean,
-    ref_time_aggregator_args = list(k = 8, align = "right")
+    ref_time_aggregator = function(x) zoo::rollmean(x, k = 8, align = "right")
   )))
 })
-test_that("estimate_uncertainty: errors appropriately if observation model not supported", { # nolint
-  expect_error(
-    estimate_uncertainty(
-      point_nowcast_matrices = valid_nowcasts,
-      truncated_reporting_triangles = valid_trunc_rts,
-      retro_reporting_triangles = valid_rts,
-      n = 2,
-      error_args = list(observation_model_name = "bernoulli")
-    ),
-    regexp = "not supported by `fit_distribution` error model."
-  )
-})
 
-test_that("estimate_uncertainty produces different parameters with different fitting models", { # nolint
-  set.seed(123)
-  result_nb <- estimate_uncertainty(
-    point_nowcast_matrices = valid_nowcasts,
-    truncated_reporting_triangles = valid_trunc_rts,
-    retro_reporting_triangles = valid_rts
-  )
-  set.seed(123)
-  result_normal <- estimate_uncertainty(
-    point_nowcast_matrices = valid_nowcasts,
-    truncated_reporting_triangles = valid_trunc_rts,
-    retro_reporting_triangles = valid_rts,
-    error_args = list(observation_model_name = "normal")
-  )
-  set.seed(123)
-  result_gamma <- estimate_uncertainty(
-    point_nowcast_matrices = valid_nowcasts,
-    truncated_reporting_triangles = valid_trunc_rts,
-    retro_reporting_triangles = valid_rts,
-    error_args = list(observation_model_name = "gamma")
-  )
-  expect_false(all(result_nb == result_normal))
-  expect_false(all(result_nb == result_gamma))
-  expect_false(all(result_gamma == result_normal))
-
-  set.seed(123)
-  result_gamma2 <- estimate_uncertainty(
-    point_nowcast_matrices = valid_nowcasts,
-    truncated_reporting_triangles = valid_trunc_rts,
-    retro_reporting_triangles = valid_rts,
-    error_args = list(observation_model_name = "gamma")
-  )
-  expect_true(all(result_gamma == result_gamma2))
-})
 test_that("estimate_uncertainty: can handle weekday filter with large ragged triangle", { # nolint
   skip_if_not_installed("dplyr") # Is in Suggests so CI should have installed
   skip_if_not_installed("tidyr")

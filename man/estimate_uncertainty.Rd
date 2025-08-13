@@ -9,7 +9,7 @@ estimate_uncertainty(
   truncated_reporting_triangles,
   retro_reporting_triangles,
   n = length(point_nowcast_matrices),
-  error_model = function(x, mu) fit_nb(x, mu),
+  error_model = fit_by_delay(),
   ref_time_aggregator = function(x) identity(x),
   delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
 )
@@ -31,9 +31,8 @@ estimate the dispersion parameters.}
 \item{error_model}{Function that ingests a matrix of observations and a
 matrix of predictions and returns a vector that can be used to
 apply uncertainty using the same error model. Default is
-\code{function(x, mu)fit_nb(x,mu)} which is a custom function that fits a
-negative binomial observation model to a vector of observations
-and corresponding expectations.}
+\code{fit_by_horizon()} which is a custom function that fits each column
+(horizon) to a negative binomial observation model.}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been

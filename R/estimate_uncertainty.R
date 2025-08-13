@@ -18,9 +18,8 @@
 #' @param error_model Function that ingests a matrix of observations and a
 #'     matrix of predictions and returns a vector that can be used to
 #'     apply uncertainty using the same error model. Default is
-#'     `function(x, mu)fit_nb(x,mu)` which is a custom function that fits a
-#'     negative binomial observation model to a vector of observations
-#'     and corresponding expectations.
+#'     `fit_by_horizon()` which is a custom function that fits each column
+#'     (horizon) to a negative binomial observation model.
 #' @param ref_time_aggregator Function that operates along the rows (reference
 #'    times) of the retrospective point nowcast matrix before it has been
 #'    aggregated across columns (delays). Default is `function(x) identity(x)`
@@ -78,7 +77,7 @@ estimate_uncertainty <- function(
     truncated_reporting_triangles,
     retro_reporting_triangles,
     n = length(point_nowcast_matrices),
-    error_model = function(x, mu) fit_nb(x, mu),
+    error_model = fit_by_delay(),
     ref_time_aggregator = function(x) identity(x),
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
   assert_integerish(n, lower = 0)
@@ -212,12 +211,57 @@ estimate_uncertainty <- function(
 
   # Take matrix of observations and predictions and get uncertainty parameters
   # for each column (horizon)
+  uncertainty_params <- error_model(
+    obs = to_add_already_observed,
+    pred = exp_to_add
+  )
+
+  return(uncertainty_params)
+}
+
+#' Helper function that fits its each column of the matrix (horizon) to an
+#'    observation model.
+#'
+#' @param fun Function that ingests observations and expectations and returns
+#'    uncertainty parameters, default is `function(x,mu) fit_nb(x,mu)`
+#' @param obs Matrix or vector of observations, default is NULL.
+#' @param pred Matrix or vector of predictions, default is NULL.
+#'
+#' @returns Vector of uncertainty parameters of the same length as the number
+#'    of columns in the `obs` matrix.
+#' @export
+#'
+#' @examples
+#' obs <- matrix(
+#'   c(
+#'     5, 6, 2,
+#'     1, 4, 2,
+#'     8, 4, 2
+#'   ),
+#'   nrow = 3,
+#'   byrow = TRUE
+#' )
+#' pred <- matrix(
+#'   c(
+#'     4.2, 5.2, 1.8,
+#'     0.7, 3.5, 3.4,
+#'     7.3, 4.1, 1.2
+#'   ),
+#'   nrow = 3,
+#'   byrow = TRUE
+#' )
+#' disp <- fit_by_horizon(obs = obs, pred = pred)
+#' disp
+fit_by_horizon <- function(fun = function(x, mu) fit_nb(x, mu),
+                           obs = NULL,
+                           pred = NULL) {
   uncertainty_params <- c()
-  for (i in seq_len(n_possible_horizons)) {
-    obs_this_horizon <- to_add_already_observed[, i]
-    pred_this_horizon <- exp_to_add[, i]
-    uncertainty_params[i] <- error_model(obs_this_horizon, pred_this_horizon)
+  if (!is.null(obs)) {
+    for (i in seq_len(ncol(obs))) {
+      uncertainty_params[i] <- fun(obs[, i], pred[, i])
+    }
   }
+
   return(uncertainty_params)
 }
 

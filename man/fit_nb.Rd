@@ -23,8 +23,8 @@ Nowcasting Hub.
 Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7fab4dce7b559c3076ab643cf22048cb5fb84cc2/code/baseline/functions.R#L404 #nolint
 }
 \examples{
-obs <- c( 4, 8, 10)
-pred <- c( 3.1, 7.2, 11)
+obs <- c(4, 8, 10)
+pred <- c(3.1, 7.2, 11)
 disp <- fit_nb(obs, pred)
 disp
 }

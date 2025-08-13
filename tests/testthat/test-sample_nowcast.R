@@ -20,6 +20,7 @@ test_that("sample_nowcast: returns a matrix of correct length", {
 
   # Result is a matrix not a vector, since delay aggregator will not
   # always turn this into a vector (at least it doesn't have to)
-  expect_length(result, nrow(point_nowcast_matrix))
+  expect_identical(nrow(result), nrow(point_nowcast_matrix))
+  expect_true(ncol(result) >= 1)
   expect_is(result, "matrix")
 })

@@ -137,7 +137,7 @@ disp_params <- estimate_uncertainty(
 nowcast_draws_df <- sample_nowcasts(
   point_nowcast_matrix,
   reporting_triangle,
-  uncertainty = disp_params,
+  uncertainty_params = disp_params,
   draws = 100
 )
 

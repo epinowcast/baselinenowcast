@@ -14,7 +14,7 @@
 #' @param retro_reporting_triangles List of `n` truncated reporting triangle
 #'   matrices with as many rows as available given the truncation.
 #' @param n Integer indicating the number of reporting matrices to use to
-#'    estimate the dispersion parameters.
+#'    estimate the uncertainty parameters.
 #' @param error_model Function that ingests a matrix of observations and a
 #'     matrix of predictions and returns a vector that can be used to
 #'     apply uncertainty using the same error model. Default is
@@ -56,7 +56,7 @@
 #'
 #' retro_nowcasts <- fill_triangles(retro_rts, n = 5)
 #' # Estimate dispersion parameters using default (negative binomial error
-#' # model on the sums
+#' # model on the sums)
 #' disp_params <- estimate_uncertainty(
 #'   point_nowcast_matrices = retro_nowcasts,
 #'   truncated_reporting_triangles = trunc_rts,
@@ -151,6 +151,18 @@ estimate_uncertainty <- function(
       "Only the first {n_iters} retrospective nowcast times were used."
     )
   }
+
+  agg <- as.matrix(ref_time_aggregator(list_of_obs[[1]]))
+  nrow_agg <- nrow(agg)
+  ncol_agg <- ncol(agg)
+
+  if (ncol_agg != ncol(list_of_obs[[1]])) {
+    cli_abort(message = c(
+      "`ref_time_aggregator` must return a matrix with ",
+      "the same number of columns as the input observations"
+    ))
+  }
+
 
 
   # Each row is retrospective nowcast date, each column is a horizon (i.e
@@ -254,11 +266,17 @@ estimate_uncertainty <- function(
 fit_by_horizon <- function(fun = function(x, mu) fit_nb(x, mu),
                            obs = NULL,
                            pred = NULL) {
-  uncertainty_params <- c()
-  if (!is.null(obs)) {
-    for (i in seq_len(ncol(obs))) {
-      uncertainty_params[i] <- fun(obs[, i], pred[, i])
-    }
+  if (is.null(obs) || is.null(pred)) {
+    return(numeric(0))
+  }
+
+  # Ensure obs and pred have the same dimensions
+  if (!identical(dim(obs), dim(pred))) {
+    cli_abort("`obs` and `pred` must have the same dimensions")
+  }
+  uncertainty_params <- numeric(ncol(obs))
+  for (i in seq_len(ncol(obs))) {
+    uncertainty_params[i] <- fun(obs[, i], pred[, i])
   }
 
   return(uncertainty_params)
@@ -276,13 +294,17 @@ fit_by_horizon <- function(fun = function(x, mu) fit_nb(x, mu),
 #' @returns `n_iters` Integer indicating the number of iterations, or
 #'    number of retrospective nowcast times, that have sufficient data once
 #'    aggregated to be used to generate a retrospective point nowcast.
-.calc_n_retro_nowcast_times <- function(list_of_obs,
-                                        n_possible_horizons,
-                                        ref_time_aggregator) {
+.calc_n_retro_nowcast_times <- function(
+    list_of_obs,
+    n_possible_horizons,
+    ref_time_aggregator = function(x) identity(x)) {
+  if (length(list_of_obs) == 0) {
+    return(0)
+  }
   # Only use the matrices that have sufficient data once aggregated
   nrow_orig <- nrow(list_of_obs[[1]])
-  nrow_agg <- nrow(ref_time_aggregator(list_of_obs[[1]]))
-
+  agg <- as.matrix(ref_time_aggregator(list_of_obs[[1]]))
+  nrow_agg <- nrow(agg)
   # Rows to lose
   rows_to_lose <- nrow_orig - nrow_agg
   # Only use the rows that have enough rows

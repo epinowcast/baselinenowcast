@@ -94,10 +94,10 @@ sample_prediction <- function(
     nrow = max_t - n_horizons,
     ncol = ncol(mean_pred_agg)
   )
-  draw_pred_agg <- as.matrix(c(
+  draw_pred_agg <- rbind(
     top_matrix,
     draw_pred
-  ))
+  )
   return(draw_pred_agg)
 }
 

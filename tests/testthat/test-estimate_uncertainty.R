@@ -519,3 +519,15 @@ test_that("estimate_uncertainty: can handle weekday filter with small ragged tri
   expect_true(all(is.finite(disp_params)))
   expect_true(all(disp_params > 0.01))
 })
+
+test_that("estimate_uncertainty: errors if ref_time_aggregator isnt appropriate", { # nolint
+  expect_error(
+    estimate_uncertainty(
+      point_nowcast_matrices = valid_nowcasts,
+      truncated_reporting_triangles = valid_trunc_rts,
+      retro_reporting_triangles = valid_rts,
+      ref_time_aggregator = function(x) rowSums(x, na.rm = TRUE)
+    ),
+    regexp = "`ref_time_aggregator` must return a matrix with"
+  )
+})

@@ -37,7 +37,7 @@ apply uncertainty using the same error model. Default is
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
 aggregated across columns (delays). Default is \code{function(x) identity(x)}
-which does not aggregate across refrence times.}
+which does not aggregate across reference times.}
 
 \item{delay_aggregator}{Function that operates along the columns (delays)
 of the retrospective point nowcast matrix after it has been aggregated

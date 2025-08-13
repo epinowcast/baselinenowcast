@@ -9,7 +9,7 @@ sample_nowcasts(
   reporting_triangle,
   uncertainty_params,
   draws = 1000,
-  error_model = sample_nb(),
+  error_model = function(pred, params) sample_nb(pred, params),
   ref_time_aggregator = function(x) identity(x),
   delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
 )

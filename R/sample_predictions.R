@@ -190,7 +190,7 @@ sample_predictions <- function(
     reporting_triangle,
     uncertainty_params,
     draws = 1000,
-    error_model = sample_nb(),
+    error_model = function(pred, params) sample_nb(pred, params),
     ref_time_aggregator = function(x) identity(x),
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
   assert_integerish(draws, lower = 1)
@@ -256,7 +256,7 @@ sample_nowcast <- function(
     point_nowcast_matrix,
     reporting_triangle,
     uncertainty_params,
-    error_model = sample_nb(),
+    error_model = function(pred, params) sample_nb(pred, params),
     ref_time_aggregator = function(x) identity(x),
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
   # Generate a single draw of the predictions
@@ -313,7 +313,7 @@ sample_nowcasts <- function(
     reporting_triangle,
     uncertainty_params,
     draws = 1000,
-    error_model = sample_nb(),
+    error_model = function(pred, params) sample_nb(pred, params),
     ref_time_aggregator = function(x) identity(x),
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
   reference_times <- seq_len(nrow(point_nowcast_matrix))

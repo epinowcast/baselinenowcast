@@ -18,9 +18,9 @@
 #' @param error_model Function that ingests a matrix of observations and a
 #'     matrix of predictions and returns a vector that can be used to
 #'     apply uncertainty using the same error model. Default is
-#'     fit_distribution.
-#' @param error_args List of arguments needed for the specified error model.
-#'     Default is `list(observation_model_name = "negative_binomial").`
+#'     `function(x, mu)fit_nb(x,mu)` which is a custom function that fits a
+#'     negative binomial observation model to a vector of observations
+#'     and corresponding expectations.
 #' @param ref_time_aggregator Function that operates along the rows (reference
 #'    times) of the retrospective point nowcast matrix before it has been
 #'    aggregated across columns (delays). Default is `function(x) identity(x)`
@@ -39,6 +39,7 @@
 #' @examples
 #' triangle <- matrix(
 #'   c(
+#'     78, 40, 24, 9,
 #'     65, 46, 21, 7,
 #'     70, 40, 20, 5,
 #'     80, 50, 10, 10,
@@ -47,11 +48,11 @@
 #'     82, 42, NA, NA,
 #'     70, NA, NA, NA
 #'   ),
-#'   nrow = 7,
+#'   nrow = 8,
 #'   byrow = TRUE
 #' )
 #'
-#' trunc_rts <- truncate_triangles(triangle, n = 2)
+#' trunc_rts <- truncate_triangles(triangle, n = 3)
 #' retro_rts <- construct_triangles(trunc_rts)
 #'
 #' retro_nowcasts <- fill_triangles(retro_rts, n = 5)
@@ -69,10 +70,7 @@
 #'   point_nowcast_matrices = retro_nowcasts,
 #'   truncated_reporting_triangles = trunc_rts,
 #'   retro_reporting_triangles = retro_rts,
-#'   n = 2,
-#'   error_model = fit_distribution,
-#'   error_args = list(observation_model_name = "normal"),
-#'   ref_time_aggregator = function(x) zoo::rollsum(x, k = 1, align = "right")
+#'   ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
 #' )
 #' disp_params_agg
 estimate_uncertainty <- function(
@@ -80,8 +78,7 @@ estimate_uncertainty <- function(
     truncated_reporting_triangles,
     retro_reporting_triangles,
     n = length(point_nowcast_matrices),
-    error_model = fit_distribution,
-    error_args = list(observation_model_name = "negative binomial"),
+    error_model = function(x, mu) fit_nb(x, mu),
     ref_time_aggregator = function(x) identity(x),
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
   assert_integerish(n, lower = 0)
@@ -214,15 +211,13 @@ estimate_uncertainty <- function(
   }
 
   # Take matrix of observations and predictions and get uncertainty parameters
-  uncertainty_params <- do.call(
-    error_model,
-    c(
-      list(to_add_already_observed),
-      list(exp_to_add),
-      error_args
-    )
-  )
-
+  # for each column (horizon)
+  uncertainty_params <- c()
+  for (i in seq_len(n_possible_horizons)) {
+    obs_this_horizon <- to_add_already_observed[, i]
+    pred_this_horizon <- exp_to_add[, i]
+    uncertainty_params[i] <- error_model(obs_this_horizon, pred_this_horizon)
+  }
   return(uncertainty_params)
 }
 
@@ -305,4 +300,37 @@ estimate_uncertainty <- function(
     cli_abort(paste0("`", name, "` is an empty list"))
   }
   return(invisible(NULL))
+}
+
+#' Fit a negative binomial to a vector of observations and expectations
+#'
+#' @description
+#' Takes in a vector of observations and a vector of expectations and performs
+#'   a MLE estimator to estimate the dispersion parameter of a negative
+#'   binomial. This code was adapted from code written (under an MIT license)
+#'   by the Karlsruhe Institute of Technology RESPINOW German Hospitalization
+#'   Nowcasting Hub.
+#'   Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7fab4dce7b559c3076ab643cf22048cb5fb84cc2/code/baseline/functions.R#L404 #nolint
+#' @importFrom stats dnbinom optimize
+#' @param x the observed values
+#' @param mu the expected values
+#' @returns the maximum likelihood estimate of the dispersion
+#' @export
+#' @examples
+#' obs <- c(4, 8, 10)
+#' pred <- c(3.1, 7.2, 11)
+#' disp <- fit_nb(obs, pred)
+#' disp
+fit_nb <- function(x, mu) {
+  if (length(x) == 0) {
+    return(NA)
+  }
+  # Check that all observations are integers
+  assert_integerish(x)
+  nllik <- function(size) {
+    nll <- -sum(dnbinom(x = x, mu = mu, size = size, log = TRUE), na.rm = TRUE)
+    return(nll)
+  }
+  opt <- optimize(nllik, c(0.1, 1000))
+  return(opt$minimum)
 }

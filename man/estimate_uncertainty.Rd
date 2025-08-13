@@ -9,8 +9,7 @@ estimate_uncertainty(
   truncated_reporting_triangles,
   retro_reporting_triangles,
   n = length(point_nowcast_matrices),
-  error_model = fit_distribution,
-  error_args = list(observation_model_name = "negative binomial"),
+  error_model = function(x, mu) fit_nb(x, mu),
   ref_time_aggregator = function(x) identity(x),
   delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
 )
@@ -32,10 +31,9 @@ estimate the dispersion parameters.}
 \item{error_model}{Function that ingests a matrix of observations and a
 matrix of predictions and returns a vector that can be used to
 apply uncertainty using the same error model. Default is
-fit_distribution.}
-
-\item{error_args}{List of arguments needed for the specified error model.
-Default is \verb{list(observation_model_name = "negative_binomial").}}
+\code{function(x, mu)fit_nb(x,mu)} which is a custom function that fits a
+negative binomial observation model to a vector of observations
+and corresponding expectations.}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
@@ -62,6 +60,7 @@ number of horizons.
 \examples{
 triangle <- matrix(
   c(
+    78, 40, 24, 9,
     65, 46, 21, 7,
     70, 40, 20, 5,
     80, 50, 10, 10,
@@ -70,11 +69,11 @@ triangle <- matrix(
     82, 42, NA, NA,
     70, NA, NA, NA
   ),
-  nrow = 7,
+  nrow = 8,
   byrow = TRUE
 )
 
-trunc_rts <- truncate_triangles(triangle, n = 2)
+trunc_rts <- truncate_triangles(triangle, n = 3)
 retro_rts <- construct_triangles(trunc_rts)
 
 retro_nowcasts <- fill_triangles(retro_rts, n = 5)
@@ -92,10 +91,7 @@ disp_params_agg <- estimate_uncertainty(
   point_nowcast_matrices = retro_nowcasts,
   truncated_reporting_triangles = trunc_rts,
   retro_reporting_triangles = retro_rts,
-  n = 2,
-  error_model = fit_distribution,
-  error_args = list(observation_model_name = "normal"),
-  ref_time_aggregator = function(x) zoo::rollsum(x, k = 1, align = "right")
+  ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
 )
 disp_params_agg
 }

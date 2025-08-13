@@ -89,8 +89,8 @@ estimate_uncertainty <- function(
     n = length(point_nowcast_matrices),
     error_model = fit_distribution,
     error_args = list(observation_model_name = "negative binomial"),
-    ref_time_aggregator = ref_time_aggregator_default(),
-    delay_aggregator = delay_aggregator_default()) {
+    ref_time_aggregator = function(x) identity(x),
+    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
   assert_integerish(n, lower = 0)
   .check_list_length(
     point_nowcast_matrices,
@@ -185,9 +185,9 @@ estimate_uncertainty <- function(
 
     # Apply the aggregation to the truncated observations, the nowcast,
     # and the reporting triangle.
-    aggr_obs <- .apply_aggregator(ref_time_aggregator, trunc_matr_observed)
-    aggr_nowcast <- .apply_aggregator(ref_time_aggregator, nowcast_i)
-    aggr_rt_obs <- .apply_aggregator(ref_time_aggregator, triangle_observed)
+    aggr_obs <- ref_time_aggregator(trunc_matr_observed)
+    aggr_nowcast <- ref_time_aggregator(nowcast_i)
+    aggr_rt_obs <- ref_time_aggregator(triangle_observed)
 
     # For each horizon, take the partial sum of the nowcasted and already
     # observed components.
@@ -204,15 +204,9 @@ estimate_uncertainty <- function(
       .apply_mask(indices_nowcast, indices_obs)
     # Reverse because the indices are horizons which are ordered opposite to
     # reference times (last reference time = first horizon)
-    exp_to_add[i, ] <- rev(.apply_aggregator(
-      delay_aggregator,
-      masked_nowcast
-    ))
+    exp_to_add[i, ] <- rev(delay_aggregator(masked_nowcast))
 
-    to_add_already_observed[i, ] <- rev(.apply_aggregator(
-      delay_aggregator,
-      masked_obs
-    ))
+    to_add_already_observed[i, ] <- rev(delay_aggregator(masked_obs))
   }
 
   if (!any(exp_to_add != 0 & !is.na(exp_to_add))) {
@@ -329,10 +323,7 @@ ref_time_aggregator_default <- function(fun = identity,
                                         ref_time_aggregator) {
   # Only use the matrices that have sufficient data once aggregated
   nrow_orig <- nrow(list_of_obs[[1]])
-  nrow_agg <- nrow(.apply_aggregator(
-    ref_time_aggregator,
-    list_of_obs[[1]]
-  ))
+  nrow_agg <- nrow(ref_time_aggregator(list_of_obs[[1]]))
 
   # Rows to lose
   rows_to_lose <- nrow_orig - nrow_agg

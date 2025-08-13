@@ -358,7 +358,7 @@ sample_nowcasts <- function(
 #' @examples
 #' pred <- c(3.2, 4.6)
 #' sampled_preds <- sample_nb(pred,
-#'   uncertainty_params = c(50, 100),
+#'   uncertainty_params = c(50, 100)
 #' )
 #' sampled_preds
 sample_nb <- function(pred = NULL, uncertainty_params = NULL) {

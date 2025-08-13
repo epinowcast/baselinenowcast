@@ -7,10 +7,8 @@
 combine_obs_with_pred(
   predicted_counts,
   reporting_triangle,
-  ref_time_aggregator = zoo::rollsum,
-  ref_time_aggregator_args = list(k = 1, align = "right"),
-  delay_aggregator = rowSums,
-  delay_aggregator_args = list(na.rm = TRUE)
+  ref_time_aggregator = function(x) identity(x),
+  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
 )
 }
 \arguments{
@@ -58,7 +56,6 @@ combine_obs_with_pred(pred_counts, reporting_triangle)
 # Another example with rolling sum
 combine_obs_with_pred(pred_counts,
   reporting_triangle,
-  ref_time_aggregator = zoo::rollsum,
-  ref_time_aggregator_args = list(k = 2, align = "right")
+  ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
 )
 }

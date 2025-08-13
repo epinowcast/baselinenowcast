@@ -8,12 +8,9 @@ sample_prediction(
   point_nowcast_matrix,
   reporting_triangle,
   uncertainty_params,
-  error_model = sample_distribution,
-  error_args = list(observation_model_name = "negative binomial"),
-  ref_time_aggregator = zoo::rollsum,
-  ref_time_aggregator_args = list(k = 1, align = "right"),
-  delay_aggregator = rowSums,
-  delay_aggregator_args = list(na.rm = TRUE)
+  error_model = function(pred, params) sample_nb(pred, params),
+  ref_time_aggregator = function(x) identity(x),
+  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
 )
 }
 \arguments{
@@ -32,12 +29,9 @@ horizon 1 to the maximum horizon. Note that these will be reversed
 internally to match the ordering of the \code{point_nowcast_matrix} (where
 a horizon of 1 is the last entry).}
 
-\item{error_model}{Function that ingests a matrix of predictions and a vector
-of uncertainty parameters and generates draws from the error model.
-Default is \code{sample_distribution}.}
-
-\item{error_args}{List of arguments needed for the specified error model.
-Default is \verb{list(observation_model_name = "negative_binomial").}}
+\item{error_model}{Function that ingests a vector or matrix of predictions
+and a vector of uncertainty parameters and generates draws from the
+error model. Default is \code{sample_nb()}.}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
@@ -81,8 +75,7 @@ nowcast_pred_draw_agg <- sample_prediction(
   point_nowcast_matrix,
   reporting_triangle,
   disp,
-  ref_time_aggregator = zoo::rollsum,
-  ref_time_aggregator_args = list(k = 2, align = "right")
+  ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
 )
 nowcast_pred_draw_agg
 }

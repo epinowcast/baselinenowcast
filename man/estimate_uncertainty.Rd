@@ -9,7 +9,7 @@ estimate_uncertainty(
   truncated_reporting_triangles,
   retro_reporting_triangles,
   n = length(point_nowcast_matrices),
-  error_model = fit_by_delay(),
+  error_model = function(obs, pred) fit_by_horizon(obs = obs, pred = pred),
   ref_time_aggregator = function(x) identity(x),
   delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
 )

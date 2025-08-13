@@ -25,17 +25,23 @@ observation model.
 }
 \examples{
 obs <- matrix(
- c( 5, 6, 2,
-     1, 4, 2,
-     8, 4, 2),
-     nrow = 3,
-     byrow = TRUE)
+  c(
+    5, 6, 2,
+    1, 4, 2,
+    8, 4, 2
+  ),
+  nrow = 3,
+  byrow = TRUE
+)
 pred <- matrix(
- c( 4.2, 5.2, 1.8,
-     0.7, 3.5, 3.4,
-     7.3, 4.1, 1.2),
-     nrow = 3,
-     byrow = TRUE)
+  c(
+    4.2, 5.2, 1.8,
+    0.7, 3.5, 3.4,
+    7.3, 4.1, 1.2
+  ),
+  nrow = 3,
+  byrow = TRUE
+)
 disp <- fit_by_horizon(obs = obs, pred = pred)
 disp
 }

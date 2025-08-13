@@ -26,17 +26,12 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
-aggregated across columns (delays). Default is \code{zoo::rollsum}.}
-
-\item{ref_time_aggregator_args}{List of arguments needed for the specified
-\code{ref_time_aggregator}. Default is \code{list(k=1, align = "right")}.}
+aggregated across columns (delays). Default is \code{function(x) identity(x)}
+which does not aggregate across refrence times.}
 
 \item{delay_aggregator}{Function that operates along the columns (delays)
 of the retrospective point nowcast matrix after it has been aggregated
-across reference times. Default is \code{rowSums}.}
-
-\item{delay_aggregator_args}{List of arguments needed for the specified
-\code{delay_aggregator}. Default is \code{list(na.rm = TRUE)}.}
+across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
 }
 \value{
 A vector of predicted counts at each reference time

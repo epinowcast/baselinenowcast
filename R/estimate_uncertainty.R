@@ -23,14 +23,11 @@
 #'     Default is `list(observation_model_name = "negative_binomial").`
 #' @param ref_time_aggregator Function that operates along the rows (reference
 #'    times) of the retrospective point nowcast matrix before it has been
-#'    aggregated across columns (delays). Default is `zoo::rollsum`.
-#' @param ref_time_aggregator_args List of arguments needed for the specified
-#'     `ref_time_aggregator`. Default is `list(k=1, align = "right")`.
+#'    aggregated across columns (delays). Default is `function(x) identity(x)`
+#'    which does not aggregate across refrence times.
 #' @param delay_aggregator Function that operates along the columns (delays)
 #'    of the retrospective point nowcast matrix after it has been aggregated
-#'    across reference times. Default is `rowSums`.
-#' @param delay_aggregator_args List of arguments needed for the specified
-#'    `delay_aggregator`. Default is `list(na.rm = TRUE)`.
+#'    across reference times. Default is `function(x) rowSums(x, na.rm = TRUE)`.
 #' @importFrom checkmate assert_integerish
 #' @importFrom cli cli_abort cli_warn
 #' @returns `uncertainty_params` Vector of length of the number of horizons,
@@ -75,11 +72,7 @@
 #'   n = 2,
 #'   error_model = fit_distribution,
 #'   error_args = list(observation_model_name = "normal"),
-#'   ref_time_aggregator = ref_time_aggregator_default(
-#'     fun = zoo::rollmean,
-#'     k = 1,
-#'     align = "right"
-#'   )
+#'   ref_time_aggregator = function(x) zoo::rollsum(x, k = 1, align = "right")
 #' )
 #' disp_params_agg
 estimate_uncertainty <- function(
@@ -231,79 +224,6 @@ estimate_uncertainty <- function(
   )
 
   return(uncertainty_params)
-}
-
-
-
-#' Delay aggregator default function
-#'
-#' @param fun Function to aggregate across columns (delays) of the reporting
-#'    triangle. Default is `rowSums`.
-#' @param ... Additional arguments passed to the function
-#'
-#' @returns Object of class aggregator containing functions and arguments
-#' @export
-#'
-#' @examples
-#' delay_aggregator()
-delay_aggregator_default <- function(fun = rowSums, ...) {
-  args <- list(...)
-  if (identical(fun, rowSums) && !"na.rm" %in% names(args)) {
-    args$na.rm <- TRUE
-  }
-
-  # Return a list containing the function and its arguments
-  list_w_fxn <- structure(
-    list(
-      fun = fun,
-      args = args
-    ),
-    class = "aggregator"
-  )
-  return(list_w_fxn)
-}
-
-#' Reference time aggregator default function
-#'
-#' @param fun Function to aggregate across reference times of the reporting
-#'    triangle, default is `identity` which returns what is passed in.
-#' @param ... Additional arguments passed to the function
-#'
-#' @returns Object of class aggregator containing functions and arguments
-#' @export
-#'
-#' @examples
-#' ref_time_aggregator()
-ref_time_aggregator_default <- function(fun = identity,
-                                        ...) {
-  # Store the function and its arguments
-  args <- list(...)
-
-  # Return a list containing the function and its arguments
-  list_w_fxn <- structure(
-    list(
-      fun = fun,
-      args = args
-    ),
-    class = "aggregator"
-  )
-  return(list_w_fxn)
-}
-
-
-#' Internal helper function to apply aggregator to data
-#'
-#' @param aggregator Object of class aggregator.
-#' @param data Vector or matrix to be aggregates
-#'
-#' @returns Aggregated data
-.apply_aggregator <- function(aggregator, data) {
-  if (inherits(aggregator, "aggregator")) {
-    do.call(aggregator$fun, c(list(data), aggregator$args))
-  } else {
-    # Fallback for backward compatibility
-    aggregator(data)
-  }
 }
 
 

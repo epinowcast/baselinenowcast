@@ -19,7 +19,8 @@ retrospective reporting triangle.}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
-aggregated across columns (delays). Default is \code{zoo::rollsum}.}
+aggregated across columns (delays). Default is \code{function(x) identity(x)}
+which does not aggregate across refrence times.}
 }
 \value{
 \code{n_iters} Integer indicating the number of iterations, or

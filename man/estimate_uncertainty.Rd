@@ -11,8 +11,8 @@ estimate_uncertainty(
   n = length(point_nowcast_matrices),
   error_model = fit_distribution,
   error_args = list(observation_model_name = "negative binomial"),
-  ref_time_aggregator = ref_time_aggregator_default(),
-  delay_aggregator = delay_aggregator_default()
+  ref_time_aggregator = function(x) identity(x),
+  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
 )
 }
 \arguments{
@@ -39,17 +39,12 @@ Default is \verb{list(observation_model_name = "negative_binomial").}}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
-aggregated across columns (delays). Default is \code{zoo::rollsum}.}
+aggregated across columns (delays). Default is \code{function(x) identity(x)}
+which does not aggregate across refrence times.}
 
 \item{delay_aggregator}{Function that operates along the columns (delays)
 of the retrospective point nowcast matrix after it has been aggregated
-across reference times. Default is \code{rowSums}.}
-
-\item{ref_time_aggregator_args}{List of arguments needed for the specified
-\code{ref_time_aggregator}. Default is \code{list(k=1, align = "right")}.}
-
-\item{delay_aggregator_args}{List of arguments needed for the specified
-\code{delay_aggregator}. Default is \code{list(na.rm = TRUE)}.}
+across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
 }
 \value{
 \code{uncertainty_params} Vector of length of the number of horizons,
@@ -100,11 +95,7 @@ disp_params_agg <- estimate_uncertainty(
   n = 2,
   error_model = fit_distribution,
   error_args = list(observation_model_name = "normal"),
-  ref_time_aggregator = ref_time_aggregator_default(
-    fun = zoo::rollmean,
-    k = 1,
-    align = "right"
-  )
+  ref_time_aggregator = function(x) zoo::rollsum(x, k = 1, align = "right")
 )
 disp_params_agg
 }

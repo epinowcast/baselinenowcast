@@ -22,7 +22,7 @@ Sample from negative binomial model given a set of predictions
 }
 \examples{
 pred <- c(3.2, 4.6)
-sampled_preds <- sample_distribution(pred,
+sampled_preds <- sample_nb(pred,
   uncertainty_params = c(50, 100),
 )
 sampled_preds

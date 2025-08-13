@@ -17,7 +17,6 @@
 #' @export
 #' @importFrom cli cli_abort cli_warn
 #' @importFrom stats rnbinom
-#' @importFrom zoo rollapply
 #' @examples
 #' point_nowcast_matrix <- matrix(
 #'   c(
@@ -358,7 +357,7 @@ sample_nowcasts <- function(
 #'    with the specified `uncertainty params`.
 #' @examples
 #' pred <- c(3.2, 4.6)
-#' sampled_preds <- sample_distribution(pred,
+#' sampled_preds <- sample_nb(pred,
 #'   uncertainty_params = c(50, 100),
 #' )
 #' sampled_preds

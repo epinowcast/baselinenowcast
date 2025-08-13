@@ -153,7 +153,6 @@ estimate_uncertainty <- function(
   }
 
   agg <- as.matrix(ref_time_aggregator(list_of_obs[[1]]))
-  nrow_agg <- nrow(agg)
   ncol_agg <- ncol(agg)
 
   if (ncol_agg != ncol(list_of_obs[[1]])) {

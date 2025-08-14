@@ -19,7 +19,6 @@
 #'    times in the input `point_nowcast_matrix`.
 #' @export
 #' @importFrom cli cli_abort cli_warn
-#' @importFrom stats rnbinom
 #' @examples
 #' point_nowcast_matrix <- matrix(
 #'   c(

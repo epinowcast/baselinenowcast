@@ -21,8 +21,8 @@
 #'     `fit_by_horizon` with arguments of `obs` matrix of observations and
 #'     `pred` the matrix of predictions that fits each column (horizon)
 #'     to a negative binomial observation model by default. The user can
-#'     specify a different fitting model by replacing the `fun` argument in
-#'      `fit_by_horizon`.
+#'     specify a different fitting model by replacing the
+#'     `observation_model` argument in `fit_by_horizon`.
 #' @param ref_time_aggregator Function that operates along the rows (reference
 #'    times) of the retrospective point nowcast matrix before it has been
 #'    aggregated across columns (delays). Default is `identity`

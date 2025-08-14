@@ -37,7 +37,7 @@ test_that(".calc_n_retro_nowcast_times: basic functionality with identity aggreg
   )
 
   # With identity aggregator, rows_to_lose = 0
-  # n_rows_required = 3 + 0 = 3
+  # n_rows_required = 3 + 0 = 3 #nolint
   # All matrices have >= 3 rows, so all should be included
   expect_identical(result, 3L)
 })
@@ -52,7 +52,7 @@ test_that(".calc_n_retro_nowcast_times: returns only the 2 larger matrices", {
     identity_aggregator
   )
 
-  # n_rows_required = 4 + 0 = 4
+  # n_rows_required = 4 + 0 = 4 #nolint
   # Only mat_5x4 (5 rows) and mat_4x4 (4 rows) have >= 4 rows
   expect_identical(result, 2L)
 })
@@ -68,7 +68,7 @@ test_that(".calc_n_retro_nowcast_times: works with aggregator that removes rows"
   )
 
   # remove_first_row_aggregator: 5x4 -> 4x4, so rows_to_lose = 1
-  # n_rows_required = 2 + 1 = 3
+  # n_rows_required = 2 + 1 = 3 #nolint
   # All matrices have >= 3 rows, so all should be included
   expect_identical(result, 3L)
 
@@ -93,7 +93,7 @@ test_that(".calc_n_retro_nowcast_times: handles edge case with no valid matrices
     identity_aggregator
   )
 
-  # n_rows_required = 5 + 0 = 5
+  # n_rows_required = 5 + 0 = 5 #nolint
   # Neither matrix has >= 5 rows
   expect_identical(result, 0L)
 })
@@ -142,7 +142,7 @@ test_that(".calc_n_retro_nowcast_times: mixed matrix sizes with moderate filteri
   )
 
   # remove_first_row_aggregator: 7x4 -> 6x4, so rows_to_lose = 1
-  # n_rows_required = 3 + 1 = 4
+  # n_rows_required = 3 + 1 = 4 #nolint
   # Matrices with >= 4 rows: 7x4, 6x4, 5x4, 4x4 (4 matrices)
   expect_identical(result, 4L)
 })

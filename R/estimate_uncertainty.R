@@ -281,12 +281,12 @@ fit_by_horizon <- function(obs,
                            pred,
                            observation_model = fit_nb) {
   if (is.null(obs) || is.null(pred)) {
-    cli_abort("Missing `obs` and/or `pred`")
+    cli_abort("Missing `obs` and/or `pred`") # nolint
   }
 
   # Ensure obs and pred have the same dimensions
   if (!identical(dim(obs), dim(pred))) {
-    cli_abort("`obs` and `pred` must have the same dimensions")
+    cli_abort("`obs` and `pred` must have the same dimensions") # nolint
   }
   uncertainty_params <- numeric(ncol(obs))
   for (i in seq_len(ncol(obs))) {

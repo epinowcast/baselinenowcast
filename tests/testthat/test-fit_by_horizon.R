@@ -61,9 +61,9 @@ test_that("fit_by_horizon: works with custom function", {
 
   # For sum_fun, should return column sums of obs_matrix
   expected <- c(
-    sum(obs_matrix[, 1]), # 5 + 1 + 8 = 14
-    sum(obs_matrix[, 2]), # 6 + 4 + 4 = 14
-    sum(obs_matrix[, 3]) # 2 + 2 + 2 = 6
+    sum(obs_matrix[, 1]), # 5 + 1 + 8 = 14 #nolint
+    sum(obs_matrix[, 2]), # 6 + 4 + 4 = 14 #nolint
+    sum(obs_matrix[, 3]) # 2 + 2 + 2 = 6 #nolint
   )
 
   expect_identical(result, expected)
@@ -76,7 +76,7 @@ test_that("fit_by_horizon: errors obs is NULL", {
       obs = NULL,
       pred = pred_matrix
     ),
-    regexp = "Missing `obs` and/or `pred"
+    regexp = "Missing `obs` and/or `pred" # nolint
   )
 })
 
@@ -87,7 +87,7 @@ test_that("fit_by_horizon: errors when pred is NULL", {
       obs = obs_matrix,
       pred = NULL
     ),
-    regexp = "Missing `obs` and/or `pred"
+    regexp = "Missing `obs` and/or `pred" # nolint
   )
 })
 
@@ -98,7 +98,7 @@ test_that("fit_by_horizon: errors when both obs and pred are NULL", {
       obs = NULL,
       pred = NULL
     ),
-    regexp = "Missing `obs` and/or `pred"
+    regexp = "Missing `obs` and/or `pred" # nolint
   )
 })
 
@@ -179,7 +179,7 @@ test_that("fit_by_horizon: function receives correct column data", {
 
 test_that("fit_by_horizon: function that errors", {
   error_fun <- function(x, mu) {
-    stop("Test error")
+    stop("Test error", call. = FALSE)
   }
 
   expect_error(
@@ -192,7 +192,7 @@ test_that("fit_by_horizon: function that errors", {
   )
 })
 
-test_that("fit_by_horizon: works with vectors converted to single-column matrices", {
+test_that("fit_by_horizon: works with vectors converted to single-column matrices", { # nolint
   obs_vec <- c(1, 2, 3)
   pred_vec <- c(1.1, 2.1, 3.1)
 
@@ -211,15 +211,15 @@ test_that("fit_by_horizon: works with vectors converted to single-column matrice
 })
 
 test_that("fit_by_horizon: function using both obs and pred parameters", {
-  correlation_fun <- function(x, mu) {
+  add_fun <- function(x, mu) {
     if (length(x) < 2 || length(mu) < 2) {
       return(NA_real_)
     }
-    return(cor(x, mu, use = "complete.obs"))
+    return(x + mu)
   }
 
   result <- fit_by_horizon(
-    observation_model = correlation_fun,
+    observation_model = add_fun,
     obs = obs_matrix,
     pred = pred_matrix
   )

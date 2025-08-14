@@ -7,14 +7,14 @@
 combine_obs_with_pred(
   predicted_counts,
   reporting_triangle,
-  ref_time_aggregator = function(x) identity(x),
+  ref_time_aggregator = identity,
   delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
 )
 }
 \arguments{
 \item{predicted_counts}{Vector of predicted counts at each reference time.
-Note that if using an aggregator function, this is assumed to have
-already been aggregated.}
+Note that if using a reference time or delay aggregator function, this
+is assumed to have already been aggregated.}
 
 \item{reporting_triangle}{Matrix of the reporting triangle, with rows
 representing the time points of reference and columns representing the

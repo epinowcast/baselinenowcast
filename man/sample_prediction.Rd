@@ -29,12 +29,12 @@ horizon 1 to the maximum horizon. Note that these will be reversed
 internally to match the ordering of the \code{point_nowcast_matrix} (where
 a horizon of 1 is the last entry).}
 
-\item{observation_model}{Function that ingests a vector or matrix of predictions
-and a vector of uncertainty parameters and generates draws from the
-error model. Default is \code{sample_nb} which expects arguments \code{pred} for the
-vector of predictions and uncertainty parameters for the corresponding
-vector of uncertainty parameters, and draws from a negative binomial
-for each element of the vector.}
+\item{observation_model}{Function that ingests a vector or matrix of
+predictions and a vector of uncertainty parameters and generates draws
+from the observation model. Default is \code{sample_nb} which expects
+arguments \code{pred} for the vector of predictions and uncertainty parameters
+for the corresponding vector of uncertainty parameters, and draws from a
+negative binomial for each element of the vector.}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been

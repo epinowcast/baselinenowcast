@@ -7,12 +7,12 @@
 #'   horizon 1 to the maximum horizon. Note that these will be reversed
 #'   internally to match the ordering of the `point_nowcast_matrix` (where
 #'   a horizon of 1 is the last entry).
-#' @param observation_model Function that ingests a vector or matrix of predictions
-#'    and a vector of uncertainty parameters and generates draws from the
-#'    error model. Default is `sample_nb` which expects arguments `pred` for the
-#'    vector of predictions and uncertainty parameters for the corresponding
-#'    vector of uncertainty parameters, and draws from a negative binomial
-#'    for each element of the vector.
+#' @param observation_model Function that ingests a vector or matrix of
+#'    predictions and a vector of uncertainty parameters and generates draws
+#'    from the observation model. Default is `sample_nb` which expects
+#'    arguments `pred` for the vector of predictions and uncertainty parameters
+#'    for the corresponding vector of uncertainty parameters, and draws from a
+#'    negative binomial for each element of the vector.
 #' @inheritParams estimate_delay
 #' @inheritParams estimate_uncertainty
 #' @returns Vector of predicted draws at each reference time, for all reference
@@ -111,8 +111,8 @@ sample_prediction <- function(
 #' nowcast for the final counts by reference time.
 #'
 #' @param predicted_counts Vector of predicted counts at each reference time.
-#'    Note that if using an aggregator function, this is assumed to have
-#'    already been aggregated.
+#'    Note that if using a reference time or delay aggregator function, this
+#'    is assumed to have already been aggregated.
 #' @inheritParams sample_prediction
 #'
 #' @returns A vector of predicted counts at each reference time
@@ -139,7 +139,7 @@ sample_prediction <- function(
 combine_obs_with_pred <- function(
     predicted_counts,
     reporting_triangle,
-    ref_time_aggregator = function(x) identity(x),
+    ref_time_aggregator = identity,
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
   aggr_reporting_triangle <- ref_time_aggregator(reporting_triangle)
   obs_counts_agg <- delay_aggregator(aggr_reporting_triangle)
@@ -341,31 +341,4 @@ sample_nowcasts <- function(
 
   draws_df <- Reduce(rbind, draws_df_list)
   return(draws_df)
-}
-#' Sample from negative binomial model given a set of predictions
-#'
-#' @param pred Vector of predictions.
-#' @param uncertainty_params Vector of uncertainty parameters.
-#' @importFrom stats rnbinom
-#' @export
-#' @returns `sampled_pred` Object of the same dimensions as `pred` representing
-#'    a single draw from the negative binomial distribution
-#'    with the specified `uncertainty params`.
-#' @examples
-#' pred <- c(3.2, 4.6)
-#' sampled_preds <- sample_nb(pred,
-#'   uncertainty_params = c(50, 100)
-#' )
-#' sampled_preds
-sample_nb <- function(pred, uncertainty_params) {
-  if (!is.null(pred)) {
-    sampled_pred <- rnbinom(
-      n = length(pred),
-      size = uncertainty_params,
-      mu = pred
-    )
-  } else {
-    sampled_pred <- NULL
-  }
-  return(sampled_pred)
 }

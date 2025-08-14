@@ -520,7 +520,7 @@ test_that("estimate_uncertainty: can handle weekday filter with small ragged tri
   expect_true(all(disp_params > 0.01))
 })
 
-test_that("estimate_uncertainty: errors if ref_time_aggregator isnt appropriate", { # nolint
+test_that("estimate_uncertainty: errors if ref_time_aggregator isn't appropriate", { # nolint
   expect_error(
     estimate_uncertainty(
       point_nowcast_matrices = valid_nowcasts,
@@ -529,5 +529,31 @@ test_that("estimate_uncertainty: errors if ref_time_aggregator isnt appropriate"
       ref_time_aggregator = function(x) rowSums(x, na.rm = TRUE)
     ),
     regexp = "`ref_time_aggregator` must return a matrix with"
+  )
+})
+
+test_that("estimate_uncertainty: errors when ref_time_aggregator changes column count", { # nolint
+  bad_aggregator <- function(x) x[, 1:2] # Removes columns
+  expect_error(
+    estimate_uncertainty(
+      point_nowcast_matrices = valid_nowcasts,
+      truncated_reporting_triangles = valid_trunc_rts,
+      retro_reporting_triangles = valid_rts,
+      ref_time_aggregator = bad_aggregator
+    ),
+    "`ref_time_aggregator` must return a matrix with"
+  )
+})
+
+test_that("estimate_uncertainty: errors when delay_aggregator changes row count", { # nolint
+  bad_aggregator <- function(x) x[1:2, ] # Removes rows
+  expect_error(
+    estimate_uncertainty(
+      point_nowcast_matrices = valid_nowcasts,
+      truncated_reporting_triangles = valid_trunc_rts,
+      retro_reporting_triangles = valid_rts,
+      delay_aggregator = bad_aggregator
+    ),
+    "`delay_aggregator` must return a vector of length"
   )
 })

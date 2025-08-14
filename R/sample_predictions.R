@@ -66,7 +66,7 @@ sample_prediction <- function(
   if (length(uncertainty_params) < n_horizons) {
     cli_abort(
       message = c(
-        "Vector of uncertainty parameter is less than the number of",
+        "Vector of uncertainty parameters is less than the number of",
         "horizons in the `reporting_triangle`."
       )
     )

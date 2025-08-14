@@ -203,9 +203,20 @@ estimate_uncertainty <- function(
       .apply_mask(indices_nowcast, indices_obs)
     # Reverse because the indices are horizons which are ordered opposite to
     # reference times (last reference time = first horizon)
-    exp_to_add[i, ] <- rev(delay_aggregator(masked_nowcast))
-
-    to_add_already_observed[i, ] <- rev(delay_aggregator(masked_obs))
+    aggr_nowcast <- delay_aggregator(masked_nowcast)
+    if (length(aggr_nowcast) != n_possible_horizons) {
+      cli_abort(
+        "`delay_aggregator` must return a vector of length {n_possible_horizons}, got {length(aggr_nowcast)}" # nolint
+      )
+    }
+    exp_to_add[i, ] <- rev(aggr_nowcast)
+    aggr_obs <- delay_aggregator(masked_obs)
+    if (length(aggr_obs) != n_possible_horizons) {
+      cli_abort(
+        "`delay_aggregator` must return a vector of length {n_possible_horizons}, got {length(aggr_obs)}" # nolint
+      )
+    }
+    to_add_already_observed[i, ] <- rev(aggr_obs)
   }
 
   if (!any(exp_to_add != 0 & !is.na(exp_to_add))) {
@@ -266,7 +277,7 @@ fit_by_horizon <- function(fun = function(x, mu) fit_nb(x, mu),
                            obs = NULL,
                            pred = NULL) {
   if (is.null(obs) || is.null(pred)) {
-    return(numeric(0))
+    cli_abort("Missing `obs` and/or `pred`")
   }
 
   # Ensure obs and pred have the same dimensions

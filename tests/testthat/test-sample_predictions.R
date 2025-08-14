@@ -162,13 +162,16 @@ test_that("sample_predictions: errors when too many or too few uncertainty param
       dispersion[1:2],
       draws = 10
     ),
-    regexp = "Vector of uncertainty parameter is less than the number "
+    regexp = "Vector of uncertainty parameters is less than the number"
   )
 
-  expect_error(sample_predictions(
-    point_nowcast_matrix,
-    reporting_triangle,
-    c(dispersion, rep(3, 3)),
-    draws = 10
-  ))
+  expect_error(
+    sample_predictions(
+      point_nowcast_matrix,
+      reporting_triangle,
+      c(dispersion, rep(3, 3)),
+      draws = 10
+    ),
+    regexp = "Vector of uncertainty parameters is greater than the number"
+  )
 })

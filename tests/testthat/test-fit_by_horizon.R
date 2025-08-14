@@ -212,9 +212,6 @@ test_that("fit_by_horizon: works with vectors converted to single-column matrice
 
 test_that("fit_by_horizon: function using both obs and pred parameters", {
   add_fun <- function(x, mu) {
-    if (length(x) < 2 || length(mu) < 2) {
-      return(NA_real_)
-    }
     return(x + mu)
   }
 

@@ -432,7 +432,7 @@ test_that("estimate_uncertainty errors when k is too large for data", {
       n = 2,
       ref_time_aggregator = function(x) zoo::rollmean(x, k = 8, align = "right")
     ),
-    regexp = "No valid retrospective nowcast times after reference time aggregation."
+    regexp = "No valid retrospective nowcast times after reference time aggregation." # nolint
   ) # nolint
 })
 

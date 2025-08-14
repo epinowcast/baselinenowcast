@@ -227,7 +227,7 @@ sample_predictions <- function(
 
 #' Generate a single draw of a nowcast combining observed and predicted values
 #'
-#' @inheritParams sample_predictions
+#' @inheritParams sample_prediction
 #' @returns Vector of predicted counts at each reference time based on combining
 #'    the observed counts and the predicted counts for the unobserved elements.
 #' @export

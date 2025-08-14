@@ -150,6 +150,9 @@ estimate_uncertainty <- function(
     n_possible_horizons,
     ref_time_aggregator
   )
+  if (n_iters == 0) {
+    cli_abort("No valid retrospective nowcast times after reference time aggregation.") # nolint
+  }
 
   if (n_iters < n) {
     cli_warn(
@@ -225,16 +228,6 @@ estimate_uncertainty <- function(
     to_add_already_observed[i, ] <- rev(aggr_obs)
   }
 
-  if (!any(exp_to_add != 0 & !is.na(exp_to_add))) {
-    cli_abort(
-      message = c(
-        "Insufficient data for uncertainty estimation. Check to ",
-        "ensure that input matrices contain sufficient number of ",
-        "rows for the specified aggregator model and corresponding",
-        "arguments"
-      )
-    )
-  }
 
   # Take matrix of observations and predictions and get uncertainty parameters
   # for each column (horizon)

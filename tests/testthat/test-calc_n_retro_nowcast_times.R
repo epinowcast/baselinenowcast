@@ -42,6 +42,17 @@ test_that(".calc_n_retro_nowcast_times: basic functionality with identity aggreg
   expect_identical(result, 3L)
 })
 
+test_that(".calc_n_retro_nowcast_times: returns 0 if list is empty", {
+  list_of_obs <- NULL
+  n_possible_horizons <- 3
+  result <- .calc_n_retro_nowcast_times(
+    list_of_obs,
+    n_possible_horizons,
+    identity_aggregator
+  )
+  expect_identical(result, 0)
+})
+
 test_that(".calc_n_retro_nowcast_times: returns only the 2 larger matrices", {
   list_of_obs <- list(mat_5x4, mat_4x4, mat_3x4, mat_2x4, mat_1x4)
   n_possible_horizons <- 4

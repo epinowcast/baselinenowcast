@@ -424,13 +424,16 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
 })
 
 test_that("estimate_uncertainty errors when k is too large for data", {
-  expect_warning(expect_error(estimate_uncertainty(
-    point_nowcast_matrices = valid_nowcasts,
-    truncated_reporting_triangles = valid_trunc_rts,
-    retro_reporting_triangles = valid_rts,
-    n = 2,
-    ref_time_aggregator = function(x) zoo::rollmean(x, k = 8, align = "right")
-  )))
+  expect_error(
+    estimate_uncertainty(
+      point_nowcast_matrices = valid_nowcasts,
+      truncated_reporting_triangles = valid_trunc_rts,
+      retro_reporting_triangles = valid_rts,
+      n = 2,
+      ref_time_aggregator = function(x) zoo::rollmean(x, k = 8, align = "right")
+    ),
+    regexp = "No valid retrospective nowcast times after reference time aggregation."
+  ) # nolint
 })
 
 test_that("estimate_uncertainty: can handle weekday filter with large ragged triangle", { # nolint
@@ -555,5 +558,16 @@ test_that("estimate_uncertainty: errors when delay_aggregator changes row count"
       delay_aggregator = bad_aggregator
     ),
     "`delay_aggregator` must return a vector of length"
+  )
+})
+
+test_that("estimate_uncertainty: errors if insufficient data", {
+  expect_error(
+    estimate_uncertainty(
+      point_nowcast_matrices = valid_nowcasts,
+      truncated_reporting_triangles = valid_trunc_rts,
+      retro_reporting_triangles = valid_rts,
+      ref_time_aggregator = function(x) zoo::rollsum(x, k = 9, align = "right")
+    )
   )
 })

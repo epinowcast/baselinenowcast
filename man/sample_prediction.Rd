@@ -74,6 +74,7 @@ nowcast_pred_draw <- sample_prediction(
 nowcast_pred_draw
 
 # Get draws on the rolling sum
+if (requireNamespace("zoo", quietly = TRUE)) {
 nowcast_pred_draw_agg <- sample_prediction(
   point_nowcast_matrix,
   reporting_triangle,
@@ -81,4 +82,5 @@ nowcast_pred_draw_agg <- sample_prediction(
   ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
 )
 nowcast_pred_draw_agg
+}
 }

@@ -41,13 +41,15 @@
 #' nowcast_pred_draw
 #'
 #' # Get draws on the rolling sum
-#' nowcast_pred_draw_agg <- sample_prediction(
-#'   point_nowcast_matrix,
-#'   reporting_triangle,
-#'   disp,
-#'   ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
-#' )
-#' nowcast_pred_draw_agg
+#' if (requireNamespace("zoo", quietly = TRUE)) {
+#'   nowcast_pred_draw_agg <- sample_prediction(
+#'     point_nowcast_matrix,
+#'     reporting_triangle,
+#'     disp,
+#'     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+#'   )
+#'   nowcast_pred_draw_agg
+#' }
 sample_prediction <- function(
     point_nowcast_matrix,
     reporting_triangle,
@@ -64,7 +66,15 @@ sample_prediction <- function(
       )
     )
   }
-  n_horizons <- sum(is.na(rowSums(reporting_triangle)))
+
+
+  aggr_nowcast <- ref_time_aggregator(point_nowcast_matrix)
+  aggr_rt <- ref_time_aggregator(reporting_triangle)
+  aggr_nowcast_pred_matrix <- .extract_predictions(
+    aggr_nowcast,
+    aggr_rt
+  )
+  n_horizons <- sum(is.na(rowSums(aggr_rt)))
   if (length(uncertainty_params) < n_horizons) {
     cli_abort(
       message = c(
@@ -73,22 +83,26 @@ sample_prediction <- function(
       )
     )
   }
-  aggr_nowcast <- ref_time_aggregator(point_nowcast_matrix)
-  aggr_rt <- ref_time_aggregator(reporting_triangle)
-  aggr_nowcast_pred_matrix <- .extract_predictions(
-    aggr_nowcast,
-    aggr_rt
-  )
-  n_horizons <- sum(is.na(rowSums(reporting_triangle)))
 
   max_t <- nrow(aggr_nowcast)
   mean_pred_agg <- as.matrix(delay_aggregator(aggr_nowcast_pred_matrix))
 
+  # If there are no partial reference times, return a zero matrix of the
+  # appropriate size (nothing to predict).
+  if (n_horizons == 0) {
+    return(matrix(0, nrow = max_t, ncol = ncol(mean_pred_agg)))
+  }
+  # Get only the predictions for the partial reference times; ordered by
+  # reference time with horizon = 1 being the last entry.
+
   # Get only the predictions, these are ordered by reference time,
   # so horizon = 0 is last.
   mean_pred <- mean_pred_agg[(max_t - n_horizons + 1):max_t, ]
-
-  draw_pred <- as.matrix(observation_model(mean_pred, rev(uncertainty_params)))
+  uncertainty_params_use <- tail(uncertainty_params, n = n_horizons)
+  draw_pred <- as.matrix(observation_model(
+    pred = mean_pred,
+    uncertainty_params = rev(uncertainty_params_use)
+  ))
 
   # Pad with 0s for the fully observed rows, which are before
   # the max_t - n_horizons
@@ -131,10 +145,12 @@ sample_prediction <- function(
 #' reporting_triangle <- construct_triangle(reporting_matrix)
 #' combine_obs_with_pred(pred_counts, reporting_triangle)
 #' # Another example with rolling sum
-#' combine_obs_with_pred(pred_counts,
-#'   reporting_triangle,
-#'   ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
-#' )
+#' if (requireNamespace("zoo", quietly = TRUE)) {
+#'   combine_obs_with_pred(pred_counts,
+#'     reporting_triangle,
+#'     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+#'   )
+#' }
 combine_obs_with_pred <- function(
     predicted_counts,
     reporting_triangle,
@@ -179,14 +195,16 @@ combine_obs_with_pred <- function(
 #' )
 #' nowcast_pred_draws
 #' # Get nowcast pred draws over rolling sum
-#' nowcast_pred_draws_rolling_df <- sample_predictions(
-#'   point_nowcast_matrix,
-#'   reporting_triangle,
-#'   disp,
-#'   500,
-#'   ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
-#' )
-#' nowcast_pred_draws_rolling_df
+#' if (requireNamespace("zoo", quietly = TRUE)) {
+#'   nowcast_pred_draws_rolling_df <- sample_predictions(
+#'     point_nowcast_matrix,
+#'     reporting_triangle,
+#'     disp,
+#'     500,
+#'     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+#'   )
+#'   nowcast_pred_draws_rolling_df
+#' }
 sample_predictions <- function(
     point_nowcast_matrix,
     reporting_triangle,

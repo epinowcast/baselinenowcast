@@ -210,7 +210,7 @@ test_that("fit_by_horizon: works with vectors converted to single-column matrice
   expect_identical(result, sum(obs_vec))
 })
 
-test_that("fit_by_horizon: handles empty matrices", {
+test_that("fit_by_horizon: errors if empty matrices", {
   obs_empty <- matrix(nrow = 0, ncol = 3)
   pred_empty <- matrix(nrow = 0, ncol = 3)
 
@@ -218,14 +218,11 @@ test_that("fit_by_horizon: handles empty matrices", {
     return(length(x))
   }
 
-  result <- fit_by_horizon(
+  expect_error(fit_by_horizon(
     observation_model = empty_fun,
     obs = obs_empty,
     pred = pred_empty
-  )
-
-  expect_length(result, 3L)
-  expect_identical(result, c(0, 0, 0))
+  ))
 })
 
 test_that("fit_by_horizon: default function parameter works", {

@@ -67,14 +67,16 @@
 #' )
 #' disp_params
 #'
-#' # Estimate dispersion parameters from rolling mean with a normal error model
-#' disp_params_agg <- estimate_uncertainty(
-#'   point_nowcast_matrices = retro_nowcasts,
-#'   truncated_reporting_triangles = trunc_rts,
-#'   retro_reporting_triangles = retro_rts,
-#'   ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
-#' )
-#' disp_params_agg
+#' # Estimate dispersion parameters from rolling sum on the reference times
+#' if (requireNamespace("zoo", quietly = TRUE)) {
+#'   disp_params_agg <- estimate_uncertainty(
+#'     point_nowcast_matrices = retro_nowcasts,
+#'     truncated_reporting_triangles = trunc_rts,
+#'     retro_reporting_triangles = retro_rts,
+#'     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+#'   )
+#'   disp_params_agg
+#' }
 estimate_uncertainty <- function(
     point_nowcast_matrices,
     truncated_reporting_triangles,
@@ -283,6 +285,12 @@ fit_by_horizon <- function(obs,
   if (is.null(obs) || is.null(pred)) {
     cli_abort("Missing `obs` and/or `pred`") # nolint
   }
+  # Coerce vectors/data.frames to matrices and validate numeric
+  obs <- as.matrix(obs)
+  pred <- as.matrix(pred)
+  if (!is.numeric(obs) || !is.numeric(pred)) {
+    cli_abort("`obs` and `pred` must be numeric (after coercion to matrix).")
+  }
 
   # Ensure obs and pred have the same dimensions
   if (!identical(dim(obs), dim(pred))) {
@@ -341,6 +349,9 @@ fit_by_horizon <- function(obs,
 .filter_to_recent_horizons <- function(matrix,
                                        n_possible_horizons) {
   max_t <- nrow(matrix)
+  if (n_possible_horizons > max_t) {
+    cli_abort("n_possible_horizons ({n_possible_horizons}) exceeds matrix rows ({max_t})") # nolint
+  }
   bottom_matrix <- matrix[(max_t - n_possible_horizons + 1):max_t, ]
   return(bottom_matrix)
 }

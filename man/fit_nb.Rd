@@ -7,9 +7,9 @@
 fit_nb(x, mu)
 }
 \arguments{
-\item{x}{the observed values}
+\item{x}{Vector of observed values.}
 
-\item{mu}{the expected values}
+\item{mu}{Vector of expected values.}
 }
 \value{
 the maximum likelihood estimate of the dispersion

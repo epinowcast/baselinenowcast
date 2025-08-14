@@ -15,17 +15,17 @@
 #'   matrices with as many rows as available given the truncation.
 #' @param n Integer indicating the number of reporting matrices to use to
 #'    estimate the uncertainty parameters.
-#' @param error_model Function that ingests a matrix of observations and a
+#' @param uncertainty_model Function that ingests a matrix of observations and a
 #'     matrix of predictions and returns a vector that can be used to
 #'     apply uncertainty using the same error model. Default is
-#'     `fit_by_horizon(obs = obs, pred = pred)` which is a custom function that
-#'     fits each  column (horizon) of the matrix of observations (`obs`) and
-#'     the matrix of predictions (`pred`) to a negative binomial observation
-#'     model by default. The user can specify a different fitting model by
-#'     replacing the `fun` argument in `fit_by_horizon`.
+#'     `fit_by_horizon` with arguments of `obs` matrix of observations and
+#'     `pred` the matrix of predictions that fits each column (horizon)
+#'     to a negative binomial observation model by default. The user can
+#'     specify a different fitting model by replacing the `fun` argument in
+#'      `fit_by_horizon`.
 #' @param ref_time_aggregator Function that operates along the rows (reference
 #'    times) of the retrospective point nowcast matrix before it has been
-#'    aggregated across columns (delays). Default is `function(x) identity(x)`
+#'    aggregated across columns (delays). Default is `identity`
 #'    which does not aggregate across reference times.
 #' @param delay_aggregator Function that operates along the columns (delays)
 #'    of the retrospective point nowcast matrix after it has been aggregated
@@ -80,8 +80,8 @@ estimate_uncertainty <- function(
     truncated_reporting_triangles,
     retro_reporting_triangles,
     n = length(point_nowcast_matrices),
-    error_model = function(obs, pred) fit_by_horizon(obs = obs, pred = pred),
-    ref_time_aggregator = function(x) identity(x),
+    uncertainty_model = fit_by_horizon,
+    ref_time_aggregator = identity,
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
   assert_integerish(n, lower = 0)
   .check_list_length(
@@ -193,11 +193,12 @@ estimate_uncertainty <- function(
 
     # For each horizon, take the partial sum of the nowcasted and already
     # observed components.
-
-    indices_nowcast <- is.na(aggr_rt_obs |>
-      .filter_to_recent_horizons(n_possible_horizons))
-    indices_obs <- !is.na(aggr_obs |>
-      .filter_to_recent_horizons(n_possible_horizons))
+    indices_nowcast <- is.na(
+      .filter_to_recent_horizons(aggr_rt_obs, n_possible_horizons)
+    )
+    indices_obs <- !is.na(
+      .filter_to_recent_horizons(aggr_obs, n_possible_horizons)
+    )
     masked_nowcast <- aggr_nowcast |>
       .filter_to_recent_horizons(n_possible_horizons) |>
       .apply_mask(indices_nowcast, indices_obs)
@@ -235,7 +236,7 @@ estimate_uncertainty <- function(
 
   # Take matrix of observations and predictions and get uncertainty parameters
   # for each column (horizon)
-  uncertainty_params <- error_model(
+  uncertainty_params <- uncertainty_model(
     obs = to_add_already_observed,
     pred = exp_to_add
   )
@@ -246,10 +247,10 @@ estimate_uncertainty <- function(
 #' Helper function that fits its each column of the matrix (horizon) to an
 #'    observation model.
 #'
-#' @param fun Function that ingests observations and expectations and returns
-#'    uncertainty parameters, default is `function(x,mu) fit_nb(x,mu)`
-#' @param obs Matrix or vector of observations, default is NULL.
-#' @param pred Matrix or vector of predictions, default is NULL.
+#' @param obs Matrix or vector of observations.
+#' @param pred Matrix or vector of predictions.
+#' @param observation_model Function that ingests observations and expectations
+#'    and returns uncertainty parameters, default is `fit_nb`.
 #'
 #' @returns Vector of uncertainty parameters of the same length as the number
 #'    of columns in the `obs` matrix.
@@ -276,9 +277,9 @@ estimate_uncertainty <- function(
 #' )
 #' disp <- fit_by_horizon(obs = obs, pred = pred)
 #' disp
-fit_by_horizon <- function(fun = function(x, mu) fit_nb(x, mu),
-                           obs = NULL,
-                           pred = NULL) {
+fit_by_horizon <- function(obs,
+                           pred,
+                           observation_model = fit_nb) {
   if (is.null(obs) || is.null(pred)) {
     cli_abort("Missing `obs` and/or `pred`")
   }
@@ -289,7 +290,7 @@ fit_by_horizon <- function(fun = function(x, mu) fit_nb(x, mu),
   }
   uncertainty_params <- numeric(ncol(obs))
   for (i in seq_len(ncol(obs))) {
-    uncertainty_params[i] <- fun(obs[, i], pred[, i])
+    uncertainty_params[i] <- observation_model(obs[, i], pred[, i])
   }
 
   return(uncertainty_params)
@@ -310,7 +311,7 @@ fit_by_horizon <- function(fun = function(x, mu) fit_nb(x, mu),
 .calc_n_retro_nowcast_times <- function(
     list_of_obs,
     n_possible_horizons,
-    ref_time_aggregator = function(x) identity(x)) {
+    ref_time_aggregator = identity) {
   if (length(list_of_obs) == 0) {
     return(0)
   }
@@ -390,8 +391,8 @@ fit_by_horizon <- function(fun = function(x, mu) fit_nb(x, mu),
 #'   Nowcasting Hub.
 #'   Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7fab4dce7b559c3076ab643cf22048cb5fb84cc2/code/baseline/functions.R#L404 #nolint
 #' @importFrom stats dnbinom optimize
-#' @param x the observed values
-#' @param mu the expected values
+#' @param x Vector of observed values.
+#' @param mu Vector of expected values.
 #' @returns the maximum likelihood estimate of the dispersion
 #' @export
 #' @examples

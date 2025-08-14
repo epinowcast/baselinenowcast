@@ -8,7 +8,7 @@ aggregating}
 .calc_n_retro_nowcast_times(
   list_of_obs,
   n_possible_horizons,
-  ref_time_aggregator = function(x) identity(x)
+  ref_time_aggregator = identity
 )
 }
 \arguments{
@@ -19,7 +19,7 @@ retrospective reporting triangle.}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
-aggregated across columns (delays). Default is \code{function(x) identity(x)}
+aggregated across columns (delays). Default is \code{identity}
 which does not aggregate across reference times.}
 }
 \value{

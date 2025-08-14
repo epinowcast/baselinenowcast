@@ -4,13 +4,12 @@
 \alias{sample_nb}
 \title{Sample from negative binomial model given a set of predictions}
 \usage{
-sample_nb(pred = NULL, uncertainty_params = NULL)
+sample_nb(pred, uncertainty_params)
 }
 \arguments{
-\item{pred}{Vector of predictions. Default is \code{NULL}}
+\item{pred}{Vector of predictions.}
 
-\item{uncertainty_params}{Vector of uncertainty parameters. Default is
-\code{NULL}.}
+\item{uncertainty_params}{Vector of uncertainty parameters.}
 }
 \value{
 \code{sampled_pred} Object of the same dimensions as \code{pred} representing

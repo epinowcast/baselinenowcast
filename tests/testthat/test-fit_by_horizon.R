@@ -41,7 +41,7 @@ pred_matrix <- matrix(
 test_that("fit_by_horizon: basic functionality with default function", {
   # Since fit_nb is not defined, we'll use a mock function
   result <- fit_by_horizon(
-    fun = mock_fit_nb,
+    observation_model = mock_fit_nb,
     obs = obs_matrix,
     pred = pred_matrix
   )
@@ -54,7 +54,7 @@ test_that("fit_by_horizon: basic functionality with default function", {
 
 test_that("fit_by_horizon: works with custom function", {
   result <- fit_by_horizon(
-    fun = sum_fun,
+    observation_model = sum_fun,
     obs = obs_matrix,
     pred = pred_matrix
   )
@@ -72,7 +72,7 @@ test_that("fit_by_horizon: works with custom function", {
 test_that("fit_by_horizon: errors obs is NULL", {
   expect_error(
     fit_by_horizon(
-      fun = sum_fun,
+      observation_model = sum_fun,
       obs = NULL,
       pred = pred_matrix
     ),
@@ -83,7 +83,7 @@ test_that("fit_by_horizon: errors obs is NULL", {
 test_that("fit_by_horizon: errors when pred is NULL", {
   expect_error(
     fit_by_horizon(
-      fun = sum_fun,
+      observation_model = sum_fun,
       obs = obs_matrix,
       pred = NULL
     ),
@@ -94,7 +94,7 @@ test_that("fit_by_horizon: errors when pred is NULL", {
 test_that("fit_by_horizon: errors when both obs and pred are NULL", {
   expect_error(
     fit_by_horizon(
-      fun = sum_fun,
+      observation_model = sum_fun,
       obs = NULL,
       pred = NULL
     ),
@@ -107,7 +107,7 @@ test_that("fit_by_horizon: errors when dimensions don't match", {
 
   expect_error(
     fit_by_horizon(
-      fun = sum_fun,
+      observation_model = sum_fun,
       obs = obs_wrong_dim,
       pred = pred_matrix
     ),
@@ -120,7 +120,7 @@ test_that("fit_by_horizon: handles single column matrices", {
   pred_single_col <- matrix(c(1.1, 2.1, 3.1), ncol = 1)
 
   result <- fit_by_horizon(
-    fun = sum_fun,
+    observation_model = sum_fun,
     obs = obs_single_col,
     pred = pred_single_col
   )
@@ -134,7 +134,7 @@ test_that("fit_by_horizon: handles single row matrices", {
   pred_single_row <- matrix(c(1.1, 2.1, 3.1), nrow = 1)
 
   result <- fit_by_horizon(
-    fun = sum_fun,
+    observation_model = sum_fun,
     obs = obs_single_row,
     pred = pred_single_row
   )
@@ -148,7 +148,7 @@ test_that("fit_by_horizon: handles 1x1 matrices", {
   pred_1x1 <- matrix(4.5, nrow = 1, ncol = 1)
 
   result <- fit_by_horizon(
-    fun = sum_fun,
+    observation_model = sum_fun,
     obs = obs_1x1,
     pred = pred_1x1
   )
@@ -167,7 +167,7 @@ test_that("fit_by_horizon: function receives correct column data", {
   }
 
   result <- fit_by_horizon(
-    fun = check_data_fun,
+    observation_model = check_data_fun,
     obs = obs_matrix,
     pred = pred_matrix
   )
@@ -184,7 +184,7 @@ test_that("fit_by_horizon: function that errors", {
 
   expect_error(
     fit_by_horizon(
-      fun = error_fun,
+      observation_model = error_fun,
       obs = obs_matrix,
       pred = pred_matrix
     ),
@@ -201,7 +201,7 @@ test_that("fit_by_horizon: works with vectors converted to single-column matrice
   pred_matrix_vec <- matrix(pred_vec, ncol = 1)
 
   result <- fit_by_horizon(
-    fun = sum_fun,
+    observation_model = sum_fun,
     obs = obs_matrix_vec,
     pred = pred_matrix_vec
   )
@@ -219,7 +219,7 @@ test_that("fit_by_horizon: function using both obs and pred parameters", {
   }
 
   result <- fit_by_horizon(
-    fun = correlation_fun,
+    observation_model = correlation_fun,
     obs = obs_matrix,
     pred = pred_matrix
   )
@@ -239,7 +239,7 @@ test_that("fit_by_horizon: handles empty matrices", {
   }
 
   result <- fit_by_horizon(
-    fun = empty_fun,
+    observation_model = empty_fun,
     obs = obs_empty,
     pred = pred_empty
   )

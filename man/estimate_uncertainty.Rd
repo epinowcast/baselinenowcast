@@ -9,8 +9,8 @@ estimate_uncertainty(
   truncated_reporting_triangles,
   retro_reporting_triangles,
   n = length(point_nowcast_matrices),
-  error_model = function(obs, pred) fit_by_horizon(obs = obs, pred = pred),
-  ref_time_aggregator = function(x) identity(x),
+  uncertainty_model = fit_by_horizon,
+  ref_time_aggregator = identity,
   delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
 )
 }
@@ -28,18 +28,18 @@ matrices with as many rows as available given the truncation.}
 \item{n}{Integer indicating the number of reporting matrices to use to
 estimate the uncertainty parameters.}
 
-\item{error_model}{Function that ingests a matrix of observations and a
+\item{uncertainty_model}{Function that ingests a matrix of observations and a
 matrix of predictions and returns a vector that can be used to
 apply uncertainty using the same error model. Default is
-\code{fit_by_horizon(obs = obs, pred = pred)} which is a custom function that
-fits each  column (horizon) of the matrix of observations (\code{obs}) and
-the matrix of predictions (\code{pred}) to a negative binomial observation
-model by default. The user can specify a different fitting model by
-replacing the \code{fun} argument in \code{fit_by_horizon}.}
+\code{fit_by_horizon} with arguments of \code{obs} matrix of observations and
+\code{pred} the matrix of predictions that fits each column (horizon)
+to a negative binomial observation model by default. The user can
+specify a different fitting model by replacing the \code{fun} argument in
+\code{fit_by_horizon}.}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
-aggregated across columns (delays). Default is \code{function(x) identity(x)}
+aggregated across columns (delays). Default is \code{identity}
 which does not aggregate across reference times.}
 
 \item{delay_aggregator}{Function that operates along the columns (delays)

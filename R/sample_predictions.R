@@ -7,9 +7,12 @@
 #'   horizon 1 to the maximum horizon. Note that these will be reversed
 #'   internally to match the ordering of the `point_nowcast_matrix` (where
 #'   a horizon of 1 is the last entry).
-#' @param error_model Function that ingests a vector or matrix of predictions
+#' @param observation_model Function that ingests a vector or matrix of predictions
 #'    and a vector of uncertainty parameters and generates draws from the
-#'    error model. Default is `sample_nb()`.
+#'    error model. Default is `sample_nb` which expects arguments `pred` for the
+#'    vector of predictions and uncertainty parameters for the corresponding
+#'    vector of uncertainty parameters, and draws from a negative binomial
+#'    for each element of the vector.
 #' @inheritParams estimate_delay
 #' @inheritParams estimate_uncertainty
 #' @returns Vector of predicted draws at each reference time, for all reference
@@ -50,8 +53,8 @@ sample_prediction <- function(
     point_nowcast_matrix,
     reporting_triangle,
     uncertainty_params,
-    error_model = function(pred, params) sample_nb(pred, params),
-    ref_time_aggregator = function(x) identity(x),
+    observation_model = sample_nb,
+    ref_time_aggregator = identity,
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
   if (length(uncertainty_params) > nrow(point_nowcast_matrix)) {
     cli_abort(
@@ -86,7 +89,7 @@ sample_prediction <- function(
   # so horizon = 0 is last.
   mean_pred <- mean_pred_agg[(max_t - n_horizons + 1):max_t, ]
 
-  draw_pred <- as.matrix(error_model(mean_pred, rev(uncertainty_params)))
+  draw_pred <- as.matrix(observation_model(mean_pred, rev(uncertainty_params)))
 
   # Pad with 0s for the fully observed rows, which are before
   # the max_t - n_horizons
@@ -252,7 +255,7 @@ sample_nowcast <- function(
     point_nowcast_matrix,
     reporting_triangle,
     uncertainty_params,
-    error_model = function(pred, params) sample_nb(pred, params),
+    observation_model = function(pred, params) sample_nb(pred, params),
     ref_time_aggregator = function(x) identity(x),
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
   # Generate a single draw of the predictions
@@ -260,7 +263,7 @@ sample_nowcast <- function(
     point_nowcast_matrix,
     reporting_triangle,
     uncertainty_params,
-    error_model,
+    observation_model,
     ref_time_aggregator,
     delay_aggregator
   )
@@ -341,9 +344,8 @@ sample_nowcasts <- function(
 }
 #' Sample from negative binomial model given a set of predictions
 #'
-#' @param pred Vector of predictions. Default is `NULL`
-#' @param uncertainty_params Vector of uncertainty parameters. Default is
-#'     `NULL`.
+#' @param pred Vector of predictions.
+#' @param uncertainty_params Vector of uncertainty parameters.
 #' @importFrom stats rnbinom
 #' @export
 #' @returns `sampled_pred` Object of the same dimensions as `pred` representing
@@ -355,7 +357,7 @@ sample_nowcasts <- function(
 #'   uncertainty_params = c(50, 100)
 #' )
 #' sampled_preds
-sample_nb <- function(pred = NULL, uncertainty_params = NULL) {
+sample_nb <- function(pred, uncertainty_params) {
   if (!is.null(pred)) {
     sampled_pred <- rnbinom(
       n = length(pred),

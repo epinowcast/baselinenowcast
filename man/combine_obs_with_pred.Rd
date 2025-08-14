@@ -24,7 +24,7 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
-aggregated across columns (delays). Default is \code{function(x) identity(x)}
+aggregated across columns (delays). Default is \code{identity}
 which does not aggregate across reference times.}
 
 \item{delay_aggregator}{Function that operates along the columns (delays)

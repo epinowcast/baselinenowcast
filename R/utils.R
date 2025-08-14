@@ -70,7 +70,7 @@
 #' @keywords internal
 .extract_predictions <- function(point_nowcast_matrix,
                                  reporting_triangle) {
-  assert_matrix(point_nowcast_matrix, any.missing = FALSE)
+  assert_matrix(point_nowcast_matrix, all.missing = FALSE)
   assert_matrix(reporting_triangle, all.missing = FALSE)
   # Check that the observations are the same
   all_equal <- all(point_nowcast_matrix[!is.na(reporting_triangle)] == reporting_triangle[!is.na(reporting_triangle)]) # nolint

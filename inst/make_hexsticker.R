@@ -127,8 +127,8 @@ retro_pt_nowcast_mat_list <- fill_triangles(
 
 # Estimate a vector of negative binomial dispersion parameters from the observations and estimates at each horizon
 disp_params <- estimate_uncertainty(
-  pt_nowcast_matrices = retro_pt_nowcast_mat_list,
-  trunc_reporting_triangles = trunc_rep_tri_list,
+  point_nowcast_matrices = retro_pt_nowcast_mat_list,
+  truncated_reporting_triangles = trunc_rep_tri_list,
   retro_reporting_triangles = retro_rep_tri_list,
   n = n_retrospective_nowcasts
 )
@@ -137,7 +137,7 @@ disp_params <- estimate_uncertainty(
 nowcast_draws_df <- sample_nowcasts(
   point_nowcast_matrix,
   reporting_triangle,
-  dispersion = disp_params,
+  uncertainty_params = disp_params,
   draws = 100
 )
 

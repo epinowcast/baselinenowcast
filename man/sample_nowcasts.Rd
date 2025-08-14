@@ -7,7 +7,7 @@
 sample_nowcasts(
   point_nowcast_matrix,
   reporting_triangle,
-  dispersion,
+  uncertainty_params,
   draws = 1000,
   ...
 )
@@ -23,13 +23,15 @@ delays. Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row. (e.g. weekly reporting of daily data).}
 
-\item{dispersion}{Vector of dispersion parameters indexed by horizon from
-minus one to the maximum delay.}
+\item{uncertainty_params}{Vector of uncertainty parameters ordered from
+horizon 1 to the maximum horizon. Note that these will be reversed
+internally to match the ordering of the \code{point_nowcast_matrix} (where
+a horizon of 1 is the last entry).}
 
 \item{draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}
 
-\item{...}{Additional arguments pass to \code{sample_predictions()}}
+\item{...}{Additional arguments passed to \code{sample_nowcast}.}
 }
 \value{
 Dataframe containing information for multiple draws with columns

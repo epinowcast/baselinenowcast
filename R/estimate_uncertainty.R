@@ -18,8 +18,11 @@
 #' @param error_model Function that ingests a matrix of observations and a
 #'     matrix of predictions and returns a vector that can be used to
 #'     apply uncertainty using the same error model. Default is
-#'     `fit_by_horizon()` which is a custom function that fits each column
-#'     (horizon) to a negative binomial observation model.
+#'     `fit_by_horizon(obs = obs, pred = pred)` which is a custom function that
+#'     fits each  column (horizon) of the matrix of observations (`obs`) and
+#'     the matrix of predictions (`pred`) to a negative binomial observation
+#'     model by default. The user can specify a different fitting model by
+#'     replacing the `fun` argument in `fit_by_horizon`.
 #' @param ref_time_aggregator Function that operates along the rows (reference
 #'    times) of the retrospective point nowcast matrix before it has been
 #'    aggregated across columns (delays). Default is `function(x) identity(x)`

@@ -26,13 +26,16 @@ list are paired with elements of \code{point_nowcast_matrices}.}
 matrices with as many rows as available given the truncation.}
 
 \item{n}{Integer indicating the number of reporting matrices to use to
-estimate the dispersion parameters.}
+estimate the uncertainty parameters.}
 
 \item{error_model}{Function that ingests a matrix of observations and a
 matrix of predictions and returns a vector that can be used to
 apply uncertainty using the same error model. Default is
-\code{fit_by_horizon()} which is a custom function that fits each column
-(horizon) to a negative binomial observation model.}
+\code{fit_by_horizon(obs = obs, pred = pred)} which is a custom function that
+fits each  column (horizon) of the matrix of observations (\code{obs}) and
+the matrix of predictions (\code{pred}) to a negative binomial observation
+model by default. The user can specify a different fitting model by
+replacing the \code{fun} argument in \code{fit_by_horizon}.}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
@@ -77,7 +80,7 @@ retro_rts <- construct_triangles(trunc_rts)
 
 retro_nowcasts <- fill_triangles(retro_rts, n = 5)
 # Estimate dispersion parameters using default (negative binomial error
-# model on the sums
+# model on the sums)
 disp_params <- estimate_uncertainty(
   point_nowcast_matrices = retro_nowcasts,
   truncated_reporting_triangles = trunc_rts,

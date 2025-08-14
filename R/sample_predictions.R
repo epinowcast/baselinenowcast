@@ -149,6 +149,7 @@ combine_obs_with_pred <- function(
 #'
 #' @param draws Integer indicating the number of draws of the predicted
 #'    nowcast vector to generate. Default is `1000`.
+#' @param ... Additional arguments passed to `sample_prediction`.
 #' @inheritParams sample_prediction
 #' @returns Dataframe containing the predicted point nowcast vectors indexed by
 #'    reference time (`pred_count`), reference time (`time`), and the draw index
@@ -189,9 +190,7 @@ sample_predictions <- function(
     reporting_triangle,
     uncertainty_params,
     draws = 1000,
-    error_model = function(pred, params) sample_nb(pred, params),
-    ref_time_aggregator = function(x) identity(x),
-    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
+    ...) {
   assert_integerish(draws, lower = 1)
   reference_times <- seq_len(nrow(point_nowcast_matrix))
 
@@ -200,9 +199,7 @@ sample_predictions <- function(
       point_nowcast_matrix,
       reporting_triangle,
       uncertainty_params,
-      error_model,
-      ref_time_aggregator,
-      delay_aggregator
+      ...
     )
 
     # If aggregating, we need to pad with NAs
@@ -282,6 +279,7 @@ sample_nowcast <- function(
 #' Generate multiple draws of a nowcast combining observed and predicted values
 #'
 #' @inheritParams sample_predictions
+#' @param ... Additional arguments passed to `sample_nowcast`.
 #' @returns Dataframe containing information for multiple draws with columns
 #'  for the reference time (`time`), the predicted counts (`pred_count`), and
 #'  the draw number (`draw`).
@@ -312,9 +310,7 @@ sample_nowcasts <- function(
     reporting_triangle,
     uncertainty_params,
     draws = 1000,
-    error_model = function(pred, params) sample_nb(pred, params),
-    ref_time_aggregator = function(x) identity(x),
-    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
+    ...) {
   reference_times <- seq_len(nrow(point_nowcast_matrix))
 
   draws_df_list <- lapply(seq_len(draws), function(i) {
@@ -322,9 +318,7 @@ sample_nowcasts <- function(
       point_nowcast_matrix,
       reporting_triangle,
       uncertainty_params,
-      error_model,
-      ref_time_aggregator,
-      delay_aggregator
+      ...
     )
     # If aggregating, we need to pad with NAs
     pred_counts_padded <- c(

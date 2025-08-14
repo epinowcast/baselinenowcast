@@ -28,19 +28,6 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 horizon 1 to the maximum horizon. Note that these will be reversed
 internally to match the ordering of the \code{point_nowcast_matrix} (where
 a horizon of 1 is the last entry).}
-
-\item{error_model}{Function that ingests a vector or matrix of predictions
-and a vector of uncertainty parameters and generates draws from the
-error model. Default is \code{sample_nb()}.}
-
-\item{ref_time_aggregator}{Function that operates along the rows (reference
-times) of the retrospective point nowcast matrix before it has been
-aggregated across columns (delays). Default is \code{function(x) identity(x)}
-which does not aggregate across reference times.}
-
-\item{delay_aggregator}{Function that operates along the columns (delays)
-of the retrospective point nowcast matrix after it has been aggregated
-across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
 }
 \value{
 Vector of predicted counts at each reference time based on combining

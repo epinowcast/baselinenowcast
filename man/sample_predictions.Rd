@@ -10,9 +10,7 @@ sample_predictions(
   reporting_triangle,
   uncertainty_params,
   draws = 1000,
-  error_model = function(pred, params) sample_nb(pred, params),
-  ref_time_aggregator = function(x) identity(x),
-  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+  ...
 )
 }
 \arguments{
@@ -34,18 +32,7 @@ a horizon of 1 is the last entry).}
 \item{draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}
 
-\item{error_model}{Function that ingests a vector or matrix of predictions
-and a vector of uncertainty parameters and generates draws from the
-error model. Default is \code{sample_nb()}.}
-
-\item{ref_time_aggregator}{Function that operates along the rows (reference
-times) of the retrospective point nowcast matrix before it has been
-aggregated across columns (delays). Default is \code{function(x) identity(x)}
-which does not aggregate across reference times.}
-
-\item{delay_aggregator}{Function that operates along the columns (delays)
-of the retrospective point nowcast matrix after it has been aggregated
-across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
+\item{...}{Additional arguments passed to \code{sample_prediction}.}
 }
 \value{
 Dataframe containing the predicted point nowcast vectors indexed by

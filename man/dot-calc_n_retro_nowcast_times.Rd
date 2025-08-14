@@ -8,7 +8,7 @@ aggregating}
 .calc_n_retro_nowcast_times(
   list_of_obs,
   n_possible_horizons,
-  ref_time_aggregator
+  ref_time_aggregator = function(x) identity(x)
 )
 }
 \arguments{

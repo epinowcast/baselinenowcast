@@ -255,8 +255,8 @@ sample_nowcast <- function(
     point_nowcast_matrix,
     reporting_triangle,
     uncertainty_params,
-    observation_model = function(pred, params) sample_nb(pred, params),
-    ref_time_aggregator = function(x) identity(x),
+    observation_model = sample_nb,
+    ref_time_aggregator = identity,
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
   # Generate a single draw of the predictions
   pred_counts <- sample_prediction(

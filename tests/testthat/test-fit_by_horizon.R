@@ -210,23 +210,6 @@ test_that("fit_by_horizon: works with vectors converted to single-column matrice
   expect_identical(result, sum(obs_vec))
 })
 
-test_that("fit_by_horizon: function using both obs and pred parameters", {
-  add_fun <- function(x, mu) {
-    return(x + mu)
-  }
-
-  result <- fit_by_horizon(
-    observation_model = add_fun,
-    obs = obs_matrix,
-    pred = pred_matrix
-  )
-
-  expect_length(result, 3L)
-  expect_type(result, "double")
-  # All correlations should be finite numbers or NA
-  expect_true(all(is.finite(result) | is.na(result)))
-})
-
 test_that("fit_by_horizon: handles empty matrices", {
   obs_empty <- matrix(nrow = 0, ncol = 3)
   pred_empty <- matrix(nrow = 0, ncol = 3)

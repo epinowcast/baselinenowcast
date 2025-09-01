@@ -167,3 +167,27 @@
 
   return(NULL)
 }
+
+#' Check observations and predictions are compatible
+#'
+#' @param obs Matrix or vector of observations.
+#' @param pred Matrix or vector of predictions.
+#'
+#' @returns NULL, invisibly
+.check_obs_and_pred <- function(obs, pred) {
+  if (is.null(obs) || is.null(pred)) {
+    cli_abort("Missing `obs` and/or `pred`") # nolint
+  }
+  # Coerce vectors/data.frames to matrices and validate numeric
+  obs <- as.matrix(obs)
+  pred <- as.matrix(pred)
+  if (!is.numeric(obs) || !is.numeric(pred)) {
+    cli_abort("`obs` and `pred` must be numeric (after coercion to matrix).")
+  }
+
+  # Ensure obs and pred have the same dimensions
+  if (!identical(dim(obs), dim(pred))) {
+    cli_abort("`obs` and `pred` must have the same dimensions") # nolint
+  }
+  return(NULL)
+}

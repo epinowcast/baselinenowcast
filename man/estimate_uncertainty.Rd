@@ -90,12 +90,12 @@ disp_params
 
 # Estimate dispersion parameters from rolling sum on the reference times
 if (requireNamespace("zoo", quietly = TRUE)) {
-disp_params_agg <- estimate_uncertainty(
-  point_nowcast_matrices = retro_nowcasts,
-  truncated_reporting_triangles = trunc_rts,
-  retro_reporting_triangles = retro_rts,
-  ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
-)
-disp_params_agg
+  disp_params_agg <- estimate_uncertainty(
+    point_nowcast_matrices = retro_nowcasts,
+    truncated_reporting_triangles = trunc_rts,
+    retro_reporting_triangles = retro_rts,
+    ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+  )
+  disp_params_agg
 }
 }

@@ -66,13 +66,13 @@ nowcast_pred_draws <- sample_predictions(
 nowcast_pred_draws
 # Get nowcast pred draws over rolling sum
 if (requireNamespace("zoo", quietly = TRUE)) {
-nowcast_pred_draws_rolling_df <- sample_predictions(
-  point_nowcast_matrix,
-  reporting_triangle,
-  disp,
-  500,
-  ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
-)
-nowcast_pred_draws_rolling_df
+  nowcast_pred_draws_rolling_df <- sample_predictions(
+    point_nowcast_matrix,
+    reporting_triangle,
+    disp,
+    500,
+    ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+  )
+  nowcast_pred_draws_rolling_df
 }
 }

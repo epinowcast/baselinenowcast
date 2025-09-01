@@ -229,6 +229,12 @@ estimate_uncertainty <- function(
   }
 
 
+
+  # Ensure obs and pred have the same dimensions, are not NULL, etc.
+  .check_obs_and_pred(
+    obs = to_add_already_observed,
+    pred = exp_to_add
+  )
   # Take matrix of observations and predictions and get uncertainty parameters
   # for each column (horizon)
   uncertainty_params <- uncertainty_model(
@@ -275,20 +281,9 @@ estimate_uncertainty <- function(
 fit_by_horizon <- function(obs,
                            pred,
                            observation_model = fit_nb) {
-  if (is.null(obs) || is.null(pred)) {
-    cli_abort("Missing `obs` and/or `pred`") # nolint
-  }
   # Coerce vectors/data.frames to matrices and validate numeric
   obs <- as.matrix(obs)
   pred <- as.matrix(pred)
-  if (!is.numeric(obs) || !is.numeric(pred)) {
-    cli_abort("`obs` and `pred` must be numeric (after coercion to matrix).")
-  }
-
-  # Ensure obs and pred have the same dimensions
-  if (!identical(dim(obs), dim(pred))) {
-    cli_abort("`obs` and `pred` must have the same dimensions") # nolint
-  }
   uncertainty_params <- numeric(ncol(obs))
   for (i in seq_len(ncol(obs))) {
     uncertainty_params[i] <- observation_model(obs[, i], pred[, i])

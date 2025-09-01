@@ -284,6 +284,7 @@ test_that("estimate_uncertainty: works as expected with perfect data", {
 })
 
 test_that("estimate_uncertainty: works as expected with some dispersion for both ks", { # nolint
+  skip_if_not_installed("zoo")
   set.seed(123)
   delay_pmf <- c(0.4, 0.3, 0.2, 0.05, 0.05)
   partial_counts <- c(80, 100, 180, 80, 140)
@@ -361,6 +362,7 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
 test_that("estimate_uncertainty: returns known dispersion parameters", { # nolint
   # Note, this test covers that we can approximately recover high dispersion,
   # it will not be able to distinguish between high dispersion values.
+  skip_if_not_installed("zoo")
   set.seed(123)
   delay_pmf <- c(0.2, 0.2, 0.2, 0.1, 0.2)
   partial_counts <- c(500, 800, 600, 900, 800)
@@ -562,6 +564,7 @@ test_that("estimate_uncertainty: errors when delay_aggregator changes row count"
 })
 
 test_that("estimate_uncertainty: errors if insufficient data", {
+  skip_if_not_installed("zoo")
   expect_error(
     estimate_uncertainty(
       point_nowcast_matrices = valid_nowcasts,

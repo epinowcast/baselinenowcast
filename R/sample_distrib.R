@@ -32,7 +32,7 @@ sample_nb <- function(pred, uncertainty_params) {
       mu = as.numeric(pred)
     )
     if (is.matrix(pred)) {
-      dim(sampled_draws) <- dim(pred)
+      dim(sampled_pred) <- dim(pred)
       dimnames(sampled_pred) <- dimnames(pred)
     }
   } else {

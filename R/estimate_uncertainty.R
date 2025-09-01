@@ -161,6 +161,9 @@ estimate_uncertainty <- function(
   }
 
   agg <- as.matrix(ref_time_aggregator(list_of_obs[[1]]))
+  if (!is.numeric(agg)) {
+    cli_abort("`ref_time_aggregator` must return a numeric matrix.")
+  }
   ncol_agg <- ncol(agg)
 
   if (ncol_agg != ncol(list_of_obs[[1]])) {
@@ -213,6 +216,11 @@ estimate_uncertainty <- function(
     # Reverse because the indices are horizons which are ordered opposite to
     # reference times (last reference time = first horizon)
     aggr_nowcast <- delay_aggregator(masked_nowcast)
+    if (!is.numeric(aggr_nowcast)) {
+      cli_abort(
+        "`delay_aggregator` must return a numeric vector, got {class(aggr_nowcast)}" # nolint
+      )
+    }
     if (length(aggr_nowcast) != n_possible_horizons) {
       cli_abort(
         "`delay_aggregator` must return a vector of length {n_possible_horizons}, got {length(aggr_nowcast)}" # nolint
@@ -281,9 +289,11 @@ estimate_uncertainty <- function(
 fit_by_horizon <- function(obs,
                            pred,
                            observation_model = fit_nb) {
+  .check_obs_and_pred(obs, pred)
   # Coerce vectors/data.frames to matrices and validate numeric
   obs <- as.matrix(obs)
   pred <- as.matrix(pred)
+
   uncertainty_params <- numeric(ncol(obs))
   for (i in seq_len(ncol(obs))) {
     uncertainty_params[i] <- observation_model(obs[, i], pred[, i])
@@ -328,19 +338,22 @@ fit_by_horizon <- function(obs,
 
 #' Filter to recent horizons
 #'
-#' @param matrix Matrix containing all the rows
+#' @param mat Matrix containing all the rows
 #' @param n_possible_horizons Number of rows we want starting from the final
 #'    row
 #'
 #' @returns `bottom_matrix` Matrix containing the last `n_possible_horizons`
 #'    rows of the matrix.
-.filter_to_recent_horizons <- function(matrix,
+.filter_to_recent_horizons <- function(mat,
                                        n_possible_horizons) {
-  max_t <- nrow(matrix)
+  max_t <- nrow(mat)
+  if (n_possible_horizons <= 0) {
+    cli_abort("n_possible_horizons must be >= 1")
+  }
   if (n_possible_horizons > max_t) {
     cli_abort("n_possible_horizons ({n_possible_horizons}) exceeds matrix rows ({max_t})") # nolint
   }
-  bottom_matrix <- matrix[(max_t - n_possible_horizons + 1):max_t, ]
+  bottom_matrix <- mat[(max_t - n_possible_horizons + 1):max_t, , drop = FALSE] # nolint
   return(bottom_matrix)
 }
 

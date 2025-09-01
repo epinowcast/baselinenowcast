@@ -19,6 +19,7 @@
 #'    times in the input `point_nowcast_matrix`.
 #' @export
 #' @importFrom cli cli_abort cli_warn
+#' @importFrom utils tail
 #' @examples
 #' point_nowcast_matrix <- matrix(
 #'   c(

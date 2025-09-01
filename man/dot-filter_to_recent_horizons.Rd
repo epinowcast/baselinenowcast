@@ -4,10 +4,10 @@
 \alias{.filter_to_recent_horizons}
 \title{Filter to recent horizons}
 \usage{
-.filter_to_recent_horizons(matrix, n_possible_horizons)
+.filter_to_recent_horizons(mat, n_possible_horizons)
 }
 \arguments{
-\item{matrix}{Matrix containing all the rows}
+\item{mat}{Matrix containing all the rows}
 
 \item{n_possible_horizons}{Number of rows we want starting from the final
 row}

@@ -98,7 +98,7 @@ sample_prediction <- function(
 
   # Get only the predictions, these are ordered by reference time,
   # so horizon = 0 is last.
-  mean_pred <- mean_pred_agg[(max_t - n_horizons + 1):max_t, ]
+  mean_pred <- mean_pred_agg[(max_t - n_horizons + 1):max_t, , drop = FALSE]
   uncertainty_params_use <- tail(uncertainty_params, n = n_horizons)
   draw_pred <- as.matrix(observation_model(
     pred = mean_pred,

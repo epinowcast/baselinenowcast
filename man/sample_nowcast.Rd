@@ -8,7 +8,7 @@ sample_nowcast(
   point_nowcast_matrix,
   reporting_triangle,
   uncertainty_params,
-  sample_model = sample_nb,
+  uncertainty_sampler = sample_nb,
   ref_time_aggregator = identity,
   delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
 )
@@ -28,6 +28,13 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 horizon 1 to the maximum horizon. Note that these will be reversed
 internally to match the ordering of the \code{point_nowcast_matrix} (where
 a horizon of 1 is the last entry).}
+
+\item{uncertainty_sampler}{Function that ingests a vector or matrix of
+predictions and a vector of uncertainty parameters and generates draws
+from the observation model. Default is \code{sample_nb} which expects
+arguments \code{pred} for the vector of predictions and uncertainty parameters
+for the corresponding vector of uncertainty parameters, and draws from a
+negative binomial for each element of the vector.}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been

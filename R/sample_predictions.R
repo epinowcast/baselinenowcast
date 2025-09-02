@@ -7,7 +7,7 @@
 #'   horizon 1 to the maximum horizon. Note that these will be reversed
 #'   internally to match the ordering of the `point_nowcast_matrix` (where
 #'   a horizon of 1 is the last entry).
-#' @param observation_model Function that ingests a vector or matrix of
+#' @param uncertainty_sampler Function that ingests a vector or matrix of
 #'    predictions and a vector of uncertainty parameters and generates draws
 #'    from the observation model. Default is `sample_nb` which expects
 #'    arguments `pred` for the vector of predictions and uncertainty parameters
@@ -55,7 +55,7 @@ sample_prediction <- function(
     point_nowcast_matrix,
     reporting_triangle,
     uncertainty_params,
-    observation_model = sample_nb,
+    uncertainty_sampler = sample_nb,
     ref_time_aggregator = identity,
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
   if (length(uncertainty_params) > nrow(point_nowcast_matrix)) {
@@ -91,7 +91,7 @@ sample_prediction <- function(
   if (ncol(mean_pred_agg) != 1) {
     cli_abort(c(
       i = paste("Got", ncol(mean_pred_agg), "columns from `delay_aggregator`."),
-      "x" = "Wrap your `delay_aggregator` to return a vector."
+      "x" = "Wrap your `delay_aggregator` to return a vector." # nolint
     ))
   }
 
@@ -108,7 +108,7 @@ sample_prediction <- function(
   # so horizon = 0 is last.
   mean_pred <- mean_pred_agg[(max_t - n_horizons + 1):max_t, , drop = FALSE]
   uncertainty_params_use <- tail(uncertainty_params, n = n_horizons)
-  draw_pred <- as.matrix(observation_model(
+  draw_pred <- as.matrix(uncertainty_sampler(
     pred = mean_pred,
     uncertainty_params = rev(uncertainty_params_use)
   ))

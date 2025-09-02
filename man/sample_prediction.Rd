@@ -8,7 +8,7 @@ sample_prediction(
   point_nowcast_matrix,
   reporting_triangle,
   uncertainty_params,
-  observation_model = sample_nb,
+  uncertainty_sampler = sample_nb,
   ref_time_aggregator = identity,
   delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
 )
@@ -29,7 +29,7 @@ horizon 1 to the maximum horizon. Note that these will be reversed
 internally to match the ordering of the \code{point_nowcast_matrix} (where
 a horizon of 1 is the last entry).}
 
-\item{observation_model}{Function that ingests a vector or matrix of
+\item{uncertainty_sampler}{Function that ingests a vector or matrix of
 predictions and a vector of uncertainty parameters and generates draws
 from the observation model. Default is \code{sample_nb} which expects
 arguments \code{pred} for the vector of predictions and uncertainty parameters

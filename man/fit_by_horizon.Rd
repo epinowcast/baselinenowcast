@@ -5,14 +5,14 @@
 \title{Helper function that fits its each column of the matrix (horizon) to an
 observation model.}
 \usage{
-fit_by_horizon(obs, pred, observation_model = fit_nb)
+fit_by_horizon(obs, pred, fit_model = fit_nb)
 }
 \arguments{
 \item{obs}{Matrix or vector of observations.}
 
 \item{pred}{Matrix or vector of predictions.}
 
-\item{observation_model}{Function that ingests observations and expectations
+\item{fit_model}{Function that ingests observations and expectations
 and returns uncertainty parameters, default is \code{fit_nb}.}
 }
 \value{

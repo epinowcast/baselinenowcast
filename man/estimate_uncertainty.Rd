@@ -35,7 +35,7 @@ apply uncertainty using the same error model. Default is
 \code{pred} the matrix of predictions that fits each column (horizon)
 to a negative binomial observation model by default. The user can
 specify a different fitting model by replacing the
-\code{observation_model} argument in \code{fit_by_horizon}.}
+\code{fit_model} argument in \code{fit_by_horizon}.}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been

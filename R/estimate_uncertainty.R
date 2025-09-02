@@ -22,7 +22,7 @@
 #'     `pred` the matrix of predictions that fits each column (horizon)
 #'     to a negative binomial observation model by default. The user can
 #'     specify a different fitting model by replacing the
-#'     `observation_model` argument in `fit_by_horizon`.
+#'     `fit_model` argument in `fit_by_horizon`.
 #' @param ref_time_aggregator Function that operates along the rows (reference
 #'    times) of the retrospective point nowcast matrix before it has been
 #'    aggregated across columns (delays). Default is `identity`
@@ -258,7 +258,7 @@ estimate_uncertainty <- function(
 #'
 #' @param obs Matrix or vector of observations.
 #' @param pred Matrix or vector of predictions.
-#' @param observation_model Function that ingests observations and expectations
+#' @param fit_model Function that ingests observations and expectations
 #'    and returns uncertainty parameters, default is `fit_nb`.
 #'
 #' @returns Vector of uncertainty parameters of the same length as the number
@@ -288,7 +288,7 @@ estimate_uncertainty <- function(
 #' disp
 fit_by_horizon <- function(obs,
                            pred,
-                           observation_model = fit_nb) {
+                           fit_model = fit_nb) {
   .check_obs_and_pred(obs, pred)
   # Coerce vectors/data.frames to matrices and validate numeric
   obs <- as.matrix(obs)
@@ -296,7 +296,7 @@ fit_by_horizon <- function(obs,
 
   uncertainty_params <- numeric(ncol(obs))
   for (i in seq_len(ncol(obs))) {
-    uncertainty_params[i] <- observation_model(obs[, i], pred[, i])
+    uncertainty_params[i] <- fit_model(obs[, i], pred[, i])
   }
 
   return(uncertainty_params)

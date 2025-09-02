@@ -280,7 +280,7 @@ sample_nowcast <- function(
     point_nowcast_matrix,
     reporting_triangle,
     uncertainty_params,
-    sample_model = sample_nb,
+    uncertainty_sampler = sample_nb,
     ref_time_aggregator = identity,
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
   # Generate a single draw of the predictions
@@ -288,7 +288,7 @@ sample_nowcast <- function(
     point_nowcast_matrix,
     reporting_triangle,
     uncertainty_params,
-    sample_model,
+    uncertainty_sampler,
     ref_time_aggregator,
     delay_aggregator
   )

@@ -88,6 +88,14 @@ sample_prediction <- function(
   max_t <- nrow(aggr_nowcast)
   mean_pred_agg <- as.matrix(delay_aggregator(aggr_nowcast_pred_matrix))
 
+  if (ncol(mean_pred_agg) != 1) {
+    cli_abort(c(
+      i = paste("Got", ncol(mean_pred_agg), "columns from `delay_aggregator`."),
+      "x" = "Wrap your `delay_aggregator` to return a vector."
+    ))
+  }
+
+
   # If there are no partial reference times, return a zero matrix of the
   # appropriate size (nothing to predict).
   if (n_horizons == 0) {
@@ -222,7 +230,6 @@ sample_predictions <- function(
       uncertainty_params,
       ...
     )
-
     # If aggregating, we need to pad with NAs
     pred_counts_padded <- c(
       rep(

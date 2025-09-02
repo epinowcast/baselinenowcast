@@ -238,3 +238,16 @@ test_that("sample_nowcasts: longer k aggregates correctly", {
   draw_of_result_last_time <- result_with_rolling_sum$pred_count[10]
   expect_equal(expected_mean[10], draw_of_result_last_time, tol = 5)
 })
+
+test_that("sample_nowcasts errors if delay agrgegator returns a matrix", {
+  expect_error(
+    sample_nowcasts(
+      point_nowcast_matrix,
+      reporting_triangle,
+      dispersion,
+      delay_aggregator = identity,
+      draws = 100
+    ),
+    regexp = "Got 4 columns from `delay_aggregator`"
+  )
+})

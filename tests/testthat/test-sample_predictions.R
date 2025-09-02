@@ -175,3 +175,16 @@ test_that("sample_predictions: errors when too many or too few uncertainty param
     regexp = "Vector of uncertainty parameters is greater than the number"
   )
 })
+
+test_that("sample_predictions errors if delay agrgegator returns a matrix", {
+  expect_error(
+    sample_predictions(
+      point_nowcast_matrix,
+      reporting_triangle,
+      dispersion,
+      delay_aggregator = identity,
+      draws = 100
+    ),
+    regexp = "Got 4 columns from `delay_aggregator`"
+  )
+})

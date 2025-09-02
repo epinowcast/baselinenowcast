@@ -66,8 +66,8 @@ nowcast for the final counts by reference time.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">combine_obs_with_pred</span><span class="op">(</span></span>
 <span>  <span class="va">predicted_counts</span>,</span>
 <span>  <span class="va">reporting_triangle</span>,</span>
-<span>  fun_to_aggregate <span class="op">=</span> <span class="va">sum</span>,</span>
-<span>  k <span class="op">=</span> <span class="fl">1</span></span>
+<span>  ref_time_aggregator <span class="op">=</span> <span class="va">identity</span>,</span>
+<span>  delay_aggregator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -76,7 +76,9 @@ nowcast for the final counts by reference time.</p>
 
 
 <dl><dt id="arg-predicted-counts">predicted_counts<a class="anchor" aria-label="anchor" href="#arg-predicted-counts"></a></dt>
-<dd><p>Vector of predicted counts at each reference time</p></dd>
+<dd><p>Vector of predicted counts at each reference time.
+Note that if using a reference time or delay aggregator function, this
+is assumed to have already been aggregated.</p></dd>
 
 
 <dt id="arg-reporting-triangle">reporting_triangle<a class="anchor" aria-label="anchor" href="#arg-reporting-triangle"></a></dt>
@@ -87,18 +89,17 @@ Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row. (e.g. weekly reporting of daily data).</p></dd>
 
 
-<dt id="arg-fun-to-aggregate">fun_to_aggregate<a class="anchor" aria-label="anchor" href="#arg-fun-to-aggregate"></a></dt>
-<dd><p>Function that will operate along the nowcast
-vectors after summing across delays. Eventually, we can add things like
-mean, but for now since we are only providing a negative binomial
-observation model, we can only allow sum. Currently supported
-functions: <code>sum</code>.</p></dd>
+<dt id="arg-ref-time-aggregator">ref_time_aggregator<a class="anchor" aria-label="anchor" href="#arg-ref-time-aggregator"></a></dt>
+<dd><p>Function that operates along the rows (reference
+times) of the retrospective point nowcast matrix before it has been
+aggregated across columns (delays). Default is <code>identity</code>
+which does not aggregate across reference times.</p></dd>
 
 
-<dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
-<dd><p>Integer indicating the number of reference times to apply the
-<code>fun_to_aggregate</code> over to create target used to compute the nowcast
-errors.</p></dd>
+<dt id="arg-delay-aggregator">delay_aggregator<a class="anchor" aria-label="anchor" href="#arg-delay-aggregator"></a></dt>
+<dd><p>Function that operates along the columns (delays)
+of the retrospective point nowcast matrix after it has been aggregated
+across reference times. Default is <code>function(x) rowSums(x, na.rm = TRUE)</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -122,10 +123,15 @@ errors.</p></dd>
 <span class="r-in"><span><span class="va">reporting_triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="construct_triangle.html">construct_triangle</a></span><span class="op">(</span><span class="va">reporting_matrix</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">combine_obs_with_pred</span><span class="op">(</span><span class="va">pred_counts</span>, <span class="va">reporting_triangle</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 33 26 41 49</span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Another example with rolling sum</span></span></span>
-<span class="r-in"><span><span class="fu">combine_obs_with_pred</span><span class="op">(</span><span class="va">pred_counts</span>, <span class="va">reporting_triangle</span>, k <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] NA 49 47 60</span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"zoo"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu">combine_obs_with_pred</span><span class="op">(</span><span class="va">pred_counts</span>,</span></span>
+<span class="r-in"><span>    <span class="va">reporting_triangle</span>,</span></span>
+<span class="r-in"><span>    ref_time_aggregator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">zoo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/zoo/man/rollmean.html" class="external-link">rollsum</a></span><span class="op">(</span><span class="va">x</span>, k <span class="op">=</span> <span class="fl">2</span>, align <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>longer object length is not a multiple of shorter object length</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 36 34 44 66</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

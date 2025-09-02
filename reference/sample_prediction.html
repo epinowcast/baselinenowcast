@@ -60,9 +60,10 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sample_prediction</span><span class="op">(</span></span>
 <span>  <span class="va">point_nowcast_matrix</span>,</span>
 <span>  <span class="va">reporting_triangle</span>,</span>
-<span>  <span class="va">dispersion</span>,</span>
-<span>  fun_to_aggregate <span class="op">=</span> <span class="va">sum</span>,</span>
-<span>  k <span class="op">=</span> <span class="fl">1</span></span>
+<span>  <span class="va">uncertainty_params</span>,</span>
+<span>  uncertainty_sampler <span class="op">=</span> <span class="va">sample_nb</span>,</span>
+<span>  ref_time_aggregator <span class="op">=</span> <span class="va">identity</span>,</span>
+<span>  delay_aggregator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -84,23 +85,33 @@ Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row. (e.g. weekly reporting of daily data).</p></dd>
 
 
-<dt id="arg-dispersion">dispersion<a class="anchor" aria-label="anchor" href="#arg-dispersion"></a></dt>
-<dd><p>Vector of dispersion parameters indexed by horizon from
-minus one to the maximum delay.</p></dd>
+<dt id="arg-uncertainty-params">uncertainty_params<a class="anchor" aria-label="anchor" href="#arg-uncertainty-params"></a></dt>
+<dd><p>Vector of uncertainty parameters ordered from
+horizon 1 to the maximum horizon. Note that these will be reversed
+internally to match the ordering of the <code>point_nowcast_matrix</code> (where
+a horizon of 1 is the last entry).</p></dd>
 
 
-<dt id="arg-fun-to-aggregate">fun_to_aggregate<a class="anchor" aria-label="anchor" href="#arg-fun-to-aggregate"></a></dt>
-<dd><p>Function that will operate along the nowcast
-vectors after summing across delays. Eventually, we can add things like
-mean, but for now since we are only providing a negative binomial
-observation model, we can only allow sum. Currently supported
-functions: <code>sum</code>.</p></dd>
+<dt id="arg-uncertainty-sampler">uncertainty_sampler<a class="anchor" aria-label="anchor" href="#arg-uncertainty-sampler"></a></dt>
+<dd><p>Function that ingests a vector or matrix of
+predictions and a vector of uncertainty parameters and generates draws
+from the observation model. Default is <code>sample_nb</code> which expects
+arguments <code>pred</code> for the vector of predictions and uncertainty parameters
+for the corresponding vector of uncertainty parameters, and draws from a
+negative binomial for each element of the vector.</p></dd>
 
 
-<dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
-<dd><p>Integer indicating the number of reference times to apply the
-<code>fun_to_aggregate</code> over to create target used to compute the nowcast
-errors.</p></dd>
+<dt id="arg-ref-time-aggregator">ref_time_aggregator<a class="anchor" aria-label="anchor" href="#arg-ref-time-aggregator"></a></dt>
+<dd><p>Function that operates along the rows (reference
+times) of the retrospective point nowcast matrix before it has been
+aggregated across columns (delays). Default is <code>identity</code>
+which does not aggregate across reference times.</p></dd>
+
+
+<dt id="arg-delay-aggregator">delay_aggregator<a class="anchor" aria-label="anchor" href="#arg-delay-aggregator"></a></dt>
+<dd><p>Function that operates along the columns (delays)
+of the retrospective point nowcast matrix after it has been aggregated
+across reference times. Default is <code>function(x) rowSums(x, na.rm = TRUE)</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -130,18 +141,28 @@ times in the input <code>point_nowcast_matrix</code>.</p>
 <span class="r-in"><span>  <span class="va">disp</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">nowcast_pred_draw</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1]   0   0  31  44 158</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]   25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5,]   23</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get draws on the rolling sum</span></span></span>
-<span class="r-in"><span><span class="va">nowcast_pred_draw_agg</span> <span class="op">&lt;-</span> <span class="fu">sample_prediction</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">point_nowcast_matrix</span>,</span></span>
-<span class="r-in"><span>  <span class="va">reporting_triangle</span>,</span></span>
-<span class="r-in"><span>  <span class="va">disp</span>,</span></span>
-<span class="r-in"><span>  fun_to_aggregate <span class="op">=</span> <span class="va">sum</span>,</span></span>
-<span class="r-in"><span>  k <span class="op">=</span> <span class="fl">2</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">nowcast_pred_draw_agg</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1]  0  0 15 61  4</span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"zoo"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">nowcast_pred_draw_agg</span> <span class="op">&lt;-</span> <span class="fu">sample_prediction</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">point_nowcast_matrix</span>,</span></span>
+<span class="r-in"><span>    <span class="va">reporting_triangle</span>,</span></span>
+<span class="r-in"><span>    <span class="va">disp</span>,</span></span>
+<span class="r-in"><span>    ref_time_aggregator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">zoo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/zoo/man/rollmean.html" class="external-link">rollsum</a></span><span class="op">(</span><span class="va">x</span>, k <span class="op">=</span> <span class="fl">2</span>, align <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">nowcast_pred_draw_agg</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   66</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   96</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]  152</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

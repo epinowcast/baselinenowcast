@@ -13,12 +13,14 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/combine_obs_with_pred.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/construct_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/construct_triangles.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-apply_mask.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-calc_expectation.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-calc_n_retro_nowcast_times.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-check_lhs_not_only_zeros.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-check_na_bottom_right.html</loc></url>
-<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-conditional_sum_cols.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-check_obs_and_pred.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-extract_predictions.html</loc></url>
-<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-fit_nb.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-filter_to_recent_horizons.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-handle_neg_vals.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-safelydoesit.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_delay_and_triangle.html</loc></url>
@@ -27,7 +29,10 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/fill_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/fill_triangles.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/fit_by_horizon.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/fit_nb.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/index.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/sample_nb.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/sample_nowcast.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/sample_nowcasts.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/sample_prediction.html</loc></url>

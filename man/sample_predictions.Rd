@@ -8,10 +8,9 @@ nowcast vector}
 sample_predictions(
   point_nowcast_matrix,
   reporting_triangle,
-  dispersion,
+  uncertainty_params,
   draws = 1000,
-  fun_to_aggregate = sum,
-  k = 1
+  ...
 )
 }
 \arguments{
@@ -25,21 +24,15 @@ delays. Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row. (e.g. weekly reporting of daily data).}
 
-\item{dispersion}{Vector of dispersion parameters indexed by horizon from
-minus one to the maximum delay.}
+\item{uncertainty_params}{Vector of uncertainty parameters ordered from
+horizon 1 to the maximum horizon. Note that these will be reversed
+internally to match the ordering of the \code{point_nowcast_matrix} (where
+a horizon of 1 is the last entry).}
 
 \item{draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}
 
-\item{fun_to_aggregate}{Function that will operate along the nowcast
-vectors after summing across delays. Eventually, we can add things like
-mean, but for now since we are only providing a negative binomial
-observation model, we can only allow sum. Currently supported
-functions: \code{sum}.}
-
-\item{k}{Integer indicating the number of reference times to apply the
-\code{fun_to_aggregate} over to create target used to compute the nowcast
-errors.}
+\item{...}{Additional arguments passed to \code{sample_prediction}.}
 }
 \value{
 Dataframe containing the predicted point nowcast vectors indexed by
@@ -72,13 +65,14 @@ nowcast_pred_draws <- sample_predictions(
 )
 nowcast_pred_draws
 # Get nowcast pred draws over rolling sum
-nowcast_pred_draws_rolling_df <- sample_predictions(
-  point_nowcast_matrix,
-  reporting_triangle,
-  disp,
-  500,
-  fun_to_aggregate = sum,
-  k = 2
-)
-nowcast_pred_draws_rolling_df
+if (requireNamespace("zoo", quietly = TRUE)) {
+  nowcast_pred_draws_rolling_df <- sample_predictions(
+    point_nowcast_matrix,
+    reporting_triangle,
+    disp,
+    500,
+    ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+  )
+  nowcast_pred_draws_rolling_df
+}
 }

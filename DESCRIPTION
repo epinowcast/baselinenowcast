@@ -44,8 +44,7 @@ Depends:
 Imports:
   cli,
   checkmate,
-  stats,
-  zoo
+  stats
 Suggests:
     epinowcast,
     bookdown,
@@ -59,7 +58,8 @@ Suggests:
     usethis,
     withr,
     lubridate,
-    knitr
+    knitr,
+    zoo
 Encoding: UTF-8
 Language: en-GB
 LazyData: true

@@ -3,16 +3,23 @@
 #' @param point_nowcast_matrix Matrix of point nowcast predictions and
 #'   observations, with rows representing the reference times and columns
 #'   representing the delays.
-#' @param dispersion Vector of dispersion parameters indexed by horizon from
-#'  minus one to the maximum delay.
+#' @param uncertainty_params Vector of uncertainty parameters ordered from
+#'   horizon 1 to the maximum horizon. Note that these will be reversed
+#'   internally to match the ordering of the `point_nowcast_matrix` (where
+#'   a horizon of 1 is the last entry).
+#' @param uncertainty_sampler Function that ingests a vector or matrix of
+#'    predictions and a vector of uncertainty parameters and generates draws
+#'    from the observation model. Default is `sample_nb` which expects
+#'    arguments `pred` for the vector of predictions and uncertainty parameters
+#'    for the corresponding vector of uncertainty parameters, and draws from a
+#'    negative binomial for each element of the vector.
 #' @inheritParams estimate_delay
 #' @inheritParams estimate_uncertainty
 #' @returns Vector of predicted draws at each reference time, for all reference
 #'    times in the input `point_nowcast_matrix`.
 #' @export
 #' @importFrom cli cli_abort cli_warn
-#' @importFrom stats rnbinom
-#' @importFrom zoo rollapply
+#' @importFrom utils tail
 #' @examples
 #' point_nowcast_matrix <- matrix(
 #'   c(
@@ -35,51 +42,88 @@
 #' nowcast_pred_draw
 #'
 #' # Get draws on the rolling sum
-#' nowcast_pred_draw_agg <- sample_prediction(
-#'   point_nowcast_matrix,
-#'   reporting_triangle,
-#'   disp,
-#'   fun_to_aggregate = sum,
-#'   k = 2
-#' )
-#' nowcast_pred_draw_agg
-sample_prediction <- function(point_nowcast_matrix,
-                              reporting_triangle,
-                              dispersion,
-                              fun_to_aggregate = sum,
-                              k = 1) {
-  .validate_aggregation_function(fun_to_aggregate)
-  if (length(dispersion) > nrow(point_nowcast_matrix)) {
+#' if (requireNamespace("zoo", quietly = TRUE)) {
+#'   nowcast_pred_draw_agg <- sample_prediction(
+#'     point_nowcast_matrix,
+#'     reporting_triangle,
+#'     disp,
+#'     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+#'   )
+#'   nowcast_pred_draw_agg
+#' }
+sample_prediction <- function(
+    point_nowcast_matrix,
+    reporting_triangle,
+    uncertainty_params,
+    uncertainty_sampler = sample_nb,
+    ref_time_aggregator = identity,
+    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
+  if (length(uncertainty_params) > nrow(point_nowcast_matrix)) {
     cli_abort(
       message = c(
-        "Vector of dispersion parameters is greater than the number ",
+        "Vector of uncertainty parameters is greater than the number ",
         "of reference times in `point_nowcast_matrix`. Check ",
-        "to make sure this is expected behavior and truncate ",
-        "dispersion to eliminate the horizons that are not in ",
-        "the matrix."
+        "to make sure this is expected behavior."
       )
     )
   }
-  point_nowcast_pred_matrix <- .extract_predictions(
-    point_nowcast_matrix,
-    reporting_triangle
+
+
+  aggr_nowcast <- ref_time_aggregator(point_nowcast_matrix)
+  aggr_rt <- ref_time_aggregator(reporting_triangle)
+  aggr_nowcast_pred_matrix <- .extract_predictions(
+    aggr_nowcast,
+    aggr_rt
   )
-  n_horizons <- length(dispersion)
-  max_t <- nrow(point_nowcast_pred_matrix)
-  mean_pred_long <- rollapply(
-    rowSums(point_nowcast_pred_matrix, na.rm = TRUE), # nolint
-    k,
-    fun_to_aggregate,
-    align = "right",
-    fill = NA
-  ) # nolint
-  # Nowcast predictions only (these are reversed, first element is horizon 0)
-  mean_pred <- mean_pred_long[(max_t - n_horizons + 1):max_t]
-  draw_pred <- rnbinom(n = n_horizons, size = rev(dispersion), mu = mean_pred)
+  n_horizons <- sum(is.na(rowSums(aggr_rt)))
+  if (length(uncertainty_params) < n_horizons) {
+    cli_abort(
+      message = c(
+        "Vector of uncertainty parameters is less than the number of",
+        "horizons in the `reporting_triangle`."
+      )
+    )
+  }
+
+  max_t <- nrow(aggr_nowcast)
+  mean_pred_agg <- as.matrix(delay_aggregator(aggr_nowcast_pred_matrix))
+
+  if (ncol(mean_pred_agg) != 1) {
+    cli_abort(c(
+      i = paste("Got", ncol(mean_pred_agg), "columns from `delay_aggregator`."),
+      "x" = "Wrap your `delay_aggregator` to return a vector." # nolint
+    ))
+  }
+
+
+  # If there are no partial reference times, return a zero matrix of the
+  # appropriate size (nothing to predict).
+  if (n_horizons == 0) {
+    return(matrix(0, nrow = max_t, ncol = ncol(mean_pred_agg)))
+  }
+  # Get only the predictions for the partial reference times; ordered by
+  # reference time with horizon = 1 being the last entry.
+
+  # Get only the predictions, these are ordered by reference time,
+  # so horizon = 0 is last.
+  mean_pred <- mean_pred_agg[(max_t - n_horizons + 1):max_t, , drop = FALSE]
+  uncertainty_params_use <- tail(uncertainty_params, n = n_horizons)
+  draw_pred <- as.matrix(uncertainty_sampler(
+    pred = mean_pred,
+    uncertainty_params = rev(uncertainty_params_use)
+  ))
+
   # Pad with 0s for the fully observed rows, which are before
   # the max_t - n_horizons
-  draw_pred_long <- c(rep(0, max_t - n_horizons), draw_pred)
-  return(draw_pred_long)
+  top_matrix <- matrix(0,
+    nrow = max_t - n_horizons,
+    ncol = ncol(mean_pred_agg)
+  )
+  draw_pred_agg <- rbind(
+    top_matrix,
+    draw_pred
+  )
+  return(draw_pred_agg)
 }
 
 #' Combine observed data with a single prediction draw
@@ -88,7 +132,9 @@ sample_prediction <- function(point_nowcast_matrix,
 #' time and adds them to the predicted counts to form a single draw of the
 #' nowcast for the final counts by reference time.
 #'
-#' @param predicted_counts Vector of predicted counts at each reference time
+#' @param predicted_counts Vector of predicted counts at each reference time.
+#'    Note that if using a reference time or delay aggregator function, this
+#'    is assumed to have already been aggregated.
 #' @inheritParams sample_prediction
 #'
 #' @returns A vector of predicted counts at each reference time
@@ -107,22 +153,21 @@ sample_prediction <- function(point_nowcast_matrix,
 #' )
 #' reporting_triangle <- construct_triangle(reporting_matrix)
 #' combine_obs_with_pred(pred_counts, reporting_triangle)
-#'
 #' # Another example with rolling sum
-#' combine_obs_with_pred(pred_counts, reporting_triangle, k = 2)
-combine_obs_with_pred <- function(predicted_counts,
-                                  reporting_triangle,
-                                  fun_to_aggregate = sum,
-                                  k = 1) {
-  .validate_aggregation_function(fun_to_aggregate)
-  obs_counts <- rollapply(
-    rowSums(reporting_triangle, na.rm = TRUE),
-    k,
-    fun_to_aggregate,
-    fill = NA,
-    align = "right"
-  )
-  return(obs_counts + predicted_counts)
+#' if (requireNamespace("zoo", quietly = TRUE)) {
+#'   combine_obs_with_pred(pred_counts,
+#'     reporting_triangle,
+#'     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+#'   )
+#' }
+combine_obs_with_pred <- function(
+    predicted_counts,
+    reporting_triangle,
+    ref_time_aggregator = identity,
+    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
+  aggr_reporting_triangle <- ref_time_aggregator(reporting_triangle)
+  obs_counts_agg <- delay_aggregator(aggr_reporting_triangle)
+  return(obs_counts_agg + predicted_counts)
 }
 
 
@@ -131,6 +176,7 @@ combine_obs_with_pred <- function(predicted_counts,
 #'
 #' @param draws Integer indicating the number of draws of the predicted
 #'    nowcast vector to generate. Default is `1000`.
+#' @param ... Additional arguments passed to `sample_prediction`.
 #' @inheritParams sample_prediction
 #' @returns Dataframe containing the predicted point nowcast vectors indexed by
 #'    reference time (`pred_count`), reference time (`time`), and the draw index
@@ -158,35 +204,42 @@ combine_obs_with_pred <- function(predicted_counts,
 #' )
 #' nowcast_pred_draws
 #' # Get nowcast pred draws over rolling sum
-#' nowcast_pred_draws_rolling_df <- sample_predictions(
-#'   point_nowcast_matrix,
-#'   reporting_triangle,
-#'   disp,
-#'   500,
-#'   fun_to_aggregate = sum,
-#'   k = 2
-#' )
-#' nowcast_pred_draws_rolling_df
-sample_predictions <- function(point_nowcast_matrix,
-                               reporting_triangle,
-                               dispersion,
-                               draws = 1000,
-                               fun_to_aggregate = sum,
-                               k = 1) {
+#' if (requireNamespace("zoo", quietly = TRUE)) {
+#'   nowcast_pred_draws_rolling_df <- sample_predictions(
+#'     point_nowcast_matrix,
+#'     reporting_triangle,
+#'     disp,
+#'     500,
+#'     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+#'   )
+#'   nowcast_pred_draws_rolling_df
+#' }
+sample_predictions <- function(
+    point_nowcast_matrix,
+    reporting_triangle,
+    uncertainty_params,
+    draws = 1000,
+    ...) {
   assert_integerish(draws, lower = 1)
-  .validate_aggregation_function(fun_to_aggregate)
-
   reference_times <- seq_len(nrow(point_nowcast_matrix))
 
   draws_df_list <- lapply(seq_len(draws), function(i) {
     pred_counts <- sample_prediction(
       point_nowcast_matrix,
       reporting_triangle,
-      dispersion
+      uncertainty_params,
+      ...
     )
-
+    # If aggregating, we need to pad with NAs
+    pred_counts_padded <- c(
+      rep(
+        NA,
+        length(reference_times) - length(pred_counts)
+      ),
+      pred_counts
+    )
     return(data.frame(
-      pred_count = pred_counts,
+      pred_count = pred_counts_padded,
       time = reference_times,
       draw = i
     ))
@@ -199,8 +252,7 @@ sample_predictions <- function(point_nowcast_matrix,
 
 #' Generate a single draw of a nowcast combining observed and predicted values
 #'
-#' @inheritParams sample_predictions
-#' @param ... Additional arguments passed to `sample_predictions()`
+#' @inheritParams sample_prediction
 #' @returns Vector of predicted counts at each reference time based on combining
 #'    the observed counts and the predicted counts for the unobserved elements.
 #' @export
@@ -224,23 +276,29 @@ sample_predictions <- function(point_nowcast_matrix,
 #'   disp
 #' )
 #' nowcast_draw
-sample_nowcast <- function(point_nowcast_matrix,
-                           reporting_triangle,
-                           dispersion,
-                           ...) {
+sample_nowcast <- function(
+    point_nowcast_matrix,
+    reporting_triangle,
+    uncertainty_params,
+    uncertainty_sampler = sample_nb,
+    ref_time_aggregator = identity,
+    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
   # Generate a single draw of the predictions
   pred_counts <- sample_prediction(
     point_nowcast_matrix,
     reporting_triangle,
-    dispersion,
-    ...
+    uncertainty_params,
+    uncertainty_sampler,
+    ref_time_aggregator,
+    delay_aggregator
   )
 
   # Combine with observations
   draw <- combine_obs_with_pred(
     pred_counts,
     reporting_triangle,
-    ...
+    ref_time_aggregator,
+    delay_aggregator
   )
 
   return(draw)
@@ -249,7 +307,7 @@ sample_nowcast <- function(point_nowcast_matrix,
 #' Generate multiple draws of a nowcast combining observed and predicted values
 #'
 #' @inheritParams sample_predictions
-#' @param ... Additional arguments pass to `sample_predictions()`
+#' @param ... Additional arguments passed to `sample_nowcast`.
 #' @returns Dataframe containing information for multiple draws with columns
 #'  for the reference time (`time`), the predicted counts (`pred_count`), and
 #'  the draw number (`draw`).
@@ -275,23 +333,32 @@ sample_nowcast <- function(point_nowcast_matrix,
 #'   draws = 5
 #' )
 #' nowcast_draws
-sample_nowcasts <- function(point_nowcast_matrix,
-                            reporting_triangle,
-                            dispersion,
-                            draws = 1000,
-                            ...) {
+sample_nowcasts <- function(
+    point_nowcast_matrix,
+    reporting_triangle,
+    uncertainty_params,
+    draws = 1000,
+    ...) {
   reference_times <- seq_len(nrow(point_nowcast_matrix))
 
   draws_df_list <- lapply(seq_len(draws), function(i) {
     pred_counts <- sample_nowcast(
       point_nowcast_matrix,
       reporting_triangle,
-      dispersion,
+      uncertainty_params,
       ...
+    )
+    # If aggregating, we need to pad with NAs
+    pred_counts_padded <- c(
+      rep(
+        NA,
+        length(reference_times) - length(pred_counts)
+      ),
+      pred_counts
     )
 
     return(data.frame(
-      pred_count = pred_counts,
+      pred_count = pred_counts_padded,
       time = reference_times,
       draw = i
     ))

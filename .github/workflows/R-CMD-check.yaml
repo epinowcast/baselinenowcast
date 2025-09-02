@@ -7,8 +7,6 @@ on:
   schedule:
     - cron: '5 4 * * 1'
   pull_request:
-    branches:
-      - main
   merge_group:
   workflow_dispatch:
 

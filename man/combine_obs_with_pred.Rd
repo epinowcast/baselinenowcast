@@ -7,12 +7,14 @@
 combine_obs_with_pred(
   predicted_counts,
   reporting_triangle,
-  fun_to_aggregate = sum,
-  k = 1
+  ref_time_aggregator = identity,
+  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
 )
 }
 \arguments{
-\item{predicted_counts}{Vector of predicted counts at each reference time}
+\item{predicted_counts}{Vector of predicted counts at each reference time.
+Note that if using a reference time or delay aggregator function, this
+is assumed to have already been aggregated.}
 
 \item{reporting_triangle}{Matrix of the reporting triangle, with rows
 representing the time points of reference and columns representing the
@@ -20,15 +22,14 @@ delays. Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row. (e.g. weekly reporting of daily data).}
 
-\item{fun_to_aggregate}{Function that will operate along the nowcast
-vectors after summing across delays. Eventually, we can add things like
-mean, but for now since we are only providing a negative binomial
-observation model, we can only allow sum. Currently supported
-functions: \code{sum}.}
+\item{ref_time_aggregator}{Function that operates along the rows (reference
+times) of the retrospective point nowcast matrix before it has been
+aggregated across columns (delays). Default is \code{identity}
+which does not aggregate across reference times.}
 
-\item{k}{Integer indicating the number of reference times to apply the
-\code{fun_to_aggregate} over to create target used to compute the nowcast
-errors.}
+\item{delay_aggregator}{Function that operates along the columns (delays)
+of the retrospective point nowcast matrix after it has been aggregated
+across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
 }
 \value{
 A vector of predicted counts at each reference time
@@ -52,7 +53,11 @@ reporting_matrix <- matrix(
 )
 reporting_triangle <- construct_triangle(reporting_matrix)
 combine_obs_with_pred(pred_counts, reporting_triangle)
-
 # Another example with rolling sum
-combine_obs_with_pred(pred_counts, reporting_triangle, k = 2)
+if (requireNamespace("zoo", quietly = TRUE)) {
+  combine_obs_with_pred(pred_counts,
+    reporting_triangle,
+    ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+  )
+}
 }

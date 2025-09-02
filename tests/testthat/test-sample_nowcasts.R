@@ -1,19 +1,20 @@
+point_nowcast_matrix <- matrix(
+  c(
+    100, 50, 30, 20,
+    90, 45, 25, 16.8,
+    80, 40, 21.2, 19.5,
+    70, 34.5, 15.4, 9.1
+  ),
+  nrow = 4,
+  byrow = TRUE
+)
+dispersion <- c(0.8, 12.4, 9.1)
+reporting_triangle <- construct_triangle(point_nowcast_matrix)
+
+
 test_that(
   "sample_nowcasts: returns a dataframe with correct structure",
   {
-    point_nowcast_matrix <- matrix(
-      c(
-        100, 50, 30, 20,
-        90, 45, 25, 16.8,
-        80, 40, 21.2, 19.5,
-        70, 34.5, 15.4, 9.1
-      ),
-      nrow = 4,
-      byrow = TRUE
-    )
-    dispersion <- c(0.8, 12.4, 9.1)
-    reporting_triangle <- construct_triangle(point_nowcast_matrix)
-
     result <- sample_nowcasts(
       point_nowcast_matrix, reporting_triangle, dispersion,
       draws = 100
@@ -28,20 +29,12 @@ test_that(
     expect_true(all(c("pred_count", "time", "draw") %in% names(result)))
     expect_length(unique(result$draw), 100L)
     expect_identical(nrow(result), as.integer(100 * nrow(point_nowcast_matrix)))
+    expect_true(all(is.finite(result$pred_count)))
   }
 )
 
 test_that("sample_nowcasts: draws are distinct and properly indexed", {
   # Setup test data
-  point_nowcast_matrix <- matrix(
-    c(
-      100, 50, 30, 20,
-      90, 45, 25, 16.8,
-      80, 40, 21.2, 19.5
-    ),
-    nrow = 3,
-    byrow = TRUE
-  )
   dispersion <- c(0.8, 12.4)
   reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
   n_draws <- 5
@@ -88,15 +81,6 @@ test_that("sample_nowcasts: draws are distinct and properly indexed", {
 
 test_that("sample_nowcasts: time index is correctly assigned", {
   # Setup test data
-  point_nowcast_matrix <- matrix(
-    c(
-      100, 50, 30, 20,
-      90, 45, 25, 16.8,
-      80, 40, 21.2, 19.5
-    ),
-    nrow = 3,
-    byrow = TRUE
-  )
   dispersion <- c(0.8, 12.4)
   reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
   n_draws <- 3
@@ -171,8 +155,7 @@ test_that(
       reporting_triangle,
       dispersion,
       draws = 100,
-      fun_to_aggregate = sum,
-      k = 2
+      ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
     )
     result <- sample_nowcasts(
       point_nowcast_matrix,
@@ -219,20 +202,19 @@ test_that("sample_nowcasts: longer k aggregates correctly", {
   pt_nowcast_mat <- fill_triangle(triangle)
   dispersion <- c(10, 10, 10)
 
-  expected_mean <- rollapply(rowSums(pt_nowcast_mat),
-    5,
-    sum,
-    align = "right",
-    fill = NA
+  expected_mean_mat <- zoo::rollsum(pt_nowcast_mat,
+    k = 5,
+    fill = NA,
+    align = "right"
   )
+  expected_mean <- rowSums(expected_mean_mat, na.rm = TRUE)
 
   result_with_rolling_sum <- sample_nowcasts(
-    pt_nowcast_mat,
-    triangle,
-    dispersion,
+    point_nowcast_matrix = pt_nowcast_mat,
+    reporting_triangle = triangle,
+    uncertainty_params = dispersion,
     draws = 100,
-    fun_to_aggregate = sum,
-    k = 5
+    ref_time_aggregator = function(x) zoo::rollsum(x, k = 5, align = "right")
   )
 
   # First 4 rows are NA because of right alignment
@@ -255,4 +237,17 @@ test_that("sample_nowcasts: longer k aggregates correctly", {
   # Mean is about the same as a draw of the last time point
   draw_of_result_last_time <- result_with_rolling_sum$pred_count[10]
   expect_equal(expected_mean[10], draw_of_result_last_time, tol = 5)
+})
+
+test_that("sample_nowcasts errors if delay agrgegator returns a matrix", {
+  expect_error(
+    sample_nowcasts(
+      point_nowcast_matrix,
+      reporting_triangle,
+      dispersion,
+      delay_aggregator = identity,
+      draws = 100
+    ),
+    regexp = "Got 4 columns from `delay_aggregator`"
+  )
 })

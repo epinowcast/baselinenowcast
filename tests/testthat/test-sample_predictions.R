@@ -1,21 +1,22 @@
+point_nowcast_matrix <- matrix(
+  c(
+    100, 50, 30, 20,
+    90, 45, 25, 16.8,
+    80, 40, 21.2, 19.5,
+    70, 34.5, 15.4, 9.1
+  ),
+  nrow = 4,
+  byrow = TRUE
+)
+dispersion <- c(0.8, 12.4, 9.1)
+reporting_triangle <- construct_triangle(point_nowcast_matrix)
 test_that(
   "sample_predictions: returns a dataframe with correct structure",
   {
-    point_nowcast_matrix <- matrix(
-      c(
-        100, 50, 30, 20,
-        90, 45, 25, 16.8,
-        80, 40, 21.2, 19.5,
-        70, 34.5, 15.4, 9.1
-      ),
-      nrow = 4,
-      byrow = TRUE
-    )
-    dispersion <- c(0.8, 12.4, 9.1)
-    reporting_triangle <- construct_triangle(point_nowcast_matrix)
-
     result <- sample_predictions(
-      point_nowcast_matrix, reporting_triangle, dispersion,
+      point_nowcast_matrix,
+      reporting_triangle,
+      dispersion,
       draws = 100
     )
 
@@ -28,8 +29,10 @@ test_that(
     expect_true(all(c("pred_count", "time", "draw") %in% names(result)))
     expect_length(unique(result$draw), 100L)
     expect_identical(nrow(result), as.integer(100 * nrow(point_nowcast_matrix)))
+    expect_false(all(is.na(result$pred_count)))
   }
 )
+
 
 test_that("sample_predictions: draws are distinct and properly indexed", {
   # Setup test data
@@ -146,5 +149,42 @@ test_that("sample_predictions works with different number of draws", {
   expect_identical(
     nrow(result),
     as.integer(n_draws * nrow(point_nowcast_matrix))
+  )
+})
+
+test_that("sample_predictions: errors when too many or too few uncertainty parameters", { # nolint
+  # Should we relax these to warnings since we want this to be flexible (
+  # e.g. the number of ucnertainty parameters doesn't have to equal the number of horizons?
+  expect_error(
+    sample_predictions(
+      point_nowcast_matrix,
+      reporting_triangle,
+      dispersion[1:2],
+      draws = 10
+    ),
+    regexp = "Vector of uncertainty parameters is less than the number"
+  )
+
+  expect_error(
+    sample_predictions(
+      point_nowcast_matrix,
+      reporting_triangle,
+      c(dispersion, rep(3, 3)),
+      draws = 10
+    ),
+    regexp = "Vector of uncertainty parameters is greater than the number"
+  )
+})
+
+test_that("sample_predictions errors if delay agrgegator returns a matrix", {
+  expect_error(
+    sample_predictions(
+      point_nowcast_matrix,
+      reporting_triangle,
+      dispersion,
+      delay_aggregator = identity,
+      draws = 100
+    ),
+    regexp = "Got 4 columns from `delay_aggregator`"
   )
 })

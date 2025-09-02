@@ -47,8 +47,8 @@ valid_rts <- construct_triangles(valid_trunc_rts)
 
 test_that("estimate_uncertainty: Basic functionality with valid inputs", {
   result <- estimate_uncertainty(
-    pt_nowcast_matrices = valid_nowcasts,
-    trunc_reporting_triangles = valid_trunc_rts,
+    point_nowcast_matrices = valid_nowcasts,
+    truncated_reporting_triangles = valid_trunc_rts,
     retro_reporting_triangles = valid_rts,
     n = 2
   )
@@ -62,59 +62,15 @@ test_that("estimate_uncertainty: Basic functionality with valid inputs", {
 
 test_that("estimate_uncertainty can handle rolling sum with k=3", {
   result <- estimate_uncertainty(
-    pt_nowcast_matrices = valid_nowcasts,
-    trunc_reporting_triangles = valid_trunc_rts,
+    point_nowcast_matrices = valid_nowcasts,
+    truncated_reporting_triangles = valid_trunc_rts,
     retro_reporting_triangles = valid_rts,
-    fun_to_aggregate = sum,
-    k = 3
+    ref_time_aggregator = function(x) zoo::rollsum(x, k = 3, align = "right")
   )
 
   expect_true(all(is.finite(result)))
 })
 
-test_that("estimate_uncertainty appropriately warns when k is too large for some of the triangles", { # nolint
-  expect_warning(estimate_uncertainty(
-    pt_nowcast_matrices = valid_nowcasts,
-    trunc_reporting_triangles = valid_trunc_rts,
-    retro_reporting_triangles = valid_rts,
-    n = 2,
-    fun_to_aggregate = sum,
-    k = 4
-  ))
-})
-
-test_that("estimate_uncertainty appropriately errors when k is too large for all the triangles", { # nolint
-  expect_error(estimate_uncertainty(
-    pt_nowcast_matrices = valid_nowcasts,
-    trunc_reporting_triangles = valid_trunc_rts,
-    retro_reporting_triangles = valid_rts,
-    n = 2,
-    fun_to_aggregate = sum,
-    k = 5
-  ))
-})
-
-
-test_that("estimate_uncertainty throws an error if function to aggregate is not valid", { # nolint
-  # Function shouldn't be a character
-  expect_error(estimate_uncertainty(
-    pt_nowcast_matrices = valid_nowcasts,
-    trunc_reporting_triangles = valid_trunc_rts,
-    retro_reporting_triangles = valid_rts,
-    n = 2,
-    fun_to_aggregate = "sum",
-    k = 2
-  ))
-  # Mean doesn't work right now because we haven't added another error model
-  expect_error(estimate_uncertainty(
-    pt_nowcast_matrices = valid_nowcasts,
-    trunc_reporting_triangles = valid_trunc_rts,
-    retro_reporting_triangles = valid_rts,
-    n = 2,
-    fun_to_aggregate = mean,
-    k = 2
-  ))
-})
 
 test_that("estimate_uncertainty works correctly with default and n parameters", { # nolint
   result_default <- estimate_uncertainty(
@@ -129,70 +85,6 @@ test_that("estimate_uncertainty works correctly with default and n parameters", 
   )
   expect_identical(result_default, result_explicit)
 })
-
-
-test_that("estimate_uncertainty: Error conditions are properly handled", {
-  # Invalid input types
-  expect_error(estimate_uncertainty(
-    list("not_a_matrix"), valid_trunc_rts, valid_rts
-  ))
-  expect_error(estimate_uncertainty(
-    valid_nowcasts, list("not_a_matrix"), valid_rts
-  ))
-
-  # Invalid retro_reporting_triangles
-  expect_error(estimate_uncertainty(
-    valid_nowcasts, valid_trunc_rts, list("not_a_matrix")
-  ))
-  expect_error(estimate_uncertainty(valid_nowcasts, valid_trunc_rts, list()))
-
-  # Mismatched list lengths
-  expect_error(
-    estimate_uncertainty(valid_nowcasts[1], valid_trunc_rts, valid_rts, n = 2)
-  )
-  expect_error(
-    estimate_uncertainty(valid_nowcasts, valid_trunc_rts[1], valid_rts, n = 2)
-  )
-  expect_error(
-    estimate_uncertainty(valid_nowcasts, valid_trunc_rts, valid_rts[1], n = 2)
-  )
-
-  # Invalid n values
-  expect_error(estimate_uncertainty(
-    valid_nowcasts, valid_trunc_rts, valid_rts,
-    n = -1
-  ))
-  expect_error(estimate_uncertainty(
-    valid_nowcasts, valid_trunc_rts, valid_rts,
-    n = 1.5
-  ))
-  expect_error(estimate_uncertainty(
-    valid_nowcasts, valid_trunc_rts, valid_rts,
-    n = 3
-  ))
-
-  # pt nowcast contains NAs or is empty
-  expect_error(estimate_uncertainty(
-    valid_trunc_rts,
-    valid_trunc_rts,
-    valid_rts
-  ))
-  expect_error(estimate_uncertainty(list(), valid_trunc_rts, valid_rts))
-
-  # trunc rep mat list is empty
-  expect_error(estimate_uncertainty(valid_nowcasts, list(), valid_rts))
-
-  # observations contain non-integers
-  test_triangle_decimal <- test_triangle + 0.1
-  non_integer_trunc_rts <- list(
-    test_triangle_decimal[1:5, ],
-    test_triangle_decimal[1:4, ]
-  )
-  expect_error(estimate_uncertainty(
-    valid_nowcasts, non_integer_trunc_rts, valid_rts
-  ))
-})
-
 
 test_that("estimate_uncertainty: Edge cases are handled properly", {
   # Empty lists
@@ -231,21 +123,16 @@ test_that("estimate_uncertainty: Matrix dimension validation works", {
 })
 
 
-test_that(".fit_nb: Passing in empty vector returns NA", {
-  x <- NULL
-  NA_result <- .fit_nb(x, mu = 1)
-  expect_true(is.na(NA_result))
-})
-
 
 test_that("estimate_uncertainty returns an estimate if passing in a NULL for a nowcast", { # nolint
   nowcasts_with_null <- list(nowcast1, NULL)
   # This should work, using only the first nowcast and first valid_trunc_rts
-  result1 <- estimate_uncertainty(
+  # Will warn that only the first one is being used
+  result1 <- expect_warning(estimate_uncertainty(
     nowcasts_with_null,
     valid_trunc_rts,
     valid_rts
-  )
+  ))
   result_to_compare <- estimate_uncertainty(
     list(nowcast1),
     list(valid_trunc_rts[[1]]),
@@ -311,17 +198,18 @@ test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
     nrow = 5,
     byrow = TRUE
   )
-
+  # Triangle 3 can't be used to generate a point nowcast
   retro_rts_list <- list(test_triangle_1, test_triangle_2, triangle3)
 
   pt_nowcast_list <- expect_message(
     fill_triangles(retro_rts_list)
   )
-  trunc_reporting_triangles <- truncate_triangles(base_tri)
-  rt_list <- construct_triangles(trunc_reporting_triangles)
-  expect_no_error(estimate_uncertainty(
+  truncated_reporting_triangles <- truncate_triangles(base_tri)
+  rt_list <- construct_triangles(truncated_reporting_triangles)
+  # Since only two point nowcasts are non-null, this will warn
+  expect_warning(estimate_uncertainty(
     pt_nowcast_list,
-    trunc_reporting_triangles,
+    truncated_reporting_triangles,
     rt_list
   ))
 })
@@ -355,15 +243,15 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
 
   # Estimate dispersion parameters
   disp_params <- estimate_uncertainty(
-    pt_nowcast_matrices = retro_nowcasts,
-    trunc_reporting_triangles = trunc_rts,
+    point_nowcast_matrices = retro_nowcasts,
+    truncated_reporting_triangles = trunc_rts,
     retro_reporting_triangles = retro_rts,
     n = 2
   )
-
+  n_horizons <- sum(is.na(rowSums(ragged_triangle)))
   # Test that the function returns the expected result
   expect_is(disp_params, "numeric")
-  expect_length(disp_params, ncol(ragged_triangle) - 1)
+  expect_length(disp_params, n_horizons)
   expect_true(all(disp_params > 0))
 })
 
@@ -379,14 +267,14 @@ test_that("estimate_uncertainty: works as expected with perfect data", {
   reporting_triangle <- rbind(rep_mat, triangle)
 
   pt_nowcast_mat <- fill_triangle(reporting_triangle)
-  trunc_reporting_triangles <- truncate_triangles(reporting_triangle)
-  retro_reporting_triangles <- construct_triangles(trunc_reporting_triangles)
+  truncated_reporting_triangles <- truncate_triangles(reporting_triangle)
+  retro_reporting_triangles <- construct_triangles(truncated_reporting_triangles) # nolint
 
-  pt_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
+  point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
 
   dispersion <- estimate_uncertainty(
-    pt_nowcast_matrices,
-    trunc_reporting_triangles,
+    point_nowcast_matrices,
+    truncated_reporting_triangles,
     retro_reporting_triangles
   )
 
@@ -396,6 +284,7 @@ test_that("estimate_uncertainty: works as expected with perfect data", {
 })
 
 test_that("estimate_uncertainty: works as expected with some dispersion for both ks", { # nolint
+  skip_if_not_installed("zoo")
   set.seed(123)
   delay_pmf <- c(0.4, 0.3, 0.2, 0.05, 0.05)
   partial_counts <- c(80, 100, 180, 80, 140)
@@ -431,25 +320,25 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
     )
   }
 
-  trunc_reporting_triangles <- truncate_triangles(rep_tri_new)
-  retro_reporting_triangles <- construct_triangles(trunc_reporting_triangles)
+  truncated_reporting_triangles <- truncate_triangles(rep_tri_new)
+  retro_reporting_triangles <- construct_triangles(truncated_reporting_triangles) # nolint
 
-  pt_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
+  point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
 
   dispersion <- estimate_uncertainty(
-    pt_nowcast_matrices,
-    trunc_reporting_triangles,
+    point_nowcast_matrices,
+    truncated_reporting_triangles,
     retro_reporting_triangles
   )
   expect_lt(dispersion[1], 500)
   expect_true(all(is.finite(dispersion)))
 
+  # Fewer reporting matrices can be included here because we are summing.
   dispersion2 <- estimate_uncertainty(
-    pt_nowcast_matrices,
-    trunc_reporting_triangles,
-    retro_reporting_triangles,
-    fun_to_aggregate = sum,
-    k = 3
+    point_nowcast_matrices[1:4],
+    truncated_reporting_triangles[1:4],
+    retro_reporting_triangles[1:4],
+    ref_time_aggregator = function(x) zoo::rollsum(x, k = 3, align = "right")
   )
   expect_lt(dispersion2[1], 500)
   expect_true(all(dispersion2 > 0.1))
@@ -457,11 +346,23 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
 
 
   expect_failure(expect_equal(dispersion, dispersion2, tol = 0.001))
+
+  # We'll get a warning if we are trying to use all of them
+  expect_warning(
+    estimate_uncertainty(
+      point_nowcast_matrices,
+      truncated_reporting_triangles,
+      retro_reporting_triangles,
+      ref_time_aggregator = function(x) zoo::rollsum(x, k = 3, align = "right")
+    ),
+    regexp = "Only the first 4 retrospective nowcast times were used."
+  )
 })
 
 test_that("estimate_uncertainty: returns known dispersion parameters", { # nolint
   # Note, this test covers that we can approximately recover high dispersion,
   # it will not be able to distinguish between high dispersion values.
+  skip_if_not_installed("zoo")
   set.seed(123)
   delay_pmf <- c(0.2, 0.2, 0.2, 0.1, 0.2)
   partial_counts <- c(500, 800, 600, 900, 800)
@@ -478,8 +379,8 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
   # Create truncated reporting triangles by sampling elements of triangle
   # from Poisson distribution
   max_t <- nrow(reporting_triangle)
-  trunc_reporting_triangles <- list()
-  pt_nowcast_matrices <- list()
+  truncated_reporting_triangles <- list()
+  point_nowcast_matrices <- list()
   retro_reporting_triangles <- list()
   disp_param <- 10000
   for (i in 1:20) {
@@ -500,12 +401,12 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
     }
     trunc_rep_tri[is.na(trunc_rep_tri_orig)] <- NA
 
-    trunc_reporting_triangles <- append(
-      trunc_reporting_triangles,
+    truncated_reporting_triangles <- append(
+      truncated_reporting_triangles,
       list(trunc_rep_tri)
     )
-    pt_nowcast_matrices <- append(
-      pt_nowcast_matrices,
+    point_nowcast_matrices <- append(
+      point_nowcast_matrices,
       list(trunc_pt_nowcast_mat)
     )
     retro_reporting_triangles <- append(
@@ -515,11 +416,161 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
   }
 
   dispersion <- estimate_uncertainty(
-    pt_nowcast_matrices,
-    trunc_reporting_triangles,
+    point_nowcast_matrices,
+    truncated_reporting_triangles,
     retro_reporting_triangles
   )
 
   expect_true(all(dispersion > 700)) # Can't distinguish more specific
   # dispersion values
+})
+
+test_that("estimate_uncertainty errors when k is too large for data", {
+  expect_error(
+    estimate_uncertainty(
+      point_nowcast_matrices = valid_nowcasts,
+      truncated_reporting_triangles = valid_trunc_rts,
+      retro_reporting_triangles = valid_rts,
+      n = 2,
+      ref_time_aggregator = function(x) zoo::rollmean(x, k = 8, align = "right")
+    ),
+    regexp = "No valid retrospective nowcast times after reference time aggregation." # nolint
+  ) # nolint
+})
+
+test_that("estimate_uncertainty: can handle weekday filter with large ragged triangle", { # nolint
+  skip_if_not_installed("dplyr") # Is in Suggests so CI should have installed
+  skip_if_not_installed("tidyr")
+  skip_if_not_installed("lubridate")
+  library(dplyr)
+  library(tidyr)
+  library(lubridate)
+  # Use the covid data to test, using only one age group and filtering to
+  # a single weekday
+  covid_data <- readRDS(test_path("fixtures", "covid_data.rds")) |>
+    filter(
+      age_group == "00+",
+      wday(reference_date) == 1
+    )
+
+  # Create a ragged triangle
+  ragged_triangle <- covid_data |>
+    select(reference_date, delay, count) |>
+    pivot_wider(
+      names_from = delay,
+      values_from = count
+    ) |>
+    select(-reference_date) |>
+    as.matrix()
+
+  short_ragged_triangle <- ragged_triangle[(nrow(ragged_triangle) - 15):nrow(ragged_triangle), ] # nolint
+
+  # Create truncated and retrospective reporting triangles
+  trunc_rts <- truncate_triangles(short_ragged_triangle, n = 5)
+  retro_rts <- construct_triangles(trunc_rts,
+    structure = c(2, 7, 7, 7, 7, 7)
+  )
+
+  retro_nowcasts <- fill_triangles(retro_rts, n = 10) # Use 10 reference times
+
+  disp_params <- estimate_uncertainty(
+    point_nowcast_matrices = retro_nowcasts,
+    truncated_reporting_triangles = trunc_rts,
+    retro_reporting_triangles = retro_rts,
+    n = 5
+  )
+  expect_true(all(is.finite(disp_params)))
+  expect_true(all(disp_params > 0.01))
+})
+
+test_that("estimate_uncertainty: can handle weekday filter with small ragged triangle", { # nolint
+  sim_delay_pmf <- c(0.1, 0.2, 0.3, 0.1, 0.1, 0.1)
+
+  # Generate counts for each reference date
+  counts <- c(
+    150,
+    160, 170, 200, 100, 400
+  )
+
+  # Create a complete triangle based on the known delay PMF and add some noise
+  complete_triangle <- lapply(counts, function(x) round(x * sim_delay_pmf))
+  complete_triangle <- do.call(rbind, complete_triangle)
+  complete_triangle <- complete_triangle + rnbinom(length(complete_triangle),
+    size = 20,
+    mu = 10
+  )
+
+  # Create a reporting triangle with every other day reporting
+  ragged_triangle <- construct_triangle(
+    complete_triangle,
+    structure = 2
+  )
+
+  # Create truncated triangles and retrospective triangles
+  trunc_rts <- truncate_triangles(ragged_triangle, n = 2)
+  retro_rts <- construct_triangles(trunc_rts, structure = 2)
+
+  # Generate nowcasts from the ragged triangles
+  retro_nowcasts <- fill_triangles(retro_rts, n = 4)
+
+  # No longer errors due to ncol > nrow
+  disp_params <- estimate_uncertainty(
+    point_nowcast_matrices = retro_nowcasts,
+    truncated_reporting_triangles = trunc_rts,
+    retro_reporting_triangles = retro_rts,
+    n = 2
+  )
+
+  expect_true(all(is.finite(disp_params)))
+  expect_true(all(disp_params > 0.01))
+})
+
+test_that("estimate_uncertainty: errors if ref_time_aggregator isn't appropriate", { # nolint
+  expect_error(
+    estimate_uncertainty(
+      point_nowcast_matrices = valid_nowcasts,
+      truncated_reporting_triangles = valid_trunc_rts,
+      retro_reporting_triangles = valid_rts,
+      ref_time_aggregator = function(x) rowSums(x, na.rm = TRUE)
+    ),
+    regexp = "`ref_time_aggregator` must return a matrix with"
+  )
+})
+
+test_that("estimate_uncertainty: errors when ref_time_aggregator changes column count", { # nolint
+  bad_aggregator <- function(x) x[, 1:2] # Removes columns
+  expect_error(
+    estimate_uncertainty(
+      point_nowcast_matrices = valid_nowcasts,
+      truncated_reporting_triangles = valid_trunc_rts,
+      retro_reporting_triangles = valid_rts,
+      ref_time_aggregator = bad_aggregator
+    ),
+    "`ref_time_aggregator` must return a matrix with"
+  )
+})
+
+test_that("estimate_uncertainty: errors when delay_aggregator changes row count", { # nolint
+  bad_aggregator <- function(x) x[1:2, ] # Removes rows
+  expect_error(
+    estimate_uncertainty(
+      point_nowcast_matrices = valid_nowcasts,
+      truncated_reporting_triangles = valid_trunc_rts,
+      retro_reporting_triangles = valid_rts,
+      delay_aggregator = bad_aggregator
+    ),
+    "`delay_aggregator` must return a vector of length"
+  )
+})
+
+test_that("estimate_uncertainty: errors if insufficient data", {
+  skip_if_not_installed("zoo")
+  expect_error(
+    estimate_uncertainty(
+      point_nowcast_matrices = valid_nowcasts,
+      truncated_reporting_triangles = valid_trunc_rts,
+      retro_reporting_triangles = valid_rts,
+      ref_time_aggregator = function(x) zoo::rollsum(x, k = 9, align = "right")
+    )
+  )
 })

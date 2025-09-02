@@ -11,7 +11,7 @@ complete_triangle <- do.call(rbind, complete_triangle)
 # Create a reporting triangle with NAs in the lower right
 reporting_triangle <- construct_triangle(complete_triangle)
 
-test_that("get_delay_estimate returns a valid probability mass function", {
+test_that("estimate_delay returns a valid probability mass function", {
   # Get delay estimate
   result <- estimate_delay(reporting_triangle)
 
@@ -33,7 +33,7 @@ test_that("get_delay_estimate returns a valid probability mass function", {
   expect_equal(result, sim_delay_pmf, tolerance = 1e-6)
 })
 
-test_that("get_delay_estimate handles custom max_delay parameter", {
+test_that("estimate_delay handles custom max_delay parameter", {
   # Test with max_delay = 3 (full delay)
   result_full <- estimate_delay(reporting_triangle, max_delay = 3)
   expect_identical(as.integer(length(result_full)), 4L)
@@ -47,7 +47,7 @@ test_that("get_delay_estimate handles custom max_delay parameter", {
   expect_equal(result_truncated, expected_truncated, tolerance = 1e-6)
 })
 
-test_that("get_delay_estimate handles custom n_history parameter", {
+test_that("estimate_delay handles custom n_history parameter", {
   # Test with different n values
   result_full <- estimate_delay(reporting_triangle, n = 5)
   result_partial <- estimate_delay(reporting_triangle, n = 4)
@@ -57,7 +57,7 @@ test_that("get_delay_estimate handles custom n_history parameter", {
   expect_equal(result_partial, sim_delay_pmf, tolerance = 1e-6)
 })
 
-test_that("get_delay_estimate validates input parameters correctly", {
+test_that("estimate_delay validates input parameters correctly", {
   # Test invalid max_delay
   expect_error(estimate_delay(reporting_triangle, max_delay = 0))
 
@@ -72,7 +72,7 @@ test_that("get_delay_estimate validates input parameters correctly", {
 })
 
 test_that(
-  "get_delay_estimate errors when NAs are in upper part of reporting triangle",
+  "estimate_delay errors when NAs are in upper part of reporting triangle",
   {
     # Add NA in the upper part where it shouldn't be
     triangle_with_na <- reporting_triangle
@@ -82,13 +82,13 @@ test_that(
   }
 )
 
-test_that("get_delay_estimate errors if not passed a matrix", {
+test_that("estimate_delay errors if not passed a matrix", {
   # Create a vector instead of a matrix
   triangle_single_day <- reporting_triangle[1, ]
   expect_error(estimate_delay(triangle_single_day))
 })
 
-test_that("get_delay_estimate calculates correct PMF with complete matrix", {
+test_that("estimate_delay calculates correct PMF with complete matrix", {
   # Create a triangle with known delay PMF
   complete_pmf <- c(0.45, 0.25, 0.2, 0.1)
 
@@ -109,7 +109,7 @@ test_that("get_delay_estimate calculates correct PMF with complete matrix", {
 })
 
 test_that(
-  "get_delay_estimate works with every other day reporting of daily data",
+  "estimate_delay works with every other day reporting of daily data",
   {
     sim_delay_pmf <- c(0.1, 0.2, 0.3, 0.1, 0.1, 0.1, 0.1)
 
@@ -132,7 +132,7 @@ test_that(
   }
 )
 
-test_that("get_delay_estimate handles diagonal reporting triangles", {
+test_that("estimate_delay handles diagonal reporting triangles", {
   # Create a triangle with known delay PMF
   partial_pmf <- c(0.4, 0.2, 0.2, 0.2)
 

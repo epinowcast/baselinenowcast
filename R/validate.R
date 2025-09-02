@@ -168,26 +168,26 @@
   return(NULL)
 }
 
-.validate_aggregation_function <- function(fun_to_aggregate) {
-  # Define allowed functions
-  allowed_functions <- list(
-    sum = sum
-  )
-
-  # Validate function
-  fun_name <- deparse(substitute(fun_to_aggregate))
-  if (is.name(fun_to_aggregate)) {
-    fun_name <- as.character(fun_to_aggregate)
+#' Check observations and predictions are compatible
+#'
+#' @param obs Matrix or vector of observations.
+#' @param pred Matrix or vector of predictions.
+#'
+#' @returns NULL, invisibly
+.check_obs_and_pred <- function(obs, pred) {
+  if (is.null(obs) || is.null(pred)) {
+    cli_abort("Missing `obs` and/or `pred`") # nolint
+  }
+  # Coerce vectors/data.frames to matrices and validate numeric
+  obs <- as.matrix(obs)
+  pred <- as.matrix(pred)
+  if (!is.numeric(obs) || !is.numeric(pred)) {
+    cli_abort("`obs` and `pred` must be numeric (after coercion to matrix).")
   }
 
-  # Check if function is in allowed list
-  if (!identical(fun_to_aggregate, allowed_functions[[fun_name]]) &&
-    !any(sapply(allowed_functions, identical, fun_to_aggregate))) {
-    allowed_names <- toString(names(allowed_functions))
-    stop(sprintf("'fun_to_aggregate' should be one of: %s", allowed_names),
-      call. = FALSE
-    )
+  # Ensure obs and pred have the same dimensions
+  if (!identical(dim(obs), dim(pred))) {
+    cli_abort("`obs` and `pred` must have the same dimensions") # nolint
   }
-
   return(NULL)
 }

@@ -30,10 +30,12 @@ test_that("truncate_triangles returns correct number of truncated matrices with 
 })
 
 test_that("truncate_triangles default n calculation works correctly", {
-  expected_default <- nrow(test_triangle) - ncol(test_triangle) - 1
+  expected_default <- nrow(test_triangle) -
+    sum(is.na(rowSums(test_triangle))) - 1
   result <- truncate_triangles(test_triangle)
   expect_length(result, expected_default)
 })
+
 
 test_that("truncate_triangles edge cases are handled properly", {
   # n = 0 returns empty list
@@ -54,10 +56,14 @@ test_that("truncate_triangles edge cases are handled properly", {
   )
 })
 
-test_that("truncate_triangles warnings are generated for excessive n values", {
-  safe_n <- nrow(test_triangle) - ncol(test_triangle) - 1
-  expect_silent(truncate_triangles(test_triangle, n = safe_n))
-  expect_warning(truncate_triangles(test_triangle, n = safe_n + 1))
+test_that("truncate_triangles can handle a range of ns", {
+  ncols <- ncol(test_triangle) - 1
+  nrows <- nrow(test_triangle) - 1
+
+  expect_silent(truncate_triangles(test_triangle, n = ncols))
+  expect_silent(truncate_triangles(test_triangle, n = nrows))
+  expect_silent(truncate_triangles(test_triangle, n = 2))
+  expect_error(truncate_triangles(test_triangle, n = -1))
 })
 
 test_that("truncate_triangles NA replacement works as expected", {
@@ -77,4 +83,26 @@ test_that("truncate_triangles truncated matrices preserve original structure", {
     result[1:(nrow(result) - 1), ],
     test_triangle[1:(nrow(result) - 1), ]
   )
+})
+
+test_that("truncate_triangles: default works well for ragged triangle", {
+  sim_delay_pmf <- c(0.1, 0.2, 0.3, 0.1, 0.1, 0.1)
+
+  # Generate counts for each reference date
+  counts <- c(
+    150,
+    160, 170, 200, 100
+  )
+
+  # Create a complete triangle based on the known delay PMF
+  complete_triangle <- lapply(counts, function(x) round(x * sim_delay_pmf))
+  complete_triangle <- do.call(rbind, complete_triangle)
+
+  ragged_triangle <- construct_triangle(
+    complete_triangle,
+    structure = 2
+  )
+
+  truncated_triangles <- truncate_triangles(ragged_triangle)
+  expect_length(truncated_triangles, 1L)
 })

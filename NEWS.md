@@ -1,6 +1,10 @@
 # baselinenowcast 0.0.0.1000
 
--   Add new logo
+-   Refactor `estimate_uncertainty` to take in an error model function, an aggregator function for aggregating across reference times, and an aggregator function for aggregating across delays.
+-   Fix internal checks that ensure there is sufficient data for the specified target choice, using the number of NA rows rather than the number of columns as a proxy for the number of horizons.
+-   Replace argument names with more complete versions where possible.
+-   Replace most function names with action-oriented function naming.
+-   Add new logo.
 -   Add a check to ensure that there are sufficient non-zero values in the reporting triangle.
 -   Add a check to ensure that sufficient `n` are specified for the delay estimate.
 -   Change the requirement so that the number of rows used for delay estimation need not be greater than or equal to the number of columns, but instead that at least one row contains a full set of observations.

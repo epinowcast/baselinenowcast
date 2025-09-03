@@ -44,20 +44,22 @@ Depends:
 Imports:
   cli,
   checkmate,
-  stats,
-  zoo
+  stats
 Suggests:
     epinowcast,
     bookdown,
     dplyr,
     tidyr,
+    readr,
     ggplot2,
     spelling,
     rmarkdown,
     testthat (>= 3.1.9),
     usethis,
     withr,
-    knitr
+    lubridate,
+    knitr,
+    zoo
 Encoding: UTF-8
 Language: en-GB
 LazyData: true

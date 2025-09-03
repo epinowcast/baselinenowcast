@@ -8,10 +8,11 @@
 #'
 #' @param n Integer indicating the number of retrospective
 #'   truncated triangles to be generated, always starting from the most
-#'   recent reference time. Default is to generate truncated matrices
-#'   for all triangles that would have a sufficient number of rows to generate
-#'   a nowcast from.
-#' @inheritParams get_delay_estimate
+#'   recent reference time. Default is to generate truncated matrices for
+#'   each row up until there are insufficient rows to generate nowcasts
+#'   from, where the minimum requirement is one more than the  number of
+#'   horizon rows (rows containing NAs).
+#' @inheritParams estimate_delay
 #' @returns `trunc_rep_tri_list` List of `n` truncated reporting triangle
 #'   matrices with as many rows as available given the truncation, and the same
 #'   number of columns as `reporting_triangle`.
@@ -35,18 +36,10 @@
 #' truncated_rts <- truncate_triangles(triangle, n = 2)
 #' truncated_rts[1:2]
 truncate_triangles <- function(reporting_triangle,
-                               n = nrow(reporting_triangle) - ncol(reporting_triangle) - 1) { # nolint
+                               n = nrow(reporting_triangle) -
+                                 sum(is.na(rowSums(reporting_triangle))) - 1) {
   .validate_triangle(reporting_triangle)
   assert_integerish(n, lower = 0)
-  if (n > (nrow(reporting_triangle) - ncol(reporting_triangle) - 1)) {
-    cli::cli_warn(
-      message = c(
-        "Not all of the triangles generated will contain sufficient ",
-        "observations to generate a nowcast from"
-      )
-    )
-  }
-
   trunc_rep_tri_list <- lapply(
     seq_len(n),
     truncate_triangle,
@@ -63,7 +56,7 @@ truncate_triangles <- function(reporting_triangle,
 #'
 #' @param t Integer indicating the number of timepoints to truncate off the
 #'   bottom of the original reporting triangle.
-#' @inheritParams get_delay_estimate
+#' @inheritParams estimate_delay
 #' @returns `trunc_rep_tri` Matrix with `t` fewer rows than
 #'    `reporting_triangle`.
 #' @importFrom checkmate assert_integerish

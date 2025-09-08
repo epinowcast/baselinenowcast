@@ -102,10 +102,10 @@ We note that this method is equivalent to the so-called chain ladder method @Fri
 
 ```{r squares}
 #| echo = FALSE,
-#| fig.cap = '*Figure 1.* Visual description of the iterative “completing” of the reporting
-#|  triangle, which relies on the assumption that the ratio between delays for
-#|  fully observed reference times is consistent with the ratio between those
-#|  same delays in the partially observed data.'
+#| fig.cap = '*Figure 1.* Visual description of the iterative “completing” of
+#| the reporting triangle, which relies on the assumption that the ratio
+#|  between delays for fully observed reference times is consistent with the
+#|  ratio between those same delays in the partially observed data.'
 knitr::include_graphics(file.path(
   "..", "man", "figures",
   "reporting_triangle.png"
@@ -197,9 +197,9 @@ $$ we thus obtain @eq-negbin2. Estimated dispersion parameters $\hat{\phi}_0, \d
 
 ```{r uncertainty_quantification}
 #| echo = FALSE,
-#| fig.cap = '*Figure 3.* Visual description of the uncertainty quantification method,
-#|    which generates retrospective point nowcasts and compares those estimates
-#|    to what was later observed as of the nowcast time.'
+#| fig.cap = '*Figure 3.* Visual description of the uncertainty quantification
+#| method, which generates retrospective point nowcasts and compares those
+#| estimates to what was later observed as of the nowcast time.'
 knitr::include_graphics(file.path("..", "man", "figures", "uq.png"))
 ```
 
@@ -218,10 +218,10 @@ This is described in the schematic Figure @fig-predicted_prob_nowcasts which des
 
 ```{r predicted_prob_nowcasts}
 #| echo = FALSE,
-#| fig.cap = '*Figure 4.* Visual description of the generation of predicted probabilistic
-#|    nowcasts generated via sampling from the observation model with the
-#|    estimated uncertainty parameters and a mean given by the sum of the
-#|    predicted components at each reference time.'
+#| fig.cap = '*Figure 4.* Visual description of the generation of predicted
+#| probabilistic nowcasts generated via sampling from the observation model
+#| with the estimated uncertainty parameters and a mean given by the sum of the
+#| predicted components at each reference time.'
 knitr::include_graphics(file.path(
   "..", "man", "figures",
   "pred_prob_nowcasts.png"

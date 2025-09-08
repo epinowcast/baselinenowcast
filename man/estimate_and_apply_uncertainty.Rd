@@ -8,10 +8,13 @@ estimate_and_apply_uncertainty(
   point_nowcast_matrix,
   reporting_triangle,
   max_delay,
-  n_retrospective_nowcasts = round(1.5 * max_delay),
+  n_history_delay = round(1.5 * max_delay),
+  n_retrospective_nowcasts = 3 * max_delay - n_history_delay,
   draws = 100,
-  error_model = "negative binomial",
-  aggregator = sum,
+  uncertainty_model = fit_by_horizon,
+  uncertainty_sampler = sample_nb,
+  ref_time_aggregator = identity,
+  delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
   ...
 )
 }
@@ -37,13 +40,13 @@ delay}
 \item{draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}
 
+\item{...}{Additional arguments}
+
 \item{error_model}{Character string indicating what error model to use.
 Default is \code{"negative binomial"}}
 
 \item{aggregator}{Function to aggregate predictions for error estimation.
 Default is \code{sum}.}
-
-\item{...}{Additional arguments}
 }
 \value{
 \code{nowcast_draws_df} Dataframe containing draws of combined

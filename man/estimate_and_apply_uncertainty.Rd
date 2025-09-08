@@ -32,8 +32,10 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 of the delay. The default is to use the whole reporting triangle,
 \code{ncol(reporting_triangle) -1}.}
 
-\item{draws}{Integer indicating the number of draws of the predicted
-nowcast vector to generate. Default is \code{1000}.}
+\item{n_history_delay}{Integer indicating the number of reference times
+(observations) to
+be used in the estimate of the reporting delay, always starting from the
+most recent reporting delay.}
 
 \item{uncertainty_model}{Function that ingests a matrix of observations and a
 matrix of predictions and returns a vector that can be used to
@@ -43,6 +45,13 @@ apply uncertainty using the same error model. Default is
 to a negative binomial observation model by default. The user can
 specify a different fitting model by replacing the
 \code{fit_model} argument in \code{fit_by_horizon}.}
+
+\item{uncertainty_sampler}{Function that ingests a vector or matrix of
+predictions and a vector of uncertainty parameters and generates draws
+from the observation model. Default is \code{sample_nb} which expects
+arguments \code{pred} for the vector of predictions and uncertainty parameters
+for the corresponding vector of uncertainty parameters, and draws from a
+negative binomial for each element of the vector.}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
@@ -65,7 +74,7 @@ Estimate and apply uncertainty to a point nowcast matrix
 \examples{
 triangle <- matrix(
   c(
-   40, 10, 20, 5,
+    40, 10, 20, 5,
     80, 50, 25, 10,
     100, 50, 30, 20,
     90, 45, 25, NA,

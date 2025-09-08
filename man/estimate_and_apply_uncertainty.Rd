@@ -37,6 +37,9 @@ of the delay. The default is to use the whole reporting triangle,
 be used in the estimate of the reporting delay, always starting from the
 most recent reporting delay.}
 
+\item{draws}{Integer indicating the number of draws of the predicted
+nowcast vector to generate. Default is \code{1000}.}
+
 \item{uncertainty_model}{Function that ingests a matrix of observations and a
 matrix of predictions and returns a vector that can be used to
 apply uncertainty using the same error model. Default is

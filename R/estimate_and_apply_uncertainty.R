@@ -3,6 +3,7 @@
 #' @inheritParams estimate_delay
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_prediction
+#' @inheritParams sample_nowcasts
 #' @param n_history_delay Integer indicating the number of reference times
 #'   (observations) to
 #'   be used in the estimate of the reporting delay, always starting from the
@@ -55,7 +56,8 @@ estimate_and_apply_uncertainty <- function(
   n_ref_times <- nrow(reporting_triangle)
   if (n_ref_times > 3 * max_delay) {
     n_retrospective_nowcasts <- 3 * max_delay - n_history_delay
-  } else if (n_ref_times >= n_history_delay + 2 & n_ref_times <= 3 * max_delay) {
+  } else if (n_ref_times >= n_history_delay + 2 &&
+    n_ref_times <= 3 * max_delay) {
     n_retrospective_nowcasts <- n_ref_times - n_history_delay
   } else {
     cli_abort(

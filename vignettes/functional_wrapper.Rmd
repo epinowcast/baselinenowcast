@@ -38,6 +38,7 @@ All the preprocessing to get to the reporting triangle, that will eventually go 
 ```{r}
 nowcast_date <- "2021-08-01"
 eval_date <- "2021-10-01"
+max_delay <- 30
 
 target_data <- germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
   enw_filter_report_dates(latest_date = eval_date) |>
@@ -52,18 +53,8 @@ observed_data <- enw_filter_report_dates(
   latest_date = nowcast_date
 )
 
-max_delay <- 30
-n_training_volume <- 3 * max_delay
-n_history_delay <- as.integer(0.5 * n_training_volume)
-n_retrospective_nowcasts <- n_training_volume - n_history_delay
-training_data <- enw_filter_reference_dates(
-  observed_data,
-  include_days = n_training_volume - 1
-)
-
-latest_training_data <- enw_latest_data(training_data)
 pobs <- enw_preprocess_data(
-  obs = training_data,
+  obs = observed_data,
   max_delay = max_delay + 1
 )
 reporting_triangle_df <- select(
@@ -78,12 +69,20 @@ reporting_triangle <- reporting_triangle_df |>
   select(-reference_date) |>
   as.matrix()
 ```
+Take the inputs and use them to configure the defaults (but these can also be args)
+```{r}
+n_training_volume <- 3 * max_delay
+n_history_delay <- as.integer(0.5 * n_training_volume)
+n_retrospective_nowcasts <- n_training_volume - n_history_delay
+draws <- 1000
+```
 
 Estimate and apply delay function
 ```{r}
 point_nowcast_matrix <- estimate_and_apply_delay(
   reporting_triangle,
-  max_delay
+  max_delay,
+  n_history_delay
 )
 ```
 
@@ -92,6 +91,7 @@ Estimate and apply uncertainty function
 nowcast_draws_df <- estimate_and_apply_uncertainty(
   point_nowcast_matrix,
   reporting_triangle,
-  max_delay
+  max_delay = max_delay,
+  draws = draws
 )
 ```

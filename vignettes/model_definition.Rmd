@@ -72,13 +72,13 @@ $${#eq-pi_d} which is simply the relative frequency of a delay of $d$ days among
 
 ### Estimating the delay distribution from a reporting triangle
 
-In the case where $t^*$ is the present day, such that only a reporting triangle with missing entries is available, the estimator $\hat{\pi}_d$ from \@eq-pi_d can only be evaluated after discarding all data from the last $D-1$ time points. In order to use these partial observations, we use a different representation of the delay distribution via terms of the form
+In the case where $t^*$ is the present day, such that only a reporting triangle with missing entries is available, the estimator $\hat{\pi}_d$ from \@ref(eq:pi_d) can only be evaluated after discarding all data from the last $D-1$ time points. In order to use these partial observations, we use a different representation of the delay distribution via terms of the form
 
 $$
 \theta_d = \frac{\pi_d}{\pi_{\le d-1}}
 $$ {#eq:theta_d}
 
-for $d = 1, \dots, D$. Here, in analogy to @eq-Xltd we write
+for $d = 1, \dots, D$. Here, in analogy to \@ref(eq:Xltd) we write
 
 $$
 \pi_{\le d-1} = \sum_{d'=0}^{d-1} \pi_d.
@@ -98,7 +98,7 @@ $$
 
 subject to the constrain that $\sum_{d = 0}^D \pi_d = 1$.
 
-We note that this method is equivalent to the so-called chain ladder method @Friedland2010, adapted to our notation in terms of reporting triangles (rather than *development triangles* as used in accounting). The intuition behind the method is described below in Figure @fig-squares, where the basic assumption is that the ratio between the delays in the complete observations (navy and purple elements of the matrix) is equivalent to the ratio between the delays in the partially observed components of the matrix (blue and pink elements of the matrix).
+We note that this method is equivalent to the so-called chain ladder method @Friedland2010, adapted to our notation in terms of reporting triangles (rather than *development triangles* as used in accounting). The intuition behind the method is described below in Figure \@ref(fig:squares), where the basic assumption is that the ratio between the delays in the complete observations (navy and purple elements of the matrix) is equivalent to the ratio between the delays in the partially observed components of the matrix (blue and pink elements of the matrix).
 
 ```{r squares}
 #| echo = FALSE,
@@ -138,7 +138,7 @@ $$
 \hat{x}_{t,d} = \hat{\pi}_d \times \hat{x}_t.
 $$
 
-The `apply_delay()` function ingests a reporting triangle and a delay PMF and returns a point nowcast matrix. The generation of a point nowcast is described in the schematic below @fig-pt_nowcast, describing how the missing elements of the reporting triangle are estimated and can then be used to generate a point estimate of the final counts at each reference time.
+The `apply_delay()` function ingests a reporting triangle and a delay PMF and returns a point nowcast matrix. The generation of a point nowcast is described in the schematic below \@ref(fig:pt_nowcast), describing how the missing elements of the reporting triangle are estimated and can then be used to generate a point estimate of the final counts at each reference time.
 
 ```{r pt_nowcast}
 #| echo = FALSE,
@@ -191,9 +191,9 @@ $${#eq-negbin2}
 
 We quantify the uncertainty at the target quantity level, which is assumed, by default, to be the final count at each reference time, summed across reporting delays.
 
-Here, the use of a constant dispersion parameter $\phi_j$ despite some of the values in the fitting procedure being yet incomplete is justified by the fact that the negative binomial distribution is closed to binomial subsampling, with the overdispersion parameter preserved. If equation @eq-negbin holds in combination with $$
+Here, the use of a constant dispersion parameter $\phi_j$ despite some of the values in the fitting procedure being yet incomplete is justified by the fact that the negative binomial distribution is closed to binomial subsampling, with the overdispersion parameter preserved. If equation \@ref(eq:negbin) holds in combination with $$
 \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \ | \ X_{s^* - j, > j} \sim \text{Bin}\left[X_{s^* - j, > j}, \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} \pi_{d}\right) / \pi_{> j} \right],
-$$ we thus obtain @eq-negbin2. Estimated dispersion parameters $\hat{\phi}_0, \dots, \hat{\phi}_D$ are obtained by maximum likelihood estimation. The `estimate_uncertainty()` function ingests the truncated reporting triangles, retrospective reporting triangles, and the retrospective point nowcasts and returns a set of uncertainty parameters corresponding to the specified observation model. The uncertainty quantification procedure is described schematically in Figure @fig-uncertainty_quantification.
+$$ we thus obtain \@ref(eq:negbin2). Estimated dispersion parameters $\hat{\phi}_0, \dots, \hat{\phi}_D$ are obtained by maximum likelihood estimation. The `estimate_uncertainty()` function ingests the truncated reporting triangles, retrospective reporting triangles, and the retrospective point nowcasts and returns a set of uncertainty parameters corresponding to the specified observation model. The uncertainty quantification procedure is described schematically in Figure \@ref(fig:uncertainty_quantification).
 
 ```{r uncertainty_quantification}
 #| echo = FALSE,
@@ -214,7 +214,7 @@ X_{t, > t^* - t} \sim \text{NegBin}(\hat{x}_{t, > t^* - t}, \phi_{t^* - t}).
 $$
 
 
-This is described in the schematic Figure @fig-predicted_prob_nowcasts which describes sampling from the observation model with a mean given by the sum of the predicted components in the point nowcast matrix (the white squares).
+This is described in the schematic Figure \@ref(fig:predicted_prob_nowcasts) which describes sampling from the observation model with a mean given by the sum of the predicted components in the point nowcast matrix (the shaded squares).
 
 ```{r predicted_prob_nowcasts}
 #| echo = FALSE,
@@ -232,7 +232,7 @@ knitr::include_graphics(file.path(
 
 The predictive distribution for $X_{t}$ then results by shifting this distribution by the already known value $x_{t, \leq t^* - t}$.
 
-This is described by the schematic Figure @fig-comb_w_obs which describes the combining of the right-truncated partial observed data summed across reference times and the predicted probabilistic nowcast components to generate probabilistic nowcasts.
+This is described by the schematic Figure \@ref(fig:comb_w_obs) which describes the combining of the right-truncated partial observed data summed across reference times and the predicted probabilistic nowcast components to generate probabilistic nowcasts.
 
 ```{r comb_w_obs}
 #| echo = FALSE,
@@ -276,7 +276,7 @@ $$ we get $$
 \text{Pr}(N = n \ |\ Y = y) = \frac{\binom{n}{y} p^y(1-p)^{n-y}}{\sum_{i=1}^\infty \binom{1}{y}p^y(1-p)^{i-y}}
 $$
 
-Plugging this into @eq-expectation we get the following (omitting terms for $n<y$, which are 0):
+Plugging this into \@ref(eq:expectation) we get the following (omitting terms for $n<y$, which are 0):
 
 $$
 \mathbb{E}(N \ |\ Y = y) = \sum_{n=y}^{\infty}n \frac{\binom{n}{y} p^y(1-p)^{n-y}}{\sum_{i=y}^\infty \binom{i}{y}p^y(1-p)^{i-y}}
@@ -292,7 +292,7 @@ Both the numerator and the denominator are known convergent series, with solutio
 
 $$
 \mathbb{E}(N \ |\ Y = y)  = \frac{(y + 1 -p)/p^2}{1/p} = \frac{y + 1 - p}{p},
-$$ which corresponds to the corrected point estimate provided in equation @eq-correction.
+$$ which corresponds to the corrected point estimate provided in equation \@ref(eq:correction).
 
 # Default settings {#default-settings}
 

@@ -39,19 +39,19 @@ $$X_{t,>d} = \sum_{i = d+1} ^{D} X_{t,i}$$
 
 representing the number of cases still missing after $d$ delay. In the following we use uppercase letters ($X_t$) for random variables, lower case ($x_t$) for the corresponding observations, and hats ($\hat{x}_t$) for estimated/imputed values. We refer to $X_t$ to describe a random variable, $x_t$ for the corresponding observation, and $\hat{x}_t$ for an estimated/imputed value. The matrix $\mathbf{x}$ with entries $x_{t,d}, t = 1, \dots, t^*, d = 1, \dots, D$ is referred to as the *reporting matrix*. For a description of the nowcasting terms being used in this document (e.g. reporting triangle) and their corresponding abbreviations in the package, please consult the [nowcasting nomenclature](nomenclature.html) vignette.
 
-|           | $d = 0$       | $d = 1$       | $d=2$          | $...$ | $d= D-1$         | $d= D$        |
-|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
-| $t=1$     | $x_{1,0}$     | $x_{1,1}$     | $x_{1,2}$      | $...$ | $x_{1,D-1}$      | $x_{1, D}$    |
-| $t=2$     | $x_{2,0}$     | $x_{2,1}$     | $x_{2,2}$      | $...$ | $x_{2,D-1}$      | $x_{2, D}$    |
-| $t=3$     | $x_{3,0}$     | $x_{3,1}$     | $x_{3,2}$      | $...$ | $x_{3,D-1}$      | $x_{3, D}$    |
-| $...$     | $...$         | $...$         | $...$          | $...$ | $...$            | $...$         |
+|   | $d = 0$ | $d = 1$ | $d=2$ | $...$ | $d= D-1$ | $d= D$ |
+|----|----|----|----|----|----|----|
+| $t=1$ | $x_{1,0}$ | $x_{1,1}$ | $x_{1,2}$ | $...$ | $x_{1,D-1}$ | $x_{1, D}$ |
+| $t=2$ | $x_{2,0}$ | $x_{2,1}$ | $x_{2,2}$ | $...$ | $x_{2,D-1}$ | $x_{2, D}$ |
+| $t=3$ | $x_{3,0}$ | $x_{3,1}$ | $x_{3,2}$ | $...$ | $x_{3,D-1}$ | $x_{3, D}$ |
+| $...$ | $...$ | $...$ | $...$ | $...$ | $...$ | $...$ |
 | $t=t^*-1$ | $x_{t^*-1,0}$ | $x_{t^*-1,1}$ | $x_{t^*-1,,2}$ | $...$ | $x_{t^*-1,,D-1}$ | $x_{t^*-1,D}$ |
-| $t=t^*$   | $x_{t^*,0}$   | $x_{t^*,1}$   | $x_{t^*,2}$    | $...$ | $x_{t^*,D-1}$    | $x_{t^*, D}$  |
+| $t=t^*$ | $x_{t^*,0}$ | $x_{t^*,1}$ | $x_{t^*,2}$ | $...$ | $x_{t^*,D-1}$ | $x_{t^*, D}$ |
 
 In the case where $t^*$ corresponds to the present date, all entries with $t+d>t^*$ have yet to be observed and are thus still missing. As the available entries at its bottom form a triangle, this incomplete reporting matrix is referred to as the *reporting triangle*.
 
 |           | $d = 0$       | $d = 1$       | $d=2$         | $...$ | $d= D-1$ | $d= D$ |
-|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
+|-----------|---------------|---------------|---------------|-------|----------|--------|
 | $t=t^*-2$ | $x_{t^*-2,0}$ | $x_{t^*-2,1}$ | $x_{t^*-2,2}$ | $...$ |          |        |
 | $t=t^*-1$ | $x_{t^*-1,0}$ | $x_{t^*-1,1}$ |               | $...$ |          |        |
 | $t=t^*$   | $x_{t^*,0}$   |               |               | $...$ |          |        |
@@ -68,12 +68,11 @@ If a complete reporting matrix is available, estimating the discrete-time delay 
 
 $$
 \hat{\pi}_d= \frac{\sum_{t=t^*-N+1}^{t=t^*} x_{t,d}}{\sum_{t=t^*-N+1}^{t=t^*} x_{t}}, (\#eq:pid)
-$$
-which is simply the relative frequency of a delay of $d$ days among all cases in the reporting matrix.
+$$ which is simply the relative frequency of a delay of $d$ days among all cases in the reporting matrix.
 
 ### Estimating the delay distribution from a reporting triangle
 
-In the case where $t^*$ is the present day, such that only a reporting triangle with missing entries is available, the estimator $\hat{\pi}_d$ from \@ref(eq:pi_) can only be evaluated after discarding all data from the last $D-1$ time points. In order to use these partial observations, we use a different representation of the delay distribution via terms of the form
+In the case where $t^*$ is the present day, such that only a reporting triangle with missing entries is available, the estimator $\hat{\pi}_d$ from \@ref(eq:pid) can only be evaluated after discarding all data from the last $D-1$ time points. In order to use these partial observations, we use a different representation of the delay distribution via terms of the form
 
 $$
 \theta_d = \frac{\pi_d}{\pi_{\le d-1}} (\#eq:thetad)
@@ -128,7 +127,7 @@ $$
 This, however, is not well-behaved if no cases at $t$ have been observed yet, i.e., $x_{t, \leq t^* - t} = 0$. Then $\hat{x}_t$ is likewise zero, which yields problems in our uncertainty quantification method (see next section). Motivated by a Bayesian argument (see [Zero-handling](#zero-handling-approximation) below) we therefore use the expression
 
 $$
-\hat{x}_t = \frac{x_{t, \leq t^*-t} + 1 - \pi_{\leq t^*-t}}{\hat{\pi}_{t, \leq t^*-t}} (\#eq:correction)
+\hat{x}_t = \frac{x_{t, \leq t^*-t} + 1 - \pi_{\leq t^*-t}}{\hat{\pi}_{\leq t^*-t}} (\#eq:correction)
 $$
 
 instead. This yields essentially identical results for large $x_{t, \leq t^* - t}$, but produces positive $\hat{x}_t$ even for preliminary zero values $x_{t, \leq t^* - t} = 0$.
@@ -186,18 +185,15 @@ $$
 X_{s^* - j, > j} \sim \text{NegBin}[\hat{x}_{s^* - j, > j}(s^*), \phi_j], (\#eq:negbin)
 $$
 
-with independence assumed across the different $s^*$. This, however, is not directly feasible as again some of the $x_{s^* - j, > j}$ are not yet observed at time $t^*$. We could discard these instances, but this would considerably reduce our number of available observations. We therefore use partial observations as available at time $t^*$ and assume
-$$
+with independence assumed across the different $s^*$. This, however, is not directly feasible as again some of the $x_{s^* - j, > j}$ are not yet observed at time $t^*$. We could discard these instances, but this would considerably reduce our number of available observations. We therefore use partial observations as available at time $t^*$ and assume $$
 \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \sim \text{NegBin}\left[\sum_{d = j + 1}^{\min(D, t^* - s^*)} \hat{x}_{s^* - j, d}, \phi_j \right]. (\#eq:negbin2)
 $$
 
 We quantify the uncertainty at the target quantity level, which is assumed, by default, to be the final count at each reference time, summed across reporting delays.
 
-Here, the use of a constant dispersion parameter $\phi_j$ despite some of the values in the fitting procedure being yet incomplete is justified by the fact that the negative binomial distribution is closed to binomial subsampling, with the overdispersion parameter preserved. If equation \@ref(eq:negbin) holds in combination with
-$$
+Here, the use of a constant dispersion parameter $\phi_j$ despite some of the values in the fitting procedure being yet incomplete is justified by the fact that the negative binomial distribution is closed to binomial subsampling, with the overdispersion parameter preserved. If equation \@ref(eq:negbin) holds in combination with $$
 \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \ | \ X_{s^* - j, > j} \sim \text{Bin}\left[X_{s^* - j, > j}, \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} \pi_{d}\right) / \pi_{> j} \right],
-$$
-we thus obtain \@ref(eq:negbin2). Estimated dispersion parameters $\hat{\phi}_0, \dots, \hat{\phi}_D$ are obtained by maximum likelihood estimation. The `estimate_uncertainty()` function ingests the truncated reporting triangles, retrospective reporting triangles, and the retrospective point nowcasts and returns a set of uncertainty parameters corresponding to the specified observation model.
+$$ we thus obtain \@ref(eq:negbin2). Estimated dispersion parameters $\hat{\phi}_0, \dots, \hat{\phi}_D$ are obtained by maximum likelihood estimation. The `estimate_uncertainty()` function ingests the truncated reporting triangles, retrospective reporting triangles, and the retrospective point nowcasts and returns a set of uncertainty parameters corresponding to the specified observation model.
 
 ```{r uncertainty_quantification}
 #| echo = FALSE,
@@ -216,7 +212,6 @@ Predictive distributions for $X_{t^*}, \dots, X_{t^* - D + 1}$ are obtained by g
 $$
 X_{t, > t^* - t} \sim \text{NegBin}(\hat{x}_{t, > t^* - t}, \phi_{t^* - t}).
 $$
-
 
 ```{r predicted_prob_nowcasts}
 #| echo = FALSE,
@@ -250,8 +245,7 @@ As mentioned in [Point nowcast generation](#point-nowcast-generation), we use a 
 
 $$
 X_{t, \leq d} \ \mid X_t \sim \text{Bin}\left(X_t, \sum_{d = 0}^d \pi_t\right).
-$$
-We are now interested in the conditional expectation
+$$ We are now interested in the conditional expectation
 
 $$
 \mathbb{E}(X_t \ \mid X_{t, \leq d})
@@ -263,8 +257,7 @@ $$
 X_t \sim \text{DiscreteUniform}(0, 1, 2, \dots).
 $$
 
-For notational simplicity and readability for the following, we substitute $N = X_{t}$, $Y = X_{t, \geq d}$ and $p = \sum_{d = 0}^D \pi_d$ and are thus looking for $\mathbb{E}(N | Y = y)$ if $Y \sim \text{Bin}(N, p)$ with a discrete uniform prior on $N$. This expectation can be written out as:
-$$
+For notational simplicity and readability for the following, we substitute $N = X_{t}$, $Y = X_{t, \geq d}$ and $p = \sum_{d = 0}^D \pi_d$ and are thus looking for $\mathbb{E}(N | Y = y)$ if $Y \sim \text{Bin}(N, p)$ with a discrete uniform prior on $N$. This expectation can be written out as: $$
 \mathbb{E}(N \ | \ Y = y) = \sum_{n=0}^{\infty}\text{Pr}(N = n | Y = y) \times n (\#eq:expectation)
 $$
 

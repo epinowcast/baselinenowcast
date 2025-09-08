@@ -28,6 +28,15 @@
 estimate_and_apply_delay <- function(reporting_triangle,
                                      max_delay = ncol(reporting_triangle) - 1,
                                      n_history_delay = round(1.5 * max_delay)) {
+  if (max_delay > ncol(reporting_triangle) - 1) {
+    message(sprintf(
+      "The maximum delay must be less than the number of columns in the reporting triangle. The maximum delay will be set to %d.", # nolint
+      ncol(reporting_triangle) - 1
+    ))
+    max_delay <- ncol(reporting_triangle) - 1
+    n_history_delay <- round(1.5 * max_delay)
+  }
+
   delay_pmf <- estimate_delay(
     reporting_triangle,
     max_delay = max_delay,

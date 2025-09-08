@@ -49,13 +49,25 @@ test_that(
       regexp = "Only the first 3 delays are being nowcasted"
     )
 
-    expect_error(
+    pt_nowcast1 <- estimate_and_apply_delay(
+      reporting_triangle = reporting_triangle,
+      max_delay = 2
+    )
+    expect_identical(ncol(pt_nowcast1), 3L)
+
+    expect_message(
       estimate_and_apply_delay(
         reporting_triangle = reporting_triangle,
-        max_delay = 6
+        max_delay = 8
       ),
-      regexp = "Number of observations in input reporting triangle is insufficient" # nolint
+      regexp = "The maximum delay must be less than the number of columns" # nolint
     )
+
+    pt_nowcast2 <- estimate_and_apply_delay(
+      reporting_triangle = reporting_triangle,
+      max_delay = 8
+    )
+    expect_identical(ncol(pt_nowcast2), 7L)
   }
 )
 

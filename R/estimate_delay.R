@@ -55,6 +55,7 @@ estimate_delay <- function(
     n = n
   )
 
+
   # Filter the reporting_triangle down to relevant rows and columns
   trunc_triangle <- .prepare_triangle(reporting_triangle, max_delay, n)
 

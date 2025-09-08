@@ -98,9 +98,14 @@ $$
 
 subject to the constrain that $\sum_{d = 0}^D \pi_d = 1$.
 
-We note that this method is equivalent to the so-called chain ladder method @Friedland2010, adapted to our notation in terms of reporting triangles (rather than *development triangles* as used in accounting). The intuition behind the method is described below in Figure @fig-squares, where the basic assumption is that the ratio between the delays in the complete observations (navy and orange elements of the matrix) is equivalent to the ratio between the delays in the partially observed components of the matrix (blue and yellow elements of the matrix).
+We note that this method is equivalent to the so-called chain ladder method @Friedland2010, adapted to our notation in terms of reporting triangles (rather than *development triangles* as used in accounting). The intuition behind the method is described below in Figure @fig-squares, where the basic assumption is that the ratio between the delays in the complete observations (navy and purple elements of the matrix) is equivalent to the ratio between the delays in the partially observed components of the matrix (blue and pink elements of the matrix).
 
-```{r squares, echo = FALSE, fig.cap = 'Visual description of the iterative “completing” of the reportingtriangle, which relies on the assumption that the ratio between delays for fully observed reference times is consistent with the ratio between those same delays in the partially observed data.'}
+```{r squares}
+#| echo = FALSE,
+#| fig.cap = '*Figure 1.* Visual description of the iterative “completing” of the reporting
+#|  triangle, which relies on the assumption that the ratio between delays for
+#|  fully observed reference times is consistent with the ratio between those
+#|  same delays in the partially observed data.'
 knitr::include_graphics(file.path(
   "..", "man", "figures",
   "reporting_triangle.png"
@@ -137,10 +142,8 @@ The `apply_delay()` function ingests a reporting triangle and a delay PMF and re
 
 ```{r pt_nowcast}
 #| echo = FALSE,
-#| fig.cap = '*Figure 1.* Visual description of the generation of a point
-#|     nowcast matrix
-#|     (filled in matrix elements in the bottom right of the reporting matrix)
-#|     and corresponding point nowcast vector (black). '
+#| fig.cap = '*Figure 2.* Visual description of the generation of a point
+#|     nowcast matrix from a reporting triangle and delay PMF. '
 knitr::include_graphics(file.path("..", "man", "figures", "point_nowcast.png"))
 ```
 
@@ -194,10 +197,9 @@ $$ we thus obtain @eq-negbin2. Estimated dispersion parameters $\hat{\phi}_0, \d
 
 ```{r uncertainty_quantification}
 #| echo = FALSE,
-#| fig.cap = 'Visual description of the uncertainty quantification method,
+#| fig.cap = '*Figure 3.* Visual description of the uncertainty quantification method,
 #|    which generates retrospective point nowcasts and compares those estimates
-#|    to what was later observed as of the nowcast time, grouped by nowcast
-#|    horizon.'
+#|    to what was later observed as of the nowcast time.'
 knitr::include_graphics(file.path("..", "man", "figures", "uq.png"))
 ```
 
@@ -216,10 +218,10 @@ This is described in the schematic Figure @fig-predicted_prob_nowcasts which des
 
 ```{r predicted_prob_nowcasts}
 #| echo = FALSE,
-#| fig.cap = 'Visual description of the generation of predicted probabilistic
+#| fig.cap = '*Figure 4.* Visual description of the generation of predicted probabilistic
 #|    nowcasts generated via sampling from the observation model with the
-#|    estimted uncertainty parameters and a mean given by the sum of the
-#|    predicted components at each reference time (white squares).'
+#|    estimated uncertainty parameters and a mean given by the sum of the
+#|    predicted components at each reference time.'
 knitr::include_graphics(file.path(
   "..", "man", "figures",
   "pred_prob_nowcasts.png"
@@ -234,8 +236,8 @@ This is described by the schematic Figure @fig-comb_w_obs which describes the co
 
 ```{r comb_w_obs}
 #| echo = FALSE,
-#| fig.cap = 'Visual description of combining the observations by reference
-#|     time with the probabilistic predicted nowcast components to generate
+#| fig.cap = '*Figure 5.* Visual description of combining the observations
+#|  with the probabilistic predicted nowcast components to generate
 #|     probabilistic nowcasts.'
 knitr::include_graphics(file.path("..", "man", "figures", "comb_w_obs.png"))
 ```
@@ -298,7 +300,10 @@ To guide practitioners, we set default behaviours that are based on the maximum 
 
 Within each step there are additional defaults:
 
-*Delay distribution estimation*: 50% of the reference times in the training volume $V$ are used for delay estimation, $N$, with a minimum requirement of at least one more than the maximum delay. If less data than this is available, this is indicated to the user, only producing an error when less data than the theoretically minimum is available for any given modelling step. *Point nowcast generation*: Delay estimation occurs using the reporting triangle being nowcasted. *Uncertainty Estimation*: 50% of the reference times in the training volume $V$ are used as retrospective point nowcast times, $M$. If there is insufficient data, the method uses the oldest retrospective nowcast date with at least the same amount of historical data for delay estimation as is used for the point nowcast at the current nowcast date, and requires that there are at least two retrospective nowcasts containing sufficient data. By default we do not sum the predicted components of each row across rows as this is context specific (diverging from [@Wolffram2023]. who sum by week due to their target data being a rolling 7 day sum).
+*Delay distribution estimation*: 50% of the reference times in the training volume $V$ are used for delay estimation, $N$, with a minimum requirement of at least one more than the maximum delay. If less data than this is available, this is indicated to the user, only producing an error when less data than the theoretically minimum is available for any given modelling step.
+
+*Point nowcast generation*: Delay estimation occurs using the reporting triangle being nowcasted.
+
+*Uncertainty Estimation*: 50% of the reference times in the training volume $V$ are used as retrospective point nowcast times, $M$. If there is insufficient data, the method uses the oldest retrospective nowcast date with at least the same amount of historical data for delay estimation as is used for the point nowcast at the current nowcast date, and requires that there are at least two retrospective nowcasts containing sufficient data. By default we do not sum the predicted components of each row across rows as this is context specific (diverging from [@Wolffram2023]. who sum by week due to their target data being a rolling 7 day sum).
 
 # References
-

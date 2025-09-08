@@ -6,7 +6,7 @@
 \usage{
 estimate_and_apply_delay(
   reporting_triangle,
-  max_delay,
+  max_delay = ncol(reporting_triangle) - 1,
   n_history_delay = round(1.5 * max_delay)
 )
 }

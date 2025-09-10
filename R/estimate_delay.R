@@ -48,14 +48,29 @@ estimate_delay <- function(
     reporting_triangle,
     max_delay = ncol(reporting_triangle) - 1,
     n = nrow(reporting_triangle)) {
+  if (max_delay > ncol(reporting_triangle) - 1) {
+    message(sprintf(
+      "The maximum delay must be less than the number of columns in the reporting triangle. The maximum delay will be set to %d.", # nolint
+      ncol(reporting_triangle) - 1
+    ))
+    max_delay <- ncol(reporting_triangle) - 1
+  }
+
+  if (max_delay < ncol(reporting_triangle) - 1 && max_delay > 0) {
+    # filter the reporting triangle to be less than the maximum delay
+    reporting_triangle <- reporting_triangle[, 1:(max_delay + 1)]
+    message(sprintf(
+      "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay. The reporting triangle will be filter to include only the first %d delays.", # nolint
+      max_delay + 1
+    ))
+  }
+
   # Check that the input reporting triangle is formatted properly.
   .validate_triangle(
     triangle = reporting_triangle,
     max_delay = max_delay,
     n = n
   )
-
-
   # Filter the reporting_triangle down to relevant rows and columns
   trunc_triangle <- .prepare_triangle(reporting_triangle, max_delay, n)
 

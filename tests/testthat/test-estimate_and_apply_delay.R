@@ -46,7 +46,7 @@ test_that(
         reporting_triangle = reporting_triangle,
         max_delay = 2
       ),
-      regexp = "Only the first 3 delays are being nowcasted"
+      regexp = "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay." # nolint
     )
 
     pt_nowcast1 <- estimate_and_apply_delay(

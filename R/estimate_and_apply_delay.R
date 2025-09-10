@@ -27,15 +27,29 @@
 #' pt_nowcast_matrix
 estimate_and_apply_delay <- function(reporting_triangle,
                                      max_delay = ncol(reporting_triangle) - 1,
-                                     n_history_delay = round(1.5 * max_delay)) {
+                                     n_history_delay = NULL) {
   if (max_delay > ncol(reporting_triangle) - 1) {
     message(sprintf(
       "The maximum delay must be less than the number of columns in the reporting triangle. The maximum delay will be set to %d.", # nolint
       ncol(reporting_triangle) - 1
     ))
     max_delay <- ncol(reporting_triangle) - 1
+  }
+
+  if (max_delay < ncol(reporting_triangle) - 1) {
+    # filter the reporting triangle to be less than the maximum delay
+    reporting_triangle <- reporting_triangle[, 1:(max_delay + 1)]
+    message(sprintf(
+      "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay. The reporting triangle will be filter to include only the first %d delays.", # nolint
+      max_delay + 1
+    ))
+  }
+
+  if (is.null(n_history_delay)) {
     n_history_delay <- round(1.5 * max_delay)
   }
+
+
 
   delay_pmf <- estimate_delay(
     reporting_triangle,

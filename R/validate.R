@@ -19,7 +19,6 @@
   assert_integerish(n)
   assert_matrix(triangle, all.missing = FALSE)
 
-  triangle <- triangle[, 1:(max_delay + 1)]
   # Check if the triangle has a valid structure
   # Ensure each column has at least one non-NA value
   if (any(colSums(!is.na(triangle)) == 0)) {

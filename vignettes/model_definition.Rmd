@@ -2,9 +2,11 @@
 title: "Mathematical methods for baselinenowcast"
 description: "Description of mathematical methods used in the package"
 output:
-  html_document:
+  bookdown::html_vignette2:
     fig_caption: yes
     code_folding: show
+    fig_width: 2
+    fig_height: 1.5
     toc: true
 pkgdown:
   as_is: true
@@ -40,7 +42,7 @@ $$X_{t,>d} = \sum_{i = d+1} ^{D} X_{t,i}$$
 representing the number of cases still missing after $d$ delay. In the following we use uppercase letters ($X_t$) for random variables, lower case ($x_t$) for the corresponding observations, and hats ($\hat{x}_t$) for estimated/imputed values. We refer to $X_t$ to describe a random variable, $x_t$ for the corresponding observation, and $\hat{x}_t$ for an estimated/imputed value. The matrix $\mathbf{x}$ with entries $x_{t,d}, t = 1, \dots, t^*, d = 1, \dots, D$ is referred to as the *reporting matrix*. For a description of the nowcasting terms being used in this document (e.g. reporting triangle) and their corresponding abbreviations in the package, please consult the [nowcasting nomenclature](nomenclature.html) vignette.
 
 |   | $d = 0$ | $d = 1$ | $d=2$ | $...$ | $d= D-1$ | $d= D$ |
-|----|----|----|----|----|----|----|
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
 | $t=1$ | $x_{1,0}$ | $x_{1,1}$ | $x_{1,2}$ | $...$ | $x_{1,D-1}$ | $x_{1, D}$ |
 | $t=2$ | $x_{2,0}$ | $x_{2,1}$ | $x_{2,2}$ | $...$ | $x_{2,D-1}$ | $x_{2, D}$ |
 | $t=3$ | $x_{3,0}$ | $x_{3,1}$ | $x_{3,2}$ | $...$ | $x_{3,D-1}$ | $x_{3, D}$ |
@@ -51,7 +53,7 @@ representing the number of cases still missing after $d$ delay. In the following
 In the case where $t^*$ corresponds to the present date, all entries with $t+d>t^*$ have yet to be observed and are thus still missing. As the available entries at its bottom form a triangle, this incomplete reporting matrix is referred to as the *reporting triangle*.
 
 |           | $d = 0$       | $d = 1$       | $d=2$         | $...$ | $d= D-1$ | $d= D$ |
-|-----------|---------------|---------------|---------------|-------|----------|--------|
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
 | $t=t^*-2$ | $x_{t^*-2,0}$ | $x_{t^*-2,1}$ | $x_{t^*-2,2}$ | $...$ |          |        |
 | $t=t^*-1$ | $x_{t^*-1,0}$ | $x_{t^*-1,1}$ |               | $...$ |          |        |
 | $t=t^*$   | $x_{t^*,0}$   |               |               | $...$ |          |        |
@@ -102,10 +104,11 @@ We note that this method is equivalent to the so-called chain ladder method @Fri
 
 ```{r squares}
 #| echo = FALSE,
-#| fig.cap = '*Figure 1.* Visual description of the iterative “completing” of
-#| the reporting triangle, which relies on the assumption that the ratio
-#|  between delays for fully observed reference times is consistent with the
-#|  ratio between those same delays in the partially observed data.'
+#| fig.cap = 'Visual description of the iterative “completing” of the reporting
+#| triangle, which relies on the assumption that the ratio between delays for
+#| fully observed reference times is consistent with the ratio between those
+#| same delays in the partially observed data.'
+
 knitr::include_graphics(file.path(
   "..", "man", "figures",
   "reporting_triangle.png"

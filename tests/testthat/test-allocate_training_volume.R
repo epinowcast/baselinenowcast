@@ -164,8 +164,8 @@ test_that(".allocate_training_volume handles specified `n_history_delay` and uns
       max_delay = 4,
       n_history_delay = 4
     ),
-    regexp = "User-specified `n_history_delay` is insufficient for delay estimation."
-  ) # nolint
+    regexp = "User-specified `n_history_delay` is insufficient for delay estimation." # nolint
+  )
 
   # Error if n_ref_times is too low
   expect_error(
@@ -222,7 +222,7 @@ test_that(".allocate_training_volume handles specified `n_retrospective_nowcasts
       n_retrospective_nowcasts = 1
     ),
     regexp = "Insufficient reference times for uncertainty estimation."
-  ) # nolint
+  )
 
   # Error if not enough rows overall
   expect_error(
@@ -231,8 +231,8 @@ test_that(".allocate_training_volume handles specified `n_retrospective_nowcasts
       max_delay = 4,
       n_retrospective_nowcasts = 2
     ),
-    regexp = "5 reference times are required for delay estimation, and this plus 2"
-  ) # nolint
+    regexp = "5 reference times are required for delay estimation, and this plus 2" # nolint
+  )
 
   # Error if n_retrospective nowccasts is too high
   expect_error(
@@ -241,6 +241,6 @@ test_that(".allocate_training_volume handles specified `n_retrospective_nowcasts
       max_delay = 6,
       n_retrospective_nowcasts = 8
     ),
-    regexp = "7 reference times are required for delay estimation, and this plus 8"
-  ) # nolint
+    regexp = "7 reference times are required for delay estimation, and this plus 8" # nolint
+  )
 })

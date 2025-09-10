@@ -25,7 +25,7 @@ test_that(
         reporting_triangle = reporting_triangle,
         n_history_delay = 2
       ),
-      regexp = "The rows used for delay estimation in the reporting triangle must"
+      regexp = "The rows used for delay estimation in the reporting triangle must" # nolint
     )
 
     expect_error(

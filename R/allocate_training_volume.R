@@ -2,7 +2,7 @@
 #'   values for training volume for delay and uncertainty estimation.
 #' @description Given the number of references times, the maximum delay, and
 #'    optionally the user-specified number of reference times used for delay
-#'    (`n_history_delay`) and/ot the number of reference times used as
+#'    (`n_history_delay`) and/or the number of reference times used as
 #'    retrospective nowcasts for uncertainty estimation
 #'    (`n_retrospective_nowcasts`), allocated the training volume accordingly
 #'    or return the allocations specified if feasible.

@@ -47,7 +47,7 @@ estimate_and_apply_delay <- function(reporting_triangle,
   }
 
   if (is.null(n_history_delay)) {
-    n_history_delay <- round(1.5 * max_delay)
+    n_history_delay <- floor(1.5 * max_delay)
   }
 
 

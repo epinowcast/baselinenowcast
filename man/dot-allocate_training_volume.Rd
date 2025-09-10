@@ -33,7 +33,7 @@ list of n_history_delay and n_retrospective_nowcasts
 \description{
 Given the number of references times, the maximum delay, and
 optionally the user-specified number of reference times used for delay
-(\code{n_history_delay}) and/ot the number of reference times used as
+(\code{n_history_delay}) and/or the number of reference times used as
 retrospective nowcasts for uncertainty estimation
 (\code{n_retrospective_nowcasts}), allocated the training volume accordingly
 or return the allocations specified if feasible.

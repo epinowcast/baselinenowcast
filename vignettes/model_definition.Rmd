@@ -190,7 +190,7 @@ Here, the use of a constant dispersion parameter $\phi_j$ despite some of the va
 \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \ | \ X_{s^* - j, > j} \sim \text{Bin}\left[X_{s^* - j, > j}, \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} \pi_{d}\right) / \pi_{> j} \right],
 $$ we thus obtain \@ref(eq:negbin2). Estimated dispersion parameters $\hat{\phi}_0, \dots, \hat{\phi}_D$ are obtained by maximum likelihood estimation. The `estimate_uncertainty()` function ingests the truncated reporting triangles, retrospective reporting triangles, and the retrospective point nowcasts and returns a set of uncertainty parameters corresponding to the specified observation model. The uncertainty quantification procedure is described schematically in Figure \@ref(fig:uncertainty-quantification).
 
-```{r uncertainty-quantification, echo = FALSE, fig.cap = Visual description of the uncertainty quantification method, which generates retrospective point nowcasts and compares those estimates to what was later observed as of the nowcast time.'}
+```{r uncertainty-quantification, echo = FALSE, fig.cap = 'Visual description of the uncertainty quantification method, which generates retrospective point nowcasts and compares those estimates to what was later observed as of the nowcast time.'}
 knitr::include_graphics(file.path("..", "man", "figures", "uq.png"))
 ```
 
@@ -205,7 +205,7 @@ X_{t, > t^* - t} \sim \text{NegBin}(\hat{x}_{t, > t^* - t}, \phi_{t^* - t}).
 $$
 This is described in the schematic Figure \@ref(fig:predicted-prob-nowcasts) which depicts sampling from the observation model with a mean given by the sum of the predicted components in the point nowcast matrix (the shaded elements in the bottom right).
 
-```{r predicted-prob-nowcasts, echo = FALSE, fig.cap = Visual description of the generation of predicted probabilistic nowcasts generated via sampling from the observation model with the estimated uncertainty parameters and a mean given by the sum of the predicted components at each reference time.'}
+```{r predicted-prob-nowcasts, echo = FALSE, fig.cap = 'Visual description of the generation of predicted probabilistic nowcasts generated via sampling from the observation model with the estimated uncertainty parameters and a mean given by the sum of the predicted components at each reference time.'}
 knitr::include_graphics(file.path(
   "..", "man", "figures",
   "pred_prob_nowcasts.png"
@@ -216,7 +216,7 @@ knitr::include_graphics(file.path(
 
 The predictive distribution for $X_{t}$ then results by shifting this distribution by the already known value $x_{t, \leq t^* - t}$, or in other words adding the right-truncated partial observed data summed across reference times and the predicted probabilistic nowcast components to generate probabilistic nowcasts.
 
-```{r comb-w-obs, echo = FALSE, fig.cap = Visual description of combining the observations with the probabilistic predicted nowcast components to generate probabilistic nowcasts.'}
+```{r comb-w-obs, echo = FALSE, fig.cap = 'Visual description of combining the observations with the probabilistic predicted nowcast components to generate probabilistic nowcasts.'}
 knitr::include_graphics(file.path("..", "man", "figures", "comb_w_obs.png"))
 ```
 

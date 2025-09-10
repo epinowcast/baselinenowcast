@@ -7,7 +7,7 @@
 estimate_and_apply_delay(
   reporting_triangle,
   max_delay = ncol(reporting_triangle) - 1,
-  n_history_delay = round(1.5 * max_delay)
+  n_history_delay = NULL
 )
 }
 \arguments{
@@ -22,7 +22,8 @@ of the delay. The default is to use the whole reporting triangle,
 \code{ncol(reporting_triangle) -1}.}
 
 \item{n_history_delay}{Integer indicating number of reference times used for
-delay estimation.}
+delay estimation. Default is NULL, which will be set internally to
+1.5* the maximum delay.}
 }
 \value{
 \code{pt_nowcast_matrix} Matrix of point nowcasts

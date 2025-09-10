@@ -40,7 +40,7 @@ test_that("fill_triangle invalid inputs throw errors", {
     fill_triangle(test_triangle,
       max_delay = ncol(test_triangle) + 1
     ),
-    regexp = "The maximum delay must be less than the number of columns in the reporting triangle. The maximum delay will be set to 3."
+    regexp = "The maximum delay must be less than the number of columns in the reporting triangle. The maximum delay will be set to 3." # noliny
   )
 
   # Invalid n values

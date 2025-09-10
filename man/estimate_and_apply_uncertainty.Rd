@@ -8,7 +8,8 @@ estimate_and_apply_uncertainty(
   point_nowcast_matrix,
   reporting_triangle,
   max_delay = ncol(reporting_triangle) - 1,
-  n_history_delay = floor(1.5 * max_delay),
+  n_history_delay = NULL,
+  n_retrospective_nowcasts = NULL,
   draws = 100,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,
@@ -33,9 +34,13 @@ of the delay. The default is to use the whole reporting triangle,
 \code{ncol(reporting_triangle) -1}.}
 
 \item{n_history_delay}{Integer indicating the number of reference times
-(observations) to
-be used in the estimate of the reporting delay, always starting from the
-most recent reporting delay.}
+(observations) to be used in the estimate of the reporting delay, always
+starting from the most recent reporting delay. Default is NULL, which will
+be set internally to 1.5* max_delay.}
+
+\item{n_retrospective_nowcasts}{Integer indicating the number of
+retrospective nowcast times to use for uncertainty estimation. Default is
+NULL, which will be set internally to 1.5* max_delay.}
 
 \item{draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}

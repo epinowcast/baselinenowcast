@@ -1,5 +1,11 @@
 #' Allocate training volume based on combination of defaults and user-specified
 #'   values for training volume for delay and uncertainty estimation.
+#' @description Given the number of references times, the maximum delay, and
+#'    optionally the user-specified number of reference times used for delay
+#'    (`n_history_delay`) and/ot the number of reference times used as
+#'    retrospective nowcasts for uncertainty estimation
+#'    (`n_retrospective_nowcasts`), allocated the training volume accordingly
+#'    or return the allocations specified if feasible.
 #'
 #' @param n_ref_times Integer indicating the number of reference times (rows)
 #'    in the reporting triangle.
@@ -11,19 +17,21 @@
                                       max_delay,
                                       n_history_delay = NULL,
                                       n_retrospective_nowcasts = NULL) {
-  if (!is.null(n_history_delay) && !is.null(n_retrospective_nowcasts)) {
-    if (n_ref_times < n_history_delay + n_retrospective_nowcasts) {
-      cli_abort(message = c(
-        "Insufficient reference times in reporting triangle for specified training volume.", # nolint
-        "i" = "{n_history_delay + n_retrospective_nowcasts} reference times are specified for delay and uncertainty estimation.", # nolint
-        "x" = "Only {n_ref_times} reference times are available in the reporting triangle." # nolint
-      ))
-    }
+  if (!is.null(n_history_delay) && !is.null(n_retrospective_nowcasts) &&
+    (n_ref_times < n_history_delay + n_retrospective_nowcasts)) {
+    cli_abort(message = c(
+      "Insufficient reference times in reporting triangle for specified training volume.", # nolint
+      "i" = "{n_history_delay + n_retrospective_nowcasts} reference times are specified for delay and uncertainty estimation.", # nolint
+      "x" = "Only {n_ref_times} reference times are available in the reporting triangle." # nolint
+    ))
   }
 
   # Logic for how to handle if one is passed in but not the other
   if (is.null(n_history_delay) && !is.null(n_retrospective_nowcasts)) {
-    n_history_delay <- max(max_delay + 1, min(3 * max_delay, n_ref_times) - n_retrospective_nowcasts)
+    n_history_delay <- max(
+      max_delay + 1,
+      min(3 * max_delay, n_ref_times) - n_retrospective_nowcasts
+    ) # nolint
     # Check to make sure this doesn't exceed n_ref times
     if (n_ref_times < n_history_delay + n_retrospective_nowcasts) {
       cli_abort(message = c(
@@ -33,7 +41,7 @@
   }
 
   if (is.null(n_retrospective_nowcasts) && !is.null(n_history_delay)) {
-    n_retrospective_nowcasts <- min(3 * max_delay, n_ref_times) - n_history_delay
+    n_retrospective_nowcasts <- min(3 * max_delay, n_ref_times) - n_history_delay # nolint
   }
 
 

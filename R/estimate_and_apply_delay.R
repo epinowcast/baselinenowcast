@@ -2,7 +2,8 @@
 #'
 #' @inheritParams estimate_delay
 #' @param n_history_delay Integer indicating number of reference times used for
-#'    delay estimation.
+#'    delay estimation. Default is NULL, which will be set internally to
+#'    1.5* the maximum delay.
 #'
 #' @returns `pt_nowcast_matrix` Matrix of point nowcasts
 #' @export

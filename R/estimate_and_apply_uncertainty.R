@@ -5,9 +5,12 @@
 #' @inheritParams sample_prediction
 #' @inheritParams sample_nowcasts
 #' @param n_history_delay Integer indicating the number of reference times
-#'   (observations) to
-#'   be used in the estimate of the reporting delay, always starting from the
-#'   most recent reporting delay.
+#'   (observations) to be used in the estimate of the reporting delay, always
+#'    starting from the most recent reporting delay. Default is NULL, which will
+#'    be set internally to 1.5* max_delay.
+#' @param n_retrospective_nowcasts Integer indicating the number of
+#'   retrospective nowcast times to use for uncertainty estimation. Default is
+#'   NULL, which will be set internally to 1.5* max_delay.
 
 #' @param ... Additional arguments
 #'
@@ -45,7 +48,8 @@ estimate_and_apply_uncertainty <- function(
     point_nowcast_matrix,
     reporting_triangle,
     max_delay = ncol(reporting_triangle) - 1,
-    n_history_delay = floor(1.5 * max_delay),
+    n_history_delay = NULL,
+    n_retrospective_nowcasts = NULL,
     draws = 100,
     uncertainty_model = fit_by_horizon,
     uncertainty_sampler = sample_nb,
@@ -54,26 +58,15 @@ estimate_and_apply_uncertainty <- function(
     ...) {
   # Logic to decide on how to allocate the training volume
   n_ref_times <- nrow(reporting_triangle)
-  if (n_ref_times > 3 * max_delay) {
-    n_retrospective_nowcasts <- 3 * max_delay - n_history_delay
-  } else if (n_ref_times >= n_history_delay + 2 &&
-    n_ref_times <= 3 * max_delay) {
-    n_retrospective_nowcasts <- n_ref_times - n_history_delay
-  } else {
-    cli_abort(
-      message = c(
-        "Insufficient rows of the reporting triangle for ",
-        "uncertainty estimation. There are {n_ref_times} rows and ",
-        "{n_history_delay} are being used for delay estimation. There must be ",
-        "at least 2 additional reference times to be used as retrospective ",
-        "nowcast times."
-      )
-    )
-  }
-  message(sprintf("Using %d reference times as retrospective nowcast times for uncertainty estimation.", n_retrospective_nowcasts)) # nolint
 
-
-
+  training_vol_list <- .allocate_training_volume(
+    n_ref_times,
+    max_delay,
+    n_history_delay,
+    n_retrospective_nowcasts
+  )
+  n_history_delay <- training_vol_list$n_history_delay
+  n_retrospective_nowcasts <- training_vol_list$n_retrospective_nowcasts
 
   # Estimate uncertainty from the reporting triangle passed in.
   trunc_rep_tris <- truncate_triangles(reporting_triangle,

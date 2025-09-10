@@ -147,6 +147,7 @@ The `apply_delay()` function ingests a reporting triangle and a delay PMF and re
 #| echo = FALSE,
 #| fig.cap = '*Figure 2.* Visual description of the generation of a point
 #|     nowcast matrix from a reporting triangle and delay PMF. '
+
 knitr::include_graphics(file.path("..", "man", "figures", "point_nowcast.png"))
 ```
 
@@ -203,6 +204,7 @@ $$ we thus obtain \@ref(eq:negbin2). Estimated dispersion parameters $\hat{\phi}
 #| fig.cap = '*Figure 3.* Visual description of the uncertainty quantification
 #| method, which generates retrospective point nowcasts and compares those
 #| estimates to what was later observed as of the nowcast time.'
+
 knitr::include_graphics(file.path("..", "man", "figures", "uq.png"))
 ```
 
@@ -222,6 +224,7 @@ $$
 #| probabilistic nowcasts generated via sampling from the observation model
 #| with the estimated uncertainty parameters and a mean given by the sum of the
 #| predicted components at each reference time.'
+
 knitr::include_graphics(file.path(
   "..", "man", "figures",
   "pred_prob_nowcasts.png"
@@ -237,6 +240,7 @@ The predictive distribution for $X_{t}$ then results by shifting this distributi
 #| fig.cap = '*Figure 5.* Visual description of combining the observations
 #|  with the probabilistic predicted nowcast components to generate
 #|     probabilistic nowcasts.'
+
 knitr::include_graphics(file.path("..", "man", "figures", "comb_w_obs.png"))
 ```
 

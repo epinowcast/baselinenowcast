@@ -100,7 +100,7 @@ $$
 
 subject to the constrain that $\sum_{d = 0}^D \pi_d = 1$.
 
-We note that this method is equivalent to the so-called chain ladder method @Friedland2010, adapted to our notation in terms of reporting triangles (rather than *development triangles* as used in accounting). The intuition behind the method relies on the basic assumption is that the ratio between the delays in the complete observations is equivalent to the ratio between the delays in the partially observed components of the matrix (Figure 1 \@ref(fig:squares)).
+We note that this method is equivalent to the so-called chain ladder method @Friedland2010, adapted to our notation in terms of reporting triangles (rather than *development triangles* as used in accounting). The intuition behind the method relies on the basic assumption is that the ratio between the delays in the complete observations is equivalent to the ratio between the delays in the partially observed components of the matrix (Figure \@ref(fig:squares)).
 
 ```{r squares, echo = FALSE, fig.cap = 'Visual description of the iterative “completing” of the reporting triangle, which relies on the assumption that the ratio between delays for fully observed reference times is consistent with the ratio between those same delays in the partially observed data.'}
 knitr::include_graphics(file.path(

@@ -23,24 +23,17 @@
 
   # Logic for how to handle if one is passed in but not the other
   if (is.null(n_history_delay) && !is.null(n_retrospective_nowcasts)) {
-    n_history_delay <- max(
-      max_delay + 1,
-      min(
-        floor(1.5 * max_delay),
-        n_ref_times - n_retrospective_nowcasts
-      )
-    )
+    n_history_delay <- max(max_delay + 1, min(3 * max_delay, n_ref_times) - n_retrospective_nowcasts)
     # Check to make sure this doesn't exceed n_ref times
     if (n_ref_times < n_history_delay + n_retrospective_nowcasts) {
       cli_abort(message = c(
-        "Insufficient reference times in reporting triangle for specified `n_retrospective_nowcasts`.", # nolint
-        "i" = "{n_history_delay} reference times are specified are required for delay estimation, and this plus {n_retrospective_nowcasts} retrospective nowcasts is more than {n_ref_times} reference times." # nolint
+        "i" = "{n_history_delay} reference times are required for delay estimation, and this plus {n_retrospective_nowcasts} retrospective nowcasts is more than the available {n_ref_times} reference times." # nolint
       ))
     }
   }
 
   if (is.null(n_retrospective_nowcasts) && !is.null(n_history_delay)) {
-    n_retrospective_nowcasts <- min(round(1.5 * max_delay), n_ref_times - n_history_delay)
+    n_retrospective_nowcasts <- min(3 * max_delay, n_ref_times) - n_history_delay
   }
 
 
@@ -66,8 +59,18 @@
   if (n_retrospective_nowcasts < 2) {
     cli_abort(
       message = c(
-        "Insufficient rows of the reporting triangle for uncertainty estimation.", # nolint
-        "i" = "There are {n_ref_times} rows and {n_history_delay} are being used for delay estimation. There must be at least 2 reference times used as retrospective nowcast times for uncertainty estimation." # nolint
+        "Insufficient reference times for uncertainty estimation.", # nolint
+        "i" = "There must be at least 2 reference times used as retrospective nowcast times for uncertainty estimation." # nolint
+      )
+    )
+  }
+
+  if (n_history_delay < max_delay + 1) {
+    cli_abort(
+      message = c(
+        "User-specified `n_history_delay` is insufficient for delay estimation.", # nolint
+        "i" = "At least {max_delay + 1} reference times are needed for delay estimation.", # nolint
+        "x" = "The specified {n_history_delay} reference times for delay estimation is insufficient" # nolint
       )
     )
   }

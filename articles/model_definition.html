@@ -90,56 +90,20 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>The <code>baselinenowcast</code> model is based on the reference
-model for the COVID-19 hospital admissions nowcasting challenge in
-Germany in 2021 and 2022<span class="citation"><sup>[<a href="#ref-Wolffram2023">1</a>]</sup></span>. Using a slight variation
-of the chain ladder method<span class="citation"><sup>[<a href="#ref-Friedland2010">2</a>]</sup></span>, the method uses
-preliminary case counts and empirical delay distributions to estimate
-yet-to-be-observed cases. Probabilistic nowcasts are generated using an
-observation model with means from the point nowcast and uncertainty
-estimated from past nowcast errors. Users can flexibly specify the data
-they would like to use for delay estimation and uncertainty
-quantification, as well as specify the parametric form of the
-observation model used for uncertainty quantification. Time steps can
-correspond to any time unit. See the <a href="#default-settings">Default
-Settings</a> section for a full description of the default behaviour of
-the <code>baselinenowcast()</code> method.</p>
+<p>The <code>baselinenowcast</code> model is based on the reference model for the COVID-19 hospital admissions nowcasting challenge in Germany in 2021 and 2022<span class="citation"><sup>[<a href="#ref-Wolffram2023">1</a>]</sup></span>. Using a slight variation of the chain ladder method<span class="citation"><sup>[<a href="#ref-Friedland2010">2</a>]</sup></span>, the method uses preliminary case counts and empirical delay distributions to estimate yet-to-be-observed cases. Probabilistic nowcasts are generated using an observation model with means from the point nowcast and uncertainty estimated from past nowcast errors. Users can flexibly specify the data they would like to use for delay estimation and uncertainty quantification, as well as specify the parametric form of the observation model used for uncertainty quantification. Time steps can correspond to any time unit. See the <a href="#default-settings">Default Settings</a> section for a full description of the default behaviour of the <code>baselinenowcast()</code> method.</p>
 <div class="section level4">
 <h4 id="notation">Notation<a class="anchor" aria-label="anchor" href="#notation"></a>
 </h4>
-<p>We denote <span class="math inline">\(X_{t,d}, d = 0, \dots,
-D\)</span> as the number of cases occurring at time <span class="math inline">\(t\)</span> which appear in the dataset with a
-delay of <span class="math inline">\(d\)</span>. For example, a delay
-<span class="math inline">\(d = 0\)</span> means that a case occurring
-on day <span class="math inline">\(t\)</span> arrived in the dataset on
-day <span class="math inline">\(t\)</span>. We only consider cases
-reporting within a maximum delay <span class="math inline">\(D\)</span>.
-The number of cases reporting for time <span class="math inline">\(t\)</span> with a delay of at most <span class="math inline">\(d\)</span> can be written as:</p>
-<p><span class="math display">\[
-X_{t, \le d} = \sum_{i=0}^d X_{t,i}
+<p>We denote <span class="math inline">\(X_{t,d}, d = 0, \dots, D\)</span> as the number of cases occurring at time <span class="math inline">\(t\)</span> which appear in the dataset with a delay of <span class="math inline">\(d\)</span>. For example, a delay <span class="math inline">\(d = 0\)</span> means that a case occurring on day <span class="math inline">\(t\)</span> arrived in the dataset on day <span class="math inline">\(t\)</span>. We only consider cases reporting within a maximum delay <span class="math inline">\(D\)</span>. The number of cases reporting for time <span class="math inline">\(t\)</span> with a delay of at most <span class="math inline">\(d\)</span> can be written as:</p>
+<p><span class="math display" id="eq:Xltd">\[
+X_{t, \le d} = \sum_{i=0}^d X_{t,i} \tag{1}
 \]</span></p>
-<p>A special case of this is the “final” number of reported cases at
-time <span class="math inline">\(t\)</span>, denoted by <span class="math display">\[
+<p>A special case of this is the “final” number of reported cases at time <span class="math inline">\(t\)</span>, denoted by <span class="math display">\[
 X_t = X_{t, \le D} = \sum_{i=0}^D X_{t,i}
-\]</span>{#eq:Xltd}</p>
-<p>For delays <span class="math inline">\(d &lt; D\)</span> we define
-the notation</p>
-<p><span class="math display">\[X_{t,&gt;d} = \sum_{i = d+1} ^{D}
-X_{t,i}\]</span></p>
-<p>representing the number of cases still missing after <span class="math inline">\(d\)</span> delay. In the following we use
-uppercase letters (<span class="math inline">\(X_t\)</span>) for random
-variables, lower case (<span class="math inline">\(x_t\)</span>) for the
-corresponding observations, and hats (<span class="math inline">\(\hat{x}_t\)</span>) for estimated/imputed values.
-We refer to <span class="math inline">\(X_t\)</span> to describe a
-random variable, <span class="math inline">\(x_t\)</span> for the
-corresponding observation, and <span class="math inline">\(\hat{x}_t\)</span> for an estimated/imputed value.
-The matrix <span class="math inline">\(\mathbf{x}\)</span> with entries
-<span class="math inline">\(x_{t,d}, t = 1, \dots, t^*, d = 1, \dots,
-D\)</span> is referred to as the <em>reporting matrix</em>. For a
-description of the nowcasting terms being used in this document
-(e.g. reporting triangle) and their corresponding abbreviations in the
-package, please consult the <a href="nomenclature.html">nowcasting
-nomenclature</a> vignette.</p>
+\]</span></p>
+<p>For delays <span class="math inline">\(d &lt; D\)</span> we define the notation</p>
+<p><span class="math display">\[X_{t,&gt;d} = \sum_{i = d+1} ^{D} X_{t,i}\]</span></p>
+<p>representing the number of cases still missing after <span class="math inline">\(d\)</span> delay. In the following we use uppercase letters (<span class="math inline">\(X_t\)</span>) for random variables, lower case (<span class="math inline">\(x_t\)</span>) for the corresponding observations, and hats (<span class="math inline">\(\hat{x}_t\)</span>) for estimated/imputed values. We refer to <span class="math inline">\(X_t\)</span> to describe a random variable, <span class="math inline">\(x_t\)</span> for the corresponding observation, and <span class="math inline">\(\hat{x}_t\)</span> for an estimated/imputed value. The matrix <span class="math inline">\(\mathbf{x}\)</span> with entries <span class="math inline">\(x_{t,d}, t = 1, \dots, t^*, d = 1, \dots, D\)</span> is referred to as the <em>reporting matrix</em>. For a description of the nowcasting terms being used in this document (e.g. reporting triangle) and their corresponding abbreviations in the package, please consult the <a href="nomenclature.html">nowcasting nomenclature</a> vignette.</p>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="14%">
@@ -216,11 +180,7 @@ nomenclature</a> vignette.</p>
 </tr>
 </tbody>
 </table>
-<p>In the case where <span class="math inline">\(t^*\)</span>
-corresponds to the present date, all entries with <span class="math inline">\(t+d&gt;t^*\)</span> have yet to be observed and
-are thus still missing. As the available entries at its bottom form a
-triangle, this incomplete reporting matrix is referred to as the
-<em>reporting triangle</em>.</p>
+<p>In the case where <span class="math inline">\(t^*\)</span> corresponds to the present date, all entries with <span class="math inline">\(t+d&gt;t^*\)</span> have yet to be observed and are thus still missing. As the available entries at its bottom form a triangle, this incomplete reporting matrix is referred to as the <em>reporting triangle</em>.</p>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="14%">
@@ -274,13 +234,7 @@ triangle, this incomplete reporting matrix is referred to as the
 <div class="section level4">
 <h4 id="preprocessing">Pre-processing of the reporting triangle<a class="anchor" aria-label="anchor" href="#preprocessing"></a>
 </h4>
-<p>All of the following steps require that the reporting triangle only
-has non-negative entries. In practice this is not necessarily the case.
-For instance, if the reporting triangle has been computed from
-increments in subsequent data snapshots, occasional downward corrections
-due to data entrance issues can cause negative entries. We therefore
-apply a pre-processing step to re-distribute negative entries across
-neighbouring cells with positive entries.</p>
+<p>All of the following steps require that the reporting triangle only has non-negative entries. In practice this is not necessarily the case. For instance, if the reporting triangle has been computed from increments in subsequent data snapshots, occasional downward corrections due to data entrance issues can cause negative entries. We therefore apply a pre-processing step to re-distribute negative entries across neighbouring cells with positive entries.</p>
 </div>
 <div class="section level3">
 <h3 id="delay-distribution-estimation">Delay distribution estimation<a class="anchor" aria-label="anchor" href="#delay-distribution-estimation"></a>
@@ -288,164 +242,86 @@ neighbouring cells with positive entries.</p>
 <div class="section level4">
 <h4 id="estimating-the-delay-distribution-from-a-reporting-matrix">Estimating the delay distribution from a reporting matrix<a class="anchor" aria-label="anchor" href="#estimating-the-delay-distribution-from-a-reporting-matrix"></a>
 </h4>
-<p>If a complete reporting matrix is available, estimating the
-discrete-time delay distribution <span class="math inline">\(\pi_d, d =
-0, \dots, D\)</span> is straightforward. Using the last <span class="math inline">\(N\)</span> rows of the reporting matrix <span class="math inline">\(\mathbf{x}\)</span>, we compute</p>
-<p><span class="math display">\[
-\hat{\pi}_d= \frac{\sum_{t=t^*-N+1}^{t=t^*}
-x_{t,d}}{\sum_{t=t^*-N+1}^{t=t^*} x_{t}},
-\]</span>{#eq-pi_d} which is simply the relative frequency of a delay of
-<span class="math inline">\(d\)</span> days among all cases in the
-reporting matrix.</p>
+<p>If a complete reporting matrix is available, estimating the discrete-time delay distribution <span class="math inline">\(\pi_d, d = 0, \dots, D\)</span> is straightforward. Using the last <span class="math inline">\(N\)</span> rows of the reporting matrix <span class="math inline">\(\mathbf{x}\)</span>, we compute</p>
+<p><span class="math display" id="eq:pid">\[
+\hat{\pi}_d= \frac{\sum_{t=t^*-N+1}^{t=t^*} x_{t,d}}{\sum_{t=t^*-N+1}^{t=t^*} x_{t}}, \tag{2}
+\]</span> which is simply the relative frequency of a delay of <span class="math inline">\(d\)</span> days among all cases in the reporting matrix.</p>
 </div>
 <div class="section level4">
 <h4 id="estimating-the-delay-distribution-from-a-reporting-triangle">Estimating the delay distribution from a reporting triangle<a class="anchor" aria-label="anchor" href="#estimating-the-delay-distribution-from-a-reporting-triangle"></a>
 </h4>
-<p>In the case where <span class="math inline">\(t^*\)</span> is the
-present day, such that only a reporting triangle with missing entries is
-available, the estimator <span class="math inline">\(\hat{\pi}_d\)</span> from @eq-pi_d can only be
-evaluated after discarding all data from the last <span class="math inline">\(D-1\)</span> time points. In order to use these
-partial observations, we use a different representation of the delay
-distribution via terms of the form</p>
-<p><span class="math display">\[
-\theta_d = \frac{\pi_d}{\pi_{\le d-1}}
-\]</span> {#eq:theta_d}</p>
-<p>for <span class="math inline">\(d = 1, \dots, D\)</span>. Here, in
-analogy to<span class="citation"><sup>[<a href="#ref-eq-Xltd"><strong>eq-Xltd?</strong></a>]</sup></span> we
-write</p>
-<p><span class="math display">\[
-\pi_{\le d-1} = \sum_{d'=0}^{d-1} \pi_d.
-\]</span> {#eq:pi_less_than_d}</p>
-<p>The <span class="math inline">\(\theta_d\)</span> can be estimated
-via</p>
-<p><span class="math display">\[
-\hat{\theta}_d = \frac{\sum_{t=t^* - N + 1}^{t^*-d} x_{t, d}}{\sum_{t=
-t^* - N + 1}^{t^*-d} x_{t, \leq d - 1}},
+<p>In the case where <span class="math inline">\(t^*\)</span> is the present day, such that only a reporting triangle with missing entries is available, the estimator <span class="math inline">\(\hat{\pi}_d\)</span> from <a href="#eq:pid">(2)</a> can only be evaluated after discarding all data from the last <span class="math inline">\(D-1\)</span> time points. In order to use these partial observations, we use a different representation of the delay distribution via terms of the form</p>
+<p><span class="math display" id="eq:thetad">\[
+\theta_d = \frac{\pi_d}{\pi_{\le d-1}} \tag{3}
 \]</span></p>
-<p>and translated to estimates <span class="math inline">\(\hat{\pi}_0,..., \hat{\pi}_D\)</span> via the
-recursion</p>
+<p>for <span class="math inline">\(d = 1, \dots, D\)</span>. Here, in analogy to <a href="#eq:Xltd">(1)</a> we write</p>
+<p><span class="math display" id="eq:pilessthand">\[
+\pi_{\le d-1} = \sum_{d'=0}^{d-1} \pi_d. \tag{4}
+\]</span></p>
+<p>The <span class="math inline">\(\theta_d\)</span> can be estimated via</p>
+<p><span class="math display">\[
+\hat{\theta}_d = \frac{\sum_{t=t^* - N + 1}^{t^*-d} x_{t, d}}{\sum_{t= t^* - N + 1}^{t^*-d} x_{t, \leq d - 1}},
+\]</span></p>
+<p>and translated to estimates <span class="math inline">\(\hat{\pi}_0,..., \hat{\pi}_D\)</span> via the recursion</p>
 <p><span class="math display">\[
 \hat{\pi}_{\leq d} = (1+\hat{\theta}_d)\hat{\pi}_{\leq d-1}
 \]</span></p>
-<p>subject to the constrain that <span class="math inline">\(\sum_{d =
-0}^D \pi_d = 1\)</span>.</p>
-<p>We note that this method is equivalent to the so-called chain ladder
-method<span class="citation"><sup>[<a href="#ref-Friedland2010">2</a>]</sup></span>, adapted to our notation
-in terms of reporting triangles (rather than <em>development
-triangles</em> as used in accounting). The intuition behind the method
-is described below in Figure<span class="citation"><sup>[<a href="#ref-fig-squares"><strong>fig-squares?</strong></a>]</sup></span>,
-where the basic assumption is that the ratio between the delays in the
-complete observations (navy and orange elements of the matrix) is
-equivalent to the ratio between the delays in the partially observed
-components of the matrix (blue and yellow elements of the matrix).</p>
-<div class="float">
-<img src="../reference/figures/reporting_triangle.png" alt="Visual description of the iterative “completing” of the reportingtriangle, which relies on the assumption that the ratio between delays for fully observed reference times is consistent with the ratio between those same delays in the partially observed data."><div class="figcaption">Visual description of the iterative “completing”
-of the reportingtriangle, which relies on the assumption that the ratio
-between delays for fully observed reference times is consistent with the
-ratio between those same delays in the partially observed data.</div>
+<p>subject to the constrain that <span class="math inline">\(\sum_{d = 0}^D \pi_d = 1\)</span>.</p>
+<p>We note that this method is equivalent to the so-called chain ladder method<span class="citation"><sup>[<a href="#ref-Friedland2010">2</a>]</sup></span>, adapted to our notation in terms of reporting triangles (rather than <em>development triangles</em> as used in accounting). The intuition behind the method relies on the basic assumption is that the ratio between the delays in the complete observations is equivalent to the ratio between the delays in the partially observed components of the matrix (Figure <a href="#fig:squares">1</a>).</p>
+<div class="figure">
+<span style="display:block;" id="fig:squares"></span>
+<img src="../reference/figures/reporting_triangle.png" alt="Visual description of the iterative “completing” of the reporting triangle, which relies on the assumption that the ratio between delays for fully observed reference times is consistent with the ratio between those same delays in the partially observed data."><p class="caption">
+Figure 1: Visual description of the iterative “completing” of the reporting triangle, which relies on the assumption that the ratio between delays for fully observed reference times is consistent with the ratio between those same delays in the partially observed data.
+</p>
 </div>
-<p>The <code>delay_estimate()</code> function ingests either a reporting
-matrix or a reporting triangle and uses the last <code>n</code> rows to
-compute an empirical delay probability mass function (PMF), returning a
-simplex vector indexed starting at delay 0.</p>
+<p>The <code>delay_estimate()</code> function ingests either a reporting matrix or a reporting triangle and uses the last <code>n</code> rows to compute an empirical delay probability mass function (PMF), returning a simplex vector indexed starting at delay 0.</p>
 </div>
 </div>
 <div class="section level3">
 <h3 id="point-nowcast-generation">Point nowcast generation<a class="anchor" aria-label="anchor" href="#point-nowcast-generation"></a>
 </h3>
-<p>We now address the computation of a point nowcast, i.e., expected
-final case numbers <span class="math inline">\(\hat{x}_t, t = t^* - D +
-1, t^*\)</span>. These are based on the reporting triangle, more
-specifically the preliminary totals <span class="math inline">\(x_{t,
-\leq t^* - t}\)</span>, and the estimated delay distribution, <span class="math inline">\(\hat{\pi}_d, d = 0, \dots, D\)</span>. In the
-following we will denote the current time <span class="math inline">\(t^*\)</span> as the nowcast time, and the time
-<span class="math inline">\(t = t^* - D, \dots, t^*\)</span> as the
-reference time. The difference <span class="math inline">\(j = t^* -
-t\)</span> will be called the <em>horizon</em>.</p>
-<p>An intuitive approach, used in<span class="citation"><sup>[<a href="#ref-Wolffram2023">1</a>]</sup></span> and the standard chain
-ladder technique, is to simply inflate the current total for a reference
-time <span class="math inline">\(t\)</span> by the inverse of the
-respective probability of observation up to time <span class="math inline">\(t^*\)</span>,</p>
+<p>We now address the computation of a point nowcast, i.e., expected final case numbers <span class="math inline">\(\hat{x}_t, t = t^* - D + 1, t^*\)</span>. These are based on the reporting triangle, more specifically the preliminary totals <span class="math inline">\(x_{t, \leq t^* - t}\)</span>, and the estimated delay distribution, <span class="math inline">\(\hat{\pi}_d, d = 0, \dots, D\)</span>. In the following we will denote the current time <span class="math inline">\(t^*\)</span> as the nowcast time, and the time <span class="math inline">\(t = t^* - D, \dots, t^*\)</span> as the reference time. The difference <span class="math inline">\(j = t^* - t\)</span> will be called the <em>horizon</em>.</p>
+<p>An intuitive approach, used in<span class="citation"><sup>[<a href="#ref-Wolffram2023">1</a>]</sup></span> and the standard chain ladder technique, is to simply inflate the current total for a reference time <span class="math inline">\(t\)</span> by the inverse of the respective probability of observation up to time <span class="math inline">\(t^*\)</span>,</p>
 <p><span class="math display">\[
 \hat{x}_t =\frac{x_{t, \leq t^*-t}}{\pi_{\leq t^*-t}}.
 \]</span></p>
-<p>This, however, is not well-behaved if no cases at <span class="math inline">\(t\)</span> have been observed yet, i.e., <span class="math inline">\(x_{t, \leq t^* - t} = 0\)</span>. Then <span class="math inline">\(\hat{x}_t\)</span> is likewise zero, which yields
-problems in our uncertainty quantification method (see next section).
-Motivated by a Bayesian argument (see <a href="#zero-handling-approximation">Zero-handling</a> below) we
-therefore use the expression</p>
-<p><span class="math display">\[
-\hat{x}_t = \frac{x_{t, \leq t^*-t} + 1 - \pi_{\leq
-t^*-t}}{\hat{\pi}_{t, \leq t^*-t}}
-\]</span> {#eq-correction}</p>
-<p>instead. This yields essentially identical results for large <span class="math inline">\(x_{t, \leq t^* - t}\)</span>, but produces
-positive <span class="math inline">\(\hat{x}_t\)</span> even for
-preliminary zero values <span class="math inline">\(x_{t, \leq t^* - t}
-= 0\)</span>.</p>
-<p>For our uncertainty quantification scheme we require not only
-estimated totals <span class="math inline">\(\hat{x}_t\)</span>, but all
-entries <span class="math inline">\(\hat{x}_{t,d}\)</span> of a point
-nowcast matrix. For <span class="math inline">\(t = t^* - D + 1, \dots,
-t^*, d &gt; t^* - t\)</span> these are obtained as</p>
+<p>This, however, is not well-behaved if no cases at <span class="math inline">\(t\)</span> have been observed yet, i.e., <span class="math inline">\(x_{t, \leq t^* - t} = 0\)</span>. Then <span class="math inline">\(\hat{x}_t\)</span> is likewise zero, which yields problems in our uncertainty quantification method (see next section). Motivated by a Bayesian argument (see <a href="#zero-handling-approximation">Zero-handling</a> below) we therefore use the expression</p>
+<p><span class="math display" id="eq:correction">\[
+\hat{x}_t = \frac{x_{t, \leq t^*-t} + 1 - \pi_{\leq t^*-t}}{\hat{\pi}_{\leq t^*-t}} \tag{5}
+\]</span></p>
+<p>instead. This yields essentially identical results for large <span class="math inline">\(x_{t, \leq t^* - t}\)</span>, but produces positive <span class="math inline">\(\hat{x}_t\)</span> even for preliminary zero values <span class="math inline">\(x_{t, \leq t^* - t} = 0\)</span>.</p>
+<p>For our uncertainty quantification scheme we require not only estimated totals <span class="math inline">\(\hat{x}_t\)</span>, but all entries <span class="math inline">\(\hat{x}_{t,d}\)</span> of a point nowcast matrix. For <span class="math inline">\(t = t^* - D + 1, \dots, t^*, d &gt; t^* - t\)</span> these are obtained as</p>
 <p><span class="math display">\[
 \hat{x}_{t,d} = \hat{\pi}_d \times \hat{x}_t.
 \]</span></p>
-<p>The <code><a href="../reference/apply_delay.html">apply_delay()</a></code> function ingests a reporting triangle
-and a delay PMF and returns a point nowcast matrix. The generation of a
-point nowcast is described in the schematic below<span class="citation"><sup>[<a href="#ref-fig-pt_nowcast"><strong>fig-pt_nowcast?</strong></a>]</sup></span>,
-describing how the missing elements of the reporting triangle are
-estimated and can then be used to generate a point estimate of the final
-counts at each reference time.</p>
-<div class="float">
-<img src="../reference/figures/point_nowcast.png" alt="Figure 1. Visual description of the generation of a point nowcast matrix (filled in matrix elements in the bottom right of the reporting matrix) and corresponding point nowcast vector (black)."><div class="figcaption">
-<em>Figure 1.</em> Visual description of the
-generation of a point nowcast matrix (filled in matrix elements in the
-bottom right of the reporting matrix) and corresponding point nowcast
-vector (black).</div>
+<p>The <code><a href="../reference/apply_delay.html">apply_delay()</a></code> function ingests a reporting triangle and a delay PMF and returns a point nowcast matrix by “filling in” the missing elements of the reporting triangle.
+The generation of a point nowcast is described in the schematic below (Figure <a href="#fig:pt-nowcast">2</a>), demonstrating how the missing elements of the reporting triangle are estimated and can then be used to generate a point estimate of the final counts at each reference time.</p>
+<div class="figure">
+<span style="display:block;" id="fig:pt-nowcast"></span>
+<img src="../reference/figures/point_nowcast.png" alt="Visual description of the generation of a point nowcast matrix from a reporting triangle and delay PMF. "><p class="caption">
+Figure 2: Visual description of the generation of a point nowcast matrix from a reporting triangle and delay PMF.
+</p>
 </div>
 </div>
 <div class="section level3">
 <h3 id="uncertainty-quantification">Uncertainty quantification<a class="anchor" aria-label="anchor" href="#uncertainty-quantification"></a>
 </h3>
-<p>To estimate the uncertainty in the nowcasts, we use the nowcast
-errors from <span class="math inline">\(M\)</span> past nowcasting time
-points. See the <a href="#default-settings">Default Settings</a> for
-more details on the default settings used in the package to define the
-number of <span class="math inline">\(M\)</span> past nowcasting time
-points used.</p>
+<p>To estimate the uncertainty in the nowcasts, we use the nowcast errors from <span class="math inline">\(M\)</span> past nowcasting time points. See the <a href="#default-settings">Default Settings</a> for more details on the default settings used in the package to define the number of <span class="math inline">\(M\)</span> past nowcasting time points used.</p>
 <div class="section level4">
 <h4 id="generation-of-retrospective-reporting-triangles">Generation of retrospective reporting triangles<a class="anchor" aria-label="anchor" href="#generation-of-retrospective-reporting-triangles"></a>
 </h4>
-<p>We first obtain “vintage” reporting triangles of the raw reporting
-triangle (i.e., before pre-processing) to replicate the data which would
-have been available as of times <span class="math inline">\(s^* = t^*-1,
-..., t^*-M\)</span>, i.e., the last <span class="math inline">\(M\)</span> time points on which nowcasts could
-have been generated. This simply corresponds to the stepwise omission of
-all entries with <span class="math inline">\(t + d &gt; s^*\)</span>,
-which for each <span class="math inline">\(s^*\)</span> is a diagonal
-from the bottom left to the top right. The same pre-processing step as
-in Section <a href="#preprocessing">Preprocessing of the reporting
-triangle</a> is applied to each vintage reporting triangle.</p>
-<p>This can be achieved in a stepwise manner using the functions
-<code><a href="../reference/truncate_triangles.html">truncate_triangles()</a></code> and <code><a href="../reference/construct_triangles.html">construct_triangles()</a></code>
-which return a list of <code>n</code> retrospective reporting triangles
-in order from most recent to oldest.</p>
+<p>We first obtain “vintage” reporting triangles of the raw reporting triangle (i.e., before pre-processing) to replicate the data which would have been available as of times <span class="math inline">\(s^* = t^*-1, ..., t^*-M\)</span>, i.e., the last <span class="math inline">\(M\)</span> time points on which nowcasts could have been generated. This simply corresponds to the stepwise omission of all entries with <span class="math inline">\(t + d &gt; s^*\)</span>, which for each <span class="math inline">\(s^*\)</span> is a diagonal from the bottom left to the top right. The same pre-processing step as in Section <a href="#preprocessing">Preprocessing of the reporting triangle</a> is applied to each vintage reporting triangle.</p>
+<p>This can be achieved in a stepwise manner using the functions <code><a href="../reference/truncate_triangles.html">truncate_triangles()</a></code> and <code><a href="../reference/construct_triangles.html">construct_triangles()</a></code> which return a list of <code>n</code> retrospective reporting triangles in order from most recent to oldest.</p>
 </div>
 <div class="section level4">
 <h4 id="generation-of-retrospective-point-nowcast-matrices">Generation of retrospective point nowcast matrices<a class="anchor" aria-label="anchor" href="#generation-of-retrospective-point-nowcast-matrices"></a>
 </h4>
-<p>For each of the <span class="math inline">\(M\)</span> vintage
-reporting triangles, i.e., <span class="math inline">\(s^* = t^*-1,,
-..., t^*-M\)</span>, we apply the method described above to estimate a
-delay distribution and generate a point nowcast matrix using the
-function <code><a href="../reference/fill_triangles.html">fill_triangles()</a></code>. To indicate the data version on
-which it is based, its entries are denoted by:</p>
+<p>For each of the <span class="math inline">\(M\)</span> vintage reporting triangles, i.e., <span class="math inline">\(s^* = t^*-1,, ..., t^*-M\)</span>, we apply the method described above to estimate a delay distribution and generate a point nowcast matrix using the function <code><a href="../reference/fill_triangles.html">fill_triangles()</a></code>. To indicate the data version on which it is based, its entries are denoted by:</p>
 <p><span class="math display">\[
 \hat{x}_{t, d}(s^*)
 \]</span></p>
-<p>for <span class="math inline">\(t = s^* - D + 1, \dots, s^*\)</span>
-and <span class="math inline">\(d = s^* - t + 1, \dots D\)</span>.</p>
-<p>Note that estimation is again based on the last <span class="math inline">\(N\)</span> rows of the respective reporting
-triangle, which must consequently contain at least <span class="math inline">\(M + N\)</span> rows in total.</p>
+<p>for <span class="math inline">\(t = s^* - D + 1, \dots, s^*\)</span> and <span class="math inline">\(d = s^* - t + 1, \dots D\)</span>.</p>
+<p>Note that estimation is again based on the last <span class="math inline">\(N\)</span> rows of the respective reporting triangle, which must consequently contain at least <span class="math inline">\(M + N\)</span> rows in total.</p>
 </div>
 <div class="section level4">
 <h4 id="fit-an-observation-model-to-past-nowcast-errors">Fit an observation model to past nowcast errors<a class="anchor" aria-label="anchor" href="#fit-an-observation-model-to-past-nowcast-errors"></a>
@@ -454,53 +330,23 @@ triangle, which must consequently contain at least <span class="math inline">\(M
 <p><span class="math display">\[
 \hat{x}_{t}(s^*) = x_{t, \leq s^* - t} + \hat{x}_{t, &gt; s^* - t}(s^*).
 \]</span></p>
-<p>Only the second term has some associated uncertainty, while the first
-is already known at time <span class="math inline">\(s^*\)</span>. To
-quantify this uncertainty for given nowcast horizon <span class="math inline">\(0 \leq j \leq D\)</span>, we assemble the <span class="math inline">\(\hat{x}_{s^* - j, &gt; j}(s^*)\)</span> and <span class="math inline">\(x_{s^* - j,&gt; j}\)</span> for <span class="math inline">\(s^* = t^* - M, \dots, t^* - 1\)</span>. By
-default, the <code>baselinenowcast()</code> method assumes that we have
-count data that can be fit with a negative binomial observation model,
-though the choice of observation model can be selected by the user.</p>
-<p>Assuming a negative binomial observation model, if all observations
-were complete, we would then estimate the overdispersion parameter <span class="math inline">\(\phi_j\)</span> of a negative binomial
-distribution</p>
-<p><span class="math display">\[
-X_{s^* - j, &gt; j} \sim \text{NegBin}[\hat{x}_{s^* - j, &gt; j}(s^*),
-\phi_j],
-\]</span>{#eq-negbin}</p>
-<p>with independence assumed across the different <span class="math inline">\(s^*\)</span>. This, however, is not directly
-feasible as again some of the <span class="math inline">\(x_{s^* - j,
-&gt; j}\)</span> are not yet observed at time <span class="math inline">\(t^*\)</span>. We could discard these instances,
-but this would considerably reduce our number of available observations.
-We therefore use partial observations as available at time <span class="math inline">\(t^*\)</span> and assume <span class="math display">\[
-\left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \sim
-\text{NegBin}\left[\sum_{d = j + 1}^{\min(D, t^* - s^*)} \hat{x}_{s^* -
-j, d}, \phi_j \right].
-\]</span>{#eq-negbin2}</p>
-<p>We quantify the uncertainty at the target quantity level, which is
-assumed, by default, to be the final count at each reference time,
-summed across reporting delays.</p>
-<p>Here, the use of a constant dispersion parameter <span class="math inline">\(\phi_j\)</span> despite some of the values in the
-fitting procedure being yet incomplete is justified by the fact that the
-negative binomial distribution is closed to binomial subsampling, with
-the overdispersion parameter preserved. If equation<span class="citation"><sup>[<a href="#ref-eq-negbin"><strong>eq-negbin?</strong></a>]</sup></span>
-holds in combination with <span class="math display">\[
-\left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \ | \
-X_{s^* - j, &gt; j} \sim \text{Bin}\left[X_{s^* - j, &gt; j},
-\left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} \pi_{d}\right) / \pi_{&gt;
-j} \right],
-\]</span> we thus obtain<span class="citation"><sup>[<a href="#ref-eq-negbin2"><strong>eq-negbin2?</strong></a>]</sup></span>.
-Estimated dispersion parameters <span class="math inline">\(\hat{\phi}_0, \dots, \hat{\phi}_D\)</span> are
-obtained by maximum likelihood estimation. The
-<code><a href="../reference/estimate_uncertainty.html">estimate_uncertainty()</a></code> function ingests the truncated
-reporting triangles, retrospective reporting triangles, and the
-retrospective point nowcasts and returns a set of uncertainty parameters
-corresponding to the specified observation model. The uncertainty
-quantification procedure is described schematically in Figure<span class="citation"><sup>[<a href="#ref-fig-uncertainty_quantification"><strong>fig-uncertainty_quantification?</strong></a>]</sup></span>.</p>
-<div class="float">
-<img src="../reference/figures/uq.png" alt="Visual description of the uncertainty quantification method, which generates retrospective point nowcasts and compares those estimates to what was later observed as of the nowcast time, grouped by nowcast horizon."><div class="figcaption">Visual description of the uncertainty
-quantification method, which generates retrospective point nowcasts and
-compares those estimates to what was later observed as of the nowcast
-time, grouped by nowcast horizon.</div>
+<p>Only the second term has some associated uncertainty, while the first is already known at time <span class="math inline">\(s^*\)</span>. To quantify this uncertainty for given nowcast horizon <span class="math inline">\(0 \leq j \leq D\)</span>, we assemble the <span class="math inline">\(\hat{x}_{s^* - j, &gt; j}(s^*)\)</span> and <span class="math inline">\(x_{s^* - j,&gt; j}\)</span> for <span class="math inline">\(s^* = t^* - M, \dots, t^* - 1\)</span>. By default, the <code>baselinenowcast()</code> method assumes that we have count data that can be fit with a negative binomial observation model, though the choice of observation model can be selected by the user.</p>
+<p>Assuming a negative binomial observation model, if all observations were complete, we would then estimate the overdispersion parameter <span class="math inline">\(\phi_j\)</span> of a negative binomial distribution</p>
+<p><span class="math display" id="eq:negbin">\[
+X_{s^* - j, &gt; j} \sim \text{NegBin}[\hat{x}_{s^* - j, &gt; j}(s^*), \phi_j], \tag{6}
+\]</span></p>
+<p>with independence assumed across the different <span class="math inline">\(s^*\)</span>. This, however, is not directly feasible as again some of the <span class="math inline">\(x_{s^* - j, &gt; j}\)</span> are not yet observed at time <span class="math inline">\(t^*\)</span>. We could discard these instances, but this would considerably reduce our number of available observations. We therefore use partial observations as available at time <span class="math inline">\(t^*\)</span> and assume <span class="math display">\[
+\left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \sim \text{NegBin}\left[\sum_{d = j + 1}^{\min(D, t^* - s^*)} \hat{x}_{s^* - j, d}, \phi_j \right]. (\#eq:negbin2)
+\]</span></p>
+<p>We quantify the uncertainty at the target quantity level, which is assumed, by default, to be the final count at each reference time, summed across reporting delays.</p>
+<p>Here, the use of a constant dispersion parameter <span class="math inline">\(\phi_j\)</span> despite some of the values in the fitting procedure being yet incomplete is justified by the fact that the negative binomial distribution is closed to binomial subsampling, with the overdispersion parameter preserved. If equation <a href="#eq:negbin">(6)</a> holds in combination with <span class="math display">\[
+\left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \ | \ X_{s^* - j, &gt; j} \sim \text{Bin}\left[X_{s^* - j, &gt; j}, \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} \pi_{d}\right) / \pi_{&gt; j} \right],
+\]</span> we thus obtain <a href="#eq:negbin2">(<strong>??</strong>)</a>. Estimated dispersion parameters <span class="math inline">\(\hat{\phi}_0, \dots, \hat{\phi}_D\)</span> are obtained by maximum likelihood estimation. The <code><a href="../reference/estimate_uncertainty.html">estimate_uncertainty()</a></code> function ingests the truncated reporting triangles, retrospective reporting triangles, and the retrospective point nowcasts and returns a set of uncertainty parameters corresponding to the specified observation model. The uncertainty quantification procedure is described schematically in Figure <a href="#fig:uncertainty-quantification">3</a>.</p>
+<div class="figure">
+<span style="display:block;" id="fig:uncertainty-quantification"></span>
+<img src="../reference/figures/uq.png" alt="Visual description of the uncertainty quantification method, which generates retrospective point nowcasts and compares those estimates to what was later observed as of the nowcast time."><p class="caption">
+Figure 3: Visual description of the uncertainty quantification method, which generates retrospective point nowcasts and compares those estimates to what was later observed as of the nowcast time.
+</p>
 </div>
 </div>
 </div>
@@ -510,156 +356,95 @@ time, grouped by nowcast horizon.</div>
 <div class="section level4">
 <h4 id="predicted-probabilistic-nowcast-generation">Predicted probabilistic nowcast generation<a class="anchor" aria-label="anchor" href="#predicted-probabilistic-nowcast-generation"></a>
 </h4>
-<p>Predictive distributions for <span class="math inline">\(X_{t^*},
-\dots, X_{t^* - D + 1}\)</span> are obtained by generating draws from
-the observation model, in this case a negative binomial, with the
-estimated dispersion parameters and a mean given by predicted component
-of the point nowcasts. Specifically, we set</p>
+<p>Predictive distributions for <span class="math inline">\(X_{t^*}, \dots, X_{t^* - D + 1}\)</span> are obtained by generating draws from the observation model, in this case a negative binomial, with the estimated dispersion parameters and a mean given by predicted component of the point nowcasts. Specifically, we set</p>
 <p><span class="math display">\[
-X_{t, &gt; t^* - t} \sim \text{NegBin}(\hat{x}_{t, &gt; t^* - t},
-\phi_{t^* - t}).
-\]</span></p>
-<p>This is described in the schematic Figure<span class="citation"><sup>[<a href="#ref-fig-predicted_prob_nowcasts"><strong>fig-predicted_prob_nowcasts?</strong></a>]</sup></span>
-which describes sampling from the observation model with a mean given by
-the sum of the predicted components in the point nowcast matrix (the
-white squares).</p>
-<div class="float">
-<img src="../reference/figures/pred_prob_nowcasts.png" alt="Visual description of the generation of predicted probabilistic nowcasts generated via sampling from the observation model with the estimted uncertainty parameters and a mean given by the sum of the predicted components at each reference time (white squares)."><div class="figcaption">Visual description of the generation of
-predicted probabilistic nowcasts generated via sampling from the
-observation model with the estimted uncertainty parameters and a mean
-given by the sum of the predicted components at each reference time
-(white squares).</div>
+X_{t, &gt; t^* - t} \sim \text{NegBin}(\hat{x}_{t, &gt; t^* - t}, \phi_{t^* - t}).
+\]</span>
+This is described in the schematic Figure <a href="#fig:predicted-prob-nowcasts">4</a> which depicts sampling from the observation model with a mean given by the sum of the predicted components in the point nowcast matrix (the shaded elements in the bottom right).</p>
+<div class="figure">
+<span style="display:block;" id="fig:predicted-prob-nowcasts"></span>
+<img src="../reference/figures/pred_prob_nowcasts.png" alt="Visual description of the generation of predicted probabilistic nowcasts generated via sampling from the observation model with the estimated uncertainty parameters and a mean given by the sum of the predicted components at each reference time."><p class="caption">
+Figure 4: Visual description of the generation of predicted probabilistic nowcasts generated via sampling from the observation model with the estimated uncertainty parameters and a mean given by the sum of the predicted components at each reference time.
+</p>
 </div>
 </div>
 <div class="section level4">
 <h4 id="combine-with-observations-to-obtain-probabilistic-nowcasts">Combine with observations to obtain probabilistic nowcasts<a class="anchor" aria-label="anchor" href="#combine-with-observations-to-obtain-probabilistic-nowcasts"></a>
 </h4>
-<p>The predictive distribution for <span class="math inline">\(X_{t}\)</span> then results by shifting this
-distribution by the already known value <span class="math inline">\(x_{t, \leq t^* - t}\)</span>.</p>
-<p>This is described by the schematic Figure<span class="citation"><sup>[<a href="#ref-fig-comb_w_obs"><strong>fig-comb_w_obs?</strong></a>]</sup></span>
-which describes the combining of the right-truncated partial observed
-data summed across reference times and the predicted probabilistic
-nowcast components to generate probabilistic nowcasts.</p>
-<div class="float">
-<img src="../reference/figures/comb_w_obs.png" alt="Visual description of combining the observations by reference time with the probabilistic predicted nowcast components to generate probabilistic nowcasts."><div class="figcaption">Visual description of combining the observations
-by reference time with the probabilistic predicted nowcast components to
-generate probabilistic nowcasts.</div>
+<p>The predictive distribution for <span class="math inline">\(X_{t}\)</span> then results by shifting this distribution by the already known value <span class="math inline">\(x_{t, \leq t^* - t}\)</span>, or in other words adding the right-truncated partial observed data summed across reference times and the predicted probabilistic nowcast components to generate probabilistic nowcasts.</p>
+<div class="figure">
+<span style="display:block;" id="fig:comb-w-obs"></span>
+<img src="../reference/figures/comb_w_obs.png" alt="Visual description of combining the observations with the probabilistic predicted nowcast components to generate probabilistic nowcasts."><p class="caption">
+Figure 5: Visual description of combining the observations with the probabilistic predicted nowcast components to generate probabilistic nowcasts.
+</p>
 </div>
-<p>The <code><a href="../reference/sample_nowcasts.html">sample_nowcasts()</a></code> function ingests uncertainty
-parameters, the reporting triangle, and the point nowcast matrix and
-generates probabilistic nowcasts.</p>
+<p>The <code><a href="../reference/sample_nowcasts.html">sample_nowcasts()</a></code> function ingests uncertainty parameters, the reporting triangle, and the point nowcast matrix and generates probabilistic nowcasts.</p>
 </div>
 </div>
 <div class="section level3">
 <h3 id="zero-handling-approximation">Zero-handling strategy<a class="anchor" aria-label="anchor" href="#zero-handling-approximation"></a>
 </h3>
-<p>As mentioned in <a href="#point-nowcast-generation">Point nowcast
-generation</a>, we use a modified point nowcasts to deal with zero
-values in preliminary counts. We here motivate this approach from a
-Bayesian perspective, based on the work of<span class="citation"><sup>[<a href="#ref-Morgenstern2025"><strong>Morgenstern2025?</strong></a>]</sup></span>.
-To this end we assume that</p>
+<p>As mentioned in <a href="#point-nowcast-generation">Point nowcast generation</a>, we use a modified point nowcasts to deal with zero values in preliminary counts. We here motivate this approach from a Bayesian perspective, based on the work of<span class="citation"><sup>[<a href="#ref-Morgenstern2025">3</a>]</sup></span>. To this end we assume that</p>
 <p><span class="math display">\[
-X_{t, \leq d} \ \mid X_t \sim \text{Bin}\left(X_t, \sum_{d = 0}^d
-\pi_t\right).
+X_{t, \leq d} \ \mid X_t \sim \text{Bin}\left(X_t, \sum_{d = 0}^d \pi_t\right).
 \]</span> We are now interested in the conditional expectation</p>
 <p><span class="math display">\[
 \mathbb{E}(X_t \ \mid X_{t, \leq d})
 \]</span></p>
-<p>in this binomial subsampling problem. We will derive it under the
-improper prior distribution</p>
+<p>in this binomial subsampling problem. We will derive it under the improper prior distribution</p>
 <p><span class="math display">\[
 X_t \sim \text{DiscreteUniform}(0, 1, 2, \dots).
 \]</span></p>
-<p>For notational simplicity and readability for the following, we
-substitute <span class="math inline">\(N = X_{t}\)</span>, <span class="math inline">\(Y = X_{t, \geq d}\)</span> and <span class="math inline">\(p = \sum_{d = 0}^D \pi_d\)</span> and are thus
-looking for <span class="math inline">\(\mathbb{E}(N | Y = y)\)</span>
-if <span class="math inline">\(Y \sim \text{Bin}(N, p)\)</span> with a
-discrete uniform prior on <span class="math inline">\(N\)</span>. This
-expectation can be written out as: <span class="math display">\[
-\mathbb{E}(N \ | \ Y = y) = \sum_{n=0}^{\infty}\text{Pr}(N = n | Y = y)
-\times n
-\]</span>{#eq-expectation}</p>
+<p>For notational simplicity and readability for the following, we substitute <span class="math inline">\(N = X_{t}\)</span>, <span class="math inline">\(Y = X_{t, \geq d}\)</span> and <span class="math inline">\(p = \sum_{d = 0}^D \pi_d\)</span> and are thus looking for <span class="math inline">\(\mathbb{E}(N | Y = y)\)</span> if <span class="math inline">\(Y \sim \text{Bin}(N, p)\)</span> with a discrete uniform prior on <span class="math inline">\(N\)</span>. This expectation can be written out as: <span class="math display">\[
+\mathbb{E}(N \ | \ Y = y) = \sum_{n=0}^{\infty}\text{Pr}(N = n | Y = y) \times n (\#eq:expectation)
+\]</span></p>
 <p>Applying Bayes Theorem we have <span class="math display">\[
-\text{Pr}(N = n \ |\ Y = y)  = \frac{\text{Pr}(Y = y \ | \ N = n) \times
-\text{Pr}(N=n)}{\sum_{i=0}^{\infty}\text{Pr}( Y = y \ |\ N= i) \times
-\text{Pr}(N = i)}.
-\]</span> Because <span class="math inline">\(\text{Pr}(N=n)\)</span> is
-a constant this simplifies to <span class="math display">\[
-\text{Pr}(N = n \ |\ Y = y)  = \frac{\text{Pr}(Y = y \ |\ N =
-n)}{\sum_{i=0}^{\infty}\text{Pr}( Y = y \ |\ N= i)}.
-\]</span> Now substituting the probability mass function of the binomial
-distribution <span class="math display">\[
+\text{Pr}(N = n \ |\ Y = y)  = \frac{\text{Pr}(Y = y \ | \ N = n) \times \text{Pr}(N=n)}{\sum_{i=0}^{\infty}\text{Pr}( Y = y \ |\ N= i) \times \text{Pr}(N = i)}.
+\]</span> Because <span class="math inline">\(\text{Pr}(N=n)\)</span> is a constant this simplifies to <span class="math display">\[
+\text{Pr}(N = n \ |\ Y = y)  = \frac{\text{Pr}(Y = y \ |\ N = n)}{\sum_{i=0}^{\infty}\text{Pr}( Y = y \ |\ N= i)}.
+\]</span> Now substituting the probability mass function of the binomial distribution <span class="math display">\[
 \text{Pr}(Y = y\ |\ N = n) =\binom{n}{y} p^y(1-p)^{n-y}
 \]</span> we get <span class="math display">\[
-\text{Pr}(N = n \ |\ Y = y) = \frac{\binom{n}{y}
-p^y(1-p)^{n-y}}{\sum_{i=1}^\infty \binom{1}{y}p^y(1-p)^{i-y}}
+\text{Pr}(N = n \ |\ Y = y) = \frac{\binom{n}{y} p^y(1-p)^{n-y}}{\sum_{i=1}^\infty \binom{1}{y}p^y(1-p)^{i-y}}
 \]</span></p>
-<p>Plugging this into<span class="citation"><sup>[<a href="#ref-eq-expectation"><strong>eq-expectation?</strong></a>]</sup></span>
-we get the following (omitting terms for <span class="math inline">\(n&lt;y\)</span>, which are 0):</p>
+<p>Plugging this into <a href="#eq:expectation">(<strong>??</strong>)</a> we get the following (omitting terms for <span class="math inline">\(n&lt;y\)</span>, which are 0):</p>
 <p><span class="math display">\[
-\mathbb{E}(N \ |\ Y = y) = \sum_{n=y}^{\infty}n \frac{\binom{n}{y}
-p^y(1-p)^{n-y}}{\sum_{i=y}^\infty \binom{i}{y}p^y(1-p)^{i-y}}
+\mathbb{E}(N \ |\ Y = y) = \sum_{n=y}^{\infty}n \frac{\binom{n}{y} p^y(1-p)^{n-y}}{\sum_{i=y}^\infty \binom{i}{y}p^y(1-p)^{i-y}}
 \]</span></p>
 <p>This is equivalent to</p>
 <p><span class="math display">\[
-\mathbb{E}(N \ | \ Y = y) =  \frac{\sum_{n=y}^{\infty}n \binom{n}{y}
-p^y(1-p)^{n-y}}{\sum_{i=y}^\infty \binom{i}{y}p^y(1-p)^{i-y}}.
+\mathbb{E}(N \ | \ Y = y) =  \frac{\sum_{n=y}^{\infty}n \binom{n}{y} p^y(1-p)^{n-y}}{\sum_{i=y}^\infty \binom{i}{y}p^y(1-p)^{i-y}}.
 \]</span></p>
-<p>Both the numerator and the denominator are known convergent series,
-with solutions available in standard libraries like Mathematica<span class="citation"><sup>[<a href="#ref-Mathematica2024"><strong>Mathematica2024?</strong></a>]</sup></span>.
-We then get</p>
+<p>Both the numerator and the denominator are known convergent series, with solutions available in standard libraries like Mathematica<span class="citation"><sup>[<a href="#ref-Mathematica2024">4</a>]</sup></span>. We then get</p>
 <p><span class="math display">\[
-\mathbb{E}(N \ |\ Y = y)  = \frac{(y + 1 -p)/p^2}{1/p} = \frac{y + 1 -
-p}{p},
-\]</span> which corresponds to the corrected point estimate provided in
-equation<span class="citation"><sup>[<a href="#ref-eq-correction"><strong>eq-correction?</strong></a>]</sup></span>.</p>
+\mathbb{E}(N \ |\ Y = y)  = \frac{(y + 1 -p)/p^2}{1/p} = \frac{y + 1 - p}{p},
+\]</span> which corresponds to the corrected point estimate provided in equation <a href="#eq:correction">(5)</a>.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="default-settings">Default settings<a class="anchor" aria-label="anchor" href="#default-settings"></a>
 </h2>
-<p>To guide practitioners, we set default behaviours that are based on
-the maximum delay observed in the data. We use the partial reporting
-triangle for delay estimation, derive delay estimates and uncertainty
-estimates from only the reporting triangle being nowcasted, and use
-three times the maximum delay number (<span class="math inline">\(V=3
-\times D\)</span>) reference times for the total training volume <span class="math inline">\(V\)</span> used by the model (in line with<span class="citation"><sup>[<a href="#ref-Wolffram2023">1</a>]</sup></span>).</p>
+<p>To guide practitioners, we set default behaviours that are based on the maximum delay observed in the data. We use the partial reporting triangle for delay estimation, derive delay estimates and uncertainty estimates from only the reporting triangle being nowcasted, and use three times the maximum delay number (<span class="math inline">\(V=3 \times D\)</span>) reference times for the total training volume <span class="math inline">\(V\)</span> used by the model (in line with<span class="citation"><sup>[<a href="#ref-Wolffram2023">1</a>]</sup></span>).</p>
 <p>Within each step there are additional defaults:</p>
-<p><em>Delay distribution estimation</em>: 50% of the reference times in
-the training volume <span class="math inline">\(V\)</span> are used for
-delay estimation, <span class="math inline">\(N\)</span>, with a minimum
-requirement of at least one more than the maximum delay. If less data
-than this is available, this is indicated to the user, only producing an
-error when less data than the theoretically minimum is available for any
-given modelling step. <em>Point nowcast generation</em>: Delay
-estimation occurs using the reporting triangle being nowcasted.
-<em>Uncertainty Estimation</em>: 50% of the reference times in the
-training volume <span class="math inline">\(V\)</span> are used as
-retrospective point nowcast times, <span class="math inline">\(M\)</span>. If there is insufficient data, the
-method uses the oldest retrospective nowcast date with at least the same
-amount of historical data for delay estimation as is used for the point
-nowcast at the current nowcast date, and requires that there are at
-least two retrospective nowcasts containing sufficient data. By default
-we do not sum the predicted components of each row across rows as this
-is context specific (diverging from<span class="citation"><sup>[<a href="#ref-Wolffram2023">1</a>]</sup></span>. who sum by week due to
-their target data being a rolling 7 day sum).</p>
+<p><em>Delay distribution estimation</em>: 50% of the reference times in the training volume <span class="math inline">\(V\)</span> are used for delay estimation, <span class="math inline">\(N\)</span>, with a minimum requirement of at least one more than the maximum delay. If less data than this is available, this is indicated to the user, only producing an error when less data than the theoretically minimum is available for any given modelling step.</p>
+<p><em>Point nowcast generation</em>: Delay estimation occurs using the reporting triangle being nowcasted.</p>
+<p><em>Uncertainty Estimation</em>: 50% of the reference times in the training volume <span class="math inline">\(V\)</span> are used as retrospective point nowcast times, <span class="math inline">\(M\)</span>. If there is insufficient data, the method uses the oldest retrospective nowcast date with at least the same amount of historical data for delay estimation as is used for the point nowcast at the current nowcast date, and requires that there are at least two retrospective nowcasts containing sufficient data. By default we do not sum the predicted components of each row across rows as this is context specific (diverging from<span class="citation"><sup>[<a href="#ref-Wolffram2023">1</a>]</sup></span>. who sum by week due to their target data being a rolling 7 day sum).</p>
 </div>
 <div class="section level2">
-<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
 <div id="ref-Wolffram2023" class="csl-entry">
-1. Wolffram, D., Abbott, S., Heiden, M. an der, Funk, S., Günther, F.,
-Hailer, D., Heyder, S., Hotz, T., Kassteele, J. van de, Küchenhoff, H.,
-Müller-Hansen, S., Syliqi, D., Ullrich, A., Weigert, M., Schienle, M.,
-&amp; Bracher, J. (2023). Collaborative nowcasting of COVID-19
-hospitalization incidences in germany. <em>PLOS Computational
-Biology</em>, <em>19</em>(8), 1–25. <a href="https://doi.org/10.1371/journal.pcbi.1011394" class="external-link">https://doi.org/10.1371/journal.pcbi.1011394</a>
+1. Wolffram, D., Abbott, S., Heiden, M. an der, Funk, S., Günther, F., Hailer, D., Heyder, S., Hotz, T., Kassteele, J. van de, Küchenhoff, H., Müller-Hansen, S., Syliqi, D., Ullrich, A., Weigert, M., Schienle, M., &amp; Bracher, J. (2023). Collaborative nowcasting of COVID-19 hospitalization incidences in germany. <em>PLOS Computational Biology</em>, <em>19</em>(8), 1–25. <a href="https://doi.org/10.1371/journal.pcbi.1011394" class="external-link">https://doi.org/10.1371/journal.pcbi.1011394</a>
 </div>
 <div id="ref-Friedland2010" class="csl-entry">
-2. Friedland, J. (2010). Estimating unpaid claims using basic
-techniques. In <em>Casualty Actuarial Society</em>. Casualty Actuarial
-Society, <a href="https://www.casact.org/sites/default/files/database/studynotes_friedland_estimating.pdf" class="external-link uri">https://www.casact.org/sites/default/files/database/studynotes_friedland_estimating.pdf</a>.
+2. Friedland, J. (2010). Estimating unpaid claims using basic techniques. In <em>Casualty Actuarial Society</em>. Casualty Actuarial Society, <a href="https://www.casact.org/sites/default/files/database/studynotes_friedland_estimating.pdf" class="external-link uri">https://www.casact.org/sites/default/files/database/studynotes_friedland_estimating.pdf</a>.
+</div>
+<div id="ref-Morgenstern2025" class="csl-entry">
+3. Morgenstern, C., &amp; Cori, A. (2025). Disentangling mechanistic and observational overdispersion effects to infer superspreading from aggregated epidemic incidence. In <em>In preparation</em>.
+</div>
+<div id="ref-Mathematica2024" class="csl-entry">
+4. Inc., W. R. (n.d.). <em>Mathematica, <span>V</span>ersion 14.2</em>. <a href="https://www.wolfram.com/mathematica" class="external-link">https://www.wolfram.com/mathematica</a>
 </div>
 </div>
 </div>

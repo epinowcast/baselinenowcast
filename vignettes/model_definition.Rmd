@@ -100,15 +100,9 @@ $$
 
 subject to the constrain that $\sum_{d = 0}^D \pi_d = 1$.
 
-We note that this method is equivalent to the so-called chain ladder method @Friedland2010, adapted to our notation in terms of reporting triangles (rather than *development triangles* as used in accounting). The intuition behind the method relies on the basic assumption is that the ratio between the delays in the complete observations is equivalent to the ratio between the delays in the partially observed components of the matrix.
+We note that this method is equivalent to the so-called chain ladder method @Friedland2010, adapted to our notation in terms of reporting triangles (rather than *development triangles* as used in accounting). The intuition behind the method relies on the basic assumption is that the ratio between the delays in the complete observations is equivalent to the ratio between the delays in the partially observed components of the matrix (Figure 1 \@ref(fig:squares)).
 
-```{r squares}
-#| echo = FALSE,
-#| fig.cap = 'Visual description of the iterative “completing” of the reporting
-#| triangle, which relies on the assumption that the ratio between delays for
-#| fully observed reference times is consistent with the ratio between those
-#| same delays in the partially observed data.'
-
+```{r squares, echo = FALSE, fig.cap = 'Visual description of the iterative “completing” of the reporting triangle, which relies on the assumption that the ratio between delays for fully observed reference times is consistent with the ratio between those same delays in the partially observed data.'}
 knitr::include_graphics(file.path(
   "..", "man", "figures",
   "reporting_triangle.png"
@@ -142,7 +136,7 @@ $$
 $$
 
 The `apply_delay()` function ingests a reporting triangle and a delay PMF and returns a point nowcast matrix by "filling in" the missing elements of the reporting triangle.
-The generation of a point nowcast is described in the schematic below \@ref(fig:pt-nowcast), describing how the missing elements of the reporting triangle are estimated and can then be used to generate a point estimate of the final counts at each reference time.
+The generation of a point nowcast is described in the schematic below (Figure \@ref(fig:pt-nowcast)), demonstrating how the missing elements of the reporting triangle are estimated and can then be used to generate a point estimate of the final counts at each reference time.
 
 ```{r pt-nowcast, echo = FALSE, fig.cap = 'Visual description of the generation of a point nowcast matrix from a reporting triangle and delay PMF. '}
 knitr::include_graphics(file.path("..", "man", "figures", "point_nowcast.png"))
@@ -194,14 +188,9 @@ We quantify the uncertainty at the target quantity level, which is assumed, by d
 
 Here, the use of a constant dispersion parameter $\phi_j$ despite some of the values in the fitting procedure being yet incomplete is justified by the fact that the negative binomial distribution is closed to binomial subsampling, with the overdispersion parameter preserved. If equation \@ref(eq:negbin) holds in combination with $$
 \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \ | \ X_{s^* - j, > j} \sim \text{Bin}\left[X_{s^* - j, > j}, \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} \pi_{d}\right) / \pi_{> j} \right],
-$$ we thus obtain \@ref(eq:negbin2). Estimated dispersion parameters $\hat{\phi}_0, \dots, \hat{\phi}_D$ are obtained by maximum likelihood estimation. The `estimate_uncertainty()` function ingests the truncated reporting triangles, retrospective reporting triangles, and the retrospective point nowcasts and returns a set of uncertainty parameters corresponding to the specified observation model.
+$$ we thus obtain \@ref(eq:negbin2). Estimated dispersion parameters $\hat{\phi}_0, \dots, \hat{\phi}_D$ are obtained by maximum likelihood estimation. The `estimate_uncertainty()` function ingests the truncated reporting triangles, retrospective reporting triangles, and the retrospective point nowcasts and returns a set of uncertainty parameters corresponding to the specified observation model. The uncertainty quantification procedure is described schematically in Figure \@ref(fig:uncertainty-quantification).
 
-```{r uncertainty_quantification}
-#| echo = FALSE,
-#| fig.cap = '*Figure 3.* Visual description of the uncertainty quantification
-#| method, which generates retrospective point nowcasts and compares those
-#| estimates to what was later observed as of the nowcast time.'
-
+```{r uncertainty-quantification, echo = FALSE, fig.cap = Visual description of the uncertainty quantification method, which generates retrospective point nowcasts and compares those estimates to what was later observed as of the nowcast time.'}
 knitr::include_graphics(file.path("..", "man", "figures", "uq.png"))
 ```
 
@@ -214,14 +203,9 @@ Predictive distributions for $X_{t^*}, \dots, X_{t^* - D + 1}$ are obtained by g
 $$
 X_{t, > t^* - t} \sim \text{NegBin}(\hat{x}_{t, > t^* - t}, \phi_{t^* - t}).
 $$
+This is described in the schematic Figure \@ref(fig:predicted-prob-nowcasts) which depicts sampling from the observation model with a mean given by the sum of the predicted components in the point nowcast matrix (the shaded elements in the bottom right).
 
-```{r predicted_prob_nowcasts}
-#| echo = FALSE,
-#| fig.cap = '*Figure 4.* Visual description of the generation of predicted
-#| probabilistic nowcasts generated via sampling from the observation model
-#| with the estimated uncertainty parameters and a mean given by the sum of the
-#| predicted components at each reference time.'
-
+```{r predicted-prob-nowcasts, echo = FALSE, fig.cap = Visual description of the generation of predicted probabilistic nowcasts generated via sampling from the observation model with the estimated uncertainty parameters and a mean given by the sum of the predicted components at each reference time.'}
 knitr::include_graphics(file.path(
   "..", "man", "figures",
   "pred_prob_nowcasts.png"
@@ -232,12 +216,7 @@ knitr::include_graphics(file.path(
 
 The predictive distribution for $X_{t}$ then results by shifting this distribution by the already known value $x_{t, \leq t^* - t}$, or in other words adding the right-truncated partial observed data summed across reference times and the predicted probabilistic nowcast components to generate probabilistic nowcasts.
 
-```{r comb_w_obs}
-#| echo = FALSE,
-#| fig.cap = '*Figure 5.* Visual description of combining the observations
-#|  with the probabilistic predicted nowcast components to generate
-#|     probabilistic nowcasts.'
-
+```{r comb-w-obs, echo = FALSE, fig.cap = Visual description of combining the observations with the probabilistic predicted nowcast components to generate probabilistic nowcasts.'}
 knitr::include_graphics(file.path("..", "man", "figures", "comb_w_obs.png"))
 ```
 

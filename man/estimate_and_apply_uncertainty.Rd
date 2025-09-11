@@ -10,7 +10,7 @@ estimate_and_apply_uncertainty(
   max_delay = ncol(reporting_triangle) - 1,
   n_history_delay = NULL,
   n_retrospective_nowcasts = NULL,
-  draws = 100,
+  draws = 1000,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,
   ref_time_aggregator = identity,

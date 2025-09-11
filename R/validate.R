@@ -173,8 +173,6 @@
 #'    are correct.
 #'
 #' @inheritParams estimate_and_apply_uncertainty
-#' @param reporting_triangle
-#' @param max_delay
 #'
 #' @returns NULL, invisibly
 #' @keywords internal

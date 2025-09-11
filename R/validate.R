@@ -168,6 +168,53 @@
   return(NULL)
 }
 
+#' Validate the inputs to `estimate_and_apply_uncertainty()` to ensure that
+#'    the reporting triangle, point nowcast matrix, and specified maximum delay
+#'    are correct.
+#'
+#' @inheritParams estimate_and_apply_uncertainty
+#' @param reporting_triangle
+#' @param max_delay
+#'
+#' @returns NULL, invisibly
+#' @keywords internal
+.validate_multiple_inputs <- function(
+    point_nowcast_matrix,
+    reporting_triangle,
+    max_delay) {
+  # Basic input validation
+  if (!is.matrix(point_nowcast_matrix)) {
+    cli_abort("`point_nowcast_matrix` must be a matrix.")
+  }
+  if (!is.matrix(reporting_triangle)) {
+    cli_abort("`reporting_triangle` must be a matrix.")
+  }
+
+  if (ncol(point_nowcast_matrix) != ncol(reporting_triangle)) {
+    cli_abort(c(
+      "x" = "`point_nowcast_matrix` and `reporting_triangle` must have the same number of columns.", # nolint
+      "i" = "Got {ncol(point_nowcast_matrix)} and {ncol(reporting_triangle)} respectively." # nolint
+    ))
+  }
+
+  if (ncol(reporting_triangle) != (max_delay + 1)) {
+    cli_abort(c(
+      "x" = "Inconsistent `max_delay`.",
+      "i" = "`ncol(reporting_triangle)` = {ncol(reporting_triangle)} but `max_delay + 1` = {max_delay + 1}." # nolint
+    ))
+  }
+
+  if (ncol(point_nowcast_matrix) != (max_delay + 1)) {
+    cli_abort(c(
+      "x" = "Inconsistent `max_delay`.",
+      "i" = "`ncol(point_nowcast_matrix)` = {ncol(point_nowcast_matrix)} but `max_delay + 1` = {max_delay + 1}." # nolint
+    ))
+  }
+
+
+  return(NULL)
+}
+
 #' Check observations and predictions are compatible
 #'
 #' @param obs Matrix or vector of observations.

@@ -57,6 +57,12 @@ estimate_and_apply_uncertainty <- function(
     ref_time_aggregator = identity,
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
     ...) {
+  .validate_multiple_inputs(
+    point_nowcast_matrix = point_nowcast_matrix,
+    reporting_triangle = reporting_triangle,
+    max_delay = max_delay
+  )
+
   # Logic to decide on how to allocate the training volume
   n_ref_times <- nrow(reporting_triangle)
 

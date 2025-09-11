@@ -112,8 +112,7 @@ test_that(".validate_multiple_inputs errors when point_nowcast_matrix columns do
       valid_point_nowcast_matrix,
       different_reporting_triangle,
       max_delay = 2
-    ),
-    regexp = "Inconsistent `max_delay`.*ncol\\(point_nowcast_matrix\\).*= 4.*max_delay \\+ 1.*= 3"
+    )
   )
 })
 

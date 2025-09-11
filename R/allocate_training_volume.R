@@ -25,11 +25,17 @@
     ))
   }
 
+  size_min <- max_delay + 3
+  size_min_delay <- max_delay + 1
+  size_min_retro_nowcasts <- 2
+  size_target <- 3 * max_delay
+  size_threshold <- max(size_min, size_target)
+
   # Logic for how to handle if one is passed in but not the other
   if (is.null(n_history_delay) && !is.null(n_retrospective_nowcasts)) {
     n_history_delay <- max(
-      max_delay + 1,
-      min(3 * max_delay, n_ref_times) - n_retrospective_nowcasts
+      size_min_delay,
+      min(size_target, n_ref_times) - n_retrospective_nowcasts
     ) # nolint
     # Check to make sure this doesn't exceed n_ref times
     if (n_ref_times < n_history_delay + n_retrospective_nowcasts) {
@@ -45,11 +51,12 @@
 
 
   if (is.null(n_history_delay) && is.null(n_retrospective_nowcasts)) {
-    if (n_ref_times >= 3 * max_delay) {
-      n_history_delay <- floor(1.5 * max_delay)
-      n_retrospective_nowcasts <- 3 * max_delay - n_history_delay
-    } else if (n_ref_times >= max_delay + 3 &&
-      n_ref_times <= 3 * max_delay) {
+    if (n_ref_times >= size_threshold) {
+      # Split ~ evenly while honoring minimums
+      n_history_delay <- max(max_delay + 1, floor(1.5 * max_delay))
+      n_retrospective_nowcasts <- size_threshold - n_history_delay
+    } else if (n_ref_times >= size_min &&
+      n_ref_times <= size_threshold) {
       # Allocate to n_history_delay and then split
       n_remaining_ref_times <- n_ref_times - max_delay - 1
       n_retrospective_nowcasts <- max(2, ceiling(n_remaining_ref_times / 2))
@@ -57,13 +64,13 @@
     } else {
       cli_abort(message = c(
         "Insufficient reference times in reporting triangle for delay and uncertainty estimation.", # nolint
-        "i" = "{max_delay + 1} reference times are required for delay estimation and 2 reference times are required as retrospective nowcasts for uncertainty estimation.", # nolint
-        "x" = "Only {n_ref_times} of the {max_delay + 3} required reference times are available in the reporting triangle." # nolint
+        "i" = "{size_min_delay} reference times are required for delay estimation and 2 reference times are required as retrospective nowcasts for uncertainty estimation.", # nolint
+        "x" = "Only {n_ref_times} of the {size_min} required reference times are available in the reporting triangle." # nolint
       ))
     }
   }
 
-  if (n_retrospective_nowcasts < 2) {
+  if (n_retrospective_nowcasts < size_min_retro_nowcasts) {
     cli_abort(
       message = c(
         "Insufficient reference times for uncertainty estimation.", # nolint
@@ -72,11 +79,11 @@
     )
   }
 
-  if (n_history_delay < max_delay + 1) {
+  if (n_history_delay < size_min_delay) {
     cli_abort(
       message = c(
         "User-specified `n_history_delay` is insufficient for delay estimation.", # nolint
-        "i" = "At least {max_delay + 1} reference times are needed for delay estimation.", # nolint
+        "i" = "At least {size_min_delay} reference times are needed for delay estimation.", # nolint
         "x" = "The specified {n_history_delay} reference times for delay estimation is insufficient" # nolint
       )
     )

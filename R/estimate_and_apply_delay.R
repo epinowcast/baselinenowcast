@@ -23,7 +23,7 @@
 #' pt_nowcast_matrix <- estimate_and_apply_delay(
 #'   reporting_triangle = triangle,
 #'   max_delay = 3,
-#'   n = 4
+#'   n_history_delay = 4
 #' )
 #' pt_nowcast_matrix
 estimate_and_apply_delay <- function(reporting_triangle,

@@ -25,7 +25,9 @@ of the delay. The default is to use the whole reporting triangle,
 starting from the most recent reporting delay. Default is NULL, which will
 be set internally to 1.5* max_delay.}
 
-\item{n_retrospective_nowcasts}{}
+\item{n_retrospective_nowcasts}{Integer indicating the number of
+retrospective nowcast times to use for uncertainty estimation. Default is
+NULL, which will be set internally to 1.5* max_delay.}
 }
 \value{
 list of n_history_delay and n_retrospective_nowcasts

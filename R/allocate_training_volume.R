@@ -10,7 +10,6 @@
 #' @param n_ref_times Integer indicating the number of reference times (rows)
 #'    in the reporting triangle.
 #' @inheritParams estimate_and_apply_uncertainty
-#' @param n_retrospective_nowcasts
 #'
 #' @returns list of n_history_delay and n_retrospective_nowcasts
 .allocate_training_volume <- function(n_ref_times,

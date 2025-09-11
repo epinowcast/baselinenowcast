@@ -34,10 +34,11 @@
 #' )
 #' pt_nowcast_matrix <- estimate_and_apply_delay(
 #'   reporting_triangle = triangle,
-#'   n = 4
+#'   n_history_delay = 4
 #' )
 #' # Need to tell uncertainty estimator to also use 4 reference times for
-#' # delay estimation, the remaining 2 will then be used for delay estimation.
+#' # delay estimation, the remaining 2 will then be used for
+#' # uncertainty estimation.
 #' nowcast_draws_df <- estimate_and_apply_uncertainty(
 #'   pt_nowcast_matrix,
 #'   triangle,
@@ -94,7 +95,7 @@ estimate_and_apply_uncertainty <- function(
     reporting_triangle,
     uncertainty_params = uncertainty_params,
     draws = draws,
-    uncertainty_sample = uncertainty_sampler,
+    uncertainty_sampler = uncertainty_sampler,
     ref_time_aggregator = ref_time_aggregator,
     delay_aggregator = delay_aggregator
   )

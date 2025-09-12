@@ -9,7 +9,10 @@ values for training volume for delay and uncertainty estimation.}
   n_ref_times,
   max_delay,
   n_history_delay = NULL,
-  n_retrospective_nowcasts = NULL
+  n_retrospective_nowcasts = NULL,
+  size_target = 3 * max_delay,
+  size_min_delay = max_delay + 1,
+  size_min_retro_nowcasts = 2
 )
 }
 \arguments{
@@ -28,6 +31,17 @@ be set internally to 1.5* max_delay.}
 \item{n_retrospective_nowcasts}{Integer indicating the number of
 retrospective nowcast times to use for uncertainty estimation. Default is
 NULL, which will be set internally to 1.5* max_delay.}
+
+\item{size_target}{Integer indicating the number of reference times to be
+used by default for the total training volume if not specified by
+\code{n_history_delay} and \code{n_retrospective_nowcasts}. Default is
+\code{3*max_delay}.}
+
+\item{size_min_delay}{Integer indicating the minimum number of reference
+times needed for delay estimation. Default is \code{max_delay + 1}.}
+
+\item{size_min_retro_nowcasts}{Integer indicating the minimum number of
+reference times needed for uncertainty estimation.}
 }
 \value{
 list of n_history_delay and n_retrospective_nowcasts

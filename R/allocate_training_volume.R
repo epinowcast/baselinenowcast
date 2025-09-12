@@ -9,13 +9,24 @@
 #'
 #' @param n_ref_times Integer indicating the number of reference times (rows)
 #'    in the reporting triangle.
+#' @param size_target Integer indicating the number of reference times to be
+#'    used by default for the total training volume if not specified by
+#'    `n_history_delay` and `n_retrospective_nowcasts`. Default is
+#'    `3*max_delay`.
+#' @param size_min_delay Integer indicating the minimum number of reference
+#'     times needed for delay estimation. Default is `max_delay + 1`.
+#' @param size_min_retro_nowcasts Integer indicating the minimum number of
+#'     reference times needed for uncertainty estimation.
 #' @inheritParams estimate_and_apply_uncertainty
 #'
 #' @returns list of n_history_delay and n_retrospective_nowcasts
 .allocate_training_volume <- function(n_ref_times,
                                       max_delay,
                                       n_history_delay = NULL,
-                                      n_retrospective_nowcasts = NULL) {
+                                      n_retrospective_nowcasts = NULL,
+                                      size_target = 3 * max_delay,
+                                      size_min_delay = max_delay + 1,
+                                      size_min_retro_nowcasts = 2) {
   if (!is.null(n_history_delay) && !is.null(n_retrospective_nowcasts) &&
     (n_ref_times < n_history_delay + n_retrospective_nowcasts)) {
     cli_abort(message = c(
@@ -25,10 +36,8 @@
     ))
   }
 
-  size_min <- max_delay + 3
-  size_min_delay <- max_delay + 1
-  size_min_retro_nowcasts <- 2
-  size_target <- 3 * max_delay
+
+  size_min <- size_min_delay + size_min_retro_nowcasts
   size_threshold <- max(size_min, size_target)
 
   # Logic for how to handle if one is passed in but not the other

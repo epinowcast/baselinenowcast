@@ -14,8 +14,7 @@ estimate_and_apply_uncertainty(
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,
   ref_time_aggregator = identity,
-  delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
-  ...
+  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
 )
 }
 \arguments{
@@ -36,11 +35,12 @@ of the delay. The default is to use the whole reporting triangle,
 \item{n_history_delay}{Integer indicating the number of reference times
 (observations) to be used in the estimate of the reporting delay, always
 starting from the most recent reporting delay. Default is NULL, which will
-be set internally to 1.5* max_delay.}
+be set internally based on the defaults in \code{allocate_reference_times()}}
 
 \item{n_retrospective_nowcasts}{Integer indicating the number of
 retrospective nowcast times to use for uncertainty estimation. Default is
-NULL, which will be set internally to 1.5* max_delay.}
+NULL, which will be set internally based on the defaults in
+\code{allocate_reference_times()}}
 
 \item{draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}
@@ -69,8 +69,6 @@ which does not aggregate across reference times.}
 \item{delay_aggregator}{Function that operates along the columns (delays)
 of the retrospective point nowcast matrix after it has been aggregated
 across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
-
-\item{...}{Additional arguments}
 }
 \value{
 \code{nowcast_draws_df} Dataframe containing draws of combined

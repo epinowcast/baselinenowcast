@@ -213,6 +213,22 @@
   return(NULL)
 }
 
+.validate_reference_time_allocation <- function(n_ref_times,
+                                    max_delay,
+                                    n_history_delay,
+                                    n_retrospectve_nowcasts){
+
+   if (n_ref_times < n_history_delay + n_retrospective_nowcasts) {
+    cli_abort(message = c(
+      "Insufficient reference times in reporting triangle for specified training volume.", # nolint
+      "i" = "{n_history_delay + n_retrospective_nowcasts} reference times are specified for delay and uncertainty estimation.", # nolint
+      "x" = "Only {n_ref_times} reference times are available in the reporting triangle." # nolint
+    ))
+   }
+
+
+}
+
 #' Check observations and predictions are compatible
 #'
 #' @param obs Matrix or vector of observations.

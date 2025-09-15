@@ -26,11 +26,12 @@ of the delay. The default is to use the whole reporting triangle,
 \item{n_history_delay}{Integer indicating the number of reference times
 (observations) to be used in the estimate of the reporting delay, always
 starting from the most recent reporting delay. Default is NULL, which will
-be set internally to 1.5* max_delay.}
+be set internally based on the defaults in \code{allocate_reference_times()}}
 
 \item{n_retrospective_nowcasts}{Integer indicating the number of
 retrospective nowcast times to use for uncertainty estimation. Default is
-NULL, which will be set internally to 1.5* max_delay.}
+NULL, which will be set internally based on the defaults in
+\code{allocate_reference_times()}}
 
 \item{size_target}{Integer indicating the number of reference times to be
 used by default for the total training volume if not specified by

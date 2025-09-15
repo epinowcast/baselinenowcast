@@ -23,7 +23,7 @@ test_that(
     expect_error(
       estimate_and_apply_delay(
         reporting_triangle = reporting_triangle,
-        n_history_delay = 2
+        n = 2
       ),
       regexp = "The rows used for delay estimation in the reporting triangle must" # nolint
     )
@@ -31,7 +31,7 @@ test_that(
     expect_error(
       estimate_and_apply_delay(
         reporting_triangle = reporting_triangle,
-        n_history_delay = 12
+        n = 12
       ),
       regexp = "Number of observations in input reporting triangle is insufficient" # nolint
     )
@@ -89,7 +89,7 @@ test_that(
     # Get delay estimate
     point_nowcast_matrix <- estimate_and_apply_delay(
       reporting_triangle = reporting_triangle,
-      n_history_delay = 5
+      n = 5
     )
     # Test that the function returns the expected PMF
     expect_equal(complete_triangle, point_nowcast_matrix, tol = 0.2)

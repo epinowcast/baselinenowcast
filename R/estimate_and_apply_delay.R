@@ -1,9 +1,6 @@
 #' Estimate and apply delay from a reporting triangle
 #'
 #' @inheritParams estimate_delay
-#' @param n_history_delay Integer indicating number of reference times used for
-#'    delay estimation. Default is NULL, which will be set internally to
-#'    1.5* the maximum delay.
 #'
 #' @returns `pt_nowcast_matrix` Matrix of point nowcasts
 #' @export
@@ -23,12 +20,12 @@
 #' pt_nowcast_matrix <- estimate_and_apply_delay(
 #'   reporting_triangle = triangle,
 #'   max_delay = 3,
-#'   n_history_delay = 4
+#'   n = 4
 #' )
 #' pt_nowcast_matrix
 estimate_and_apply_delay <- function(reporting_triangle,
                                      max_delay = ncol(reporting_triangle) - 1,
-                                     n_history_delay = NULL) {
+                                     ...) {
   if (max_delay > ncol(reporting_triangle) - 1) {
     message(sprintf(
       "The maximum delay must be less than the number of columns in the reporting triangle. The maximum delay will be set to %d.", # nolint
@@ -46,16 +43,10 @@ estimate_and_apply_delay <- function(reporting_triangle,
     ))
   }
 
-  if (is.null(n_history_delay)) {
-    n_history_delay <- floor(1.5 * max_delay)
-  }
-
-
-
   delay_pmf <- estimate_delay(
     reporting_triangle,
     max_delay = max_delay,
-    n = n_history_delay
+    ...
   )
 
   # This is going to return a matrix that is truncated at the maximum delay

@@ -15,10 +15,12 @@
 #' @param size_min_retro_nowcasts Integer indicating the minimum number of
 #'     reference times needed for uncertainty estimation. Default is `2`.
 #' @importFrom cli cli_abort cli_warn
+#' @export
 #' @returns list of n_history_delay and n_retrospective_nowcasts
 #' @examples
 #' triangle <- matrix(
-#'   c(100, 50, 30, 20,
+#'   c(
+#'     100, 50, 30, 20,
 #'     40, 10, 20, 5,
 #'     80, 50, 25, 10,
 #'     100, 50, 30, 20,
@@ -37,15 +39,16 @@
 #' ref_time_allocation_default
 #' # Modify to use less volume and redistribute
 #' ref_time_allocation_alt <- allocate_reference_times(
-#'                           reporting_triangle = triangle,
-#'                            scale_factor = 2,
-#'                            prop_delay = 0.6)
+#'   reporting_triangle = triangle,
+#'   scale_factor = 2,
+#'   prop_delay = 0.6
+#' )
 #' ref_time_allocation_alt
 allocate_reference_times <- function(reporting_triangle,
-                                      max_delay = ncol(reporting_triangle) - 1,
-                                      scale_factor = 3,
-                                      prop_delay = 0.5,
-                                      size_min_retro_nowcasts = 2) {
+                                     max_delay = ncol(reporting_triangle) - 1,
+                                     scale_factor = 3,
+                                     prop_delay = 0.5,
+                                     size_min_retro_nowcasts = 2) {
   # Number of ref times in reporting triangle
   n_ref_times <- nrow(reporting_triangle)
   # number of rows you need for delay estimation
@@ -53,58 +56,60 @@ allocate_reference_times <- function(reporting_triangle,
   # The minimum number of rows needed
   size_required <- size_min_delay + size_min_retro_nowcasts
   # The target number of rows
-  size_target <- scale_factor*max_delay
+  size_target <- scale_factor * max_delay
 
   # Check for scale factor being too high.
-  if(size_target > n_ref_times && n_ref_times >= size_required){
+  if (size_target > n_ref_times && n_ref_times >= size_required) {
     cli_warn(message = c(
       "Insufficient reference times in reporting triangle for the specified `scale_factor`.", # nolint
-      "i" = "{n_ref_times} reference times available and {size_target} are specified.", #nolint
+      "i" = "{n_ref_times} reference times available and {size_target} are specified.", # nolint
       "x" = "All {n_ref_times} reference times will be used."
     ))
     size_used <- n_ref_times
-  }else if(size_target > n_ref_times && n_ref_times < size_required){
+  } else if (size_target > n_ref_times && n_ref_times < size_required) {
     cli_abort(message = c(
       "Insufficient reference times in reporting triangle for the both delay and uncertainty estimation.", # nolint
-      "i" = "{n_ref_times} reference times available and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", #nolint
+      "i" = "{n_ref_times} reference times available and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", # nolint
       "x" = "Probabilistic nowcasts cannot be generated. "
     ))
-  }else if(size_target < n_ref_times && size_target < size_required){
+  } else if (size_target < n_ref_times && size_target < size_required) {
     cli_abort(message = c(
       "Insufficient reference times specified by `scale_factor` for the both delay and uncertainty estimation.", # nolint
-      "i" = "{scale_factor*max_delay} reference times specified and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", #nolint
+      "i" = "{scale_factor*max_delay} reference times specified and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", # nolint
       "x" = "Probabilistic nowcasts cannot be generated. "
     ))
-  }else{
+  } else {
     size_used <- size_target
   }
 
 
   # If size being used equals or exceeds the target, simply split according to prop delay #nolint
-  if(size_used >= size_target){
-    n_history_delay <- max(floor(size_used*prop_delay), size_min_delay)
+  if (size_used >= size_target) {
+    n_history_delay <- max(floor(size_used * prop_delay), size_min_delay)
     n_retrospective_nowcasts <- size_used - n_history_delay
 
-  # If less than the target size, we will assign the remainder after hitting
+    # If less than the target size, we will assign the remainder after hitting
     # the delay requirement according to prop_delay
-  }else if (size_used >= size_required  & size_used < size_target ) { #nolint
+  } else if (size_used >= size_required & size_used < size_target) { # nolint
     # Allocate to n_history_delay and then split the remainder ensuring n_retropsective nowcasts has enough #nolint
     n_remaining_ref_times <- size_used - size_min_delay
     # n_history_delay <- size_min_delay
     # n_retrospective_nowcasts <- size_used - n_history_delay
-    n_retrospective_nowcasts <- max(ceiling(n_remaining_ref_times*(1-prop_delay)),
-                                    size_min_retro_nowcasts)
+    n_retrospective_nowcasts <- max(
+      ceiling(n_remaining_ref_times * (1 - prop_delay)),
+      size_min_retro_nowcasts
+    )
     n_history_delay <- size_used - n_retrospective_nowcasts
   }
 
-  prop_delay_used <- n_history_delay/size_used
+  prop_delay_used <- n_history_delay / size_used
 
-  if(prop_delay_used != prop_delay){
+  if (prop_delay_used != prop_delay) {
     cli_warn(
       message = c(
         "`prop_delay` specified is not equivalent to `prop_delay` used.",
-        "i" = "{prop_delay} reference times were specified for delay estimation but due to minimum requirements had to be reallocated.", #nolint
-        "x" =  "{round(prop_delay_used,3)} of reference times used for delay estimation." #nolint
+        "i" = "{prop_delay} reference times were specified for delay estimation but due to minimum requirements had to be reallocated.", # nolint
+        "x" = "{round(prop_delay_used,3)} of reference times used for delay estimation." # nolint
       )
     )
   }

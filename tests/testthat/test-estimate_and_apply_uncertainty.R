@@ -1,5 +1,5 @@
 triangle <- matrix(
-  data = sample(10, 12 * 5, replace = TRUE),
+  data = sample.int(10, 12 * 5, replace = TRUE),
   nrow = 12,
   ncol = 5
 ) |> construct_triangle()
@@ -13,7 +13,7 @@ n_delay_valid <- tv$n_history_delay
 n_retro_valid <- tv$n_retrospective_nowcasts
 
 
-test_that("estimate_and_apply_uncertainty works as expected with the default settings", {
+test_that("estimate_and_apply_uncertainty works as expected with the default settings", { # nolint
   set.seed(123)
   nowcast_draws_df <- estimate_and_apply_uncertainty(
     pt_nowcast_matrix,
@@ -29,7 +29,7 @@ test_that("estimate_and_apply_uncertainty works as expected with the default set
     ),
     regexp = "Using 6 reference times for delay estimation." # nolint
   )
-  expect_equal(nowcast_draws_df, df_w_default)
+  expect_identical(nowcast_draws_df, df_w_default)
 
   expect_message(
     estimate_and_apply_uncertainty(
@@ -58,7 +58,7 @@ test_that("estimate_and_apply_uncertainty works as expected with the default set
   expect_false(all(nowcast_draws_df == df_w_non_default))
 })
 
-test_that("estimate_and_apply_uncertainty error when things are specified incorrectly", {
+test_that("estimate_and_apply_uncertainty error when things are specified incorrectly", { # nolint
   expect_error(
     estimate_and_apply_uncertainty(
       pt_nowcast_matrix,
@@ -78,7 +78,7 @@ test_that("estimate_and_apply_uncertainty error when things are specified incorr
   )
 
   triangle <- matrix(
-    data = sample(10, 6 * 5, replace = TRUE),
+    data = sample.int(10, 6 * 5, replace = TRUE),
     nrow = 6,
     ncol = 5
   ) |> construct_triangle()

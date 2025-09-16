@@ -72,11 +72,11 @@ estimate_and_apply_uncertainty <- function(
     n_retrospective_nowcasts <- tv$n_retrospective_nowcasts
   }
 
-  if (is.null(n_history_delay) & !is.null(n_retrospective_nowcasts)) {
+  if (is.null(n_history_delay) && !is.null(n_retrospective_nowcasts)) {
     n_history_delay <- min(3 * max_delay, n_ref_times) - n_retrospective_nowcasts # nolint
     message(sprintf("`n_history_delay` was not specified, %d reference times will be used for delay estimation.", n_history_delay)) # nolint
   }
-  if (!is.null(n_history_delay) & is.null(n_retrospective_nowcasts)) {
+  if (!is.null(n_history_delay) && is.null(n_retrospective_nowcasts)) {
     n_retrospective_nowcasts <- min(3 * max_delay, n_ref_times) - n_history_delay # nolint
     message(sprintf("`n_retrospective_nowcasts` was not specified, %d reference times will be used as retrospective nowcast times for uncertainty estimation.", n_retrospective_nowcasts)) # nolint
   }

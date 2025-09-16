@@ -43,7 +43,7 @@
 #' ref_time allocation_alt
 allocate_reference_times <- function(reporting_triangle,
                                       max_delay = ncol(reporting_triangle) - 1,
-                                      scale_factor = 3,
+                                      scale_factor = min(3, nrow(reporting_triangle)/max_delay), #nolint
                                       prop_delay = 0.5,
                                       size_min_retrospective_nowcasts = 2) {
   # Number of ref times in reporting triangle

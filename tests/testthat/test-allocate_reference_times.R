@@ -39,8 +39,8 @@ test_that("allocate_reference_times works as expected when user specifies traini
       scale_factor = 3,
       prop_delay = 0.5
     ),
-    regexp = "Insufficient reference times in reporting triangle for the specified"
-  ) # nolint
+    regexp = "Insufficient reference times in reporting triangle for the specified" #nolint
+  )
   expect_identical(tv3$n_history_delay, 5)
   expect_identical(tv3$n_retrospective_nowcasts, 5)
 })
@@ -48,7 +48,6 @@ test_that("allocate_reference_times works as expected when user specifies traini
 test_that("allocate_reference_times warns when user or defaults don't meet minimum requirements, and reallocates accordingly.", { # nolint
 
   # Test the default works when their is less than 3* max delay of data
-  # Q: Should this warn even though user didn't specify scale factor of 3
   tv5 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = matrix(
@@ -57,8 +56,8 @@ test_that("allocate_reference_times warns when user or defaults don't meet minim
         ncol = 5
       ) |> construct_triangle(),
     ),
-    regexp = "Insufficient reference times in reporting triangle for the specified"
-  ) # nolint
+    regexp = "Insufficient reference times in reporting triangle for the specified" #nolint
+  )
   expect_identical(tv5$n_history_delay, 5)
   expect_identical(tv5$n_retrospective_nowcasts, 5)
 

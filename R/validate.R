@@ -224,11 +224,11 @@
 #' @inheritParams allocate_reference_times
 #' @autoglobal
 #' @returns NULL, invisibly
-.validate_reference_time_allocation <- function(n_ref_times,
-                                                size_min_ref_times_delay,
-                                                n_history_delay,
-                                                n_retrospective_nowcasts,
-                                                size_min_retro_nowcasts = 2) {
+.validate_ref_time_allocation <- function(n_ref_times,
+                                          size_min_ref_times_delay,
+                                          n_history_delay,
+                                          n_retrospective_nowcasts,
+                                          size_min_retro_nowcasts = 2) {
   if (n_ref_times < n_history_delay + n_retrospective_nowcasts) {
     cli_abort(message = c(
       "Insufficient reference times in reporting triangle for specified `n_history_delay` and `n_retrospective_nowcasts`.", # nolint

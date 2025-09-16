@@ -23,7 +23,7 @@ test_that("allocate_reference_times works as expected when user specifies traini
     reporting_triangle = rep_tri2,
     max_delay = 4,
     scale_factor = 3,
-    prop_delay = 2 / 3,
+    prop_delay = 2 / 3
   )
   expect_identical(tv2$n_history_delay, 8)
   expect_identical(tv2$n_retrospective_nowcasts, 4)
@@ -182,8 +182,8 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     allocate_reference_times(
       reporting_triangle = rep_tri3
     ),
-    regexp = "Insufficient reference times in reporting triangle for the specified"
-  ) # nolint
+    regexp = "Insufficient reference times in reporting triangle for the specified" # nolint
+  )
   expect_identical(tv3$n_history_delay, 7)
   expect_identical(tv3$n_retrospective_nowcasts, 3)
 

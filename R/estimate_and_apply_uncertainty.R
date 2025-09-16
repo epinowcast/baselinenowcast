@@ -82,7 +82,7 @@ estimate_and_apply_uncertainty <- function(
   }
 
   # Validate that the inputs or defaults or combinations are valid.
-  .validate_reference_time_allocation(
+  .validate_ref_time_allocation(
     size_min_ref_times_delay = min_ref_times_delay,
     n_ref_times = n_ref_times,
     n_history_delay = n_history_delay,

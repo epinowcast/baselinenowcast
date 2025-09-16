@@ -184,9 +184,6 @@
   if (!is.matrix(point_nowcast_matrix)) {
     cli_abort("`point_nowcast_matrix` must be a matrix.")
   }
-  if (!is.matrix(reporting_triangle)) {
-    cli_abort("`reporting_triangle` must be a matrix.")
-  }
 
   if (ncol(point_nowcast_matrix) != ncol(reporting_triangle)) {
     cli_abort(c(

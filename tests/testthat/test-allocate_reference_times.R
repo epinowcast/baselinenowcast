@@ -41,8 +41,8 @@ test_that("allocate_reference_times works as expected when user specifies traini
     ),
     regexp = "Insufficient reference times in reporting triangle for the specified" #nolint
   )
-  expect_identical(tv3$n_history_delay, 5)
-  expect_identical(tv3$n_retrospective_nowcasts, 5)
+  expect_identical(tv3$n_history_delay, 7)
+  expect_identical(tv3$n_retrospective_nowcasts, 3)
 })
 
 test_that("allocate_reference_times warns when user or defaults don't meet minimum requirements, and reallocates accordingly.", { # nolint
@@ -58,8 +58,8 @@ test_that("allocate_reference_times warns when user or defaults don't meet minim
     ),
     regexp = "Insufficient reference times in reporting triangle for the specified" #nolint
   )
-  expect_identical(tv5$n_history_delay, 5)
-  expect_identical(tv5$n_retrospective_nowcasts, 5)
+  expect_identical(tv5$n_history_delay, 7)
+  expect_identical(tv5$n_retrospective_nowcasts, 3)
 
   # Enough to run but not enough for prop delay or scale factor defaults
   tv6 <- expect_warning(
@@ -70,10 +70,10 @@ test_that("allocate_reference_times warns when user or defaults don't meet minim
         ncol = 5
       ) |> construct_triangle(),
     ),
-    regexp = "Insufficient reference times in reporting triangle for the specified"
-  ) # nolint
-  expect_identical(tv6$n_history_delay, 5)
-  expect_identical(tv6$n_retrospective_nowcasts, 3)
+    regexp = "Insufficient reference times in reporting triangle for the specified" #nolint
+  )
+  expect_identical(tv6$n_history_delay, 6)
+  expect_identical(tv6$n_retrospective_nowcasts, 2)
 
   # Reallocate to ensure we have enough for n_retrospective_nowcasts
   tv7 <- expect_warning(
@@ -135,8 +135,8 @@ test_that("allocate_reference_times errors when data is insufficient. ", { # nol
       scale_factor = 3,
       prop_delay = 0.5
     ),
-    regexp = "Insufficient reference times in reporting triangle for the both delay and uncertainty estimation."
-  ) # nolint
+    regexp = "Insufficient reference times in reporting triangle for the both delay and uncertainty estimation." #nolint
+  )
 })
 
 test_that("allocate_reference_times allocates properly with no user specifications (using defaults)", { # nolint
@@ -172,8 +172,8 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     ),
     regexp = "Insufficient reference times in reporting triangle for the specified"
   ) # nolint
-  expect_identical(tv3$n_history_delay, 5)
-  expect_identical(tv3$n_retrospective_nowcasts, 5)
+  expect_identical(tv3$n_history_delay, 7)
+  expect_identical(tv3$n_retrospective_nowcasts, 3)
 
   # Not enough reference times to hit prop delay -->  hit minimum for delay,
   # rest go to uncertainty
@@ -187,8 +187,8 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     ),
     regexp = "`prop_delay` specified is not equivalent to `prop_delay` used."
   )
-  expect_identical(tv3$n_history_delay, 5)
-  expect_identical(tv3$n_retrospective_nowcasts, 3)
+  expect_identical(tv3$n_history_delay, 6)
+  expect_identical(tv3$n_retrospective_nowcasts, 2)
 
   # Same idea as above
   tv4 <- expect_warning(
@@ -201,8 +201,8 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     ),
     regexp = "`prop_delay` specified is not equivalent to `prop_delay` used."
   )
-  expect_identical(tv4$n_history_delay, 6)
-  expect_identical(tv4$n_retrospective_nowcasts, 3)
+  expect_identical(tv4$n_history_delay, 7)
+  expect_identical(tv4$n_retrospective_nowcasts, 2)
 
   # Handle larger numbers
   tv5 <- expect_warning(
@@ -216,8 +216,8 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     regexp = "`prop_delay` specified is not equivalent to `prop_delay` used."
   )
 
-  expect_identical(tv5$n_history_delay, 40)
-  expect_identical(tv5$n_retrospective_nowcasts, 20)
+  expect_identical(tv5$n_history_delay, 50)
+  expect_identical(tv5$n_retrospective_nowcasts, 10)
 
   # Handle larger less clean numbers
   tv6 <- expect_warning(
@@ -230,8 +230,8 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     ),
     regexp = "`prop_delay` specified is not equivalent to `prop_delay` used."
   )
-  expect_identical(tv6$n_history_delay, 39)
-  expect_identical(tv6$n_retrospective_nowcasts, 16)
+  expect_identical(tv6$n_history_delay, 47)
+  expect_identical(tv6$n_retrospective_nowcasts, 8)
 
   # Handle even larger numbers even splot
   tv7 <- allocate_reference_times(

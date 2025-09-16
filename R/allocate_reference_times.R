@@ -43,7 +43,7 @@
 #' ref_time allocation_alt
 allocate_reference_times <- function(reporting_triangle,
                                       max_delay = ncol(reporting_triangle) - 1,
-                                      scale_factor = min(3, nrow(reporting_triangle)/max_delay), #nolint
+                                      scale_factor = 3,
                                       prop_delay = 0.5,
                                       size_min_retrospective_nowcasts = 2) {
   # Number of ref times in reporting triangle
@@ -80,21 +80,20 @@ allocate_reference_times <- function(reporting_triangle,
   }
 
 
+  # If size being used equals or exceeds the target, simply split according to prop delay #nolint
+  if(size_used >= size_target){
+    n_history_delay <- max(floor(size_used*prop_delay), size_min_delay)
+    n_retrospective_nowcasts <- size_used - n_history_delay
 
-  if(n_ref_times >= size_target){
-    n_history_delay <- floor(size_used*prop_delay)
-    n_retrospective_nowcasts <- size_used - n_history_delay
-  }else if (size_used >= size_required  & size_used < size_target & prop_delay*size_used < size_min_delay) { #nolint
-    # Allocate to n_history_delay and then use remainder
+  # If less than the target size, we will assign the remainder after hitting
+    # the delay requirement according to prop_delay
+  }else if (size_used >= size_required  & size_used < size_target ) { #nolint
+    # Allocate to n_history_delay and then split the remainder ensuring n_retropsective nowcasts has enough #nolint
     n_remaining_ref_times <- size_used - size_min_delay
-    n_history_delay <- size_min_delay
-    n_retrospective_nowcasts <- size_used - n_history_delay
-    # n_history_delay <- size_min_delay + floor(n_remaining_ref_times/2)
+    # n_history_delay <- size_min_delay
     # n_retrospective_nowcasts <- size_used - n_history_delay
-  } else if (n_ref_times >= size_required  & size_used < size_target & prop_delay*size_used >= size_min_delay){
-    # Allocate to n_history_delay after ensuring that n_retrospective_nowcasts has enough
-    n_remaining_ref_times <- size_used - size_min_delay
-    n_retrospective_nowcasts <- max(size_min_retrospective_nowcasts, ceiling((1-prop_delay)*size_used))
+    n_retrospective_nowcasts <- max(ceiling(n_remaining_ref_times*(1-prop_delay)),
+                                    size_min_retrospective_nowcasts)
     n_history_delay <- size_used - n_retrospective_nowcasts
   }
 

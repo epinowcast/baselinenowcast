@@ -17,7 +17,7 @@
 #'    observations and probabilistic predictions at each reference time.
 #' @export
 #' @importFrom cli cli_abort
-#'
+#' @autoglobal
 #' @examples
 #' triangle <- matrix(
 #'   c(
@@ -64,12 +64,9 @@ estimate_and_apply_uncertainty <- function(
   # Logic to decide on how to allocate the training volume
   n_ref_times <- nrow(reporting_triangle)
   min_ref_times_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
-  n_history_delay <- training_vol_list$n_history_delay
-  n_retrospective_nowcasts <- training_vol_list$n_retrospective_nowcasts
   if (is.null(n_history_delay) && is.null(n_retrospective_nowcasts)) {
     tv <- allocate_reference_times(
-      reporting_triangle,
-      max_delay
+      reporting_triangle
     )
     n_history_delay <- tv$n_history_delay
     n_retrospective_nowcasts <- tv$n_retrospective_nowcasts

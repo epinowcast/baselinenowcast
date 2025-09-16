@@ -222,12 +222,12 @@
 #'    reference times needed for delay estimation.
 #' @inheritParams estimate_and_apply_uncertainty
 #' @inheritParams allocate_reference_times
-#'
+#' @autoglobal
 #' @returns NULL, invisibly
 .validate_reference_time_allocation <- function(n_ref_times,
                                                 size_min_ref_times_delay,
                                                 n_history_delay,
-                                                n_retrospectve_nowcasts,
+                                                n_retrospective_nowcasts,
                                                 size_min_retro_nowcasts = 2) {
   if (n_ref_times < n_history_delay + n_retrospective_nowcasts) {
     cli_abort(message = c(

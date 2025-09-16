@@ -1,4 +1,4 @@
-testthat(".validate_ref_time_allocations doesn't error when inputs are sufficient", { # nolint
+test_that(".validate_ref_time_allocations doesn't error when inputs are sufficient", { # nolint
   # Defaults
   expect_no_error(
     .validate_ref_time_allocation(
@@ -40,7 +40,7 @@ testthat(".validate_ref_time_allocations doesn't error when inputs are sufficien
   )
 })
 
-testthat(".validate_ref_time_allocations doesn't error when ref times mismatch inputs", { # nolint
+test_that(".validate_ref_time_allocations doesn't error when ref times mismatch inputs", { # nolint
 
   expect_error(
     .validate_ref_time_allocation(

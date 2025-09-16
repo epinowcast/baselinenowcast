@@ -202,12 +202,7 @@
     ))
   }
 
-  if (ncol(point_nowcast_matrix) != (max_delay + 1)) {
-    cli_abort(c(
-      "x" = "Inconsistent `max_delay`.", # nolint
-      "i" = "`ncol(point_nowcast_matrix)` = {ncol(point_nowcast_matrix)} but `max_delay + 1` = {max_delay + 1}." # nolint
-    ))
-  }
+
 
 
   return(NULL)

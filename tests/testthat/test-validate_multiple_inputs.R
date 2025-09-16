@@ -142,6 +142,7 @@ test_that(".validate_multiple_inputs errors when matrices have different number 
   )
 })
 
+
 test_that(".validate_multiple_inputs accepts matrices with different row numbers", { # nolint
   # Test where matrices have different numbers of rows but same columns
   different_rows_point <- valid_point_nowcast_matrix[1:3, ]

@@ -46,7 +46,8 @@ be used for delay estimation, allocate reference times accordingly
 }
 \examples{
 triangle <- matrix(
-  c(100, 50, 30, 20,
+  c(
+    100, 50, 30, 20,
     40, 10, 20, 5,
     80, 50, 25, 10,
     100, 50, 30, 20,
@@ -65,8 +66,9 @@ ref_time_allocation_default <- allocate_reference_times(triangle)
 ref_time_allocation_default
 # Modify to use less volume and redistribute
 ref_time_allocation_alt <- allocate_reference_times(
-                          reporting_triangle = triangle,
-                           scale_factor = 2,
-                           prop_delay = 0.6)
+  reporting_triangle = triangle,
+  scale_factor = 2,
+  prop_delay = 0.6
+)
 ref_time_allocation_alt
 }

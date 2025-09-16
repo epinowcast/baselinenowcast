@@ -33,7 +33,7 @@
 #' )
 #' pt_nowcast_matrix <- estimate_and_apply_delay(
 #'   reporting_triangle = triangle,
-#'   n_history_delay = 4
+#'   n = 4
 #' )
 #' # Need to tell uncertainty estimator to also use 4 reference times for
 #' # delay estimation, the remaining 2 will then be used for

@@ -95,3 +95,29 @@ test_that(
     expect_equal(complete_triangle, point_nowcast_matrix, tol = 0.2)
   }
 )
+
+test_that(
+  "estimate_and_apply_delay messages if max delay is specified as higher than reporting triangle ", # nolint
+  {
+    sim_delay_pmf <- c(0.1, 0.2, 0.3, 0.1, 0.1, 0.1, 0.1)
+
+    counts <- c(30, 40, 50, 60, 70)
+
+    complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
+    complete_triangle <- do.call(rbind, complete_triangle)
+
+    reporting_triangle <- construct_triangle(
+      complete_triangle,
+      structure = 2
+    )
+
+    point_nowcast_matrix <- expect_message(
+      estimate_and_apply_delay(
+        reporting_triangle = reporting_triangle,
+        max_delay = 8,
+        n = 5
+      ),
+      regexp = "The maximum delay must be less than the number of columns in the reporting triangle."
+    ) # nolint
+  }
+)

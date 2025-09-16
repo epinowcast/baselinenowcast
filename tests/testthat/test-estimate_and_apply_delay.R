@@ -117,7 +117,7 @@ test_that(
         max_delay = 8,
         n = 5
       ),
-      regexp = "The maximum delay must be less than the number of columns in the reporting triangle."
-    ) # nolint
+      regexp = "The maximum delay must be less than the number of columns in the reporting triangle." # nolint
+    )
   }
 )

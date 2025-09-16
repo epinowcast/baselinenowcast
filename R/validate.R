@@ -221,6 +221,12 @@
                                           n_history_delay,
                                           n_retrospective_nowcasts,
                                           size_min_retro_nowcasts = 2) {
+  assert_integerish(n_ref_times, lower = 0)
+  assert_integerish(size_min_ref_times_delay, lower = 0)
+  assert_integerish(n_history_delay, lower = 0)
+  assert_integerish(n_retrospective_nowcasts, lower = 0)
+  assert_integerish(size_min_retro_nowcasts, lower = 0)
+
   if (n_ref_times < n_history_delay + n_retrospective_nowcasts) {
     cli_abort(message = c(
       "Insufficient reference times in reporting triangle for specified `n_history_delay` and `n_retrospective_nowcasts`.", # nolint

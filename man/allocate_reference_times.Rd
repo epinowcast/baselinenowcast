@@ -10,7 +10,7 @@ allocate_reference_times(
   max_delay = ncol(reporting_triangle) - 1,
   scale_factor = 3,
   prop_delay = 0.5,
-  size_min_retrospectve_nowcasts = 2
+  size_min_retrospective_nowcasts = 2
 )
 }
 \arguments{

@@ -213,20 +213,46 @@
   return(NULL)
 }
 
+#' Validate the specified number of reference times meets the minimum
+#'    requirements
+#'
+#' @param n_ref_times Integer indicating the number of reference times
+#'    available.
+#' @param size_min_ref_times_delay Integer indicating minimum number of
+#'    reference times needed for delay estimation.
+#' @inheritParams estimate_and_apply_uncertainty
+#'
+#' @returns NULL, invisibly
 .validate_reference_time_allocation <- function(n_ref_times,
-                                    max_delay,
-                                    n_history_delay,
-                                    n_retrospectve_nowcasts){
-
-   if (n_ref_times < n_history_delay + n_retrospective_nowcasts) {
+                                                size_min_ref_times_delay,
+                                                n_history_delay,
+                                                n_retrospectve_nowcasts,
+                                                size_min_retrospective_nowcasts = 2) {
+  if (n_ref_times < n_history_delay + n_retrospective_nowcasts) {
     cli_abort(message = c(
-      "Insufficient reference times in reporting triangle for specified training volume.", # nolint
+      "Insufficient reference times in reporting triangle for specified `n_history_delay` and `n_retrospective_nowcasts`.", # nolint
       "i" = "{n_history_delay + n_retrospective_nowcasts} reference times are specified for delay and uncertainty estimation.", # nolint
       "x" = "Only {n_ref_times} reference times are available in the reporting triangle." # nolint
     ))
-   }
+  }
 
+  if (n_history_delay < size_min_ref_times_delay) {
+    cli_abort(message = c(
+      "Insufficient `n_history_delay`.", # nolint
+      "i" = "{size_min_ref_times_delay} reference times needed for delay estimation.", # nolint
+      "x" = "{n_history_delay} reference times were specified." # nolint
+    ))
+  }
 
+  if (n_retrospective_nowcasts < size_min_retrospective_nowcasts) {
+    cli_abort(message = c(
+      "Insufficient `n_retrospective_nowcasts`.", # nolint
+      "i" = "{size_min_retrospective_nowcasts} reference times needed for uncertainty estimation.", # nolint
+      "x" = "{n_retrospective_nowcasts} reference times were specified." # nolint
+    ))
+  }
+
+  return(NULL)
 }
 
 #' Check observations and predictions are compatible

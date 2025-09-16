@@ -20,6 +20,8 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
 \code{ncol(reporting_triangle) -1}.}
+
+\item{...}{Additional arguments}
 }
 \value{
 \code{pt_nowcast_matrix} Matrix of point nowcasts

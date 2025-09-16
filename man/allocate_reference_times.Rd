@@ -10,7 +10,7 @@ allocate_reference_times(
   max_delay = ncol(reporting_triangle) - 1,
   scale_factor = 3,
   prop_delay = 0.5,
-  size_min_retrospective_nowcasts = 2
+  size_min_retro_nowcasts = 2
 )
 }
 \arguments{
@@ -62,11 +62,11 @@ triangle <- matrix(
 )
 # Use the defaults
 ref_time_allocation_default <- allocate_reference_times(triangle)
-ref_time allocation_default
+ref_time_allocation_default
 # Modify to use less volume and redistribute
 ref_time_allocation_alt <- allocate_reference_times(
                           reporting_triangle = triangle,
                            scale_factor = 2,
                            prop_delay = 0.6)
-ref_time allocation_alt
+ref_time_allocation_alt
 }

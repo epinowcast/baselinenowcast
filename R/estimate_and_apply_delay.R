@@ -1,6 +1,7 @@
 #' Estimate and apply delay from a reporting triangle
 #'
 #' @inheritParams estimate_delay
+#' @param ... Additional arguments
 #'
 #' @returns `pt_nowcast_matrix` Matrix of point nowcasts
 #' @export

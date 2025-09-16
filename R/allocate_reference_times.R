@@ -34,24 +34,24 @@
 #' )
 #' # Use the defaults
 #' ref_time_allocation_default <- allocate_reference_times(triangle)
-#' ref_time allocation_default
+#' ref_time_allocation_default
 #' # Modify to use less volume and redistribute
 #' ref_time_allocation_alt <- allocate_reference_times(
 #'                           reporting_triangle = triangle,
 #'                            scale_factor = 2,
 #'                            prop_delay = 0.6)
-#' ref_time allocation_alt
+#' ref_time_allocation_alt
 allocate_reference_times <- function(reporting_triangle,
                                       max_delay = ncol(reporting_triangle) - 1,
                                       scale_factor = 3,
                                       prop_delay = 0.5,
-                                      size_min_retrospective_nowcasts = 2) {
+                                      size_min_retro_nowcasts = 2) {
   # Number of ref times in reporting triangle
   n_ref_times <- nrow(reporting_triangle)
   # number of rows you need for delay estimation
   size_min_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
   # The minimum number of rows needed
-  size_required <- size_min_delay + size_min_retrospective_nowcasts
+  size_required <- size_min_delay + size_min_retro_nowcasts
   # The target number of rows
   size_target <- scale_factor*max_delay
 
@@ -66,13 +66,13 @@ allocate_reference_times <- function(reporting_triangle,
   }else if(size_target > n_ref_times && n_ref_times < size_required){
     cli_abort(message = c(
       "Insufficient reference times in reporting triangle for the both delay and uncertainty estimation.", # nolint
-      "i" = "{n_ref_times} reference times available and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retrospective_nowcasts} for uncertainty estimation.", #nolint
+      "i" = "{n_ref_times} reference times available and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", #nolint
       "x" = "Probabilistic nowcasts cannot be generated. "
     ))
   }else if(size_target < n_ref_times && size_target < size_required){
     cli_abort(message = c(
       "Insufficient reference times specified by `scale_factor` for the both delay and uncertainty estimation.", # nolint
-      "i" = "{scale_factor*max_delay} reference times specified and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retrospective_nowcasts} for uncertainty estimation.", #nolint
+      "i" = "{scale_factor*max_delay} reference times specified and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", #nolint
       "x" = "Probabilistic nowcasts cannot be generated. "
     ))
   }else{
@@ -93,7 +93,7 @@ allocate_reference_times <- function(reporting_triangle,
     # n_history_delay <- size_min_delay
     # n_retrospective_nowcasts <- size_used - n_history_delay
     n_retrospective_nowcasts <- max(ceiling(n_remaining_ref_times*(1-prop_delay)),
-                                    size_min_retrospective_nowcasts)
+                                    size_min_retro_nowcasts)
     n_history_delay <- size_used - n_retrospective_nowcasts
   }
 

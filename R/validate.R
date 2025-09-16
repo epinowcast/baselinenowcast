@@ -221,13 +221,14 @@
 #' @param size_min_ref_times_delay Integer indicating minimum number of
 #'    reference times needed for delay estimation.
 #' @inheritParams estimate_and_apply_uncertainty
+#' @inheritParams allocate_reference_times
 #'
 #' @returns NULL, invisibly
 .validate_reference_time_allocation <- function(n_ref_times,
                                                 size_min_ref_times_delay,
                                                 n_history_delay,
                                                 n_retrospectve_nowcasts,
-                                                size_min_retrospective_nowcasts = 2) {
+                                                size_min_retro_nowcasts = 2) {
   if (n_ref_times < n_history_delay + n_retrospective_nowcasts) {
     cli_abort(message = c(
       "Insufficient reference times in reporting triangle for specified `n_history_delay` and `n_retrospective_nowcasts`.", # nolint
@@ -244,10 +245,10 @@
     ))
   }
 
-  if (n_retrospective_nowcasts < size_min_retrospective_nowcasts) {
+  if (n_retrospective_nowcasts < size_min_retro_nowcasts) {
     cli_abort(message = c(
       "Insufficient `n_retrospective_nowcasts`.", # nolint
-      "i" = "{size_min_retrospective_nowcasts} reference times needed for uncertainty estimation.", # nolint
+      "i" = "{size_min_retro_nowcasts} reference times needed for uncertainty estimation.", # nolint
       "x" = "{n_retrospective_nowcasts} reference times were specified." # nolint
     ))
   }

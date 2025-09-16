@@ -135,7 +135,7 @@ test_that("allocate_reference_times errors when data is insufficient. ", { # nol
       scale_factor = 3,
       prop_delay = 0.5
     ),
-    regexp = "Insufficient reference times in reporting triangle for the both delay and uncertainty estimation." #nolint
+    regexp = "Insufficient reference times in reporting triangle for the both delay" #nolint
   )
 })
 

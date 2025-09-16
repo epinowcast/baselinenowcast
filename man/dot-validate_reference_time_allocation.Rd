@@ -10,7 +10,7 @@ requirements}
   size_min_ref_times_delay,
   n_history_delay,
   n_retrospectve_nowcasts,
-  size_min_retrospective_nowcasts = 2
+  size_min_retro_nowcasts = 2
 )
 }
 \arguments{
@@ -24,6 +24,9 @@ reference times needed for delay estimation.}
 (observations) to be used in the estimate of the reporting delay, always
 starting from the most recent reporting delay. Default is NULL, which will
 be set internally based on the defaults in \code{allocate_reference_times()}}
+
+\item{size_min_retro_nowcasts}{Integer indicating the minimum number of
+reference times needed for uncertainty estimation. Default is \code{2}.}
 }
 \value{
 NULL, invisibly

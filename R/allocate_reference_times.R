@@ -87,7 +87,10 @@ allocate_reference_times <- function(reporting_triangle,
   if (size_used >= size_target) {
     n_history_delay <- max(floor(size_used * prop_delay), size_min_delay)
     n_retrospective_nowcasts <- size_used - n_history_delay
-
+    if (n_retrospective_nowcasts < size_min_retro_nowcasts) {
+      n_retrospective_nowcasts <- size_min_retro_nowcasts
+      n_history_delay <- size_used - n_retrospective_nowcasts
+    }
     # If less than the target size, we will assign the remainder after hitting
     # the delay requirement according to prop_delay
   } else if (size_used >= size_required & size_used < size_target) { # nolint

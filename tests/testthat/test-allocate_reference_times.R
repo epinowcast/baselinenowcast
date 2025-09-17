@@ -273,3 +273,19 @@ test_that("allocate_reference_times allocates properly with no user specificatio
   expect_identical(tv9$n_history_delay, 60)
   expect_identical(tv9$n_retrospective_nowcasts, 60)
 })
+
+test_that("allocate_reference_times warns and reallocates appropriately when sufficient ref times but not enough retro nowcasts", { # nolint
+  # Handle larger numbers
+  rep_tri <- matrix(
+    data = 1,
+    nrow = 14,
+    ncol = 4
+  ) |> construct_triangle()
+  tv <- expect_warning(
+    allocate_reference_times(
+      reporting_triangle = rep_tri,
+      prop_delay = 0.95
+    ),
+    regexp = "`prop_delay` specified is not equivalent to `prop_delay` used."
+  )
+})

@@ -289,3 +289,54 @@ test_that("allocate_reference_times warns and reallocates appropriately when suf
     regexp = "`prop_delay` specified is not equivalent to `prop_delay` used."
   )
 })
+
+test_that("allocate_reference_times errors when inputs are invalid", {
+  rep_tri <- matrix(
+    data = 1,
+    nrow = 14,
+    ncol = 4
+  ) |> construct_triangle()
+
+  expect_error(
+    allocate_reference_times(
+      reporting_triangle = 6
+    )
+  )
+
+  expect_error(
+    allocate_reference_times(
+      reporting_triangle = rep_tri,
+      size_min_retro_nowcasts = 0.1
+    )
+  )
+  expect_error(
+    allocate_reference_times(
+      reporting_triangle = rep_tri,
+      scale_factor = c(4, 5)
+    )
+  )
+  expect_error(
+    allocate_reference_times(
+      reporting_triangle = rep_tri,
+      scale_factor = -3
+    )
+  )
+  expect_error(
+    allocate_reference_times(
+      reporting_triangle = rep_tri,
+      prop_delay = c(4, 5)
+    )
+  )
+  expect_error(
+    allocate_reference_times(
+      reporting_triangle = rep_tri,
+      prop_delay = 2.3
+    )
+  )
+  expect_error(
+    allocate_reference_times(
+      reporting_triangle = rep_tri,
+      prop_delay = -0.4
+    )
+  )
+})

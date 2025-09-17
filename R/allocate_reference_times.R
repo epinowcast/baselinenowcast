@@ -49,6 +49,20 @@ allocate_reference_times <- function(reporting_triangle,
                                      scale_factor = 3,
                                      prop_delay = 0.5,
                                      size_min_retro_nowcasts = 2) {
+  # Checks of inputs
+  .validate_triangle(
+    reporting_triangle,
+    max_delay
+  )
+  assert_integerish(size_min_retro_nowcasts, lower = 0)
+  if (!is.numeric(scale_factor) || length(scale_factor) != 1 || !is.finite(scale_factor) || scale_factor <= 0) { # nolint
+    cli_abort("`scale_factor` must be a finite positive scalar.")
+  }
+
+  if (!is.numeric(prop_delay) || length(prop_delay) != 1 || !is.finite(prop_delay) || prop_delay <= 0 || prop_delay >= 1) { # nolint
+    cli_abort("`prop_delay` must be in (0, 1).")
+  }
+
   # Number of ref times in reporting triangle
   n_ref_times <- nrow(reporting_triangle)
   # number of rows you need for delay estimation

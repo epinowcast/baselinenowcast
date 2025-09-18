@@ -71,7 +71,11 @@ allocate_reference_times <- function(reporting_triangle,
   size_used <- .check_against_requirements(
     n_ref_times,
     size_required,
-    size_target
+    size_target,
+    size_min_delay,
+    size_min_retro_nowcasts,
+    scale_factor,
+    max_delay
   )
 
   # If size being used equals or exceeds the target, simply split according to prop delay #nolint
@@ -159,11 +163,16 @@ allocate_reference_times <- function(reporting_triangle,
 #'
 #' @param n_ref_times Integer indicating the number of reference tiems available
 #' @inheritParams .assign_ns_from_sizes
+#' @inheritParams allocate_reference_times
 #'
 #' @returns `size_used` Integer indicating how many reference times will be used
 .check_against_requirements <- function(n_ref_times,
                                         size_required,
-                                        size_target) {
+                                        size_target,
+                                        size_min_delay,
+                                        size_min_retro_nowcasts,
+                                        scale_factor,
+                                        max_delay) {
   if (size_target > n_ref_times && n_ref_times >= size_required) {
     cli_warn(message = c(
       "Insufficient reference times in reporting triangle for the specified `scale_factor`.", # nolint

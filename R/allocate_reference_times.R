@@ -161,7 +161,7 @@ allocate_reference_times <- function(reporting_triangle,
 #' Check target size against number of reference times available and the number
 #'   required
 #'
-#' @param n_ref_times Integer indicating the number of reference tiems available
+#' @param n_ref_times Integer indicating the number of reference times available
 #' @inheritParams .assign_ns_from_sizes
 #' @inheritParams allocate_reference_times
 #'
@@ -173,30 +173,71 @@ allocate_reference_times <- function(reporting_triangle,
                                         size_min_retro_nowcasts,
                                         scale_factor,
                                         max_delay) {
-  if (size_target > n_ref_times && n_ref_times >= size_required) {
+  # Early return for simple case
+  if (size_target <= n_ref_times && size_target >= size_required) {
+    return(size_target)
+  }
+
+  # Handle target exceeds available reference times
+  if (size_target > n_ref_times) {
+    return(.handle_target_exceeds_available(
+      n_ref_times, size_required, size_target,
+      size_min_delay, size_min_retro_nowcasts
+    ))
+  }
+
+  # Handle target less than required
+  .handle_target_insufficient(
+    size_target, size_required, size_min_delay,
+    size_min_retro_nowcasts, scale_factor, max_delay
+  )
+}
+
+#' Helper for when target exceeds available reference times
+#'
+#' @inheritParams .check_against_requirements
+#' @inheritParams .assign_ns_from_sizes
+#' @inheritParams allocate_reference_times
+#'
+#' @returns number of reference times to use or NULL, invisibly
+.handle_target_exceeds_available <- function(n_ref_times,
+                                             size_required,
+                                             size_target,
+                                             size_min_delay,
+                                             size_min_retro_nowcasts) {
+  if (n_ref_times >= size_required) {
     cli_warn(message = c(
       "Insufficient reference times in reporting triangle for the specified `scale_factor`.", # nolint
       "i" = "{n_ref_times} reference times available and {size_target} are specified.", # nolint
-      "x" = "All {n_ref_times} reference times will be used." # nolint
+      "x" = "All {n_ref_times} reference times will be used."
     ))
-    size_used <- n_ref_times
-  } else if (size_target > n_ref_times && n_ref_times < size_required) {
-    cli_abort(message = c(
-      "Insufficient reference times in reporting triangle for the both delay and uncertainty estimation.", # nolint
-      "i" = "{n_ref_times} reference times available and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", # nolint
-      "x" = "Probabilistic nowcasts cannot be generated. " # nolint
-    ))
-  } else if (size_target < n_ref_times && size_target < size_required) {
-    cli_abort(message = c(
-      "Insufficient reference times specified by `scale_factor` for the both delay and uncertainty estimation.", # nolint
-      "i" = "{scale_factor*max_delay} reference times specified and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", # nolint
-      "x" = "Probabilistic nowcasts cannot be generated. " # nolint
-    ))
-  } else {
-    size_used <- size_target
+    return(n_ref_times)
   }
 
-  return(size_used)
+  cli_abort(message = c(
+    "Insufficient reference times in reporting triangle for the both delay and uncertainty estimation.", # nolint
+    "i" = "{n_ref_times} reference times available and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", # nolint
+    "x" = "Probabilistic nowcasts cannot be generated."
+  ))
+}
+
+#'
+#' @inheritParams .check_against_requirements
+#' @inheritParams .assign_ns_from_sizes
+#' @inheritParams allocate_reference_times
+#'
+#' @returns NULL invisibly
+.handle_target_insufficient <- function(size_target,
+                                        size_required,
+                                        size_min_delay,
+                                        size_min_retro_nowcasts,
+                                        scale_factor,
+                                        max_delay) {
+  cli_abort(message = c(
+    "Insufficient reference times specified by `scale_factor` for the both delay and uncertainty estimation.",
+    "i" = "{scale_factor*max_delay} reference times specified and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.",
+    "x" = "Probabilistic nowcasts cannot be generated."
+  ))
 }
 
 #' Assign number of reference times to delay and uncertainty from the sizes

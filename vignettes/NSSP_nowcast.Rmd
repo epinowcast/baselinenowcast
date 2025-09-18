@@ -1,6 +1,7 @@
 ---
-title: "Nowcasting NSSP data vignette"
+title: "Nowcasting NSSP data"
 description: "A nowcasting example applied to data from NSSP"
+authors: Kaitlyn Johnson + add MADPH
 output:
   bookdown::html_document2:
     fig_caption: yes
@@ -11,7 +12,7 @@ bibliography: library.bib
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 link-citations: true
 vignette: >
-  %\VignetteIndexEntry{Getting Started with baselinenowcast}
+  %\VignetteIndexEntry{Nowcasting NSSP data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -21,6 +22,21 @@ vignette: >
 - Incorporate language from Rosa's description of Syndrome Selection for Nowcasting (explaining how the NSSP ESSENCE visit records dataset works)
 - How diseases are defined (diagnosis codes + clinical notes or a combination + exclusion criteria)
 - syndromic surveillance relying solely on presence of diangosis codes are best for this
+
+## Load packages
+```{r setup, message = FALSE, warning = FALSE, results = 'hide'}
+# Load packages
+library(baselinenowcast)
+library(epinowcast)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(Rnssp)
+library(httr)
+library(readr)
+# Set seed for reproducibility
+set.seed(123)
+```
 
 
 # NSSP data cleaning
@@ -32,20 +48,175 @@ vignette: >
  - Summarise the data in long format, obtaining a cleaned long tidy dataframe containing the counts of admissions on each reference date (visit date) and report date (update date).
  - Explain that we will be pretending to make a nowcast as of some nowcast date in the past ( so we will filter for all report dates before that time).
 
+Load in the line list data. This typically will be pulled using an API, but here we just load in the package data.
+We have provided example code showing how you would pull the data from an API
+```{r}
+# API code?
+NSSP_line_list_raw <- read_csv(file.path("../../baselinenowcast-paper/scratch/covid-api-pull.csv"))
+head(NSSP_line_list_raw)
+```
+Format the data as a tibble and put into wide format based on the characters in the column "DischargeDiagnosisMDTUpdates".
+This column contains a character string indicating all of the time stamps of patient update "events" , formatted as:
+"{event number}; YYYY-MM-DD HH:MM:SS| {event number 2} YYYY-MM-DD HH:MM:SS|"
+
+In this chunk of code, we will use `tidyr`'s `separate_wider_delim` to pivot these entries from long to wide, so that each "event" has its own column.
+Since patients experience a different number of patient update "events", there will be missing values for patients not experiencing many events during their visit.
+The columns will be named by the original column name + the event number, e.g. "DischargeDiagnosisMDTUpdates1".
+
+```{r}
+NSSP_line_list <- as_tibble(NSSP_line_list_raw)
+NSSP_wide <- NSSP_line_list |>
+  separate_wider_delim(DischargeDiagnosisMDTUpdates, delim = "{", names_sep = "", too_few = "align_start")
+head(NSSP_wide)
+```
+Find the name of the last update column, and create a long tidy dataframe where each row is now an event.
+```{r}
+lastcol <- tail(colnames(select(NSSP_wide, matches("DischargeDiagnosisMDTUpdates"))), 1) # determines the title of the last DischargeDiagnosisMDTUpdates column
+NSSP_long <- gather(NSSP_wide, Updatecount, "Update", DischargeDiagnosisMDTUpdates1:as.name(`lastcol`), factor_key = TRUE) # convert wide to long - X1 X2 etc turned into 1 column labelled as "Update"
+NSSP_long$ID <- paste(NSSP_long$C_Processed_BioSense_ID, parse_number(as.character(NSSP_long$Updatecount))) # create an ID for each event
+```
+Next, we will clean up the time stamps in the data so that the "Update" column is formatted as "%Y-%m-%d %H:%M:%S", and then we will filter out an events that are not present (updates are NAs).
+```{r}
+NSSP_long$Update <- gsub(".*\\}", "", NSSP_long$Update) # Get rid of the number in brackets at the start
+NSSP_long$Update <- gsub("|", "", NSSP_long$Update) # Get rid of the lines surrounding messages - now all that is there is a date time
+NSSP_long$Update <- gsub(";+", "", NSSP_long$Update) # Get rid of the semicolons surrounding messages - now all that is there is a date time
+NSSP_long$Update <- as.POSIXct(NSSP_long$Update, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+NSSP_long <- NSSP_long %>% drop_na(Update)
+```
+
+
+Do the same procedure for the diagnoses codes in the column "DischargeDiagnosisUpdates"
+```{r}
+# condensed --> wide
+NSSP_wide_codes <- NSSP_line_list |> separate_wider_delim(DischargeDiagnosisUpdates, delim = "{", names_sep = "", too_few = "align_start")
+lastcol_code <- tail(colnames(select(NSSP_wide_codes, matches("DischargeDiagnosisUpdates"))), 1) # determines the title of the last DischargeDiagnosisUpdates column
+
+# wide to long
+NSSP_long_codes <- gather(NSSP_wide_codes, Updatecount, `Update DD`, DischargeDiagnosisUpdates1:as.name(`lastcol_code`), factor_key = TRUE)
+
+# Add the ID in the same way as before -- will let us join by patient events
+NSSP_long_codes$ID <- paste(NSSP_long_codes$C_Processed_BioSense_ID, parse_number(as.character(NSSP_long_codes$Updatecount)))
+
+# Clean up "messages" (diagnosis codes )
+NSSP_long_codes$`Update DD` <- gsub(".*\\}", "", NSSP_long_codes$`Update DD`) # Get rid of the number in brackets at the start
+
+# Remove rows corresponding to emptoy updates
+NSSP_long_codes <- NSSP_long_codes |>
+  filter(`Update DD` != "") |>
+  drop_na(`Update DD`)
+
+# Select only the ID (patient + event number) and the update diagnosis code
+NSSP_long_codes <- NSSP_long_codes |> select(`ID`, `Update DD`)
+```
+
+Merge together the time stamps of events and the "messages" (diagnosis codes) of events.
+```{r}
+df_all <- merge(NSSP_long, NSSP_long_codes, by = "ID")
+df_all <- df_all |> filter(`Update DD` != ";;|") # drops empty updates
+head(df_all)
+```
+Now we have a dataframe where each row is an event, with the patient's visit start date ("C_Visit_date_Tme"), the patient ID ("C_Processed_BioSense_ID"), the diagnosis at the event ("Update DD"), and the time stamp of the event ("Update").
+
+Next we will add columns for the time from arrival to each updated diagnosis, in weeks.
+```{r}
+df_all$C_Visit_Date_Time <- as.POSIXct(df_all$C_Visit_Date_Time, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+df_all$ArrivaltoUpdate <- as.numeric(difftime(df_all$Update, df_all$C_Visit_Date_Time, units = "weeks"))
+```
+
+Next, apply the query to identify when the patient was diagnosed with COVID.
+```{r}
+covid_updates <- df_all |> filter(grepl("U07", `Update DD`))
+# order these by lowest time
+covid_updates <- covid_updates[order(covid_updates$ArrivaltoUpdate), ]
+# Get only the first time each patient had a covid diagnosis code.
+first_covid <- covid_updates |>
+  group_by(C_Processed_BioSense_ID) |>
+  slice(1)
+```
+
+Clean up for nowcasting
+```{r}
+clean_line_list <- first_covid |>
+  mutate(
+    reference_date = as.Date(C_Visit_Date_Time),
+    report_date = as.Date(Update)
+  ) |>
+  ungroup() |>
+  select(reference_date, report_date)
+```
+
+Get the counts by reference and report date and compute the delay.
+```{r}
+count_df <- clean_line_list |>
+  group_by(reference_date, report_date) |>
+  summarise(count = n()) |>
+  mutate(delay = as.integer(report_date - reference_date))
+
+head(count_df)
+```
+
 # Pre-processing
 
  - Explain that we will be using data that looks just like the cleaned long tidy dataframe above, but is much larger. If following along with real-data, its not necessary to load in another dataset here.
  - Calculate the delay time by taking the difference between the report date and the reference date
+
+ Load in the larger mock dataset
+```{r}
+mock_long_df <- read_csv(file.path("../../baselinenowcast-paper/scratch/covid_nowcast_mock.csv"))
+head(mock_long_df)
+```
+You can see that this larger mock dataset has the same format as the one we generated from the line list NSSP data -- with columns for reference date, report date, and counts.
+
+
+
 
 # Exploratory data analysis to identify an appropriate maximum delay
 
  - Estimate the delay distribution across all the data and plot the PDF/CDF
  - Find the maximum but getting the 99th quantile or eyeballing it
 
+```{r}
+mock_data <- mock_long_df |>
+  mutate(delay = as.integer(report_date - reference_date))
+
+delay_df_t <- mock_data |>
+  group_by(reference_date) |>
+  summarise(mean_delay = count * delay / sum(count))
+
+avg_delay_pmf <- mock_data |>
+  group_by(delay) |>
+  summarise(pmf = sum(count) / sum(mock_data$count)) |>
+  mutate(cdf = cumsum(pmf))
+
+ggplot(delay_df_t) +
+  geom_line(aes(
+    x = reference_date,
+    y = mean_delay
+  ))
+
+ggplot(avg_delay_pmf) +
+  geom_line(aes(x = delay, y = cdf)) +
+  geom_hline(aes(yintercept = 0.95))
+```
+Based on this figure, we can set the maximum delay to be 28 days as this is where 95% of the cases appear to have been reported.
+
+```{r}
+max_delay <- 28
+```
+
 # Run baselinenowcast to generate a probabilistic nowcast
 
  - Pass the long tidy dataframe and the maximum delay into the `baselinenowcast()` function.
  - Generate a probabilistic nowcast
+
+The `baselinenowcast()` function takes in data of this format and produces a `baselinenowcast` object which contains a dataframe with the probabilistic nowcast draws generated data using the default method specifications.
+See the Getting Started Vignette for more details on alternative method specifications to enable changing the number of reference times used for delay and uncertainty estimation, sharing across strata, or accounting for weekday effects in the reporting delay.
+Alternatively, see the Modular baselinenowcast workflow for more details on how to specify and express your own methods/models within the framework using the modularity and flexibility of the low-level function interface .
+```{r}
+# This won't run as we haven't finished this yet.
+# nowcast_draws_df <- baselinenowcast(mock_long_df, max_delay = max_delay)
+```
+
 
 # Plot and summarise the nowcast
 
@@ -54,8 +225,9 @@ vignette: >
 
 # Evaluate against later observed "final" data
 
+ - Load in evaluation data (also will be package data, the above will be a subset of this data).
  - Generate the final data in the correct format and plot this alongside the nowcast.
 
- # Compare to what was later observed
+# Compare to what was later observed
 
  - Load in a dataset that contains data out beyond the max delay + the nowcast date

@@ -15,6 +15,7 @@
 #' @param size_min_retro_nowcasts Integer indicating the minimum number of
 #'     reference times needed for uncertainty estimation. Default is `2`.
 #' @importFrom cli cli_abort cli_warn
+#' @importFrom checkmate assert_integerish
 #' @export
 #' @returns list of n_history_delay and n_retrospective_nowcasts
 #' @examples
@@ -50,27 +51,19 @@ allocate_reference_times <- function(reporting_triangle,
                                      prop_delay = 0.5,
                                      size_min_retro_nowcasts = 2) {
   # Checks of inputs
-  .validate_triangle(
-    reporting_triangle,
-    max_delay
+  .validate_triangle(reporting_triangle, max_delay)
+  .validate_allocation_params(
+    scale_factor, prop_delay,
+    size_min_retro_nowcasts
   )
-  assert_integerish(size_min_retro_nowcasts, lower = 0)
-  if (!is.numeric(scale_factor) || length(scale_factor) != 1 || !is.finite(scale_factor) || scale_factor <= 0) { # nolint
-    cli_abort("`scale_factor` must be a finite positive scalar.")
-  }
-
-  if (!is.numeric(prop_delay) || length(prop_delay) != 1 || !is.finite(prop_delay) || prop_delay <= 0 || prop_delay >= 1) { # nolint
-    cli_abort("`prop_delay` must be in (0, 1).")
-  }
-
-  # Number of ref times in reporting triangle
-  n_ref_times <- nrow(reporting_triangle)
-  # number of rows you need for delay estimation
-  size_min_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
-  # The minimum number of rows needed
-  size_required <- size_min_delay + size_min_retro_nowcasts
-  # The target number of rows
-  size_target <- scale_factor * max_delay
+  sizes <- .calculate_sizes(
+    reporting_triangle, max_delay, scale_factor,
+    size_min_retro_nowcasts
+  )
+  n_ref_times <- sizes$n_ref_times
+  size_required <- sizes$size_required
+  size_min_delay <- sizes$size_min_delay
+  size_target <- sizes$size_target
 
   # Check for scale factor being too high.
   if (size_target > n_ref_times && n_ref_times >= size_required) {
@@ -136,4 +129,49 @@ allocate_reference_times <- function(reporting_triangle,
     n_history_delay = n_history_delay,
     n_retrospective_nowcasts = n_retrospective_nowcasts
   ))
+}
+
+#' Helper function to validate allocation parameters
+#'
+#'
+#' @inheritParams allocate_reference_times
+#'
+#' @returns NULL invisibly
+.validate_allocation_params <- function(scale_factor,
+                                        prop_delay,
+                                        size_min_retro_nowcasts) {
+  assert_integerish(size_min_retro_nowcasts, lower = 0)
+
+  if (!is.numeric(scale_factor) || length(scale_factor) != 1 ||
+    !is.finite(scale_factor) || scale_factor <= 0) {
+    cli_abort("`scale_factor` must be a finite positive scalar.")
+  }
+
+  if (!is.numeric(prop_delay) || length(prop_delay) != 1 ||
+    !is.finite(prop_delay) || prop_delay <= 0 || prop_delay >= 1) {
+    cli_abort("`prop_delay` must be in (0, 1).")
+  }
+  return(NULL)
+}
+
+#' Helper function to calculate various size requirements
+#' @inheritParams allocate_reference_times
+#'
+#' @returns list of the integer sizes
+.calculate_sizes <- function(reporting_triangle,
+                             max_delay,
+                             scale_factor,
+                             size_min_retro_nowcasts) {
+  n_ref_times <- nrow(reporting_triangle)
+  size_min_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
+  size_required <- size_min_delay + size_min_retro_nowcasts
+  size_target <- scale_factor * max_delay
+
+  sizes <- list(
+    n_ref_times = n_ref_times,
+    size_min_delay = size_min_delay,
+    size_required = size_required,
+    size_target = size_target
+  )
+  return(sizes)
 }

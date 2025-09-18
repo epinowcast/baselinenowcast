@@ -67,30 +67,12 @@ allocate_reference_times <- function(reporting_triangle,
   size_min_delay <- sizes$size_min_delay
   size_target <- sizes$size_target
 
-  # Check for scale factor being too high.
-  if (size_target > n_ref_times && n_ref_times >= size_required) {
-    cli_warn(message = c(
-      "Insufficient reference times in reporting triangle for the specified `scale_factor`.", # nolint
-      "i" = "{n_ref_times} reference times available and {size_target} are specified.", # nolint
-      "x" = "All {n_ref_times} reference times will be used." # nolint
-    ))
-    size_used <- n_ref_times
-  } else if (size_target > n_ref_times && n_ref_times < size_required) {
-    cli_abort(message = c(
-      "Insufficient reference times in reporting triangle for the both delay and uncertainty estimation.", # nolint
-      "i" = "{n_ref_times} reference times available and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", # nolint
-      "x" = "Probabilistic nowcasts cannot be generated. " # nolint
-    ))
-  } else if (size_target < n_ref_times && size_target < size_required) {
-    cli_abort(message = c(
-      "Insufficient reference times specified by `scale_factor` for the both delay and uncertainty estimation.", # nolint
-      "i" = "{scale_factor*max_delay} reference times specified and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", # nolint
-      "x" = "Probabilistic nowcasts cannot be generated. " # nolint
-    ))
-  } else {
-    size_used <- size_target
-  }
-
+  # Check specifications against targets and requirements
+  size_used <- .check_against_requirements(
+    n_ref_times,
+    size_required,
+    size_target
+  )
 
   # If size being used equals or exceeds the target, simply split according to prop delay #nolint
   ns <- .assign_ns_from_sizes(
@@ -170,6 +152,42 @@ allocate_reference_times <- function(reporting_triangle,
     size_target = size_target
   )
   return(sizes)
+}
+
+#' Check target size against number of reference times available and the number
+#'   required
+#'
+#' @param n_ref_times Integer indicating the number of reference tiems available
+#' @inheritParams .assign_ns_from_sizes
+#'
+#' @returns `size_used` Integer indicating how many reference times will be used
+.check_against_requirements <- function(n_ref_times,
+                                        size_required,
+                                        size_target) {
+  if (size_target > n_ref_times && n_ref_times >= size_required) {
+    cli_warn(message = c(
+      "Insufficient reference times in reporting triangle for the specified `scale_factor`.", # nolint
+      "i" = "{n_ref_times} reference times available and {size_target} are specified.", # nolint
+      "x" = "All {n_ref_times} reference times will be used." # nolint
+    ))
+    size_used <- n_ref_times
+  } else if (size_target > n_ref_times && n_ref_times < size_required) {
+    cli_abort(message = c(
+      "Insufficient reference times in reporting triangle for the both delay and uncertainty estimation.", # nolint
+      "i" = "{n_ref_times} reference times available and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", # nolint
+      "x" = "Probabilistic nowcasts cannot be generated. " # nolint
+    ))
+  } else if (size_target < n_ref_times && size_target < size_required) {
+    cli_abort(message = c(
+      "Insufficient reference times specified by `scale_factor` for the both delay and uncertainty estimation.", # nolint
+      "i" = "{scale_factor*max_delay} reference times specified and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", # nolint
+      "x" = "Probabilistic nowcasts cannot be generated. " # nolint
+    ))
+  } else {
+    size_used <- size_target
+  }
+
+  return(size_used)
 }
 
 #' Assign number of reference times to delay and uncertainty from the sizes

@@ -57,7 +57,9 @@ allocate_reference_times <- function(reporting_triangle,
     size_min_retro_nowcasts
   )
   sizes <- .calculate_sizes(
-    reporting_triangle, max_delay, scale_factor,
+    reporting_triangle,
+    max_delay,
+    scale_factor,
     size_min_retro_nowcasts
   )
   n_ref_times <- sizes$n_ref_times
@@ -91,24 +93,18 @@ allocate_reference_times <- function(reporting_triangle,
 
 
   # If size being used equals or exceeds the target, simply split according to prop delay #nolint
-  if (size_used >= size_target) {
-    n_history_delay <- max(floor(size_used * prop_delay), size_min_delay)
-    n_retrospective_nowcasts <- size_used - n_history_delay
-    if (n_retrospective_nowcasts < size_min_retro_nowcasts) {
-      n_retrospective_nowcasts <- size_min_retro_nowcasts
-      n_history_delay <- size_used - n_retrospective_nowcasts
-    }
-    # If less than the target size, we will assign the remainder after hitting
-    # the delay requirement according to prop_delay
-  } else if (size_used >= size_required & size_used < size_target) { # nolint
-    # Allocate to n_history_delay and then split the remainder ensuring n_retropsective nowcasts has enough #nolint
-    n_remaining_ref_times <- size_used - size_min_delay
-    n_retrospective_nowcasts <- max(
-      ceiling(n_remaining_ref_times * (1 - prop_delay)),
-      size_min_retro_nowcasts
-    )
-    n_history_delay <- size_used - n_retrospective_nowcasts
-  }
+  ns <- .assign_ns_from_sizes(
+    size_used = size_used,
+    size_target = size_target,
+    size_min_delay = size_min_delay,
+    size_min_retro_nowcasts = size_min_retro_nowcasts,
+    size_required = size_required,
+    prop_delay = prop_delay
+  )
+
+  n_retrospective_nowcasts <- ns$n_retrospective_nowcasts
+  n_history_delay <- ns$n_history_delay
+
 
   prop_delay_used <- n_history_delay / size_used
 
@@ -174,4 +170,48 @@ allocate_reference_times <- function(reporting_triangle,
     size_target = size_target
   )
   return(sizes)
+}
+
+#' Assign number of reference times to delay and uncertainty from the sizes
+#'
+#' @param size_used Integer indicating number reference times that will be used.
+#' @param size_target Integer indicating the target number of reference times.
+#' @param size_min_delay Integer indicating the number needed for delay
+#'    estimation.
+#' @param size_min_retro_nowcasts Integer indicating the number needed for
+#'    uncertainty estimation.
+#' @param size_required Integer indicating the number need for both delay and
+#'    uncertainty
+#' @inheritParams allocate_reference_times
+#'
+#' @returns List of number of reference times to use for delay and uncertainty
+.assign_ns_from_sizes <- function(size_used,
+                                  size_target,
+                                  size_min_delay,
+                                  size_min_retro_nowcasts,
+                                  size_required,
+                                  prop_delay) {
+  if (size_used >= size_target) {
+    n_history_delay <- max(floor(size_used * prop_delay), size_min_delay)
+    n_retrospective_nowcasts <- size_used - n_history_delay
+    if (n_retrospective_nowcasts < size_min_retro_nowcasts) {
+      n_retrospective_nowcasts <- size_min_retro_nowcasts
+      n_history_delay <- size_used - n_retrospective_nowcasts
+    }
+    # If less than the target size, we will assign the remainder after hitting
+    # the delay requirement according to prop_delay
+  } else if (size_used >= size_required & size_used < size_target) { # nolint
+    # Allocate to n_history_delay and then split the remainder ensuring n_retropsective nowcasts has enough #nolint
+    n_remaining_ref_times <- size_used - size_min_delay
+    n_retrospective_nowcasts <- max(
+      ceiling(n_remaining_ref_times * (1 - prop_delay)),
+      size_min_retro_nowcasts
+    )
+    n_history_delay <- size_used - n_retrospective_nowcasts
+  }
+
+  return(list(
+    n_retrospective_nowcasts = n_retrospective_nowcasts,
+    n_history_delay = n_history_delay
+  ))
 }

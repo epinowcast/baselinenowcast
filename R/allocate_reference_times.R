@@ -126,12 +126,12 @@ allocate_reference_times <- function(reporting_triangle,
 
   if (!is.numeric(scale_factor) || length(scale_factor) != 1 ||
     !is.finite(scale_factor) || scale_factor <= 0) {
-    cli_abort("`scale_factor` must be a finite positive scalar.")
+    cli_abort("`scale_factor` must be a finite positive scalar.") # nolint
   }
 
   if (!is.numeric(prop_delay) || length(prop_delay) != 1 ||
     !is.finite(prop_delay) || prop_delay <= 0 || prop_delay >= 1) {
-    cli_abort("`prop_delay` must be in (0, 1).")
+    cli_abort("`prop_delay` must be in (0, 1).") # nolint
   }
   return(NULL)
 }
@@ -161,11 +161,13 @@ allocate_reference_times <- function(reporting_triangle,
 #' Check target size against number of reference times available and the number
 #'   required
 #'
-#' @param n_ref_times Integer indicating the number of reference times available
+#' @param n_ref_times Integer indicating the number of reference times
+#'    available
 #' @inheritParams .assign_ns_from_sizes
 #' @inheritParams allocate_reference_times
 #'
-#' @returns `size_used` Integer indicating how many reference times will be used
+#' @returns `size_used` Integer indicating how many reference times will be
+#'    used
 .check_against_requirements <- function(n_ref_times,
                                         size_required,
                                         size_target,
@@ -187,10 +189,10 @@ allocate_reference_times <- function(reporting_triangle,
   }
 
   # Handle target less than required
-  .handle_target_insufficient(
+  return(.handle_target_insufficient(
     size_target, size_required, size_min_delay,
     size_min_retro_nowcasts, scale_factor, max_delay
-  )
+  ))
 }
 
 #' Helper for when target exceeds available reference times
@@ -234,10 +236,11 @@ allocate_reference_times <- function(reporting_triangle,
                                         scale_factor,
                                         max_delay) {
   cli_abort(message = c(
-    "Insufficient reference times specified by `scale_factor` for the both delay and uncertainty estimation.",
-    "i" = "{scale_factor*max_delay} reference times specified and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.",
+    "Insufficient reference times specified by `scale_factor` for the both delay and uncertainty estimation.", # nolint
+    "i" = "{scale_factor*max_delay} reference times specified and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", # nolint,
     "x" = "Probabilistic nowcasts cannot be generated."
   ))
+  return(NULL)
 }
 
 #' Assign number of reference times to delay and uncertainty from the sizes

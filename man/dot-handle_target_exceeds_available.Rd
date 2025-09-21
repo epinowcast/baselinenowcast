@@ -13,7 +13,8 @@
 )
 }
 \arguments{
-\item{n_ref_times}{Integer indicating the number of reference times available}
+\item{n_ref_times}{Integer indicating the number of reference times
+available}
 
 \item{size_required}{Integer indicating the number need for both delay and
 uncertainty}

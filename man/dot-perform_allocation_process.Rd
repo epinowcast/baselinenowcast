@@ -35,7 +35,7 @@ estimation. Default is \code{0.5}.}
 reference times needed for uncertainty estimation. Default is \code{2}.}
 }
 \value{
-list of refernce time allocations
+list of reference time allocations
 }
 \description{
 Perform the allocation process

@@ -72,7 +72,7 @@ allocate_reference_times <- function(reporting_triangle,
 #'
 #' @inheritParams allocate_reference_times
 #'
-#' @return list of refernce time allocations
+#' @return list of reference time allocations
 .perform_allocation_process <- function(reporting_triangle,
                                         max_delay,
                                         scale_factor,

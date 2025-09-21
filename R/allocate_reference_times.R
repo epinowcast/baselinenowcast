@@ -91,7 +91,28 @@ allocate_reference_times <- function(reporting_triangle,
   n_retrospective_nowcasts <- ns$n_retrospective_nowcasts
   n_history_delay <- ns$n_history_delay
 
+  .handle_output_msgs(
+    n_history_delay,
+    n_retrospective_nowcasts,
+    size_used,
+    prop_delay
+  )
+  return(list(
+    n_history_delay = n_history_delay,
+    n_retrospective_nowcasts = n_retrospective_nowcasts
+  ))
+}
 
+#' Handle output messages after allocation has occurred
+#'
+#' @inheritParams allocate_reference_times
+#' @inheritParams .assign_ns_from_sizes
+#'
+#' @return NULL, invisibly
+.handle_output_msgs <- function(n_history_delay,
+                                n_retrospective_nowcasts,
+                                size_used,
+                                prop_delay) {
   prop_delay_used <- n_history_delay / size_used
 
   if (prop_delay_used != prop_delay) {
@@ -104,13 +125,12 @@ allocate_reference_times <- function(reporting_triangle,
     )
   }
 
-  message(sprintf("Using %d reference times for delay estimation.", n_history_delay)) # nolint
-  message(sprintf("Using %d reference times as retrospective nowcast times for uncertainty estimation.", n_retrospective_nowcasts)) # nolint
-
-  return(list(
-    n_history_delay = n_history_delay,
-    n_retrospective_nowcasts = n_retrospective_nowcasts
+  message(sprintf(
+    "Using %d reference times for delay estimation.",
+    n_history_delay
   ))
+  message(sprintf("Using %d reference times as retrospective nowcast times for uncertainty estimation.", n_retrospective_nowcasts)) # nolint
+  return(NULL)
 }
 
 #' Helper function to validate allocation parameters
@@ -182,7 +202,7 @@ allocate_reference_times <- function(reporting_triangle,
 
   # Handle target exceeds available reference times
   if (size_target > n_ref_times) {
-    return(.handle_target_exceeds_available(
+    return(.handle_target_exceeds_avail(
       n_ref_times, size_required, size_target,
       size_min_delay, size_min_retro_nowcasts
     ))
@@ -202,16 +222,16 @@ allocate_reference_times <- function(reporting_triangle,
 #' @inheritParams allocate_reference_times
 #'
 #' @returns number of reference times to use or NULL, invisibly
-.handle_target_exceeds_available <- function(n_ref_times,
-                                             size_required,
-                                             size_target,
-                                             size_min_delay,
-                                             size_min_retro_nowcasts) {
+.handle_target_exceeds_avail <- function(n_ref_times,
+                                         size_required,
+                                         size_target,
+                                         size_min_delay,
+                                         size_min_retro_nowcasts) {
   if (n_ref_times >= size_required) {
     cli_warn(message = c(
       "Insufficient reference times in reporting triangle for the specified `scale_factor`.", # nolint
       "i" = "{n_ref_times} reference times available and {size_target} are specified.", # nolint
-      "x" = "All {n_ref_times} reference times will be used."
+      "x" = "All {n_ref_times} reference times will be used." # nolint
     ))
     return(n_ref_times)
   }
@@ -219,8 +239,9 @@ allocate_reference_times <- function(reporting_triangle,
   cli_abort(message = c(
     "Insufficient reference times in reporting triangle for the both delay and uncertainty estimation.", # nolint
     "i" = "{n_ref_times} reference times available and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", # nolint
-    "x" = "Probabilistic nowcasts cannot be generated."
+    "x" = "Probabilistic nowcasts cannot be generated." # nolint
   ))
+  return(NULL)
 }
 
 #'
@@ -238,7 +259,7 @@ allocate_reference_times <- function(reporting_triangle,
   cli_abort(message = c(
     "Insufficient reference times specified by `scale_factor` for the both delay and uncertainty estimation.", # nolint
     "i" = "{scale_factor*max_delay} reference times specified and {size_required} are needed, {size_min_delay} for delay estimation and {size_min_retro_nowcasts} for uncertainty estimation.", # nolint,
-    "x" = "Probabilistic nowcasts cannot be generated."
+    "x" = "Probabilistic nowcasts cannot be generated." # nolint
   ))
   return(NULL)
 }

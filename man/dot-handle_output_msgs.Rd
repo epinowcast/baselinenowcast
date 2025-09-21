@@ -12,6 +12,16 @@
 )
 }
 \arguments{
+\item{n_history_delay}{Integer indicating the number of reference times
+(observations) to be used in the estimate of the reporting delay, always
+starting from the most recent reporting delay. Default is NULL, which will
+be set internally based on the defaults in \code{allocate_reference_times()}}
+
+\item{n_retrospective_nowcasts}{Integer indicating the number of
+retrospective nowcast times to use for uncertainty estimation. Default is
+NULL, which will be set internally based on the defaults in
+\code{allocate_reference_times()}}
+
 \item{size_used}{Integer indicating number reference times that will be used.}
 
 \item{prop_delay}{Numeric value <1 indicating what proportion of all

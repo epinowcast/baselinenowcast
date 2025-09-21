@@ -56,6 +56,28 @@ allocate_reference_times <- function(reporting_triangle,
     scale_factor, prop_delay,
     size_min_retro_nowcasts
   )
+
+  ns <- .perform_allocation_process(
+    reporting_triangle,
+    max_delay,
+    scale_factor,
+    prop_delay,
+    size_min_retro_nowcasts
+  )
+
+  return(ns)
+}
+
+#' Perform the allocation process
+#'
+#' @inheritParams allocate_reference_times
+#'
+#' @return list of refernce time allocations
+.perform_allocation_process <- function(reporting_triangle,
+                                        max_delay,
+                                        scale_factor,
+                                        prop_delay,
+                                        size_min_retro_nowcasts) {
   sizes <- .calculate_sizes(
     reporting_triangle,
     max_delay,
@@ -91,12 +113,14 @@ allocate_reference_times <- function(reporting_triangle,
   n_retrospective_nowcasts <- ns$n_retrospective_nowcasts
   n_history_delay <- ns$n_history_delay
 
+  # Handle proportion delay warning and messages
   .handle_output_msgs(
     n_history_delay,
     n_retrospective_nowcasts,
     size_used,
     prop_delay
   )
+
   return(list(
     n_history_delay = n_history_delay,
     n_retrospective_nowcasts = n_retrospective_nowcasts
@@ -107,6 +131,7 @@ allocate_reference_times <- function(reporting_triangle,
 #'
 #' @inheritParams allocate_reference_times
 #' @inheritParams .assign_ns_from_sizes
+#' @inheritParams estimate_and_apply_uncertainty
 #'
 #' @return NULL, invisibly
 .handle_output_msgs <- function(n_history_delay,

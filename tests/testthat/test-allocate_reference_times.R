@@ -55,11 +55,11 @@ test_that("allocate_reference_times properly scales delay and total training amo
     ncol = 5
   ) |> construct_triangle()
 
-  tv <- allocate_reference_times(
+  tv <- expect_warning(allocate_reference_times(
     rep_tri,
     scale_factor = 2,
     prop_delay = 0.5
-  )
+  ))
   expect_equal(tv$n_history_delay, 5)
   expect_equal(tv$n_retrospective_nowcasts, 3)
 
@@ -71,11 +71,11 @@ test_that("allocate_reference_times properly scales delay and total training amo
   expect_equal(tv2$n_history_delay, 8)
   expect_equal(tv2$n_retrospective_nowcasts, 8)
 
-  tv3 <- expect_warning(allocate_reference_times(
+  tv3 <- allocate_reference_times(
     rep_tri,
     scale_factor = 5,
     prop_delay = 0.25
-  ))
+  )
   expect_equal(tv3$n_history_delay, 5)
   expect_equal(tv3$n_retrospective_nowcasts, 15)
 

@@ -85,8 +85,8 @@ test_that("allocate_reference_times properly scales delay and total training amo
     prop_delay = 0.25
   )
   # As close as you can to prop delay
-  expect_equal(tv3$n_history_delay, 5)
-  expect_equal(tv3$n_retrospective_nowcasts, 7)
+  expect_equal(tv4$n_history_delay, 5)
+  expect_equal(tv4$n_retrospective_nowcasts, 7)
 
   tv5 <- allocate_reference_times(
     rep_tri,

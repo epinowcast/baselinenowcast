@@ -31,6 +31,25 @@ test_that("estimate_and_apply_uncertainty works as expected with the default set
     n_retrospective_nowcasts = 2
   )
   expect_false(all(nowcast_draws_df == df_w_non_default))
+
+  set.seed(123)
+  # Test compound
+  trunc_rep_tris <- truncate_triangles(triangle, n = n_retro_valid)
+  retro_rep_tris <- construct_triangles(trunc_rep_tris)
+  retro_pt_nowcasts <- fill_triangles(retro_rep_tris, n = n_delay_valid)
+  disp_params <- estimate_uncertainty(
+    retro_pt_nowcasts,
+    trunc_rep_tris,
+    retro_rep_tris,
+    n = n_retro_valid
+  )
+  nowcast_draws_df2 <- sample_nowcasts(
+    pt_nowcast_matrix,
+    triangle,
+    disp_params
+  )
+
+  expect_equal(nowcast_draws_df, nowcast_draws_df2)
 })
 
 test_that("estimate_and_apply_uncertainty error when things are specified incorrectly", { # nolint

@@ -69,7 +69,7 @@ allocate_reference_times <- function(reporting_triangle,
                                      n_min_retro_nowcasts = 2) {
   # Checks of inputs
   .validate_triangle(reporting_triangle, max_delay)
-  .validate_allocation_params(
+  .validate_inputs_allocation(
     scale_factor, prop_delay,
     n_min_retro_nowcasts
   )
@@ -175,23 +175,6 @@ allocate_reference_times <- function(reporting_triangle,
   return(NULL)
 }
 
-#' Helper function to validate allocation parameters
-#'
-#'
-#' @inheritParams allocate_reference_times
-#' @importFrom checkmate assert_scalar assert_numeric assert_integerish
-#'
-#' @returns NULL invisibly
-.validate_allocation_params <- function(scale_factor,
-                                        prop_delay,
-                                        n_min_retro_nowcasts) {
-  assert_integerish(n_min_retro_nowcasts, lower = 0)
-  assert_scalar(prop_delay)
-  assert_numeric(prop_delay, lower = 0, upper = 1)
-  assert_scalar(scale_factor)
-  assert_numeric(scale_factor, lower = 0)
-  return(NULL)
-}
 
 #' Helper function to calculate various size requirements
 #' @inheritParams allocate_reference_times

@@ -202,27 +202,46 @@
   return(NULL)
 }
 
+#' Helper function to validate allocation parameters
+#'
+#'
+#' @inheritParams allocate_reference_times
+#' @importFrom checkmate assert_scalar assert_numeric assert_integerish
+#'
+#' @returns NULL invisibly
+.validate_inputs_allocation <- function(scale_factor,
+                                        prop_delay,
+                                        n_min_retro_nowcasts) {
+  assert_integerish(n_min_retro_nowcasts, lower = 0)
+  assert_scalar(prop_delay)
+  assert_numeric(prop_delay, lower = 0, upper = 1)
+  assert_scalar(scale_factor)
+  assert_numeric(scale_factor, lower = 0)
+  return(NULL)
+}
+
+
 #' Validate the specified number of reference times meets the minimum
 #'    requirements
 #'
 #' @param n_ref_times Integer indicating the number of reference times
 #'    available.
-#' @param size_min_ref_times_delay Integer indicating minimum number of
+#' @param n_min_delay Integer indicating minimum number of
 #'    reference times needed for delay estimation.
 #' @inheritParams estimate_and_apply_uncertainty
 #' @inheritParams allocate_reference_times
 #' @autoglobal
 #' @returns NULL, invisibly
-.validate_ref_time_allocation <- function(n_ref_times,
-                                          size_min_ref_times_delay,
-                                          n_history_delay,
-                                          n_retrospective_nowcasts,
-                                          size_min_retro_nowcasts = 2) {
+.validate_inputs_uncertainty <- function(n_ref_times,
+                                         n_min_delay,
+                                         n_history_delay,
+                                         n_retrospective_nowcasts,
+                                         n_min_retro_nowcasts = 2) {
   assert_integerish(n_ref_times, lower = 0)
-  assert_integerish(size_min_ref_times_delay, lower = 0)
+  assert_integerish(n_min_delay, lower = 0)
   assert_integerish(n_history_delay, lower = 0)
   assert_integerish(n_retrospective_nowcasts, lower = 0)
-  assert_integerish(size_min_retro_nowcasts, lower = 0)
+  assert_integerish(n_min_retro_nowcasts, lower = 0)
 
   if (n_ref_times < n_history_delay + n_retrospective_nowcasts) {
     cli_abort(message = c(
@@ -232,18 +251,18 @@
     ))
   }
 
-  if (n_history_delay < size_min_ref_times_delay) {
+  if (n_history_delay < n_min_delay) {
     cli_abort(message = c(
       "Insufficient `n_history_delay`.", # nolint
-      "i" = "{size_min_ref_times_delay} reference times needed for delay estimation.", # nolint
+      "i" = "{n_min_delay} reference times needed for delay estimation.", # nolint
       "x" = "{n_history_delay} reference times were specified." # nolint
     ))
   }
 
-  if (n_retrospective_nowcasts < size_min_retro_nowcasts) {
+  if (n_retrospective_nowcasts < n_min_retro_nowcasts) {
     cli_abort(message = c(
       "Insufficient `n_retrospective_nowcasts`.", # nolint
-      "i" = "{size_min_retro_nowcasts} reference times needed for uncertainty estimation.", # nolint
+      "i" = "{n_min_retro_nowcasts} reference times needed for uncertainty estimation.", # nolint
       "x" = "{n_retrospective_nowcasts} reference times were specified." # nolint
     ))
   }

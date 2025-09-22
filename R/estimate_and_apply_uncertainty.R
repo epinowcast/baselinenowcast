@@ -61,8 +61,8 @@ estimate_and_apply_uncertainty <- function(
   n_ref_times <- nrow(reporting_triangle)
   min_ref_times_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
   # Validate that the inputs are valid.
-  .validate_ref_time_allocation(
-    size_min_ref_times_delay = min_ref_times_delay,
+  .validate_inputs_uncertainty(
+    n_min_delay = min_ref_times_delay,
     n_ref_times = n_ref_times,
     n_history_delay = n_history_delay,
     n_retrospective_nowcasts = n_retrospective_nowcasts

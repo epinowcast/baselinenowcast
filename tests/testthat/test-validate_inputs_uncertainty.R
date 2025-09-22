@@ -1,9 +1,9 @@
-test_that(".validate_ref_time_allocations doesn't error when inputs are sufficient", { # nolint
+test_that(".validate_inputs_uncertaintys doesn't error when inputs are sufficient", { # nolint
   # Defaults
   expect_no_error(
-    .validate_ref_time_allocation(
+    .validate_inputs_uncertainty(
       n_ref_times = 12,
-      size_min_ref_times_delay = 4,
+      n_min_delay = 4,
       n_history_delay = 6,
       n_retrospective_nowcasts = 6
     )
@@ -11,9 +11,9 @@ test_that(".validate_ref_time_allocations doesn't error when inputs are sufficie
 
   # Defaults with more data
   expect_no_error(
-    .validate_ref_time_allocation(
+    .validate_inputs_uncertainty(
       n_ref_times = 20,
-      size_min_ref_times_delay = 4,
+      n_min_delay = 4,
       n_history_delay = 6,
       n_retrospective_nowcasts = 6
     )
@@ -21,9 +21,9 @@ test_that(".validate_ref_time_allocations doesn't error when inputs are sufficie
 
   # more delays
   expect_no_error(
-    .validate_ref_time_allocation(
+    .validate_inputs_uncertainty(
       n_ref_times = 12,
-      size_min_ref_times_delay = 4,
+      n_min_delay = 4,
       n_history_delay = 10,
       n_retrospective_nowcasts = 2
     )
@@ -31,21 +31,21 @@ test_that(".validate_ref_time_allocations doesn't error when inputs are sufficie
 
   # more uncertainty
   expect_no_error(
-    .validate_ref_time_allocation(
+    .validate_inputs_uncertainty(
       n_ref_times = 12,
-      size_min_ref_times_delay = 4,
+      n_min_delay = 4,
       n_history_delay = 4,
       n_retrospective_nowcasts = 8
     )
   )
 })
 
-test_that(".validate_ref_time_allocations doesn't error when ref times mismatch inputs", { # nolint
+test_that(".validate_inputs_uncertaintys doesn't error when ref times mismatch inputs", { # nolint
 
   expect_error(
-    .validate_ref_time_allocation(
+    .validate_inputs_uncertainty(
       n_ref_times = 12,
-      size_min_ref_times_delay = 4,
+      n_min_delay = 4,
       n_history_delay = 8,
       n_retrospective_nowcasts = 6
     ),
@@ -53,9 +53,9 @@ test_that(".validate_ref_time_allocations doesn't error when ref times mismatch 
   )
 
   expect_error(
-    .validate_ref_time_allocation(
+    .validate_inputs_uncertainty(
       n_ref_times = -12,
-      size_min_ref_times_delay = 4,
+      n_min_delay = 4,
       n_history_delay = 8,
       n_retrospective_nowcasts = 6
     ),
@@ -63,19 +63,19 @@ test_that(".validate_ref_time_allocations doesn't error when ref times mismatch 
   )
 
   expect_error(
-    .validate_ref_time_allocation(
+    .validate_inputs_uncertainty(
       n_ref_times = 12,
-      size_min_ref_times_delay = -4,
+      n_min_delay = -4,
       n_history_delay = 8,
       n_retrospective_nowcasts = 6
     ),
-    regexp = "Assertion on 'size_min_ref_times_delay' failed: Element 1 is not >= 0" # nolint
+    regexp = "Assertion on 'n_min_delay' failed: Element 1 is not >= 0" # nolint
   )
 
   expect_error(
-    .validate_ref_time_allocation(
+    .validate_inputs_uncertainty(
       n_ref_times = 12,
-      size_min_ref_times_delay = 4,
+      n_min_delay = 4,
       n_history_delay = -8,
       n_retrospective_nowcasts = 6
     ),
@@ -83,9 +83,9 @@ test_that(".validate_ref_time_allocations doesn't error when ref times mismatch 
   )
 
   expect_error(
-    .validate_ref_time_allocation(
+    .validate_inputs_uncertainty(
       n_ref_times = 12,
-      size_min_ref_times_delay = 4,
+      n_min_delay = 4,
       n_history_delay = 8,
       n_retrospective_nowcasts = -6
     ),
@@ -93,11 +93,11 @@ test_that(".validate_ref_time_allocations doesn't error when ref times mismatch 
   )
 })
 
-test_that(".validate_ref_time_allocation errors when n_history_delay is too small", { # nolint
+test_that(".validate_inputs_uncertainty errors when n_history_delay is too small", { # nolint
   expect_error(
-    .validate_ref_time_allocation(
+    .validate_inputs_uncertainty(
       n_ref_times = 12,
-      size_min_ref_times_delay = 6,
+      n_min_delay = 6,
       n_history_delay = 5,
       n_retrospective_nowcasts = 6
     ),
@@ -105,11 +105,11 @@ test_that(".validate_ref_time_allocation errors when n_history_delay is too smal
   )
 })
 
-test_that(".validate_ref_time_allocation errors when n_retrospective_nowcasts is too small", { # nolint
+test_that(".validate_inputs_uncertainty errors when n_retrospective_nowcasts is too small", { # nolint
   expect_error(
-    .validate_ref_time_allocation(
+    .validate_inputs_uncertainty(
       n_ref_times = 12,
-      size_min_ref_times_delay = 6,
+      n_min_delay = 6,
       n_history_delay = 6,
       n_retrospective_nowcasts = 1
     ),

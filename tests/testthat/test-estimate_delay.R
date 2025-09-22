@@ -69,7 +69,7 @@ test_that("estimate_delay validates input parameters correctly", {
 
   # Test max_delay >= ncol(reporting_triangle) -- should error
   expect_error(estimate_delay(reporting_triangle, max_delay = 5),
-    regexp = "The maximum delay must be less than the number of columns in the reporting triangle." # nolint
+    regexp = "The maximum delay must be less than the number of columns"
   ) # nolint
 })
 

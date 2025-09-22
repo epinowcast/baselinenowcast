@@ -248,9 +248,9 @@
                                         n_min_retro_nowcasts) {
   assert_integerish(n_min_retro_nowcasts, lower = 0)
   assert_scalar(prop_delay)
-  assert_numeric(prop_delay, lower = 0, upper = 1)
+  assert_numeric(prop_delay, lower = 0, upper = 1, finite = TRUE)
   assert_scalar(scale_factor)
-  assert_numeric(scale_factor, lower = 0)
+  assert_numeric(scale_factor, lower = 0, finite = TRUE)
   return(NULL)
 }
 

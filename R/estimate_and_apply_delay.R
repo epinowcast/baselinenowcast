@@ -27,7 +27,6 @@
 estimate_and_apply_delay <- function(reporting_triangle,
                                      max_delay = ncol(reporting_triangle) - 1,
                                      ...) {
-  # .validate_max_delay(reporting_triangle, max_delay)
   reporting_triangle <- .check_to_filter_to_max_delay(
     reporting_triangle,
     max_delay

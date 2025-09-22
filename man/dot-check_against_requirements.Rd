@@ -7,10 +7,10 @@ required}
 \usage{
 .check_against_requirements(
   n_ref_times,
-  size_required,
-  size_target,
-  size_min_delay,
-  size_min_retro_nowcasts,
+  n_required,
+  n_target,
+  n_min_delay,
+  n_min_retro_nowcasts,
   scale_factor,
   max_delay
 )
@@ -19,15 +19,15 @@ required}
 \item{n_ref_times}{Integer indicating the number of reference times
 available}
 
-\item{size_required}{Integer indicating the number need for both delay and
+\item{n_required}{Integer indicating the number need for both delay and
 uncertainty}
 
-\item{size_target}{Integer indicating the target number of reference times.}
+\item{n_target}{Integer indicating the target number of reference times.}
 
-\item{size_min_delay}{Integer indicating the number needed for delay
+\item{n_min_delay}{Integer indicating the number needed for delay
 estimation.}
 
-\item{size_min_retro_nowcasts}{Integer indicating the number needed for
+\item{n_min_retro_nowcasts}{Integer indicating the number needed for
 uncertainty estimation.}
 
 \item{scale_factor}{Numeric value indicating the multiplicative factor on
@@ -39,7 +39,7 @@ of the delay. The default is to use the whole reporting triangle,
 \code{ncol(reporting_triangle) -1}.}
 }
 \value{
-\code{size_used} Integer indicating how many reference times will be
+\code{n_used} Integer indicating how many reference times will be
 used
 }
 \description{

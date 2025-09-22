@@ -9,7 +9,7 @@
   max_delay,
   scale_factor,
   prop_delay,
-  size_min_retro_nowcasts
+  n_min_retro_nowcasts
 )
 }
 \arguments{
@@ -31,7 +31,7 @@ Default is \code{3}.}
 reference times in the reporting triangle to be used for delay
 estimation. Default is \code{0.5}.}
 
-\item{size_min_retro_nowcasts}{Integer indicating the minimum number of
+\item{n_min_retro_nowcasts}{Integer indicating the minimum number of
 reference times needed for uncertainty estimation. Default is \code{2}.}
 }
 \value{

@@ -10,7 +10,7 @@ allocate_reference_times(
   max_delay = ncol(reporting_triangle) - 1,
   scale_factor = 3,
   prop_delay = 0.5,
-  size_min_retro_nowcasts = 2
+  n_min_retro_nowcasts = 2
 )
 }
 \arguments{
@@ -32,7 +32,7 @@ Default is \code{3}.}
 reference times in the reporting triangle to be used for delay
 estimation. Default is \code{0.5}.}
 
-\item{size_min_retro_nowcasts}{Integer indicating the minimum number of
+\item{n_min_retro_nowcasts}{Integer indicating the minimum number of
 reference times needed for uncertainty estimation. Default is \code{2}.}
 }
 \value{
@@ -53,9 +53,10 @@ uncertainty estimation if there are sufficient reference times in the
 reporting triangle for this.
 \item if the specified number of reference times
 (\code{scale_factor} x \verb{max delay}) is greater than the number of reference
-times available in the reporting triangle, satisfy the minimum
-requirement for delay estimation and split according to
-the specified \code{prop_delay}, ensuring that the minimumum reference times
+times available in the reporting triangle, use all the reference times
+available and satisfy the minimum
+requirement for delay estimation and then split the remainder according to
+the specified \code{prop_delay}, ensuring that the minimum reference times
 for delay and uncertainty estimation are fulfilled.
 \item the function errors if the minimum requirements for delay and
 uncertainty estimation are not possible from the number of reference times

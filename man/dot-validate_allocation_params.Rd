@@ -4,7 +4,7 @@
 \alias{.validate_allocation_params}
 \title{Helper function to validate allocation parameters}
 \usage{
-.validate_allocation_params(scale_factor, prop_delay, size_min_retro_nowcasts)
+.validate_allocation_params(scale_factor, prop_delay, n_min_retro_nowcasts)
 }
 \arguments{
 \item{scale_factor}{Numeric value indicating the multiplicative factor on
@@ -15,7 +15,7 @@ Default is \code{3}.}
 reference times in the reporting triangle to be used for delay
 estimation. Default is \code{0.5}.}
 
-\item{size_min_retro_nowcasts}{Integer indicating the minimum number of
+\item{n_min_retro_nowcasts}{Integer indicating the minimum number of
 reference times needed for uncertainty estimation. Default is \code{2}.}
 }
 \value{

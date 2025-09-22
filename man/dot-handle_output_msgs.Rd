@@ -7,7 +7,7 @@
 .handle_output_msgs(
   n_history_delay,
   n_retrospective_nowcasts,
-  size_used,
+  n_used,
   prop_delay
 )
 }
@@ -22,7 +22,7 @@ retrospective nowcast times to use for uncertainty estimation. Default is
 NULL, which will be set internally based on the defaults in
 \code{allocate_reference_times()}}
 
-\item{size_used}{Integer indicating number reference times that will be used.}
+\item{n_used}{Integer indicating number reference times that will be used.}
 
 \item{prop_delay}{Numeric value <1 indicating what proportion of all
 reference times in the reporting triangle to be used for delay

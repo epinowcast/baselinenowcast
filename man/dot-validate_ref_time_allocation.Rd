@@ -22,13 +22,10 @@ reference times needed for delay estimation.}
 
 \item{n_history_delay}{Integer indicating the number of reference times
 (observations) to be used in the estimate of the reporting delay, always
-starting from the most recent reporting delay. Default is NULL, which will
-be set internally based on the defaults in \code{allocate_reference_times()}}
+starting from the most recent reporting delay.}
 
 \item{n_retrospective_nowcasts}{Integer indicating the number of
-retrospective nowcast times to use for uncertainty estimation. Default is
-NULL, which will be set internally based on the defaults in
-\code{allocate_reference_times()}}
+retrospective nowcast times to use for uncertainty estimation.}
 }
 \value{
 NULL, invisibly

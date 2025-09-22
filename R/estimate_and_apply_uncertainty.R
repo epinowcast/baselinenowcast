@@ -6,13 +6,9 @@
 #' @inheritParams sample_nowcasts
 #' @param n_history_delay Integer indicating the number of reference times
 #'   (observations) to be used in the estimate of the reporting delay, always
-#'    starting from the most recent reporting delay. Default is NULL, which will
-#'    be set internally based on the defaults in `allocate_reference_times()`
+#'    starting from the most recent reporting delay.
 #' @param n_retrospective_nowcasts Integer indicating the number of
-#'   retrospective nowcast times to use for uncertainty estimation. Default is
-#'   NULL, which will be set internally based on the defaults in
-#'   `allocate_reference_times()`
-#'
+#'   retrospective nowcast times to use for uncertainty estimation.
 #' @returns `nowcast_draws_df` Dataframe containing draws of combined
 #'    observations and probabilistic predictions at each reference time.
 #' @export
@@ -47,9 +43,9 @@
 estimate_and_apply_uncertainty <- function(
     point_nowcast_matrix,
     reporting_triangle,
+    n_history_delay,
+    n_retrospective_nowcasts,
     max_delay = ncol(reporting_triangle) - 1,
-    n_history_delay = NULL,
-    n_retrospective_nowcasts = NULL,
     draws = 1000,
     uncertainty_model = fit_by_horizon,
     uncertainty_sampler = sample_nb,
@@ -63,24 +59,7 @@ estimate_and_apply_uncertainty <- function(
 
   n_ref_times <- nrow(reporting_triangle)
   min_ref_times_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
-  if (is.null(n_history_delay) && is.null(n_retrospective_nowcasts)) {
-    tv <- allocate_reference_times(
-      reporting_triangle
-    )
-    n_history_delay <- tv$n_history_delay
-    n_retrospective_nowcasts <- tv$n_retrospective_nowcasts
-  }
-
-  if (is.null(n_history_delay) && !is.null(n_retrospective_nowcasts)) {
-    n_history_delay <- min(3 * max_delay, n_ref_times) - n_retrospective_nowcasts # nolint
-    message(sprintf("`n_history_delay` was not specified, %d reference times will be used for delay estimation.", n_history_delay)) # nolint
-  }
-  if (!is.null(n_history_delay) && is.null(n_retrospective_nowcasts)) {
-    n_retrospective_nowcasts <- min(3 * max_delay, n_ref_times) - n_history_delay # nolint
-    message(sprintf("`n_retrospective_nowcasts` was not specified, %d reference times will be used as retrospective nowcast times for uncertainty estimation.", n_retrospective_nowcasts)) # nolint
-  }
-
-  # Validate that the inputs or defaults or combinations are valid.
+  # Validate that the inputs are valid.
   .validate_ref_time_allocation(
     size_min_ref_times_delay = min_ref_times_delay,
     n_ref_times = n_ref_times,

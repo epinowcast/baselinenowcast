@@ -21,32 +21,7 @@ test_that("estimate_and_apply_uncertainty works as expected with the default set
     n_history_delay = n_delay_valid,
     n_retrospective_nowcasts = n_retro_valid
   )
-  set.seed(123)
-  df_w_default <- expect_message(
-    estimate_and_apply_uncertainty(
-      pt_nowcast_matrix,
-      triangle
-    ),
-    regexp = "Using 6 reference times for delay estimation." # nolint
-  )
-  expect_identical(nowcast_draws_df, df_w_default)
 
-  expect_message(
-    estimate_and_apply_uncertainty(
-      pt_nowcast_matrix,
-      triangle,
-      n_history_delay = 6
-    ),
-    regexp = "`n_retrospective_nowcasts` was not specified, " # nolint
-  )
-  expect_message(
-    estimate_and_apply_uncertainty(
-      pt_nowcast_matrix,
-      triangle,
-      n_retrospective_nowcasts = 6
-    ),
-    regexp = "`n_history_delay` was not specified, " # nolint
-  )
 
   set.seed(123)
   df_w_non_default <- estimate_and_apply_uncertainty(
@@ -63,7 +38,8 @@ test_that("estimate_and_apply_uncertainty error when things are specified incorr
     estimate_and_apply_uncertainty(
       pt_nowcast_matrix,
       triangle,
-      n_history_delay = 4
+      n_history_delay = 4,
+      n_retrospective_nowcasts = 2
     ),
     regexp = "Insufficient `n_history_delay`."
   )
@@ -72,6 +48,7 @@ test_that("estimate_and_apply_uncertainty error when things are specified incorr
     estimate_and_apply_uncertainty(
       pt_nowcast_matrix,
       triangle,
+      n_history_delay = 6,
       n_retrospective_nowcasts = 1
     ),
     regexp = "Insufficient `n_retrospective_nowcasts`."
@@ -90,7 +67,9 @@ test_that("estimate_and_apply_uncertainty error when things are specified incorr
   expect_error(
     estimate_and_apply_uncertainty(
       pt_nowcast_matrix,
-      triangle
+      triangle,
+      n_history_delay = 6,
+      n_retrospective_nowcasts = 2
     ),
     regexp = "Insufficient reference times in reporting triangle"
   )

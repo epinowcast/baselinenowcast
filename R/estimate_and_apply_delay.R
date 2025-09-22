@@ -5,7 +5,7 @@
 #'
 #' @returns `pt_nowcast_matrix` Matrix of point nowcasts
 #' @export
-#'
+#' @importFrom cli cli_alert_info
 #' @examples
 #' triangle <- matrix(
 #'   c(
@@ -32,7 +32,7 @@ estimate_and_apply_delay <- function(reporting_triangle,
     reporting_triangle <- reporting_triangle[, 1:(max_delay + 1)]
 
     cli_alert_info(
-      text = "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay. The reporting triangle will be filter to include only the first {max_delay+1} delays.", # nolint
+      text = "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay. The reporting triangle will be filter to include only the first {max_delay+1} delays." # nolint
     )
   }
 

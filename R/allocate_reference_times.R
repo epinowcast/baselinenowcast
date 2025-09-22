@@ -311,7 +311,9 @@ allocate_reference_times <- function(reporting_triangle,
 #'    uncertainty estimation.
 #' @param n_required Integer indicating the number need for both delay and
 #'    uncertainty
-#' @inheritParams allocate_reference_times
+#' @param prop_delay Numeric value <1 indicating what proportion of all
+#'     reference times in the reporting triangle to be used for delay
+#'     estimation.
 #'
 #' @returns List of number of reference times to use for delay and uncertainty
 .assign_allocation_from_ns <- function(n_used,

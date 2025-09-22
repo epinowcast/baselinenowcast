@@ -142,6 +142,7 @@
 #'
 #' @inheritParams .validate_delay_and_triangle
 #' @inheritParams estimate_delay
+#' @importFrom cli cli_alert_info
 #'
 #' @returns reporting_triangle
 .check_to_filter_to_max_delay <- function(triangle,
@@ -151,7 +152,7 @@
     triangle <- triangle[, 1:(max_delay + 1)]
 
     cli_alert_info(
-      text = "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay. The reporting triangle will be filter to include only the first {max_delay+1} delays." # nolint
+      text = "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay. The reporting triangle will be filtered to include only the first {max_delay+1} delays." # nolint
     )
   }
   return(triangle)

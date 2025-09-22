@@ -71,19 +71,19 @@ test_that("allocate_reference_times properly scales delay and total training amo
   expect_equal(tv2$n_history_delay, 8)
   expect_equal(tv2$n_retrospective_nowcasts, 8)
 
-  tv3 <- allocate_reference_times(
+  tv3 <- expect_warning(allocate_reference_times(
     rep_tri,
     scale_factor = 5,
     prop_delay = 0.25
-  )
+  ))
   expect_equal(tv3$n_history_delay, 5)
   expect_equal(tv3$n_retrospective_nowcasts, 15)
 
-  tv4 <- allocate_reference_times(
+  tv4 <- expect_warning(allocate_reference_times(
     rep_tri,
     scale_factor = 3,
     prop_delay = 0.25
-  )
+  ))
   # As close as you can to prop delay
   expect_equal(tv4$n_history_delay, 5)
   expect_equal(tv4$n_retrospective_nowcasts, 7)
@@ -93,7 +93,7 @@ test_that("allocate_reference_times properly scales delay and total training amo
     scale_factor = 3,
     prop_delay = 0.75
   )
-  # Can hit exaxtly prop delay
+  # Can hit exactly prop delay
   expect_equal(tv5$n_history_delay, 9)
   expect_equal(tv5$n_retrospective_nowcasts, 3)
 })

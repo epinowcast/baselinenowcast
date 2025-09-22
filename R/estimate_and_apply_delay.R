@@ -27,21 +27,13 @@
 estimate_and_apply_delay <- function(reporting_triangle,
                                      max_delay = ncol(reporting_triangle) - 1,
                                      ...) {
-  if (max_delay > ncol(reporting_triangle) - 1) {
-    message(sprintf(
-      "The maximum delay must be less than the number of columns in the reporting triangle. The maximum delay will be set to %d.", # nolint
-      ncol(reporting_triangle) - 1
-    ))
-    max_delay <- ncol(reporting_triangle) - 1
-  }
-
   if (max_delay < ncol(reporting_triangle) - 1) {
     # filter the reporting triangle to be less than the maximum delay
     reporting_triangle <- reporting_triangle[, 1:(max_delay + 1)]
-    message(sprintf(
-      "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay. The reporting triangle will be filter to include only the first %d delays.", # nolint
-      max_delay + 1
-    ))
+
+    cli_alert_info(
+      text = "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay. The reporting triangle will be filter to include only the first {max_delay+1} delays.", # nolint
+    )
   }
 
   delay_pmf <- estimate_delay(
@@ -56,10 +48,9 @@ estimate_and_apply_delay <- function(reporting_triangle,
   trunc_reporting_triangle <- reporting_triangle[, 1:(max_delay + 1)]
 
   if (ncol(trunc_reporting_triangle) < ncol(reporting_triangle)) {
-    message(sprintf(
-      "Only the first %d delays are being nowcasted.",
-      ncol(trunc_reporting_triangle)
-    )) # nolint
+    cli_alert_info(
+      text = "Only the first {ncol(trunc_reporting_triangle)} delays are being nowcasted." # nolint
+    )
   }
 
   point_nowcast_matrix <- apply_delay(trunc_reporting_triangle, delay_pmf)

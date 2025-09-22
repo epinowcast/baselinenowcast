@@ -55,19 +55,13 @@ test_that(
     )
     expect_identical(ncol(pt_nowcast1), 3L)
 
-    expect_message(
+    expect_error(
       estimate_and_apply_delay(
         reporting_triangle = reporting_triangle,
         max_delay = 8
       ),
       regexp = "The maximum delay must be less than the number of columns" # nolint
     )
-
-    pt_nowcast2 <- estimate_and_apply_delay(
-      reporting_triangle = reporting_triangle,
-      max_delay = 8
-    )
-    expect_identical(ncol(pt_nowcast2), 7L)
   }
 )
 
@@ -111,7 +105,7 @@ test_that(
       structure = 2
     )
 
-    point_nowcast_matrix <- expect_message(
+    point_nowcast_matrix <- expect_error(
       estimate_and_apply_delay(
         reporting_triangle = reporting_triangle,
         max_delay = 8,

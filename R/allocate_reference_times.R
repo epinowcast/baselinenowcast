@@ -14,9 +14,9 @@
 #'    - if the specified number of reference times
 #'    (`scale_factor` x `max delay`) is greater than the number of reference
 #'    times available in the reporting triangle, satisfy the minimum
-#'    requirement for delay estimation and split the remainder according to
+#'    requirement for delay estimation and split according to
 #'    the specified `prop_delay`, ensuring that the minimumum reference times
-#'    for uncertainty estimation is fulfilled.
+#'    for delay and uncertainty estimation are fulfilled.
 #'    - the function errors if the minimum requirements for delay and
 #'    uncertainty estimation are not possible from the number of reference times
 #'    in the reporting triangle.

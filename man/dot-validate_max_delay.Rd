@@ -4,7 +4,7 @@
 \alias{.validate_max_delay}
 \title{Check that the maximum delay is not too large, error if it is}
 \usage{
-.validate_max_delay(reporting_triangle, max_delay)
+.validate_max_delay(triangle, max_delay)
 }
 \arguments{
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units

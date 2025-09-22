@@ -125,9 +125,9 @@
 #' @inheritParams .validate_triangle
 #'
 #' @returns NULL invisibly
-.validate_max_delay <- function(reporting_triangle,
+.validate_max_delay <- function(triangle,
                                 max_delay) {
-  if (max_delay > ncol(reporting_triangle) - 1) {
+  if (max_delay > ncol(triangle) - 1) {
     cli_abort(
       message = "The maximum delay must be less than the number of columns in the reporting triangle." # nolint
     )

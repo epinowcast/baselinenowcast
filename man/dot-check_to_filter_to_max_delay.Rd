@@ -5,7 +5,7 @@
 \title{Check that the reporting triangle contains the correct number of columns for
 the specified maximum delay}
 \usage{
-.check_to_filter_to_max_delay(reporting_triangle, max_delay)
+.check_to_filter_to_max_delay(triangle, max_delay)
 }
 \arguments{
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units

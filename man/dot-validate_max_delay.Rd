@@ -12,7 +12,7 @@ of the delay. The default is to use the whole reporting triangle,
 \code{ncol(reporting_triangle) -1}.}
 }
 \value{
-NULL invisble
+NULL invisibly
 }
 \description{
 Check that the maximum delay is not too large, error if it is

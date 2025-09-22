@@ -124,7 +124,7 @@
 #'
 #' @inheritParams .validate_triangle
 #'
-#' @returns NULL invisble
+#' @returns NULL invisibly
 .validate_max_delay <- function(reporting_triangle,
                                 max_delay) {
   if (max_delay > ncol(reporting_triangle) - 1) {

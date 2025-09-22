@@ -3,7 +3,23 @@
 #' @description Given the reporting triangle, the maximum delay, and
 #'    optionally the user-specified scale factor on the max delay to be used as
 #'    total reference times and the proportion of those reference times to
-#'    be used for delay estimation, allocate reference times accordingly
+#'    be used for delay estimation, allocate reference times to the number
+#'    used for delay estimation and the number used as retrospective nowcasts
+#'    for uncertainty estimation.
+#'
+#'    This function implements an algorithm which:
+#'    - by default uses 3 x the maximum delay, split evenly between delay and
+#'    uncertainty estimation if there are sufficient reference times in the
+#'    reporting triangle for this.
+#'    - if the specified number of reference times
+#'    (`scale_factor` x `max delay`) is greater than the number of reference
+#'    times available in the reporting triangle, satisfy the minimum
+#'    requirement for delay estimation and split the remainder according to
+#'    the specified `prop_delay`, ensuring that the minumum reference times
+#'    for uncertainty estimation is fulfilled.
+#'    - the function errors if the minimum requirements for delay and
+#'    uncertainty estimation are not possible from the number of reference times
+#'    in the reporting triangle.
 #'
 #' @inheritParams estimate_delay
 #' @param scale_factor Numeric value indicating the multiplicative factor on

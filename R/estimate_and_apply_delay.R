@@ -27,14 +27,11 @@
 estimate_and_apply_delay <- function(reporting_triangle,
                                      max_delay = ncol(reporting_triangle) - 1,
                                      ...) {
-  if (max_delay < ncol(reporting_triangle) - 1) {
-    # filter the reporting triangle to be less than the maximum delay
-    reporting_triangle <- reporting_triangle[, 1:(max_delay + 1)]
-
-    cli_alert_info(
-      text = "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay. The reporting triangle will be filter to include only the first {max_delay+1} delays." # nolint
-    )
-  }
+  # .validate_max_delay(reporting_triangle, max_delay)
+  reporting_triangle <- .check_to_filter_to_max_delay(
+    reporting_triangle,
+    max_delay
+  )
 
   delay_pmf <- estimate_delay(
     reporting_triangle,

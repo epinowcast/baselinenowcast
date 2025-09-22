@@ -15,7 +15,7 @@
 #'    (`scale_factor` x `max delay`) is greater than the number of reference
 #'    times available in the reporting triangle, satisfy the minimum
 #'    requirement for delay estimation and split the remainder according to
-#'    the specified `prop_delay`, ensuring that the minumum reference times
+#'    the specified `prop_delay`, ensuring that the minimumum reference times
 #'    for uncertainty estimation is fulfilled.
 #'    - the function errors if the minimum requirements for delay and
 #'    uncertainty estimation are not possible from the number of reference times

@@ -37,7 +37,8 @@
 #' nowcast_draws_df <- estimate_and_apply_uncertainty(
 #'   pt_nowcast_matrix,
 #'   triangle,
-#'   n_history_delay = 4
+#'   n_history_delay = 4,
+#'   n_retrospective_nowcasts = 2
 #' )
 #' nowcast_draws_df
 estimate_and_apply_uncertainty <- function(

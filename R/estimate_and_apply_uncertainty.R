@@ -86,7 +86,7 @@ estimate_and_apply_uncertainty <- function(
     n_ref_times = n_ref_times,
     n_history_delay = n_history_delay,
     n_retrospective_nowcasts = n_retrospective_nowcasts
-  ) # nolint
+  )
 
   # Estimate uncertainty from the reporting triangle passed in.
   trunc_rep_tris <- truncate_triangles(reporting_triangle,

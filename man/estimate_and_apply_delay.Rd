@@ -21,7 +21,7 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 of the delay. The default is to use the whole reporting triangle,
 \code{ncol(reporting_triangle) -1}.}
 
-\item{...}{Additional arguments}
+\item{...}{Additional arguments passed to the \code{estimate_delay} function}
 }
 \value{
 \code{pt_nowcast_matrix} Matrix of point nowcasts

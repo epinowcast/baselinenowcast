@@ -60,7 +60,7 @@ estimate_delay <- function(
     # filter the reporting triangle to be less than the maximum delay
     reporting_triangle <- reporting_triangle[, 1:(max_delay + 1)]
     message(sprintf(
-      "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay. The reporting triangle will be filter to include only the first %d delays.", # nolint
+      "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay. The reporting triangle will be filtered to include only the first %d delays.", # nolint
       max_delay + 1
     ))
   }

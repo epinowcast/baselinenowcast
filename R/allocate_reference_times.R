@@ -165,22 +165,17 @@ allocate_reference_times <- function(reporting_triangle,
 #'
 #'
 #' @inheritParams allocate_reference_times
+#' @importFrom checkmate assert_scalar assert_numeric assert_integerish
 #'
 #' @returns NULL invisibly
 .validate_allocation_params <- function(scale_factor,
                                         prop_delay,
                                         size_min_retro_nowcasts) {
   assert_integerish(size_min_retro_nowcasts, lower = 0)
-
-  if (!is.numeric(scale_factor) || length(scale_factor) != 1 ||
-    !is.finite(scale_factor) || scale_factor <= 0) {
-    cli_abort("`scale_factor` must be a finite positive scalar.") # nolint
-  }
-
-  if (!is.numeric(prop_delay) || length(prop_delay) != 1 ||
-    !is.finite(prop_delay) || prop_delay <= 0 || prop_delay >= 1) {
-    cli_abort("`prop_delay` must be in (0, 1).") # nolint
-  }
+  assert_scalar(prop_delay)
+  assert_numeric(prop_delay, lower = 0, upper = 1)
+  assert_scalar(scale_factor)
+  assert_numeric(scale_factor, lower = 0)
   return(NULL)
 }
 

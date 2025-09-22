@@ -61,7 +61,6 @@ estimate_and_apply_uncertainty <- function(
     max_delay = max_delay
   )
 
-  # Logic to decide on how to allocate the training volume
   n_ref_times <- nrow(reporting_triangle)
   min_ref_times_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
   if (is.null(n_history_delay) && is.null(n_retrospective_nowcasts)) {

@@ -48,6 +48,56 @@ test_that("allocate_reference_times works as expected when user specifies traini
   expect_identical(tv3$n_retrospective_nowcasts, 3)
 })
 
+test_that("allocate_reference_times properly scales delay and total training amount", { # nolint
+  rep_tri <- matrix(
+    data = 1,
+    nrow = 20,
+    ncol = 5
+  ) |> construct_triangle()
+
+  tv <- allocate_reference_times(
+    rep_tri,
+    scale_factor = 2,
+    prop_delay = 0.5
+  )
+  expect_equal(tv$n_history_delay, 5)
+  expect_equal(tv$n_retrospective_nowcasts, 3)
+
+  tv2 <- allocate_reference_times(
+    rep_tri,
+    scale_factor = 4,
+    prop_delay = 0.5
+  )
+  expect_equal(tv2$n_history_delay, 8)
+  expect_equal(tv2$n_retrospective_nowcasts, 8)
+
+  tv3 <- allocate_reference_times(
+    rep_tri,
+    scale_factor = 5,
+    prop_delay = 0.25
+  )
+  expect_equal(tv3$n_history_delay, 5)
+  expect_equal(tv3$n_retrospective_nowcasts, 15)
+
+  tv4 <- allocate_reference_times(
+    rep_tri,
+    scale_factor = 3,
+    prop_delay = 0.25
+  )
+  # As close as you can to prop delay
+  expect_equal(tv3$n_history_delay, 5)
+  expect_equal(tv3$n_retrospective_nowcasts, 7)
+
+  tv5 <- allocate_reference_times(
+    rep_tri,
+    scale_factor = 3,
+    prop_delay = 0.75
+  )
+  # Can hit exaxtly prop delay
+  expect_equal(tv5$n_history_delay, 9)
+  expect_equal(tv5$n_retrospective_nowcasts, 3)
+})
+
 test_that("allocate_reference_times warns when user or defaults don't meet minimum requirements, and reallocates accordingly.", { # nolint
 
   # Test the default works when their is less than 3* max delay of data

@@ -5,6 +5,7 @@
 #' @importFrom checkmate assert_integerish
 #' @importFrom checkmate assert_matrix
 #' @importFrom cli cli_abort
+#' @inheritParams .validate_delay_and_triangle
 #' @inheritParams estimate_delay
 #' @returns NULL, invisibly
 #' @keywords internal
@@ -122,7 +123,8 @@
 
 #' Check that the maximum delay is not too large, error if it is
 #'
-#' @inheritParams .validate_triangle
+#' @inheritParams .validate_delay_and_triangle
+#' @inheritParams estimate_delay
 #'
 #' @returns NULL invisibly
 .validate_max_delay <- function(triangle,
@@ -138,7 +140,8 @@
 #' Check that the reporting triangle contains the correct number of columns for
 #'   the specified maximum delay
 #'
-#' @inheritParams .validate_triangle
+#' @inheritParams .validate_delay_and_triangle
+#' @inheritParams estimate_delay
 #'
 #' @returns reporting_triangle
 .check_to_filter_to_max_delay <- function(triangle,

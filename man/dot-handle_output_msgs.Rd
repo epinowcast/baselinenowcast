@@ -26,7 +26,7 @@ NULL, which will be set internally based on the defaults in
 
 \item{prop_delay}{Numeric value <1 indicating what proportion of all
 reference times in the reporting triangle to be used for delay
-estimation. Default is \code{0.5}.}
+estimation.}
 }
 \value{
 NULL, invisibly

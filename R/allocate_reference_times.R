@@ -130,6 +130,9 @@ allocate_reference_times <- function(reporting_triangle,
 #' Handle output messages after allocation has occurred
 #'
 #' @inheritParams allocate_reference_times
+#' @param prop_delay Numeric value <1 indicating what proportion of all
+#'   reference times in the reporting triangle to be used for delay
+#'  estimation.
 #' @inheritParams .assign_ns_from_sizes
 #' @inheritParams estimate_and_apply_uncertainty
 #'

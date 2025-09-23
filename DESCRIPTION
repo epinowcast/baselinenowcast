@@ -15,6 +15,7 @@ Authors@R:
     person(given = "Emily",
            family = "Tyszka",
            email = "etsyzka@umass.edu",
+            role = c("ctb"),
            comment = c(ORCID = "0009-0005-6088-4017")),
     person(given = "Johannes",
            family = "Bracher",

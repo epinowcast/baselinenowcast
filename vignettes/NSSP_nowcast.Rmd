@@ -33,7 +33,7 @@ In additional, exclusion criteria are used in some definitions to improve the sp
 In this example, we will focus on syndromic surveillance definitions that rely solely on the presence of one or more diagnoses codes, as this means that patients tend to transition from a non-case to case only once (rather than reverting back to a non-case during the course of their clinical encounter).
 Our nowcasting methods primarily focus on the former.
 
-In this vignette, we will walk through how to "clean" the line list NSSP dataset in order to obtain a long tidy dataframe containing the incident counts of "cases" of a particular syndromic surveillance definition by reference date (in this case the date the visit started) and report date (the date the patient's record was updated with the corresponding diagnosis).
+ We will walk through how to "clean" the line list NSSP dataset in order to obtain a long tidy dataframe containing the incident counts of "cases" of a particular syndromic surveillance definition by reference date (in this case the date the visit started) and report date (the date the patient's record was updated with the corresponding diagnosis).
 
 Once we have shown how to generate data of this form from the line-list data, we will swap out the dataframe for a larger mock dataset formatted the same way, and demonstrate how to use `baselinenowcast` to generate a nowcast of the admissions.
 We will start by using the diagnosis codes that define Acute Respiratory Infections (ARI), but any sets of diagnosis codes that define a syndrome could be used interchangeably.

@@ -159,7 +159,7 @@ NSSP_time_stamps_long <-
   NSSP_time_stamps_long |>
   mutate(time_stamp = str_remove(time_stamp, ".*\\}")) |>
   mutate(time_stamp = str_remove_all(time_stamp, "[|;]+")) |>
-  mutate(time_stamp = as.POSIXct(time_stmap,
+  mutate(time_stamp = as.POSIXct(time_stamp,
     format = "%Y-%m-%d %H:%M:%S", tz = "UTC"
   )) |>
   drop_na(time_stamp)

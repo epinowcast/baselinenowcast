@@ -1,5 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
+-   Add a vignette which demonstrates how to pre-process NSSP data and use `baselinenowcast` to nowcast cases of a specific syndromic surveillance.
 -   Refactor `estimate_uncertainty` to take in an error model function, an aggregator function for aggregating across reference times, and an aggregator function for aggregating across delays.
 -   Fix internal checks that ensure there is sufficient data for the specified target choice, using the number of NA rows rather than the number of columns as a proxy for the number of horizons.
 -   Replace argument names with more complete versions where possible.

@@ -70,7 +70,7 @@ This typically will be pulled using an API, but here we provide the `NSSP_line_l
 NSSP_line_list_raw
 ```
 <div class="alert alert-warning" role="alert">
-<strong>Warning:</strong> This dataset does not represent data from real patients, it is entirely simulated.
+<strong>Note:</strong> This dataset does not represent data from real patients, it is entirely simulated.
 </div>
 
 

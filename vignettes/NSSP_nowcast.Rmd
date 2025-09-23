@@ -68,7 +68,6 @@ We will then summarise the data in long format, obtaining a long tidy dataframe 
 This typically will be pulled using an API, but here we provide the `NSSP_line_list_raw` dataset as package data.
 ```{r}
 NSSP_line_list_raw
-head(NSSP_line_list_raw)
 ```
 <div class="alert alert-warning" role="alert">
 <strong>Warning:</strong> This dataset does not represent data from real patients, it is entirely simulated.
@@ -83,17 +82,17 @@ diagnoses_codes_defn <- c("U07", "R112")
 ```
 
 ## Expand the data so that each "event" has its own column
-We will create two datasets which parse the characters in the columns "DischargeDiagnosisMDTUpdates" and "DischargeDiagnosisUpdates" , which contain a string listing the time stamp and diagnosis codes (respectively) of each "event" in the clinical encounter, formatted as:
+We will create two datasets which parse the characters in the columns `DischargeDiagnosisMDTUpdates` and `DischargeDiagnosisUpdates` , which contain a string listing the time stamp and diagnosis codes (respectively) of each "event" in the clinical encounter, formatted as:
 
- - "{event number};YYYY-MM-DD HH:MM:SS;|{event number 2};YYYY-MM-DD HH:MM:SS;|" for "DischargeDiagnosisMDTUpdates"
+ - `"{event number};YYYY-MM-DD HH:MM:SS;|{event number 2};YYYY-MM-DD HH:MM:SS;|" for "DischargeDiagnosisMDTUpdates"`
 
- - "{event number};{diagnoses codes};|{event number 2}{diagnoses codes};|" for "DischargeDiagnosisUpdates"
+ - `"{event number};{diagnoses codes};|{event number 2}{diagnoses codes};|" for "DischargeDiagnosisUpdates"`
 
 Later, we will merge the two datasets back together by the unique patient ID and the event numbers.
 
 We will use `tidyr`'s `separate_wider_delim` to expand these entries, so that each "event" has its own column.
 Since patients experience a different number of patient update "events", there will be missing values for patients not experiencing many events during their visit.
-The columns will be named by the original column name + the event number, e.g. "DischargeDiagnosisMDTUpdates1".
+The columns will be named by the original column name + the event number, e.g. `DischargeDiagnosisMDTUpdates1`.
 
 ```{r}
 NSSP_time_stamps_wide <- NSSP_line_list_raw |>
@@ -110,7 +109,6 @@ NSSP_diagnoses_wide <- NSSP_line_list_raw |>
     delim = "{", names_sep = "", too_few = "align_start"
   ) |>
   select(-DischargeDiagnosisMDTUpdates)
-head(NSSP_diagnoses_wide)
 ```
 
 Find the name of the last update column, and pivot the data from wide to long.
@@ -133,7 +131,6 @@ NSSP_time_stamps_long <- gather(NSSP_time_stamps_wide,
       parse_number(as.character(column_name))
     )
   )
-head(NSSP_time_stamps_long)
 ```
 
 Perform the same procedure for the diagnoses dataset.
@@ -154,10 +151,9 @@ NSSP_diagnoses_long <- gather(NSSP_diagnoses_wide,
       parse_number(as.character(column_name))
     )
   )
-head(NSSP_diagnoses_long)
 ```
 
-Next, we will clean up the time stamps in the data so that the "Update" column is formatted as "%Y-%m-%d %H:%M:%S", and then we will filter out an events that are not present (updates are NAs).
+Next, we will clean up the time stamps in the data so that the "`time_stamp`" column is formatted as `%Y-%m-%d %H:%M:%S`, and then we will filter out an events that are not present (updates are NAs).
 ```{r}
 NSSP_time_stamps_long <-
   NSSP_time_stamps_long |>
@@ -184,7 +180,6 @@ NSSP_diagnoses_long <-
   filter(nzchar(diagnoses_codes, "")) |>
   drop_na() |>
   select(event_id, diagnoses_codes)
-head(NSSP_diagnoses_long)
 ```
 
 
@@ -196,9 +191,8 @@ df_all <- merge(NSSP_time_stamps_long,
   by = "event_id"
 ) |>
   filter(diagnoses_codes != ";;|") # drops empty updates
-head(df_all)
 ```
-Now we have a dataframe where each row is an event, with the patient's visit start date ("C_Visit_date_Time"), the patient ID ("C_Processed_BioSense_ID"), the diagnoses code at the event ("diagnoses_code"), and the time stamp of the event ("time_stamp").
+Now we have a dataframe where each row is an event, with the patient's visit start date (`C_Visit_date_Time`), the patient ID (`C_Processed_BioSense_ID`), the diagnoses code at the event (`diagnoses_code`), and the time stamp of the event (`time_stamp`).
 
 Next we will add a columns for the time from arrival to each updated diagnosis, in days.
 ```{r}
@@ -241,7 +235,6 @@ count_df <- clean_line_list |>
   group_by(reference_date, report_date) |>
   summarise(count = n()) |>
   mutate(delay = as.integer(report_date - reference_date))
-head(count_df)
 ```
 Looking at this data, we can see that there is one case where there is a negative delay, which indicates that the time stamp of the diagnosis update was recorded before the start of the visit.
 This is likely due to a data entry error, we will choose to exclude all negative values delays in our dataset.
@@ -260,7 +253,6 @@ For demonstration purposes, we will now swap out the data from the mock NSSP lin
 We'll start by loading in the mock longer dataset, which is also provided as package data
 ```{r}
 mock_long_df
-head(mock_long_df)
 ```
 You can see that this larger mock dataset has the same format as the one we generated from the line list NSSP data -- with columns for reference date, report date, and counts.
 
@@ -426,7 +418,6 @@ nowcast_summary_df <-
     q95th_lb = quantile(pred_count, 0.025),
     q95th_ub = quantile(pred_count, 0.975)
   )
-head(nowcast_summary_df)
 ```
 
 Next, we will join the initially reported data and the final evaluation data, both summarised by reference time.
@@ -446,7 +437,6 @@ eval_data <- long_df |>
   summarise(final_count = sum(count)) |>
   mutate(time = row_number()) |>
   select(time, final_count)
-
 
 nowcast_w_data <- nowcast_summary_df |>
   left_join(training_df_by_ref_date,

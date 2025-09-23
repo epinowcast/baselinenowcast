@@ -356,7 +356,7 @@ test_that("allocate_reference_times errors when inputs are invalid", {
   expect_error(
     allocate_reference_times(
       reporting_triangle = rep_tri,
-      size_min_retro_nowcasts = 0.1
+      n_min_retro_nowcasts = 0.1
     )
   )
   expect_error(

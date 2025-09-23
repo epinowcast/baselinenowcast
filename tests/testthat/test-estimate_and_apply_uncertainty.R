@@ -49,7 +49,7 @@ test_that("estimate_and_apply_uncertainty works as expected with the default set
     disp_params
   )
 
-  expect_equal(nowcast_draws_df, nowcast_draws_df2, tol = 0.1)
+  expect_equal(nowcast_draws_df, nowcast_draws_df2, tolerance = 0.1)
 })
 
 test_that("estimate_and_apply_uncertainty error when things are specified incorrectly", { # nolint

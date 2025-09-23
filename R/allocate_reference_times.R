@@ -130,49 +130,10 @@ allocate_reference_times <- function(reporting_triangle,
   n_retrospective_nowcasts <- ns$n_retrospective_nowcasts
   n_history_delay <- ns$n_history_delay
 
-  # Handle proportion delay warning and messages
-  .handle_output_msgs(
-    n_history_delay,
-    n_retrospective_nowcasts,
-    n_used,
-    prop_delay
-  )
-
   return(list(
     n_history_delay = n_history_delay,
     n_retrospective_nowcasts = n_retrospective_nowcasts
   ))
-}
-
-#' Handle output messages after allocation has occurred
-#'
-#' @inheritParams allocate_reference_times
-#' @param prop_delay Numeric value <1 indicating what proportion of all
-#'   reference times in the reporting triangle to be used for delay
-#'  estimation.
-#' @inheritParams .assign_allocation_from_ns
-#' @inheritParams estimate_and_apply_uncertainty
-#' @importFrom cli cli_alert_info cli_warn
-#' @return NULL, invisibly
-.handle_output_msgs <- function(n_history_delay,
-                                n_retrospective_nowcasts,
-                                n_used,
-                                prop_delay) {
-  prop_delay_used <- n_history_delay / n_used
-
-  if (prop_delay_used != prop_delay) {
-    cli_warn(
-      message = c(
-        "`prop_delay` specified is not equivalent to `prop_delay` used.",
-        "i" = "{prop_delay} reference times were specified for delay estimation but due to minimum requirements had to be reallocated.", # nolint
-        "x" = "{round(prop_delay_used,3)} of reference times used for delay estimation." # nolint
-      )
-    )
-  }
-
-  cli_alert_info(text = "Using {n_history_delay} reference times for delay estimation.") # nolint
-  cli_alert_info(text = "Using {n_retrospective_nowcasts} reference times as retrospective nowcast times for uncertainty estimation.") # nolint
-  return(NULL)
 }
 
 
@@ -249,16 +210,14 @@ allocate_reference_times <- function(reporting_triangle,
                                          n_min_retro_nowcasts) {
   if (n_ref_times >= n_required) {
     cli_warn(message = c(
-      "Insufficient reference times in reporting triangle for the specified `scale_factor`.", # nolint
-      "i" = "{n_ref_times} reference times available and {n_target} are specified.", # nolint
-      "x" = "All {n_ref_times} reference times will be used." # nolint
+      "{n_ref_times} reference times available and {n_target} are specified.", # nolint
+      "i" = "All {n_ref_times} reference times will be used." # nolint
     ))
     return(n_ref_times)
   }
 
   cli_abort(message = c(
-    "Insufficient reference times in reporting triangle for the both delay and uncertainty estimation.", # nolint
-    "i" = "{n_ref_times} reference times available and {n_required} are needed, {n_min_delay} for delay estimation and {n_min_retro_nowcasts} for uncertainty estimation.", # nolint
+    "{n_ref_times} reference times available and {n_required} are needed, {n_min_delay} for delay estimation and {n_min_retro_nowcasts} for uncertainty estimation.", # nolint
     "x" = "Probabilistic nowcasts cannot be generated." # nolint
   ))
   return(NULL)
@@ -277,8 +236,7 @@ allocate_reference_times <- function(reporting_triangle,
                                         scale_factor,
                                         max_delay) {
   cli_abort(message = c(
-    "Insufficient reference times specified by `scale_factor` for the both delay and uncertainty estimation.", # nolint
-    "i" = "{scale_factor*max_delay} reference times specified and {n_required} are needed, {n_min_delay} for delay estimation and {n_min_retro_nowcasts} for uncertainty estimation.", # nolint,
+    "{scale_factor*max_delay} reference times specified and {n_required} are needed, {n_min_delay} for delay estimation and {n_min_retro_nowcasts} for uncertainty estimation.", # nolint,
     "x" = "Probabilistic nowcasts cannot be generated." # nolint
   ))
   return(NULL)
@@ -318,11 +276,22 @@ allocate_reference_times <- function(reporting_triangle,
     n_history_delay <- n_used - n_retrospective_nowcasts
   }
 
-  # Special case: check to make sure minimum
+  # Special case as a final check to make sure minimum
   # requirements for uncertainty were hit
   if (n_retrospective_nowcasts < n_min_retro_nowcasts) {
     n_retrospective_nowcasts <- n_min_retro_nowcasts
     n_history_delay <- n_used - n_retrospective_nowcasts
+  }
+
+  prop_delay_used <- n_history_delay / n_used
+
+  if (prop_delay_used != prop_delay) {
+    cli_warn(
+      message = c(
+        "{prop_delay} reference times were specified for delay estimation but due to minimum requirements had to be reallocated.", # nolint
+        "i" = "{round(prop_delay_used,3)} of reference times used for delay estimation." # nolint
+      )
+    )
   }
 
   return(list(

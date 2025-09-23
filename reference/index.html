@@ -62,6 +62,12 @@
 
       <dl><dt>
 
+          <code><a href="allocate_reference_times.html">allocate_reference_times()</a></code>
+
+        </dt>
+        <dd>Allocate training volume based on combination of defaults and user-specified values for training volume for delay and uncertainty estimation.</dd>
+      </dl><dl><dt>
+
           <code><a href="apply_delay.html">apply_delay()</a></code>
 
         </dt>
@@ -92,10 +98,28 @@
         <dd>Apply mask to extract the elements of the matrix that are both true</dd>
       </dl><dl><dt>
 
+          <code><a href="dot-assign_allocation_from_ns.html">.assign_allocation_from_ns()</a></code>
+
+        </dt>
+        <dd>Assign number of reference times to delay and uncertainty from the sizes</dd>
+      </dl><dl><dt>
+
           <code><a href="dot-calc_n_retro_nowcast_times.html">.calc_n_retro_nowcast_times()</a></code>
 
         </dt>
         <dd>Calculate the number of retrospective nowcast times that can be used after aggregating</dd>
+      </dl><dl><dt>
+
+          <code><a href="dot-calculate_ns.html">.calculate_ns()</a></code>
+
+        </dt>
+        <dd>Helper function to calculate various size requirements</dd>
+      </dl><dl><dt>
+
+          <code><a href="dot-check_against_requirements.html">.check_against_requirements()</a></code>
+
+        </dt>
+        <dd>Check target size against number of reference times available and the number required</dd>
       </dl><dl><dt>
 
           <code><a href="dot-check_lhs_not_only_zeros.html">.check_lhs_not_only_zeros()</a></code>
@@ -110,16 +134,64 @@
         <dd>Check observations and predictions are compatible</dd>
       </dl><dl><dt>
 
+          <code><a href="dot-check_to_filter_to_max_delay.html">.check_to_filter_to_max_delay()</a></code>
+
+        </dt>
+        <dd>Check that the reporting triangle contains the correct number of columns for the specified maximum delay</dd>
+      </dl><dl><dt>
+
           <code><a href="dot-filter_to_recent_horizons.html">.filter_to_recent_horizons()</a></code>
 
         </dt>
         <dd>Filter to recent horizons</dd>
       </dl><dl><dt>
 
+          <code><a href="dot-handle_target_exceeds_avail.html">.handle_target_exceeds_avail()</a></code>
+
+        </dt>
+        <dd>Helper for when target exceeds available reference times</dd>
+      </dl><dl><dt>
+
+          <code><a href="dot-perform_allocation_process.html">.perform_allocation_process()</a></code>
+
+        </dt>
+        <dd>Perform the allocation process</dd>
+      </dl><dl><dt>
+
           <code><a href="dot-safelydoesit.html">.safelydoesit()</a></code>
 
         </dt>
         <dd>Safe iterator</dd>
+      </dl><dl><dt>
+
+          <code><a href="dot-validate_inputs_allocation.html">.validate_inputs_allocation()</a></code>
+
+        </dt>
+        <dd>Helper function to validate allocation parameters</dd>
+      </dl><dl><dt>
+
+          <code><a href="dot-validate_inputs_uncertainty.html">.validate_inputs_uncertainty()</a></code>
+
+        </dt>
+        <dd>Validate the specified number of reference times meets the minimum requirements</dd>
+      </dl><dl><dt>
+
+          <code><a href="dot-validate_max_delay.html">.validate_max_delay()</a></code>
+
+        </dt>
+        <dd>Check that the maximum delay is not too large, error if it is</dd>
+      </dl><dl><dt>
+
+          <code><a href="estimate_and_apply_delay.html">estimate_and_apply_delay()</a></code>
+
+        </dt>
+        <dd>Estimate and apply delay from a reporting triangle</dd>
+      </dl><dl><dt>
+
+          <code><a href="estimate_and_apply_uncertainty.html">estimate_and_apply_uncertainty()</a></code>
+
+        </dt>
+        <dd>Estimate and apply uncertainty to a point nowcast matrix</dd>
       </dl><dl><dt>
 
           <code><a href="estimate_delay.html">estimate_delay()</a></code>

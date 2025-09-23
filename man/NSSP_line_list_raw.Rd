@@ -18,11 +18,12 @@ dictionary with indices and corresponding time stamps formatted as
 YYYY-MM-DD HH:MM:SS.}
 \item{DischargeDiagnosisUpdates}{Character string formatted as a
 dictionary with indices and corresponding diagnoses codes pertaining to
-thie diagnosis associated with that event.}
+this diagnosis associated with that event.}
 \item{HasBeenAdmitted}{Numeric indicating whether the patient was
 admitted (0 for no, 1 for admission).}
 \item{C_Visit_Date_Time}{Date-time indicating the time stamp of the
-initial visit in YYYY-MM-DD HH:MM:SS format}
+the patient registering in the emergency department, in
+YYYY-MM-DD HH:MM:SS format}
 \item{c_race}{Character string indicating the race/ethnicity of the
 patient}
 \item{sex}{Character string indicating the gender of the patient}

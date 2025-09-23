@@ -28,7 +28,7 @@ Reporting delays can vary by a range of factors including the electronic health 
 These reporting delays will be used to estimate a reporting delay distribution.
 
 In this near-real-time emergency department dataset, public health surveillance definitions have been developed for a range of public health concerns and these definitions typically rely on the presence of diagnosis code(s), specific free text captured in clinical notes, or a combination of these.
-In additional, exclusion criteria are used in soem definitions to improve the specificity of these definitions in some instances.
+In additional, exclusion criteria are used in some definitions to improve the specificity of these definitions in some instances.
 
 In this example, we will focus on syndromic surveillance definitions that rely solely on the presence of one or more diagnoses codes, as this means that patients tend to transition from a non-case to case only once (rather than reverting back to a non-case during the course of their clinical encounter).
 Our nowcasting methods primarily focus on the former.
@@ -79,7 +79,7 @@ diagnoses_codes_defn <- c("U07", "R112")
 ```
 
 ## Expand the data so that each "event" has its own column
-We will create two datasets which parse the characters in the columns "DischargeDiagnosisMDTUpdates" and "DischargeDiagnosis , which contain a string listing the time stamp and diagnosis codes (respectively) of each "event" in the clinical encounter, formatted as:
+We will create two datasets which parse the characters in the columns "DischargeDiagnosisMDTUpdates" and "DischargeDiagnosisUpdates" , which contain a string listing the time stamp and diagnosis codes (respectively) of each "event" in the clinical encounter, formatted as:
 
  - "{event number};YYYY-MM-DD HH:MM:SS;|{event number 2};YYYY-MM-DD HH:MM:SS;|" for "DischargeDiagnosisMDTUpdates"
 

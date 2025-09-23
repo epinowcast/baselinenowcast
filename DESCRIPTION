@@ -50,6 +50,8 @@ Suggests:
     bookdown,
     dplyr,
     tidyr,
+    stringr,
+    purrr,
     readr,
     ggplot2,
     spelling,

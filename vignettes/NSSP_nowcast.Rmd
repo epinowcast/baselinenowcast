@@ -44,11 +44,12 @@ We will start by using the diagnosis codes that define Acute Respiratory Infecti
 # Load packages
 library(baselinenowcast)
 library(ggplot2)
+library(stringr)
 library(dplyr)
 library(tidyr)
-library(Rnssp)
-library(httr)
 library(readr)
+library(lubridate)
+library(purrr)
 # Set seed for reproducibility
 set.seed(123)
 ```
@@ -98,6 +99,7 @@ NSSP_time_stamps_wide <- NSSP_line_list_raw |>
   select(-DischargeDiagnosisUpdates)
 head(NSSP_time_stamps_wide)
 ```
+Repeat for the diagnoses codes column.
 ```{r}
 NSSP_diagnoses_wide <- NSSP_line_list_raw |>
   separate_wider_delim(DischargeDiagnosisUpdates,
@@ -266,7 +268,7 @@ long_df <- mock_long_df |>
 
 delay_df_t <- long_df |>
   group_by(reference_date) |>
-  summarise(mean_delay = count * delay / sum(count))
+  summarise(mean_delay = sum(count * delay) / sum(count))
 
 delay_summary <- long_df |>
   mutate(mean_delay_overall = sum(count * delay) / sum(count))
@@ -515,7 +517,7 @@ plot_prob_nowcast <- ggplot(nowcast_data_recent) +
   xlab("Date of ED visit") +
   ylab("Number of ARI cases") +
   theme(legend.position = "bottom") +
-  ggtitle("Comparison of ARI cases as of the nowcast date, later observed counts, \n and probabilistic nowcasted counts")
+  ggtitle("Comparison of cases of ARI as of the nowcast date, later observed, \n and generated as a probabilistic nowcast")
 ```
 </details>
 ```{r}

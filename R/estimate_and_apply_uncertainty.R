@@ -9,11 +9,12 @@
 #'    starting from the most recent reporting delay.
 #' @param n_retrospective_nowcasts Integer indicating the number of
 #'   retrospective nowcast times to use for uncertainty estimation.
+#' @param ... Additional arguments to `estimate_uncertainty()` and
+#'    `sample_prediction()`.
 #' @returns `nowcast_draws_df` Dataframe containing draws of combined
 #'    observations and probabilistic predictions at each reference time.
 #' @export
 #' @importFrom cli cli_abort
-#' @autoglobal
 #' @examples
 #' triangle <- matrix(
 #'   c(
@@ -50,8 +51,7 @@ estimate_and_apply_uncertainty <- function(
     draws = 1000,
     uncertainty_model = fit_by_horizon,
     uncertainty_sampler = sample_nb,
-    ref_time_aggregator = identity,
-    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
+    ...) {
   .validate_multiple_inputs(
     point_nowcast_matrix = point_nowcast_matrix,
     reporting_triangle = reporting_triangle,
@@ -86,8 +86,7 @@ estimate_and_apply_uncertainty <- function(
     retro_reporting_triangles = retro_rep_tris,
     n = n_retrospective_nowcasts,
     uncertainty_model = uncertainty_model,
-    ref_time_aggregator = ref_time_aggregator,
-    delay_aggregator = delay_aggregator
+    ...
   )
   nowcast_draws <- sample_nowcasts(
     point_nowcast_matrix,
@@ -95,8 +94,7 @@ estimate_and_apply_uncertainty <- function(
     uncertainty_params = uncertainty_params,
     draws = draws,
     uncertainty_sampler = uncertainty_sampler,
-    ref_time_aggregator = ref_time_aggregator,
-    delay_aggregator = delay_aggregator
+    ...
   )
   return(nowcast_draws)
 }

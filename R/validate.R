@@ -268,7 +268,6 @@
 #'    reference times needed for delay estimation.
 #' @inheritParams estimate_and_apply_uncertainty
 #' @inheritParams allocate_reference_times
-#' @autoglobal
 #' @returns NULL, invisibly
 .validate_inputs_uncertainty <- function(n_ref_times,
                                          n_min_delay,

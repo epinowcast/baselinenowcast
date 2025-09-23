@@ -13,8 +13,7 @@ estimate_and_apply_uncertainty(
   draws = 1000,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,
-  ref_time_aggregator = identity,
-  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+  ...
 )
 }
 \arguments{
@@ -58,14 +57,8 @@ arguments \code{pred} for the vector of predictions and uncertainty parameters
 for the corresponding vector of uncertainty parameters, and draws from a
 negative binomial for each element of the vector.}
 
-\item{ref_time_aggregator}{Function that operates along the rows (reference
-times) of the retrospective point nowcast matrix before it has been
-aggregated across columns (delays). Default is \code{identity}
-which does not aggregate across reference times.}
-
-\item{delay_aggregator}{Function that operates along the columns (delays)
-of the retrospective point nowcast matrix after it has been aggregated
-across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
+\item{...}{Additional arguments to \code{estimate_uncertainty()} and
+\code{sample_prediction()}.}
 }
 \value{
 \code{nowcast_draws_df} Dataframe containing draws of combined

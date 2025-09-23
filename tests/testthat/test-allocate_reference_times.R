@@ -248,7 +248,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     allocate_reference_times(
       reporting_triangle = rep_tri4
     ),
-    regexp = "reference times were specified for delay estimation but due to minimum"
+    regexp = "reference times were specified for delay estimation but due to minimum" # nolint
   )
   expect_identical(tv4$n_history_delay, 6)
   expect_identical(tv4$n_retrospective_nowcasts, 2)
@@ -294,7 +294,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     allocate_reference_times(
       reporting_triangle = rep_tri7
     ),
-    regexp = "reference times were specified for delay estimation but due to minimum"
+    regexp = "reference times were specified for delay estimation but due to minimum" # nolint
   )
   expect_identical(tv7$n_history_delay, 47)
   expect_identical(tv7$n_retrospective_nowcasts, 8)
@@ -336,7 +336,7 @@ test_that("allocate_reference_times warns and reallocates appropriately when suf
       reporting_triangle = rep_tri,
       prop_delay = 0.95
     ),
-    regexp = "reference times were specified for delay estimation but due to minimum"
+    regexp = "reference times were specified for delay estimation but due to minimum" # nolint
   )
 })
 

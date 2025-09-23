@@ -5,6 +5,7 @@
 #' @importFrom checkmate assert_integerish
 #' @importFrom checkmate assert_matrix
 #' @importFrom cli cli_abort
+#' @inheritParams .validate_delay_and_triangle
 #' @inheritParams estimate_delay
 #' @returns NULL, invisibly
 #' @keywords internal
@@ -120,6 +121,43 @@
   return(NULL)
 }
 
+#' Check that the maximum delay is not too large, error if it is
+#'
+#' @inheritParams .validate_delay_and_triangle
+#' @inheritParams estimate_delay
+#'
+#' @returns NULL invisibly
+.validate_max_delay <- function(triangle,
+                                max_delay) {
+  if (max_delay > ncol(triangle) - 1) {
+    cli_abort(
+      message = "The maximum delay must be less than the number of columns in the reporting triangle." # nolint
+    )
+  }
+
+  return(NULL)
+}
+#' Check that the reporting triangle contains the correct number of columns for
+#'   the specified maximum delay
+#'
+#' @inheritParams .validate_delay_and_triangle
+#' @inheritParams estimate_delay
+#' @importFrom cli cli_alert_info
+#'
+#' @returns reporting_triangle
+.check_to_filter_to_max_delay <- function(triangle,
+                                          max_delay) {
+  if (max_delay < ncol(triangle) - 1) {
+    # filter the reporting triangle to be less than the maximum delay
+    triangle <- triangle[, 1:(max_delay + 1)]
+
+    cli_alert_info(
+      text = "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay. The reporting triangle will be filtered to include only the first {max_delay+1} delays." # nolint
+    )
+  }
+  return(triangle)
+}
+
 #' Validate triangle to nowcast and delay PMF together
 #' Various checks to make sure that the reporting triangle  and the delay PMF
 #'   passed in to [apply_delay()] are formatted properly and compatible.
@@ -163,6 +201,107 @@
         "ensure a nowcast, not a forecast, is being produced."
       )
     )
+  }
+
+  return(NULL)
+}
+
+#' Validate the inputs to `estimate_and_apply_uncertainty()` to ensure that
+#'    the reporting triangle, point nowcast matrix, and specified maximum delay
+#'    are correct.
+#'
+#' @inheritParams estimate_and_apply_uncertainty
+#'
+#' @returns NULL, invisibly
+#' @keywords internal
+.validate_multiple_inputs <- function(
+    point_nowcast_matrix,
+    reporting_triangle,
+    max_delay) {
+  # Basic input validation
+  if (!is.matrix(point_nowcast_matrix)) {
+    cli_abort("`point_nowcast_matrix` must be a matrix.")
+  }
+
+  if (ncol(point_nowcast_matrix) != ncol(reporting_triangle)) {
+    cli_abort(c(
+      "x" = "`point_nowcast_matrix` and `reporting_triangle` must have the same number of columns.", # nolint
+      "i" = "Got {ncol(point_nowcast_matrix)} and {ncol(reporting_triangle)} respectively." # nolint
+    ))
+  }
+
+  if (ncol(reporting_triangle) != (max_delay + 1)) {
+    cli_abort(c(
+      "x" = "Inconsistent `max_delay`.", # nolint
+      "i" = "`ncol(reporting_triangle)` = {ncol(reporting_triangle)} but `max_delay + 1` = {max_delay + 1}." # nolint
+    ))
+  }
+
+  return(NULL)
+}
+
+#' Helper function to validate allocation parameters
+#'
+#'
+#' @inheritParams allocate_reference_times
+#' @importFrom checkmate assert_scalar assert_numeric assert_integerish
+#'
+#' @returns NULL invisibly
+.validate_inputs_allocation <- function(scale_factor,
+                                        prop_delay,
+                                        n_min_retro_nowcasts) {
+  assert_integerish(n_min_retro_nowcasts, lower = 0)
+  assert_scalar(prop_delay)
+  assert_numeric(prop_delay, lower = 0, upper = 1, finite = TRUE)
+  assert_scalar(scale_factor)
+  assert_numeric(scale_factor, lower = 0, finite = TRUE)
+  return(NULL)
+}
+
+
+#' Validate the specified number of reference times meets the minimum
+#'    requirements
+#'
+#' @param n_ref_times Integer indicating the number of reference times
+#'    available.
+#' @param n_min_delay Integer indicating minimum number of
+#'    reference times needed for delay estimation.
+#' @inheritParams estimate_and_apply_uncertainty
+#' @inheritParams allocate_reference_times
+#' @returns NULL, invisibly
+.validate_inputs_uncertainty <- function(n_ref_times,
+                                         n_min_delay,
+                                         n_history_delay,
+                                         n_retrospective_nowcasts,
+                                         n_min_retro_nowcasts = 2) {
+  assert_integerish(n_ref_times, lower = 0)
+  assert_integerish(n_min_delay, lower = 0)
+  assert_integerish(n_history_delay, lower = 0)
+  assert_integerish(n_retrospective_nowcasts, lower = 0)
+  assert_integerish(n_min_retro_nowcasts, lower = 0)
+
+  if (n_ref_times < n_history_delay + n_retrospective_nowcasts) {
+    cli_abort(message = c(
+      "Insufficient reference times in reporting triangle for specified `n_history_delay` and `n_retrospective_nowcasts`.", # nolint
+      "i" = "{n_history_delay + n_retrospective_nowcasts} reference times are specified for delay and uncertainty estimation.", # nolint
+      "x" = "Only {n_ref_times} reference times are available in the reporting triangle." # nolint
+    ))
+  }
+
+  if (n_history_delay < n_min_delay) {
+    cli_abort(message = c(
+      "Insufficient `n_history_delay`.", # nolint
+      "i" = "{n_min_delay} reference times needed for delay estimation.", # nolint
+      "x" = "{n_history_delay} reference times were specified." # nolint
+    ))
+  }
+
+  if (n_retrospective_nowcasts < n_min_retro_nowcasts) {
+    cli_abort(message = c(
+      "Insufficient `n_retrospective_nowcasts`.", # nolint
+      "i" = "{n_min_retro_nowcasts} reference times needed for uncertainty estimation.", # nolint
+      "x" = "{n_retrospective_nowcasts} reference times were specified." # nolint
+    ))
   }
 
   return(NULL)

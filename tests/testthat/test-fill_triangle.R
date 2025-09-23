@@ -34,9 +34,14 @@ test_that("fill_triangle invalid inputs throw errors", {
 
   # Invalid max_delay
   expect_error(fill_triangle(test_triangle, max_delay = -1))
-  expect_error(fill_triangle(test_triangle,
-    max_delay = ncol(test_triangle) + 1
-  ))
+
+  # Error about maximum delay
+  expect_error(
+    fill_triangle(test_triangle,
+      max_delay = ncol(test_triangle) + 1
+    ),
+    regexp = "The maximum delay must be less than the number of columns" # nolint
+  )
 
   # Invalid n values
   expect_error(fill_triangle(test_triangle, n = -1))

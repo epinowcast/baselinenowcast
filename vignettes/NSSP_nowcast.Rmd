@@ -157,10 +157,11 @@ Next, we will clean up the time stamps in the data so that the "Update" column i
 ```{r}
 NSSP_time_stamps_long <-
   NSSP_time_stamps_long |>
-  mutate(time_stamp = time_stamp |>
-    str_remove(".*\\}") |>
-    str_remove_all("[|;]+") |>
-    as.POSIXct(format = "%Y-%m-%d %H:%M:%S", tz = "UTC")) |>
+  mutate(time_stamp = str_remove(time_stamp, ".*\\}")) |>
+  mutate(time_stamp = str_remove_all(time_stamp, "[|;]+")) |>
+  mutate(time_stamp = as.POSIXct(time_stmap,
+    format = "%Y-%m-%d %H:%M:%S", tz = "UTC"
+  )) |>
   drop_na(time_stamp)
 ```
 
@@ -172,9 +173,8 @@ back into the time stamped dataset.
 ```{r}
 NSSP_diagnoses_long <-
   NSSP_diagnoses_long |>
-  mutate(diagnoses_codes = diagnoses_codes |>
-    str_remove(".*\\}")) |>
-  filter(diagnoses_codes != "") |>
+  mutate(diagnoses_codes = str_remove(diagnoses_codes, ".*\\}")) |>
+  filter(nzchar(diagnoses_codes, "")) |>
   drop_na() |>
   select(event_id, diagnoses_codes)
 head(NSSP_diagnoses_long)
@@ -241,8 +241,7 @@ This is likely due to a data entry error, we will choose to exclude all negative
 
 Filter out negative delays.
 ```{r}
-count_df <- count_df |>
-  filter(delay >= 0)
+count_df <- filter(count_df, delay >= 0)
 head(count_df)
 ```
 
@@ -517,7 +516,8 @@ plot_prob_nowcast <- ggplot(nowcast_data_recent) +
   xlab("Date of ED visit") +
   ylab("Number of ARI cases") +
   theme(legend.position = "bottom") +
-  ggtitle("Comparison of cases of ARI as of the nowcast date, later observed, \n and generated as a probabilistic nowcast")
+  ggtitle("Comparison of cases of ARI as of the nowcast date, later observed,
+          \n and generated as a probabilistic nowcast")
 ```
 </details>
 ```{r}

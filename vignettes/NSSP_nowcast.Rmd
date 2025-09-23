@@ -19,15 +19,30 @@ vignette: >
 
 # Introduction
 
-- Incorporate language from Rosa's description of Syndrome Selection for Nowcasting (explaining how the NSSP ESSENCE visit records dataset works)
-- How diseases are defined (diagnosis codes + clinical notes or a combination + exclusion criteria)
-- syndromic surveillance relying solely on presence of diangosis codes are best for this
+In this vignette, we will show an example of how to clean and pre-process line-list patient-level data from the National Syndromic Surveillance (NSSP) dataset.
+This dataset is entirely fake, it represents a small number of simulate records that mirror the NSSP update fields.
+It was created to demonstrate how to take advantage of the timesteps embedded in the NSSP ESSENCE visits records dataset, which records the timing of diagnoses code updates related to each clinical encounter.
+Diagnosis code may begin to be associated with the clinical encounter at different points in the patient or clinical processing journey (e.g. during admission, triage, after laboratory results are returned, or during coding for billing, etc.), and are captured by the syndromic surveillance system as they are entered into the electronic health record.
+The difference between the visit date - when the patient registers in the emergency department- and the time of the diagnosis update pertaining to the diagnosis of interest, is used to compute a reporting delay for each patient.
+Reporting delays can vary by a range of factors including the electronic health record system, facility, provide, season, time of day, or means of diagnosis.
+These reporting delays will be used to estimate a reporting delay distribution.
+
+In this near-real-time emergency department dataset, public health surveillance definitions have been developed for a range of public health concerns and these definitions typically rely on the presence of diagnosis code(s), specific free text captured in clinical notes, or a combination of these.
+In additional, exclusion criteria are used in soem definitions to improve the specificity of these definitions in some instances.
+
+In this example, we will focus on syndromic surveillance definitions that rely solely on the presence of one or more diagnoses codes, as this means that patients tend to transition from a non-case to case only once (rather than reverting back to a non-case during the course of their clinical encounter).
+Our nowcasting methods primarily focus on the former.
+
+In this vignette, we will walk through how to "clean" the line list NSSP dataset in order to obtain a long tidy dataframe containing the incident counts of "cases" of a particular syndromic surveillance definition by reference date (in this case the date the visit started) and report date (the date the patient's record was updated with the corresponding diagnosis).
+
+Once we have shown how to generate data of this form from the line-list data, we will swap out the dataframe for a larger mock dataset formatted the same way, and demonstrate how to use `baselinenowcast` to generate a nowcast of the admissions.
+We will start by using the diagnosis codes that define Acute Respiratory Infections (ARI), but any sets of diagnosis codes that define a syndrome could be used interchangeably.
+
 
 ## Load packages
 ```{r setup, message = FALSE, warning = FALSE, results = 'hide'}
 # Load packages
 library(baselinenowcast)
-library(epinowcast)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
@@ -39,110 +54,176 @@ set.seed(123)
 ```
 
 
+
 # NSSP data cleaning
 
- - Explain that we are pulling in data that looks like what you might query from the ESSENCE API (actually represents a small number of simulated records that mirror NSSP update fields)
- - Goal is to turn the line list's time stamp and update columns into a long format with one row per update
- - Filter through the updates to find the first "hit" that corresponds to the pathogen/syndrome of interest (this might be one ICD10 or a list of ICD10s)
- - The first update time represents the date of reporting of the diagnosis, and the visit time represents the data in which the reference event, in this case the date of the visit, occurred.
- - Summarise the data in long format, obtaining a cleaned long tidy dataframe containing the counts of admissions on each reference date (visit date) and report date (update date).
- - Explain that we will be pretending to make a nowcast as of some nowcast date in the past ( so we will filter for all report dates before that time).
+We will start by loading in the mock line-list dataset.
+Our goal is to turn the line-list's time stamp and diagnosis update columns into first a long format with one row per update, then filter through the updates to find the first "hit" that corresponds to the diagnosis codes in the syndromic surveillance definition for ARI.
+In this dataset, the first update time represents the date of reporting of the diagnosis, and the visit time represents the date in which the reference event, in this case the date of the visit, occurred.
+We will then summarise the data in long format, obtaining a long tidy dataframe with the counts of admissions on each reference date (visit date) and report date (the first time the diagnosis occurred during the clinical encounter).
 
-Load in the line list data. This typically will be pulled using an API, but here we just load in the package data.
-We have provided example code showing how you would pull the data from an API
+
+## Load in the line list data
+This typically will be pulled using an API, but here we provide the `NSSP_line_list_raw` dataset as package data.
 ```{r}
-# API code?
-NSSP_line_list_raw <- read_csv(file.path("../../baselinenowcast-paper/scratch/covid-api-pull.csv"))
+NSSP_line_list_raw
 head(NSSP_line_list_raw)
 ```
-Format the data as a tibble and put into wide format based on the characters in the column "DischargeDiagnosisMDTUpdates".
-This column contains a character string indicating all of the time stamps of patient update "events" , formatted as:
-"{event number}; YYYY-MM-DD HH:MM:SS| {event number 2} YYYY-MM-DD HH:MM:SS|"
 
-In this chunk of code, we will use `tidyr`'s `separate_wider_delim` to pivot these entries from long to wide, so that each "event" has its own column.
+## Define the syndromic surveillance definition diagnosis codes.
+Here we will list the diagnosis codes which correspond to ARI.
+To be considered an ARI case, one or more of these codes must be reported.
+```{r}
+diagnoses_codes_defn <- c("U07", "R112")
+```
+
+## Expand the data so that each "event" has its own column
+We will create two datasets which parse the characters in the columns "DischargeDiagnosisMDTUpdates" and "DischargeDiagnosis , which contain a string listing the time stamp and diagnosis codes (respectively) of each "event" in the clinical encounter, formatted as:
+
+ - "{event number};YYYY-MM-DD HH:MM:SS;|{event number 2};YYYY-MM-DD HH:MM:SS;|" for "DischargeDiagnosisMDTUpdates"
+
+ - "{event number};{diagnoses codes};|{event number 2}{diagnoses codes};|" for "DischargeDiagnosisUpdates"
+
+Later, we will merge the two datasets back together by the unique patient ID and the event numbers.
+
+We will use `tidyr`'s `separate_wider_delim` to expand these entries, so that each "event" has its own column.
 Since patients experience a different number of patient update "events", there will be missing values for patients not experiencing many events during their visit.
 The columns will be named by the original column name + the event number, e.g. "DischargeDiagnosisMDTUpdates1".
 
 ```{r}
-NSSP_line_list <- as_tibble(NSSP_line_list_raw)
-NSSP_wide <- NSSP_line_list |>
-  separate_wider_delim(DischargeDiagnosisMDTUpdates, delim = "{", names_sep = "", too_few = "align_start")
-head(NSSP_wide)
+NSSP_time_stamps_wide <- NSSP_line_list_raw |>
+  separate_wider_delim(DischargeDiagnosisMDTUpdates,
+    delim = "{", names_sep = "", too_few = "align_start"
+  ) |>
+  select(-DischargeDiagnosisUpdates)
+head(NSSP_time_stamps_wide)
 ```
-Find the name of the last update column, and create a long tidy dataframe where each row is now an event.
 ```{r}
-lastcol <- tail(colnames(select(NSSP_wide, matches("DischargeDiagnosisMDTUpdates"))), 1) # determines the title of the last DischargeDiagnosisMDTUpdates column
-NSSP_long <- gather(NSSP_wide, Updatecount, "Update", DischargeDiagnosisMDTUpdates1:as.name(`lastcol`), factor_key = TRUE) # convert wide to long - X1 X2 etc turned into 1 column labelled as "Update"
-NSSP_long$ID <- paste(NSSP_long$C_Processed_BioSense_ID, parse_number(as.character(NSSP_long$Updatecount))) # create an ID for each event
+NSSP_diagnoses_wide <- NSSP_line_list_raw |>
+  separate_wider_delim(DischargeDiagnosisUpdates,
+    delim = "{", names_sep = "", too_few = "align_start"
+  ) |>
+  select(-DischargeDiagnosisMDTUpdates)
+head(NSSP_diagnoses_wide)
 ```
+
+Find the name of the last update column, and pivot the data from wide to long.
+This creates a long tidy dataframe where each row is now an event.
+We will create a unique event ID using the event number and the patient ID in the `C_Processed_BioSense_ID` column.
+```{r}
+lastcol_ts <- tail(colnames(select(
+  NSSP_time_stamps_wide,
+  matches("DischargeDiagnosisMDTUpdates")
+)), 1)
+NSSP_time_stamps_long <- gather(NSSP_time_stamps_wide,
+  key = column_name,
+  value = "time_stamp",
+  DischargeDiagnosisMDTUpdates1:as.name(`lastcol_ts`),
+  factor_key = TRUE
+) |>
+  mutate(
+    event_id = paste(
+      C_Processed_BioSense_ID,
+      parse_number(as.character(column_name))
+    )
+  )
+head(NSSP_time_stamps_long)
+```
+
+Perform the same procedure for the diagnoses dataset.
+```{r}
+lastcol_diag <- tail(colnames(select(
+  NSSP_diagnoses_wide,
+  matches("DischargeDiagnosisUpdates")
+)), 1)
+NSSP_diagnoses_long <- gather(NSSP_diagnoses_wide,
+  key = column_name,
+  value = "diagnoses_codes",
+  DischargeDiagnosisUpdates1:as.name(`lastcol_diag`),
+  factor_key = TRUE
+) |>
+  mutate(
+    event_id = paste(
+      C_Processed_BioSense_ID,
+      parse_number(as.character(column_name))
+    )
+  )
+head(NSSP_diagnoses_long)
+```
+
 Next, we will clean up the time stamps in the data so that the "Update" column is formatted as "%Y-%m-%d %H:%M:%S", and then we will filter out an events that are not present (updates are NAs).
 ```{r}
-NSSP_long$Update <- gsub(".*\\}", "", NSSP_long$Update) # Get rid of the number in brackets at the start
-NSSP_long$Update <- gsub("|", "", NSSP_long$Update) # Get rid of the lines surrounding messages - now all that is there is a date time
-NSSP_long$Update <- gsub(";+", "", NSSP_long$Update) # Get rid of the semicolons surrounding messages - now all that is there is a date time
-NSSP_long$Update <- as.POSIXct(NSSP_long$Update, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-NSSP_long <- NSSP_long %>% drop_na(Update)
+NSSP_time_stamps_long <-
+  NSSP_time_stamps_long |>
+  mutate(time_stamp = time_stamp |>
+    str_remove(".*\\}") |>
+    str_remove_all("[|;]+") |>
+    as.POSIXct(format = "%Y-%m-%d %H:%M:%S", tz = "UTC")) |>
+  drop_na(time_stamp)
+```
+
+Clean up the diagnoses codes and remove the empty updates from the diagnoses dataset.
+For these, we want to keep the semi-colons and just remove the numbers since
+this information is stored in the event ID.
+We will only use the event ID and the diagnoses codes, as this will be merged
+back into the time stamped dataset.
+```{r}
+NSSP_diagnoses_long <-
+  NSSP_diagnoses_long |>
+  mutate(diagnoses_codes = diagnoses_codes |>
+    str_remove(".*\\}")) |>
+  filter(diagnoses_codes != "") |>
+  drop_na() |>
+  select(event_id, diagnoses_codes)
+head(NSSP_diagnoses_long)
 ```
 
 
-Do the same procedure for the diagnoses codes in the column "DischargeDiagnosisUpdates"
+Merge together the time stamps of events and the diagnoses codes.
+Filter to remove empty update
 ```{r}
-# condensed --> wide
-NSSP_wide_codes <- NSSP_line_list |> separate_wider_delim(DischargeDiagnosisUpdates, delim = "{", names_sep = "", too_few = "align_start")
-lastcol_code <- tail(colnames(select(NSSP_wide_codes, matches("DischargeDiagnosisUpdates"))), 1) # determines the title of the last DischargeDiagnosisUpdates column
-
-# wide to long
-NSSP_long_codes <- gather(NSSP_wide_codes, Updatecount, `Update DD`, DischargeDiagnosisUpdates1:as.name(`lastcol_code`), factor_key = TRUE)
-
-# Add the ID in the same way as before -- will let us join by patient events
-NSSP_long_codes$ID <- paste(NSSP_long_codes$C_Processed_BioSense_ID, parse_number(as.character(NSSP_long_codes$Updatecount)))
-
-# Clean up "messages" (diagnosis codes )
-NSSP_long_codes$`Update DD` <- gsub(".*\\}", "", NSSP_long_codes$`Update DD`) # Get rid of the number in brackets at the start
-
-# Remove rows corresponding to emptoy updates
-NSSP_long_codes <- NSSP_long_codes |>
-  filter(`Update DD` != "") |>
-  drop_na(`Update DD`)
-
-# Select only the ID (patient + event number) and the update diagnosis code
-NSSP_long_codes <- NSSP_long_codes |> select(`ID`, `Update DD`)
-```
-
-Merge together the time stamps of events and the "messages" (diagnosis codes) of events.
-```{r}
-df_all <- merge(NSSP_long, NSSP_long_codes, by = "ID")
-df_all <- df_all |> filter(`Update DD` != ";;|") # drops empty updates
+df_all <- merge(NSSP_time_stamps_long,
+  NSSP_diagnoses_long,
+  by = "event_id"
+) |>
+  filter(diagnoses_codes != ";;|") # drops empty updates
 head(df_all)
 ```
-Now we have a dataframe where each row is an event, with the patient's visit start date ("C_Visit_date_Tme"), the patient ID ("C_Processed_BioSense_ID"), the diagnosis at the event ("Update DD"), and the time stamp of the event ("Update").
+Now we have a dataframe where each row is an event, with the patient's visit start date ("C_Visit_date_Time"), the patient ID ("C_Processed_BioSense_ID"), the diagnoses code at the event ("diagnoses_code"), and the time stamp of the event ("time_stamp").
 
-Next we will add columns for the time from arrival to each updated diagnosis, in weeks.
+Next we will add a columns for the time from arrival to each updated diagnosis, in days.
 ```{r}
-df_all$C_Visit_Date_Time <- as.POSIXct(df_all$C_Visit_Date_Time, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-df_all$ArrivaltoUpdate <- as.numeric(difftime(df_all$Update, df_all$C_Visit_Date_Time, units = "weeks"))
+df_all <- df_all |>
+  mutate(arrival_to_update_delay = as.numeric(difftime(
+    as.POSIXct(time_stamp), as.POSIXct(C_Visit_Date_Time),
+    units = "days"
+  )))
 ```
 
-Next, apply the query to identify when the patient was diagnosed with COVID.
+Next, apply the query to identify when the patient first was diagnosed with ARI.
 ```{r}
-covid_updates <- df_all |> filter(grepl("U07", `Update DD`))
-# order these by lowest time
-covid_updates <- covid_updates[order(covid_updates$ArrivaltoUpdate), ]
-# Get only the first time each patient had a covid diagnosis code.
-first_covid <- covid_updates |>
+ARI_updates <- df_all |>
+  filter(map_lgl(diagnoses_codes, ~ any(str_detect(.x, diagnoses_codes_defn))))
+```
+
+Next, we will order these by the delay from visit to the diagnoses, and for each patient keep only the first update containing the ARI diagnoses code(s).
+```{r}
+first_ARI_diagnosis <- ARI_updates |>
+  arrange(arrival_to_update_delay) |>
   group_by(C_Processed_BioSense_ID) |>
   slice(1)
 ```
 
-Clean up for nowcasting
+Clean up for nowcasting.
 ```{r}
-clean_line_list <- first_covid |>
+clean_line_list <- first_ARI_diagnosis |>
   mutate(
     reference_date = as.Date(C_Visit_Date_Time),
-    report_date = as.Date(Update)
+    report_date = as.Date(time_stamp)
   ) |>
   ungroup() |>
   select(reference_date, report_date)
+head(clean_line_list)
 ```
 
 Get the counts by reference and report date and compute the delay.
@@ -151,41 +232,49 @@ count_df <- clean_line_list |>
   group_by(reference_date, report_date) |>
   summarise(count = n()) |>
   mutate(delay = as.integer(report_date - reference_date))
+head(count_df)
+```
+Looking at this data, we can see that there is one case where there is a negative delay, which indicates that the time stamp of the diagnosis update was recorded before the start of the visit.
+This is likely due to a data entry error, we will choose to exclude all negative values delays in our dataset.
 
+Filter out negative delays.
+```{r}
+count_df <- count_df |>
+  filter(delay >= 0)
 head(count_df)
 ```
 
-# Pre-processing
+We have now generated data in the format that we need to use the `baslinenowcast` package, which requires a long tidy dataframe with incident case counts indexed by reference date and report date.
+For demonstration purposes, we will now swap out the data from the mock NSSP line-list data with a larger mock dataset.
 
- - Explain that we will be using data that looks just like the cleaned long tidy dataframe above, but is much larger. If following along with real-data, its not necessary to load in another dataset here.
- - Calculate the delay time by taking the difference between the report date and the reference date
+# Pre-processing of larger mock dataset
 
- Load in the larger mock dataset
+We'll start by loading in the mock longer dataset, which is also provided as package data
 ```{r}
-mock_long_df <- read_csv(file.path("../../baselinenowcast-paper/scratch/covid_nowcast_mock.csv"))
+mock_long_df
 head(mock_long_df)
 ```
 You can see that this larger mock dataset has the same format as the one we generated from the line list NSSP data -- with columns for reference date, report date, and counts.
 
+## Exploratory data analysis to identify an appropriate maximum delay
 
+We will start by computing the reporting delay and performing an exploratory data analysis of the delays in this dataset.
 
-
-# Exploratory data analysis to identify an appropriate maximum delay
 
  - Estimate the delay distribution across all the data and plot the PDF/CDF
  - Find the maximum but getting the 99th quantile or eyeballing it
 
 ```{r}
-mock_data <- mock_long_df |>
+mock_long_df <- mock_long_df |>
   mutate(delay = as.integer(report_date - reference_date))
 
-delay_df_t <- mock_data |>
+delay_df_t <- mock_long_df |>
   group_by(reference_date) |>
   summarise(mean_delay = count * delay / sum(count))
 
-avg_delay_pmf <- mock_data |>
+avg_delay_pmf <- mock_long_df |>
   group_by(delay) |>
-  summarise(pmf = sum(count) / sum(mock_data$count)) |>
+  summarise(pmf = sum(count) / sum(mock_df_long$count)) |>
   mutate(cdf = cumsum(pmf))
 
 ggplot(delay_df_t) +

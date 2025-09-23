@@ -70,6 +70,10 @@ This typically will be pulled using an API, but here we provide the `NSSP_line_l
 NSSP_line_list_raw
 head(NSSP_line_list_raw)
 ```
+<div class="alert alert-warning" role="alert">
+<strong>Warning:</strong> This dataset does not represent data from real patients, it is entirely simulated.
+</div>
+
 
 ## Define the syndromic surveillance definition diagnosis codes.
 Here we will list the diagnosis codes which correspond to ARI.
@@ -157,11 +161,15 @@ Next, we will clean up the time stamps in the data so that the "Update" column i
 ```{r}
 NSSP_time_stamps_long <-
   NSSP_time_stamps_long |>
-  mutate(time_stamp = str_remove(time_stamp, ".*\\}")) |>
-  mutate(time_stamp = str_remove_all(time_stamp, "[|;]+")) |>
-  mutate(time_stamp = as.POSIXct(time_stamp,
-    format = "%Y-%m-%d %H:%M:%S", tz = "UTC"
-  )) |>
+  mutate(time_stamp = time_stamp = as.POSIXct(
+      str_remove_all(
+        str_remove(time_stamp, ".*\\}"),
+        "[|;]+"
+      ),
+      format = "%Y-%m-%d %H:%M:%S",
+      tz = "UTC"
+    )
+  )|>
   drop_na(time_stamp)
 ```
 

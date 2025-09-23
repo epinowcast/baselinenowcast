@@ -84,9 +84,9 @@ diagnoses_codes_defn <- c("U07", "R112")
 ## Expand the data so that each "event" has its own column
 We will create two datasets which parse the characters in the columns `DischargeDiagnosisMDTUpdates` and `DischargeDiagnosisUpdates` , which contain a string listing the time stamp and diagnosis codes (respectively) of each "event" in the clinical encounter, formatted as:
 
- - `"{event number};YYYY-MM-DD HH:MM:SS;|{event number 2};YYYY-MM-DD HH:MM:SS;|" for "DischargeDiagnosisMDTUpdates"`
+ - `{event number};YYYY-MM-DD HH:MM:SS;|{event number 2};YYYY-MM-DD HH:MM:SS;|` for `DischargeDiagnosisMDTUpdates`
 
- - `"{event number};{diagnoses codes};|{event number 2}{diagnoses codes};|" for "DischargeDiagnosisUpdates"`
+ - `{event number};{diagnoses codes};|{event number 2}{diagnoses codes};|` for `DischargeDiagnosisUpdates`
 
 Later, we will merge the two datasets back together by the unique patient ID and the event numbers.
 
@@ -153,7 +153,7 @@ NSSP_diagnoses_long <- gather(NSSP_diagnoses_wide,
   )
 ```
 
-Next, we will clean up the time stamps in the data so that the "`time_stamp`" column is formatted as `%Y-%m-%d %H:%M:%S`, and then we will filter out an events that are not present (updates are NAs).
+Next, we will clean up the time stamps in the data so that the `time_stamp` column is formatted as `%Y-%m-%d %H:%M:%S`, and then we will filter out an events that are not present (updates are NAs).
 ```{r}
 NSSP_time_stamps_long <-
   NSSP_time_stamps_long |>

@@ -48,13 +48,14 @@ for uncertainty estimation.
 
 This function implements an algorithm which:
 \itemize{
-\item by default uses 3 x the maximum delay, split evenly between delay and
-uncertainty estimation if there are sufficient reference times in the
-reporting triangle for this.
 \item if the specified number of reference times
-(\code{scale_factor} x \verb{max delay}) is greater than the number of reference
-times available in the reporting triangle, use all the reference times
-available and satisfy the minimum
+(\code{scale_factor} x \verb{max delay}) is less than or equal to the number of
+reference times available in the reporting triangle, split reference times
+between delay and uncertainty according to \code{prop_delay}, ensuring that the
+minimum requirements for delay and uncertainty estimation are met.
+\item if the specified number of reference times is greater than the
+number of reference times available in the reporting triangle,
+use all the reference times available and satisfy the minimum
 requirement for delay estimation and then split the remainder according to
 the specified \code{prop_delay}, ensuring that the minimum reference times
 for delay and uncertainty estimation are fulfilled.

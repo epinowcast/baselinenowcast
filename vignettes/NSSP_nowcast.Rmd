@@ -259,64 +259,265 @@ You can see that this larger mock dataset has the same format as the one we gene
 ## Exploratory data analysis to identify an appropriate maximum delay
 
 We will start by computing the reporting delay and performing an exploratory data analysis of the delays in this dataset.
-
-
- - Estimate the delay distribution across all the data and plot the PDF/CDF
- - Find the maximum but getting the 99th quantile or eyeballing it
-
+<details><summary>Click to expand code to create plots of the delay distributions </summary>
 ```{r}
-mock_long_df <- mock_long_df |>
+long_df <- mock_long_df |>
   mutate(delay = as.integer(report_date - reference_date))
 
-delay_df_t <- mock_long_df |>
+delay_df_t <- long_df |>
   group_by(reference_date) |>
   summarise(mean_delay = count * delay / sum(count))
 
-avg_delay_pmf <- mock_long_df |>
+delay_summary <- long_df |>
+  mutate(mean_delay_overall = sum(count * delay) / sum(count))
+
+avg_delays <- long_df |>
   group_by(delay) |>
-  summarise(pmf = sum(count) / sum(mock_df_long$count)) |>
+  summarise(pmf = sum(count) / sum(long_df$count)) |>
   mutate(cdf = cumsum(pmf))
 
-ggplot(delay_df_t) +
+delay_t <- ggplot(delay_df_t) +
   geom_line(aes(
     x = reference_date,
     y = mean_delay
-  ))
+  )) +
+  geom_line(
+    data = delay_summary,
+    aes(
+      x = reference_date,
+      y = mean_delay_overall
+    ),
+    linetype = "dashed"
+  ) +
+  xlab("") +
+  ylab("Mean delay") +
+  theme_bw()
 
-ggplot(avg_delay_pmf) +
+cdf_delay <- ggplot(avg_delays) +
   geom_line(aes(x = delay, y = cdf)) +
-  geom_hline(aes(yintercept = 0.95))
+  geom_hline(aes(yintercept = 0.95), linetype = "dashed") +
+  theme_bw()
 ```
-Based on this figure, we can set the maximum delay to be 28 days as this is where 95% of the cases appear to have been reported.
+</details>
+```{r}
+delay_t
+cdf_delay
+```
+Based on this figure, we can set the maximum delay to be 25 days as this is where 95% of the cases appear to have been reported.
+We will also set the nowcast date as 30 days before the maximum reference date in the dataset, May 5th, 2026.
 
 ```{r}
-max_delay <- 28
+max_delay <- 25
+nowcast_date <- max(long_df$reference_date) - days(30)
 ```
 
-# Run baselinenowcast to generate a probabilistic nowcast
+## Format for `baselinenowcast`
+We'll start by generating a reporting triangle from the `mock_long_df`, after we've removed all of the reports from after the nowcast date.
+We will need to fill in all the possible reference dates and report dates with delays up until the maximum delay.
+We'll do this by first making a "spine" of all of the date combinations we need, and then joining the dataset to that spine.
+As a final step, we'll pivot filter out the report date column and pivot from wide to long format.
 
- - Pass the long tidy dataframe and the maximum delay into the `baselinenowcast()` function.
- - Generate a probabilistic nowcast
 
-The `baselinenowcast()` function takes in data of this format and produces a `baselinenowcast` object which contains a dataframe with the probabilistic nowcast draws generated data using the default method specifications.
-See the Getting Started Vignette for more details on alternative method specifications to enable changing the number of reference times used for delay and uncertainty estimation, sharing across strata, or accounting for weekday effects in the reporting delay.
-Alternatively, see the Modular baselinenowcast workflow for more details on how to specify and express your own methods/models within the framework using the modularity and flexibility of the low-level function interface .
 ```{r}
-# This won't run as we haven't finished this yet.
-# nowcast_draws_df <- baselinenowcast(mock_long_df, max_delay = max_delay)
+training_df <- long_df |>
+  filter(report_date <= nowcast_date) |>
+  mutate(delay = as.integer(report_date - reference_date)) |>
+  filter(delay <= max_delay) |>
+  select(reference_date, report_date, count)
+
+rep_tri_df <- expand_grid(
+  reference_date = seq(min(long_df$reference_date),
+    nowcast_date,
+    by = "day"
+  )
+) |>
+  rowwise() |>
+  reframe(
+    reference_date = reference_date,
+    report_date = seq(reference_date, min(
+      reference_date + max_delay,
+      nowcast_date
+    ),
+    by = "day"
+    )
+  ) |>
+  mutate(delay = as.integer(report_date - reference_date)) |>
+  left_join(training_df,
+    by = c("reference_date", "report_date")
+  ) |>
+  replace_na(list(count = 0)) |>
+  select(-report_date) |>
+  pivot_wider(
+    names_from = delay,
+    values_from = count
+  )
+head(rep_tri_df)
+```
+## Specify the `baselinenowcast` model
+
+We will need to tell the model how many reference times to use for delay estimation and uncertainty estimation.
+We recommend choosing these as functions of the maximum delay.
+```{r}
+n_ref_times_used <- 3 * max_delay
+n_history_delay <- floor(n_ref_times_used / 2)
+n_retrospective_nowcasts <- n_ref_times_used - n_history_delay
 ```
 
+# Run the `baselinenowcast` workflow
+Here we demonstrate the workflow using the low-level functions. For more details, see the [Getting Started](baselinenowcast.html) vignette.
+```{r}
+rep_tri <- rep_tri_df |>
+  select(-reference_date) |>
+  as.matrix()
 
-# Plot and summarise the nowcast
+# Delay estimation
+delay_pmf <- estimate_delay(
+  reporting_triangle = rep_tri,
+  max_delay = max_delay,
+  n = n_history_delay
+)
+# Point nowcast generation
+pt_nowcast_matrix <- apply_delay(
+  reporting_triangle = rep_tri,
+  delay_pmf = delay_pmf
+)
+# Unertainty estimation
+trunc_rep_tris <- truncate_triangles(rep_tri,
+  n = n_retrospective_nowcasts
+)
+retro_rep_tris <- construct_triangles(trunc_rep_tris)
+pt_nowcasts <- fill_triangles(retro_rep_tris,
+  n = n_history_delay
+)
+disp <- estimate_uncertainty(
+  point_nowcast_matrices = pt_nowcasts,
+  truncated_reporting_triangles = trunc_rep_tris,
+  retro_reporting_triangles = retro_rep_tris,
+  n = n_retrospective_nowcasts
+)
 
- - Compute the median and 50th and 95th percent quantiles
- - Make a plot of the nowcast compared to the unadjusted data
+nowcast_draws_df <- sample_nowcasts(
+  point_nowcast_matrix = pt_nowcast_matrix,
+  reporting_triangle = rep_tri,
+  uncertainty_params = disp,
+  draws = 100
+)
+head(nowcast_draws_df)
+```
 
-# Evaluate against later observed "final" data
+# Summarise and plot the nowcast
+Now that we have a dataframe of probabilistic nowcast draws for all reference times in our original reporting triangle, we can summarise the median and 50th and 95th quantiles.
+```{r}
+nowcast_summary_df <-
+  nowcast_draws_df |>
+  group_by(time) |>
+  summarise(
+    median = median(pred_count),
+    q50th_lb = quantile(pred_count, 0.25),
+    q50th_ub = quantile(pred_count, 0.75),
+    q95th_lb = quantile(pred_count, 0.025),
+    q95th_ub = quantile(pred_count, 0.975)
+  )
+head(nowcast_summary_df)
+```
 
- - Load in evaluation data (also will be package data, the above will be a subset of this data).
- - Generate the final data in the correct format and plot this alongside the nowcast.
+Next, we will join the initially reported data and the final evaluation data, both summarised by reference time.
+```{r}
+training_df_by_ref_date <- training_df |>
+  filter(report_date <= nowcast_date) |>
+  group_by(reference_date) |>
+  summarise(initial_count = sum(count)) |>
+  mutate(time = row_number())
 
-# Compare to what was later observed
+eval_data <- long_df |>
+  filter(
+    delay <= max_delay,
+    reference_date <= nowcast_date
+  ) |>
+  group_by(reference_date) |>
+  summarise(final_count = sum(count)) |>
+  mutate(time = row_number()) |>
+  select(time, final_count)
 
- - Load in a dataset that contains data out beyond the max delay + the nowcast date
+
+nowcast_w_data <- nowcast_summary_df |>
+  left_join(training_df_by_ref_date,
+    by = "time"
+  ) |>
+  left_join(eval_data,
+    by = "time"
+  )
+head(nowcast_w_data)
+```
+
+# Plot against later observed "final" data
+Next we will make a plot of the nowcast
+```{r}
+combined_data <- nowcast_w_data |>
+  select(reference_date, initial_count, final_count) |>
+  distinct() |>
+  pivot_longer(
+    cols = c(initial_count, final_count),
+    names_to = "type",
+    values_to = "count"
+  ) |>
+  mutate(type = case_when(
+    type == "initial_count" ~ "Initially observed data",
+    type == "final_count" ~ "Final observed data"
+  )) |>
+  filter(reference_date >= nowcast_date - days(60))
+```
+<details><summary>Click to expand code to create the plot of the probabilistic nowcast</summary>
+```{r}
+nowcast_data_recent <- nowcast_w_data |>
+  filter(reference_date >= nowcast_date - days(60))
+
+plot_prob_nowcast <- ggplot(nowcast_data_recent) +
+  geom_line(
+    aes(
+      x = reference_date, y = median
+    ),
+    color = "gray"
+  ) +
+  geom_ribbon(
+    aes(
+      x = reference_date,
+      ymin = q50th_ub, ymax = q50th_lb
+    ),
+    alpha = 0.5,
+    fill = "gray"
+  ) +
+  geom_ribbon(
+    aes(
+      x = reference_date,
+      ymin = q95th_ub, ymax = q95th_lb
+    ),
+    alpha = 0.5,
+    fill = "gray"
+  ) +
+  # Add observed data and final data once
+  geom_line(
+    data = combined_data,
+    aes(
+      x = reference_date,
+      y = count,
+      color = type
+    )
+  ) +
+  theme_bw() +
+  scale_color_manual(
+    values = c(
+      "Initially observed data" = "darkred",
+      "Final observed data" = "black"
+    ),
+    name = ""
+  ) +
+  xlab("Date of ED visit") +
+  ylab("Number of ARI cases") +
+  theme(legend.position = "bottom") +
+  ggtitle("Comparison of ARI cases as of the nowcast date, later observed counts, \n and probabilistic nowcasted counts")
+```
+</details>
+```{r}
+plot_prob_nowcast
+```

@@ -120,12 +120,13 @@ lastcol_ts <- tail(colnames(select(
   syn_nssp_time_stamps_wide,
   matches("DischargeDiagnosisMDTUpdates")
 )), 1)
-syn_nssp_time_stamps_wide <- gather(syn_nssp_time_stamps_wide,
-  key = column_name,
-  value = "time_stamp",
-  DischargeDiagnosisMDTUpdates1:as.name(`lastcol_ts`),
-  factor_key = TRUE
-) |>
+syn_nssp_time_stamps_long <- syn_nssp_time_stamps_wide |>
+  pivot_longer(
+    cols = starts_with("DischargeDiagnosisMDTUpdates"),
+    names_to = "column_name",
+    values_to = "time_stamp",
+    values_drop_na = FALSE
+  ) |>
   mutate(
     event_id = paste(
       C_Processed_BioSense_ID,
@@ -140,12 +141,13 @@ lastcol_diag <- tail(colnames(select(
   syn_nssp_diagnoses_wide,
   matches("DischargeDiagnosisUpdates")
 )), 1)
-syn_nssp_diagnoses_long <- gather(syn_nssp_diagnoses_wide,
-  key = column_name,
-  value = "diagnoses_codes",
-  DischargeDiagnosisUpdates1:as.name(`lastcol_diag`),
-  factor_key = TRUE
-) |>
+syn_nssp_diagnoses_long <- syn_nssp_diagnoses_wide |>
+  pivot_longer(
+    cols = starts_with("DischargeDiagnosisUpdates"),
+    names_to = "column_name",
+    values_to = "diagnoses_codes",
+    values_drop_na = FALSE
+  ) |>
   mutate(
     event_id = paste(
       C_Processed_BioSense_ID,
@@ -157,7 +159,7 @@ syn_nssp_diagnoses_long <- gather(syn_nssp_diagnoses_wide,
 Next, we will clean up the time stamps in the data so that the `time_stamp` column is formatted as `%Y-%m-%d %H:%M:%S`, and then we will filter out an events that are not present (updates are NAs).
 ```{r}
 syn_nssp_time_stamps_long <-
-  syn_nssp_time_stamps_wide |>
+  syn_nssp_time_stamps_long |>
   mutate(time_stamp = as.POSIXct(
     str_remove_all(
       str_remove(time_stamp, ".*\\}"),

@@ -16,7 +16,7 @@
 
 #' A synthetic dataset resembling line-list (each row is a patient) data from the
 #'   National Syndromic Surveillance System (NSSP) accessed via the Essence
-#'   platform. All entries are mock data, formatted to look as close to the
+#'   platform. All entries are synthetic, formatted to look as close to the
 #'   real raw data as possible.
 #'
 #' @format A data.frame with 25 rows and 8 columns.

@@ -289,9 +289,8 @@ allocate_reference_times <- function(reporting_triangle,
 
   if (round(prop_delay_used, 3) != round(prop_delay, 3)) {
     cli_alert_info(
-      text = c(
+      text =
         "{prop_delay} reference times were specified for delay estimation but {round(prop_delay_used,3)} of reference times used for delay estimation." # nolint
-      )
     )
   }
 

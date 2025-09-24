@@ -22,7 +22,7 @@ vignette: >
 In this vignette, we will show an example of how to clean and pre-process line-list patient-level data from the National Syndromic Surveillance (NSSP) dataset.
 This dataset is entirely fake, it represents a small number of simulate records that mirror the NSSP update fields.
 It was created to demonstrate how to take advantage of the timesteps embedded in the NSSP ESSENCE visits records dataset, which records the timing of diagnoses code updates related to each clinical encounter.
-Diagnosis code may begin to be associated with the clinical encounter at different points in the patient or clinical processing journey (e.g. during admission, triage, after laboratory results are returned, or during coding for billing, etc.), and are captured by the syndromic surveillance system as they are entered into the electronic health record.
+Clinical encounters may begin to be associated with diagnoses codes at different points in the patient or clinical processing journey (e.g. during admission, triage, after laboratory results are returned, or during coding for billing, etc.), and are captured by the syndromic surveillance system as they are entered into the electronic health record.
 The difference between the visit date - when the patient registers in the emergency department- and the time of the diagnosis update pertaining to the diagnosis of interest, is used to compute a reporting delay for each patient.
 Reporting delays can vary by a range of factors including the electronic health record system, facility, provide, season, time of day, or means of diagnosis.
 These reporting delays will be used to estimate a reporting delay distribution.
@@ -31,7 +31,7 @@ In this near-real-time emergency department dataset, public health surveillance 
 In additional, exclusion criteria are used in some definitions to improve the specificity of these definitions in some instances.
 
 In this example, we will focus on syndromic surveillance definitions that rely solely on the presence of one or more diagnoses codes, as this means that patients tend to transition from a non-case to case only once (rather than reverting back to a non-case during the course of their clinical encounter).
-Our nowcasting methods primarily focus on the former.
+Our nowcasting methods primarily focus on the former use-case, though extensions to be able to acount for downward revisions as cases transition from case to non-case, are planned for future work.
 
  We will walk through how to "clean" the line list NSSP dataset in order to obtain a long tidy dataframe containing the incident counts of "cases" of a particular syndromic surveillance definition by reference date (in this case the date the visit started) and report date (the date the patient's record was updated with the corresponding diagnosis).
 

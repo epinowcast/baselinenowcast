@@ -98,14 +98,14 @@ test_that("allocate_reference_times properly scales delay and total training amo
   expect_identical(tv5$n_retrospective_nowcasts, 3)
 })
 
-test_that("allocate_reference_times handles rounding without warning", {
+test_that("allocate_reference_times handles rounding with a warning", {
   rep_tri <- matrix(
     data = 1,
     nrow = 20,
     ncol = 6
   ) |> construct_triangle()
 
-  tv <- expect_no_warning(allocate_reference_times(
+  tv <- expect_warning(allocate_reference_times(
     rep_tri,
     scale_factor = 3,
     prop_delay = 0.5

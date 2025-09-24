@@ -266,8 +266,11 @@ allocate_reference_times <- function(reporting_triangle,
                                        n_required,
                                        prop_delay) {
   # This is the "standard case", with checks to ensure that minimums are hit
+  flag_req_delay <- FALSE
+  flag_req_uncertainty <- FALSE
   if (n_used >= n_target) {
-    n_history_delay <- max(floor(n_used * prop_delay), n_min_delay)
+    n_history_delay <- max(c(floor(n_used * prop_delay), n_min_delay))
+    flag_req_delay <- which.max(c(floor(n_used * prop_delay), n_min_delay)) == 2
     n_retrospective_nowcasts <- n_used - n_history_delay
     # If the size used is less than the target size, we will assign the
     # remainder after hitting the delay requirement according to prop_delay
@@ -282,6 +285,7 @@ allocate_reference_times <- function(reporting_triangle,
   # requirements for uncertainty were hit
   if (n_retrospective_nowcasts < n_min_retro_nowcasts) {
     n_retrospective_nowcasts <- n_min_retro_nowcasts
+    flag_req_uncertainty <- TRUE
     n_history_delay <- n_used - n_retrospective_nowcasts
   }
 
@@ -292,6 +296,13 @@ allocate_reference_times <- function(reporting_triangle,
       text =
         "{prop_delay} reference times were specified for delay estimation but {round(prop_delay_used,3)} of reference times used for delay estimation." # nolint
     )
+    if (flag_req_uncertainty) {
+      cli_alert_info("This is due to the minumim requirement for the number of retrospective nowcasts for uncertainty estimation ({n_min_retro_nowcasts}).") # nolint
+    } else if (flag_req_delay) {
+      cli_alert_info("This is due to the minumim requirement for the number of reference times needed for delay estimation ({n_min_delay}).")
+    } else {
+      cli_alert_info("`prop_delay` not identical to the proprtion of reference times used for delay estimation due to rounding.")
+    }
   }
 
   return(list(

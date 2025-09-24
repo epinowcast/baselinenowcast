@@ -364,48 +364,31 @@ rep_tri <- rep_tri_df |>
 
 We will use the helper function `allocate_reference_times()` to determine how many reference times to use for delay estimation and uncertainty estimation.
 We will use the defaults for this function, which uses 3 times the maximum delay as the total amount of training volume, split evenly between reference times used for delay estimation and reference times used for producing retrospective nowcasts for uncertainty estimation.
+In this case, this will result in 37 reference times used for delay estimation, and 38 used for uncertainty estimation.
 ```{r}
 ref_time_allocation <- allocate_reference_times(rep_tri)
-n_ref_times_used <- 3 * max_delay
-n_history_delay <- floor(n_ref_times_used / 2)
-n_retrospective_nowcasts <- n_ref_times_used - n_history_delay
+n_history_delay <- ref_time_allocation$n_history_delay
+n_retrospective_nowcasts <- ref_time_allocation$n_retrospective_nowcasts
 ```
 
 # Run the `baselinenowcast` workflow
-Here we demonstrate the workflow using the low-level functions. For more details, see the [Getting Started](baselinenowcast.html) vignette.
-```{r}
-# Delay estimation
-delay_pmf <- estimate_delay(
-  reporting_triangle = rep_tri,
-  max_delay = max_delay,
-  n = n_history_delay
-)
-# Point nowcast generation
-pt_nowcast_matrix <- apply_delay(
-  reporting_triangle = rep_tri,
-  delay_pmf = delay_pmf
-)
-# Unertainty estimation
-trunc_rep_tris <- truncate_triangles(rep_tri,
-  n = n_retrospective_nowcasts
-)
-retro_rep_tris <- construct_triangles(trunc_rep_tris)
-pt_nowcasts <- fill_triangles(retro_rep_tris,
-  n = n_history_delay
-)
-disp <- estimate_uncertainty(
-  point_nowcast_matrices = pt_nowcasts,
-  truncated_reporting_triangles = trunc_rep_tris,
-  retro_reporting_triangles = retro_rep_tris,
-  n = n_retrospective_nowcasts
-)
+Here we demonstrate the workflow using the intermediate-level functions. For more details, see the [Getting Started](baselinenowcast.html) vignette.
 
-nowcast_draws_df <- sample_nowcasts(
-  point_nowcast_matrix = pt_nowcast_matrix,
-  reporting_triangle = rep_tri,
-  uncertainty_params = disp,
+First, we generate the point estimate of the nowcast as a "filled in" reporting triangle
+```{r}
+pt_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = n_history_delay)
+```
+
+Next, we estimate and apply uncertainty by generating retrospective nowcasts and comparing against later observed data.
+```{r}
+nowcast_draws_df <- estimate_and_apply_uncertainty(
+  pt_nowcast_matrix,
+  rep_tri,
+  n_history_delay = n_history_delay,
+  n_retrospective_nowcasts = n_retrospective_nowcasts,
   draws = 100
 )
+
 head(nowcast_draws_df)
 ```
 

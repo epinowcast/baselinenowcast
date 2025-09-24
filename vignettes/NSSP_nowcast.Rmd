@@ -1,7 +1,6 @@
 ---
-title: "Nowcasting NSSP data"
+title: "Nowcasting U.S. National Syndromic Surveillance Program (NSSP) data"
 description: "A nowcasting example applied to data from NSSP"
-authors: Kaitlyn Johnson, Emily Tyszka
 output:
   bookdown::html_document2:
     fig_caption: yes
@@ -19,7 +18,8 @@ vignette: >
 
 # Introduction
 
-In this vignette, we will show an example of how to clean and pre-process line-list patient-level data from the National Syndromic Surveillance (NSSP) dataset.
+In this vignette, we will show an example of how to clean and pre-process line-list patient-level data from the [National Syndromic Surveillance](https://www.cdc.gov/nssp/index.html) (NSSP) dataset.
+The NSSP Emergency Department (ED) visit dataset is a datset widely used by public health departments in the United States, representing many but not all counties in the country.
 This dataset is entirely fake, it represents a small number of synthetic records that mirror the NSSP update fields.
 It was created to demonstrate how to take advantage of the timesteps embedded in the NSSP ESSENCE visits records dataset, which records the timing of diagnoses code updates related to each clinical encounter.
 Clinical encounters may begin to be associated with diagnoses codes at different points in the patient or clinical processing journey (e.g. during admission, triage, after laboratory results are returned, or during coding for billing, etc.), and are captured by the syndromic surveillance system as they are entered into the electronic health record.
@@ -180,7 +180,7 @@ back into the time stamped dataset.
 syn_nssp_diagnoses_long <-
   syn_nssp_diagnoses_long |>
   mutate(diagnoses_codes = str_remove(diagnoses_codes, ".*\\}")) |>
-  filter(nzchar(diagnoses_codes, "")) |>
+  filter(nzchar(diagnoses_codes)) |>
   drop_na() |>
   select(event_id, diagnoses_codes)
 ```
@@ -502,8 +502,7 @@ plot_prob_nowcast <- ggplot(nowcast_data_recent) +
   xlab("Date of ED visit") +
   ylab("Number of ARI cases") +
   theme(legend.position = "bottom") +
-  ggtitle("Comparison of cases of ARI as of the nowcast date, later observed,
-          \n and generated as a probabilistic nowcast")
+  ggtitle("Comparison of cases of ARI as of the nowcast date, later observed,\n and generated as a probabilistic nowcast") # nolint
 ```
 </details>
 ```{r}

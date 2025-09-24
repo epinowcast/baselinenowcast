@@ -3,8 +3,8 @@
 \docType{data}
 \name{syn_nssp_line_list}
 \alias{syn_nssp_line_list}
-\title{A synthetic dataset resembling line-list (each row is a patient) data from the
-National Syndromic Surveillance System (NSSP) accessed via the Essence
+\title{A synthetic dataset resembling line-list (each row is a patient) data from
+the National Syndromic Surveillance System (NSSP) accessed via the Essence
 platform. All entries are synthetic, formatted to look as close to the
 real raw data as possible.}
 \format{
@@ -37,8 +37,8 @@ pre-process this dataset to obtain a reporting triangle.
 syn_nssp_line_list
 }
 \description{
-A synthetic dataset resembling line-list (each row is a patient) data from the
-National Syndromic Surveillance System (NSSP) accessed via the Essence
+A synthetic dataset resembling line-list (each row is a patient) data from
+the National Syndromic Surveillance System (NSSP) accessed via the Essence
 platform. All entries are synthetic, formatted to look as close to the
 real raw data as possible.
 }

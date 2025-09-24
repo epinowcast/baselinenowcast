@@ -14,8 +14,8 @@
 #' @source Created for package demonstration.
 "syn_nssp_rep_tri_df"
 
-#' A synthetic dataset resembling line-list (each row is a patient) data from the
-#'   National Syndromic Surveillance System (NSSP) accessed via the Essence
+#' A synthetic dataset resembling line-list (each row is a patient) data from
+#'   the National Syndromic Surveillance System (NSSP) accessed via the Essence
 #'   platform. All entries are synthetic, formatted to look as close to the
 #'   real raw data as possible.
 #'

@@ -137,7 +137,7 @@ syn_nssp_time_stamps_wide <- gather(syn_nssp_time_stamps_wide,
 Perform the same procedure for the diagnoses dataset.
 ```{r}
 lastcol_diag <- tail(colnames(select(
- syn_nssp_diagnoses_wide,
+  syn_nssp_diagnoses_wide,
   matches("DischargeDiagnosisUpdates")
 )), 1)
 syn_nssp_diagnoses_long <- gather(syn_nssp_diagnoses_wide,
@@ -156,7 +156,7 @@ syn_nssp_diagnoses_long <- gather(syn_nssp_diagnoses_wide,
 
 Next, we will clean up the time stamps in the data so that the `time_stamp` column is formatted as `%Y-%m-%d %H:%M:%S`, and then we will filter out an events that are not present (updates are NAs).
 ```{r}
-syn_nssp_time_stamps_long<-
+syn_nssp_time_stamps_long <-
   syn_nssp_time_stamps_wide |>
   mutate(time_stamp = as.POSIXct(
     str_remove_all(
@@ -467,7 +467,7 @@ plot_prob_nowcast <- ggplot(nowcast_data_recent) +
   geom_ribbon(
     aes(
       x = reference_date,
-      ymin = q50th_ub, ymax = q50th_lb
+      ymin = q50th_lb, ymax = q50th_ub
     ),
     alpha = 0.5,
     fill = "gray"
@@ -475,7 +475,7 @@ plot_prob_nowcast <- ggplot(nowcast_data_recent) +
   geom_ribbon(
     aes(
       x = reference_date,
-      ymin = q95th_ub, ymax = q95th_lb
+      ymin = q95th_lb, ymax = q95th_ub
     ),
     alpha = 0.5,
     fill = "gray"

@@ -112,6 +112,21 @@ test_that("allocate_reference_times handles rounding with a warning", {
   ))
   expect_identical(tv$n_history_delay, 7)
   expect_identical(tv$n_retrospective_nowcasts, 8)
+
+  rep_tri2 <- matrix(
+    data = 1,
+    nrow = 100,
+    ncol = 31
+  ) |> construct_triangle()
+
+  # Don't warn when prop delay is basically equivalent
+  tv2 <- expect_no_warning(allocate_reference_times(
+    rep_tri2,
+    scale_factor = 3,
+    prop_delay = 0.667
+  ))
+  expect_identical(tv2$n_history_delay, 60)
+  expect_identical(tv2$n_retrospective_nowcasts, 30)
 })
 
 test_that("allocate_reference_times warns when user or defaults don't meet minimum requirements, and reallocates accordingly.", { # nolint

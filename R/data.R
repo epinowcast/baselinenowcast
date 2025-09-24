@@ -1,4 +1,4 @@
-#' A mock dataset containing the number of incident cases indexed by
+#' A synthetic dataset containing the number of incident cases indexed by
 #'   reference date and report date.
 #'
 #' @format A data.frame with 3795 rows and 3 columns.
@@ -12,9 +12,9 @@
 #'   specified reference date and reported on the report date.}
 #' }
 #' @source Created for package demonstration.
-"mock_long_df"
+"syn_nssp_rep_tri_df"
 
-#' A mock dataset resembling line-list (each row is a patient) data from the
+#' A synthetic dataset resembling line-list (each row is a patient) data from the
 #'   National Syndromic Surveillance System (NSSP) accessed via the Essence
 #'   platform. All entries are mock data, formatted to look as close to the
 #'   real raw data as possible.
@@ -41,4 +41,4 @@
 #' }
 #' @source Created for package demonstration to provide an example of how to
 #' pre-process this dataset to obtain a reporting triangle.
-"NSSP_line_list_raw"
+"syn_nssp_line_list"

@@ -20,7 +20,7 @@ vignette: >
 # Introduction
 
 In this vignette, we will show an example of how to clean and pre-process line-list patient-level data from the National Syndromic Surveillance (NSSP) dataset.
-This dataset is entirely fake, it represents a small number of simulate records that mirror the NSSP update fields.
+This dataset is entirely fake, it represents a small number of synthetic records that mirror the NSSP update fields.
 It was created to demonstrate how to take advantage of the timesteps embedded in the NSSP ESSENCE visits records dataset, which records the timing of diagnoses code updates related to each clinical encounter.
 Clinical encounters may begin to be associated with diagnoses codes at different points in the patient or clinical processing journey (e.g. during admission, triage, after laboratory results are returned, or during coding for billing, etc.), and are captured by the syndromic surveillance system as they are entered into the electronic health record.
 The difference between the visit date - when the patient registers in the emergency department- and the time of the diagnosis update pertaining to the diagnosis of interest, is used to compute a reporting delay for each patient.
@@ -35,7 +35,7 @@ Our nowcasting methods primarily focus on the former use-case, though extensions
 
  We will walk through how to "clean" the line list NSSP dataset in order to obtain a long tidy dataframe containing the incident counts of "cases" of a particular syndromic surveillance definition by reference date (in this case the date the visit started) and report date (the date the patient's record was updated with the corresponding diagnosis).
 
-Once we have shown how to generate data of this form from the line-list data, we will swap out the dataframe for a larger mock dataset formatted the same way, and demonstrate how to use `baselinenowcast` to generate a nowcast of the admissions.
+Once we have shown how to generate data of this form from the line-list data, we will swap out the dataframe for a larger synthetic dataset formatted the same way, and demonstrate how to use `baselinenowcast` to generate a nowcast of the admissions.
 We will start by using the diagnosis codes that define Acute Respiratory Infections (ARI), but any sets of diagnosis codes that define a syndrome could be used interchangeably.
 
 
@@ -58,16 +58,16 @@ set.seed(123)
 
 # NSSP data cleaning
 
-We will start by loading in the mock line-list dataset.
+We will start by loading in the synthetic line-list dataset.
 Our goal is to turn the line-list's time stamp and diagnosis update columns into first a long format with one row per update, then filter through the updates to find the first "hit" that corresponds to the diagnosis codes in the syndromic surveillance definition for ARI.
 In this dataset, the first update time represents the date of reporting of the diagnosis, and the visit time represents the date in which the reference event, in this case the date of the visit, occurred.
 We will then summarise the data in long format, obtaining a long tidy dataframe with the counts of admissions on each reference date (visit date) and report date (the first time the diagnosis occurred during the clinical encounter).
 
 
 ## Load in the line list data
-This typically will be pulled using an API, but here we provide the `NSSP_line_list_raw` dataset as package data.
+This typically will be pulled using an API, but here we provide the `syn_nssp_line_list` dataset as package data.
 ```{r}
-NSSP_line_list_raw
+syn_nssp_line_list
 ```
 <div class="alert alert-warning" role="alert">
 <strong>Note:</strong> This dataset does not represent data from real patients, it is entirely simulated.
@@ -96,16 +96,16 @@ Since patients experience a different number of patient update "events", there w
 The columns will be named by the original column name + the event number, e.g. `DischargeDiagnosisMDTUpdates1`.
 
 ```{r}
-NSSP_time_stamps_wide <- NSSP_line_list_raw |>
+syn_nssp_time_stamps_wide <- syn_nssp_line_list |>
   separate_wider_delim(DischargeDiagnosisMDTUpdates,
     delim = "{", names_sep = "", too_few = "align_start"
   ) |>
   select(-DischargeDiagnosisUpdates)
-head(NSSP_time_stamps_wide)
+head(syn_nssp_time_stamps_wide)
 ```
 Repeat for the diagnoses codes column.
 ```{r}
-NSSP_diagnoses_wide <- NSSP_line_list_raw |>
+syn_nssp_diagnoses_wide <- syn_nssp_line_list |>
   separate_wider_delim(DischargeDiagnosisUpdates,
     delim = "{", names_sep = "", too_few = "align_start"
   ) |>
@@ -117,10 +117,10 @@ This creates a long tidy dataframe where each row is now an event.
 We will create a unique event ID using the event number and the patient ID in the `C_Processed_BioSense_ID` column.
 ```{r}
 lastcol_ts <- tail(colnames(select(
-  NSSP_time_stamps_wide,
+  syn_nssp_time_stamps_wide,
   matches("DischargeDiagnosisMDTUpdates")
 )), 1)
-NSSP_time_stamps_long <- gather(NSSP_time_stamps_wide,
+syn_nssp_time_stamps_wide <- gather(syn_nssp_time_stamps_wide,
   key = column_name,
   value = "time_stamp",
   DischargeDiagnosisMDTUpdates1:as.name(`lastcol_ts`),
@@ -137,10 +137,10 @@ NSSP_time_stamps_long <- gather(NSSP_time_stamps_wide,
 Perform the same procedure for the diagnoses dataset.
 ```{r}
 lastcol_diag <- tail(colnames(select(
-  NSSP_diagnoses_wide,
+ syn_nssp_diagnoses_wide,
   matches("DischargeDiagnosisUpdates")
 )), 1)
-NSSP_diagnoses_long <- gather(NSSP_diagnoses_wide,
+syn_nssp_diagnoses_long <- gather(syn_nssp_diagnoses_wide,
   key = column_name,
   value = "diagnoses_codes",
   DischargeDiagnosisUpdates1:as.name(`lastcol_diag`),
@@ -156,8 +156,8 @@ NSSP_diagnoses_long <- gather(NSSP_diagnoses_wide,
 
 Next, we will clean up the time stamps in the data so that the `time_stamp` column is formatted as `%Y-%m-%d %H:%M:%S`, and then we will filter out an events that are not present (updates are NAs).
 ```{r}
-NSSP_time_stamps_long <-
-  NSSP_time_stamps_long |>
+syn_nssp_time_stamps_long<-
+  syn_nssp_time_stamps_wide |>
   mutate(time_stamp = as.POSIXct(
     str_remove_all(
       str_remove(time_stamp, ".*\\}"),
@@ -175,8 +175,8 @@ this information is stored in the event ID.
 We will only use the event ID and the diagnoses codes, as this will be merged
 back into the time stamped dataset.
 ```{r}
-NSSP_diagnoses_long <-
-  NSSP_diagnoses_long |>
+syn_nssp_diagnoses_long <-
+  syn_nssp_diagnoses_long |>
   mutate(diagnoses_codes = str_remove(diagnoses_codes, ".*\\}")) |>
   filter(nzchar(diagnoses_codes, "")) |>
   drop_na() |>
@@ -187,8 +187,8 @@ NSSP_diagnoses_long <-
 Merge together the time stamps of events and the diagnoses codes.
 Filter to remove empty update
 ```{r}
-df_all <- merge(NSSP_time_stamps_long,
-  NSSP_diagnoses_long,
+df_all <- merge(syn_nssp_time_stamps_long,
+  syn_nssp_diagnoses_long,
   by = "event_id"
 ) |>
   filter(diagnoses_codes != ";;|") # drops empty updates
@@ -247,22 +247,22 @@ head(count_df)
 ```
 
 We have now generated data in the format that we need to use the `baslinenowcast` package, which requires a long tidy dataframe with incident case counts indexed by reference date and report date.
-For demonstration purposes, we will now swap out the data from the mock NSSP line-list data with a larger mock dataset.
+For demonstration purposes, we will now swap out the data from the simulated NSSP line-list data with a larger synthetic dataset.
 
-# Pre-processing of larger mock dataset
+# Pre-processing of larger synthetic dataset
 
-We'll start by loading in the mock longer dataset, which is also provided as package data
+We'll start by loading in the synthetic reporting triangle dataframe, which is also provided as package data.
 ```{r}
-mock_long_df
+syn_nssp_rep_tri_df
 ```
-You can see that this larger mock dataset has the same format as the one we generated from the line list NSSP data -- with columns for reference date, report date, and counts.
+You can see that this larger synthetic dataset has the same format as the one we generated from the line list NSSP data -- with columns for reference date, report date, and counts.
 
 ## Exploratory data analysis to identify an appropriate maximum delay
 
 We will start by computing the reporting delay and performing an exploratory data analysis of the delays in this dataset.
 <details><summary>Click to expand code to create plots of the delay distributions </summary>
 ```{r}
-long_df <- mock_long_df |>
+long_df <- syn_nssp_rep_tri_df |>
   mutate(delay = as.integer(report_date - reference_date))
 
 delay_df_t <- long_df |>
@@ -313,7 +313,7 @@ nowcast_date <- max(long_df$reference_date) - days(30)
 ```
 
 ## Format for `baselinenowcast`
-We'll start by generating a reporting triangle from the `mock_long_df`, after we've removed all of the reports from after the nowcast date.
+We'll start by generating a reporting triangle from the `syn_nssp_rep_tri_df`, after we've removed all of the reports from after the nowcast date.
 We will need to fill in all the possible reference dates and report dates with delays up until the maximum delay.
 We'll do this by first making a "spine" of all of the date combinations we need, and then joining the dataset to that spine.
 As a final step, we'll pivot filter out the report date column and pivot from wide to long format.

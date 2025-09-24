@@ -31,7 +31,7 @@ In this near-real-time emergency department dataset, public health surveillance 
 In additional, exclusion criteria are used in some definitions to improve the specificity of these definitions in some instances.
 
 In this example, we will focus on syndromic surveillance definitions that rely solely on the presence of one or more diagnoses codes, as this means that patients tend to transition from a non-case to case only once (rather than reverting back to a non-case during the course of their clinical encounter).
-Our nowcasting methods primarily focus on the former use-case, though extensions to be able to acount for downward revisions as cases transition from case to non-case, are planned for future work.
+Our nowcasting methods primarily focus on the former use-case, though extensions to be able to account for downward revisions as cases transition from case to non-case, are planned for future work.
 
  We will walk through how to "clean" the line list NSSP dataset in order to obtain a long tidy dataframe containing the incident counts of "cases" of a particular syndromic surveillance definition by reference date (in this case the date the visit started) and report date (the date the patient's record was updated with the corresponding diagnosis).
 
@@ -78,6 +78,7 @@ NSSP_line_list_raw
 Here we will list the diagnosis codes which correspond to ARI.
 To be considered an ARI case, one or more of these codes must be reported.
 ```{r}
+# TO DO: Update for ARI diagnoses codes!
 diagnoses_codes_defn <- c("U07", "R112")
 ```
 
@@ -353,11 +354,18 @@ rep_tri_df <- expand_grid(
   )
 head(rep_tri_df)
 ```
+As a final pre-processing step, we'll format the reporting triangle as just a matrix, for compatibility with the low-level functions in `baselinenowcast`.
+```{r}
+rep_tri <- rep_tri_df |>
+  select(-reference_date) |>
+  as.matrix()
+```
 ## Specify the `baselinenowcast` model
 
-We will need to tell the model how many reference times to use for delay estimation and uncertainty estimation.
-We recommend choosing these as functions of the maximum delay.
+We will use the helper function `allocate_reference_times()` to determine how many reference times to use for delay estimation and uncertainty estimation.
+We will use the defaults for this function, which uses 3 times the maximum delay as the total amount of training volume, split evenly between reference times used for delay estimation and reference times used for producing retrospective nowcasts for uncertainty estimation.
 ```{r}
+ref_time_allocation <- allocate_reference_times(rep_tri)
 n_ref_times_used <- 3 * max_delay
 n_history_delay <- floor(n_ref_times_used / 2)
 n_retrospective_nowcasts <- n_ref_times_used - n_history_delay
@@ -366,10 +374,6 @@ n_retrospective_nowcasts <- n_ref_times_used - n_history_delay
 # Run the `baselinenowcast` workflow
 Here we demonstrate the workflow using the low-level functions. For more details, see the [Getting Started](baselinenowcast.html) vignette.
 ```{r}
-rep_tri <- rep_tri_df |>
-  select(-reference_date) |>
-  as.matrix()
-
 # Delay estimation
 delay_pmf <- estimate_delay(
   reporting_triangle = rep_tri,

@@ -98,6 +98,22 @@ test_that("allocate_reference_times properly scales delay and total training amo
   expect_identical(tv5$n_retrospective_nowcasts, 3)
 })
 
+test_that("allocate_reference_times handles rounding without warning", {
+  rep_tri <- matrix(
+    data = 1,
+    nrow = 20,
+    ncol = 6
+  ) |> construct_triangle()
+
+  tv <- expect_no_warning(allocate_reference_times(
+    rep_tri,
+    scale_factor = 3,
+    prop_delay = 0.5
+  ))
+  expect_identical(tv$n_history_delay, 7)
+  expect_identical(tv$n_retrospective_nowcasts, 8)
+})
+
 test_that("allocate_reference_times warns when user or defaults don't meet minimum requirements, and reallocates accordingly.", { # nolint
 
   # Test the default works when their is less than 3* max delay of data

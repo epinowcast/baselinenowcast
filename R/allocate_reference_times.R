@@ -288,10 +288,9 @@ allocate_reference_times <- function(reporting_triangle,
   prop_delay_used <- n_history_delay / n_used
 
   if (round(prop_delay_used, 3) != round(prop_delay, 3)) {
-    cli_warn(
-      message = c(
-        "{prop_delay} reference times were specified for delay estimation but due to minimum requirements or rounding had to be reallocated.", # nolint
-        "i" = "{round(prop_delay_used,3)} of reference times used for delay estimation." # nolint
+    cli_alert_info(
+      text = c(
+        "{prop_delay} reference times were specified for delay estimation but {round(prop_delay_used,3)} of reference times used for delay estimation." # nolint
       )
     )
   }

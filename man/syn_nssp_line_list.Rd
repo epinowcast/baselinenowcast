@@ -4,9 +4,9 @@
 \name{syn_nssp_line_list}
 \alias{syn_nssp_line_list}
 \title{A synthetic dataset resembling line-list (each row is a patient) data from
-the National Syndromic Surveillance System (NSSP) accessed via the Essence
-platform. All entries are synthetic, formatted to look as close to the
-real raw data as possible.}
+the United States' National Syndromic Surveillance System (NSSP)
+accessed via the Essence platform. All entries are synthetic, formatted to
+look as close to the real raw data as possible.}
 \format{
 A data.frame with 25 rows and 8 columns.
 \describe{
@@ -23,23 +23,25 @@ this diagnosis associated with that event.}
 admitted (0 for no, 1 for admission).}
 \item{C_Visit_Date_Time}{Date-time indicating the time stamp of the
 the patient registering in the emergency department, in
-YYYY-MM-DD HH:MM:SS format}
+YYYY-MM-DD HH:MM:SS format.}
 \item{c_race}{Character string indicating the race/ethnicity of the
-patient}
-\item{sex}{Character string indicating the gender of the patient}
+patient.}
+\item{sex}{Character string indicating the sex of the patient.}
 }
 }
 \source{
 Created for package demonstration to provide an example of how to
-pre-process this dataset to obtain a reporting triangle.
+pre-process this dataset to obtain a reporting triangle. This is made to
+look like the data that one would pull directly an API to access
+patient-level line-list data.
 }
 \usage{
 syn_nssp_line_list
 }
 \description{
 A synthetic dataset resembling line-list (each row is a patient) data from
-the National Syndromic Surveillance System (NSSP) accessed via the Essence
-platform. All entries are synthetic, formatted to look as close to the
-real raw data as possible.
+the United States' National Syndromic Surveillance System (NSSP)
+accessed via the Essence platform. All entries are synthetic, formatted to
+look as close to the real raw data as possible.
 }
 \keyword{datasets}

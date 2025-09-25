@@ -1,5 +1,5 @@
 ---
-title: "Nowcasting U.S. National Syndromic Surveillance Program (NSSP) data"
+title: "Nowcasting syndromic surveilance system data: a case study applied to the U.S. National Syndromic Surveillance Program (NSSP) data"
 description: "A nowcasting example applied to data from NSSP"
 output:
   bookdown::html_document2:
@@ -11,17 +11,18 @@ bibliography: library.bib
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 link-citations: true
 vignette: >
-  %\VignetteIndexEntry{Nowcasting NSSP data}
+  %\VignetteIndexEntry{Nowcasting syndromic surveilance system data: a case study applied to the U.S. National Syndromic Surveillance Program (NSSP) data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 # Introduction
 
-In this vignette, we will show an example of how to clean and pre-process line-list patient-level data from the [National Syndromic Surveillance](https://www.cdc.gov/nssp/index.html) (NSSP) dataset.
+In this vignette, we will show an example of how to clean and pre-process line-list patient-level data from syndromic surveillance system data and use it to produce nowcasts of cases of a particular syndromic surveillance definition.
+Real-time data on the latest trends in syndromic surveillance data are critical to public health planning.
+When these datasets are analysed in real-time, delays from the initial visit to updated diagnoses codes results in right-truncation of counts of the primary event, the patient visit, leading to systematic downward bias in the most recent data.
+In this case study, we will use synthetic data from the United States' [National Syndromic Surveillance](https://www.cdc.gov/nssp/index.html) (NSSP) dataset.
 The NSSP Emergency Department (ED) visit dataset is a dataset widely used by public health departments in the United States, representing many but not all counties in the country.
-This dataset is entirely fake, it represents a small number of synthetic records that mirror the NSSP update fields.
-It was created to demonstrate how to take advantage of the timesteps embedded in the NSSP ESSENCE visits records dataset, which records the timing of diagnoses code updates related to each clinical encounter.
 Clinical encounters may begin to be associated with diagnoses codes at different points in the patient or clinical processing journey (e.g. during admission, triage, after laboratory results are returned, or during coding for billing, etc.), and are captured by the syndromic surveillance system as they are entered into the electronic health record.
 The difference between the visit date - when the patient registers in the emergency department- and the time of the diagnosis update pertaining to the diagnosis of interest, is used to compute a reporting delay for each patient.
 Reporting delays can vary by a range of factors including the electronic health record system, facility, provide, season, time of day, or means of diagnosis.
@@ -70,7 +71,7 @@ This typically will be pulled using an API, but here we provide the `syn_nssp_li
 syn_nssp_line_list
 ```
 <div class="alert alert-warning" role="alert">
-<strong>Note:</strong> This dataset does not represent data from real patients, it is entirely simulated.
+<strong>Note:</strong> This dataset does not represent data from real patients, it is entirely synthetic and designed to mirror the NSSP update fields, which records the timing of a clinical encounter and the corresponding diagnoses code, if any.
 </div>
 
 
@@ -264,7 +265,7 @@ You can see that this larger synthetic dataset has the same format as the one we
 We will start by computing the reporting delay and performing an exploratory data analysis of the delays in this dataset.
 <details><summary>Click to expand code to create plots of the delay distributions </summary>
 ```{r}
-long_df <- syn_nssp_rep_tri_df |>
+long_df <- syn_nssp_df |>
   mutate(delay = as.integer(report_date - reference_date))
 
 delay_df_t <- long_df |>

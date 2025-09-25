@@ -21,35 +21,31 @@ vignette: >
 In this vignette, we will show an example of how to clean and pre-process line-list patient-level data from syndromic surveillance system data and use it to produce nowcasts of cases of a particular syndromic surveillance definition.
 Real-time data on the latest trends in syndromic surveillance data are critical to public health planning.
 When these datasets are analysed in real-time, delays from the initial visit to updated diagnoses codes results in right-truncation of counts of the primary event, the patient visit, leading to systematic downward bias in the most recent data.
-In this case study, we will use synthetic data from the United States' [National Syndromic Surveillance](https://www.cdc.gov/nssp/index.html) (NSSP) dataset.
+Nowcasting uses the previously observed reporting delays to correct for this downward bias and estimate the eventual, final observed cases.
+
+## About syndromic surveillance system data
+
+Syndromic surveillance system data is used by public health departments to understand in real-time trends clinical encounters using electronic health records.
+In this case study, we will use synthetic data from the United States' [National Syndromic Surveillance](https://www.cdc.gov/nssp/index.html) (NSSP) dataset to nowcasts cases of Acute Respiratory Infections (ARI).
 The NSSP Emergency Department (ED) visit dataset is a dataset widely used by public health departments in the United States, representing many but not all counties in the country.
+The dataset contains information at the patient-level about each clinical encounter recorded in the electronic health record system during their hospital stay.
 Clinical encounters may begin to be associated with diagnoses codes at different points in the patient or clinical processing journey (e.g. during admission, triage, after laboratory results are returned, or during coding for billing, etc.), and are captured by the syndromic surveillance system as they are entered into the electronic health record.
 The difference between the visit date - when the patient registers in the emergency department- and the time of the diagnosis update pertaining to the diagnosis of interest, is used to compute a reporting delay for each patient.
 Reporting delays can vary by a range of factors including the electronic health record system, facility, provide, season, time of day, or means of diagnosis.
-These reporting delays will be used to estimate a reporting delay distribution.
-
-In this near-real-time emergency department dataset, public health surveillance definitions have been developed for a range of public health concerns and these definitions typically rely on the presence of diagnosis code(s), specific free text captured in clinical notes, or a combination of these.
-In additional, exclusion criteria are used in some definitions to improve the specificity of these definitions in some instances.
-
-In this example, we will focus on syndromic surveillance definitions that rely solely on the presence of one or more diagnoses codes, as this means that patients tend to transition from a non-case to case only once (rather than reverting back to a non-case during the course of their clinical encounter).
-Our nowcasting methods primarily focus on the former use-case, though extensions to be able to account for downward revisions as cases transition from case to non-case, are planned for future work.
-
- We will walk through how to "clean" the line list NSSP dataset in order to obtain a long tidy dataframe containing the incident counts of "cases" of a particular syndromic surveillance definition by reference date (in this case the date the visit started) and report date (the date the patient's record was updated with the corresponding diagnosis).
-
-Once we have shown how to generate data of this form from the line-list data, we will swap out the dataframe for a larger synthetic dataset formatted the same way, and demonstrate how to use `baselinenowcast` to generate a nowcast of the admissions.
-We will start by using the diagnosis codes that define Acute Respiratory Infections (ARI), but any sets of diagnosis codes that define a syndrome could be used interchangeably.
 
 
 ## Load packages
+
+We use the `baselinenowcast` package, `dplyr`, and `tidyr` for data manipulation, `readr` for loading in data, `stringr` for parsing text data, `lubridate` for formatting dates, `ggplot2` for plotting, and `purrr` for mapping diagnoses codes to text fields in the data.
 ```{r setup, message = FALSE, warning = FALSE, results = 'hide'}
 # Load packages
 library(baselinenowcast)
-library(ggplot2)
-library(stringr)
 library(dplyr)
 library(tidyr)
 library(readr)
+library(stringr)
 library(lubridate)
+library(ggplot2)
 library(purrr)
 # Set seed for reproducibility
 set.seed(123)
@@ -59,13 +55,10 @@ set.seed(123)
 
 # NSSP data cleaning
 
-We will start by loading in the synthetic line-list dataset.
-Our goal is to turn the line-list's time stamp and diagnosis update columns into first a long format with one row per update, then filter through the updates to find the first "hit" that corresponds to the diagnosis codes in the syndromic surveillance definition for ARI.
-In this dataset, the first update time represents the date of reporting of the diagnosis, and the visit time represents the date in which the reference event, in this case the date of the visit, occurred.
-We will then summarise the data in long format, obtaining a long tidy dataframe with the counts of admissions on each reference date (visit date) and report date (the first time the diagnosis occurred during the clinical encounter).
-
+We will walk through how to "clean" the line list NSSP dataset in order to obtain a long tidy dataframe containing the incident counts of "cases" of a particular syndromic surveillance definition by reference date (in this case the date the visit started) and report date (the date the patient's record was updated with the corresponding diagnosis).
 
 ## Load in the line list data
+
 This typically will be pulled using an API, but here we provide the `syn_nssp_line_list` dataset as package data.
 ```{r}
 syn_nssp_line_list
@@ -76,7 +69,14 @@ syn_nssp_line_list
 
 
 ## Define the syndromic surveillance definition diagnosis codes.
-Here we will list the diagnosis codes which correspond to ARI.
+
+In this near-real-time emergency department dataset, public health surveillance definitions have been developed for a range of public health concerns and these definitions typically rely on the presence of diagnosis code(s), specific free text captured in clinical notes, or a combination of these.
+In additional, exclusion criteria are used in some definitions to improve the specificity of these definitions in some instances.
+
+In this example, we will focus on syndromic surveillance definitions that rely solely on the presence of one or more diagnoses codes, as this means that patients tend to transition from a non-case to case only once (rather than reverting back to a non-case during the course of their clinical encounter).
+Our nowcasting methods primarily focus on the former use-case, though extensions to be able to account for downward revisions as cases transition from case to non-case, are planned for future work.
+
+Here we will list the diagnosis codes which correspond to ARI, but any sets of diagnosis codes that define a syndrome could be used interchangeably.
 To be considered an ARI case, one or more of these codes must be reported.
 ```{r}
 # TO DO: Update for ARI diagnoses codes!
@@ -84,18 +84,20 @@ diagnoses_codes_defn <- c("U07", "R112")
 ```
 
 ## Expand the data so that each "event" has its own column
+
+First we will pivot the line-list's time stamp and diagnosis update columns into a long format with one row per update.
+
 We will create two datasets which parse the characters in the columns `DischargeDiagnosisMDTUpdates` and `DischargeDiagnosisUpdates` , which contain a string listing the time stamp and diagnosis codes (respectively) of each "event" in the clinical encounter, formatted as:
 
  - `{event number};YYYY-MM-DD HH:MM:SS;|{event number 2};YYYY-MM-DD HH:MM:SS;|` for `DischargeDiagnosisMDTUpdates`
 
  - `{event number};{diagnoses codes};|{event number 2}{diagnoses codes};|` for `DischargeDiagnosisUpdates`
 
-Later, we will merge the two datasets back together by the unique patient ID and the event numbers.
+Later, we will merge the two datasets back together by the unique patient ID and the event number, so that we can associate each set of diagnoses codes with a timestamp.
 
-We will use `tidyr`'s `separate_wider_delim` to expand these entries, so that each "event" has its own column.
+We will use `tidyr::separate_wider_delim()` to expand these entries, so that each "event" has its own column.
 Since patients experience a different number of patient update "events", there will be missing values for patients not experiencing many events during their visit.
 The columns will be named by the original column name + the event number, e.g. `DischargeDiagnosisMDTUpdates1`.
-
 ```{r}
 syn_nssp_time_stamps_wide <- syn_nssp_line_list |>
   separate_wider_delim(DischargeDiagnosisMDTUpdates,
@@ -104,6 +106,7 @@ syn_nssp_time_stamps_wide <- syn_nssp_line_list |>
   select(-DischargeDiagnosisUpdates)
 head(syn_nssp_time_stamps_wide)
 ```
+
 Repeat for the diagnoses codes column.
 ```{r}
 syn_nssp_diagnoses_wide <- syn_nssp_line_list |>
@@ -190,7 +193,7 @@ syn_nssp_diagnoses_long <-
 Merge together the time stamps of events and the diagnoses codes.
 Filter to remove empty update
 ```{r}
-df_all <- merge(syn_nssp_time_stamps_long,
+nssp_merged <- merge(syn_nssp_time_stamps_long,
   syn_nssp_diagnoses_long,
   by = "event_id"
 ) |>
@@ -198,18 +201,18 @@ df_all <- merge(syn_nssp_time_stamps_long,
 ```
 Now we have a dataframe where each row is an event, with the patient's visit start date (`C_Visit_date_Time`), the patient ID (`C_Processed_BioSense_ID`), the diagnoses code at the event (`diagnoses_code`), and the time stamp of the event (`time_stamp`).
 
-Next we will add a columns for the time from arrival to each updated diagnosis, in days.
+Next we will add a column for the time from arrival to each updated diagnosis, in days.
 ```{r}
-df_all <- df_all |>
+nssp_updates <- nssp_merged |>
   mutate(arrival_to_update_delay = as.numeric(difftime(
     as.POSIXct(time_stamp), as.POSIXct(C_Visit_Date_Time),
     units = "days"
   )))
 ```
 
-Next, apply the query to identify when the patient first was diagnosed with ARI.
+We next filter through the updates to find the first "hit" that corresponds to the diagnosis codes in the syndromic surveillance definition for ARI.
 ```{r}
-ARI_updates <- df_all |>
+ARI_updates <- nssp_updates |>
   filter(map_lgl(diagnoses_codes, ~ any(str_detect(.x, diagnoses_codes_defn))))
 ```
 
@@ -221,19 +224,18 @@ first_ARI_diagnosis <- ARI_updates |>
   slice(1)
 ```
 
-Clean up for nowcasting.
+Label the visit start date, `C_Visit_Date_Time`, as the reference date,`reference_date` and `time_stamp` as the report date, `report_date` and remove the other column names that are no longer needed, as each row now represents a case.
 ```{r}
 clean_line_list <- first_ARI_diagnosis |>
   mutate(
     reference_date = as.Date(C_Visit_Date_Time),
     report_date = as.Date(time_stamp)
   ) |>
-  ungroup() |>
-  select(reference_date, report_date)
+  ungroup()
 head(clean_line_list)
 ```
 
-Get the counts by reference and report date and compute the delay.
+For nowcasting, we want to compute the number of incident cases indexed by referene and report date, so we can aggregate by reference and report date and compute the delay.
 ```{r}
 count_df <- clean_line_list |>
   group_by(reference_date, report_date) |>

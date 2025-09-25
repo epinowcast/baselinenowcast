@@ -189,9 +189,8 @@ reference times needed for uncertainty estimation. Default is <code>2</code>.</p
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Use the defaults</span></span></span>
 <span class="r-in"><span><span class="va">ref_time_allocation_default</span> <span class="op">&lt;-</span> <span class="fu">allocate_reference_times</span><span class="op">(</span><span class="va">triangle</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>0.5 reference times were specified for delay estimation but due to</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> minimum requirements had to be reallocated.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 0.444 of reference times used for delay estimation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 0.5 reference times were specified for delay estimation but 0.444 of reference times used for delay estimation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `prop_delay` not identical to the proprtion of reference times used for delay estimation due to rounding.</span>
 <span class="r-in"><span><span class="va">ref_time_allocation_default</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $n_history_delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4</span>
@@ -205,9 +204,8 @@ reference times needed for uncertainty estimation. Default is <code>2</code>.</p
 <span class="r-in"><span>  scale_factor <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  prop_delay <span class="op">=</span> <span class="fl">0.6</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>0.6 reference times were specified for delay estimation but due to</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> minimum requirements had to be reallocated.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 0.667 of reference times used for delay estimation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 0.6 reference times were specified for delay estimation but 0.667 of reference times used for delay estimation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> This is due to the minumim requirement for the number of reference times needed for delay estimation (4).</span>
 <span class="r-in"><span><span class="va">ref_time_allocation_alt</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $n_history_delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4</span>

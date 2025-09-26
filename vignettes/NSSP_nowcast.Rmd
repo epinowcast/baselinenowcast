@@ -316,6 +316,7 @@ cdf_delay <- ggplot(avg_delays) +
 cdf_delay
 delay_t
 ```
+
 Based on this figure, we can set the maximum delay to be 25 days as this is where 95% of the cases appear to have been reported.
 We will also set the nowcast date as 30 days before the maximum reference date in the dataset, May 5th, 2026.
 This is so that we can use the later observed data, beyond the 25 days maximum delay, to evaluate our nowcast against.

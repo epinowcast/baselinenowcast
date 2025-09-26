@@ -44,6 +44,10 @@ Depends:
 Imports:
   cli,
   checkmate,
+  stats,
+  zoo,
+  lubridate,
+  utils,
   stats
 Suggests:
     epinowcast,

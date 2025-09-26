@@ -24,7 +24,7 @@ of the delay. The default is to use the whole reporting triangle,
 \item{n}{Integer indicating the number of reference times (observations) to
 be used in the estimate of the reporting delay, always starting from the
 most recent reporting delay. The default is to use the whole reporting
-triangle, so \code{nrow(reporting_triangle)}}
+triangle, so \code{nrow(reporting_triangle)}.}
 }
 \value{
 Vector indexed at 0 of length \code{max_delay + 1} with columns

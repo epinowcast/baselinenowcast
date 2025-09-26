@@ -1,12 +1,9 @@
 ARI
-BioSense
 CMD
 COVID
 Codecov
 DD
 DataFrame
-DischargeDiagnosisMDTUpdates
-DischargeDiagnosisUpdates
 DiscreteUniform
 HH
 KITmetricslab
@@ -62,6 +59,7 @@ mathbb
 mathbf
 negbin
 nolint
+norovirus
 nowcast
 nowcasted
 nowcasting
@@ -76,7 +74,6 @@ sim
 swo
 th
 thetad
-timesteps
 ub
 xlab
 yintercept

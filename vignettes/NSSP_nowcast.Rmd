@@ -1,5 +1,5 @@
 ---
-title: "Nowcasting syndromic surveilance system data: a case study applied to the U.S. National Syndromic Surveillance Program (NSSP) data"
+title: "Nowcasting syndromic surveillance system data: a case study applied to the U.S. National Syndromic Surveillance Program (NSSP) data"
 description: "A nowcasting example applied to data from NSSP"
 output:
   bookdown::html_document2:
@@ -11,7 +11,7 @@ bibliography: library.bib
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 link-citations: true
 vignette: >
-  %\VignetteIndexEntry{Nowcasting syndromic surveilance system data: a case study applied to the U.S. National Syndromic Surveillance Program (NSSP) data}
+  %\VignetteIndexEntry{Nowcasting syndromic surveillance system data: a case study applied to the U.S. National Syndromic Surveillance Program (NSSP) data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -318,7 +318,7 @@ delay_t
 ```
 Based on this figure, we can set the maximum delay to be 25 days as this is where 95% of the cases appear to have been reported.
 We will also set the nowcast date as 30 days before the maximum reference date in the dataset, May 5th, 2026.
-This is so that we can use the later observed data, beyound the 25 days maximum delay, to evaluate our nowcast against.
+This is so that we can use the later observed data, beyond the 25 days maximum delay, to evaluate our nowcast against.
 ```{r}
 max_delay <- 25
 nowcast_date <- max(long_df$reference_date) - days(30)
@@ -388,7 +388,7 @@ n_retrospective_nowcasts <- ref_time_allocation$n_retrospective_nowcasts
 # Run the `baselinenowcast` workflow
 
 First, we generate the point estimate of the nowcast as a "filled in" reporting triangle.
-See the sections "Estimating the delay dsitribution from a reporting triangle" and "Point nowcast generation" of the [mathematical model](model_definition.html) for more details.
+See the sections "Estimating the delay distribution from a reporting triangle" and "Point nowcast generation" of the [mathematical model](model_definition.html) for more details.
 ```{r}
 pt_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = n_history_delay)
 ```
@@ -452,7 +452,7 @@ head(nowcast_w_data)
 ```
 
 ## Plot against later observed "final" data
-Next we will make a plot of the nowcasted "final" cases compareed to the initially reported, right-truncated cases and the true "final" reports.
+Next we will make a plot of the nowcasted "final" cases compared to the initially reported, right-truncated cases and the true "final" reports.
 ```{r}
 combined_data <- nowcast_w_data |>
   select(reference_date, initial_count, final_count) |>
@@ -526,7 +526,7 @@ plot_prob_nowcast
 # Summary
 
 In this vignette we used `baselinenowcast ` to nowcast cases of ARI starting from synthetic syndromic surveillance system data designed to mirror the U.S. NSSP dataset.
-We walked through the process of defining a syndromic surveillance definition using a list of diagnoses codes, and using the time stamps of updates in an EHR in the NSSP dataset to create a count of the number of cases of a specific definition indexed by the date of their visit and the date at which the patient's diagnoses was recorded into the surveillance system.
+We walked through the process of defining a syndromic surveillance definition using a list of diagnoses codes, and using the time stamps of updates in an electronic health record in the NSSP dataset to create a count of the number of cases of a specific definition indexed by the date of their visit and the date at which the patient's diagnoses was recorded into the surveillance system.
 From there we used the `baselinenowcast` workflow to estimate a delay distribution, apply it to generate a point nowcast, and estimate and apply uncertainty to generate probabilistic nowcasts.
 As a final step, we compared our nowcasts of the eventual final observed case counts to what we later observed and the right-truncated initial reports.
 

@@ -5,9 +5,16 @@
 \alias{as_reporting_triangle.data.frame}
 \title{Create a reporting triangle from a dataframe}
 \usage{
-as_reporting_triangle(data, max_delay = NULL, ...)
+as_reporting_triangle(data, ...)
 
-\method{as_reporting_triangle}{data.frame}(data, max_delay = NULL, ...)
+\method{as_reporting_triangle}{data.frame}(
+  data,
+  max_delay,
+  strata = NULL,
+  reference_date = "reference_date",
+  report_date = "report_date",
+  count = "count"
+)
 }
 \arguments{
 \item{data}{Data.frame to be converted to a reporting triangle matrix.
@@ -18,12 +25,22 @@ indexed by their reference date and report date.}
 \item{max_delay}{Integer indicating the maximum delay of the process which
 will dictate the number of columns in the resulting reporting triangle.}
 
-\item{...}{Additional arguments}
+\item{strata}{Character string indicating the metadata on the strata of this
+reporting triangle. Default is \code{NULL}.}
 }
 \value{
-Matrix containing reference times as rows and delays as columns
-with entries for the number of new counts at each reference time and
-delay.
+\code{reporting_triangle} class object which is a list containing:
+\itemize{
+\item A matrix with which rows are reference times and columns are delays and
+entries are incident cases at each reference time and delay.
+\item An integer indicating the maximum delay used to create the reporting
+triangle
+\item A vector of the same length as the rows of the matrix indicating the
+dates corresponding to the reference times in the rows of the reporting
+triangle.
+\item A character string indicating the strata.
+\item A vector indicating the "structure" of the reporting triangle.
+}
 }
 \description{
 Create a reporting triangle from a dataframe
@@ -37,19 +54,16 @@ the reference event.
 report of the reference event.
 \item \code{count}: Column of numeric or integer indicating the new confirmed counts
 pertaining to that reference and report date.
+Additional columns can be included but will not be used. The input
+dataframe for this function must contain only a single strata, there can
+be no repeated reference dates and report dates.
 }
 }
 \examples{
-long_data <- data.frame(
-  reference_date = c(
-    "2025-01-01", "2025-01-01", "2025-01-01",
-    "2025-01-02", "2025-01-02", "2025-01-03"
-  ),
-  report_date = c(
-    "2025-01-01", "2025-01-02", "2025-01-03",
-    "2025-01-02", "2025-01-03", "2025-01-03"
-  ),
-  count = c(10, 2, 1, 12, 3, 13)
+data_as_of_df <- syn_nssp_df |>
+  filter(report_date <= "2026-04-01")
+as_reporting_triangle(
+  data = data_as_of_df,
+  max_delay = 25
 )
-as_reporting_triangle(long_data)
 }

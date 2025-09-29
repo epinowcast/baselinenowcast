@@ -50,6 +50,7 @@ as_reporting_triangle <- function(data, ...) {
 #'
 #' @export
 #' @method as_reporting_triangle data.frame
+#' @importFrom checkmate check_integerish
 as_reporting_triangle.data.frame <- function(
     data,
     max_delay,
@@ -74,7 +75,7 @@ as_reporting_triangle.data.frame <- function(
   # Compute delay
   data$delay <- time_length(as.Date(data$report_date) -
     as.Date(data$reference_date), unit = delays_unit)
-  if (!is.empty(check_integerish(data$delay))) {
+  if (!isTRUE(check_integerish(data$delay))) {
     cli_abort(
       message = c(
         "Delays must be integers, detected non-integer time difference between `reference_date` and `report_date` .", # nolint

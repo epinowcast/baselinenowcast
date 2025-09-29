@@ -13,7 +13,7 @@ test_that("detect_structure works with small triangle", {
   exp_structure <- c(2, 1, 1)
   detected_structure <- detect_structure(ragged_triangle)
 
-  expect_equal(exp_struture, detected_structure)
+  expect_equal(exp_structure, detected_structure)
 
 
   ragged_triangle2 <- matrix(

@@ -43,6 +43,7 @@ dates corresponding to the reference times in the rows of the reporting
 triangle.
 \item A character string indicating the strata.
 \item A vector indicating the "structure" of the reporting triangle.
+\item A character string indicating the unit of the delays.
 }
 }
 \description{

@@ -32,6 +32,7 @@
 #'    triangle.
 #'    - A character string indicating the strata.
 #'    - A vector indicating the "structure" of the reporting triangle.
+#'    - A character string indicating the unit of the delays.
 #' @export
 #'
 #' @examples

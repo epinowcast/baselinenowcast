@@ -18,20 +18,21 @@ vignette: >
 
 # Introduction
 
-In this vignette, we will show an example of how to clean and pre-process line-list patient-level data from syndromic surveillance system data and use it to produce nowcasts of cases of a particular syndromic surveillance definition.
-Real-time data on the latest trends in syndromic surveillance data are critical to public health planning.
-When these datasets are analysed in real-time, delays from the initial visit to updated diagnoses codes results in right-truncation of counts of the primary event, the patient visit, leading to systematic downward bias in the most recent data.
-Nowcasting uses the previously observed reporting delays to correct for this downward bias and estimate the eventual, final observed cases.
+Syndromic surveillance data are used by public health departments to understand trends in clinical encounters from electronic health records.
+When these datasets are analysed in real-time, delays from the initial visit to updated diagnoses codes results in right-truncation of counts of the primary event, i.e. the patient visit, leading to systematic downward bias in the most recent data.
+Nowcasting uses the previously observed reporting delays to correct for this downward bias and estimate the eventual, final observed cases, which provides an estimate of the trend in cases in real-time.
 
 ## About syndromic surveillance system data
 
-Syndromic surveillance system data is used by public health departments to understand in real-time trends clinical encounters using electronic health records.
-In this case study, we will use synthetic data from the United States' [National Syndromic Surveillance](https://www.cdc.gov/nssp/index.html) (NSSP) dataset to nowcasts cases of Broad Acute Respiratory Incidence (ARI).
+Syndromic surveillance system data contains information at the visit-level on the timing and nature of the patient's clinical interactions.
+In this case study, we will use synthetic data from the United States' [National Syndromic Surveillance Program](https://www.cdc.gov/nssp/index.html) (NSSP) dataset available for participating jurisdictions through the CDC's ESSENCE platform, to nowcast cases of Broad Acute Respiratory Incidence (BAR).
 The NSSP Emergency Department (ED) visit dataset is a dataset widely used by public health departments in the United States, representing many but not all counties in the country.
-The dataset contains information at the patient-level about each clinical encounter recorded in the electronic health record system during their hospital stay.
-Clinical encounters may begin to be associated with diagnoses codes at different points in the patient or clinical processing journey (e.g. during admission, triage, after laboratory results are returned, or during coding for billing, etc.), and are captured by the syndromic surveillance system as they are entered into the electronic health record.
+The dataset contains information at the visit-level about each clinical encounter recorded in the electronic health record system during the patient's hospital stay.
+Clinical encounters may begin to be associated with diagnoses codes at different points in the patient or clinical processing journey (e.g. during registration, triage, clinical encounter, after laboratory results are returned, or during coding for billing, etc.), and are captured through update messages to the syndromic surveillance system once they are entered into a facility's electronic health record.
 The difference between the visit date - when the patient registers in the emergency department- and the time of the diagnosis update pertaining to the diagnosis of interest, is used to compute a reporting delay for each patient.
-Reporting delays can vary by a range of factors including the electronic health record system, facility, provide, season, time of day, or means of diagnosis.
+Reporting delays for diagnoses of interest can vary by a range of factors including by pathogen/syndrome, season, time of day or week, means of diagnosis, the electronic health record system, or treating facility.
+In this vignette, we will demonstrate how to use syndromic surveillance system data, particularly the timestamped data captured in each NSSP ESSENCE visit record, to produce nowcasts of cases of a particular diagnosis of interest.
+Note that all visits that originate in the emergency department are used for this analysis, regardless of eventual inpatient admission.
 
 
 ## Load packages
@@ -53,9 +54,9 @@ set.seed(123)
 
 
 
-# NSSP data cleaning
+# NSSP data pre-processing
 
-We will walk through how to "clean" the line list NSSP dataset in order to obtain a [long tidy dataframe](https://r4ds.had.co.nz/tidy-data.html) containing the incident counts of "cases" of a particular syndromic surveillance definition by reference date (in this case the date the visit started) and report date (the date the patient's record was updated with the corresponding diagnosis).
+We will walk through how to preprocess the line list NSSP data details dataset in order to obtain a [long tidy dataframe](https://r4ds.had.co.nz/tidy-data.html) containing the incident counts of "cases" of a particular syndrome by reference date (in this instance the date the visit started) and report date (the date the patient's record was updated with the corresponding diagnosis of interest).
 
 ## Load in the line list data
 
@@ -68,18 +69,18 @@ syn_nssp_line_list
 </div>
 
 
-## Define the syndromic surveillance definition diagnosis codes.
+## Define the "syndrome" definition
 
-In this near-real-time emergency department dataset, public health surveillance definitions have been developed for a range of public health concerns and these definitions typically rely on the presence of diagnosis code(s), specific free text captured in clinical notes, or a combination of these.
-In additional, exclusion criteria are used in some definitions to improve the specificity of these definitions in some instances.
+In this near-real-time emergency department dataset, public health surveillance, or "syndrome" definitions have been developed for a range of public health concerns. These definitions typically rely on the presence of diagnosis code(s), specific free text captured in clinical notes, or a combination of these.
+In some instances, exclusion criteria are incorporated into these definitions to improve their specificity.
 
 In this example, we will focus on syndromic surveillance definitions that rely solely on the presence of one or more diagnoses codes, as this means that patients tend to transition from a non-case to case only once (rather than reverting back to a non-case during the course of their clinical encounter).
 Our nowcasting methods primarily focus on the former use-case, though extensions to be able to account for downward revisions as cases transition from case to non-case, are planned for future work.
 
-Here we will list the diagnosis codes which correspond to ARI, but any sets of diagnosis codes that define a syndrome could be used interchangeably.
+Here we will list the diagnosis codes which correspond to Broad Acute Respiratory, but any sets of diagnosis codes that define a syndrome could be used interchangeably.
 To be considered a Broad Acute Respiratory case, one or more of these codes must be reported.
 ```{r}
-diagnoses_codes_defn <- c("A22.1", "A221", "A37", "A48.1", "A481", "B25.0", "B250", "B34.2", "B34.9", "B342", "B349", "B44.0", "B44.9", "B440", "B449", "B44.81", "B4481", "B97.2", "B97.4", "B972", "B974", "J00", "J01", "J02", "J03", "J04", "J05", "J06", "J09", "J10", "J11", "J12", "J13", "J14", "J15", "J16", "J17", "J18", "J20", "J21", "J22", "J39.8", "J398", "J40", "J47.9", "J479", "J80", "J85.1", "J851", "J95.821", "J95821", "J96.0", "J96.00", "J9600", "J96.01", "J9601", "J96.02", "J9602", "J96.2", "J960", "J962", "J96.20", "J9620", "J96.21", "J9621", "J9622", "J96.22", "J96.91", "J9691", "J98.8", "J988", "R05", "R06.03", "R0603", "R09.02", "R0902", "R09.2", "R092", "R43.0", "R43.1", "R43.2", "R430", "R431", "R432", "U07.1", "U07.2", "U071", "U072", "022.1", "0221", "034.0", "0340", "041.5", "0415", "041.81", "04181", "079.1", "079.2", "079.3", "079.6", "0791", "0792", "0793", "0796", "079.82", "079.89", "07982", "07989", "079.99", "07999", "117.3", "1173", "460", "461", "462", "463", "464", "465", "466", "461.", "461", "461.", "464.", "465.", "466.", "461", "464", "465", "466", "478.9", "4789", "480.", "482.", "483.", "484.", "487.", "488.", "480", "481", "482", "483", "484", "485", "486", "487", "488", "490", "494.1", "4941", "517.1", "5171", "518.51", "518.53", "51851", "51853", "518.6", "5186", "518.81", "518.82", "518.84", "51881", "51882", "51884", "519.8", "5198", "073.0", "0730", "781.1", "7811", "786.2", "7862", "799.02", "79902", "799.1", "7991", "033", "033.", "033", "780.60", "78060")
+diagnoses_codes_defn <- c("A22.1", "A221", "A37", "A48.1", "A481", "B25.0", "B250", "B34.2", "B34.9", "B342", "B349", "B44.0", "B44.9", "B440", "B449", "B44.81", "B4481", "B97.2", "B97.4", "B972", "B974", "J00", "J01", "J02", "J03", "J04", "J05", "J06", "J09", "J10", "J11", "J12", "J13", "J14", "J15", "J16", "J17", "J18", "J20", "J21", "J22", "J39.8", "J398", "J40", "J47.9", "J479", "J80", "J85.1", "J851", "J95.821", "J95821", "J96.0", "J96.00", "J9600", "J96.01", "J9601", "J96.02", "J9602", "J96.2", "J960", "J962", "J96.20", "J9620", "J96.21", "J9621", "J9622", "J96.22", "J96.91", "J9691", "J98.8", "J988", "R05", "R06.03", "R0603", "R09.02", "R0902", "R09.2", "R092", "R43.0", "R43.1", "R43.2", "R430", "R431", "R432", "U07.1", "U07.2", "U071", "U072", "022.1", "0221", "034.0", "0340", "041.5", "0415", "041.81", "04181", "079.1", "079.2", "079.3", "079.6", "0791", "0792", "0793", "0796", "079.82", "079.89", "07982", "07989", "079.99", "07999", "117.3", "1173", "460", "461", "462", "463", "464", "465", "466", "461.", "461", "461.", "464.", "465.", "466.", "461", "464", "465", "466", "478.9", "4789", "480.", "482.", "483.", "484.", "487.", "488.", "480", "481", "482", "483", "484", "485", "486", "487", "488", "490", "494.1", "4941", "517.1", "5171", "518.51", "518.53", "51851", "51853", "518.6", "5186", "518.81", "518.82", "518.84", "51881", "51882", "51884", "519.8", "5198", "073.0", "0730", "781.1", "7811", "786.2", "7862", "799.02", "79902", "799.1", "7991", "033", "033.", "033", "780.60", "78060") # nolint
 ```
 
 ## Expand the data so that each "event" has its own column
@@ -92,6 +93,7 @@ We will create two datasets which parse the characters in the columns `Discharge
 
  - `{event number};{diagnoses codes};|{event number 2}{diagnoses codes};|` for `DischargeDiagnosisUpdates`
 
+The timestamp records the timing of diagnosis code updates related to each clinical encounter, capturing the point in time when each new code became available within the NSSP system.
 Later, we will merge the two datasets back together by the unique patient ID and the event number, so that we can associate each set of diagnoses codes with a timestamp.
 
 We will use `tidyr::separate_wider_delim()` to expand these entries, so that each "event" has its own column.

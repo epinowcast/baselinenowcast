@@ -13,7 +13,8 @@ as_reporting_triangle(data, ...)
   strata = NULL,
   reference_date = "reference_date",
   report_date = "report_date",
-  count = "count"
+  count = "count",
+  delays_unit = "days"
 )
 }
 \arguments{
@@ -22,11 +23,13 @@ Can either be in the long tidy format of counts by reference date
 and report date or line list data with individual observations
 indexed by their reference date and report date.}
 
-\item{max_delay}{Integer indicating the maximum delay of the process which
-will dictate the number of columns in the resulting reporting triangle.}
-
 \item{strata}{Character string indicating the metadata on the strata of this
 reporting triangle. Default is \code{NULL}.}
+
+\item{delays_unit}{Character string specifying the time units to use.
+Default is "daily".}
+
+\item{inheritParams}{estimate_delay}
 }
 \value{
 \code{reporting_triangle} class object which is a list containing:

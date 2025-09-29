@@ -24,14 +24,14 @@ Detect the structure of a reporting triangle
 }
 \examples{
 ragged_triangle <- matrix(
-c(
- 1, 3, 5, 7, 9, 7,
- 4, 5, 9, 4, NA, NA,
- 1, 6, NA, NA, NA, NA,
- 3, NA, NA, NA, NA, NA
-),
-nrow = 4,
-byrow = TRUE
+  c(
+    1, 3, 5, 7, 9, 7,
+    4, 5, 9, 4, NA, NA,
+    1, 6, NA, NA, NA, NA,
+    3, NA, NA, NA, NA, NA
+  ),
+  nrow = 4,
+  byrow = TRUE
 )
 detected_structure <- detect_structure(ragged_triangle)
 detected_structure

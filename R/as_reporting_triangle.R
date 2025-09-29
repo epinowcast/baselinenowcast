@@ -6,8 +6,9 @@
 #'    indexed by their reference date and report date.
 #' @param strata Character string indicating the metadata on the strata of this
 #'    reporting triangle. Default is `NULL`.
-#' @param max_delay Integer indicating the maximum delay of the process which
-#'    will dictate the number of columns in the resulting reporting triangle.
+#' @param inheritParams estimate_delay
+#' @param delays_unit Character string specifying the time units to use.
+#'    Default is "daily".
 #' @details
 #'  The input needs to be a data.frame or similar with the following columns:
 #'    - `reference_date`: Column of type `date` or character with the dates of
@@ -55,7 +56,8 @@ as_reporting_triangle.data.frame <- function(
     strata = NULL,
     reference_date = "reference_date",
     report_date = "report_date",
-    count = "count") {
+    count = "count",
+    delays_unit = "days") {
   # Create a named vector for renaming
   old_names <- c(reference_date, report_date, count)
   new_names <- c("reference_date", "report_date", "count")
@@ -70,8 +72,16 @@ as_reporting_triangle.data.frame <- function(
   # - there are values missing in the bottom right of the reporting triangle
 
   # Compute delay
-  data$delay <- as.integer(as.Date(data$report_date) -
-    as.Date(data$reference_date))
+  data$delay <- time_length(as.Date(data$report_date) -
+    as.Date(data$reference_date), unit = delays_unit)
+  if (!is.empty(check_integerish(data$delay))) {
+    cli_abort(
+      message = c(
+        "Delays must be integers, detected non-integer time difference between `reference_date` and `report_date` .", # nolint
+        "i" = "Check that `delays_unit` is specified correctly." # nolint
+      )
+    )
+  }
 
   # Filter to delays less than maximum delay
   data <- data[data$delay <= max_delay, ]
@@ -118,7 +128,8 @@ as_reporting_triangle.data.frame <- function(
       reference_date = reference_dates,
       max_delay = max_delay,
       strata = strata,
-      structure = structure
+      structure = structure,
+      delays_unit = delays_unit
     ),
     class = "reporting_triangle"
   )

@@ -1,4 +1,4 @@
-#' @title Create a reporting triangle from a dataframe
+#' @title Create a reporting triangle
 #'
 #' @param data Data.frame to be converted to a reporting triangle matrix.
 #'    Can either be in the long tidy format of counts by reference date
@@ -6,16 +6,23 @@
 #'    indexed by their reference date and report date.
 #' @param strata Character string indicating the metadata on the strata of this
 #'    reporting triangle. Default is `NULL`.
-#' @param inheritParams estimate_delay
+#' @param reference_date_col_name Character string indicating the name of the
+#'    column which represents the reference date, or the date of the primary
+#'    event occurrence.
+#' @param report_date_col_name Character string indicating the name of the
+#'    column which represents the date the primary event was reported.
+#' @param count_col_name Character string indicating the name of the column
+#'    containing the number of incident cases on each reference and report date.
+#' @inheritParams estimate_delay
 #' @param delays_unit Character string specifying the time units to use.
 #'    Default is "daily".
 #' @details
 #'  The input needs to be a data.frame or similar with the following columns:
-#'    - `reference_date`: Column of type `date` or character with the dates of
-#'     the reference event.
-#'    - `report_date`: Column of type `date` or character with the dates of
-#'     report of the reference event.
-#'    - `count`: Column of numeric or integer indicating the new confirmed counts
+#'    - Column of type `date` or character with the dates of
+#'     the primary event occurence (reference date).
+#'    - Column of type `date` or character with the dates of
+#'     report of the primary event.
+#'    - Column of numeric or integer indicating the new confirmed counts
 #'     pertaining to that reference and report date.
 #'  Additional columns can be included but will not be used. The input
 #'  dataframe for this function must contain only a single strata, there can
@@ -42,11 +49,22 @@
 #'   data = data_as_of_df,
 #'   max_delay = 25
 #' )
+#' @importFrom lubridate time_length days ymd
 as_reporting_triangle <- function(data, ...) {
   UseMethod("as_reporting_triangle")
 }
 
+#' @export
+as_reporting_triangle.default <- function(data, ...) {
+  cli_abort(
+    message = c(
+      "Don't know how to convert object of class {.cls {class(data)}} to reporting_triangle",
+      "i" = "Supported classes: data.frame, matrix"
+    )
+  )
+}
 
+#' @title Create a reporting triangle object from a data.frame
 #' @rdname as_reporting_triangle
 #'
 #' @export
@@ -56,22 +74,24 @@ as_reporting_triangle.data.frame <- function(
     data,
     max_delay,
     strata = NULL,
-    reference_date = "reference_date",
-    report_date = "report_date",
-    count = "count",
+    reference_date_col_name = "reference_date",
+    report_date_col_name = "report_date",
+    count_col_name = "count",
     delays_unit = "days") {
   # Create a named vector for renaming
-  old_names <- c(reference_date, report_date, count)
+  old_names <- c(reference_date_col_name, report_date_col_name, count_col_name)
   new_names <- c("reference_date", "report_date", "count")
   names(data)[names(data) %in% old_names] <- new_names[match(
     names(data)[names(data) %in% old_names], old_names
   )]
 
+
   # Check for:
   # - multiple reference report date combinations
   # - max delay is specified
   # - all reference dates from min to max are available
-  # - there are values missing in the bottom right of the reporting triangle
+
+  .validate_rep_tri_df(data)
 
   # Compute delay
   data$delay <- time_length(as.Date(data$report_date) -
@@ -119,14 +139,41 @@ as_reporting_triangle.data.frame <- function(
     direction = "wide"
   )
 
-  # Get only the reporting triangle
-  rep_tri_mat <- as.matrix(wide_data[2:ncol(wide_data)])
+  # Get only the reporting triangle (remove reference date column)
+  rep_tri_mat <- as.matrix(wide_data[, -1])
 
-  structure <- detect_structure(rep_tri_mat)
+  rep_tri <- as_reporting_triangle.matrix(
+    reporting_triangle = rep_tri_mat,
+    reference_dates = reference_dates,
+    max_delay = max_delay,
+    strata = strata,
+    delays_unit = delays_unit
+  )
+  return(rep_tri)
+}
 
+#' @title Create a reporting triangle object from a matrix
+#' @inheritParams estimate_delay
+#' @rdname as_reporting_triangle
+#' @export
+as_reporting_triangle.matrix <- function(reporting_triangle,
+                                         reference_dates,
+                                         max_delay,
+                                         strata = NULL,
+                                         delays_unit = "days") {
+  .validate_triangle(reporting_triangle, max_delay = max_delay)
+  if (length(reference_dates) != nrow(reporting_triangle)) {
+    cli_abort(
+      message = c(
+        "Length of `reference_dates` must equal number of rows in `reporting_triangle`" # noline
+      )
+    )
+  }
+
+  structure <- detect_structure(reporting_triangle)
   reporting_triangle_obj <- structure(
     list(
-      reporting_triangle_matrix = rep_tri_mat,
+      reporting_triangle_matrix = reporting_triangle,
       reference_date = reference_dates,
       max_delay = max_delay,
       strata = strata,

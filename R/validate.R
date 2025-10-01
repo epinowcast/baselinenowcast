@@ -330,3 +330,57 @@
   }
   return(NULL)
 }
+
+#' Validate the reporting triangle data.frame
+#'
+#' @param data Data.frame in long tidy form with reference dates, report dates,
+#'   and case counts, used to create a `reporting_triangle` obect
+#'
+#' @returns NULL, invisibly
+.validate_rep_tri_df <- function(data) {
+  # Validate inputs
+  required_cols <- c(
+    "reference_date",
+    "report_date",
+    "count"
+  )
+  missing_cols <- setdiff(required_cols, names(data))
+  if (length(missing_cols) > 0) {
+    cli_abort(
+      message = c(
+        "Required columns missing from data",
+        "x" = "Missing: {.val {missing_cols}}"
+      )
+    )
+  }
+
+  # Check for distinct pairs of reference dates and report dates
+  dup_pairs <- duplicated(data[, c("reference_date", "report_date")])
+
+  if (any(dup_pairs)) {
+    # Get the duplicated pairs for error message
+    dup_data <- data[dup_pairs, c("reference_date", "report_date")]
+    cli_abort(
+      message = c(
+        "Data contains duplicate `reference_date` and `report_date` combinations", # nolint
+        "x" = "Found {sum(dup_pairs)} duplicate pair{?s}",
+        "i" = "Each reference_date and report_date combination should appear only once" # nolint
+      )
+    )
+  }
+
+  # Check that all reference dates from min to max are available
+  all_dates_length <- length(seq(
+    from = min(data$reference_date),
+    to = max(data$reference_date),
+    by = "days"
+  ))
+  if (all_dates_length != length(unique(data$reference_date))) {
+    cli_warn(
+      message = c(
+        "Data does not contain case counts for all possible reference dates."
+      )
+    )
+  }
+  return(NULL)
+}

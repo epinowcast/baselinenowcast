@@ -214,7 +214,7 @@ detect_structure <- function(reporting_triangle) {
   n_prev_nas <- 0
   structure_long <- rep(NA, ncol(reporting_triangle))
   for (i in 1:n_row_nas) {
-    n_nas <- sum(!is.na(reporting_triangle[nrow(reporting_triangle) - i + 1, ])) - n_prev_nas
+    n_nas <- sum(!is.na(reporting_triangle[nrow(reporting_triangle) - i + 1, ])) - n_prev_nas # nolint
     structure_long[i] <- n_nas
     n_prev_nas <- n_prev_nas + n_nas
   }

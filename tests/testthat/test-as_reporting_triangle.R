@@ -39,7 +39,7 @@ test_that("as_reporting_triangle.data.frame() can handle a ragged triangle with 
 })
 
 test_that("as_reporting_triangle.data.frame() errors if there are duplicate pairs of reference and report dates", { # nolint
-  df_dup <- bind_rows(data_as_of_df, data_as_of_df)
+  df_dup <- rbind(data_as_of_df, data_as_of_df)
   expect_error(
     as_reporting_triangle(df_dup,
       max_delay = 25
@@ -134,6 +134,6 @@ test_that("as_reporting_triangle.matrix() errors if reference dates don't align 
       reference_dates = reference_dates,
       max_delay = max_delay
     ),
-    regexp = "Length of `reference_dates` must equal number of rows in `reporting_triangle`"
+    regexp = "Length of `reference_dates` must equal number of rows in "
   ) # nolint
 })

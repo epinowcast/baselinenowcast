@@ -5,7 +5,11 @@
 #'    Can either be in the long tidy format of counts by reference date
 #'    and report date or line list data with individual observations
 #'    indexed by their reference date and report date.
-#' @param ... Additional arguments.
+#' @param max_delay Integer indicating the maximum delay to estimate.
+#' @param ... Additional arguments passed to methods. For data.frame method:
+#'    `strata`, `reference_date_col_name`, `report_date_col_name`,
+#'    `count_col_name`, `delays_unit`. For matrix method: `reference_dates`,
+#'    `strata`, `delays_unit`.
 #
 #' @returns `reporting_triangle` class object which is a list containing:
 #'    - A matrix with which rows are reference times and columns are delays and
@@ -27,12 +31,12 @@
 #'   max_delay = 25
 #' )
 #' @importFrom lubridate time_length days ymd
-as_reporting_triangle <- function(data, ...) {
+as_reporting_triangle <- function(data, max_delay, ...) {
   UseMethod("as_reporting_triangle")
 }
 
 #' @export
-as_reporting_triangle.default <- function(data, ...) {
+as_reporting_triangle.default <- function(data, max_delay, ...) {
   cli_abort(
     message = c(
       "Don't know how to convert object of class {.cls {class(data)}} to reporting_triangle",
@@ -51,7 +55,6 @@ as_reporting_triangle.default <- function(data, ...) {
 #'    column which represents the date the primary event was reported.
 #' @param count_col_name Character string indicating the name of the column
 #'    containing the number of incident cases on each reference and report date.
-#' @inheritParams estimate_delay
 #' @param delays_unit Character string specifying the time units to use.
 #'    Default is "daily".
 #' @details
@@ -162,12 +165,13 @@ as_reporting_triangle.data.frame <- function(
 }
 
 #' @title Create a reporting triangle object from a matrix
-#' @inheritParams estimate_delay
+#' @param reference_dates Vector of character strings indicating the reference
+#'   dates corresponding to each row of the reporting triangle matrix (`data`).
 #' @rdname as_reporting_triangle
 #' @export
 as_reporting_triangle.matrix <- function(data,
-                                         reference_dates,
                                          max_delay,
+                                         reference_dates,
                                          strata = NULL,
                                          delays_unit = "days") {
   .validate_triangle(data, max_delay = max_delay)

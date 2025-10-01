@@ -6,7 +6,7 @@
 \alias{as_reporting_triangle.matrix}
 \title{Create a reporting triangle}
 \usage{
-as_reporting_triangle(data, ...)
+as_reporting_triangle(data, max_delay, ...)
 
 \method{as_reporting_triangle}{data.frame}(
   data,
@@ -20,8 +20,8 @@ as_reporting_triangle(data, ...)
 
 \method{as_reporting_triangle}{matrix}(
   data,
-  reference_dates,
   max_delay,
+  reference_dates,
   strata = NULL,
   delays_unit = "days"
 )
@@ -33,11 +33,12 @@ Can either be in the long tidy format of counts by reference date
 and report date or line list data with individual observations
 indexed by their reference date and report date.}
 
-\item{...}{Additional arguments.}
+\item{max_delay}{Integer indicating the maximum delay to estimate.}
 
-\item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-\code{ncol(reporting_triangle) -1}.}
+\item{...}{Additional arguments passed to methods. For data.frame method:
+\code{strata}, \code{reference_date_col_name}, \code{report_date_col_name},
+\code{count_col_name}, \code{delays_unit}. For matrix method: \code{reference_dates},
+\code{strata}, \code{delays_unit}.}
 
 \item{strata}{Character string indicating the metadata on the strata of this
 reporting triangle. Default is \code{NULL}.}
@@ -54,6 +55,9 @@ containing the number of incident cases on each reference and report date.}
 
 \item{delays_unit}{Character string specifying the time units to use.
 Default is "daily".}
+
+\item{reference_dates}{Vector of character strings indicating the reference
+dates corresponding to each row of the reporting triangle matrix (\code{data}).}
 }
 \value{
 \code{reporting_triangle} class object which is a list containing:

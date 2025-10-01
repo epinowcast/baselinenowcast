@@ -82,7 +82,8 @@ as_reporting_triangle.data.frame <- function(
     reference_date_col_name = "reference_date",
     report_date_col_name = "report_date",
     count_col_name = "count",
-    delays_unit = "days") {
+    delays_unit = "days",
+    ...) {
   # Create a named vector for renaming
   old_names <- c(reference_date_col_name, report_date_col_name, count_col_name)
   new_names <- c("reference_date", "report_date", "count")
@@ -173,7 +174,8 @@ as_reporting_triangle.matrix <- function(data,
                                          max_delay,
                                          reference_dates,
                                          strata = NULL,
-                                         delays_unit = "days") {
+                                         delays_unit = "days",
+                                         ...) {
   .validate_triangle(data, max_delay = max_delay)
   if (length(reference_dates) != nrow(data)) {
     cli_abort(

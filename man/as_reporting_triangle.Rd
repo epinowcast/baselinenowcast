@@ -15,7 +15,8 @@ as_reporting_triangle(data, max_delay, ...)
   reference_date_col_name = "reference_date",
   report_date_col_name = "report_date",
   count_col_name = "count",
-  delays_unit = "days"
+  delays_unit = "days",
+  ...
 )
 
 \method{as_reporting_triangle}{matrix}(
@@ -23,7 +24,8 @@ as_reporting_triangle(data, max_delay, ...)
   max_delay,
   reference_dates,
   strata = NULL,
-  delays_unit = "days"
+  delays_unit = "days",
+  ...
 )
 }
 \arguments{

@@ -12,6 +12,38 @@ test_that("as_reporting_triangle.data.frame() works as expected", { # nolint
   )
   expected_structure <- 1
   expect_identical(rep_tri$structure, expected_structure)
+
+  # even if we add other columns
+  data_as_of_df$test_col <- 2
+
+  rep_tri2 <- as_reporting_triangle(data_as_of_df,
+    max_delay = 25
+  )
+  expect_identical(
+    nrow(rep_tri2$reporting_triangle_matrix),
+    length(unique(data_as_of_df$reference_date))
+  )
+  expected_structure <- 1
+  expect_identical(rep_tri2$structure, expected_structure)
+
+  # or lower max delay
+  rep_tri3 <- as_reporting_triangle(data_as_of_df,
+    max_delay = 20
+  )
+  # Check that the same number of reference dates is in the reporting triangle
+  expect_identical(
+    nrow(rep_tri3$reporting_triangle_matrix),
+    length(unique(data_as_of_df$reference_date))
+  )
+})
+
+test_that("as_reporting_triangle.data.frame() errors if max delay is too large", { # nolint
+  expect_error(
+    as_reporting_triangle(data_as_of_df,
+      max_delay = 500
+    ),
+    regexp = "`max_delay` specified is larger than the maximum delay in the data." # nolint
+  )
 })
 
 
@@ -134,6 +166,6 @@ test_that("as_reporting_triangle.matrix() errors if reference dates don't align 
       reference_dates = reference_dates,
       max_delay = max_delay
     ),
-    regexp = "Length of `reference_dates` must equal number of rows in "
+    regexp = "Length of `reference_dates` must equal number of rows in"
   ) # nolint
 })

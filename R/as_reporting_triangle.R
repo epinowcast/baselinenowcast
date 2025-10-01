@@ -56,7 +56,7 @@ as_reporting_triangle.default <- function(data, max_delay, ...) {
 #' @param count_col_name Character string indicating the name of the column
 #'    containing the number of incident cases on each reference and report date.
 #' @param delays_unit Character string specifying the time units to use.
-#'    Default is "daily".
+#'    Default is "days".
 #' @details
 #'  The input needs to be a data.frame or similar with the following columns:
 #'    - Column of type `date` or character with the dates of
@@ -96,7 +96,7 @@ as_reporting_triangle.data.frame <- function(
   # - max delay is specified
   # - all reference dates from min to max are available
 
-  .validate_rep_tri_df(data)
+  .validate_rep_tri_df(data, delays_unit)
 
   # Compute delay
   data$delay <- time_length(as.Date(data$report_date) -
@@ -137,11 +137,15 @@ as_reporting_triangle.data.frame <- function(
       all.x = TRUE
     )
 
-  # Fill in the 0s based on whether the report date has been observed
+  # Fill in the 0s based on the whether the report date is after the
+  # latest report date (this assumes data has been filtered before!)
+
+  # Get appropriate lubridate function based on delay_units
+  delay_fn <- get(delays_unit, envir = asNamespace("lubridate"))
   ix <- is.na(all_combos$count)
   all_combos$count[ix] <- ifelse(
-    all_combos$reference_date[ix] + days(all_combos$delay[ix]) >
-      max(all_combos$reference_date),
+    all_combos$reference_date[ix] + delay_fn(all_combos$delay[ix]) >
+      max(data$report_date),
     NA, 0
   )
   wide_data <- reshape(

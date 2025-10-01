@@ -51,8 +51,7 @@ Imports:
   checkmate,
   stats,
   lubridate,
-  utils,
-  stats
+  utils
 Suggests:
     epinowcast,
     bookdown,

@@ -56,7 +56,7 @@ column which represents the date the primary event was reported.}
 containing the number of incident cases on each reference and report date.}
 
 \item{delays_unit}{Character string specifying the time units to use.
-Default is "daily".}
+Default is "days".}
 
 \item{reference_dates}{Vector of character strings indicating the reference
 dates corresponding to each row of the reporting triangle matrix (\code{data}).}

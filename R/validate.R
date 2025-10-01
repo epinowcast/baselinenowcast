@@ -335,9 +335,11 @@
 #'
 #' @param data Data.frame in long tidy form with reference dates, report dates,
 #'   and case counts, used to create a `reporting_triangle` object.
+#' @inheritParams as_reporting_triangle.data.frame
 #'
 #' @returns NULL, invisibly
-.validate_rep_tri_df <- function(data) {
+.validate_rep_tri_df <- function(data,
+                                 delays_unit) {
   # Validate inputs
   required_cols <- c(
     "reference_date",
@@ -369,11 +371,17 @@
     )
   }
 
+  if (max(data$report_date) > max(data$reference_date)) {
+    cli_warn(
+      message = "The dataframe contains report dates beyond the final reference date." # nolint
+    )
+  }
+
   # Check that all reference dates from min to max are available
   all_dates_length <- length(seq(
     from = min(data$reference_date),
     to = max(data$reference_date),
-    by = "days"
+    by = {{ delays_unit }}
   ))
   if (all_dates_length != length(unique(data$reference_date))) {
     cli_warn(

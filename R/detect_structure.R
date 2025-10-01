@@ -32,6 +32,11 @@ detect_structure <- function(reporting_triangle) {
   }
   structure <- structure_long[!is.na(structure_long)]
 
+  # Structure is NULL if there are no NAs
+  if (length(structure) == 0) {
+    return(NULL)
+  }
+
   # Check to see if this can be reduced to just a single number
   expanded <- .expand_structure_vec(structure[1],
     cols = ncol(reporting_triangle)

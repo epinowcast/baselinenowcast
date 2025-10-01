@@ -11,14 +11,23 @@
 #' @keywords internal
 .validate_triangle <- function(
     triangle,
-    max_delay = ncol(triangle) - 1,
-    n = nrow(triangle)) {
+    max_delay = NULL, # ncol(triangle) - 1,
+    n = NULL) { # nrow(triangle)) {
   # Make sure the input triangle is of the correct class, and n and max_delay
   # are integers
   assert_class(triangle, "matrix")
+  assert_matrix(triangle, all.missing = FALSE)
+  # Now set defaults
+  if (is.null(max_delay)) {
+    max_delay <- ncol(triangle) - 1
+  }
+  if (is.null(n)) {
+    n <- nrow(triangle)
+  }
   assert_integerish(max_delay)
   assert_integerish(n)
-  assert_matrix(triangle, all.missing = FALSE)
+
+
 
   # Check if the triangle has a valid structure
   # Ensure each column has at least one non-NA value

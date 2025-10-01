@@ -13,7 +13,7 @@ test_that("detect_structure works with small triangle", {
   exp_structure <- c(2, 1, 1)
   detected_structure <- detect_structure(ragged_triangle)
 
-  expect_equal(exp_structure, detected_structure)
+  expect_identical(exp_structure, detected_structure)
 
 
   ragged_triangle2 <- matrix(
@@ -29,7 +29,7 @@ test_that("detect_structure works with small triangle", {
   exp_structure2 <- c(1, 1, 2)
 
   detected_structure2 <- detect_structure(ragged_triangle2)
-  expect_equal(exp_structure2, detected_structure2)
+  expect_identical(exp_structure2, detected_structure2)
 
   ragged3 <- matrix(
     c(
@@ -45,7 +45,7 @@ test_that("detect_structure works with small triangle", {
   exp_structure3 <- c(1, 2, 1)
   detected_structure3 <- detect_structure(ragged3)
 
-  expect_equal(exp_structure3, detected_structure3)
+  expect_identical(exp_structure3, detected_structure3)
 })
 
 test_that("detect_structure detects a symmetric reporting triangle", {
@@ -63,5 +63,5 @@ test_that("detect_structure detects a symmetric reporting triangle", {
 
   exp_structure <- 1
   detected_structure <- detect_structure(rep_tri)
-  expect_equal(exp_structure, detected_structure)
+  expect_identical(exp_structure, detected_structure)
 })

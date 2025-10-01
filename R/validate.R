@@ -334,7 +334,7 @@
 #' Validate the reporting triangle data.frame
 #'
 #' @param data Data.frame in long tidy form with reference dates, report dates,
-#'   and case counts, used to create a `reporting_triangle` obect
+#'   and case counts, used to create a `reporting_triangle` object.
 #'
 #' @returns NULL, invisibly
 .validate_rep_tri_df <- function(data) {

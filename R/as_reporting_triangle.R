@@ -19,7 +19,7 @@
 #' @details
 #'  The input needs to be a data.frame or similar with the following columns:
 #'    - Column of type `date` or character with the dates of
-#'     the primary event occurence (reference date).
+#'     the primary event occurrence (reference date).
 #'    - Column of type `date` or character with the dates of
 #'     report of the primary event.
 #'    - Column of numeric or integer indicating the new confirmed counts

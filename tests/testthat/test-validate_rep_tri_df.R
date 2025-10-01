@@ -1,3 +1,6 @@
+# Test data uses the NSSP data
+data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+
 test_that(".validate_rep_tri_df() errors if missing required columns", { # nolint
   data <- data_as_of_df[-1] # remove a column
   expect_error(

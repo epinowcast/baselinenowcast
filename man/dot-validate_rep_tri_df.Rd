@@ -8,7 +8,7 @@
 }
 \arguments{
 \item{data}{Data.frame in long tidy form with reference dates, report dates,
-and case counts, used to create a \code{reporting_triangle} obect}
+and case counts, used to create a \code{reporting_triangle} object.}
 }
 \value{
 NULL, invisibly

@@ -84,7 +84,7 @@ Create a reporting triangle object from a matrix
 The input needs to be a data.frame or similar with the following columns:
 \itemize{
 \item Column of type \code{date} or character with the dates of
-the primary event occurence (reference date).
+the primary event occurrence (reference date).
 \item Column of type \code{date} or character with the dates of
 report of the primary event.
 \item Column of numeric or integer indicating the new confirmed counts

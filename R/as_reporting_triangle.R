@@ -1,9 +1,47 @@
 #' @title Create a reporting triangle
 #'
-#' @param data Data.frame to be converted to a reporting triangle matrix.
+#' @param data Either a matrix of a reporting triangle or a
+#'    data.frame to be converted to a reporting triangle matrix.
 #'    Can either be in the long tidy format of counts by reference date
 #'    and report date or line list data with individual observations
 #'    indexed by their reference date and report date.
+#' @param ... Additional arguments.
+#
+#' @returns `reporting_triangle` class object which is a list containing:
+#'    - A matrix with which rows are reference times and columns are delays and
+#'    entries are incident cases at each reference time and delay.
+#'    - An integer indicating the maximum delay used to create the reporting
+#'    triangle
+#'    - A vector of the same length as the rows of the matrix indicating the
+#'    dates corresponding to the reference times in the rows of the reporting
+#'    triangle.
+#'    - A character string indicating the strata.
+#'    - A vector indicating the "structure" of the reporting triangle.
+#'    - A character string indicating the unit of the delays.
+#' @export
+#'
+#' @examples
+#' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' as_reporting_triangle(
+#'   data = data_as_of_df,
+#'   max_delay = 25
+#' )
+#' @importFrom lubridate time_length days ymd
+as_reporting_triangle <- function(data, ...) {
+  UseMethod("as_reporting_triangle")
+}
+
+#' @export
+as_reporting_triangle.default <- function(data, ...) {
+  cli_abort(
+    message = c(
+      "Don't know how to convert object of class {.cls {class(data)}} to reporting_triangle",
+      "i" = "Supported classes: data.frame, matrix"
+    )
+  )
+}
+
+#' @title Create a reporting triangle object from a data.frame
 #' @param strata Character string indicating the metadata on the strata of this
 #'    reporting triangle. Default is `NULL`.
 #' @param reference_date_col_name Character string indicating the name of the
@@ -29,42 +67,6 @@
 #'  be no repeated reference dates and report dates.
 #'
 #'
-#' @returns `reporting_triangle` class object which is a list containing:
-#'    - A matrix with which rows are reference times and columns are delays and
-#'    entries are incident cases at each reference time and delay.
-#'    - An integer indicating the maximum delay used to create the reporting
-#'    triangle
-#'    - A vector of the same length as the rows of the matrix indicating the
-#'    dates corresponding to the reference times in the rows of the reporting
-#'    triangle.
-#'    - A character string indicating the strata.
-#'    - A vector indicating the "structure" of the reporting triangle.
-#'    - A character string indicating the unit of the delays.
-#' @export
-#'
-#' @examples
-#' data_as_of_df <- syn_nssp_df |>
-#'   filter(report_date <= "2026-04-01")
-#' as_reporting_triangle(
-#'   data = data_as_of_df,
-#'   max_delay = 25
-#' )
-#' @importFrom lubridate time_length days ymd
-as_reporting_triangle <- function(data, ...) {
-  UseMethod("as_reporting_triangle")
-}
-
-#' @export
-as_reporting_triangle.default <- function(data, ...) {
-  cli_abort(
-    message = c(
-      "Don't know how to convert object of class {.cls {class(data)}} to reporting_triangle",
-      "i" = "Supported classes: data.frame, matrix"
-    )
-  )
-}
-
-#' @title Create a reporting triangle object from a data.frame
 #' @rdname as_reporting_triangle
 #'
 #' @export
@@ -163,12 +165,12 @@ as_reporting_triangle.data.frame <- function(
 #' @inheritParams estimate_delay
 #' @rdname as_reporting_triangle
 #' @export
-as_reporting_triangle.matrix <- function(reporting_triangle,
+as_reporting_triangle.matrix <- function(data,
                                          reference_dates,
                                          max_delay,
                                          strata = NULL,
                                          delays_unit = "days") {
-  .validate_triangle(reporting_triangle, max_delay = max_delay)
+  .validate_triangle(data, max_delay = max_delay)
   if (length(reference_dates) != nrow(reporting_triangle)) {
     cli_abort(
       message = c(
@@ -177,10 +179,10 @@ as_reporting_triangle.matrix <- function(reporting_triangle,
     )
   }
 
-  structure <- detect_structure(reporting_triangle)
+  structure <- detect_structure(data)
   reporting_triangle_obj <- structure(
     list(
-      reporting_triangle_matrix = reporting_triangle,
+      reporting_triangle_matrix = data,
       reference_date = reference_dates,
       max_delay = max_delay,
       strata = strata,

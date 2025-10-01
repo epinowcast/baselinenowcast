@@ -19,7 +19,7 @@ as_reporting_triangle(data, ...)
 )
 
 \method{as_reporting_triangle}{matrix}(
-  reporting_triangle,
+  data,
   reference_dates,
   max_delay,
   strata = NULL,
@@ -27,10 +27,13 @@ as_reporting_triangle(data, ...)
 )
 }
 \arguments{
-\item{data}{Data.frame to be converted to a reporting triangle matrix.
+\item{data}{Either a matrix of a reporting triangle or a
+data.frame to be converted to a reporting triangle matrix.
 Can either be in the long tidy format of counts by reference date
 and report date or line list data with individual observations
 indexed by their reference date and report date.}
+
+\item{...}{Additional arguments.}
 
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
@@ -51,12 +54,6 @@ containing the number of incident cases on each reference and report date.}
 
 \item{delays_unit}{Character string specifying the time units to use.
 Default is "daily".}
-
-\item{reporting_triangle}{Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
-Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).}
 }
 \value{
 \code{reporting_triangle} class object which is a list containing:
@@ -95,8 +92,7 @@ be no repeated reference dates and report dates.
 }
 }
 \examples{
-data_as_of_df <- syn_nssp_df |>
-  filter(report_date <= "2026-04-01")
+data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 as_reporting_triangle(
   data = data_as_of_df,
   max_delay = 25

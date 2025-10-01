@@ -15,7 +15,6 @@ test_that("as_reporting_triangle.data.frame() works as expected", { # nolint
 
   # even if we add other columns
   data_as_of_df$test_col <- 2
-
   rep_tri2 <- as_reporting_triangle(data_as_of_df,
     max_delay = 25
   )
@@ -131,7 +130,7 @@ test_that("as_reporting_triangle.matrix() can handle specification of each arg",
   max_delay <- 4
 
   rep_tri <- as_reporting_triangle(
-    reporting_triangle = rep_tri_mat,
+    data = rep_tri_mat,
     reference_dates = reference_dates,
     max_delay = max_delay
   )
@@ -162,7 +161,7 @@ test_that("as_reporting_triangle.matrix() errors if reference dates don't align 
 
   expect_error(
     as_reporting_triangle(
-      reporting_triangle = rep_tri_mat,
+      data = rep_tri_mat,
       reference_dates = reference_dates,
       max_delay = max_delay
     ),

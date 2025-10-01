@@ -152,7 +152,7 @@ as_reporting_triangle.data.frame <- function(
   rep_tri_mat <- as.matrix(wide_data[, -1])
 
   rep_tri <- as_reporting_triangle.matrix(
-    reporting_triangle = rep_tri_mat,
+    data = rep_tri_mat,
     reference_dates = reference_dates,
     max_delay = max_delay,
     strata = strata,
@@ -171,7 +171,7 @@ as_reporting_triangle.matrix <- function(data,
                                          strata = NULL,
                                          delays_unit = "days") {
   .validate_triangle(data, max_delay = max_delay)
-  if (length(reference_dates) != nrow(reporting_triangle)) {
+  if (length(reference_dates) != nrow(data)) {
     cli_abort(
       message = c(
         "Length of `reference_dates` must equal number of rows in `reporting_triangle`" # noline

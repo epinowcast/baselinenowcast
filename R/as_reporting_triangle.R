@@ -174,6 +174,7 @@ as_reporting_triangle.data.frame <- function(
 #'   dates corresponding to each row of the reporting triangle matrix (`data`).
 #' @rdname as_reporting_triangle
 #' @export
+#' @method as_reporting_triangle matrix
 as_reporting_triangle.matrix <- function(data,
                                          max_delay,
                                          reference_dates,

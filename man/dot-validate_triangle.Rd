@@ -6,11 +6,7 @@
 Various checks to make sure that the reporting triangle passed in to
 \code{\link[=estimate_delay]{estimate_delay()}} is formatted properly.}
 \usage{
-.validate_triangle(
-  triangle,
-  max_delay = ncol(triangle) - 1,
-  n = nrow(triangle)
-)
+.validate_triangle(triangle, max_delay = NULL, n = NULL)
 }
 \arguments{
 \item{triangle}{Matrix of values with rows indicating the time points and

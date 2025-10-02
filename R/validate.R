@@ -15,6 +15,10 @@
     n = nrow(triangle)) {
   # Make sure the input triangle is of the correct class, and n and max_delay
   # are integers
+  if (is.null(triangle)) {
+    triangle_name <- deparse(substitute(triangle))
+    cli_abort(message = c("`{triangle_name}` argument is missing."))
+  }
   assert_class(triangle, "matrix")
   assert_integerish(max_delay)
   assert_integerish(n)

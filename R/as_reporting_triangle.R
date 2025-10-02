@@ -35,16 +35,6 @@ as_reporting_triangle <- function(data, max_delay, ...) {
   UseMethod("as_reporting_triangle")
 }
 
-#' @export
-as_reporting_triangle.default <- function(data, max_delay, ...) {
-  cli_abort(
-    message = c(
-      "Don't know how to convert object of class {.cls {class(data)}} to reporting_triangle",
-      "i" = "Supported classes: data.frame, matrix"
-    )
-  )
-}
-
 #' @title Create a reporting triangle object from a data.frame
 #' @param strata Character string indicating the metadata on the strata of this
 #'    reporting triangle. Default is `NULL`.

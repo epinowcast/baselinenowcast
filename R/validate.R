@@ -16,6 +16,8 @@
   # Make sure the input triangle is of the correct class, and n and max_delay
   # are integers
   assert_class(triangle, "matrix")
+  assert_integerish(max_delay)
+  assert_integerish(n)
   assert_matrix(triangle, all.missing = FALSE)
 
   # Check if the triangle has a valid structure

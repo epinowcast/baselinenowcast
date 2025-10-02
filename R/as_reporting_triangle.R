@@ -182,7 +182,11 @@ as_reporting_triangle.matrix <- function(data,
                                          strata = NULL,
                                          delays_unit = "days",
                                          ...) {
-  .validate_triangle(data, max_delay, nrow(data))
+  .validate_triangle(
+    triangle = data,
+    max_delay = max_delay,
+    n = nrow(data)
+  )
   if (length(reference_dates) != nrow(data)) {
     cli_abort(
       message = c(

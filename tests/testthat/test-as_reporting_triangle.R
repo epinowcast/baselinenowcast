@@ -131,7 +131,7 @@ test_that("as_reporting_triangle.matrix() can handle specification of each arg",
   max_delay <- 4
 
   rep_tri <- as_reporting_triangle(
-    reporting_triangle = rep_tri_mat,
+    data = rep_tri_mat,
     reference_dates = reference_dates,
     max_delay = max_delay
   )
@@ -162,7 +162,7 @@ test_that("as_reporting_triangle.matrix() errors if reference dates don't align 
 
   expect_error(
     as_reporting_triangle(
-      reporting_triangle = rep_tri_mat,
+      data = rep_tri_mat,
       reference_dates = reference_dates,
       max_delay = max_delay
     ),

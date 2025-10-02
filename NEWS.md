@@ -1,5 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
+-   Add a `as_reporting_triangle()` S3 method which ingests a data.frame or matrix and returns a `reporting_triangle` object, which will be used as an input to the eventual `baselinenowcast()` function.
 -   Add a vignette which demonstrates how to pre-process for nowcasting syndromic surveillance system data using the U.S. National Syndromic Surveillance Program (NSSP) data as a case study, and then use `baselinenowcast` to nowcast cases of a specific syndromic surveillance definition.
 -   Add intermediate-level grouping functions to generate a point nowcast from a reporting triangle and to take a point nowcast and estimate and apply uncertainty.
 -   Refactor `estimate_uncertainty` to take in an error model function, an aggregator function for aggregating across reference times, and an aggregator function for aggregating across delays.

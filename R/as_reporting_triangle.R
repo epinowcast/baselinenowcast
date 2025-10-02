@@ -75,6 +75,7 @@ as_reporting_triangle.default <- function(data, max_delay, ...) {
 #' @export
 #' @method as_reporting_triangle data.frame
 #' @importFrom checkmate check_integerish
+#' @importFrom stats reshape
 as_reporting_triangle.data.frame <- function(
     data,
     max_delay,
@@ -160,7 +161,7 @@ as_reporting_triangle.data.frame <- function(
   rep_tri_mat <- as.matrix(wide_data[, -1])
 
   rep_tri <- as_reporting_triangle.matrix(
-    reporting_triangle = rep_tri_mat,
+    data = rep_tri_mat,
     reference_dates = reference_dates,
     max_delay = max_delay,
     strata = strata,
@@ -170,20 +171,19 @@ as_reporting_triangle.data.frame <- function(
 }
 
 #' @title Create a reporting triangle object from a matrix
-#' @inheritParams estimate_delay
 #' @param reference_dates Vector of character strings indicating the reference
 #'   dates corresponding to each row of the reporting triangle matrix (`data`).
 #' @rdname as_reporting_triangle
 #' @export
 #' @method as_reporting_triangle matrix
-as_reporting_triangle.matrix <- function(reporting_triangle,
+as_reporting_triangle.matrix <- function(data,
                                          max_delay,
                                          reference_dates,
                                          strata = NULL,
                                          delays_unit = "days",
                                          ...) {
-  .validate_triangle(reporting_triangle, max_delay, nrow(reporting_triangle))
-  if (length(reference_dates) != nrow(reporting_triangle)) {
+  .validate_triangle(data, max_delay, nrow(data))
+  if (length(reference_dates) != nrow(data)) {
     cli_abort(
       message = c(
         "Length of `reference_dates` must equal number of rows in `reporting_triangle`" # noline
@@ -191,10 +191,10 @@ as_reporting_triangle.matrix <- function(reporting_triangle,
     )
   }
 
-  structure <- detect_structure(reporting_triangle)
+  structure <- detect_structure(data)
   reporting_triangle_obj <- structure(
     list(
-      reporting_triangle_matrix = reporting_triangle,
+      reporting_triangle_matrix = data,
       reference_date = reference_dates,
       max_delay = max_delay,
       strata = strata,

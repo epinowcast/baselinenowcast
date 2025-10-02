@@ -20,7 +20,7 @@ as_reporting_triangle(data, max_delay, ...)
 )
 
 \method{as_reporting_triangle}{matrix}(
-  reporting_triangle,
+  data,
   max_delay,
   reference_dates,
   strata = NULL,
@@ -57,12 +57,6 @@ containing the number of incident cases on each reference and report date.}
 
 \item{delays_unit}{Character string specifying the time units to use.
 Default is "days".}
-
-\item{reporting_triangle}{Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
-Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).}
 
 \item{reference_dates}{Vector of character strings indicating the reference
 dates corresponding to each row of the reporting triangle matrix (\code{data}).}

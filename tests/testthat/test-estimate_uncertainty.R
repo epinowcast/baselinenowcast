@@ -455,12 +455,12 @@ test_that("estimate_uncertainty: can handle weekday filter with large ragged tri
 
   # Create a ragged triangle
   ragged_triangle <- covid_data |>
-    select(reference_date, delay, count) |>
-    pivot_wider(
+    dplyr::select(reference_date, delay, count) |>
+    tidyr::pivot_wider(
       names_from = delay,
       values_from = count
     ) |>
-    select(-reference_date) |>
+    dplyr::select(-reference_date) |>
     as.matrix()
 
   short_ragged_triangle <- ragged_triangle[(nrow(ragged_triangle) - 15):nrow(ragged_triangle), ] # nolint

@@ -301,7 +301,7 @@ allocate_reference_times <- function(reporting_triangle,
     } else if (flag_req_delay) {
       cli_alert_info("This is due to the minumim requirement for the number of reference times needed for delay estimation ({n_min_delay}).") # nolint
     } else {
-      cli_alert_info("`prop_delay` not identical to the proprtion of reference times used for delay estimation due to rounding.") # nolint
+      cli_alert_info("`prop_delay` not identical to the proportion of reference times used for delay estimation due to rounding.") # nolint
     }
   }
 

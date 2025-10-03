@@ -206,7 +206,6 @@ nssp_merged <- merge(syn_nssp_time_stamps,
 ```
 
 Now we have a dataframe where each row is an event, with the patient's visit start date (`C_Visit_date_Time`), the patient ID (`C_Processed_BioSense_ID`), the diagnoses code at the event (`diagnoses_code`), and the time stamp of the event (`time_stamp`).
-
 Next we will add a column for the time from arrival to each updated diagnosis, in days.
 ```{r}
 nssp_updates <- nssp_merged |>
@@ -242,6 +241,7 @@ head(clean_line_list)
 ```
 
 ## Obtain counts of cases by reference date (visit date) and report date (time of first diagnosis)
+
 For nowcasting, we want to compute the number of incident cases indexed by reference and report date, so we can aggregate by reference and report date and compute the delay distribution.
 ```{r}
 count_df_raw <- clean_line_list |>
@@ -342,7 +342,6 @@ nowcast_date <- max(long_df$reference_date) - days(30)
 
 From the case counts by reference date and report date, we generate a reporting triangle(see the [mathematical model](model_definition.html) vignette for more details), which pivots the data from long to wide so that each row is a reference date and each column is a delay.
 In order to produce a reporting triangle, we need to obtain the number of incident case counts at all reference dates and for all corresponding report dates up until the maximum delay.
-
 First, we'll remove any reports after the nowcast date and any delays after the maximum delay.
 ```{r}
 training_df <- long_df |>
@@ -415,13 +414,11 @@ rep_tri <- rep_tri_df |>
 To specify the number of reference times used for delay and uncertainty estimation, we use an algorithm based on the maximum delay.
 By default, it splits the data evenly (or approximately because of odd numbers of reference times used for training) between data used for delay and uncertainty.
 See the documentation for `?allocate_reference_times` and the "Default Settings" section of the [mathematical model](model_definition.html) vignette for more details.
-
 ```{r}
 ref_time_allocation <- allocate_reference_times(rep_tri)
 n_history_delay <- ref_time_allocation$n_history_delay
 n_retrospective_nowcasts <- ref_time_allocation$n_retrospective_nowcasts
 ```
-
 
 The `allocate_reference_times` function returns integer values that indicate the number of reference times to use for delay estimate (`n_history_delay`) and uncertainty estimate (`n_retrospective nowcasts`).
 ```{r}
@@ -481,7 +478,6 @@ nowcast_summary_df <-
 ```
 
 In order to compare our estimates to the data that was available as of the time of the nowcast and the "final" cases (which is what we were trying to estimate), we will join both the initially reported cases and the held out, true final cases to our probabilistic nowcasts.
-
 We already summarised the initial reports by reference date from the data used to train the nowcast model.
 Next summarise the final reports by reference date using all the data.
 ```{r}

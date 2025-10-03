@@ -19,44 +19,41 @@ vignette: >
 # Introduction
 
 Syndromic surveillance data are used by public health departments to understand trends in clinical encounters from electronic health records.
-When these datasets are analysed in real-time, delays from the initial visit to updated diagnoses codes results in right-truncation of counts of the primary event, i.e. the patient visit, leading to systematic downward bias in the most recent data.
-Nowcasting uses the previously observed reporting delays to correct for this downward bias and estimate the eventual, final observed cases, which provides an estimate of the trend in cases in real-time.
+When these datasets are analysed in real-time, delays from the initial visit to updated diagnoses codes results in systematic downward bias in the counts of the primary event, i.e. the patient visit, due to the most recent dates being only partially observed.
+Nowcasting uses historical reporting delays to correct for this downward bias and estimate the eventual, final observed cases, which provides an estimate of the trend in cases in real-time.
+In this vignette, we will pre-process the timestamped data captured in each NSSP ESSENCE visit record to obtain data in the format we need for nowcasting, and then we will demonstrate how to specify and run the `baselinenowcast` workflow.
+Lastly, we'll summarise the nowcast and plot against the later observed data.
 
 ## About syndromic surveillance system data
 
 Syndromic surveillance system data contains information at the visit-level on the timing and nature of the patient's clinical interactions.
-In this case study, we will use synthetic data from the United States' [National Syndromic Surveillance Program](https://www.cdc.gov/nssp/index.html) (NSSP) dataset available for participating jurisdictions through the CDC's ESSENCE platform, to nowcast cases of Broad Acute Respiratory Incidence (BAR).
+In this case study, we will use synthetic data from the United States' [National Syndromic Surveillance Program](https://www.cdc.gov/nssp/index.html) (NSSP) dataset available for participating jurisdictions through the Centers for Disease Control and Prevention's (CDC) ESSENCE platform, to nowcast cases of Broad Acute Respiratory Incidence (BAR) defined by a set of diagnoses codes.
+These could easily be swapped out with another set of diangoses codes e.g. for influenza-like illness, COVID-19, etc.
 The NSSP Emergency Department (ED) visit dataset is a dataset widely used by public health departments in the United States, representing many but not all counties in the country.
 The dataset contains information at the visit-level about each clinical encounter recorded in the electronic health record system during the patient's hospital stay.
 Clinical encounters may begin to be associated with diagnoses codes at different points in the patient or clinical processing journey (e.g. during registration, triage, clinical encounter, after laboratory results are returned, or during coding for billing, etc.), and are captured through update messages to the syndromic surveillance system once they are entered into a facility's electronic health record.
 The difference between the visit date - when the patient registers in the emergency department- and the time of the diagnosis update pertaining to the diagnosis of interest, is used to compute a reporting delay for each patient.
 Reporting delays for diagnoses of interest can vary by a range of factors including by pathogen/syndrome, season, time of day or week, means of diagnosis, the electronic health record system, or treating facility.
-In this vignette, we will demonstrate how to use syndromic surveillance system data, particularly the timestamped data captured in each NSSP ESSENCE visit record, to produce nowcasts of cases of a particular diagnosis of interest.
 Note that all visits that originate in the emergency department are used for this analysis, regardless of eventual inpatient admission.
-
 
 ## Load packages
 
-We use the `baselinenowcast` package, `dplyr`, and `tidyr` for data manipulation, `readr` for loading in data, `stringr` for parsing text data, `lubridate` for formatting dates, `ggplot2` for plotting, and `purrr` for mapping diagnoses codes to text fields in the data.
+We use the `baselinenowcast` package for nowcasting, `dplyr`, and `tidyr` for data manipulation, `stringr` for parsing text data, `lubridate` for formatting dates, `ggplot2` for plotting, and `purrr` for mapping diagnoses codes to text fields in the data.
 ```{r setup, message = FALSE, warning = FALSE, results = 'hide'}
 # Load packages
 library(baselinenowcast)
 library(dplyr)
 library(tidyr)
-library(readr)
 library(stringr)
 library(lubridate)
 library(ggplot2)
 library(purrr)
-# Set seed for reproducibility
-set.seed(123)
 ```
-
-
 
 # NSSP data pre-processing
 
 We will walk through how to preprocess the line list NSSP data details dataset in order to obtain a [long tidy dataframe](https://r4ds.had.co.nz/tidy-data.html) containing the incident counts of "cases" of a particular syndrome by reference date (in this instance the date the visit started) and report date (the date the patient's record was updated with the corresponding diagnosis of interest).
+We need the data in this format to estimate the reporting delay, which we will then apply to the partial observations to produce a nowcast -- an estimate of the final observed cases.
 
 ## Load in the line list data
 
@@ -68,14 +65,11 @@ syn_nssp_line_list
 <strong>Note:</strong> This dataset does not represent data from real patients, it is entirely synthetic and designed to mirror the NSSP update fields, which records the timing of a clinical encounter and the corresponding diagnoses code, if any.
 </div>
 
-
 ## Define the "syndrome" definition
 
-In this near-real-time emergency department dataset, public health surveillance, or "syndrome" definitions have been developed for a range of public health concerns. These definitions typically rely on the presence of diagnosis code(s), specific free text captured in clinical notes, or a combination of these.
+In this near-real-time emergency department dataset, practitioners have developed public health surveillance definitions, or "syndrome" definitions for a range of public health concerns.
+These definitions typically rely on the presence of diagnosis code(s), specific free text captured in clinical notes, or a combination of these.
 In some instances, exclusion criteria are incorporated into these definitions to improve their specificity.
-
-In this example, we will focus on syndromic surveillance definitions that rely solely on the presence of one or more diagnoses codes, as this means that patients tend to transition from a non-case to case only once (rather than reverting back to a non-case during the course of their clinical encounter).
-Our nowcasting methods primarily focus on the former use-case, though extensions to be able to account for downward revisions as cases transition from case to non-case, are planned for future work.
 
 Here we will list the diagnosis codes which correspond to Broad Acute Respiratory, but any sets of diagnosis codes that define a syndrome could be used interchangeably.
 To be considered a Broad Acute Respiratory case, one or more of these codes must be reported.
@@ -99,80 +93,92 @@ Later, we will merge the two datasets back together by the unique patient ID and
 We will use `tidyr::separate_wider_delim()` to expand these entries, so that each "event" has its own column.
 Since patients experience a different number of patient update "events", there will be missing values for patients not experiencing many events during their visit.
 The columns will be named by the original column name + the event number, e.g. `DischargeDiagnosisMDTUpdates1`.
+We'll write a function to do this for both the time stamps and diagnoses codes.
 ```{r}
-syn_nssp_time_stamps_wide <- syn_nssp_line_list |>
-  separate_wider_delim(DischargeDiagnosisMDTUpdates,
-    delim = "{", names_sep = "", too_few = "align_start"
-  ) |>
-  select(-DischargeDiagnosisUpdates)
-head(syn_nssp_time_stamps_wide)
+expand_events <- function(line_list, event_col_name) {
+  wide_line_list <- line_list |>
+    separate_wider_delim({{ event_col_name }},
+      delim = "{", names_sep = "", too_few = "align_start"
+    )
+  return(wide_line_list)
+}
 ```
-
-Repeat for the diagnoses codes column.
+Expand both the time stamps and diagnoses codes, and remove the column containing the information on the other.
 ```{r}
-syn_nssp_diagnoses_wide <- syn_nssp_line_list |>
-  separate_wider_delim(DischargeDiagnosisUpdates,
-    delim = "{", names_sep = "", too_few = "align_start"
-  ) |>
+syn_nssp_time_stamps_wide <- expand_events(
+  line_list = syn_nssp_line_list,
+  event_col_name = "DischargeDiagnosisMDTUpdates"
+) |>
+  select(-DischargeDiagnosisUpdates)
+
+syn_nssp_diagnoses_wide <- expand_events(
+  line_list = syn_nssp_line_list,
+  event_col_name = "DischargeDiagnosisUpdates"
+) |>
   select(-DischargeDiagnosisMDTUpdates)
 ```
 
-Find the name of the last update column, and pivot the data from wide to long.
+We will write a function that, for each of the diagnoses and time stamps datasets, find the name of the last update column, and uses that to pivot the data from wide to long.
 This creates a long tidy dataframe where each row is now an event.
-We will create a unique event ID using the event number and the patient ID in the `C_Processed_BioSense_ID` column.
 ```{r}
-lastcol_ts <- tail(colnames(select(
-  syn_nssp_time_stamps_wide,
-  matches("DischargeDiagnosisMDTUpdates")
-)), 1)
-syn_nssp_time_stamps_long <- syn_nssp_time_stamps_wide |>
-  pivot_longer(
-    cols = starts_with("DischargeDiagnosisMDTUpdates"),
-    names_to = "column_name",
-    values_to = "time_stamp",
-    values_drop_na = FALSE
-  ) |>
-  mutate(
-    event_id = paste(
-      C_Processed_BioSense_ID,
-      parse_number(as.character(column_name))
+wide_to_long <- function(wide_line_list,
+                         event_col_name,
+                         values_to_name,
+                         id_col_name) {
+  lastcol_ <- tail(colnames(select(
+    wide_line_list,
+    matches({{ event_col_name }})
+  )), 1)
+  long_data <- wide_line_list |>
+    pivot_longer(
+      cols = starts_with({{ event_col_name }}),
+      names_to = "column_name",
+      values_to = {{ values_to_name }},
+      values_drop_na = FALSE
+    ) |>
+    mutate(
+      event_id = paste(
+        .data[[id_col_name]],
+        as.numeric(str_extract(as.character(column_name), "[0-9.]+"))
+      )
     )
-  )
+  return(long_data)
+}
 ```
 
-Perform the same procedure for the diagnoses dataset.
+Pivot both datasets from long to wide using the function above, specifying the name of the column which will hold the values (either time stamps or diagnoses).
+We will create a unique event ID using the event number and the patient ID (`id_col_name`) which in this case is the `C_Processed_BioSense_ID` column.
 ```{r}
-lastcol_diag <- tail(colnames(select(
-  syn_nssp_diagnoses_wide,
-  matches("DischargeDiagnosisUpdates")
-)), 1)
-syn_nssp_diagnoses_long <- syn_nssp_diagnoses_wide |>
-  pivot_longer(
-    cols = starts_with("DischargeDiagnosisUpdates"),
-    names_to = "column_name",
-    values_to = "diagnoses_codes",
-    values_drop_na = FALSE
-  ) |>
-  mutate(
-    event_id = paste(
-      C_Processed_BioSense_ID,
-      parse_number(as.character(column_name))
-    )
-  )
+syn_nssp_time_stamps_long <- wide_to_long(
+  wide_line_list = syn_nssp_time_stamps_wide,
+  event_col_name = "DischargeDiagnosisMDTUpdates",
+  values_to_name = "time_stamp",
+  id_col_name = "C_Processed_BioSense_ID"
+)
+
+syn_nssp_diagnoses_long <- wide_to_long(
+  wide_line_list = syn_nssp_diagnoses_wide,
+  event_col_name = "DischargeDiagnosisUpdates",
+  values_to_name = "diagnoses_codes",
+  id_col_name = "C_Processed_BioSense_ID"
+)
 ```
 
-Next, we will clean up the time stamps in the data so that the `time_stamp` column is formatted as `%Y-%m-%d %H:%M:%S`, and then we will filter out an events that are not present (updates are NAs).
+Next, we will clean up the time stamps in the data so that the `time_stamp` column is formatted as `%Y-%m-%d %H:%M:%S`, format the visit time the same (`C_Visit_Date_Time`) and then we will filter out an events that are not present (updates are NAs).
 ```{r}
-syn_nssp_time_stamps_long <-
+syn_nssp_time_stamps <-
   syn_nssp_time_stamps_long |>
-  mutate(time_stamp = as.POSIXct(
-    str_remove_all(
-      str_remove(time_stamp, ".*\\}"),
-      "[|;]+"
+  mutate(
+    time_stamp = as.POSIXct(
+      str_remove_all(
+        str_remove(time_stamp, ".*\\}"),
+        "[|;]+"
+      ),
+      format = "%Y-%m-%d %H:%M:%S",
+      tz = "UTC"
     ),
-    format = "%Y-%m-%d %H:%M:%S",
-    tz = "UTC"
-  )) |>
+    C_Visit_Date_Time = as.POSIXct(C_Visit_Date_Time)
+  ) |>
   drop_na(time_stamp)
 ```
 
@@ -182,7 +188,7 @@ this information is stored in the event ID.
 We will only use the event ID and the diagnoses codes, as this will be merged
 back into the time stamped dataset.
 ```{r}
-syn_nssp_diagnoses_long <-
+syn_nssp_diagnoses <-
   syn_nssp_diagnoses_long |>
   mutate(diagnoses_codes = str_remove(diagnoses_codes, ".*\\}")) |>
   filter(nzchar(diagnoses_codes)) |>
@@ -190,36 +196,36 @@ syn_nssp_diagnoses_long <-
   select(event_id, diagnoses_codes)
 ```
 
-
 Merge together the time stamps of events and the diagnoses codes.
 Filter to remove empty updates.
 ```{r}
-nssp_merged <- merge(syn_nssp_time_stamps_long,
-  syn_nssp_diagnoses_long,
+nssp_merged <- merge(syn_nssp_time_stamps,
+  syn_nssp_diagnoses,
   by = "event_id"
 ) |>
-  filter(diagnoses_codes != ";;|") # drops empty updates
+  filter(diagnoses_codes != ";;|")
 ```
+
 Now we have a dataframe where each row is an event, with the patient's visit start date (`C_Visit_date_Time`), the patient ID (`C_Processed_BioSense_ID`), the diagnoses code at the event (`diagnoses_code`), and the time stamp of the event (`time_stamp`).
 
 Next we will add a column for the time from arrival to each updated diagnosis, in days.
 ```{r}
 nssp_updates <- nssp_merged |>
   mutate(arrival_to_update_delay = as.numeric(difftime(
-    as.POSIXct(time_stamp), as.POSIXct(C_Visit_Date_Time),
+    time_stamp, C_Visit_Date_Time,
     units = "days"
   )))
 ```
 
-We next filter through the updates to find the first "hit" that corresponds to the diagnosis codes in the syndromic surveillance definition for ARI.
+We next filter through the updates to find the first "hit" that corresponds to the diagnosis codes in the syndromic surveillance definition for BAR.
 ```{r}
-ARI_updates <- nssp_updates |>
+bar_updates <- nssp_updates |>
   filter(map_lgl(diagnoses_codes, ~ any(str_detect(.x, diagnoses_codes_defn))))
 ```
 
-Next, we will order these by the delay from visit to the diagnoses, and for each patient keep only the first update containing the ARI diagnoses code(s).
+Next, we will order these by the delay from visit to the diagnoses, and for each patient keep only the first update containing the BAR diagnoses code(s).
 ```{r}
-first_ARI_diagnosis <- ARI_updates |>
+first_bar_diagnosis <- bar_updates |>
   arrange(arrival_to_update_delay) |>
   group_by(C_Processed_BioSense_ID) |>
   slice(1)
@@ -227,7 +233,7 @@ first_ARI_diagnosis <- ARI_updates |>
 
 Label the visit start date, `C_Visit_Date_Time`, as the reference date,`reference_date` and `time_stamp` as the report date, `report_date` and remove the other column names that are no longer needed, as each row now represents a case.
 ```{r}
-clean_line_list <- first_ARI_diagnosis |>
+clean_line_list <- first_bar_diagnosis |>
   mutate(
     reference_date = as.Date(C_Visit_Date_Time),
     report_date = as.Date(time_stamp)
@@ -236,6 +242,7 @@ clean_line_list <- first_ARI_diagnosis |>
 head(clean_line_list)
 ```
 
+## Obtain counts of cases by reference date (visit date) and report date (time of first diagnosis)
 For nowcasting, we want to compute the number of incident cases indexed by reference and report date, so we can aggregate by reference and report date and compute the delay distribution.
 ```{r}
 count_df_raw <- clean_line_list |>
@@ -243,10 +250,11 @@ count_df_raw <- clean_line_list |>
   summarise(count = n()) |>
   mutate(delay = as.integer(report_date - reference_date))
 ```
+
 Looking at this data, we can see that there is one case where there is a negative delay, which indicates that the time stamp of the diagnosis update was recorded before the start of the visit.
-This is likely due to a data entry error.
-We could choose to code these as having 0 delay, but if they are indeed erroneous this might bias our delay distribution estimation towards zero when they are equally likely to have had longer delays.
-We choose to exclude all negative valued delays.
+Depending on the way that the data is generated, this could be a true negative value, for example if the patient had previously been tested elsewhere before arriving at the ED.
+In this case, patients interactions with the system always start in the ED, so this is likely due to a data entry error.
+For this reason, we will will choose to exclude all the negative valued delays, however, the choice of how to handle these should be guided be guided by the data experts and their understanding of the most likely reason for the observation to prevent introducing additional bias in this choice.
 
 Filter out negative delays.
 ```{r}
@@ -389,7 +397,9 @@ n_retrospective_nowcasts <- ref_time_allocation$n_retrospective_nowcasts
 
 # Run the `baselinenowcast` workflow
 
-First, we generate the point estimate of the nowcast as a "filled in" reporting triangle.
+First, we generate the point estimate of the nowcast as a "filled in" reporting triangle by estimating a reporting delay and applying it to the partially observed case counts.
+In this example, we have focused on syndromic surveillance definitions that rely solely on the presence of one or more diagnoses codes, as this means that patients tend to transition from a non-case to case only once (rather than reverting back to a non-case during the course of their clinical encounter).
+Our nowcasting methods primarily focus on the former use-case, though the latter can also be handled in this framework.
 See the sections "Estimating the delay distribution from a reporting triangle" and "Point nowcast generation" of the [mathematical model](model_definition.html) for more details.
 ```{r}
 pt_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = n_history_delay)

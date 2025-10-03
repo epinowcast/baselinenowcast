@@ -136,7 +136,7 @@ wide_to_long <- function(wide_line_list,
     mutate(
       event_id = paste(
         .data[[id_col_name]],
-        as.numeric(str_extract(as.character(column_name), "[0-9.]+"))
+        as.numeric(str_extract(as.character(.data[[names_to]]), "[0-9.]+"))
       )
     )
   return(long_data)

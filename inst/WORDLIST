@@ -1,6 +1,7 @@
 ARI
 CMD
 COVID
+Centers
 Codecov
 DD
 DataFrame
@@ -49,6 +50,8 @@ github
 gray
 hline
 infty
+init
+inits
 jamesmbaazam
 jbracher
 jonathonmellor

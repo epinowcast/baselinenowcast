@@ -28,7 +28,7 @@ Lastly, we'll summarise the nowcast and plot against the later observed data.
 
 Syndromic surveillance system data contains information at the visit-level on the timing and nature of the patient's clinical interactions.
 In this case study, we will use synthetic data from the United States' [National Syndromic Surveillance Program](https://www.cdc.gov/nssp/index.html) (NSSP) dataset available for participating jurisdictions through the Centers for Disease Control and Prevention's (CDC) ESSENCE platform, to nowcast cases of Broad Acute Respiratory Incidence (BAR) defined by a set of diagnoses codes.
-These could easily be swapped out with another set of diangoses codes e.g. for influenza-like illness, COVID-19, etc.
+These could easily be swapped out with another set of diagnoses codes e.g. for influenza-like illness, COVID-19, etc.
 The NSSP Emergency Department (ED) visit dataset is a dataset widely used by public health departments in the United States, representing many but not all counties in the country.
 The dataset contains information at the visit-level about each clinical encounter recorded in the electronic health record system during the patient's hospital stay.
 Clinical encounters may begin to be associated with diagnoses codes at different points in the patient or clinical processing journey (e.g. during registration, triage, clinical encounter, after laboratory results are returned, or during coding for billing, etc.), and are captured through update messages to the syndromic surveillance system once they are entered into a facility's electronic health record.
@@ -62,7 +62,7 @@ This typically will be pulled using an API, but here we provide the `syn_nssp_li
 syn_nssp_line_list
 ```
 <div class="alert alert-warning" role="alert">
-<strong>Note:</strong> This dataset does not represent data from real patients, it is entirely synthetic and designed to mirror the NSSP update fields, which records the timing of a clinical encounter and the corresponding diagnoses code, if any.
+<strong>Note:</strong> This dataset does not represent data from real patients, it is entirely synthetic and designed to mirror the NSSP update fields, which records the timing of a clinical encounter and the corresponding diagnoses code, if any. See `?syn_nssp_line_list` for full documentation.
 </div>
 
 ## Define the "syndrome" definition
@@ -263,7 +263,9 @@ head(count_df)
 ```
 
 We have now generated data in the format that we need to use the `baselinenowcast` package, which requires a [long tidy dataframe](https://r4ds.had.co.nz/tidy-data.html) with incident case counts indexed by reference date and report date.
+See the [Getting Started](baselinenowcast.html) and [model definition](model_definition.html) vignettes for more details on the data format we need for nowcasting.
 For demonstration purposes, we will now swap out the data from the simulated NSSP line-list data with a larger synthetic dataset.
+In reality you would proceed straight from this dataset to the subsequent steps, using the case counts indexed by reference date and report date to run the nowcasting workflow.
 
 # Pre-processing of larger synthetic dataset
 
@@ -327,49 +329,71 @@ delay_t
 ```
 
 Based on this figure, we can set the maximum delay to be 25 days as this is where 95% of the cases appear to have been reported.
-We will also set the nowcast date as 30 days before the maximum reference date in the dataset, May 5th, 2026.
-This is so that we can use the later observed data, beyond the 25 days maximum delay, to evaluate our nowcast against.
+In general, we want to choose a maximum delay that will incorporate the vast majority of all observed reporting delays so that the estimates of the final counts account for all eventual cases reported.
+However, a longer maximum delay will mean that you will require more historical data for training the model, which must be considered if the amount of historical data is limited say in a novel outbreak situation.
+In order to produce a nowcast that we can evaluate against later observed data for this example, we will pretend that we are making a nowcast 30 days before the last reference date in the dataset, May 5th, 2026.
+In real-time, we would just use the latest reference date as our nowcast date, however, for evaluating the performance of the method we want to look back at the nowcast we would have made with the data we would have had at past time points.
+See the [Getting Started](baselinenowcast.html) vignette for another example of evaluating our nowcast, and for a full quantitative evaluation of the method applied to different case studies, see our [pre-print](https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2) where we evaluate the method on COVID-19 cases in Germany and norovirus cases in England.
 ```{r}
 max_delay <- 25
 nowcast_date <- max(long_df$reference_date) - days(30)
 ```
 
-
 ## Format for `baselinenowcast`
 
-We'll start by generating a reporting triangle (see the [mathematical model](model_definition.html) vignette for more details) from the `syn_nssp_df`, after we've removed all of the reports from after the nowcast date.
-
+From the case counts by reference date and report date, we generate a reporting triangle(see the [mathematical model](model_definition.html) vignette for more details), which pivots the data from long to wide so that each row is a reference date and each column is a delay.
 In order to produce a reporting triangle, we need to obtain the number of incident case counts at all reference dates and for all corresponding report dates up until the maximum delay.
-We'll do this by first making a "spine" of all of the date combinations we need, and then joining the dataset to that spine.
-As a final step, we'll pivot filter out the report date column and pivot from wide to long format.
+
+First, we'll remove any reports after the nowcast date and any delays after the maximum delay.
 ```{r}
 training_df <- long_df |>
   filter(report_date <= nowcast_date) |>
   mutate(delay = as.integer(report_date - reference_date)) |>
   filter(delay <= max_delay) |>
-  select(reference_date, report_date, count)
+  select(reference_date, delay, report_date, count)
+```
 
-rep_tri_df <- expand_grid(
-  reference_date = seq(min(long_df$reference_date),
-    nowcast_date,
-    by = "day"
-  )
-) |>
-  rowwise() |>
-  reframe(
-    reference_date = reference_date,
-    report_date = seq(reference_date, min(
-      reference_date + max_delay,
-      nowcast_date
+What would happen if we looked at the trend in case counts without correcting for downward bias due to partial observations?
+We can summarise the cases by reference dates and plot.
+```{r}
+training_df_by_ref_date <- training_df |>
+  filter(report_date <= nowcast_date) |>
+  group_by(reference_date) |>
+  summarise(initial_count = sum(count)) |>
+  mutate(time = row_number())
+```
+
+<details><summary>Click to expand code to create the plot of the initially reported cases</summary>
+```{r}
+init_data <- training_df_by_ref_date |>
+  filter(reference_date >= nowcast_date - days(60))
+
+plot_inits <- ggplot(init_data) +
+  geom_line(aes(x = reference_date, y = initial_count), color = "darkred") +
+  theme_bw() +
+  ylab("Initially reported BAR cases") +
+  xlab("Date of ED visit")
+```
+```{r}
+plot_inits
+```
+
+We can see that without nowcasting, the cases appear to be sharply declining at the most recent dates.
+We can't tell from this data alone if the true trend in cases is really declining rapidly or if it is plateauing or increasing, which is why we need to use nowcasting to make an estimate of the eventually reported cases at each visit date.
+
+To do this, we will use `tidyr::complete()` to fill in all combinations of reference dates and delays, filter to exclude all reference dates and delays beyond the maximum reference date, and pivot from long to wide. This will ensure that the combinations that were missing in our dataset (i.e. no cases were reported) but would have been observed will be coded as 0 cases, whereas the ones that have yet to be observed will get coded as NAs.
+```{r}
+rep_tri_df <- training_df |>
+  complete(
+    reference_date = seq(
+      from = min(reference_date),
+      to = max(reference_date),
+      by = "day"
     ),
-    by = "day"
-    )
+    delay = 0:max_delay,
+    fill = list(count = 0)
   ) |>
-  mutate(delay = as.integer(report_date - reference_date)) |>
-  left_join(training_df,
-    by = c("reference_date", "report_date")
-  ) |>
-  replace_na(list(count = 0)) |>
+  filter(reference_date + days(delay) <= max(reference_date)) |>
   select(-report_date) |>
   pivot_wider(
     names_from = delay,
@@ -378,6 +402,8 @@ rep_tri_df <- expand_grid(
 head(rep_tri_df)
 ```
 
+We now have a data.frame where each row is a reference date, each column is a delay, and each entry represents the number of cases reported corresponding to each reference date and on each delay.
+The bottom right of the reporting triangle contains NAs to indicate that those observations have yet to be observed.
 As a final pre-processing step, we'll format the reporting triangle as just a matrix, for compatibility with the low-level functions in `baselinenowcast`.
 ```{r}
 rep_tri <- rep_tri_df |>
@@ -387,26 +413,38 @@ rep_tri <- rep_tri_df |>
 
 ## Specify the `baselinenowcast` model
 
-We will use the helper function `allocate_reference_times()` to determine how many reference times to use for delay estimation and uncertainty estimation, using the package defaults.
-See the "Default Settings" section of the [mathematical model](model_definition.html) vignette for more details.
+To specify the number of reference times used for delay and uncertainty estimation, we use an algorithm based on the maximum delay.
+By default, it splits the data evenly (or approximately because of odd numbers of reference times used for training) between data used for delay and uncertainty.
+See the documentation for `?allocate_reference_times` and the "Default Settings" section of the [mathematical model](model_definition.html) vignette for more details.
+
 ```{r}
 ref_time_allocation <- allocate_reference_times(rep_tri)
 n_history_delay <- ref_time_allocation$n_history_delay
 n_retrospective_nowcasts <- ref_time_allocation$n_retrospective_nowcasts
 ```
 
-# Run the `baselinenowcast` workflow
 
-First, we generate the point estimate of the nowcast as a "filled in" reporting triangle by estimating a reporting delay and applying it to the partially observed case counts.
-In this example, we have focused on syndromic surveillance definitions that rely solely on the presence of one or more diagnoses codes, as this means that patients tend to transition from a non-case to case only once (rather than reverting back to a non-case during the course of their clinical encounter).
-Our nowcasting methods primarily focus on the former use-case, though the latter can also be handled in this framework.
-See the sections "Estimating the delay distribution from a reporting triangle" and "Point nowcast generation" of the [mathematical model](model_definition.html) for more details.
+The `allocate_reference_times` function returns integer values that indicate the number of reference times to use for delay estimate (`n_history_delay`) and uncertainty estimate (`n_retrospective nowcasts`).
 ```{r}
-pt_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = n_history_delay)
+message("Number of reference times used for delay estimation: ", n_history_delay)
+message("Number of reference times used as retrospective nowcast times for uncertainty estimation: ", n_retrospective_nowcasts)
 ```
 
-Next, we estimate and apply uncertainty by generating retrospective nowcasts and comparing against later observed data.
-See the section "Uncertainty quantification" of the [mathematical_model](model_definition.html) for more details on assumptions being made here and a further description of how the uncertainty is quantified using past nowcast errors.
+# Run the `baselinenowcast` workflow
+
+To produce a nowcast, we first estimate a reporting delay and use it to generate a point estimate, or a single number that serves as our best guess for the unknown value, of the expected case counts at each unobserved reference date and delay.
+We refer to this "filled in" triangle as a point nowcast matrix.
+See "Estimating the delay distribution from a reporting triangle" and "Point nowcast generation" of the [mathematical model](model_definition.html) for more details.
+Note that in this example, we have focused on syndromic surveillance definitions that rely solely on the presence of one or more diagnoses codes, as this means that patients tend to transition from a non-case to case only once (rather than reverting back to a non-case during the course of their clinical encounter).
+Our nowcasting methods primarily focus on the former use-case, though the latter can also be handled in this framework.
+```{r}
+pt_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = n_history_delay)
+pt_nowcast_matrix
+```
+
+Next, we quantify the uncertainty using past nowcast errors, generating retrospective nowcasts and comparing against later observed data.
+We then apply the uncertainty by sampling from the observation model to produce probabilistic nowcast draws
+See the section "Uncertainty quantification" of the [mathematical_model](model_definition.html) for more details.
 ```{r}
 nowcast_draws_df <- estimate_and_apply_uncertainty(
   pt_nowcast_matrix,
@@ -420,7 +458,10 @@ head(nowcast_draws_df)
 
 # Summarise and plot the nowcast
 
-Now that we have a dataframe of probabilistic nowcast draws, which represent our predicted "final" case count at each reference time, we can summarise them to compute the 50th and 95th percent prediction intervals, which are used to communicate uncertainty in the nowcast.
+We now have an estimate of the "final" number of cases of BAR by reference date with uncertainty.
+These are known as probabilistic nowcast draws.
+To summarise the uncertainty, we can compute prediction intervals.
+Here we will visualize the results using the 50th and 95th percent prediction intervals, though we suggest showing more prediction intervals if possible.
 ```{r}
 nowcast_summary_df <-
   nowcast_draws_df |>
@@ -434,15 +475,11 @@ nowcast_summary_df <-
   )
 ```
 
-Next, we will join the initially reported cases and the held out, true final cases to our probabilistic nowcast.
-The final cases will be used to evaluate the performance of our nowcast given the right-truncated initial reports.
-```{r}
-training_df_by_ref_date <- training_df |>
-  filter(report_date <= nowcast_date) |>
-  group_by(reference_date) |>
-  summarise(initial_count = sum(count)) |>
-  mutate(time = row_number())
+In order to compare our estimates to the data that was available as of the time of the nowcast and the "final" cases (which is what we were trying to estimate), we will join both the initially reported cases and the held out, true final cases to our probabilistic nowcasts.
 
+We already summarised the initial reports by reference date from the data used to train the nowcast model.
+Next summarise the final reports by reference date using all the data.
+```{r}
 eval_data <- long_df |>
   filter(
     delay <= max_delay,
@@ -452,7 +489,10 @@ eval_data <- long_df |>
   summarise(final_count = sum(count)) |>
   mutate(time = row_number()) |>
   select(time, final_count)
+```
 
+Lastly, join the initial and final reports to the probabilistic nowcast.
+```{r}
 nowcast_w_data <- nowcast_summary_df |>
   left_join(training_df_by_ref_date,
     by = "time"
@@ -463,8 +503,15 @@ nowcast_w_data <- nowcast_summary_df |>
 head(nowcast_w_data)
 ```
 
-## Plot against later observed "final" data
-Next we will make a plot of the nowcasted "final" cases compared to the initially reported, right-truncated cases and the true "final" reports.
+## Plot nowcast against later observed "final" data
+
+Next we will make a plot of the nowcasted "final" cases compared to the initially reported cases and the true "final" reports.
+The plot shows that, had we naively summarised the initial reports by reference date (red), it would have appeared as if the recent cases of BAR were declining rapidly.
+With our probabilistic nowcast (gray), we can see an estimate of the true trend in real-time, which shows that the cases of BAR are plateauing rather than continuing to decline.
+Compared to what we eventually observe (black), we can see that our nowcasts appear visually to have been relatively accurate.
+For more quantitative evaluation, we recommend using proper scoring rules (e.g. using the [`scoringutils` R package](https://epiforecasts.io/scoringutils/)) to evaluate nowcasts.
+
+<details><summary>Click to expand code to create the plot of the probabilistic nowcast</summary>
 ```{r}
 combined_data <- nowcast_w_data |>
   select(reference_date, initial_count, final_count) |>
@@ -479,9 +526,7 @@ combined_data <- nowcast_w_data |>
     type == "final_count" ~ "Final observed data"
   )) |>
   filter(reference_date >= nowcast_date - days(60))
-```
-<details><summary>Click to expand code to create the plot of the probabilistic nowcast</summary>
-```{r}
+
 nowcast_data_recent <- nowcast_w_data |>
   filter(reference_date >= nowcast_date - days(60))
 
@@ -526,9 +571,9 @@ plot_prob_nowcast <- ggplot(nowcast_data_recent) +
     name = ""
   ) +
   xlab("Date of ED visit") +
-  ylab("Number of ARI cases") +
+  ylab("Number of BAR cases") +
   theme(legend.position = "bottom") +
-  ggtitle("Comparison of cases of ARI as of the nowcast date, later observed,\n and generated as a probabilistic nowcast") # nolint
+  ggtitle("Comparison of cases of BAR as of the nowcast date, later observed,\n and generated as a probabilistic nowcast") # nolint
 ```
 </details>
 ```{r}

@@ -254,8 +254,6 @@ Looking at this data, we can see that there is one case where there is a negativ
 Depending on the way that the data is generated, this could be a true negative value, for example if the patient had previously been tested elsewhere before arriving at the ED.
 In this case, patients interactions with the system always start in the ED, so this is likely due to a data entry error.
 For this reason, we will will choose to exclude all the negative valued delays, however, the choice of how to handle these should be guided be guided by the data experts and their understanding of the most likely reason for the observation to prevent introducing additional bias in this choice.
-
-Filter out negative delays.
 ```{r}
 count_df <- filter(count_df_raw, delay >= 0)
 head(count_df)
@@ -372,6 +370,7 @@ plot_inits <- ggplot(init_data) +
   ylab("Initially reported BAR cases") +
   xlab("Date of ED visit")
 ```
+</details>
 ```{r}
 plot_inits
 ```
@@ -441,7 +440,7 @@ Note that in this example, we have focused on syndromic surveillance definitions
 Our nowcasting methods primarily focus on the former use-case, though the latter can also be handled in this framework.
 ```{r}
 pt_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = n_history_delay)
-pt_nowcast_matrix
+head(pt_nowcast_matrix)
 ```
 
 Next, we quantify the uncertainty using past nowcast errors, generating retrospective nowcasts and comparing against later observed data.

@@ -96,10 +96,10 @@ The columns will be named by the original column name + the event number, e.g. `
 We'll write a function to do this for both the time stamps and diagnoses codes.
 ```{r}
 expand_events <- function(line_list, event_col_name) {
-  wide_line_list <- line_list |>
-    separate_wider_delim({{ event_col_name }},
-      delim = "{", names_sep = "", too_few = "align_start"
-    )
+  wide_line_list <- separate_wider_delim(line_list,
+    {{ event_col_name }},
+    delim = "{", names_sep = "", too_few = "align_start"
+  )
   return(wide_line_list)
 }
 ```
@@ -123,17 +123,14 @@ This creates a long tidy dataframe where each row is now an event.
 ```{r}
 wide_to_long <- function(wide_line_list,
                          event_col_name,
-                         values_to_name,
+                         values_to,
+                         names_to,
                          id_col_name) {
-  lastcol_ <- tail(colnames(select(
-    wide_line_list,
-    matches({{ event_col_name }})
-  )), 1)
   long_data <- wide_line_list |>
     pivot_longer(
       cols = starts_with({{ event_col_name }}),
-      names_to = "column_name",
-      values_to = {{ values_to_name }},
+      names_to = {{ names_to }},
+      values_to = {{ values_to }},
       values_drop_na = FALSE
     ) |>
     mutate(
@@ -152,14 +149,16 @@ We will create a unique event ID using the event number and the patient ID (`id_
 syn_nssp_time_stamps_long <- wide_to_long(
   wide_line_list = syn_nssp_time_stamps_wide,
   event_col_name = "DischargeDiagnosisMDTUpdates",
-  values_to_name = "time_stamp",
+  values_to = "time_stamp",
+  names_to = "column_name",
   id_col_name = "C_Processed_BioSense_ID"
 )
 
 syn_nssp_diagnoses_long <- wide_to_long(
   wide_line_list = syn_nssp_diagnoses_wide,
   event_col_name = "DischargeDiagnosisUpdates",
-  values_to_name = "diagnoses_codes",
+  values_to = "diagnoses_codes",
+  names_to = "column_name",
   id_col_name = "C_Processed_BioSense_ID"
 )
 ```
@@ -274,7 +273,7 @@ We'll start by loading in the synthetic reporting triangle dataframe, which is a
 syn_nssp_df
 ```
 <div class="alert alert-warning" role="alert">
-<strong>Note:</strong> This dataset represents synthetic data on the number of incident cases indexed by reference date and report date. It was generated to approximately mirror trends in ARI cases during a season without using any real data. See `?syn_nssp_df` for full documentation.
+<strong>Note:</strong> This dataset represents synthetic data on the number of incident cases indexed by reference date and report date. It was generated to approximately mirror trends in BAR cases during a season without using any real data. See `?syn_nssp_df` for full documentation.
 </div>
 
 You can see that this larger synthetic dataset has the same format as the one we generated from the line list NSSP data -- with columns for reference date, report date, and counts.
@@ -426,8 +425,14 @@ n_retrospective_nowcasts <- ref_time_allocation$n_retrospective_nowcasts
 
 The `allocate_reference_times` function returns integer values that indicate the number of reference times to use for delay estimate (`n_history_delay`) and uncertainty estimate (`n_retrospective nowcasts`).
 ```{r}
-message("Number of reference times used for delay estimation: ", n_history_delay)
-message("Number of reference times used as retrospective nowcast times for uncertainty estimation: ", n_retrospective_nowcasts)
+message(
+  "Number of reference times used for delay estimation: ",
+  n_history_delay
+)
+message(
+  "Number of reference times used for uncertainty estimation: ",
+  n_retrospective_nowcasts
+)
 ```
 
 # Run the `baselinenowcast` workflow
@@ -582,13 +587,19 @@ plot_prob_nowcast
 
 # Summary
 
-In this vignette we used `baselinenowcast ` to nowcast cases of ARI starting from synthetic syndromic surveillance system data designed to mirror the U.S. NSSP dataset.
+In this vignette we used `baselinenowcast ` to nowcast cases of BAR starting from synthetic syndromic surveillance system data designed to mirror the U.S. NSSP dataset.
 We walked through the process of defining a syndromic surveillance definition using a list of diagnoses codes, and using the time stamps of updates in an electronic health record in the NSSP dataset to create a count of the number of cases of a specific definition indexed by the date of their visit and the date at which the patient's diagnoses was recorded into the surveillance system.
 From there we used the `baselinenowcast` workflow to estimate a delay distribution, apply it to generate a point nowcast, and estimate and apply uncertainty to generate probabilistic nowcasts.
 As a final step, we compared our nowcasts of the eventual final observed case counts to what we later observed and the right-truncated initial reports.
 
-Next steps include scoring the nowcasts we generated using proper scoring rules such as the weighted interval score or the continuous ranked probability score and found the coverage metrics.
-Since the `baselinenowcast` method is very fast, we encourage users to test out on a range of nowcast dates, and consider other model specifications such as weekday specific delay estimation or variations in the amount of training data used for delay and uncertainty estimation.
-For more details on the performance of these method specifications applied to data from COVID-19 in Germany and norovirus cases in England, see our latest [pre-print](https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v1.full).
+Next steps include scoring the nowcasts we generated using proper scoring rules such as the weighted interval score (WIS) or the continuous ranked probability score (CRPS) and computing metrics such as the interval coverage to assess how well the observed data falls within our uncertainty bands.
+See the [`scoringutils` R package](epiforecasts.io/scoringutils/) for resources on scoring predictions.
+In this vignette we used the package's default settings to specify the model, but the optimal settings will be dependent on the context and its important to tune the model for your dataset and needs.
+The user has a number of choices in how to specify the model, such as the amount of training data to use for delay or uncertainty estimation, the choice of observation model, whether to separately estimate delays by weekday, or whether to borrow estimates from across different strata such as age groups or locations.
+See the [Getting Started](baselinenowcast.html) vignette and [model definition](model_definition.html) for more details on the different model specifications.
+In our [pre-print](https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v1.full) we show examples using the various model specifications to produce and evaluate the performance of age-group specific nowcasts of COVID-19 in Germany and norovirus cases in England.
+Here's a [link](https://github.com/epinowcast/baselinenowcast-paper) to the code used to generate those nowcasts if interested in doing something similar for your own settings.
 
-We encourage users to explore model specifications tailored to their data and scenario, which can be done most readily via the modular low level function interface described in detail in the [Getting Started](baselinenowcast.html) vignette.
+Visual inspection of the nowcasts produced, as well as visual inspection of the data such as the mean reporting delay over time and across weekdays, can help identify which specifications are most likely to improve performance.
+We encourage users to test the performance of different specifications of their model, ideally by producing nowcasts from different model specifications for a range of past nowcast dates, using the data that would have been available as of the past nowcast date, and comparing those nowcasts to later observed data.
+You could do this just as we did here when we filtered the long tidy data.frame indexed by reference and report date, to remove report dates before the nowcast date.

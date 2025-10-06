@@ -65,3 +65,15 @@ test_that("detect_structure detects a symmetric reporting triangle", {
   detected_structure <- detect_structure(rep_tri)
   expect_identical(exp_structure, detected_structure)
 })
+
+test_that("detect_structure returns 0 if there are no NAs", {
+  rep_mat <- matrix(
+    data = 5,
+    nrow = 7,
+    ncol = 4
+  )
+  exp_structure <- 0
+  detected_structure <- detect_structure(rep_mat)
+
+  expect_identical(exp_structure, detected_structure)
+})

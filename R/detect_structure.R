@@ -5,7 +5,8 @@
 #' @returns  Integer or vector specifying the reporting structure.
 #'   If integer, divides columns evenly by that integer (with last possibly
 #'   truncated).  If vector, the sum must not be greater than or equal to the
-#'   number of columns. Default is 1 (standard triangular structure).
+#'   number of columns. Default is 1 (standard triangular structure). If
+#'   there are no NAs, will return 0.
 #' @export
 #'
 #' @examples
@@ -23,6 +24,10 @@
 #' detected_structure
 detect_structure <- function(reporting_triangle) {
   n_row_nas <- sum(is.na(rowSums(reporting_triangle)))
+  # Structure is NULL if there are no NAs
+  if (n_row_nas == 0) {
+    return(0)
+  }
   n_prev_nas <- 0
   structure_long <- rep(NA, ncol(reporting_triangle))
   for (i in 1:n_row_nas) {
@@ -31,11 +36,6 @@ detect_structure <- function(reporting_triangle) {
     n_prev_nas <- n_prev_nas + n_nas
   }
   structure <- structure_long[!is.na(structure_long)]
-
-  # Structure is NULL if there are no NAs
-  if (length(structure) == 0) {
-    return(NULL)
-  }
 
   # Check to see if this can be reduced to just a single number
   expanded <- .expand_structure_vec(structure[1],

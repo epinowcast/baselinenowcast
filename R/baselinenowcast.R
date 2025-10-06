@@ -55,7 +55,6 @@ baselinenowcast.reporting_triangle <- function(data,
                                                prop_delay = 0.5,
                                                include_draws = TRUE,
                                                draws = 1000,
-                                               strata_sharing = NULL,
                                                ...){
 
   tri <- data$reporting_triangle_matrix
@@ -100,16 +99,9 @@ baselinenowcast.reporting_triangle <- function(data,
                    names_to = "delay")
   }
 
-  #
   results <- combine_data(nowcast_df,
                           strata = data$strata,
                           reference_dates = data$reference_date)
-  nowcast_result <- structure(
-    results,
-    class = c("baselinenowcast"),
-    original_triangle = data,
-    strata_sharing = strata_sharing
-  )
 
 
   return(nowcast_result)

@@ -6,7 +6,10 @@
 \title{A synthetic dataset resembling line-list (each row is a patient) data from
 the United States' National Syndromic Surveillance System (NSSP)
 accessed via the Essence platform. All entries are synthetic, formatted to
-look as close to the real raw data as possible.}
+look as close to the real raw data as possible.
+
+For an example of how to produce a nowcast from this data, see
+\code{vignette("nssp_nowcast")}.}
 \format{
 A data.frame with 25 rows and 8 columns.
 \describe{
@@ -43,5 +46,8 @@ A synthetic dataset resembling line-list (each row is a patient) data from
 the United States' National Syndromic Surveillance System (NSSP)
 accessed via the Essence platform. All entries are synthetic, formatted to
 look as close to the real raw data as possible.
+
+For an example of how to produce a nowcast from this data, see
+\code{vignette("nssp_nowcast")}.
 }
 \keyword{datasets}

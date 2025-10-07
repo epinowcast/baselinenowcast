@@ -123,7 +123,6 @@ test_that("as_reporting_triangle.data.frame() returns appropriate strata", { # n
   expect_identical(exp_strata_list, rep_tri$strata_list)
 
   # Just pass one
-
   rep_tri <- as_reporting_triangle(
     data_as_of_df,
     max_delay = 25,
@@ -141,9 +140,17 @@ test_that("as_reporting_triangle.data.frame() errors if multiple strata", { # no
     as_reporting_triangle(
       data_as_of_df,
       max_delay = 25,
-      strata = c("age_group", "location")
+      strata = c("age_group")
     ),
     regexp = "Multiple values found for the specified `strata` when trying to create "
+  )
+  expect_error(
+    as_reporting_triangle(
+      data_as_of_df,
+      max_delay = 25,
+      strata = c("region")
+    ),
+    regexp = "`strata` specified are not columns in `data`"
   )
 })
 

@@ -92,6 +92,11 @@ as_reporting_triangle.data.frame <- function(
 
   # Create the named list of strata
   if (!is.null(strata)) {
+    if (!all(strata %in% colnames(data))) {
+      cli_abort(
+        message = c("`strata` specified are not columns in `data`.")
+      )
+    }
     strata_list <- lapply(data[c(strata)], unique)
 
     if (!all(sapply(strata_list, length) == 1)) {

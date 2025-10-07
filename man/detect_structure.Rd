@@ -17,7 +17,8 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 Integer or vector specifying the reporting structure.
 If integer, divides columns evenly by that integer (with last possibly
 truncated).  If vector, the sum must not be greater than or equal to the
-number of columns. Default is 1 (standard triangular structure).
+number of columns. Default is 1 (standard triangular structure). If
+there are no NAs, will return 0.
 }
 \description{
 Detect the structure of a reporting triangle

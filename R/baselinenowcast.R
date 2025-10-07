@@ -9,9 +9,6 @@
 #'   in the output, default is TRUE.
 #' @param draws Integer indicating the number of probabilistic draws to include
 #'    if `include_draws` is TRUE. Default is 1000.
-#' @param strata_sharing Character string indicating whether uncertainty or
-#'    delay estimates are being shared. Default is NULL, for neither.
-
 #' @param ... Additional arguments passed to methods. For the
 #'     `reporting_triangles` method: `strata`, `strata_sharing`.
 #'
@@ -48,6 +45,11 @@ baselinenowcast <- function(data,
   UseMethod("baselinenowcast")
 }
 
+#' @title Creating a dataframe of nowcast results from a single reporting
+#'    triangle
+#' @rdname baselinenowcast
+#' @export
+#' @method baselinenowcast reporting_triangle
 baselinenowcast.reporting_triangle <- function(data,
                                                delay = NULL,
                                                uncertainty_params = NULL,

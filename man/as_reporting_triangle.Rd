@@ -23,7 +23,7 @@ as_reporting_triangle(data, max_delay, ...)
   data,
   max_delay,
   reference_dates,
-  strata = NULL,
+  strata_list = NULL,
   delays_unit = "days",
   ...
 )
@@ -42,8 +42,9 @@ indexed by their reference date and report date.}
 \code{count_col_name}, \code{delays_unit}. For matrix method: \code{reference_dates},
 \code{strata}, \code{delays_unit}.}
 
-\item{strata}{Character string indicating the metadata on the strata of this
-reporting triangle. Default is \code{NULL}.}
+\item{strata}{Character string indicating the column names for
+stratification e.g. location, age group, weekday. Must correspond
+to column names in \code{data}. Default is \code{NULL}.}
 
 \item{reference_date_col_name}{Character string indicating the name of the
 column which represents the reference date, or the date of the primary

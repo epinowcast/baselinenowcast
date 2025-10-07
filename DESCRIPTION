@@ -72,7 +72,7 @@ Encoding: UTF-8
 Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 Remotes:
   epinowcast=epinowcast/epinowcast@v0.3.0

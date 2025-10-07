@@ -110,6 +110,43 @@ test_that("as_reporting_triangle.data.frame() errors if missing required columns
   )
 })
 
+test_that("as_reporting_triangle.data.frame() returns appropriate strata", { # nolint
+  data_as_of_df$age_group <- "00+"
+  data_as_of_df$location <- "south"
+  rep_tri <- as_reporting_triangle(
+    data_as_of_df,
+    max_delay = 25,
+    strata = c("age_group", "location")
+  )
+  exp_strata_list <- list(age_group = "00+", location = "south")
+
+  expect_identical(exp_strata_list, rep_tri$strata_list)
+
+  # Just pass one
+
+  rep_tri <- as_reporting_triangle(
+    data_as_of_df,
+    max_delay = 25,
+    strata = c("age_group")
+  )
+  exp_strata_list <- list(age_group = "00+")
+
+  expect_identical(exp_strata_list, rep_tri$strata_list)
+})
+
+test_that("as_reporting_triangle.data.frame() errors if multiple strata", { # nolint
+  data_as_of_df$age_group <- "00+"
+  data_as_of_df$age_group[1:10] <- "5-14"
+  expect_error(
+    as_reporting_triangle(
+      data_as_of_df,
+      max_delay = 25,
+      strata = c("age_group", "location")
+    ),
+    regexp = "Multiple values found for the specified `strata` when trying to create "
+  )
+})
+
 test_that("as_reporting_triangle.matrix() can handle specification of each arg", {
   rep_tri_mat <- matrix(
     c(

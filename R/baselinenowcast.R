@@ -55,36 +55,41 @@ baselinenowcast.reporting_triangle <- function(data,
                                                prop_delay = 0.5,
                                                include_draws = TRUE,
                                                draws = 1000,
-                                               ...){
-
+                                               ...) {
   tri <- data$reporting_triangle_matrix
 
-  if(is.NULL(delay_pmf){
+  if (is.NULL(delay_pmf)) {
     delay_pmf <- estimate_delay(tri)
-  }else{
+  } else {
     # check for delay pmf being the right length/format
   }
 
-  tv <- allocate_reference_times(tri, scale_factor, prop_delay)
+  tv <- allocate_reference_times(tri,
+    scale_factor = scale_factor,
+    prop_delay = prop_delay
+  )
   pt_nowcast <- apply_delay(tri, delay_pmf)
 
-  if is.NULL(uncertainty_params){
-    trunc_rep_tris <- truncate_triangles(try, n = tv$n_retrospective_nowcasts)
+  if (is.NULL(uncertainty_params)) {
+    trunc_rep_tris <- truncate_triangles(tri, n = tv$n_retrospective_nowcasts)
     retro_rep_tris <- construct_triangles(trunc_rep_tris,
-                                          structure = data$structure)
+      structure = data$structure
+    )
     pt_nowcasts <- fill_triangles(retro_rep_tris,
-                                  n = $n_history_delay,
-                                  max_delay = data$max_delay)
+      n = tv$n_history_delay,
+      max_delay = data$max_delay
+    )
     uncertainty_params <- estimate_uncertainty(
-      pt_nowcast,
+      pt_nowcasts,
       trunc_rep_tris,
       retro_rep_tris,
-      n = tv$n_retrospective_nowcasts)
-   }else{
-     # check for uncertainty params being the right length/format
-   }
+      n = tv$n_retrospective_nowcasts
+    )
+  } else {
+    # check for uncertainty params being the right length/format
+  }
 
-  if(include_draws){
+  if (include_draws) {
     nowcast_df <- sample_nowcasts(
       pt_nowcast,
       tri,
@@ -92,18 +97,58 @@ baselinenowcast.reporting_triangle <- function(data,
       draws,
       ...
     )
-  }else{
+  } else {
     nowcast_df <- as.data.frame(as.matrix(tri)) |>
       mutate(time = row_number()) |>
       pivot_longer(!time,
-                   names_to = "delay")
+        names_to = "delay"
+      )
   }
 
-  results <- combine_data(nowcast_df,
-                          strata = data$strata,
-                          reference_dates = data$reference_date)
+  results <- .combine_data(nowcast_df,
+    strata_list = data$strata_list,
+    reference_dates = data$reference_date
+  )
 
 
   return(nowcast_result)
+}
 
+#' Combine data from a nowcast dataframe, strata, and reference dates
+#' @description Combines data from a nowcast dataframe, a named list of the
+#'    strata associated with the nowcast dataframe, and a vector of reference
+#'    dates corresponding to the time column in the `nowcast_df`
+#'
+#' @param nowcast_df Data.frame containing information for multiple draws with
+#'  columns for the reference time (`time`), the predicted counts
+#'  (`pred_count`), and the draw number (`draw`).
+#' @param strata_list Named list where each entry should be the name of the strata
+#'    and the name of the corresponding strata.
+#' @param reference_dates Vector of reference dates corresponding to the
+#'    reference times in the `nowcast_df`.
+#'
+#' @returns Data.frame indexed by the reference dates and with columns for
+#'   each of the named elements in the named list `strata`.
+.combine_data <- function(nowcast_df,
+                          strata_list,
+                          reference_dates) {
+  spine_df <- data.frame(
+    reference_date = reference_dates,
+    time = 1:length(reference_dates)
+  )
+
+  nowcast_df_dates <- merge(nowcast_df,
+    spine_df,
+    by = "time",
+    all.x = TRUE
+  )
+
+  if (!is.null(strata_list)) {
+    for (strata_name in names(strata_list)) {
+      nowcast_df_dates[[strata_name]] <- strata_list[[strata_name]]
+    }
+  }
+  nowcast_df_dates$time <- NULL
+
+  return(nowcast_df_dates)
 }

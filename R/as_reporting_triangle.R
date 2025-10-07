@@ -36,8 +36,9 @@ as_reporting_triangle <- function(data, max_delay, ...) {
 }
 
 #' @title Create a reporting triangle object from a data.frame
-#' @param strata Character string indicating the metadata on the strata of this
-#'    reporting triangle. Default is `NULL`.
+#' @param strata Character string indicating the column names for
+#'   stratification e.g. location, age group, weekday. Must correspond
+#'   to column names in `data`. Default is `NULL`.
 #' @param reference_date_col_name Character string indicating the name of the
 #'    column which represents the reference date, or the date of the primary
 #'    event occurrence.
@@ -88,6 +89,20 @@ as_reporting_triangle.data.frame <- function(
   # - all reference dates from min to max are available
 
   .validate_rep_tri_df(data, delays_unit)
+
+  # Create the named list of strata
+  if (!is.null(strata)) {
+    strata_list <- lapply(data[c(strata)], unique)
+
+    if (!all(sapply(strata_list, length) == 1)) {
+      cli_abort(
+        message = c("Multiple values found for the specified `strata` when trying to create a single `reporting_triangle` object.") # nolint
+      )
+    }
+  } else {
+    strata_list <- NULL
+  }
+
 
   # Compute delay
   data$delay <- time_length(as.Date(data$report_date) -
@@ -155,7 +170,7 @@ as_reporting_triangle.data.frame <- function(
     data = rep_tri_mat,
     reference_dates = reference_dates,
     max_delay = max_delay,
-    strata = strata,
+    strata_list = strata_list,
     delays_unit = delays_unit
   )
   return(rep_tri)
@@ -170,7 +185,7 @@ as_reporting_triangle.data.frame <- function(
 as_reporting_triangle.matrix <- function(data,
                                          max_delay,
                                          reference_dates,
-                                         strata = NULL,
+                                         strata_list = NULL,
                                          delays_unit = "days",
                                          ...) {
   .validate_triangle(
@@ -192,7 +207,7 @@ as_reporting_triangle.matrix <- function(data,
       reporting_triangle_matrix = data,
       reference_date = reference_dates,
       max_delay = max_delay,
-      strata = strata,
+      strata_list = strata_list,
       structure = structure,
       delays_unit = delays_unit
     ),

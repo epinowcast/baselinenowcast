@@ -149,6 +149,7 @@ as_reporting_triangle.data.frame <- function(
 
   # Get only the reporting triangle (remove reference date column)
   rep_tri_mat <- as.matrix(wide_data[, -1])
+  dimnames(rep_tri_mat) <- NULL
 
   rep_tri <- as_reporting_triangle.matrix(
     data = rep_tri_mat,

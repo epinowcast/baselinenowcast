@@ -213,3 +213,48 @@ test_that("as_reporting_triangle.matrix() errors if reference dates don't align 
     regexp = "Length of `reference_dates` must equal number of rows in"
   ) # nolint
 })
+
+test_that("`as_reporting_triangle.data.frame()` inputs are of the right type", {
+  expect_error(
+    as_reporting_triangle(
+      data = data_as_of_df,
+      reference_date_col_name = 4
+    ),
+    regexp = "Assertion on 'reference_date_col_name' failed: Must be of type 'character', not 'double'."
+  )
+  expect_error(
+    as_reporting_triangle(
+      data = data_as_of_df,
+      report_date_col_name = 4
+    ),
+    regexp = "Assertion on 'report_date_col_name' failed: Must be of type 'character', not 'double'."
+  )
+  expect_error(
+    as_reporting_triangle(
+      data = data_as_of_df,
+      count_col_name = 4
+    ),
+    regexp = "Assertion on 'count_col_name' failed: Must be of type 'character', not 'double'."
+  )
+  expect_error(
+    as_reporting_triangle(
+      data = data_as_of_df,
+      delays_unit = 4
+    ),
+    regexp = "Assertion on 'delays_unit' failed: Must be of type 'character', not 'double'."
+  )
+  expect_error(
+    as_reporting_triangle(
+      data = data_as_of_df,
+      strata = 4
+    ),
+    regexp = "Assertion on 'strata' failed:"
+  )
+  expect_error(
+    as_reporting_triangle(
+      data = data_as_of_df,
+      delays_unit = "daily"
+    ),
+    regexp = "Assertion on 'delays_unit' failed:"
+  )
+})

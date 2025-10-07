@@ -65,7 +65,7 @@ as_reporting_triangle <- function(data, max_delay, ...) {
 #'
 #' @export
 #' @method as_reporting_triangle data.frame
-#' @importFrom checkmate check_integerish
+#' @importFrom checkmate check_integerish assert_character
 #' @importFrom stats reshape
 as_reporting_triangle.data.frame <- function(
     data,
@@ -76,12 +76,22 @@ as_reporting_triangle.data.frame <- function(
     count_col_name = "count",
     delays_unit = "days",
     ...) {
+  assert_character(strata, null.ok = TRUE)
+  assert_character(reference_date_col_name)
+  assert_character(report_date_col_name)
+  assert_character(count_col_name)
+  assert_character(delays_unit)
+  assert_choice(delays_unit, choices = c("days", "weeks", "months", "years"))
+
   # Create a named vector for renaming
   old_names <- c(reference_date_col_name, report_date_col_name, count_col_name)
   new_names <- c("reference_date", "report_date", "count")
   names(data)[names(data) %in% old_names] <- new_names[match(
     names(data)[names(data) %in% old_names], old_names
   )]
+
+
+
 
   # Check for:
   # - multiple reference report date combinations

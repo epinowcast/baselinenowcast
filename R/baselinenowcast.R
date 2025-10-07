@@ -60,7 +60,7 @@ baselinenowcast.reporting_triangle <- function(data,
                                                ...) {
   tri <- data$reporting_triangle_matrix
 
-  if (is.NULL(delay_pmf)) {
+  if (is.null(delay_pmf)) {
     delay_pmf <- estimate_delay(tri)
   } else {
     # check for delay pmf being the right length/format
@@ -73,7 +73,7 @@ baselinenowcast.reporting_triangle <- function(data,
   )
   pt_nowcast <- apply_delay(tri, delay_pmf)
 
-  if (is.NULL(uncertainty_params)) {
+  if (is.null(uncertainty_params)) {
     trunc_rep_tris <- truncate_triangles(tri, n = tv$n_retrospective_nowcasts)
     retro_rep_tris <- construct_triangles(trunc_rep_tris,
       structure = data$structure
@@ -109,13 +109,13 @@ baselinenowcast.reporting_triangle <- function(data,
       )
   }
 
-  results <- .combine_data(nowcast_df,
+  result_df <- .combine_data(nowcast_df,
     strata_list = data$strata_list,
     reference_dates = data$reference_date
   )
 
 
-  return(nowcast_result)
+  return(result_df)
 }
 
 #' Combine data from a nowcast dataframe, strata, and reference dates

@@ -433,7 +433,7 @@
   }
 
   n_delays <- ncol(triangle)
-  if (!n_possible_horizons == length(uncertainty_params)) {
+  if (!n_delays == length(delay_pmf)) {
     cli_abort(
       message = c("`delay_pmf` is not the same length as the number of delays in the reporting triangle.") # nolint
     )

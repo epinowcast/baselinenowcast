@@ -396,3 +396,47 @@
   }
   return(NULL)
 }
+
+#' Validate the uncertainty parameters if they are passed in
+#'
+#' @inheritParams .validate_delay_and_triangle
+#' @inheritParams estimate_and_apply_uncertainty
+#'
+#' @returns NULL invisibly
+.validate_uncertainty <- function(triangle,
+                                  uncertainty_params) {
+  assert_numeric(uncertainty_params)
+  n_possible_horizons <- sum(is.na(rowSums(triangle)))
+  if (!n_possible_horizons == length(uncertainty_params)) {
+    cli_abort(
+      message = c("`uncertainty_params` are not the same length as the number of horizons in the reporting triangle.") # nolint
+    )
+  }
+  return(NULL)
+}
+
+
+#' Validate the delay PMF if it is passed in
+#'
+#' @inheritParams .validate_delay_and_triangle
+#' @inheritParams estimate_and_apply_uncertainty
+#'
+#' @returns NULL invisibly
+#' @importFrom checkmate assert_numeric
+.validate_delay <- function(triangle,
+                            delay_pmf) {
+  test <- check_numeric(sum(delay_pmf), lower = 0.99, upper = 1.01, len = 1)
+  if (!isTRUE(test)) {
+    cli_warn(
+      message = "`delay_pmf` does not sum to approximately one."
+    )
+  }
+
+  n_delays <- ncol(triangle)
+  if (!n_possible_horizons == length(uncertainty_params)) {
+    cli_abort(
+      message = c("`delay_pmf` is not the same length as the number of delays in the reporting triangle.") # nolint
+    )
+  }
+  return(NULL)
+}

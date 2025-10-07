@@ -35,7 +35,7 @@
 #' nowcast_obj <- baselinenowcast(rep_tri)
 #' @importFrom lubridate time_length days ymd
 baselinenowcast <- function(data,
-                            delay = NULL,
+                            delay_pmf = NULL,
                             uncertainty_params = NULL,
                             scale_factor = 3,
                             prop_delay = 0.5,
@@ -51,7 +51,7 @@ baselinenowcast <- function(data,
 #' @export
 #' @method baselinenowcast reporting_triangle
 baselinenowcast.reporting_triangle <- function(data,
-                                               delay = NULL,
+                                               delay_pmf = NULL,
                                                uncertainty_params = NULL,
                                                scale_factor = 3,
                                                prop_delay = 0.5,
@@ -64,6 +64,7 @@ baselinenowcast.reporting_triangle <- function(data,
     delay_pmf <- estimate_delay(tri)
   } else {
     # check for delay pmf being the right length/format
+    .validate_delay(tri, delay_pmf)
   }
 
   tv <- allocate_reference_times(tri,
@@ -89,6 +90,7 @@ baselinenowcast.reporting_triangle <- function(data,
     )
   } else {
     # check for uncertainty params being the right length/format
+    .validate_uncertainty(tri, uncertainty_params)
   }
 
   if (include_draws) {

@@ -419,7 +419,7 @@
 #' Validate the delay PMF if it is passed in
 #'
 #' @inheritParams .validate_delay_and_triangle
-#' @inheritParams estimate_and_apply_uncertainty
+#' @inheritParams sample_prediction
 #'
 #' @returns NULL invisibly
 #' @importFrom checkmate check_numeric

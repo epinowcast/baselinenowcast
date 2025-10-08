@@ -67,8 +67,9 @@ syn_nssp_line_list
 
 ## Define the "syndrome" definition
 
-In this near-real-time emergency department dataset, practitioners have developed public health surveillance definitions, or "syndrome" definitions for a range of public health concerns.
-These definitions typically rely on the presence of diagnosis code(s), specific free text captured in clinical notes, or a combination of these.
+In this near-real-time emergency department dataset, we use public health surveillance definitions, or "syndrome" definitions.
+These syndrome definitions exist for a range of public health concerns and are primarily defined by the CDC's NSSP Community of Practice, who consult subject matter experts from public health departments.
+They definitions typically rely on the presence of diagnosis code(s), specific free text captured in clinical notes, or a combination of these.
 In some instances, exclusion criteria are incorporated into these definitions to improve their specificity.
 
 Here we will list the diagnosis codes which correspond to Broad Acute Respiratory, but any sets of diagnosis codes that define a syndrome could be used interchangeably.

@@ -5,6 +5,7 @@
 #' @inheritParams apply_delay
 #' @inheritParams sample_prediction
 #' @inheritParams allocate_reference_times
+#' @inheritParams sample_nowcast
 #' @param include_draws Boolean indicating whether or not to include uncertainty
 #'   in the output, default is TRUE.
 #' @param draws Integer indicating the number of probabilistic draws to include
@@ -57,6 +58,8 @@ baselinenowcast.reporting_triangle <- function(data,
                                                prop_delay = 0.5,
                                                include_draws = TRUE,
                                                draws = 1000,
+                                               uncertainty_model = fit_by_horizon,
+                                               uncertainty_sampler = sample_nb,
                                                ...) {
   tri <- data$reporting_triangle_matrix
 
@@ -86,7 +89,9 @@ baselinenowcast.reporting_triangle <- function(data,
       pt_nowcasts,
       trunc_rep_tris,
       retro_rep_tris,
-      n = tv$n_retrospective_nowcasts
+      n = tv$n_retrospective_nowcasts,
+      uncertainty_model = uncertainty_model,
+      ...
     )
   } else {
     # check for uncertainty params being the right length/format
@@ -99,14 +104,22 @@ baselinenowcast.reporting_triangle <- function(data,
       tri,
       uncertainty_params,
       draws,
+      uncertainty_sampler = uncertainty_sampler,
       ...
     )
   } else {
-    nowcast_df <- as.data.frame(as.matrix(tri)) |>
-      mutate(time = row_number()) |>
-      pivot_longer(!time,
-        names_to = "delay"
-      )
+    nowcast_df_wide <- as.data.frame(as.matrix(tri))
+    nowcast_df_wide$time <- seq_len(nrow(nowcast_df))
+
+    nowcast_df <- reshape(nowcast_df_wide,
+      direction = "long",
+      varying = setdiff(names(nowcast_df), "time"),
+      v.names = "pred_count",
+      timevar = "delay",
+      times = setdiff(names(nowcast_df), "time"),
+      idvar = "time"
+    )
+    rownames(nowcast_df) <- NULL
   }
 
   result_df <- .combine_data(nowcast_df,

@@ -7,7 +7,7 @@
 \usage{
 baselinenowcast(
   data,
-  delay = NULL,
+  delay_pmf = NULL,
   uncertainty_params = NULL,
   scale_factor = 3,
   prop_delay = 0.5,
@@ -18,18 +18,23 @@ baselinenowcast(
 
 \method{baselinenowcast}{reporting_triangle}(
   data,
-  delay = NULL,
+  delay_pmf = NULL,
   uncertainty_params = NULL,
   scale_factor = 3,
   prop_delay = 0.5,
   include_draws = TRUE,
   draws = 1000,
+  uncertainty_model = fit_by_horizon,
+  uncertainty_sampler = sample_nb,
   ...
 )
 }
 \arguments{
 \item{data}{Either a \code{reporting_triangle} object or a \code{reporting_triangles}
 object.}
+
+\item{delay_pmf}{Vector of delays assumed to be indexed starting at the
+first delay column in \code{rep_mat_to_nowcast}}
 
 \item{uncertainty_params}{Vector of uncertainty parameters ordered from
 horizon 1 to the maximum horizon. Note that these will be reversed
@@ -52,6 +57,13 @@ if \code{include_draws} is TRUE. Default is 1000.}
 
 \item{...}{Additional arguments passed to methods. For the
 \code{reporting_triangles} method: \code{strata}, \code{strata_sharing}.}
+
+\item{uncertainty_sampler}{Function that ingests a vector or matrix of
+predictions and a vector of uncertainty parameters and generates draws
+from the observation model. Default is \code{sample_nb} which expects
+arguments \code{pred} for the vector of predictions and uncertainty parameters
+for the corresponding vector of uncertainty parameters, and draws from a
+negative binomial for each element of the vector.}
 }
 \value{
 \code{reporting_triangle} class object which is a list containing:

@@ -65,7 +65,7 @@ as_reporting_triangle <- function(data, max_delay, ...) {
 #'
 #' @export
 #' @method as_reporting_triangle data.frame
-#' @importFrom checkmate check_integerish assert_character
+#' @importFrom checkmate check_integerish assert_character assert_choice
 #' @importFrom stats reshape
 as_reporting_triangle.data.frame <- function(
     data,

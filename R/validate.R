@@ -422,7 +422,7 @@
 #' @inheritParams estimate_and_apply_uncertainty
 #'
 #' @returns NULL invisibly
-#' @importFrom checkmate assert_numeric
+#' @importFrom checkmate check_numeric
 .validate_delay <- function(triangle,
                             delay_pmf) {
   test <- check_numeric(sum(delay_pmf), lower = 0.99, upper = 1.01, len = 1)

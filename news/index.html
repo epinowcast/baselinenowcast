@@ -52,7 +52,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.0.1000" id="baselinenowcast-0001000">baselinenowcast 0.0.0.1000<a class="anchor" aria-label="anchor" href="#baselinenowcast-0001000"></a></h2>
-<ul><li>Add intermediate-level grouping functions to generate a point nowcast from a reporting triangle and to take a point nowcast and estimate and apply uncertainty.</li>
+<ul><li>Add a vignette which demonstrates how to pre-process for nowcasting syndromic surveillance system data using the U.S. National Syndromic Surveillance Program (NSSP) data as a case study, and then use <code>baselinenowcast</code> to nowcast cases of a specific syndromic surveillance definition.</li>
+<li>Add intermediate-level grouping functions to generate a point nowcast from a reporting triangle and to take a point nowcast and estimate and apply uncertainty.</li>
 <li>Refactor <code>estimate_uncertainty</code> to take in an error model function, an aggregator function for aggregating across reference times, and an aggregator function for aggregating across delays.</li>
 <li>Fix internal checks that ensure there is sufficient data for the specified target choice, using the number of NA rows rather than the number of columns as a proxy for the number of horizons.</li>
 <li>Replace argument names with more complete versions where possible.</li>
@@ -87,7 +88,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Kaitlyn Johnson, <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Johannes Bracher, Sebastian Funk.</p>
+  <p>Developed by Kaitlyn Johnson, <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Emily Tyszka, Johannes Bracher, Sebastian Funk.</p>
 </div>
 
 <div class="pkgdown-footer-right">

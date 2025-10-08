@@ -6,6 +6,7 @@
 <url><loc>https://baselinenowcast.epinowcast.org/articles/index.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/articles/model_definition.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/articles/nomenclature.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/articles/nssp_nowcast.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/authors.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/index.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/news/index.html</loc></url>
@@ -50,6 +51,8 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/sample_nowcasts.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/sample_prediction.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/sample_predictions.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/syn_nssp_df.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/syn_nssp_line_list.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/truncate_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/truncate_triangles.html</loc></url>
 </urlset>

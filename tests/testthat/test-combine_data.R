@@ -19,7 +19,7 @@ test_that(".combine_data() creates a dataframe from a set of dates and named lis
   expect_true(all(expected_cols %in% colnames(new_df)))
 
   # time corresponds to reference dates starting at 1
-  expected_dates <- min(ref_dates) + days(unique(data_df$time) - 1)
+  expected_dates <- min(ref_dates) + lubridate::days(unique(data_df$time) - 1)
   expect_identical(expected_dates, sort(unique(new_df$reference_date)))
   expect_identical(new_df$age_group, rep("00+", 30))
   expect_identical(new_df$region, rep("south", 30))

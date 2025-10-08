@@ -194,6 +194,9 @@ as_reporting_triangle.data.frame <- function(
 #' @title Create a reporting triangle object from a matrix
 #' @param reference_dates Vector of character strings indicating the reference
 #'   dates corresponding to each row of the reporting triangle matrix (`data`).
+#' @param strata_list Named list indicating where the name will correspond to
+#'   the column name and the single entry will correspond to the variable within
+#'   the column.
 #' @rdname as_reporting_triangle
 #' @export
 #' @method as_reporting_triangle matrix

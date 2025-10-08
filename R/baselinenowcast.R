@@ -48,6 +48,8 @@ baselinenowcast <- function(data,
 
 #' @title Creating a dataframe of nowcast results from a single reporting
 #'    triangle
+#' @inheritParams estimate_uncertainty
+#' @inheritParams sample_nowcast
 #' @rdname baselinenowcast
 #' @export
 #' @method baselinenowcast reporting_triangle

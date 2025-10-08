@@ -58,6 +58,15 @@ if \code{include_draws} is TRUE. Default is 1000.}
 \item{...}{Additional arguments passed to methods. For the
 \code{reporting_triangles} method: \code{strata}, \code{strata_sharing}.}
 
+\item{uncertainty_model}{Function that ingests a matrix of observations and a
+matrix of predictions and returns a vector that can be used to
+apply uncertainty using the same error model. Default is
+\code{fit_by_horizon} with arguments of \code{obs} matrix of observations and
+\code{pred} the matrix of predictions that fits each column (horizon)
+to a negative binomial observation model by default. The user can
+specify a different fitting model by replacing the
+\code{fit_model} argument in \code{fit_by_horizon}.}
+
 \item{uncertainty_sampler}{Function that ingests a vector or matrix of
 predictions and a vector of uncertainty parameters and generates draws
 from the observation model. Default is \code{sample_nb} which expects

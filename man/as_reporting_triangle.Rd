@@ -61,6 +61,10 @@ Default is "days".}
 
 \item{reference_dates}{Vector of character strings indicating the reference
 dates corresponding to each row of the reporting triangle matrix (\code{data}).}
+
+\item{strata_list}{Named list indicating where the name will correspond to
+the column name and the single entry will correspond to the variable within
+the column.}
 }
 \value{
 \code{reporting_triangle} class object which is a list containing:

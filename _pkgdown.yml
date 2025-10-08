@@ -22,6 +22,8 @@ navbar:
           href: articles/model_definition.html
         - text: "Nomenclature"
           href: articles/nomenclature.html
+        - text: "NSSP nowcasting"
+          href: articles/nssp_nowcast.html
 
 # Code folding configuration
 code:

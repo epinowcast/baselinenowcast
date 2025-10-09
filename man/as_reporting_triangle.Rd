@@ -2,58 +2,16 @@
 % Please edit documentation in R/as_reporting_triangle.R
 \name{as_reporting_triangle}
 \alias{as_reporting_triangle}
-\alias{as_reporting_triangle.data.frame}
-\alias{as_reporting_triangle.matrix}
 \title{Create a \code{reporting_triangle} object}
 \usage{
 as_reporting_triangle(data, max_delay, ...)
-
-\method{as_reporting_triangle}{data.frame}(
-  data,
-  max_delay,
-  strata = NULL,
-  reference_date = "reference_date",
-  report_date = "report_date",
-  count = "count",
-  delays_unit = "days",
-  ...
-)
-
-\method{as_reporting_triangle}{matrix}(
-  data,
-  max_delay,
-  reference_dates,
-  strata = NULL,
-  delays_unit = "days",
-  ...
-)
 }
 \arguments{
-\item{data}{Matrix of a reporting triangle where rows are reference times,
-columns are delays, and entries are the incident counts.}
+\item{data}{Data to be nowcasted.}
 
-\item{max_delay}{Integer indicating the maximum delay to estimate.}
+\item{max_delay}{Integer indicating the maximum delay.}
 
 \item{...}{Additional arguments passed to methods.}
-
-\item{strata}{Character string indicating the metadata on the strata of this
-reporting triangle. Default is \code{NULL}.}
-
-\item{reference_date}{Character string indicating the name of the
-column which represents the reference date, or the date of the primary
-event occurrence.}
-
-\item{report_date}{Character string indicating the name of the
-column which represents the date the primary event was reported.}
-
-\item{count}{Character string indicating the name of the column
-containing the number of incident cases on each reference and report date.}
-
-\item{delays_unit}{Character string specifying the time units to use.
-Default is "days".}
-
-\item{reference_dates}{Vector of character strings indicating the reference
-dates corresponding to each row of the reporting triangle matrix (\code{data}).}
 }
 \value{
 \code{reporting_triangle} class object which is a list containing:
@@ -72,16 +30,11 @@ triangle.
 
 See the corresponding \verb{as_reporting_triangle.<data.type>} functions for
 more details on the required input formats.
-
-A \code{reporting_triangle} object.
 }
 \description{
 Create a \code{reporting_triangle} object
 }
-\examples{
-data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-as_reporting_triangle(
-  data = data_as_of_df,
-  max_delay = 25
-)
+\seealso{
+\code{\link{as_reporting_triangle.data.frame}}
+\code{\link{as_reporting_triangle.matrix}}
 }

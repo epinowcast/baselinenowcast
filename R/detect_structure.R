@@ -35,15 +35,15 @@ detect_structure <- function(reporting_triangle) {
     structure_long[i] <- n_nas
     n_prev_nas <- n_prev_nas + n_nas
   }
-  structure <- structure_long[!is.na(structure_long)]
+  struct <- structure_long[!is.na(structure_long)]
 
   # Check to see if this can be reduced to just a single number
-  expanded <- .expand_structure_vec(structure[1],
+  expanded <- .expand_structure_vec(struct[1],
     cols = ncol(reporting_triangle)
   )
 
-  if (identical(expanded, structure)) {
-    structure <- structure[1]
+  if (identical(expanded, struct)) {
+    struct <- struct[1]
   }
-  return(structure)
+  return(struct)
 }

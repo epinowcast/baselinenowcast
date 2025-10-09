@@ -13,7 +13,7 @@ test_that(".validate_rep_tri_df() errors if there are duplicate pairs of referen
   df_dup <- bind_rows(data_as_of_df, data_as_of_df)
   expect_error(
     .validate_rep_tri_df(df_dup, delays_unit = "days"),
-    regexp = "Data contains duplicate `reference_date` and `report_date` combinations"
+    regexp = "Data contains duplicate `reference_date` and `report_date` combinations" # nolint
   ) # nolint
 })
 
@@ -22,12 +22,12 @@ test_that(".validate_rep_tri_df() can handle a ragged triangle with a single mis
 
   rep_tri <- expect_warning(
     .validate_rep_tri_df(test, delays_unit = "days"),
-    regexp = "Data does not contain case counts for all possible reference dates",
+    regexp = "Data does not contain case counts for all possible reference dates" # nolint
   )
 })
 
-test_that(".validate_rep_tri_df() warns when maximum report date is greater than the reference date", {
+test_that(".validate_rep_tri_df() warns when maximum report date is greater than the reference date", { # nolint
   expect_warning(.validate_rep_tri_df(syn_nssp_df, delays_unit = "days"),
-    regexp = "The dataframe contains report dates beyond the final reference date."
-  ) # nolint
+    regexp = "The dataframe contains report dates beyond the final reference date." # nolint
+  )
 })

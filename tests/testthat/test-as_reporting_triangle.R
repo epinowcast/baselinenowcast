@@ -56,7 +56,7 @@ test_that("as_reporting_triangle.data.frame() can handle a ragged triangle with 
     as_reporting_triangle(test,
       max_delay = 25
     ),
-    regexp = "Data does not contain case counts for all possible reference dates",
+    regexp = "Data does not contain case counts for all possible reference dates" # nolint
   )
   # Check that the same number of reference dates is in the reporting triangle
   expect_identical(
@@ -76,11 +76,11 @@ test_that("as_reporting_triangle.data.frame() errors if there are duplicate pair
     as_reporting_triangle(df_dup,
       max_delay = 25
     ),
-    regexp = "Data contains duplicate `reference_date` and `report_date` combinations"
+    regexp = "Data contains duplicate `reference_date` and `report_date` combinations" # nolint
   ) # nolint
 })
 
-test_that("as_reporting_triangle.data.frame() can handle different column names", {
+test_that("as_reporting_triangle.data.frame() can handle different column names", { # nolint
   data <- data_as_of_df
   old_names <- c("reference_date", "report_date", "count")
   new_names <- c("ref_date", "rep_date", "cases")
@@ -90,9 +90,9 @@ test_that("as_reporting_triangle.data.frame() can handle different column names"
 
   rep_tri <- as_reporting_triangle(data,
     max_delay = 25,
-    reference_date_col_name = "ref_date",
-    report_date_col_name = "rep_date",
-    count_col_name = "cases"
+    reference_date = "ref_date",
+    report_date = "rep_date",
+    count = "cases"
   )
   expect_identical(
     nrow(rep_tri$reporting_triangle_matrix),
@@ -110,7 +110,7 @@ test_that("as_reporting_triangle.data.frame() errors if missing required columns
   )
 })
 
-test_that("as_reporting_triangle.matrix() can handle specification of each arg", {
+test_that("as_reporting_triangle.matrix() can handle specification of each arg", { # nolint
   rep_tri_mat <- matrix(
     c(
       1, 3, 5, 7, 9,
@@ -140,7 +140,7 @@ test_that("as_reporting_triangle.matrix() can handle specification of each arg",
   expect_identical(rep_tri$structure, 1)
 })
 
-test_that("as_reporting_triangle.matrix() errors if reference dates don't align with rows of the matrix", {
+test_that("as_reporting_triangle.matrix() errors if reference dates don't align with rows of the matrix", { # nolint
   rep_tri_mat <- matrix(
     c(
       1, 3, 5, 7, 9,

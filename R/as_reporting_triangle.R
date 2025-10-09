@@ -1,11 +1,7 @@
-#' @title Create a `reporting_triangle` object
+#' Create a `reporting_triangle` object
 #'
-#' @param data Data to be nowcasted. Either a matrix of a reporting triangle or a
-#'    data.frame to be converted to a reporting triangle matrix.
-#'    Can either be in the long tidy format of counts by reference date
-#'    and report date or line list data with individual observations
-#'    indexed by their reference date and report date.
-#' @param max_delay Integer indicating the maximum delay to estimate.
+#' @param data Data to be nowcasted.
+#' @param max_delay Integer indicating the maximum delay.
 #' @param ... Additional arguments passed to methods.
 #
 #' @returns `reporting_triangle` class object which is a list containing:
@@ -23,12 +19,20 @@
 #'   See the corresponding `as_reporting_triangle.<data.type>` functions for
 #'   more details on the required input formats.
 #'
+#' @seealso
+#' \code{\link{as_reporting_triangle.data.frame}}
+#' \code{\link{as_reporting_triangle.matrix}}
 #' @export
-#'
 as_reporting_triangle <- function(data, max_delay, ...) {
   UseMethod("as_reporting_triangle")
 }
 
+#' Create a `reporting_triangle` object from a data.frame
+#'
+#' This method takes a data.frame containing case counts indexed by reference
+#' date and report date and creates a `reporting_triangle` object. See other
+#' methods for other data input options.
+#'
 #' @param data Data.frame in a long tidy format with counts by reference date
 #'    and report date. Must contain the following columns:
 #' .    - Column of type `date` or character with the dates of
@@ -40,6 +44,7 @@ as_reporting_triangle <- function(data, max_delay, ...) {
 #'  Additional columns can be included but will not be used. The input
 #'  dataframe for this function must contain only a single strata, there can
 #'  be no repeated reference dates and report dates.
+#' @param max_delay Integer indicating the maximum delay.
 #' @param strata Character string indicating the metadata on the strata of this
 #'    reporting triangle. Default is `NULL`.
 #' @param reference_date Character string indicating the name of the
@@ -56,8 +61,10 @@ as_reporting_triangle <- function(data, max_delay, ...) {
 #' @returns A `reporting_triangle` object.
 #'
 #' @export
-#' @rdname as_reporting_triangle
 #' @method as_reporting_triangle data.frame
+#' @seealso
+#' \code{\link{as_reporting_triangle}}
+#' \code{\link{as_reporting_triangle.matrix}}
 #' @importFrom checkmate check_integerish
 #' @importFrom stats reshape
 #' @examples
@@ -77,15 +84,11 @@ as_reporting_triangle.data.frame <- function(
     ...) {
   # Create a named vector for renaming
   old_names <- c(reference_date, report_date, count)
-  new_names <- c(
-    deparse(substitute(reference_date)),
-    deparse(substitute(report_date)),
-    deparse(substitute(count))
-  )
-  setNames(new_names, old_names)
-  # names(data)[names(data) %in% old_names] <- new_names[match(
-  #   names(data)[names(data) %in% old_names], old_names
-  # )]
+  new_names <- c("reference_date", "report_date", "count")
+
+  names(data)[names(data) %in% old_names] <- new_names[match(
+    names(data)[names(data) %in% old_names], old_names
+  )]
 
   .validate_rep_tri_df(data, delays_unit)
 
@@ -94,7 +97,7 @@ as_reporting_triangle.data.frame <- function(
     difftime(
       as.Date(data$report_date),
       as.Date(data$reference_date),
-      unit = delays_unit
+      units = delays_unit
     )
   )
   if (!isTRUE(check_integerish(data$delay))) {
@@ -108,9 +111,8 @@ as_reporting_triangle.data.frame <- function(
 
   if (max_delay > max(data$delay)) {
     cli_abort(
-      message = c(
+      message =
         "`max_delay` specified is larger than the maximum delay in the data."
-      )
     )
   }
 
@@ -159,13 +161,23 @@ as_reporting_triangle.data.frame <- function(
 }
 
 
+#' Create a `reporting_triangle` from a matrix
+#'
+#' This method takes a matrix in the format of a reporting triangle, with rows
+#' as reference dates and columns as delays and elements as incident case
+#' counts and creates a `reporting_triangle` object. See other
+#' methods for other data input options.
+#'
 #' @param data Matrix of a reporting triangle where rows are reference times,
 #'    columns are delays, and entries are the incident counts.
+#' @param max_delay Integer indicating the maximum delay.
 #' @param reference_dates Vector of character strings indicating the reference
 #'   dates corresponding to each row of the reporting triangle matrix (`data`).
-#' @rdname as_reporting_triangle
 #' @export
 #' @method as_reporting_triangle matrix
+#' @seealso
+#' \code{\link{as_reporting_triangle.data.frame}}
+#' \code{\link{as_reporting_triangle}}
 as_reporting_triangle.matrix <- function(data,
                                          max_delay,
                                          reference_dates,
@@ -179,24 +191,33 @@ as_reporting_triangle.matrix <- function(data,
   )
   if (length(reference_dates) != nrow(data)) {
     cli_abort(
-      message = c(
-        "Length of `reference_dates` must equal number of rows in `reporting_triangle`" # noline
-      )
+      message =
+        "Length of `reference_dates` must equal number of rows in `reporting_triangle`" # nolint
     )
   }
 
   structure <- detect_structure(data)
-  reporting_triangle_obj <- structure(
-    list(
-      reporting_triangle_matrix = data,
-      reference_date = reference_dates,
-      max_delay = max_delay,
-      strata = strata,
-      structure = structure,
-      delays_unit = delays_unit
-    ),
-    class = "reporting_triangle"
+  reporting_triangle_list <- list(
+    reporting_triangle_matrix = data,
+    reference_date = reference_dates,
+    max_delay = max_delay,
+    strata = strata,
+    structure = structure,
+    delays_unit = delays_unit
   )
 
+  reporting_triangle_obj <- new_reporting_triangle(reporting_triangle_list)
   return(reporting_triangle_obj)
+}
+
+#' Class constructor for `reporting_triangle` objects
+#'
+#' @param data A list to convert
+#'
+#' @returns An object of class `reporting_triangle`
+#'
+#' @export
+new_reporting_triangle <- function(data) {
+  class(data) <- c("reporting_triangle", class(data))
+  return(data)
 }

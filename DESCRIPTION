@@ -57,6 +57,7 @@ Suggests:
     dplyr,
     tidyr,
     stringr,
+    lubridate,
     purrr,
     readr,
     ggplot2,

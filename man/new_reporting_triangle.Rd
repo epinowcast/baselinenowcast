@@ -4,10 +4,32 @@
 \alias{new_reporting_triangle}
 \title{Class constructor for \code{reporting_triangle} objects}
 \usage{
-new_reporting_triangle(data)
+new_reporting_triangle(
+  reporting_triangle_matrix,
+  reference_dates,
+  structure,
+  max_delay,
+  delays_unit,
+  strata = NULL
+)
 }
 \arguments{
-\item{data}{A list to convert}
+\item{reporting_triangle_matrix}{Matrix of reporting triangle}
+
+\item{structure}{Integer or vector specifying the reporting structure.
+If integer, divides columns evenly by that integer (with last possibly
+truncated).  If vector, the sum must not be greater than or equal to the
+number of columns. Default is 1 (standard triangular structure).}
+
+\item{max_delay}{Integer indicating the maximum delay.}
+
+\item{delays_unit}{Character string specifying the time units to use.
+Default is \code{"days"}.}
+
+\item{strata}{Character string indicating the metadata on the strata of this
+reporting triangle. Default is \code{NULL}.}
+
+\item{inheritParams}{as_reporting_triangle.matrix}
 }
 \value{
 An object of class \code{reporting_triangle}

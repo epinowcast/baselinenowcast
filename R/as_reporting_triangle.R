@@ -201,27 +201,107 @@ as_reporting_triangle.matrix <- function(data,
   }
 
   struct <- detect_structure(data)
-  reporting_triangle_list <- list(
+
+  reporting_triangle_obj <- new_reporting_triangle(
     reporting_triangle_matrix = data,
-    reference_date = reference_dates,
+    reference_dates = reference_dates,
     max_delay = max_delay,
     strata = strata,
     structure = struct,
     delays_unit = delays_unit
   )
-
-  reporting_triangle_obj <- new_reporting_triangle(reporting_triangle_list)
   return(reporting_triangle_obj)
 }
 
 #' Class constructor for `reporting_triangle` objects
 #'
-#' @param data A list to convert
+#' @param reporting_triangle_matrix Matrix of reporting triangle
+#' @param inheritParams as_reporting_triangle.matrix
+#' @inheritParams construct_triangle
+#' @inheritParams as_reporting_triangle
 #'
 #' @returns An object of class `reporting_triangle`
 #'
 #' @export
-new_reporting_triangle <- function(data) {
-  class(data) <- c("reporting_triangle", class(data))
-  return(data)
+new_reporting_triangle <- function(reporting_triangle_matrix,
+                                   reference_dates,
+                                   structure,
+                                   max_delay,
+                                   delays_unit,
+                                   strata = NULL) {
+  assert_matrix(reporting_triangle_matrix)
+  assert_date(reference_dates,
+    unique = TRUE,
+    null.ok = FALSE,
+    min.len = 1,
+    len = nrow(reporting_triangle_matrix)
+  )
+  assert_numeric(structure, lower = 1)
+  assert_integerish(max_delay, min = 1)
+  assert_character(delays_unit, len = 1)
+  assert_character(strata, null.ok = TRUE, len = 1)
+  assert_character(delays_unit, len = 1)
+  assert_choice(delays_unit,
+    choices = c("days", "weeks", "months", "years")
+  )
+
+  result <- structure(
+    list(
+      reporting_triangle_matrix = reporting_triangle_matrix,
+      reference_dates = reference_dates,
+      structure = structure,
+      max_delay = max_delay,
+      delays_unit = delays_unit,
+      strata = strata
+    ),
+    class = "reporting_triangle"
+  )
+  return(result)
+}
+
+#' Assert validity of `reporting_triangle` objects
+#'
+#' @param data An object to check for validity.
+#'
+#' @param ... Additional arguments
+#'
+#' @return NULL
+#'
+#' @export
+assert_reporting_triangle <- function(data, ...) {
+  UseMethod("assert_reporting_triangle")
+}
+
+#' S3 method for reporting triangle assertion
+#' @method assert_reporting_triangle reporting_triangle
+#' @export
+#' @importFrom checkmate assert_matrix assert_date assert_numeric
+#'    assert_character assert_choice
+assert_reporting_triangle.reporting_triangle <- function(data, ...) {
+  assert_matrix(data$reporting_triangle_matrix)
+  assert_date(data$reference_date,
+    unique = TRUE,
+    null.ok = FALSE,
+    min.len = 1,
+    len = nrow(data$reporting_triangle_matrix)
+  )
+  assert_integerish(data$structure,
+    min.len = 1
+  )
+  if (sum(data$structure) > ncol(data$reporting_triangle_matrix)) {
+    cli_abort(message = c(
+      message = c(
+        "Sum of `structure` must not be greater than or equal",
+        "to the number of columns in matrix"
+      )
+    ))
+  }
+  assert_integerish(data$max_delay, lower = 1)
+  assert_character(data$delays_unit, len = 1)
+  assert_character(data$strata, null.ok = TRUE, len = 1)
+  assert_character(data$delays_unit, len = 1)
+  assert_choice(data$delays_unit,
+    choices = c("days", "weeks", "months", "years")
+  )
+  return(NULL)
 }

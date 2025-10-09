@@ -24,7 +24,7 @@ identifiers:
 abstract: This package provides R functions to implement nowcasting from
   right-truncated epidemiological case data
 authors:
-- name: Kaitlyn Johnson
+- name: Kaitlyn E. Johnson
   email: kaitlyn.johnson@lshtm.ac.uk
   orcid: https://orcid.org/0000-0001-8011-0012
 - name: Sam Abbott
@@ -37,22 +37,13 @@ authors:
   email: johannes.bracher@kit.edu
   orcid: https://orcid.org/0000-0002-3777-1410
 preferred-citation:
-  type: manual
-  title: 'baselinenowcast: Baseline nowcast from right-truncated epidemiological data'
-  authors:
-  - name: Kaitlyn Johnson
-    email: kaitlyn.johnson@lshtm.ac.uk
-    orcid: https://orcid.org/0000-0001-8011-0012
-  - name: Sam Abbott
-    email: contact@samabbott.co.uk
-    orcid: https://orcid.org/0000-0001-8057-8037
-  - name: Sebastian Funk
-    email: sebastian.funk@lshtm.ac.uk
-    orcid: https://orcid.org/0000-0002-2842-3406
-  - name: Johannes Bracher
-    email: johannes.bracher@kit.edu
-    orcid: https://orcid.org/0000-0002-3777-1410
-  year: '2025'
+ type = "article",
+    title = "Baseline nowcasting methods for handling delays in epidemiological data",
+    authors = "Johnson, Kaitlyn E. and Tang, Maria and Tyszka, Emily and Nemcova, Barbora, and Wolffram, Daniel and Ergas, Rosa, and Reich Nicholas G. and Funk, Sebastian and Mellor Jonathon and Bracher, Johannes and Abbott, Sam",
+    journal = "medRxiv",
+    year = 2025,
+    doi = "10.1101/2025.08.14.25333653",
+    url = "https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2"
 repository-code: https://github.com/epinowcast/baselinenowcast/issues/
 url: https://baselinenowcast.epinowcast.org
 contact:

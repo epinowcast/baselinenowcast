@@ -6,6 +6,11 @@
 \usage{
 \method{assert_reporting_triangle}{reporting_triangle}(data, ...)
 }
+\arguments{
+\item{data}{An object to check for validity.}
+
+\item{...}{Additional arguments}
+}
 \description{
 S3 method for reporting triangle assertion
 }

@@ -276,6 +276,7 @@ assert_reporting_triangle <- function(data, ...) {
 
 #' S3 method for reporting triangle assertion
 #' @method assert_reporting_triangle reporting_triangle
+#' @inheritParams assert_reporting_triangle
 #' @export
 #' @importFrom checkmate assert_matrix assert_date assert_numeric
 #'    assert_character assert_choice

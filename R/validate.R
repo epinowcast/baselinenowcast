@@ -336,14 +336,19 @@
 }
 
 #' Validate the reporting triangle data.frame
+#' @description Checks for duplicate reference date report dates, missing
+#'    columns, report dates beyond the final reference date, and missing
+#'    combinations of delays and reports.
 #'
 #' @param data Data.frame in long tidy form with reference dates, report dates,
 #'   and case counts, used to create a `reporting_triangle` object.
 #' @inheritParams as_reporting_triangle.data.frame
 #'
+#' @importFrom checkmate assert_data_frame
 #' @returns NULL, invisibly
 .validate_rep_tri_df <- function(data,
                                  delays_unit) {
+  assert_data_frame(data)
   # Validate inputs
   required_cols <- c(
     "reference_date",

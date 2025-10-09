@@ -1,15 +1,12 @@
-#' @title Create a reporting triangle
+#' @title Create a `reporting_triangle` object
 #'
-#' @param data Either a matrix of a reporting triangle or a
+#' @param data Data to be nowcasted. Either a matrix of a reporting triangle or a
 #'    data.frame to be converted to a reporting triangle matrix.
 #'    Can either be in the long tidy format of counts by reference date
 #'    and report date or line list data with individual observations
 #'    indexed by their reference date and report date.
 #' @param max_delay Integer indicating the maximum delay to estimate.
-#' @param ... Additional arguments passed to methods. For data.frame method:
-#'    `strata`, `reference_date_col_name`, `report_date_col_name`,
-#'    `count_col_name`, `delays_unit`. For matrix method: `reference_dates`,
-#'    `strata`, `delays_unit`.
+#' @param ... Additional arguments passed to methods.
 #
 #' @returns `reporting_triangle` class object which is a list containing:
 #'    - A matrix with which rows are reference times and columns are delays and
@@ -22,76 +19,84 @@
 #'    - A character string indicating the strata.
 #'    - A vector indicating the "structure" of the reporting triangle.
 #'    - A character string indicating the unit of the delays.
+#'
+#'   See the corresponding `as_reporting_triangle.<data.type>` functions for
+#'   more details on the required input formats.
+#'
 #' @export
 #'
+as_reporting_triangle <- function(data, max_delay, ...) {
+  UseMethod("as_reporting_triangle")
+}
+
+#' @param data Data.frame in a long tidy format with counts by reference date
+#'    and report date. Must contain the following columns:
+#' .    - Column of type `date` or character with the dates of
+#'     the primary event occurrence (reference date).
+#'    - Column of type `date` or character with the dates of
+#'     report of the primary event (report_date).
+#'    - Column of numeric or integer indicating the new confirmed counts
+#'     pertaining to that reference and report date (count).
+#'  Additional columns can be included but will not be used. The input
+#'  dataframe for this function must contain only a single strata, there can
+#'  be no repeated reference dates and report dates.
+#' @param strata Character string indicating the metadata on the strata of this
+#'    reporting triangle. Default is `NULL`.
+#' @param reference_date Character string indicating the name of the
+#'    column which represents the reference date, or the date of the primary
+#'    event occurrence.
+#' @param report_date Character string indicating the name of the
+#'    column which represents the date the primary event was reported.
+#' @param count Character string indicating the name of the column
+#'    containing the number of incident cases on each reference and report date.
+#' @param delays_unit Character string specifying the time units to use.
+#'    Default is "days".
+#'
+#'
+#' @returns A `reporting_triangle` object.
+#'
+#' @export
+#' @rdname as_reporting_triangle
+#' @method as_reporting_triangle data.frame
+#' @importFrom checkmate check_integerish
+#' @importFrom stats reshape
 #' @examples
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 #' as_reporting_triangle(
 #'   data = data_as_of_df,
 #'   max_delay = 25
 #' )
-#' @importFrom lubridate time_length days ymd
-as_reporting_triangle <- function(data, max_delay, ...) {
-  UseMethod("as_reporting_triangle")
-}
-
-#' @title Create a reporting triangle object from a data.frame
-#' @param strata Character string indicating the metadata on the strata of this
-#'    reporting triangle. Default is `NULL`.
-#' @param reference_date_col_name Character string indicating the name of the
-#'    column which represents the reference date, or the date of the primary
-#'    event occurrence.
-#' @param report_date_col_name Character string indicating the name of the
-#'    column which represents the date the primary event was reported.
-#' @param count_col_name Character string indicating the name of the column
-#'    containing the number of incident cases on each reference and report date.
-#' @param delays_unit Character string specifying the time units to use.
-#'    Default is "days".
-#' @details
-#'  The input needs to be a data.frame or similar with the following columns:
-#'    - Column of type `date` or character with the dates of
-#'     the primary event occurrence (reference date).
-#'    - Column of type `date` or character with the dates of
-#'     report of the primary event.
-#'    - Column of numeric or integer indicating the new confirmed counts
-#'     pertaining to that reference and report date.
-#'  Additional columns can be included but will not be used. The input
-#'  dataframe for this function must contain only a single strata, there can
-#'  be no repeated reference dates and report dates.
-#'
-#'
-#' @rdname as_reporting_triangle
-#'
-#' @export
-#' @method as_reporting_triangle data.frame
-#' @importFrom checkmate check_integerish
-#' @importFrom stats reshape
 as_reporting_triangle.data.frame <- function(
     data,
     max_delay,
     strata = NULL,
-    reference_date_col_name = "reference_date",
-    report_date_col_name = "report_date",
-    count_col_name = "count",
+    reference_date = "reference_date",
+    report_date = "report_date",
+    count = "count",
     delays_unit = "days",
     ...) {
   # Create a named vector for renaming
-  old_names <- c(reference_date_col_name, report_date_col_name, count_col_name)
-  new_names <- c("reference_date", "report_date", "count")
-  names(data)[names(data) %in% old_names] <- new_names[match(
-    names(data)[names(data) %in% old_names], old_names
-  )]
-
-  # Check for:
-  # - multiple reference report date combinations
-  # - max delay is specified
-  # - all reference dates from min to max are available
+  old_names <- c(reference_date, report_date, count)
+  new_names <- c(
+    deparse(substitute(reference_date)),
+    deparse(substitute(report_date)),
+    deparse(substitute(count))
+  )
+  setNames(new_names, old_names)
+  # names(data)[names(data) %in% old_names] <- new_names[match(
+  #   names(data)[names(data) %in% old_names], old_names
+  # )]
 
   .validate_rep_tri_df(data, delays_unit)
 
   # Compute delay
-  data$delay <- time_length(as.Date(data$report_date) -
-    as.Date(data$reference_date), unit = delays_unit)
+  data$delay <- as.numeric(
+    difftime(
+      as.Date(data$report_date),
+      as.Date(data$reference_date),
+      unit = delays_unit
+    )
+  )
   if (!isTRUE(check_integerish(data$delay))) {
     cli_abort(
       message = c(
@@ -109,16 +114,9 @@ as_reporting_triangle.data.frame <- function(
     )
   }
 
-  # Filter to delays less than maximum delay
   data <- data[data$delay <= max_delay, ]
-
-  # Get the vector of reference dates inorder from oldest to most recent
   reference_dates <- sort(unique(data$reference_date))
-
-  # Get only the columns you need
   select_data <- data[, c("reference_date", "count", "delay")]
-
-  # Expand so that all delays from 0 to max delay are covered
   all_combos <- expand.grid(
     reference_date = reference_dates,
     delay = 0:max_delay
@@ -128,17 +126,16 @@ as_reporting_triangle.data.frame <- function(
       all.x = TRUE
     )
 
-  # Fill in the 0s based on the whether the report date is after the
-  # latest report date (this assumes data has been filtered before!)
-
-  # Get appropriate lubridate function based on delay_units
-  delay_fn <- get(delays_unit, envir = asNamespace("lubridate"))
   ix <- is.na(all_combos$count)
   all_combos$count[ix] <- ifelse(
-    all_combos$reference_date[ix] + delay_fn(all_combos$delay[ix]) >
-      max(data$report_date),
-    NA, 0
+    as.numeric(difftime(
+      as.Date(max(data$report_date)),
+      as.Date(all_combos$reference_date[ix]),
+      unit = delays_unit
+    )) >= all_combos$delay[ix],
+    0, all_combos$count[ix]
   )
+
   wide_data <- reshape(
     all_combos,
     idvar = "reference_date",
@@ -161,7 +158,9 @@ as_reporting_triangle.data.frame <- function(
   return(rep_tri)
 }
 
-#' @title Create a reporting triangle object from a matrix
+
+#' @param data Matrix of a reporting triangle where rows are reference times,
+#'    columns are delays, and entries are the incident counts.
 #' @param reference_dates Vector of character strings indicating the reference
 #'   dates corresponding to each row of the reporting triangle matrix (`data`).
 #' @rdname as_reporting_triangle

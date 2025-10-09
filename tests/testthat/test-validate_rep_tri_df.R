@@ -10,7 +10,7 @@ test_that(".validate_rep_tri_df() errors if missing required columns", { # nolin
 })
 
 test_that(".validate_rep_tri_df() errors if there are duplicate pairs of reference and report dates", { # nolint
-  df_dup <- bind_rows(data_as_of_df, data_as_of_df)
+  df_dup <- rbind(data_as_of_df, data_as_of_df)
   expect_error(
     .validate_rep_tri_df(df_dup, delays_unit = "days"),
     regexp = "Data contains duplicate `reference_date` and `report_date` combinations" # nolint

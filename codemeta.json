@@ -32,6 +32,13 @@
     },
     {
       "@type": "Person",
+      "givenName": "Emily",
+      "familyName": "Tyszka",
+      "email": "etsyzka@umass.edu",
+      "@id": "https://orcid.org/0009-0005-6088-4017"
+    },
+    {
+      "@type": "Person",
       "givenName": "Johannes",
       "familyName": "Bracher",
       "email": "johannes.bracher@kit.edu",
@@ -104,6 +111,30 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=tidyr"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "stringr",
+      "name": "stringr",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=stringr"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "purrr",
+      "name": "purrr",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=purrr"
     },
     {
       "@type": "SoftwareApplication",
@@ -265,7 +296,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "2478.732KB",
+  "fileSize": "2899.668KB",
   "releaseNotes": "https://github.com/epinowcast/baselinenowcast/blob/main/NEWS.md",
   "readme": "https://github.com/epinowcast/baselinenowcast/blob/main/README.md",
   "contIntegration": ["https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/epinowcast/baselinenowcast"],

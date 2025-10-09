@@ -9,9 +9,6 @@
 \arguments{
 \item{data}{Data.frame in long tidy form with reference dates, report dates,
 and case counts, used to create a \code{reporting_triangle} object.}
-
-\item{delays_unit}{Character string specifying the time units to use.
-Default is "days".}
 }
 \value{
 NULL, invisibly

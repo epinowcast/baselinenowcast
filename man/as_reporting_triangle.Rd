@@ -4,12 +4,24 @@
 \alias{as_reporting_triangle}
 \title{Create a \code{reporting_triangle} object}
 \usage{
-as_reporting_triangle(data, max_delay, ...)
+as_reporting_triangle(
+  data,
+  max_delay,
+  strata = NULL,
+  delays_unit = "days",
+  ...
+)
 }
 \arguments{
 \item{data}{Data to be nowcasted.}
 
 \item{max_delay}{Integer indicating the maximum delay.}
+
+\item{strata}{Character string indicating the metadata on the strata of this
+reporting triangle. Default is \code{NULL}.}
+
+\item{delays_unit}{Character string specifying the time units to use.
+Default is \code{"days"}.}
 
 \item{...}{Additional arguments passed to methods.}
 }

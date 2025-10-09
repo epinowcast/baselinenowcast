@@ -7,9 +7,9 @@
 \method{as_reporting_triangle}{matrix}(
   data,
   max_delay,
-  reference_dates,
   strata = NULL,
   delays_unit = "days",
+  reference_dates,
   ...
 )
 }
@@ -17,10 +17,10 @@
 \item{data}{Matrix of a reporting triangle where rows are reference times,
 columns are delays, and entries are the incident counts.}
 
-\item{max_delay}{Integer indicating the maximum delay.}
-
 \item{reference_dates}{Vector of character strings indicating the reference
 dates corresponding to each row of the reporting triangle matrix (\code{data}).}
+
+\item{...}{Additional arguments passed to methods.}
 }
 \description{
 This method takes a matrix in the format of a reporting triangle, with rows

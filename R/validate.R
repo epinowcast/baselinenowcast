@@ -16,7 +16,7 @@
   # Make sure the input triangle is of the correct class, and n and max_delay
   # are integers
   if (is.null(triangle)) {
-    triangle_name <- deparse(substitute(triangle))
+    triangle_name <- deparse(substitute(triangle)) # nolint
     cli_abort(message = "`{triangle_name}` argument is missing.") # nolint
   }
   assert_class(triangle, "matrix")

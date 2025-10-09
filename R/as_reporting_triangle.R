@@ -2,6 +2,10 @@
 #'
 #' @param data Data to be nowcasted.
 #' @param max_delay Integer indicating the maximum delay.
+#' @param strata Character string indicating the metadata on the strata of this
+#'    reporting triangle. Default is `NULL`.
+#' @param delays_unit Character string specifying the time units to use.
+#'    Default is `"days"`.
 #' @param ... Additional arguments passed to methods.
 #
 #' @returns `reporting_triangle` class object which is a list containing:
@@ -23,7 +27,11 @@
 #' \code{\link{as_reporting_triangle.data.frame}}
 #' \code{\link{as_reporting_triangle.matrix}}
 #' @export
-as_reporting_triangle <- function(data, max_delay, ...) {
+as_reporting_triangle <- function(data,
+                                  max_delay,
+                                  strata = NULL,
+                                  delays_unit = "days",
+                                  ...) {
   UseMethod("as_reporting_triangle")
 }
 
@@ -44,9 +52,6 @@ as_reporting_triangle <- function(data, max_delay, ...) {
 #'  Additional columns can be included but will not be used. The input
 #'  dataframe for this function must contain only a single strata, there can
 #'  be no repeated reference dates and report dates.
-#' @param max_delay Integer indicating the maximum delay.
-#' @param strata Character string indicating the metadata on the strata of this
-#'    reporting triangle. Default is `NULL`.
 #' @param reference_date Character string indicating the name of the
 #'    column which represents the reference date, or the date of the primary
 #'    event occurrence.
@@ -54,8 +59,7 @@ as_reporting_triangle <- function(data, max_delay, ...) {
 #'    column which represents the date the primary event was reported.
 #' @param count Character string indicating the name of the column
 #'    containing the number of incident cases on each reference and report date.
-#' @param delays_unit Character string specifying the time units to use.
-#'    Default is "days".
+#' @param ... Additional arguments passed to methods.
 #'
 #'
 #' @returns A `reporting_triangle` object.
@@ -77,10 +81,10 @@ as_reporting_triangle.data.frame <- function(
     data,
     max_delay,
     strata = NULL,
+    delays_unit = "days",
     reference_date = "reference_date",
     report_date = "report_date",
     count = "count",
-    delays_unit = "days",
     ...) {
   # Create a named vector for renaming
   old_names <- c(reference_date, report_date, count)
@@ -97,7 +101,7 @@ as_reporting_triangle.data.frame <- function(
     difftime(
       as.Date(data$report_date),
       as.Date(data$reference_date),
-      units = delays_unit
+      unit = delays_unit
     )
   )
   if (!isTRUE(check_integerish(data$delay))) {
@@ -170,9 +174,9 @@ as_reporting_triangle.data.frame <- function(
 #'
 #' @param data Matrix of a reporting triangle where rows are reference times,
 #'    columns are delays, and entries are the incident counts.
-#' @param max_delay Integer indicating the maximum delay.
 #' @param reference_dates Vector of character strings indicating the reference
 #'   dates corresponding to each row of the reporting triangle matrix (`data`).
+#' @param ... Additional arguments passed to methods.
 #' @export
 #' @method as_reporting_triangle matrix
 #' @seealso
@@ -180,9 +184,9 @@ as_reporting_triangle.data.frame <- function(
 #' \code{\link{as_reporting_triangle}}
 as_reporting_triangle.matrix <- function(data,
                                          max_delay,
-                                         reference_dates,
                                          strata = NULL,
                                          delays_unit = "days",
+                                         reference_dates,
                                          ...) {
   .validate_triangle(
     triangle = data,
@@ -196,13 +200,13 @@ as_reporting_triangle.matrix <- function(data,
     )
   }
 
-  structure <- detect_structure(data)
+  struct <- detect_structure(data)
   reporting_triangle_list <- list(
     reporting_triangle_matrix = data,
     reference_date = reference_dates,
     max_delay = max_delay,
     strata = strata,
-    structure = structure,
+    structure = struct,
     delays_unit = delays_unit
   )
 

@@ -8,10 +8,10 @@
   data,
   max_delay,
   strata = NULL,
+  delays_unit = "days",
   reference_date = "reference_date",
   report_date = "report_date",
   count = "count",
-  delays_unit = "days",
   ...
 )
 }
@@ -30,11 +30,6 @@ dataframe for this function must contain only a single strata, there can
 be no repeated reference dates and report dates.
 }}
 
-\item{max_delay}{Integer indicating the maximum delay.}
-
-\item{strata}{Character string indicating the metadata on the strata of this
-reporting triangle. Default is \code{NULL}.}
-
 \item{reference_date}{Character string indicating the name of the
 column which represents the reference date, or the date of the primary
 event occurrence.}
@@ -45,8 +40,7 @@ column which represents the date the primary event was reported.}
 \item{count}{Character string indicating the name of the column
 containing the number of incident cases on each reference and report date.}
 
-\item{delays_unit}{Character string specifying the time units to use.
-Default is "days".}
+\item{...}{Additional arguments passed to methods.}
 }
 \value{
 A \code{reporting_triangle} object.

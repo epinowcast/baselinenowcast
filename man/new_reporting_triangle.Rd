@@ -16,6 +16,9 @@ new_reporting_triangle(
 \arguments{
 \item{reporting_triangle_matrix}{Matrix of reporting triangle}
 
+\item{reference_dates}{Vector of character strings indicating the reference
+dates corresponding to each row of the reporting triangle matrix (\code{data}).}
+
 \item{structure}{Integer or vector specifying the reporting structure.
 If integer, divides columns evenly by that integer (with last possibly
 truncated).  If vector, the sum must not be greater than or equal to the
@@ -28,8 +31,6 @@ Default is \code{"days"}.}
 
 \item{strata}{Character string indicating the metadata on the strata of this
 reporting triangle. Default is \code{NULL}.}
-
-\item{inheritParams}{as_reporting_triangle.matrix}
 }
 \value{
 An object of class \code{reporting_triangle}

@@ -52,6 +52,7 @@ as_reporting_triangle <- function(data,
 #'  Additional columns can be included but will not be used. The input
 #'  dataframe for this function must contain only a single strata, there can
 #'  be no repeated reference dates and report dates.
+#' @inheritParams as_reporting_triangle
 #' @param reference_date Character string indicating the name of the
 #'    column which represents the reference date, or the date of the primary
 #'    event occurrence.
@@ -101,7 +102,7 @@ as_reporting_triangle.data.frame <- function(
     difftime(
       as.Date(data$report_date),
       as.Date(data$reference_date),
-      unit = delays_unit
+      units = delays_unit
     )
   )
   if (!isTRUE(check_integerish(data$delay))) {
@@ -137,7 +138,7 @@ as_reporting_triangle.data.frame <- function(
     as.numeric(difftime(
       as.Date(max(data$report_date)),
       as.Date(all_combos$reference_date[ix]),
-      unit = delays_unit
+      units = delays_unit
     )) >= all_combos$delay[ix],
     0, all_combos$count[ix]
   )
@@ -174,6 +175,7 @@ as_reporting_triangle.data.frame <- function(
 #'
 #' @param data Matrix of a reporting triangle where rows are reference times,
 #'    columns are delays, and entries are the incident counts.
+#' @inheritParams as_reporting_triangle
 #' @param reference_dates Vector of character strings indicating the reference
 #'   dates corresponding to each row of the reporting triangle matrix (`data`).
 #' @param ... Additional arguments passed to methods.
@@ -216,7 +218,7 @@ as_reporting_triangle.matrix <- function(data,
 #' Class constructor for `reporting_triangle` objects
 #'
 #' @param reporting_triangle_matrix Matrix of reporting triangle
-#' @param inheritParams as_reporting_triangle.matrix
+#' @inheritParams as_reporting_triangle.matrix
 #' @inheritParams construct_triangle
 #' @inheritParams as_reporting_triangle
 #'
@@ -237,7 +239,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
     len = nrow(reporting_triangle_matrix)
   )
   assert_numeric(structure, lower = 1)
-  assert_integerish(max_delay, min = 1)
+  assert_integerish(max_delay, min.len = 1)
   assert_character(delays_unit, len = 1)
   assert_character(strata, null.ok = TRUE, len = 1)
   assert_character(delays_unit, len = 1)

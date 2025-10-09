@@ -17,6 +17,14 @@
 \item{data}{Matrix of a reporting triangle where rows are reference times,
 columns are delays, and entries are the incident counts.}
 
+\item{max_delay}{Integer indicating the maximum delay.}
+
+\item{strata}{Character string indicating the metadata on the strata of this
+reporting triangle. Default is \code{NULL}.}
+
+\item{delays_unit}{Character string specifying the time units to use.
+Default is \code{"days"}.}
+
 \item{reference_dates}{Vector of character strings indicating the reference
 dates corresponding to each row of the reporting triangle matrix (\code{data}).}
 

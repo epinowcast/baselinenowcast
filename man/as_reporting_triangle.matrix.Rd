@@ -7,9 +7,9 @@
 \method{as_reporting_triangle}{matrix}(
   data,
   max_delay,
+  reference_dates,
   strata = NULL,
   delays_unit = "days",
-  reference_dates,
   ...
 )
 }
@@ -19,16 +19,17 @@ columns are delays, and entries are the incident counts.}
 
 \item{max_delay}{Integer indicating the maximum delay.}
 
-\item{strata}{Character string indicating the metadata on the strata of this
-reporting triangle. Default is \code{NULL}.}
+\item{reference_dates}{Vector of character strings indicating the reference
+dates corresponding to each row of the reporting triangle matrix (\code{data}).}
+
+\item{strata}{Named list indicating where the name will correspond to
+the column name and the single entry will correspond to the variable within
+the column.}
 
 \item{delays_unit}{Character string specifying the time units to use.
 Default is \code{"days"}.}
 
-\item{reference_dates}{Vector of character strings indicating the reference
-dates corresponding to each row of the reporting triangle matrix (\code{data}).}
-
-\item{...}{Additional arguments passed to methods.}
+\item{...}{Additional arguments not used.}
 }
 \value{
 A \code{\link{reporting_triangle}} object

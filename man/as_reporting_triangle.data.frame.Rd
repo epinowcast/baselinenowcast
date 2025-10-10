@@ -32,8 +32,10 @@ be no repeated reference dates and report dates.
 
 \item{max_delay}{Integer indicating the maximum delay.}
 
-\item{strata}{Character string indicating the metadata on the strata of this
-reporting triangle. Default is \code{NULL}.}
+\item{strata}{Vector or single character string indicating the name of the
+column(s) of \code{data} which indicate the strata associated with the data.
+Entries of that column must all be the same. Default is \code{NULL}, which
+does not assign metadata to this data.}
 
 \item{delays_unit}{Character string specifying the time units to use.
 Default is \code{"days"}.}

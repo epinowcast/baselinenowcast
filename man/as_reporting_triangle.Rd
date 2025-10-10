@@ -17,8 +17,8 @@ as_reporting_triangle(
 
 \item{max_delay}{Integer indicating the maximum delay.}
 
-\item{strata}{Character string indicating the metadata on the strata of this
-reporting triangle. Default is \code{NULL}.}
+\item{strata}{Strata associated with the data to be nowcasted. Default is
+\code{NULL}}
 
 \item{delays_unit}{Character string specifying the time units to use.
 Default is \code{"days"}.}

@@ -29,8 +29,9 @@ number of columns. Default is 1 (standard triangular structure).}
 \item{delays_unit}{Character string specifying the time units to use.
 Default is \code{"days"}.}
 
-\item{strata}{Character string indicating the metadata on the strata of this
-reporting triangle. Default is \code{NULL}.}
+\item{strata}{Named list indicating where the name will correspond to
+the column name and the single entry will correspond to the variable within
+the column.}
 }
 \value{
 An object of class \code{reporting_triangle}

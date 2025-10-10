@@ -194,6 +194,52 @@ test_that("as_reporting_triangle.data.frame() errors if missing required columns
   )
 })
 
+
+test_that("as_reporting_triangle.data.frame() returns appropriate strata", { # nolint
+  data_as_of_df$age_group <- "00+"
+  data_as_of_df$location <- "south"
+  rep_tri <- as_reporting_triangle(
+    data_as_of_df,
+    max_delay = 25,
+    strata = c("age_group", "location")
+  )
+  exp_strata_list <- list(age_group = "00+", location = "south")
+
+  expect_identical(exp_strata_list, rep_tri$strata)
+
+  # Just pass one
+  rep_tri <- as_reporting_triangle(
+    data_as_of_df,
+    max_delay = 25,
+    strata = c("age_group")
+  )
+  exp_strata_list <- list(age_group = "00+")
+
+  expect_identical(exp_strata_list, rep_tri$strata)
+})
+
+test_that("as_reporting_triangle.data.frame() errors if multiple strata", { # nolint
+  data_as_of_df$age_group <- "00+"
+  data_as_of_df$age_group[1:10] <- "5-14"
+  expect_error(
+    as_reporting_triangle(
+      data_as_of_df,
+      max_delay = 25,
+      strata = c("age_group")
+    ),
+    regexp = "Multiple values found for the specified `strata` when trying to create "
+  )
+  expect_error(
+    as_reporting_triangle(
+      data_as_of_df,
+      max_delay = 25,
+      strata = c("region")
+    ),
+    regexp = "`strata` specified are not columns in `data`"
+  )
+})
+
+
 test_that("as_reporting_triangle.matrix() can handle specification of each arg", { # nolint
   rep_tri_mat <- matrix(
     c(
@@ -254,6 +300,51 @@ test_that("as_reporting_triangle.matrix() errors if reference dates don't align 
   ) # nolint
 })
 
+test_that("`as_reporting_triangle.data.frame()` inputs are of the right type", {
+  expect_error(
+    as_reporting_triangle(
+      data = data_as_of_df,
+      reference_date = 4
+    ),
+    regexp = "Assertion on 'reference_date' failed: Must be of type 'character', not 'double'."
+  )
+  expect_error(
+    as_reporting_triangle(
+      data = data_as_of_df,
+      report_date = 4
+    ),
+    regexp = "Assertion on 'report_date' failed: Must be of type 'character', not 'double'."
+  )
+  expect_error(
+    as_reporting_triangle(
+      data = data_as_of_df,
+      count = 4
+    ),
+    regexp = "Assertion on 'count' failed: Must be of type 'character', not 'double'."
+  )
+  expect_error(
+    as_reporting_triangle(
+      data = data_as_of_df,
+      delays_unit = 4
+    ),
+    regexp = "Assertion on 'delays_unit' failed: Must be of type 'character', not 'double'."
+  )
+  expect_error(
+    as_reporting_triangle(
+      data = data_as_of_df,
+      strata = 4
+    ),
+    regexp = "Assertion on 'strata' failed:"
+  )
+  expect_error(
+    as_reporting_triangle(
+      data = data_as_of_df,
+      delays_unit = "daily"
+    ),
+    regexp = "Assertion on 'delays_unit' failed:"
+  )
+})
+
 test_that("assert on reporting triangle works as expected", {
   rep_tri <- as_reporting_triangle(data_as_of_df,
     max_delay = 25
@@ -272,7 +363,7 @@ test_that("assert on reporting triangle works as expected", {
   rep_tri3 <- rep_tri
   rep_tri3$strata <- NULL
   expect_no_error(assert_reporting_triangle(rep_tri3))
-  rep_tri3$strata <- "region"
+  rep_tri3$strata <- list(region = "south")
   expect_no_error(assert_reporting_triangle(rep_tri3))
   rep_tri3$strata <- 6
   expect_error(assert_reporting_triangle(rep_tri3))

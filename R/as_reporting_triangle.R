@@ -2,8 +2,8 @@
 #'
 #' @param data Data to be nowcasted.
 #' @param max_delay Integer indicating the maximum delay.
-#' @param strata Character string indicating the metadata on the strata of this
-#'    reporting triangle. Default is `NULL`.
+#' @param strata Strata associated with the data to be nowcasted. Default is
+#'   `NULL`
 #' @param delays_unit Character string specifying the time units to use.
 #'    Default is `"days"`.
 #' @param ... Additional arguments passed to methods.
@@ -37,6 +37,10 @@ as_reporting_triangle <- function(data,
 #'  Additional columns can be included but will not be used. The input
 #'  dataframe for this function must contain only a single strata, there can
 #'  be no repeated reference dates and report dates.
+#' @param strata Vector or single character string indicating the name of the
+#'    column(s) of `data` which indicate the strata associated with the data.
+#'    Entries of that column must all be the same. Default is `NULL`, which
+#'    does not assign metadata to this data.
 #' @inheritParams as_reporting_triangle
 #' @param reference_date Character string indicating the name of the
 #'    column which represents the reference date, or the date of the primary
@@ -70,6 +74,13 @@ as_reporting_triangle.data.frame <- function(
     report_date = "report_date",
     count = "count",
     ...) {
+  assert_character(strata, null.ok = TRUE)
+  assert_character(reference_date)
+  assert_character(report_date)
+  assert_character(count)
+  assert_character(delays_unit)
+  assert_choice(delays_unit, choices = c("days", "weeks", "months", "years"))
+
   # Create a named vector for renaming
   old_names <- c(reference_date, report_date, count)
   new_names <- c("reference_date", "report_date", "count")
@@ -79,6 +90,25 @@ as_reporting_triangle.data.frame <- function(
   )]
 
   .validate_rep_tri_df(data, delays_unit)
+
+  # Create the named list of strata
+  if (!is.null(strata)) {
+    if (!all(strata %in% colnames(data))) {
+      cli_abort(
+        message = c("`strata` specified are not columns in `data`.")
+      )
+    }
+    strata_list <- lapply(data[c(strata)], unique)
+
+    if (!all(sapply(strata_list, length) == 1)) {
+      cli_abort(
+        message = c("Multiple values found for the specified `strata` when trying to create a single `reporting_triangle` object.") # nolint
+      )
+    }
+  } else {
+    strata_list <- NULL
+  }
+
 
   # Compute delay
   data$delay <- as.numeric(
@@ -142,7 +172,7 @@ as_reporting_triangle.data.frame <- function(
     data = rep_tri_mat,
     reference_dates = reference_dates,
     max_delay = max_delay,
-    strata = strata,
+    strata = strata_list,
     delays_unit = delays_unit
   )
   return(rep_tri)
@@ -161,7 +191,10 @@ as_reporting_triangle.data.frame <- function(
 #' @inheritParams as_reporting_triangle
 #' @param reference_dates Vector of character strings indicating the reference
 #'   dates corresponding to each row of the reporting triangle matrix (`data`).
-#' @param ... Additional arguments passed to methods.
+#' @param strata Named list indicating where the name will correspond to
+#'   the column name and the single entry will correspond to the variable within
+#'   the column.
+#' @param ... Additional arguments not used.
 #' @export
 #' @return A \code{\link{reporting_triangle}} object
 #' @method as_reporting_triangle matrix
@@ -193,9 +226,9 @@ as_reporting_triangle.data.frame <- function(
 #' rep_tri
 as_reporting_triangle.matrix <- function(data,
                                          max_delay,
+                                         reference_dates,
                                          strata = NULL,
                                          delays_unit = "days",
-                                         reference_dates,
                                          ...) {
   .validate_triangle(
     triangle = data,
@@ -248,7 +281,14 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   assert_numeric(structure, lower = 1)
   assert_integerish(max_delay, min.len = 1)
   assert_character(delays_unit, len = 1)
-  assert_character(strata, null.ok = TRUE, len = 1)
+  assert_list(strata, names = "named", null.ok = TRUE)
+  if (!(all(lengths(strata) == 1))) {
+    cli_abort(
+      message = c("A single `reporting_triangle` object can only be made from one `strata`", # nolint
+        "i" = "Check that the `strata` columns in `data` have a single set of unique entries."
+      ) # nolint
+    )
+  }
   assert_character(delays_unit, len = 1)
   assert_choice(delays_unit,
     choices = c("days", "weeks", "months", "years")
@@ -274,7 +314,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
 #' @return NULL
 #' @export
 #' @importFrom checkmate assert_matrix assert_date assert_numeric
-#'    assert_character assert_choice
+#'    assert_character assert_choice assert_list
 assert_reporting_triangle <- function(data) {
   assert_matrix(data$reporting_triangle_matrix)
   assert_date(data$reference_date,
@@ -296,7 +336,14 @@ assert_reporting_triangle <- function(data) {
   }
   assert_integerish(data$max_delay, lower = 1)
   assert_character(data$delays_unit, len = 1)
-  assert_character(data$strata, null.ok = TRUE, len = 1)
+  assert_list(data$strata, names = "named", null.ok = TRUE)
+  if (!all(sapply(data$strata, length) == 1)) {
+    cli_abort(
+      message = c("Multiple values found for the specified `strata`.",
+        "i" = "Objects of class `reporting_triangle` may only have a single strata."
+      ) # nolint
+    )
+  }
   assert_character(data$delays_unit, len = 1)
   assert_choice(data$delays_unit,
     choices = c("days", "weeks", "months", "years")

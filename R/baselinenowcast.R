@@ -125,7 +125,7 @@ baselinenowcast.reporting_triangle <- function(data,
   }
 
   result_df <- .combine_data(nowcast_df,
-    strata_list = data$strata_list,
+    strata_list = data$strata,
     reference_dates = data$reference_date
   )
 

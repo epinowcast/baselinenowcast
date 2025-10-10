@@ -16,8 +16,8 @@
   # Make sure the input triangle is of the correct class, and n and max_delay
   # are integers
   if (is.null(triangle)) {
-    triangle_name <- deparse(substitute(triangle))
-    cli_abort(message = c("`{triangle_name}` argument is missing."))
+    triangle_name <- deparse(substitute(triangle)) # nolint
+    cli_abort(message = "`{triangle_name}` argument is missing.") # nolint
   }
   assert_class(triangle, "matrix")
   assert_integerish(max_delay)
@@ -336,14 +336,19 @@
 }
 
 #' Validate the reporting triangle data.frame
+#' @description Checks for duplicate reference date report dates, missing
+#'    columns, report dates beyond the final reference date, and missing
+#'    combinations of delays and reports.
 #'
 #' @param data Data.frame in long tidy form with reference dates, report dates,
 #'   and case counts, used to create a `reporting_triangle` object.
 #' @inheritParams as_reporting_triangle.data.frame
 #'
+#' @importFrom checkmate assert_data_frame
 #' @returns NULL, invisibly
 .validate_rep_tri_df <- function(data,
                                  delays_unit) {
+  assert_data_frame(data)
   # Validate inputs
   required_cols <- c(
     "reference_date",
@@ -355,7 +360,7 @@
     cli_abort(
       message = c(
         "Required columns missing from data",
-        "x" = "Missing: {.val {missing_cols}}"
+        "x" = "Missing: {.val {missing_cols}}" # nolint
       )
     )
   }
@@ -364,12 +369,10 @@
   dup_pairs <- duplicated(data[, c("reference_date", "report_date")])
 
   if (any(dup_pairs)) {
-    # Get the duplicated pairs for error message
-    dup_data <- data[dup_pairs, c("reference_date", "report_date")]
     cli_abort(
       message = c(
         "Data contains duplicate `reference_date` and `report_date` combinations", # nolint
-        "x" = "Found {sum(dup_pairs)} duplicate pair{?s}",
+        "x" = "Found {sum(dup_pairs)} duplicate pair{?s}", # nolint
         "i" = "Each reference_date and report_date combination should appear only once" # nolint
       )
     )
@@ -389,9 +392,8 @@
   ))
   if (all_dates_length != length(unique(data$reference_date))) {
     cli_warn(
-      message = c(
+      message =
         "Data does not contain case counts for all possible reference dates."
-      )
     )
   }
   return(NULL)

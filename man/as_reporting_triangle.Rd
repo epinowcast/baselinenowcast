@@ -2,110 +2,39 @@
 % Please edit documentation in R/as_reporting_triangle.R
 \name{as_reporting_triangle}
 \alias{as_reporting_triangle}
-\alias{as_reporting_triangle.data.frame}
-\alias{as_reporting_triangle.matrix}
-\title{Create a reporting triangle}
+\title{Create a \code{reporting_triangle} object}
 \usage{
-as_reporting_triangle(data, max_delay, ...)
-
-\method{as_reporting_triangle}{data.frame}(
+as_reporting_triangle(
   data,
   max_delay,
   strata = NULL,
-  reference_date_col_name = "reference_date",
-  report_date_col_name = "report_date",
-  count_col_name = "count",
-  delays_unit = "days",
-  ...
-)
-
-\method{as_reporting_triangle}{matrix}(
-  data,
-  max_delay,
-  reference_dates,
-  strata_list = NULL,
   delays_unit = "days",
   ...
 )
 }
 \arguments{
-\item{data}{Either a matrix of a reporting triangle or a
-data.frame to be converted to a reporting triangle matrix.
-Can either be in the long tidy format of counts by reference date
-and report date or line list data with individual observations
-indexed by their reference date and report date.}
+\item{data}{Data to be nowcasted.}
 
-\item{max_delay}{Integer indicating the maximum delay to estimate.}
+\item{max_delay}{Integer indicating the maximum delay.}
 
-\item{...}{Additional arguments passed to methods. For data.frame method:
-\code{strata}, \code{reference_date_col_name}, \code{report_date_col_name},
-\code{count_col_name}, \code{delays_unit}. For matrix method: \code{reference_dates},
-\code{strata}, \code{delays_unit}.}
-
-\item{strata}{Character string indicating the column names for
-stratification e.g. location, age group, weekday. Must correspond
-to column names in \code{data}. Default is \code{NULL}.}
-
-\item{reference_date_col_name}{Character string indicating the name of the
-column which represents the reference date, or the date of the primary
-event occurrence.}
-
-\item{report_date_col_name}{Character string indicating the name of the
-column which represents the date the primary event was reported.}
-
-\item{count_col_name}{Character string indicating the name of the column
-containing the number of incident cases on each reference and report date.}
+\item{strata}{Strata associated with the data to be nowcasted. Default is
+\code{NULL}}
 
 \item{delays_unit}{Character string specifying the time units to use.
-Default is "days".}
+Default is \code{"days"}.}
 
-\item{reference_dates}{Vector of character strings indicating the reference
-dates corresponding to each row of the reporting triangle matrix (\code{data}).}
-
-\item{strata_list}{Named list indicating where the name will correspond to
-the column name and the single entry will correspond to the variable within
-the column.}
+\item{...}{Additional arguments passed to methods.}
 }
 \value{
-\code{reporting_triangle} class object which is a list containing:
-\itemize{
-\item A matrix with which rows are reference times and columns are delays and
-entries are incident cases at each reference time and delay.
-\item An integer indicating the maximum delay used to create the reporting
-triangle
-\item A vector of the same length as the rows of the matrix indicating the
-dates corresponding to the reference times in the rows of the reporting
-triangle.
-\item A character string indicating the strata.
-\item A vector indicating the "structure" of the reporting triangle.
-\item A character string indicating the unit of the delays.
-}
+A \code{\link{reporting_triangle}} object
 }
 \description{
-Create a reporting triangle
-
-Create a reporting triangle object from a data.frame
-
-Create a reporting triangle object from a matrix
+Create a \code{reporting_triangle} object
 }
-\details{
-The input needs to be a data.frame or similar with the following columns:
-\itemize{
-\item Column of type \code{date} or character with the dates of
-the primary event occurrence (reference date).
-\item Column of type \code{date} or character with the dates of
-report of the primary event.
-\item Column of numeric or integer indicating the new confirmed counts
-pertaining to that reference and report date.
-Additional columns can be included but will not be used. The input
-dataframe for this function must contain only a single strata, there can
-be no repeated reference dates and report dates.
+\seealso{
+Other reporting_triangle:
+\code{\link{as_reporting_triangle.data.frame}()},
+\code{\link{as_reporting_triangle.matrix}()},
+\code{\link{reporting_triangle-class}}
 }
-}
-\examples{
-data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-as_reporting_triangle(
-  data = data_as_of_df,
-  max_delay = 25
-)
-}
+\concept{reporting_triangle}

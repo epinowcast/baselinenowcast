@@ -11,11 +11,13 @@
 and case counts, used to create a \code{reporting_triangle} object.}
 
 \item{delays_unit}{Character string specifying the time units to use.
-Default is "days".}
+Default is \code{"days"}.}
 }
 \value{
 NULL, invisibly
 }
 \description{
-Validate the reporting triangle data.frame
+Checks for duplicate reference date report dates, missing
+columns, report dates beyond the final reference date, and missing
+combinations of delays and reports.
 }

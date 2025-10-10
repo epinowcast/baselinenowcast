@@ -27,7 +27,7 @@ Valid options are "days", "weeks", "months", "years".}
 }
 See the corresponding \code{\link{as_reporting_triangle.matrix}} and
 \code{\link{as_reporting_triangle.data.frame}} functions
-for more details on the required input formats to genererate the object.
+for more details on the required input formats to genereate the object.
 }
 
 \seealso{

@@ -9,6 +9,7 @@ type: software
 license: MIT
 title: 'baselinenowcast: Baseline nowcast'
 version: 0.0.0.1000
+doi: 10.1101/2025.08.14.25333653
 identifiers:
 - type: url
   value: https://github.com/epinowcast/baselinenowcast/
@@ -48,6 +49,44 @@ authors:
   given-names: Sebastian
   email: sebastian.funk@lshtm.ac.uk
   orcid: https://orcid.org/0000-0002-2842-3406
+preferred-citation:
+  type: article
+  title: Baseline nowcasting methods for handling delays in epidemiological data
+  authors:
+  - family-names: Johnson
+    given-names: Kaitlyn E.
+  - family-names: Tang
+    given-names: Maria
+  - family-names: Tyszka
+    given-names: Emily
+    email: etsyzka@umass.edu
+    orcid: https://orcid.org/0009-0005-6088-4017
+  - family-names: Nemcova
+    given-names: Barbora
+  - family-names: Wolffram
+    given-names: Dnaiel
+  - family-names: Ergas
+    given-names: Rosa
+  - family-names: Reich
+    given-names: Nicholas G.
+  - family-names: Funk
+    given-names: Sebastian
+    email: sebastian.funk@lshtm.ac.uk
+    orcid: https://orcid.org/0000-0002-2842-3406
+  - family-names: Mellor
+    given-names: Jonathon
+  - family-names: Bracher
+    given-names: Johannes
+    email: johannes.bracher@kit.edu
+    orcid: https://orcid.org/0000-0002-3777-1410
+  - family-names: Abbott
+    given-names: Sam
+    email: contact@samabbott.co.uk
+    orcid: https://orcid.org/0000-0001-8057-8037
+  year: '2025'
+  journal: medRxiv
+  doi: 10.1101/2025.08.14.25333653
+  url: https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2
 repository-code: https://github.com/epinowcast/baselinenowcast
 url: https://baselinenowcast.epinowcast.org
 contact:
@@ -56,6 +95,22 @@ contact:
   email: kaitlyn.johnson@lshtm.ac.uk
   orcid: https://orcid.org/0000-0001-8011-0012
 references:
+- type: manual
+  title: 'baselinenowcast: Baseline nowcast from right-truncated epidemiological data'
+  authors:
+  - family-names: Johnson
+    given-names: Kaitlyn E.
+  - family-names: Abbott
+    given-names: Sam
+  - family-names: Tyszka
+    given-names: Emily
+  - family-names: Bracher
+    given-names: Johannes
+  - family-names: Funk
+    given-names: Sebastian
+  license: MIT
+  year: '2025'
+  url: https://github.com/epinowcast/baselinenowcast/
 - type: software
   title: 'R: A Language and Environment for Statistical Computing'
   notes: Depends

@@ -73,7 +73,7 @@ Please note that the `baselinenowcast` project is released with a [Contributor C
 
 ## Citation
 
-If you use `baselinenowcast` in your work, please consider citing it with `citation("baselinenowcast")` (or `print(citation("baselinenowcast"), bibex = TRUE)`):
+If you use `baselinenowcast` in your work, please consider citing it with `citation("baselinenowcast")` (or `print(citation("baselinenowcast"), bibtex = TRUE)`):
 
   #> To cite package ‘baselinenowcast’ in publications use:
   #>
@@ -84,13 +84,26 @@ If you use `baselinenowcast` in your work, please consider citing it with `citat
   #> A BibTeX entry for LaTeX users is
   #>
   #>  @Article{,
-  #>  title = {Baseline nowcasting methods for handling delays in epidemiological data},
-  #>  author = {Kaitlyn E. Johnson and Maria Tang and Emily Tyszka and Barbora Nemcova and Dnaiel Wolffram and Rosa Ergas and Nicholas G. Reich and Sebastian Funk and Jonathon    Mellor and Johannes Bracher and Sam Abbott},
-  #>  year = {2025},
-  #>  journal = {medRxiv},
-  #>  doi = {10.1101/2025.08.14.25333653},
-  #>  url = {https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2},
+  #>    title = {Baseline nowcasting methods for handling delays in epidemiological data},
+  #>    author = {Kaitlyn E. Johnson and Maria Tang and Emily Tyszka and Barbora Nemcova and Daniel Wolffram and Rosa Ergas and Nicholas G. Reich and Sebastian Funk and Jonathon Mellor and Johannes Bracher and Sam Abbott},
+  #>    year = {2025},
+  #>    journal = {medRxiv},
+  #>    doi = {10.1101/2025.08.14.25333653},
+  #>    url = {https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2},
   #>  }
+  #>
+  #> Johnson KE, Abbott S, Tyszka E, Bracher J, Funk S (2025). _baselinenowcast: Baseline nowcast from right-truncated epidemiological data_.
+  #> <https://github.com/epinowcast/baselinenowcast/>.
+  #>
+  #> A BibTeX entry for LaTeX users is
+  #> @Manual{,
+  #>    license = {MIT},
+  #>    title = {baselinenowcast: Baseline nowcast from right-truncated epidemiological data},
+  #>    author = {Kaitlyn E. Johnson and Sam Abbott and Emily Tyszka and Johannes Bracher and Sebastian Funk},
+  #>    year = {2025},
+  #>    url = {https://github.com/epinowcast/baselinenowcast/},
+  #> }
+
 
 
 ## Contributors

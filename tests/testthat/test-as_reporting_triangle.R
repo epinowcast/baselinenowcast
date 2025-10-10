@@ -46,8 +46,92 @@ test_that("as_reporting_triangle.data.frame() errors if max delay is too large",
   )
 })
 
+test_that("as_reporting_triangle.data.frame() can handle different temporal granularities", { # nolint
+  skip_if_not_installed("lubridate")
+  skip_if_not_installed("dplyr")
+  weekly_weekly <- data_as_of_df |>
+    dplyr::filter(
+      lubridate::wday(reference_date) == 1,
+      lubridate::wday(report_date) == 1
+    )
 
+  rep_tri <- as_reporting_triangle(weekly_weekly,
+    max_delay = 3,
+    delays_unit = "weeks"
+  )
+  expected_days_diff <- as.numeric(difftime(
+    rep_tri$reference_dates[2],
+    rep_tri$reference_dates[1]
+  ))
+  expect_identical(expected_days_diff, 7)
+  expect_true(is.matrix(rep_tri$reporting_triangle_matrix))
+  expect_identical(rep_tri$delays_unit, "weeks")
 
+  # Now just filter the reference dates, keep all delays (needed for doing the
+  # weekday filtering)
+  weekly_daily <- data_as_of_df |>
+    dplyr::filter(lubridate::wday(reference_date) == 1)
+  rep_tri2 <- expect_warning(as_reporting_triangle(weekly_daily,
+    max_delay = 25,
+    delays_unit = "days"
+  ))
+  expected_days_diff <- as.numeric(difftime(
+    rep_tri2$reference_dates[2],
+    rep_tri2$reference_dates[1]
+  ))
+  expect_identical(expected_days_diff, 7)
+  expect_true(is.matrix(rep_tri2$reporting_triangle_matrix))
+  expect_identical(rep_tri2$delays_unit, "days")
+
+  # Now just filter the report dates to simulate reporting on one day of the
+  # week but with reference dates for all days
+  daily_weekly <- data_as_of_df |>
+    dplyr::filter(lubridate::wday(report_date) == 1)
+  rep_tri3 <- as_reporting_triangle(daily_weekly,
+    max_delay = 25,
+    delays_unit = "days"
+  )
+  expected_days_diff <- as.numeric(difftime(
+    rep_tri3$reference_dates[2],
+    rep_tri3$reference_dates[1]
+  ))
+  expect_identical(expected_days_diff, 1)
+  expect_true(is.matrix(rep_tri3$reporting_triangle_matrix))
+  expect_identical(rep_tri3$delays_unit, "days")
+  # we expect a lot of 0s in the reporting triangle because it gets
+  # converted to daily daily so test for this
+  n_zeros <- sum(rep_tri3$reporting_triangle_matrix == 0, na.rm = TRUE)
+  n_elements <- nrow(rep_tri3$reporting_triangle_matrix) * ncol(rep_tri3$reporting_triangle_matrix) # nolint
+  prop_zeros <- n_zeros / n_elements
+  expect_gt(prop_zeros, 5 / 7)
+
+  # Check for user errors:
+  # User specifies weekly but data is daily -- should error because delays
+  # are not integers
+  expect_error(
+    expect_warning(
+      as_reporting_triangle(data_as_of_df,
+        max_delay = 25,
+        delays_unit = "weeks"
+      )
+    ),
+    regexp = "Check that `delays_unit` is specified correctly."
+  )
+
+  # User specifies daily but the data is weekly. -- this will create a daily
+  # matrix with 0s for all the missing report dates
+  rep_tri4 <- expect_warning(
+    as_reporting_triangle(weekly_weekly,
+      max_delay = 25,
+      delays_unit = "days"
+    ),
+    regexp = "Data does not contain case counts for all possible reference dates."
+  ) # nolint
+  expect_identical(
+    ncol(rep_tri4$reporting_triangle_matrix),
+    ncol(rep_tri2$reporting_triangle_matrix)
+  )
+})
 test_that("as_reporting_triangle.data.frame() can handle a ragged triangle with a single missing reference date", { # nolint
 
   test <- data_as_of_df[data_as_of_df$reference_date != "2026-03-26", ]

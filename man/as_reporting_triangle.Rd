@@ -26,27 +26,15 @@ Default is \code{"days"}.}
 \item{...}{Additional arguments passed to methods.}
 }
 \value{
-\code{reporting_triangle} class object which is a list containing:
-\itemize{
-\item A matrix with which rows are reference times and columns are delays and
-entries are incident cases at each reference time and delay.
-\item An integer indicating the maximum delay used to create the reporting
-triangle
-\item A vector of the same length as the rows of the matrix indicating the
-dates corresponding to the reference times in the rows of the reporting
-triangle.
-\item A character string indicating the strata.
-\item A vector indicating the "structure" of the reporting triangle.
-\item A character string indicating the unit of the delays.
-}
-
-See the corresponding \verb{as_reporting_triangle.<data.type>} functions for
-more details on the required input formats.
+A \code{\link{reporting_triangle}} object
 }
 \description{
 Create a \code{reporting_triangle} object
 }
 \seealso{
-\code{\link{as_reporting_triangle.data.frame}}
-\code{\link{as_reporting_triangle.matrix}}
+Other reporting_triangle:
+\code{\link{as_reporting_triangle.data.frame}()},
+\code{\link{as_reporting_triangle.matrix}()},
+\code{\link{reporting_triangle-class}}
 }
+\concept{reporting_triangle}

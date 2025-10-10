@@ -30,13 +30,45 @@ dates corresponding to each row of the reporting triangle matrix (\code{data}).}
 
 \item{...}{Additional arguments passed to methods.}
 }
+\value{
+A \code{\link{reporting_triangle}} object
+}
 \description{
 This method takes a matrix in the format of a reporting triangle, with rows
 as reference dates and columns as delays and elements as incident case
 counts and creates a \code{reporting_triangle} object. See other
 methods for other data input options.
 }
-\seealso{
-\code{\link{as_reporting_triangle.data.frame}}
-\code{\link{as_reporting_triangle}}
+\examples{
+rep_tri_mat <- matrix(
+c(
+1, 3, 5, 7, 9,
+4, 7, 8, 0, NA,
+9, 10, 0, NA, NA,
+3, 0, NA, NA, NA,
+6, NA, NA, NA, NA
+),
+nrow = 5,
+byrow = TRUE
+)
+
+reference_dates <- seq(
+ from = as.Date("2025-01-01"),
+ to = as.Date("2025-01-05"),
+ by = "day"
+ )
+ max_delay <- 4
+ rep_tri <- as_reporting_triangle(
+ data = rep_tri_mat,
+ reference_dates = reference_dates,
+ max_delay = max_delay
+ )
+ rep_tri
 }
+\seealso{
+Other reporting_triangle:
+\code{\link{as_reporting_triangle}()},
+\code{\link{as_reporting_triangle.data.frame}()},
+\code{\link{reporting_triangle-class}}
+}
+\concept{reporting_triangle}

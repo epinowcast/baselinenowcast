@@ -1,5 +1,10 @@
 #' Detect the structure of a reporting triangle
 #'
+#' This function takes as input a reporting triangle matrix and returns an
+#'   integer or vector specifying the reporting structure, which will tell
+#'   \code{\link{construct_triangle}} how to create new reporting triangles of
+#'   the same reporting pattern.
+#'
 #' @inheritParams estimate_delay
 #'
 #' @returns  Integer or vector specifying the reporting structure.

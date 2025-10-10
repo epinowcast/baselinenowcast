@@ -125,7 +125,7 @@ test_that("as_reporting_triangle.data.frame() can handle different temporal gran
       max_delay = 25,
       delays_unit = "days"
     ),
-    regexp = "Data does not contain case counts for all possible reference dates."
+    regexp = "Data does not contain case counts for all possible reference dates." # nolint
   ) # nolint
   expect_identical(
     ncol(rep_tri4$reporting_triangle_matrix),

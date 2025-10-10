@@ -4,12 +4,10 @@
 \alias{assert_reporting_triangle}
 \title{Assert validity of \code{reporting_triangle} objects}
 \usage{
-assert_reporting_triangle(data, ...)
+assert_reporting_triangle(data)
 }
 \arguments{
-\item{data}{An object to check for validity.}
-
-\item{...}{Additional arguments}
+\item{data}{A \code{reporting_triangle} object to check for validity.}
 }
 \description{
 Assert validity of \code{reporting_triangle} objects

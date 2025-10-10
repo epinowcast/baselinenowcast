@@ -48,10 +48,10 @@ column which represents the date the primary event was reported.}
 \item{count}{Character string indicating the name of the column
 containing the number of incident cases on each reference and report date.}
 
-\item{...}{Additional arguments passed to methods.}
+\item{...}{Additional arguments not used.}
 }
 \value{
-A \code{reporting_triangle} object.
+A \code{\link{reporting_triangle}} object
 }
 \description{
 This method takes a data.frame containing case counts indexed by reference
@@ -66,6 +66,9 @@ as_reporting_triangle(
 )
 }
 \seealso{
-\code{\link{as_reporting_triangle}}
-\code{\link{as_reporting_triangle.matrix}}
+Other reporting_triangle:
+\code{\link{as_reporting_triangle}()},
+\code{\link{as_reporting_triangle.matrix}()},
+\code{\link{reporting_triangle-class}}
 }
+\concept{reporting_triangle}

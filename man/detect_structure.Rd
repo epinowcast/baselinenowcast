@@ -21,7 +21,10 @@ number of columns. Default is 1 (standard triangular structure). If
 there are no NAs, will return 0.
 }
 \description{
-Detect the structure of a reporting triangle
+This function takes as input a reporting trianglee matrix and returns an
+integer or vector specifying the reporting structure, which will tell
+\code{\link{construct_triangle}} how to create new reporting triangles of
+the same reporting pattern.
 }
 \examples{
 ragged_triangle <- matrix(

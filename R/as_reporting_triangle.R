@@ -8,24 +8,9 @@
 #'    Default is `"days"`.
 #' @param ... Additional arguments passed to methods.
 #
-#' @returns `reporting_triangle` class object which is a list containing:
-#'    - A matrix with which rows are reference times and columns are delays and
-#'    entries are incident cases at each reference time and delay.
-#'    - An integer indicating the maximum delay used to create the reporting
-#'    triangle
-#'    - A vector of the same length as the rows of the matrix indicating the
-#'    dates corresponding to the reference times in the rows of the reporting
-#'    triangle.
-#'    - A character string indicating the strata.
-#'    - A vector indicating the "structure" of the reporting triangle.
-#'    - A character string indicating the unit of the delays.
+#' @return  A \code{\link{reporting_triangle}} object
 #'
-#'   See the corresponding `as_reporting_triangle.<data.type>` functions for
-#'   more details on the required input formats.
-#'
-#' @seealso
-#' \code{\link{as_reporting_triangle.data.frame}}
-#' \code{\link{as_reporting_triangle.matrix}}
+#' @family reporting_triangle
 #' @export
 as_reporting_triangle <- function(data,
                                   max_delay,
@@ -60,16 +45,14 @@ as_reporting_triangle <- function(data,
 #'    column which represents the date the primary event was reported.
 #' @param count Character string indicating the name of the column
 #'    containing the number of incident cases on each reference and report date.
-#' @param ... Additional arguments passed to methods.
+#' @param ... Additional arguments not used.
 #'
 #'
-#' @returns A `reporting_triangle` object.
 #'
 #' @export
+#' @return A \code{\link{reporting_triangle}} object
 #' @method as_reporting_triangle data.frame
-#' @seealso
-#' \code{\link{as_reporting_triangle}}
-#' \code{\link{as_reporting_triangle.matrix}}
+#' @family reporting_triangle
 #' @importFrom checkmate check_integerish
 #' @importFrom stats reshape
 #' @examples
@@ -180,10 +163,34 @@ as_reporting_triangle.data.frame <- function(
 #'   dates corresponding to each row of the reporting triangle matrix (`data`).
 #' @param ... Additional arguments passed to methods.
 #' @export
+#' @return A \code{\link{reporting_triangle}} object
 #' @method as_reporting_triangle matrix
-#' @seealso
-#' \code{\link{as_reporting_triangle.data.frame}}
-#' \code{\link{as_reporting_triangle}}
+#' @family reporting_triangle
+#' @examples
+#' rep_tri_mat <- matrix(
+#'   c(
+#'     1, 3, 5, 7, 9,
+#'     4, 7, 8, 0, NA,
+#'     9, 10, 0, NA, NA,
+#'     3, 0, NA, NA, NA,
+#'     6, NA, NA, NA, NA
+#'   ),
+#'   nrow = 5,
+#'   byrow = TRUE
+#' )
+#'
+#' reference_dates <- seq(
+#'   from = as.Date("2025-01-01"),
+#'   to = as.Date("2025-01-05"),
+#'   by = "day"
+#' )
+#' max_delay <- 4
+#' rep_tri <- as_reporting_triangle(
+#'   data = rep_tri_mat,
+#'   reference_dates = reference_dates,
+#'   max_delay = max_delay
+#' )
+#' rep_tri
 as_reporting_triangle.matrix <- function(data,
                                          max_delay,
                                          strata = NULL,
@@ -263,24 +270,12 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
 
 #' Assert validity of `reporting_triangle` objects
 #'
-#' @param data An object to check for validity.
-#'
-#' @param ... Additional arguments
-#'
+#' @param data A `reporting_triangle` object to check for validity.
 #' @return NULL
-#'
-#' @export
-assert_reporting_triangle <- function(data, ...) {
-  UseMethod("assert_reporting_triangle")
-}
-
-#' S3 method for reporting triangle assertion
-#' @method assert_reporting_triangle reporting_triangle
-#' @inheritParams assert_reporting_triangle
 #' @export
 #' @importFrom checkmate assert_matrix assert_date assert_numeric
 #'    assert_character assert_choice
-assert_reporting_triangle.reporting_triangle <- function(data, ...) {
+assert_reporting_triangle <- function(data) {
   assert_matrix(data$reporting_triangle_matrix)
   assert_date(data$reference_date,
     unique = TRUE,

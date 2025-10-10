@@ -35,8 +35,14 @@ be no repeated reference dates and report dates.
 \item{strata}{Character string indicating the metadata on the strata of this
 reporting triangle. Default is \code{NULL}.}
 
-\item{delays_unit}{Character string specifying the time units to use.
-Default is \code{"days"}.}
+\item{delays_unit}{Character string specifying the temporal granularity of
+the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
+For the matrix method, this is simply passed as an item in the
+\code{reporting_triangle} object which will later be used to create a nowcast
+data.frame. For the data.frame method, this is used to compute the delay
+in terms of the specified unit, and to expand the combinations of
+reference dates and delays to the complete set of combinations in
+the reporting triangle.  Default is \code{"days"}.}
 
 \item{reference_date}{Character string indicating the name of the
 column which represents the reference date, or the date of the primary
@@ -55,8 +61,9 @@ A \code{\link{reporting_triangle}} object
 }
 \description{
 This method takes a data.frame containing case counts indexed by reference
-date and report date and creates a \code{reporting_triangle} object. See other
-methods for other data input options.
+date and report date and creates a A \code{\link{reporting_triangle}} object.
+See \code{\link{as_reporting_triangle.matrix}}for other data
+input options.
 }
 \examples{
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]

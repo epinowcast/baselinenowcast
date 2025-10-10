@@ -20,8 +20,14 @@ as_reporting_triangle(
 \item{strata}{Character string indicating the metadata on the strata of this
 reporting triangle. Default is \code{NULL}.}
 
-\item{delays_unit}{Character string specifying the time units to use.
-Default is \code{"days"}.}
+\item{delays_unit}{Character string specifying the temporal granularity of
+the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
+For the matrix method, this is simply passed as an item in the
+\code{reporting_triangle} object which will later be used to create a nowcast
+data.frame. For the data.frame method, this is used to compute the delay
+in terms of the specified unit, and to expand the combinations of
+reference dates and delays to the complete set of combinations in
+the reporting triangle.  Default is \code{"days"}.}
 
 \item{...}{Additional arguments passed to methods.}
 }

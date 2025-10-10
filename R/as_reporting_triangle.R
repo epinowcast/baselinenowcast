@@ -4,8 +4,14 @@
 #' @param max_delay Integer indicating the maximum delay.
 #' @param strata Character string indicating the metadata on the strata of this
 #'    reporting triangle. Default is `NULL`.
-#' @param delays_unit Character string specifying the time units to use.
-#'    Default is `"days"`.
+#' @param delays_unit Character string specifying the temporal granularity of
+#'    the delays. Options are `"days"`, `"weeks"`, `"months"`, `"years"`.
+#'    For the matrix method, this is simply passed as an item in the
+#'    `reporting_triangle` object which will later be used to create a nowcast
+#'    data.frame. For the data.frame method, this is used to compute the delay
+#'    in terms of the specified unit, and to expand the combinations of
+#'    reference dates and delays to the complete set of combinations in
+#'    the reporting triangle.  Default is `"days"`.
 #' @param ... Additional arguments passed to methods.
 #
 #' @return  A \code{\link{reporting_triangle}} object
@@ -23,8 +29,9 @@ as_reporting_triangle <- function(data,
 #' Create a `reporting_triangle` object from a data.frame
 #'
 #' This method takes a data.frame containing case counts indexed by reference
-#' date and report date and creates a `reporting_triangle` object. See other
-#' methods for other data input options.
+#' date and report date and creates a A \code{\link{reporting_triangle}} object.
+#' See \code{\link{as_reporting_triangle.matrix}}for other data
+#' input options.
 #'
 #' @param data Data.frame in a long tidy format with counts by reference date
 #'    and report date. Must contain the following columns:
@@ -153,8 +160,9 @@ as_reporting_triangle.data.frame <- function(
 #'
 #' This method takes a matrix in the format of a reporting triangle, with rows
 #' as reference dates and columns as delays and elements as incident case
-#' counts and creates a `reporting_triangle` object. See other
-#' methods for other data input options.
+#' counts and creates a \code{\link{reporting_triangle}} object. See other
+#' \code{\link{as_reporting_triangle.data_frame}}for other data
+#' input options.
 #'
 #' @param data Matrix of a reporting triangle where rows are reference times,
 #'    columns are delays, and entries are the incident counts.

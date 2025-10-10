@@ -22,8 +22,14 @@ columns are delays, and entries are the incident counts.}
 \item{strata}{Character string indicating the metadata on the strata of this
 reporting triangle. Default is \code{NULL}.}
 
-\item{delays_unit}{Character string specifying the time units to use.
-Default is \code{"days"}.}
+\item{delays_unit}{Character string specifying the temporal granularity of
+the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
+For the matrix method, this is simply passed as an item in the
+\code{reporting_triangle} object which will later be used to create a nowcast
+data.frame. For the data.frame method, this is used to compute the delay
+in terms of the specified unit, and to expand the combinations of
+reference dates and delays to the complete set of combinations in
+the reporting triangle.  Default is \code{"days"}.}
 
 \item{reference_dates}{Vector of character strings indicating the reference
 dates corresponding to each row of the reporting triangle matrix (\code{data}).}
@@ -36,8 +42,9 @@ A \code{\link{reporting_triangle}} object
 \description{
 This method takes a matrix in the format of a reporting triangle, with rows
 as reference dates and columns as delays and elements as incident case
-counts and creates a \code{reporting_triangle} object. See other
-methods for other data input options.
+counts and creates a \code{\link{reporting_triangle}} object. See other
+\code{\link{as_reporting_triangle.data_frame}}for other data
+input options.
 }
 \examples{
 rep_tri_mat <- matrix(

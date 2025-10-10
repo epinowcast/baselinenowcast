@@ -25,8 +25,9 @@ triangle, see \code{\link{construct_triangle}} for more details.}
 Valid options are "days", "weeks", "months", "years".}
 \item{strata}{Character string indicating the strata}
 }
-See the corresponding \verb{as_reporting_triangle.<data.type>} functions for
-more details on the required input formats.
+See the corresponding \code{\link{as_reporting_triangle.matrix}} and
+\code{\link{as_reporting_triangle.data.frame}} functions
+for more details on the required input formats to genererate the object.
 }
 
 \seealso{

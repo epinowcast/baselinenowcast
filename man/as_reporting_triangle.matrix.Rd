@@ -43,7 +43,7 @@ A \code{\link{reporting_triangle}} object
 This method takes a matrix in the format of a reporting triangle, with rows
 as reference dates and columns as delays and elements as incident case
 counts and creates a \code{\link{reporting_triangle}} object. See other
-\code{\link{as_reporting_triangle.data_frame}}for other data
+\code{\link{as_reporting_triangle.data.frame}}for other data
 input options.
 }
 \examples{

@@ -30,7 +30,7 @@ as_reporting_triangle <- function(data,
 #'
 #' This method takes a data.frame containing case counts indexed by reference
 #' date and report date and creates a A \code{\link{reporting_triangle}} object.
-#' See \code{\link{as_reporting_triangle.matrix}}for other data
+#' See \code{\link{as_reporting_triangle.matrix}} for other data
 #' input options.
 #'
 #' @param data Data.frame in a long tidy format with counts by reference date
@@ -161,7 +161,7 @@ as_reporting_triangle.data.frame <- function(
 #' This method takes a matrix in the format of a reporting triangle, with rows
 #' as reference dates and columns as delays and elements as incident case
 #' counts and creates a \code{\link{reporting_triangle}} object. See other
-#' \code{\link{as_reporting_triangle.data_frame}}for other data
+#' \code{\link{as_reporting_triangle.data.frame}}for other data
 #' input options.
 #'
 #' @param data Matrix of a reporting triangle where rows are reference times,

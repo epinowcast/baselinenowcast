@@ -150,6 +150,13 @@ test_that(".validate_triangle rejects matrix with empty columns", {
   )
 })
 
+test_that(".validate_triangle errors with appropriate name of arg", {
+  data <- NULL
+  expect_error(.validate_triangle(data),
+    regexp = "`data` argument is missing."
+  )
+})
+
 test_that(".validate_triangle errors when only 0s in LHS of NAs", {
   invalid_mat <- matrix(
     c(

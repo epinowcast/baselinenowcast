@@ -7,7 +7,8 @@ cff-version: 1.2.0
 message: 'To cite package "baselinenowcast" in publications use:'
 type: software
 license: MIT
-title: 'baselinenowcast: Baseline nowcast'
+title: 'baselinenowcast: Methods for baseline nowcasting right-truncated epidemiological
+  data'
 version: 0.0.0.1000
 doi: 10.1101/2025.08.14.25333653
 identifiers:
@@ -33,10 +34,6 @@ authors:
   given-names: Kaitlyn
   email: kaitlyn.johnson@lshtm.ac.uk
   orcid: https://orcid.org/0000-0001-8011-0012
-- family-names: Abbott
-  given-names: Sam
-  email: contact@samabbott.co.uk
-  orcid: https://orcid.org/0000-0001-8057-8037
 - family-names: Tyszka
   given-names: Emily
   email: etsyzka@umass.edu
@@ -49,6 +46,10 @@ authors:
   given-names: Sebastian
   email: sebastian.funk@lshtm.ac.uk
   orcid: https://orcid.org/0000-0002-2842-3406
+- family-names: Abbott
+  given-names: Sam
+  email: contact@samabbott.co.uk
+  orcid: https://orcid.org/0000-0001-8057-8037
 preferred-citation:
   type: article
   title: Baseline nowcasting methods for handling delays in epidemiological data
@@ -64,7 +65,7 @@ preferred-citation:
   - family-names: Nemcova
     given-names: Barbora
   - family-names: Wolffram
-    given-names: Dnaiel
+    given-names: Daniel
   - family-names: Ergas
     given-names: Rosa
   - family-names: Reich
@@ -96,18 +97,19 @@ contact:
   orcid: https://orcid.org/0000-0001-8011-0012
 references:
 - type: manual
-  title: 'baselinenowcast: Baseline nowcast from right-truncated epidemiological data'
+  title: 'baselinenowcast: Methods for baseline nowcasting right-truncated epidemiological
+    data'
   authors:
   - family-names: Johnson
     given-names: Kaitlyn E.
-  - family-names: Abbott
-    given-names: Sam
   - family-names: Tyszka
     given-names: Emily
   - family-names: Bracher
     given-names: Johannes
   - family-names: Funk
     given-names: Sebastian
+  - family-names: Abbott
+    given-names: Sam
   license: MIT
   year: '2025'
   url: https://github.com/epinowcast/baselinenowcast/

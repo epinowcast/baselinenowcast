@@ -13,8 +13,8 @@ bibentry(
 bibentry(
   bibtype = "Manual",
   license = "MIT",
-  title = "baselinenowcast: Baseline nowcast from right-truncated epidemiological data",
-  author = "Kaitlyn E. Johnson and Sam Abbott and Emily Tyszka and Johannes Bracher and Sebastian Funk",
+  title = "baselinenowcast: Methods for baseline nowcasting right-truncated epidemiological data",
+  author = "Kaitlyn E. Johnson and Emily Tyszka and Johannes Bracher and Sebastian Funk and Sam Abbott",
   year = 2025,
   url = "https://github.com/epinowcast/baselinenowcast/"
 )

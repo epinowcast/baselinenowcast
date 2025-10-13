@@ -211,7 +211,7 @@ test_that("as_reporting_triangle.data.frame() returns appropriate strata", { # n
   rep_tri <- as_reporting_triangle(
     data_as_of_df,
     max_delay = 25,
-    strata = c("age_group")
+    strata = "age_group"
   )
   exp_strata_list <- list(age_group = "00+")
 
@@ -225,15 +225,15 @@ test_that("as_reporting_triangle.data.frame() errors if multiple strata", { # no
     as_reporting_triangle(
       data_as_of_df,
       max_delay = 25,
-      strata = c("age_group")
+      strata = "age_group"
     ),
-    regexp = "Multiple values found for the specified `strata` when trying to create "
+    regexp = "Multiple values found for the specified `strata` when trying to create " # nolint
   )
   expect_error(
     as_reporting_triangle(
       data_as_of_df,
       max_delay = 25,
-      strata = c("region")
+      strata = "region"
     ),
     regexp = "`strata` specified are not columns in `data`"
   )
@@ -306,28 +306,28 @@ test_that("`as_reporting_triangle.data.frame()` inputs are of the right type", {
       data = data_as_of_df,
       reference_date = 4
     ),
-    regexp = "Assertion on 'reference_date' failed: Must be of type 'character', not 'double'."
+    regexp = "Assertion on 'reference_date' failed: Must be of type 'character', not 'double'." # nolint
   )
   expect_error(
     as_reporting_triangle(
       data = data_as_of_df,
       report_date = 4
     ),
-    regexp = "Assertion on 'report_date' failed: Must be of type 'character', not 'double'."
+    regexp = "Assertion on 'report_date' failed: Must be of type 'character', not 'double'." # nolint
   )
   expect_error(
     as_reporting_triangle(
       data = data_as_of_df,
       count = 4
     ),
-    regexp = "Assertion on 'count' failed: Must be of type 'character', not 'double'."
+    regexp = "Assertion on 'count' failed: Must be of type 'character', not 'double'." # nolint
   )
   expect_error(
     as_reporting_triangle(
       data = data_as_of_df,
       delays_unit = 4
     ),
-    regexp = "Assertion on 'delays_unit' failed: Must be of type 'character', not 'double'."
+    regexp = "Assertion on 'delays_unit' failed: Must be of type 'character', not 'double'." # nolint
   )
   expect_error(
     as_reporting_triangle(

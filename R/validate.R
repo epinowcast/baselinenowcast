@@ -409,7 +409,7 @@
                                   uncertainty_params) {
   assert_numeric(uncertainty_params)
   n_possible_horizons <- sum(is.na(rowSums(triangle)))
-  if (!n_possible_horizons == length(uncertainty_params)) {
+  if (n_possible_horizons != length(uncertainty_params)) {
     cli_abort(
       message = c("`uncertainty_params` are not the same length as the number of horizons in the reporting triangle.") # nolint
     )
@@ -435,7 +435,7 @@
   }
 
   n_delays <- ncol(triangle)
-  if (!n_delays == length(delay_pmf)) {
+  if (n_delays != length(delay_pmf)) {
     cli_abort(
       message = c("`delay_pmf` is not the same length as the number of delays in the reporting triangle.") # nolint
     )

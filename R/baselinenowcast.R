@@ -53,16 +53,17 @@ baselinenowcast <- function(data,
 #' @rdname baselinenowcast
 #' @export
 #' @method baselinenowcast reporting_triangle
-baselinenowcast.reporting_triangle <- function(data,
-                                               delay_pmf = NULL,
-                                               uncertainty_params = NULL,
-                                               scale_factor = 3,
-                                               prop_delay = 0.5,
-                                               include_draws = TRUE,
-                                               draws = 1000,
-                                               uncertainty_model = fit_by_horizon,
-                                               uncertainty_sampler = sample_nb,
-                                               ...) {
+baselinenowcast.reporting_triangle <- function(
+    data,
+    delay_pmf = NULL,
+    uncertainty_params = NULL,
+    scale_factor = 3,
+    prop_delay = 0.5,
+    include_draws = TRUE,
+    draws = 1000,
+    uncertainty_model = fit_by_horizon,
+    uncertainty_sampler = sample_nb,
+    ...) {
   tri <- data$reporting_triangle_matrix
 
   if (is.null(delay_pmf)) {
@@ -153,7 +154,7 @@ baselinenowcast.reporting_triangle <- function(data,
                           reference_dates) {
   spine_df <- data.frame(
     reference_date = reference_dates,
-    time = 1:length(reference_dates)
+    time = seq_along(reference_dates)
   )
 
   nowcast_df_dates <- merge(nowcast_df,

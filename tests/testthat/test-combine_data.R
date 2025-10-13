@@ -1,7 +1,7 @@
 data_df <- data.frame(
-  time = rep(c(1:10), 3),
+  time = rep(1:10, 3),
   draw = rep.int(1:3, times = 10),
-  pred_count = sample(1:20, 30, replace = TRUE)
+  pred_count = sample.int(20, 30, replace = TRUE)
 )
 ref_dates <- seq(from = ymd("2025-01-01"), to = ymd("2025-01-10"), by = "day")
 strata_list <- list(age_group = "00+", region = "south")

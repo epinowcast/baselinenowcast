@@ -2,8 +2,8 @@
 #'
 #' @param data Data to be nowcasted.
 #' @param max_delay Integer indicating the maximum delay.
-#' @param strata Character string indicating the metadata on the strata of this
-#'    reporting triangle. Default is `NULL`.
+#' @param strata Metadata on the strata that this reporting triangle pertains
+#'    to.
 #' @param delays_unit Character string specifying the temporal granularity of
 #'    the delays. Options are `"days"`, `"weeks"`, `"months"`, `"years"`.
 #'    For the matrix method, this is simply passed as an item in the
@@ -195,12 +195,12 @@ as_reporting_triangle.data.frame <- function(
 #'
 #' @param data Matrix of a reporting triangle where rows are reference times,
 #'    columns are delays, and entries are the incident counts.
-#' @inheritParams as_reporting_triangle
-#' @param reference_dates Vector of character strings indicating the reference
-#'   dates corresponding to each row of the reporting triangle matrix (`data`).
 #' @param strata Named list indicating where the name will correspond to
 #'   the column name and the single entry will correspond to the variable within
 #'   the column.
+#' @inheritParams as_reporting_triangle
+#' @param reference_dates Vector of character strings indicating the reference
+#'   dates corresponding to each row of the reporting triangle matrix (`data`).
 #' @param ... Additional arguments not used.
 #' @export
 #' @return A \code{\link{reporting_triangle}} object

@@ -12,9 +12,14 @@
 <url><loc>https://baselinenowcast.epinowcast.org/news/index.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/allocate_reference_times.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/apply_delay.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.data.frame.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.matrix.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/assert_reporting_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/combine_obs_with_pred.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/construct_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/construct_triangles.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/detect_structure.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-apply_mask.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-assign_allocation_from_ns.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-calc_expectation.html</loc></url>
@@ -36,6 +41,8 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_inputs_uncertainty.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_max_delay.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_multiple_inputs.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_rep_tri_args.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_rep_tri_df.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delay.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_uncertainty.html</loc></url>
@@ -46,6 +53,8 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/fit_by_horizon.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/fit_nb.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/index.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/new_reporting_triangle.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/sample_nb.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/sample_nowcast.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/sample_nowcasts.html</loc></url>

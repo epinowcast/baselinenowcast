@@ -43,8 +43,25 @@ in the output, default is TRUE.}
 \item{draws}{Integer indicating the number of probabilistic draws to include
 if \code{include_draws} is TRUE. Default is 1000.}
 
+\item{uncertainty_model}{Function that ingests a matrix of observations and a
+matrix of predictions and returns a vector that can be used to
+apply uncertainty using the same error model. Default is
+\code{fit_by_horizon} with arguments of \code{obs} matrix of observations and
+\code{pred} the matrix of predictions that fits each column (horizon)
+to a negative binomial observation model by default. The user can
+specify a different fitting model by replacing the
+\code{fit_model} argument in \code{fit_by_horizon}.}
+
+\item{uncertainty_sampler}{Function that ingests a vector or matrix of
+predictions and a vector of uncertainty parameters and generates draws
+from the observation model. Default is \code{sample_nb} which expects
+arguments \code{pred} for the vector of predictions and uncertainty parameters
+for the corresponding vector of uncertainty parameters, and draws from a
+negative binomial for each element of the vector.}
+
 \item{...}{Additional arguments passed to
-\verb{\code{\link{estimate_uncertainty}}}.}
+\code{\link{estimate_uncertainty}}
+and \code{\link{sample_nowcast}}.}
 }
 \value{
 A data.frame of class \code{nowcast_df}
@@ -59,7 +76,7 @@ rep_tri <- as_reporting_triangle(
   data = data_as_of_df,
   max_delay = 25
 )
-nowcast_df<- baselinenowcast(rep_tri)
+nowcast_df <- baselinenowcast(rep_tri)
 }
 \seealso{
 Other nowcast_df:

@@ -87,7 +87,6 @@ as_reporting_triangle.data.frame <- function(
   assert_character(count)
   assert_character(delays_unit)
   assert_choice(delays_unit, choices = c("days", "weeks", "months", "years"))
-
   # Create a named vector for renaming
   old_names <- c(reference_date, report_date, count)
   new_names <- c("reference_date", "report_date", "count")

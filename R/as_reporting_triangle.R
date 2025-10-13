@@ -231,9 +231,9 @@ as_reporting_triangle.data.frame <- function(
 #' rep_tri
 as_reporting_triangle.matrix <- function(data,
                                          max_delay,
-                                         reference_dates,
                                          strata_map = NULL,
                                          delays_unit = "days",
+                                         reference_dates,
                                          ...) {
   .validate_triangle(
     triangle = data,

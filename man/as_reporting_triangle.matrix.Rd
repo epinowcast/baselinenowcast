@@ -7,9 +7,9 @@
 \method{as_reporting_triangle}{matrix}(
   data,
   max_delay,
-  reference_dates,
   strata_map = NULL,
   delays_unit = "days",
+  reference_dates,
   ...
 )
 }
@@ -18,9 +18,6 @@
 columns are delays, and entries are the incident counts.}
 
 \item{max_delay}{Integer indicating the maximum delay.}
-
-\item{reference_dates}{Vector of character strings indicating the reference
-dates corresponding to each row of the reporting triangle matrix (\code{data}).}
 
 \item{strata_map}{Named list where each item is named by the grouping
 variable and its entry is the strata it corresponds to.}
@@ -33,6 +30,9 @@ data.frame. For the data.frame method, this is used to compute the delay
 in terms of the specified unit, and to expand the combinations of
 reference dates and delays to the complete set of combinations in
 the reporting triangle.  Default is \code{"days"}.}
+
+\item{reference_dates}{Vector of character strings indicating the reference
+dates corresponding to each row of the reporting triangle matrix (\code{data}).}
 
 \item{...}{Additional arguments not used.}
 }

@@ -15,6 +15,10 @@
     n = nrow(triangle)) {
   # Make sure the input triangle is of the correct class, and n and max_delay
   # are integers
+  if (is.null(triangle)) {
+    triangle_name <- deparse(substitute(triangle)) # nolint
+    cli_abort(message = "`{triangle_name}` argument is missing.") # nolint
+  }
   assert_class(triangle, "matrix")
   assert_integerish(max_delay)
   assert_integerish(n)
@@ -328,5 +332,102 @@
   if (!identical(dim(obs), dim(pred))) {
     cli_abort("`obs` and `pred` must have the same dimensions") # nolint
   }
+  return(NULL)
+}
+
+#' Validate the reporting triangle data.frame
+#' @description Checks for duplicate reference date report dates, missing
+#'    columns, report dates beyond the final reference date, and missing
+#'    combinations of delays and reports.
+#'
+#' @param data Data.frame in long tidy form with reference dates, report dates,
+#'   and case counts, used to create a `reporting_triangle` object.
+#' @inheritParams as_reporting_triangle.data.frame
+#'
+#' @importFrom checkmate assert_data_frame
+#' @returns NULL, invisibly
+.validate_rep_tri_df <- function(data,
+                                 delays_unit) {
+  assert_data_frame(data)
+  # Validate inputs
+  required_cols <- c(
+    "reference_date",
+    "report_date",
+    "count"
+  )
+  missing_cols <- setdiff(required_cols, names(data))
+  if (length(missing_cols) > 0) {
+    cli_abort(
+      message = c(
+        "Required columns missing from data",
+        "x" = "Missing: {.val {missing_cols}}" # nolint
+      )
+    )
+  }
+
+  # Check for distinct pairs of reference dates and report dates
+  dup_pairs <- duplicated(data[, c("reference_date", "report_date")])
+
+  if (any(dup_pairs)) {
+    cli_abort(
+      message = c(
+        "Data contains duplicate `reference_date` and `report_date` combinations", # nolint
+        "x" = "Found {sum(dup_pairs)} duplicate pair{?s}", # nolint
+        "i" = "Each reference_date and report_date combination should appear only once" # nolint
+      )
+    )
+  }
+
+  if (max(data$report_date) > max(data$reference_date)) {
+    cli_warn(
+      message = "The dataframe contains report dates beyond the final reference date." # nolint
+    )
+  }
+
+  # Check that all reference dates from min to max are available
+  all_dates_length <- length(seq(
+    from = min(data$reference_date),
+    to = max(data$reference_date),
+    by = {{ delays_unit }}
+  ))
+  if (all_dates_length != length(unique(data$reference_date))) {
+    cli_warn(
+      message =
+        "Data does not contain case counts for all possible reference dates."
+    )
+  }
+  return(NULL)
+}
+
+#' Validate each item in the reporting triangle
+#'
+#' @inheritParams new_reporting_triangle
+#' @inheritParams as_reporting_triangle.matrix
+#' @inheritParams construct_triangle
+#' @inheritParams as_reporting_triangle
+#'
+#' @returns NULL
+.validate_rep_tri_args <- function(reporting_triangle_matrix,
+                                   reference_dates,
+                                   structure,
+                                   max_delay,
+                                   delays_unit,
+                                   strata = NULL) {
+  assert_matrix(reporting_triangle_matrix)
+  assert_date(reference_dates,
+    unique = TRUE,
+    null.ok = FALSE,
+    min.len = 1,
+    len = nrow(reporting_triangle_matrix)
+  )
+  assert_numeric(structure, lower = 1)
+  assert_integerish(structure, min.len = 1)
+  assert_integerish(max_delay, min.len = 1, lower = 1)
+  assert_character(delays_unit, len = 1)
+  assert_character(strata, null.ok = TRUE, len = 1)
+  assert_character(delays_unit, len = 1)
+  assert_choice(delays_unit,
+    choices = c("days", "weeks", "months", "years")
+  )
   return(NULL)
 }

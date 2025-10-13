@@ -1,7 +1,6 @@
 #' @title Create a reporting triangle
 #'
-#' @param data Either a `reporting_triangle` object or a `reporting_triangles`
-#'    object.
+#' @param data Reporting triangle to be nowcasted
 #' @inheritParams apply_delay
 #' @inheritParams sample_prediction
 #' @inheritParams allocate_reference_times
@@ -10,31 +9,10 @@
 #'   in the output, default is TRUE.
 #' @param draws Integer indicating the number of probabilistic draws to include
 #'    if `include_draws` is TRUE. Default is 1000.
-#' @param ... Additional arguments passed to methods. For the
-#'     `reporting_triangles` method: `strata`, `strata_sharing`.
-#'
-#
-#' @returns `reporting_triangle` class object which is a list containing:
-#'    - A matrix with which rows are reference times and columns are delays and
-#'    entries are incident cases at each reference time and delay.
-#'    - An integer indicating the maximum delay used to create the reporting
-#'    triangle
-#'    - A vector of the same length as the rows of the matrix indicating the
-#'    dates corresponding to the reference times in the rows of the reporting
-#'    triangle.
-#'    - A character string indicating the strata.
-#'    - A vector indicating the "structure" of the reporting triangle.
-#'    - A character string indicating the unit of the delays.
+#' @param ... Additional arguments passed to methods.
+#' @returns `nowcast_df` Data.frame of class `nowcast_df`
+#' @family nowcast_df
 #' @export
-#'
-#' @examples
-#' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-#' rep_tri <- as_reporting_triangle(
-#'   data = data_as_of_df,
-#'   max_delay = 25
-#' )
-#' nowcast_obj <- baselinenowcast(rep_tri)
-#' @importFrom lubridate time_length days ymd
 baselinenowcast <- function(data,
                             delay_pmf = NULL,
                             uncertainty_params = NULL,
@@ -48,11 +26,22 @@ baselinenowcast <- function(data,
 
 #' @title Creating a dataframe of nowcast results from a single reporting
 #'    triangle
-#' @inheritParams estimate_uncertainty
-#' @inheritParams sample_nowcast
-#' @rdname baselinenowcast
+#'
+#' @param data `reporting_triangle` class object to be nowcasted.
+#' @param ... Additional arguments passed to
+#'    `\code{\link{estimate_uncertainty}}`.
+#' @inheritParams baselinenowcast
+#' @family nowcast_df
 #' @export
 #' @method baselinenowcast reporting_triangle
+#' @returns A data.frame of class `nowcast_df`
+#' @examples
+#' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' rep_tri <- as_reporting_triangle(
+#'   data = data_as_of_df,
+#'   max_delay = 25
+#' )
+#' nowcast_df <- baselinenowcast(rep_tri)
 baselinenowcast.reporting_triangle <- function(
     data,
     delay_pmf = NULL,
@@ -111,21 +100,13 @@ baselinenowcast.reporting_triangle <- function(
       ...
     )
   } else {
-    nowcast_df_wide <- as.data.frame(as.matrix(tri))
-    nowcast_df_wide$time <- seq_len(nrow(nowcast_df))
-
-    nowcast_df <- reshape(nowcast_df_wide,
-      direction = "long",
-      varying = setdiff(names(nowcast_df), "time"),
-      v.names = "pred_count",
-      timevar = "delay",
-      times = setdiff(names(nowcast_df), "time"),
-      idvar = "time"
+    nowcast_df <- data.frame(
+      time = seq_len(nrow(pt_nowcast)),
+      pred_count = rowSums(pt_nowcast)
     )
-    rownames(nowcast_df) <- NULL
   }
 
-  result_df <- .combine_data(nowcast_df,
+  result_df <- new_nowcast_df(nowcast_df,
     strata_list = data$strata,
     reference_dates = data$reference_date
   )
@@ -141,17 +122,19 @@ baselinenowcast.reporting_triangle <- function(
 #'
 #' @param nowcast_df Data.frame containing information for multiple draws with
 #'  columns for the reference time (`time`), the predicted counts
-#'  (`pred_count`), and the draw number (`draw`).
-#' @param strata_list Named list where each entry should be the name of the strata
-#'    and the name of the corresponding strata.
+#'  (`pred_count`), and optionally the draw number (`draw`).
+#' @param strata_list Named list where each entry should be the name of the
+#'   strata and the name of the corresponding strata.
 #' @param reference_dates Vector of reference dates corresponding to the
 #'    reference times in the `nowcast_df`.
 #'
-#' @returns Data.frame indexed by the reference dates and with columns for
-#'   each of the named elements in the named list `strata`.
-.combine_data <- function(nowcast_df,
-                          strata_list,
-                          reference_dates) {
+#' @returns An object of class `nowcast_df` which is a data.frame indexed by
+#'  the reference dates and with columns for
+#'  each of the named elements in the named list `strata`.
+#' @export
+new_nowcast_df <- function(nowcast_df,
+                           strata_list,
+                           reference_dates) {
   spine_df <- data.frame(
     reference_date = reference_dates,
     time = seq_along(reference_dates)
@@ -170,5 +153,10 @@ baselinenowcast.reporting_triangle <- function(
   }
   nowcast_df_dates$time <- NULL
 
-  return(nowcast_df_dates)
+  result <- structure(
+    data.frame(nowcast_df_dates),
+    class = c(class(nowcast_df_dates), "nowcast_df")
+  )
+
+  return(result)
 }

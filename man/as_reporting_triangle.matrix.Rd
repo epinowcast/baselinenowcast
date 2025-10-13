@@ -8,7 +8,7 @@
   data,
   max_delay,
   reference_dates,
-  strata = NULL,
+  strata_map = NULL,
   delays_unit = "days",
   ...
 )
@@ -22,9 +22,8 @@ columns are delays, and entries are the incident counts.}
 \item{reference_dates}{Vector of character strings indicating the reference
 dates corresponding to each row of the reporting triangle matrix (\code{data}).}
 
-\item{strata}{Named list indicating where the name will correspond to
-the column name and the single entry will correspond to the variable within
-the column.}
+\item{strata_map}{Named list where each item is named by the grouping
+variable and its entry is the strata it corresponds to.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.

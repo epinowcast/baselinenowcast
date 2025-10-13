@@ -7,7 +7,7 @@
 as_reporting_triangle(
   data,
   max_delay,
-  strata = NULL,
+  strata_map = NULL,
   delays_unit = "days",
   ...
 )
@@ -17,8 +17,8 @@ as_reporting_triangle(
 
 \item{max_delay}{Integer indicating the maximum delay.}
 
-\item{strata}{Metadata on the strata that this reporting triangle pertains
-to.}
+\item{strata_map}{Named list where each item is named by the grouping
+variable and its entry is the strata it corresponds to.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.

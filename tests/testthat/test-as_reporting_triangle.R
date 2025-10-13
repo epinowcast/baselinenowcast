@@ -205,7 +205,7 @@ test_that("as_reporting_triangle.data.frame() returns appropriate strata", { # n
   )
   exp_strata_list <- list(age_group = "00+", location = "south")
 
-  expect_identical(exp_strata_list, rep_tri$strata)
+  expect_identical(exp_strata_list, rep_tri$strata_map)
 
   # Just pass one
   rep_tri <- as_reporting_triangle(
@@ -215,7 +215,7 @@ test_that("as_reporting_triangle.data.frame() returns appropriate strata", { # n
   )
   exp_strata_list <- list(age_group = "00+")
 
-  expect_identical(exp_strata_list, rep_tri$strata)
+  expect_identical(exp_strata_list, rep_tri$strata_map)
 })
 
 test_that("as_reporting_triangle.data.frame() errors if multiple strata", { # nolint
@@ -361,11 +361,11 @@ test_that("assert on reporting triangle works as expected", {
   expect_error(assert_reporting_triangle(rep_tri2))
 
   rep_tri3 <- rep_tri
-  rep_tri3$strata <- NULL
+  rep_tri3$strata_map <- NULL
   expect_no_error(assert_reporting_triangle(rep_tri3))
-  rep_tri3$strata <- list(region = "south")
+  rep_tri3$strata_map <- list(region = "south")
   expect_no_error(assert_reporting_triangle(rep_tri3))
-  rep_tri3$strata <- 6
+  rep_tri3$strata_map <- 6
   expect_error(assert_reporting_triangle(rep_tri3))
 
   rep_tri4 <- rep_tri

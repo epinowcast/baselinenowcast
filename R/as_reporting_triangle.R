@@ -2,8 +2,8 @@
 #'
 #' @param data Data to be nowcasted.
 #' @param max_delay Integer indicating the maximum delay.
-#' @param strata Metadata on the strata that this reporting triangle pertains
-#'    to.
+#' @param strata_map Named list where each item is named by the grouping
+#'    variable and its entry is the strata it corresponds to.
 #' @param delays_unit Character string specifying the temporal granularity of
 #'    the delays. Options are `"days"`, `"weeks"`, `"months"`, `"years"`.
 #'    For the matrix method, this is simply passed as an item in the
@@ -20,7 +20,7 @@
 #' @export
 as_reporting_triangle <- function(data,
                                   max_delay,
-                                  strata = NULL,
+                                  strata_map = NULL,
                                   delays_unit = "days",
                                   ...) {
   UseMethod("as_reporting_triangle")
@@ -75,8 +75,9 @@ as_reporting_triangle <- function(data,
 as_reporting_triangle.data.frame <- function(
     data,
     max_delay,
-    strata = NULL,
+    strata_map = NULL,
     delays_unit = "days",
+    strata = NULL,
     reference_date = "reference_date",
     report_date = "report_date",
     count = "count",
@@ -178,7 +179,7 @@ as_reporting_triangle.data.frame <- function(
     data = rep_tri_mat,
     reference_dates = reference_dates,
     max_delay = max_delay,
-    strata = strata_list,
+    strata_map = strata_list,
     delays_unit = delays_unit
   )
   return(rep_tri)
@@ -195,9 +196,6 @@ as_reporting_triangle.data.frame <- function(
 #'
 #' @param data Matrix of a reporting triangle where rows are reference times,
 #'    columns are delays, and entries are the incident counts.
-#' @param strata Named list indicating where the name will correspond to
-#'   the column name and the single entry will correspond to the variable within
-#'   the column.
 #' @inheritParams as_reporting_triangle
 #' @param reference_dates Vector of character strings indicating the reference
 #'   dates corresponding to each row of the reporting triangle matrix (`data`).
@@ -234,7 +232,7 @@ as_reporting_triangle.data.frame <- function(
 as_reporting_triangle.matrix <- function(data,
                                          max_delay,
                                          reference_dates,
-                                         strata = NULL,
+                                         strata_map = NULL,
                                          delays_unit = "days",
                                          ...) {
   .validate_triangle(
@@ -255,7 +253,7 @@ as_reporting_triangle.matrix <- function(data,
     reporting_triangle_matrix = data,
     reference_dates = reference_dates,
     max_delay = max_delay,
-    strata = strata,
+    strata_map = strata_map,
     structure = struct,
     delays_unit = delays_unit
   )
@@ -277,7 +275,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
                                    structure,
                                    max_delay,
                                    delays_unit,
-                                   strata = NULL) {
+                                   strata_map = NULL) {
   assert_matrix(reporting_triangle_matrix)
   assert_date(reference_dates,
     unique = TRUE,
@@ -288,8 +286,8 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   assert_numeric(structure, lower = 1)
   assert_integerish(max_delay, min.len = 1)
   assert_character(delays_unit, len = 1)
-  assert_list(strata, names = "named", null.ok = TRUE)
-  if ((all(lengths(strata) != 1)) && !is.null(strata)) {
+  assert_list(strata_map, names = "named", null.ok = TRUE)
+  if ((all(lengths(strata_map) != 1)) && !is.null(strata_map)) {
     cli_abort(
       message = c("A single `reporting_triangle` object can only be made from one `strata`", # nolint
         "i" = "Check that the `strata` columns in `data` have a single set of unique entries." # nolint
@@ -308,7 +306,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
       structure = structure,
       max_delay = max_delay,
       delays_unit = delays_unit,
-      strata = strata
+      strata_map = strata_map
     ),
     class = "reporting_triangle"
   )
@@ -343,10 +341,10 @@ assert_reporting_triangle <- function(data) {
   }
   assert_integerish(data$max_delay, lower = 1)
   assert_character(data$delays_unit, len = 1)
-  assert_list(data$strata, names = "named", null.ok = TRUE)
-  if (lengths(data$strata) != 1 && !is.null(data$strata)) {
+  assert_list(data$strata_map, names = "named", null.ok = TRUE)
+  if (lengths(data$strata_map) != 1 && !is.null(data$strata_map)) {
     cli_abort(
-      message = c("Multiple values found for the specified `strata`.",
+      message = c("Multiple values found for the specified `strata_map`.",
         "i" = "Objects of class `reporting_triangle` may only have a single strata." # nolint
       )
     )

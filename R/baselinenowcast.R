@@ -29,8 +29,11 @@ baselinenowcast <- function(data,
 #'
 #' @param data `reporting_triangle` class object to be nowcasted.
 #' @param ... Additional arguments passed to
-#'    `\code{\link{estimate_uncertainty}}`.
+#'    \code{\link{estimate_uncertainty}}
+#'    and \code{\link{sample_nowcast}}.
 #' @inheritParams baselinenowcast
+#' @inheritParams estimate_uncertainty
+#' @inheritParams sample_nowcast
 #' @family nowcast_df
 #' @export
 #' @method baselinenowcast reporting_triangle

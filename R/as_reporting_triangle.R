@@ -345,7 +345,7 @@ assert_reporting_triangle <- function(data) {
   assert_integerish(data$max_delay, lower = 1)
   assert_character(data$delays_unit, len = 1)
   assert_list(data$strata, names = "named", null.ok = TRUE)
-  if (lengths(data$strata) != 1 && !is.null(strata)) {
+  if (lengths(data$strata) != 1 && !is.null(data$strata)) {
     cli_abort(
       message = c("Multiple values found for the specified `strata`.",
         "i" = "Objects of class `reporting_triangle` may only have a single strata." # nolint

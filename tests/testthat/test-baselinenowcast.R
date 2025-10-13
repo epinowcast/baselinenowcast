@@ -69,7 +69,7 @@ test_that("baselinenowcast specifying not to include draws works as expected", {
 
   expect_equal(summarised_prob_nowcast$mean_nowcast,
     pt_nowcast$pred_count,
-    tol = 2
+    tol = 0.1
   )
   expect_identical(nrow(summarised_prob_nowcast), nrow(pt_nowcast))
 })
@@ -95,7 +95,8 @@ test_that("baselinenowcast passing in a separate delay/uncertainty parameters re
 
   expect_failure(expect_equal(
     mean_dif_delay$mean_nc,
-    mean_nowcast$mean_nc
+    mean_nowcast$mean_nc,
+    tol = 0.1
   ))
 
   dif_uq <- baselinenowcast(rep_tri,
@@ -108,6 +109,7 @@ test_that("baselinenowcast passing in a separate delay/uncertainty parameters re
 
   expect_failure(expect_equal(
     sd_uq$sd_nc,
-    mean_nowcast$sd_nc
+    mean_nowcast$sd_nc,
+    tol = 0.1
   ))
 })

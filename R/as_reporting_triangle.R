@@ -107,7 +107,7 @@ as_reporting_triangle.data.frame <- function(
     }
     strata_list <- lapply(data[c(strata)], unique)
 
-    if (!lengths(strata_list) == 1) {
+    if (all(lengths(strata_list)) != 1) {
       cli_abort(
         message = "Multiple values found for the specified `strata` when trying to create a single `reporting_triangle` object." # nolint
       )
@@ -290,7 +290,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   assert_integerish(max_delay, min.len = 1)
   assert_character(delays_unit, len = 1)
   assert_list(strata, names = "named", null.ok = TRUE)
-  if (!(all(lengths(strata) == 1))) {
+  if ((all(lengths(strata) != 1)) && !is.null(strata)) {
     cli_abort(
       message = c("A single `reporting_triangle` object can only be made from one `strata`", # nolint
         "i" = "Check that the `strata` columns in `data` have a single set of unique entries." # nolint
@@ -345,7 +345,7 @@ assert_reporting_triangle <- function(data) {
   assert_integerish(data$max_delay, lower = 1)
   assert_character(data$delays_unit, len = 1)
   assert_list(data$strata, names = "named", null.ok = TRUE)
-  if (lengths(data$strata) == 1) {
+  if (lengths(data$strata) != 1 && !is.null(strata)) {
     cli_abort(
       message = c("Multiple values found for the specified `strata`.",
         "i" = "Objects of class `reporting_triangle` may only have a single strata." # nolint

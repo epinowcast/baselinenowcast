@@ -20,15 +20,25 @@ contributors](https://img.shields.io/github/contributors/epinowcast/baselinenowc
 
 ## Summary
 
-Nowcasting right-truncated epidemiological data is critical for timely public health decision-making, as reporting delays can create misleading impressions of declining trends in recent data. 
-This package provides simple nowcasting methods for practical use based on using empirical delay distributions and uncertainty from past performance. 
-It is also designed to be used as a baseline method for developers of new nowcasting methods.
-It supports standard data frame inputs with reference date, report date, and count columns, is compatible with
-‘epinowcast’ objects, and also supports direct use of reporting triangles. 
-Alongside an opinionated default workflow, it has a low-level pipe-friendly modular interface, allowing context-specific workflows. 
-It can accommodate a wide spectrum of reporting schedules, including mixed patterns of reference and reporting (daily-weekly, weekly-daily). 
-It also supports sharing delay distributions and uncertainty estimates between strata, weekday-specific delay estimation to account for weekday effects in reporting, as well as custom uncertainty models and delay estimation methods.
-For more details on the performance of the method(s) in this package applied to case studies of COVID-19 and norovirus, see our recent [pre-print](https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2).
+Nowcasting right-truncated epidemiological data is critical for timely
+public health decision-making, as reporting delays can create misleading
+impressions of declining trends in recent data. This package provides
+simple nowcasting methods for practical use based on using empirical
+delay distributions and uncertainty from past performance. It is also
+designed to be used as a baseline method for developers of new
+nowcasting methods. It supports standard data frame inputs with
+reference date, report date, and count columns, is compatible with
+‘epinowcast’ objects, and also supports direct use of reporting
+triangles. Alongside an opinionated default workflow, it has a low-level
+pipe-friendly modular interface, allowing context-specific workflows. It
+can accommodate a wide spectrum of reporting schedules, including mixed
+patterns of reference and reporting (daily-weekly, weekly-daily). It
+also supports sharing delay distributions and uncertainty estimates
+between strata, as well as custom uncertainty models and delay
+estimation methods. For more details on the performance of the method(s)
+in this package applied to case studies of COVID-19 and norovirus, see
+our recent
+[pre-print](https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2).
 
 ## Installation
 
@@ -107,7 +117,43 @@ By contributing to this project, you agree to abide by its terms.
 ## Citation
 
 If you use `baselinenowcast` in your work, please consider citing it
-with `citation("baselinenowcast")`.
+with `citation("baselinenowcast")` (or
+`print(citation("baselinenowcast"), bibtex = TRUE)`):
+
+    To cite baselinenowcast in publications please use the following.
+
+      Johnson KE, Tang M, Tyszka E, Nemcova B, Wolffram D, Ergas R, Reich
+      NG, Funk S, Mellor J, Bracher J, Abbott S (2025). "Baseline
+      nowcasting methods for handling delays in epidemiological data."
+      _medRxiv_. doi:10.1101/2025.08.14.25333653
+      <https://doi.org/10.1101/2025.08.14.25333653>,
+      <https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2>.
+
+    A BibTeX entry for LaTeX users is
+
+      @Article{,
+        title = {Baseline nowcasting methods for handling delays in epidemiological data},
+        author = {Kaitlyn E. Johnson and Maria Tang and Emily Tyszka and Barbora Nemcova and Daniel Wolffram and Rosa Ergas and Nicholas G. Reich and Sebastian Funk and Jonathon Mellor and Johannes Bracher and Sam Abbott},
+        year = {2025},
+        journal = {medRxiv},
+        doi = {10.1101/2025.08.14.25333653},
+        url = {https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2},
+      }
+
+      Johnson KE, Tyszka E, Bracher J, Funk S, Abbott S (2025).
+      _baselinenowcast: Methods for baseline nowcasting right-truncated
+      epidemiological data_.
+      <https://github.com/epinowcast/baselinenowcast/>.
+
+    A BibTeX entry for LaTeX users is
+
+      @Manual{,
+        license = {MIT},
+        title = {baselinenowcast: Methods for baseline nowcasting right-truncated epidemiological data},
+        author = {Kaitlyn E. Johnson and Emily Tyszka and Johannes Bracher and Sebastian Funk and Sam Abbott},
+        year = {2025},
+        url = {https://github.com/epinowcast/baselinenowcast/},
+      }
 
 ## Contributors
 

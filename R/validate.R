@@ -440,6 +440,8 @@
       message = c("`delay_pmf` is not the same length as the number of delays in the reporting triangle.") # nolint
     )
   }
+}
+
 #' Validate each item in the reporting triangle
 #'
 #' @inheritParams new_reporting_triangle
@@ -453,7 +455,7 @@
                                    structure,
                                    max_delay,
                                    delays_unit,
-                                   strata = NULL) {
+                                   strata_map = NULL) {
   assert_matrix(reporting_triangle_matrix)
   assert_date(reference_dates,
     unique = TRUE,
@@ -461,11 +463,17 @@
     min.len = 1,
     len = nrow(reporting_triangle_matrix)
   )
+  if (!all(lengths(strata_map) == 1)) {
+    cli_abort(
+      message = "`strata_map` must be a named list with entries of lengtth 1." # nolint
+    )
+  }
+  assert_list(strata_map, null.ok = TRUE)
   assert_numeric(structure, lower = 1)
   assert_integerish(structure, min.len = 1)
   assert_integerish(max_delay, min.len = 1, lower = 1)
   assert_character(delays_unit, len = 1)
-  assert_character(strata, null.ok = TRUE, len = 1)
+
   assert_character(delays_unit, len = 1)
   assert_choice(delays_unit,
     choices = c("days", "weeks", "months", "years")

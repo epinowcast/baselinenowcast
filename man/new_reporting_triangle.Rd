@@ -10,7 +10,7 @@ new_reporting_triangle(
   structure,
   max_delay,
   delays_unit,
-  strata_map = NULL
+  strata = NULL
 )
 }
 \arguments{
@@ -34,9 +34,6 @@ data.frame. For the data.frame method, this is used to compute the delay
 in terms of the specified unit, and to expand the combinations of
 reference dates and delays to the complete set of combinations in
 the reporting triangle.  Default is \code{"days"}.}
-
-\item{strata_map}{Named list where each item is named by the grouping
-variable and its entry is the strata it corresponds to.}
 }
 \value{
 An object of class \code{reporting_triangle}

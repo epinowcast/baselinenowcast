@@ -107,7 +107,7 @@ as_reporting_triangle.data.frame <- function(
     }
     strata_list <- lapply(data[c(strata)], unique)
 
-    if (all(lengths(strata_list)) != 1) {
+    if (!all(lengths(strata_list) == 1)) {
       cli_abort(
         message = "Multiple values found for the specified `strata` when trying to create a single `reporting_triangle` object." # nolint
       )
@@ -275,14 +275,14 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
                                    structure,
                                    max_delay,
                                    delays_unit,
-                                   strata = NULL) {
+                                   strata_map = NULL) {
   .validate_rep_tri_args(
     reporting_triangle_matrix,
     reference_dates,
     structure,
     max_delay,
     delays_unit,
-    strata
+    strata_map
   )
   result <- structure(
     list(
@@ -312,7 +312,7 @@ assert_reporting_triangle <- function(data) {
     structure = data$structure,
     max_delay = data$max_delay,
     delays_unit = data$delays_unit,
-    strata = data$strata
+    strata_map = data$strata_map
   )
 
   if (sum(data$structure) > ncol(data$reporting_triangle_matrix)) {

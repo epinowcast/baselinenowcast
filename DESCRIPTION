@@ -52,13 +52,15 @@ Depends:
 Imports:
   cli,
   checkmate,
-  stats
+  stats,
+  utils
 Suggests:
     epinowcast,
     bookdown,
     dplyr,
     tidyr,
     stringr,
+    lubridate,
     purrr,
     readr,
     ggplot2,
@@ -67,14 +69,13 @@ Suggests:
     testthat (>= 3.1.9),
     usethis,
     withr,
-    lubridate,
     knitr,
     zoo
 Encoding: UTF-8
 Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 Remotes:
   epinowcast=epinowcast/epinowcast@v0.3.0

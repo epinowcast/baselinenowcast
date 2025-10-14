@@ -2,8 +2,8 @@
   "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
   "@type": "SoftwareSourceCode",
   "identifier": "baselinenowcast",
-  "description": "Nowcasting right-truncated epidemiological data is critical for timely public health decision-making, as reporting delays can create misleading impressions of declining trends in recent data. This package provides simple nowcasting methods for practical use based on using empirical delay distributions and uncertainty from past performance. It is also designed to be used as a baseline method for developers of new nowcasting methods. It supports standard data frame inputs with reference date, report date, and count columns, is compatible with 'epinowcast' objects, and also supports direct use of reporting triangles. Alongside an opinionated default workflow, it has a low-level pipe-friendly modular interface, allowing context-specific workflows. It can accommodate a wide spectrum of reporting schedules, including mixed patterns of reference and reporting (daily-weekly, weekly-daily). It also supports sharing delay distributions and uncertainty estimates between strata, as well as custom uncertainty models and delay estimation methods.",
-  "name": "baselinenowcast: Baseline nowcast",
+  "description": "Nowcasting right-truncated epidemiological data is critical for timely public health decision-making, as reporting delays can create misleading impressions of declining trends in recent data. This package provides simple nowcasting methods for practical use based on using empirical delay distributions and uncertainty from past performance. It is also designed to be used as a baseline method for developers of new nowcasting methods. It supports standard data frame inputs with reference date, report date, and count columns, is compatible with 'epinowcast' objects, and also supports direct use of reporting triangles. Alongside an opinionated default workflow, it has a low-level pipe-friendly modular interface, allowing context-specific workflows. It can accommodate a wide spectrum of reporting schedules, including mixed patterns of reference and reporting (daily-weekly, weekly-daily). It also supports sharing delay distributions and uncertainty estimates between strata, as well as custom uncertainty models and delay estimation methods. For more details on the performance of the method(s) in this package applied to case studies of COVID-19 and norovirus, see our recent [pre-print](https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2).",
+  "name": "baselinenowcast: Methods for baseline nowcasting right-truncated epidemiological data",
   "relatedLink": "https://baselinenowcast.epinowcast.org",
   "codeRepository": "https://github.com/epinowcast/baselinenowcast/",
   "issueTracker": "https://github.com/epinowcast/baselinenowcast/issues",
@@ -25,13 +25,6 @@
     },
     {
       "@type": "Person",
-      "givenName": "Sam",
-      "familyName": "Abbott",
-      "email": "contact@samabbott.co.uk",
-      "@id": "https://orcid.org/0000-0001-8057-8037"
-    },
-    {
-      "@type": "Person",
       "givenName": "Emily",
       "familyName": "Tyszka",
       "email": "etsyzka@umass.edu",
@@ -50,6 +43,13 @@
       "familyName": "Funk",
       "email": "sebastian.funk@lshtm.ac.uk",
       "@id": "https://orcid.org/0000-0002-2842-3406"
+    },
+    {
+      "@type": "Person",
+      "givenName": "Sam",
+      "familyName": "Abbott",
+      "email": "contact@samabbott.co.uk",
+      "@id": "https://orcid.org/0000-0001-8057-8037"
     }
   ],
   "copyrightHolder": [
@@ -301,7 +301,116 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "2943.668KB",
+  "fileSize": "2945.286KB",
+  "citation": [
+    {
+      "@type": "ScholarlyArticle",
+      "datePublished": "2025",
+      "author": [
+        {
+          "@type": "Person",
+          "givenName": ["Kaitlyn", "E."],
+          "familyName": "Johnson"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Maria",
+          "familyName": "Tang"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Emily",
+          "familyName": "Tyszka"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Barbora",
+          "familyName": "Nemcova"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Daniel",
+          "familyName": "Wolffram"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Rosa",
+          "familyName": "Ergas"
+        },
+        {
+          "@type": "Person",
+          "givenName": ["Nicholas", "G."],
+          "familyName": "Reich"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Sebastian",
+          "familyName": "Funk"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Jonathon",
+          "familyName": "Mellor"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Johannes",
+          "familyName": "Bracher"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Sam",
+          "familyName": "Abbott"
+        }
+      ],
+      "name": "Baseline nowcasting methods for handling delays in epidemiological data",
+      "identifier": "10.1101/2025.08.14.25333653",
+      "url": "https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2",
+      "@id": "https://doi.org/10.1101/2025.08.14.25333653",
+      "sameAs": "https://doi.org/10.1101/2025.08.14.25333653",
+      "isPartOf": {
+        "@type": "PublicationIssue",
+        "datePublished": "2025",
+        "isPartOf": {
+          "@type": ["PublicationVolume", "Periodical"],
+          "name": "medRxiv"
+        }
+      }
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "datePublished": "2025",
+      "author": [
+        {
+          "@type": "Person",
+          "givenName": ["Kaitlyn", "E."],
+          "familyName": "Johnson"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Emily",
+          "familyName": "Tyszka"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Johannes",
+          "familyName": "Bracher"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Sebastian",
+          "familyName": "Funk"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Sam",
+          "familyName": "Abbott"
+        }
+      ],
+      "name": "baselinenowcast: Methods for baseline nowcasting right-truncated epidemiological data",
+      "url": "https://github.com/epinowcast/baselinenowcast/"
+    }
+  ],
   "releaseNotes": "https://github.com/epinowcast/baselinenowcast/blob/main/NEWS.md",
   "readme": "https://github.com/epinowcast/baselinenowcast/blob/main/README.md",
   "contIntegration": ["https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/epinowcast/baselinenowcast"],

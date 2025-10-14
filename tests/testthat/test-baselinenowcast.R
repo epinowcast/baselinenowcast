@@ -44,6 +44,14 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
     regexp = "`uncertainty_params` are not the same length"
   )
 
+  expect_warning(
+    baselinenowcast(rep_tri,
+      output_type = "point",
+      uncertainty_params = rep(1, 25)
+    ),
+    regexp = "`uncertainty_params` passed in but point estimate was specified as an output type" # nolint
+  )
+
   test_df2 <- baselinenowcast(rep_tri,
     uncertainty_params = rep(1, 25),
     draws = 100
@@ -56,7 +64,7 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
 test_that("baselinenowcast specifying not to include draws works as expected", {
   skip_if_not_installed("dplyr")
   pt_nowcast <- baselinenowcast(rep_tri,
-    include_draws = FALSE
+    output_type = "point"
   )
   expect_s3_class(pt_nowcast, "data.frame")
   expect_true(all(c("pred_count", "reference_date", "age_group")

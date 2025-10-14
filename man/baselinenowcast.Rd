@@ -6,39 +6,40 @@
 \usage{
 baselinenowcast(
   data,
-  delay_pmf = NULL,
-  uncertainty_params = NULL,
   scale_factor = 3,
   prop_delay = 0.5,
-  include_draws = TRUE,
+  output_type = "samples",
   draws = 1000,
+  uncertainty_model = fit_by_horizon,
+  uncertainty_sampler = sample_nb,
   ...
 )
 }
 \arguments{
 \item{data}{Reporting triangle to be nowcasted}
 
-\item{delay_pmf}{Vector of delays assumed to be indexed starting at the
-first delay column in \code{rep_mat_to_nowcast}}
-
-\item{uncertainty_params}{Vector of uncertainty parameters ordered from
-horizon 1 to the maximum horizon. Note that these will be reversed
-internally to match the ordering of the \code{point_nowcast_matrix} (where
-a horizon of 1 is the last entry).}
-
-\item{scale_factor}{Numeric value indicating the multiplicative factor on
-the maximum delay to be used for estimation of delay and uncertainty.
-Default is \code{3}.}
-
-\item{prop_delay}{Numeric value <1 indicating what proportion of all
-reference times in the reporting triangle to be used for delay
-estimation. Default is \code{0.5}.}
-
-\item{include_draws}{Boolean indicating whether or not to include uncertainty
-in the output, default is TRUE.}
+\item{output_type}{Character string indicating whether the output should be
+samples (\code{"samples"})from the estimate with full uncertainty or whether to
+return the point estimate (\code{"point"}). Default is \code{"samples"}.}
 
 \item{draws}{Integer indicating the number of probabilistic draws to include
-if \code{include_draws} is TRUE. Default is 1000.}
+if \code{output_type} is \code{"samples"}. Default is 1000.}
+
+\item{uncertainty_model}{Function that ingests a matrix of observations and a
+matrix of predictions and returns a vector that can be used to
+apply uncertainty using the same error model. Default is
+\code{fit_by_horizon} with arguments of \code{obs} matrix of observations and
+\code{pred} the matrix of predictions that fits each column (horizon)
+to a negative binomial observation model by default. The user can
+specify a different fitting model by replacing the
+\code{fit_model} argument in \code{fit_by_horizon}.}
+
+\item{uncertainty_sampler}{Function that ingests a vector or matrix of
+predictions and a vector of uncertainty parameters and generates draws
+from the observation model. Default is \code{sample_nb} which expects
+arguments \code{pred} for the vector of predictions and uncertainty parameters
+for the corresponding vector of uncertainty parameters, and draws from a
+negative binomial for each element of the vector.}
 
 \item{...}{Additional arguments passed to methods.}
 }

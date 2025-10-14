@@ -227,7 +227,7 @@ test_that("as_reporting_triangle.data.frame() errors if multiple strata", { # no
       max_delay = 25,
       strata = "age_group"
     ),
-    regexp = "A single `reporting_triangle` object can only be made from one `strata`" # nolint
+    regexp = "Multiple values found for the specified `strata` when trying to create a single" # nolint
   )
   expect_error(
     as_reporting_triangle(

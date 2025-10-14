@@ -1,25 +1,25 @@
 #' @title Create a reporting triangle
 #'
 #' @param data Reporting triangle to be nowcasted
-#' @inheritParams apply_delay
-#' @inheritParams sample_prediction
-#' @inheritParams allocate_reference_times
 #' @inheritParams sample_nowcast
-#' @param include_draws Boolean indicating whether or not to include uncertainty
-#'   in the output, default is TRUE.
+#' @inheritParams estimate_uncertainty
+#' @inheritParams sample_nowcast
+#' @param output_type Character string indicating whether the output should be
+#'   samples (`"samples"`)from the estimate with full uncertainty or whether to
+#'   return the point estimate (`"point"`). Default is `"samples"`.
 #' @param draws Integer indicating the number of probabilistic draws to include
-#'    if `include_draws` is TRUE. Default is 1000.
+#'    if `output_type` is `"samples"`. Default is 1000.
 #' @param ... Additional arguments passed to methods.
 #' @returns `nowcast_df` Data.frame of class `nowcast_df`
 #' @family nowcast_df
 #' @export
 baselinenowcast <- function(data,
-                            delay_pmf = NULL,
-                            uncertainty_params = NULL,
                             scale_factor = 3,
                             prop_delay = 0.5,
-                            include_draws = TRUE,
+                            output_type = "samples",
                             draws = 1000,
+                            uncertainty_model = fit_by_horizon,
+                            uncertainty_sampler = sample_nb,
                             ...) {
   UseMethod("baselinenowcast")
 }
@@ -28,6 +28,13 @@ baselinenowcast <- function(data,
 #'    triangle
 #'
 #' @param data `reporting_triangle` class object to be nowcasted.
+#' @param delay_pmf Vector of delays assumed to be indexed starting at the
+#'   first delay column in `data$reporting_triangle_matrix`. Default is to
+#'   estimate from the reporting triangle matrix in `data`,
+#'   `estimate_delay(data$reporting_triangle_matrix)`.
+#' @param uncertainty_params Vector of uncertainty parameters ordered from
+#'   horizon 1 to the maximum horizon. Default is `NULL`, which will
+#'   result in computing the uncertainty parameters from the `data`.
 #' @param ... Additional arguments passed to
 #'    \code{\link{estimate_uncertainty}}
 #'    and \code{\link{sample_nowcast}}.
@@ -45,25 +52,24 @@ baselinenowcast <- function(data,
 #'   max_delay = 25
 #' )
 #' nowcast_df <- baselinenowcast(rep_tri)
+#' nowcast_df
 baselinenowcast.reporting_triangle <- function(
     data,
-    delay_pmf = NULL,
-    uncertainty_params = NULL,
     scale_factor = 3,
     prop_delay = 0.5,
-    include_draws = TRUE,
+    output_type = "samples",
     draws = 1000,
     uncertainty_model = fit_by_horizon,
     uncertainty_sampler = sample_nb,
+    delay_pmf = estimate_delay(data$reporting_triangle_matrix),
+    uncertainty_params = NULL,
     ...) {
   tri <- data$reporting_triangle_matrix
 
-  if (is.null(delay_pmf)) {
-    delay_pmf <- estimate_delay(tri)
-  } else {
-    # check for delay pmf being the right length/format
-    .validate_delay(tri, delay_pmf)
-  }
+  assert_choice(output_type, choices = c("samples", "point"))
+  # check for delay pmf being the right length/format
+  .validate_delay(tri, delay_pmf)
+
 
   tv <- allocate_reference_times(tri,
     scale_factor = scale_factor,
@@ -71,46 +77,47 @@ baselinenowcast.reporting_triangle <- function(
   )
   pt_nowcast <- apply_delay(tri, delay_pmf)
 
-  if (is.null(uncertainty_params)) {
-    trunc_rep_tris <- truncate_triangles(tri, n = tv$n_retrospective_nowcasts)
-    retro_rep_tris <- construct_triangles(trunc_rep_tris,
-      structure = data$structure
-    )
-    pt_nowcasts <- fill_triangles(retro_rep_tris,
-      n = tv$n_history_delay,
-      max_delay = data$max_delay
-    )
-    uncertainty_params <- estimate_uncertainty(
-      pt_nowcasts,
-      trunc_rep_tris,
-      retro_rep_tris,
-      n = tv$n_retrospective_nowcasts,
-      uncertainty_model = uncertainty_model,
-      ...
-    )
-  } else {
-    # check for uncertainty params being the right length/format
-    .validate_uncertainty(tri, uncertainty_params)
-  }
-
-  if (include_draws) {
-    nowcast_df <- sample_nowcasts(
-      pt_nowcast,
-      tri,
-      uncertainty_params,
-      draws,
-      uncertainty_sampler = uncertainty_sampler,
-      ...
-    )
-  } else {
+  if (output_type == "point") {
     nowcast_df <- data.frame(
       time = seq_len(nrow(pt_nowcast)),
       pred_count = rowSums(pt_nowcast)
     )
+    if (!is.null(uncertainty_params)) {
+      cli_warn(
+        message =
+          "`uncertainty_params` passed in but point estimate was specified as an output type. `uncertainty params` will not be used."
+      ) # nolint
+    }
+  } else { # estimate uncertainty or sample from passed in uncertainty
+    if (is.null(uncertainty_params)) {
+      nowcast_df <- estimate_and_apply_uncertainty(
+        point_nowcast_matrix = pt_nowcast,
+        reporting_triangle = tri,
+        n_history_delay = tv$n_history_delay,
+        n_retrospective_nowcast = tv$n_retrospective_nowcasts,
+        max_delay = ncol(tri) - 1,
+        draws = draws,
+        uncertainty_model = uncertainty_model,
+        uncertainty_sampler = uncertainty_sampler,
+        ...
+      )
+    } else { # uncertainty parameters passed in and not a point estimate
+      # check for uncertainty params being the right length/format
+      .validate_uncertainty(tri, uncertainty_params)
+      nowcast_df <- sample_nowcasts(
+        point_nowcast_matrix = pt_nowcast,
+        reporting_triangle = tri,
+        uncertainty_params = uncertainty_params,
+        draws = draws,
+        uncertainty_sampler = uncertainty_sampler,
+        ...
+      )
+    }
   }
 
+
   result_df <- new_nowcast_df(nowcast_df,
-    strata_list = data$strata,
+    strata_map = data$strata_map,
     reference_dates = data$reference_date
   )
 
@@ -126,8 +133,7 @@ baselinenowcast.reporting_triangle <- function(
 #' @param nowcast_df Data.frame containing information for multiple draws with
 #'  columns for the reference time (`time`), the predicted counts
 #'  (`pred_count`), and optionally the draw number (`draw`).
-#' @param strata_list Named list where each entry should be the name of the
-#'   strata and the name of the corresponding strata.
+#' @inheritParams as_reporting_triangle
 #' @param reference_dates Vector of reference dates corresponding to the
 #'    reference times in the `nowcast_df`.
 #'
@@ -136,7 +142,7 @@ baselinenowcast.reporting_triangle <- function(
 #'  each of the named elements in the named list `strata`.
 #' @export
 new_nowcast_df <- function(nowcast_df,
-                           strata_list,
+                           strata_map,
                            reference_dates) {
   spine_df <- data.frame(
     reference_date = reference_dates,
@@ -149,9 +155,9 @@ new_nowcast_df <- function(nowcast_df,
     all.x = TRUE
   )
 
-  if (!is.null(strata_list)) {
-    for (strata_name in names(strata_list)) {
-      nowcast_df_dates[[strata_name]] <- strata_list[[strata_name]]
+  if (!is.null(strata_map)) {
+    for (strata_name in names(strata_map)) {
+      nowcast_df_dates[[strata_name]] <- strata_map[[strata_name]]
     }
   }
   nowcast_df_dates$time <- NULL

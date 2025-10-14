@@ -4,15 +4,15 @@
 \alias{new_nowcast_df}
 \title{Combine data from a nowcast dataframe, strata, and reference dates}
 \usage{
-new_nowcast_df(nowcast_df, strata_list, reference_dates)
+new_nowcast_df(nowcast_df, strata_map, reference_dates)
 }
 \arguments{
 \item{nowcast_df}{Data.frame containing information for multiple draws with
 columns for the reference time (\code{time}), the predicted counts
 (\code{pred_count}), and optionally the draw number (\code{draw}).}
 
-\item{strata_list}{Named list where each entry should be the name of the
-strata and the name of the corresponding strata.}
+\item{strata_map}{Named list where each item is named by the grouping
+variable and its entry is the strata it corresponds to.}
 
 \item{reference_dates}{Vector of reference dates corresponding to the
 reference times in the \code{nowcast_df}.}

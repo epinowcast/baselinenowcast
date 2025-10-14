@@ -11,8 +11,8 @@ new_nowcast_df(nowcast_df, strata_map, reference_dates)
 columns for the reference time (\code{time}), the predicted counts
 (\code{pred_count}), and optionally the draw number (\code{draw}).}
 
-\item{strata_map}{Named list where each item is named by the grouping
-variable and its entry is the strata it corresponds to.}
+\item{strata_map}{Named list where each name is the grouping
+variable (e.g. \code{age_group}) and each value is the stratum (e.g. "0-18").}
 
 \item{reference_dates}{Vector of reference dates corresponding to the
 reference times in the \code{nowcast_df}.}

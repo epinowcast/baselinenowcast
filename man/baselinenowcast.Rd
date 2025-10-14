@@ -2,7 +2,7 @@
 % Please edit documentation in R/baselinenowcast.R
 \name{baselinenowcast}
 \alias{baselinenowcast}
-\title{Create a reporting triangle}
+\title{Generate a nowcast from a reporting triangle}
 \usage{
 baselinenowcast(
   data,
@@ -47,7 +47,7 @@ negative binomial for each element of the vector.}
 \code{nowcast_df} Data.frame of class \code{nowcast_df}
 }
 \description{
-Create a reporting triangle
+Generate a nowcast from a reporting triangle
 }
 \seealso{
 Other nowcast_df:

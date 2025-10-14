@@ -1,4 +1,4 @@
-#' @title Create a reporting triangle
+#' @title Generate a nowcast from a reporting triangle
 #'
 #' @param data Reporting triangle to be nowcasted
 #' @inheritParams sample_nowcast
@@ -118,9 +118,8 @@ baselinenowcast.reporting_triangle <- function(
 
   result_df <- new_nowcast_df(nowcast_df,
     strata_map = data$strata_map,
-    reference_dates = data$reference_date
+    reference_dates = data$reference_dates
   )
-
 
   return(result_df)
 }
@@ -164,7 +163,7 @@ new_nowcast_df <- function(nowcast_df,
 
   result <- structure(
     data.frame(nowcast_df_dates),
-    class = c(class(nowcast_df_dates), "nowcast_df")
+    class = c("nowcast_df", class(nowcast_df_dates))
   )
 
   return(result)

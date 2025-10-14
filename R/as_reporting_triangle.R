@@ -2,8 +2,8 @@
 #'
 #' @param data Data to be nowcasted.
 #' @param max_delay Integer indicating the maximum delay.
-#' @param strata_map Named list where each item is named by the grouping
-#'    variable and its entry is the strata it corresponds to.
+#' @param strata_map Named list where each name is the grouping
+#'    variable (e.g. `age_group`) and each value is the stratum (e.g. "0-18").
 #' @param delays_unit Character string specifying the temporal granularity of
 #'    the delays. Options are `"days"`, `"weeks"`, `"months"`, `"years"`.
 #'    For the matrix method, this is simply passed as an item in the
@@ -97,7 +97,11 @@ as_reporting_triangle.data.frame <- function(
   )]
 
   .validate_rep_tri_df(data, delays_unit)
-
+  if (!is.null(strata_map) && !is.null(strata)) {
+    cli_abort(
+      message = "Cannot specify both `strata_map` and `strata`. Use `strata` to derive `strata_map` from the columns in `data`."
+    )
+  }
   # Create the named list of strata
   if (!is.null(strata)) {
     if (!all(strata %in% colnames(data))) {
@@ -105,15 +109,12 @@ as_reporting_triangle.data.frame <- function(
         message = "`strata` specified are not columns in `data`."
       )
     }
-    strata_list <- lapply(data[c(strata)], unique)
-
-    if (!all(lengths(strata_list) == 1)) {
+    strata_map <- lapply(data[c(strata)], unique)
+    if (!all(lengths(strata_map) == 1)) {
       cli_abort(
         message = "Multiple values found for the specified `strata` when trying to create a single `reporting_triangle` object." # nolint
       )
     }
-  } else {
-    strata_list <- NULL
   }
 
 
@@ -179,7 +180,7 @@ as_reporting_triangle.data.frame <- function(
     data = rep_tri_mat,
     reference_dates = reference_dates,
     max_delay = max_delay,
-    strata_map = strata_list,
+    strata_map = strata_map,
     delays_unit = delays_unit
   )
   return(rep_tri)

@@ -11,7 +11,7 @@ strata_list <- list(age_group = "00+", region = "south")
 test_that("new_nowcast_df() creates a dataframe from a set of dates and named list of strata", { # nolint
   new_df <- new_nowcast_df(data_df,
     reference_dates = ref_dates,
-    strata_list = strata_list
+    strata_map = strata_list
   )
 
   expected_cols <- c("age_group", "region")
@@ -32,7 +32,7 @@ test_that("new_nowcast_df() creates a dataframe from a set of dates and named li
 
   new_df_ns <- new_nowcast_df(data_df,
     reference_dates = ref_dates,
-    strata_list = NULL
+    strata_map = NULL
   )
   expected_cols <- c("draw", "pred_count", "reference_date")
   expect_identical(expected_cols, colnames(new_df_ns))

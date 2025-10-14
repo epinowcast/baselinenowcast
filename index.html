@@ -88,7 +88,7 @@
 <div class="section level2">
 <h2 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
 </h2>
-<p>Nowcasting right-truncated epidemiological data is critical for timely public health decision-making, as reporting delays can create misleading impressions of declining trends in recent data. This package provides simple nowcasting methods for practical use based on using empirical delay distributions and uncertainty from past performance. It is also designed to be used as a baseline method for developers of new nowcasting methods. It supports standard data frame inputs with reference date, report date, and count columns, is compatible with ‘epinowcast’ objects, and also supports direct use of reporting triangles. Alongside an opinionated default workflow, it has a low-level pipe-friendly modular interface, allowing context-specific workflows. It can accommodate a wide spectrum of reporting schedules, including mixed patterns of reference and reporting (daily-weekly, weekly-daily). It also supports sharing delay distributions and uncertainty estimates between strata, weekday-specific delay estimation to account for weekday effects in reporting, as well as custom uncertainty models and delay estimation methods. For more details on the performance of the method(s) in this package applied to case studies of COVID-19 and norovirus, see our recent <a href="https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2" class="external-link">pre-print</a>.</p>
+<p>Nowcasting right-truncated epidemiological data is critical for timely public health decision-making, as reporting delays can create misleading impressions of declining trends in recent data. This package provides simple nowcasting methods for practical use based on using empirical delay distributions and uncertainty from past performance. It is also designed to be used as a baseline method for developers of new nowcasting methods. It supports standard data frame inputs with reference date, report date, and count columns, is compatible with ‘epinowcast’ objects, and also supports direct use of reporting triangles. Alongside an opinionated default workflow, it has a low-level pipe-friendly modular interface, allowing context-specific workflows. It can accommodate a wide spectrum of reporting schedules, including mixed patterns of reference and reporting (daily-weekly, weekly-daily). It also supports sharing delay distributions and uncertainty estimates between strata, as well as custom uncertainty models and delay estimation methods. For more details on the performance of the method(s) in this package applied to case studies of COVID-19 and norovirus, see our recent <a href="https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2" class="external-link">pre-print</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -130,7 +130,41 @@ Community Forum
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p>If you use <code>baselinenowcast</code> in your work, please consider citing it with <code>citation("baselinenowcast")</code>.</p>
+<p>If you use <code>baselinenowcast</code> in your work, please consider citing it with <code>citation("baselinenowcast")</code> (or <code>print(citation("baselinenowcast"), bibtex = TRUE)</code>):</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>To cite baselinenowcast <span class="cf">in</span> publications please use the following.</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  Johnson KE, Tang M, Tyszka E, Nemcova B, Wolffram D, Ergas R, Reich</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  NG, Funk S, Mellor J, Bracher J, Abbott <span class="fu">S</span> (<span class="dv">2025</span>). <span class="st">"Baseline</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="st">  nowcasting methods for handling delays in epidemiological data."</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  _medRxiv_. doi<span class="sc">:</span><span class="fl">10.1101</span><span class="sc">/</span><span class="dv">2025</span>.<span class="dv">08</span>.<span class="fl">14.25333653</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>doi.org<span class="sc">/</span><span class="fl">10.1101</span><span class="sc">/</span><span class="dv">2025</span>.<span class="dv">08</span>.<span class="fl">14.25333653</span><span class="sc">&gt;</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>www.medrxiv.org<span class="sc">/</span>content<span class="sc">/</span><span class="fl">10.1101</span><span class="sc">/</span><span class="dv">2025</span>.<span class="dv">08</span>.<span class="fl">14.25333653</span>v2<span class="sc">&gt;</span>.</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>A BibTeX entry <span class="cf">for</span> LaTeX users is</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="sc">@</span>Article{,</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>    title <span class="ot">=</span> {Baseline nowcasting methods <span class="cf">for</span> handling delays <span class="cf">in</span> epidemiological data},</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>    author <span class="ot">=</span> {Kaitlyn E. Johnson and Maria Tang and Emily Tyszka and Barbora Nemcova and Daniel Wolffram and Rosa Ergas and Nicholas G. Reich and Sebastian Funk and Jonathon Mellor and Johannes Bracher and Sam Abbott},</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>    year <span class="ot">=</span> {<span class="dv">2025</span>},</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>    journal <span class="ot">=</span> {medRxiv},</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>    doi <span class="ot">=</span> {<span class="fl">10.1101</span><span class="sc">/</span><span class="dv">2025</span>.<span class="dv">08</span>.<span class="fl">14.25333653</span>},</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>    url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>www.medrxiv.org<span class="sc">/</span>content<span class="sc">/</span><span class="fl">10.1101</span><span class="sc">/</span><span class="dv">2025</span>.<span class="dv">08</span>.<span class="fl">14.25333653</span>v2},</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>  }</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>  Johnson KE, Tyszka E, Bracher J, Funk S, Abbott <span class="fu">S</span> (<span class="dv">2025</span>).</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>  _baselinenowcast<span class="sc">:</span> Methods <span class="cf">for</span> baseline nowcasting right<span class="sc">-</span>truncated</span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>  epidemiological data_.</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>  <span class="sc">&lt;</span>https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>epinowcast<span class="sc">/</span>baselinenowcast<span class="sc">/</span><span class="er">&gt;</span>.</span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>A BibTeX entry <span class="cf">for</span> LaTeX users is</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>  <span class="sc">@</span>Manual{,</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>    license <span class="ot">=</span> {MIT},</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>    title <span class="ot">=</span> {baselinenowcast<span class="sc">:</span> Methods <span class="cf">for</span> baseline nowcasting right<span class="sc">-</span>truncated epidemiological data},</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>    author <span class="ot">=</span> {Kaitlyn E. Johnson and Emily Tyszka and Johannes Bracher and Sebastian Funk and Sam Abbott},</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>    year <span class="ot">=</span> {<span class="dv">2025</span>},</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>    url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>epinowcast<span class="sc">/</span>baselinenowcast<span class="sc">/</span>},</span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>  }</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="contributors">Contributors<a class="anchor" aria-label="anchor" href="#contributors"></a>

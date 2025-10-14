@@ -1,6 +1,7 @@
 # baselinenowcast 0.0.0.1000
 
 -   Add a `baselinenowcast.reporting_triangle()` method which ingests a `reporting_triangle` object and produces a `nowcast_df` object which is a data.frame with nowcasts and associated metadata.
+-   Include the pre-print as well as the package in the citation.
 -   Add a `as_reporting_triangle()` S3 method which ingests a data.frame or matrix and returns a `reporting_triangle` object, which will be used as an input to the eventual `baselinenowcast()` function.
 -   Add a vignette which demonstrates how to pre-process for nowcasting syndromic surveillance system data using the U.S. National Syndromic Surveillance Program (NSSP) data as a case study, and then use `baselinenowcast` to nowcast cases of a specific syndromic surveillance definition.
 -   Add intermediate-level grouping functions to generate a point nowcast from a reporting triangle and to take a point nowcast and estimate and apply uncertainty.

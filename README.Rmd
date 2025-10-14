@@ -73,7 +73,13 @@ Please note that the `baselinenowcast` project is released with a [Contributor C
 
 ## Citation
 
-If you use `baselinenowcast` in your work, please consider citing it with `citation("baselinenowcast")`.
+If you use `baselinenowcast` in your work, please consider citing it with `citation("baselinenowcast")` (or `print(citation("baselinenowcast"), bibtex = TRUE)`):
+
+```{r, echo = FALSE}
+print(citation("baselinenowcast"), bibtex = TRUE)
+```
+
+
 
 ## Contributors
 

@@ -440,5 +440,35 @@
       message = c("`delay_pmf` is not the same length as the number of delays in the reporting triangle.") # nolint
     )
   }
+#' Validate each item in the reporting triangle
+#'
+#' @inheritParams new_reporting_triangle
+#' @inheritParams as_reporting_triangle.matrix
+#' @inheritParams construct_triangle
+#' @inheritParams as_reporting_triangle
+#'
+#' @returns NULL
+.validate_rep_tri_args <- function(reporting_triangle_matrix,
+                                   reference_dates,
+                                   structure,
+                                   max_delay,
+                                   delays_unit,
+                                   strata = NULL) {
+  assert_matrix(reporting_triangle_matrix)
+  assert_date(reference_dates,
+    unique = TRUE,
+    null.ok = FALSE,
+    min.len = 1,
+    len = nrow(reporting_triangle_matrix)
+  )
+  assert_numeric(structure, lower = 1)
+  assert_integerish(structure, min.len = 1)
+  assert_integerish(max_delay, min.len = 1, lower = 1)
+  assert_character(delays_unit, len = 1)
+  assert_character(strata, null.ok = TRUE, len = 1)
+  assert_character(delays_unit, len = 1)
+  assert_choice(delays_unit,
+    choices = c("days", "weeks", "months", "years")
+  )
   return(NULL)
 }

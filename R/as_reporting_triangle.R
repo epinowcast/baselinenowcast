@@ -275,30 +275,15 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
                                    structure,
                                    max_delay,
                                    delays_unit,
-                                   strata_map = NULL) {
-  assert_matrix(reporting_triangle_matrix)
-  assert_date(reference_dates,
-    unique = TRUE,
-    null.ok = FALSE,
-    min.len = 1,
-    len = nrow(reporting_triangle_matrix)
+                                   strata = NULL) {
+  .validate_rep_tri_args(
+    reporting_triangle_matrix,
+    reference_dates,
+    structure,
+    max_delay,
+    delays_unit,
+    strata
   )
-  assert_numeric(structure, lower = 1)
-  assert_integerish(max_delay, min.len = 1)
-  assert_character(delays_unit, len = 1)
-  assert_list(strata_map, names = "named", null.ok = TRUE)
-  if ((all(lengths(strata_map) != 1)) && !is.null(strata_map)) {
-    cli_abort(
-      message = c("A single `reporting_triangle` object can only be made from one `strata`", # nolint
-        "i" = "Check that the `strata` columns in `data` have a single set of unique entries." # nolint
-      )
-    )
-  }
-  assert_character(delays_unit, len = 1)
-  assert_choice(delays_unit,
-    choices = c("days", "weeks", "months", "years")
-  )
-
   result <- structure(
     list(
       reporting_triangle_matrix = reporting_triangle_matrix,
@@ -321,16 +306,15 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
 #' @importFrom checkmate assert_matrix assert_date assert_numeric
 #'    assert_character assert_choice assert_list
 assert_reporting_triangle <- function(data) {
-  assert_matrix(data$reporting_triangle_matrix)
-  assert_date(data$reference_date,
-    unique = TRUE,
-    null.ok = FALSE,
-    min.len = 1,
-    len = nrow(data$reporting_triangle_matrix)
+  .validate_rep_tri_args(
+    reporting_triangle_matrix = data$reporting_triangle_matrix,
+    reference_dates = data$reference_dates,
+    structure = data$structure,
+    max_delay = data$max_delay,
+    delays_unit = data$delays_unit,
+    strata = data$strata
   )
-  assert_integerish(data$structure,
-    min.len = 1
-  )
+
   if (sum(data$structure) > ncol(data$reporting_triangle_matrix)) {
     cli_abort(message = c(
       message = c(
@@ -339,19 +323,6 @@ assert_reporting_triangle <- function(data) {
       )
     ))
   }
-  assert_integerish(data$max_delay, lower = 1)
-  assert_character(data$delays_unit, len = 1)
-  assert_list(data$strata_map, names = "named", null.ok = TRUE)
-  if (lengths(data$strata_map) != 1 && !is.null(data$strata_map)) {
-    cli_abort(
-      message = c("Multiple values found for the specified `strata_map`.",
-        "i" = "Objects of class `reporting_triangle` may only have a single strata." # nolint
-      )
-    )
-  }
-  assert_character(data$delays_unit, len = 1)
-  assert_choice(data$delays_unit,
-    choices = c("days", "weeks", "months", "years")
-  )
+
   return(NULL)
 }

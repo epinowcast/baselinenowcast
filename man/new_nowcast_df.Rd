@@ -18,9 +18,7 @@ variable (e.g. \code{age_group}) and each value is the stratum (e.g. "0-18").}
 reference times in the \code{nowcast_df}.}
 }
 \value{
-An object of class \code{nowcast_df} which is a data.frame indexed by
-the reference dates and with columns for
-each of the named elements in the named list \code{strata}.
+An object of class \code{\link{nowcast_df}}
 }
 \description{
 Combines data from a nowcast dataframe, a named list of the

@@ -11,7 +11,7 @@
 #' @param draws Integer indicating the number of probabilistic draws to include
 #'    if `output_type` is `"samples"`. Default is 1000.
 #' @param ... Additional arguments passed to methods.
-#' @returns `nowcast_df` Data.frame of class `nowcast_df`
+#' @returns Data.frame of class \code{\link{nowcast_df}}
 #' @family nowcast_df
 #' @export
 baselinenowcast <- function(data,
@@ -46,7 +46,7 @@ baselinenowcast <- function(data,
 #' @family nowcast_df
 #' @export
 #' @method baselinenowcast reporting_triangle
-#' @returns A data.frame of class `nowcast_df`
+#' @returns Data.frame of class \code{\link{nowcast_df}}
 #' @examples
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 #' rep_tri <- as_reporting_triangle(
@@ -69,6 +69,7 @@ baselinenowcast.reporting_triangle <- function(
   tri <- data$reporting_triangle_matrix
 
   assert_choice(output_type, choices = c("samples", "point"))
+  assert_integerish(draws, null.ok = TRUE)
   # check for delay pmf being the right length/format
   .validate_delay(tri, delay_pmf)
 
@@ -137,9 +138,7 @@ baselinenowcast.reporting_triangle <- function(
 #' @param reference_dates Vector of reference dates corresponding to the
 #'    reference times in the `nowcast_df`.
 #'
-#' @returns An object of class `nowcast_df` which is a data.frame indexed by
-#'  the reference dates and with columns for
-#'  each of the named elements in the named list `strata`.
+#' @returns An object of class \code{\link{nowcast_df}}
 #' @export
 new_nowcast_df <- function(nowcast_df,
                            strata_map,
@@ -168,4 +167,50 @@ new_nowcast_df <- function(nowcast_df,
   )
 
   return(result)
+}
+
+#' Assert validity of `nowcast_df` objects
+#'
+#' @param data A \code{\link{nowcast_df}} object to check for validity.
+#' @return NULL
+#' @export
+assert_nowcast_df <- function(data) {
+  assert_data_frame(data)
+
+  required_cols <- c("reference_date", "pred_count")
+  missing_cols <- setdiff(required_cols, names(data))
+  if (length(missing_cols) > 0) {
+    cli_abort(
+      message = c(
+        "Required columns missing from data",
+        "x" = "Missing: {.val {missing_cols}}" # nolint
+      )
+    )
+  }
+
+  assert_date(data$reference_date)
+  # Check for duplicated reference dates
+  cols_to_check <- names(data)[names(data) %in% c("reference_date", "draw")]
+
+  dups <- duplicated(data[, c(cols_to_check)])
+  if (any(dups)) {
+    cli_abort(
+      message = c(
+        "Data contains multiple `reference_date`s", # nolint
+        "x" = "Found {sum(dups)} duplicate `reference_date`{?s}", # nolint
+        "i" = "`nowcast_df` objects should only contain a single estimate for each reference date." # nolint
+      )
+    )
+  }
+
+  other_cols <- setdiff(names(data), c(required_cols, "draw"))
+  strata_map <- lapply(data[other_cols], unique)
+  if (!all(lengths(strata_map) == 1)) {
+    cli_abort(
+      message = c("Multiple values found in the metadata columns in `nowcast_df`."), # nolint
+      "i" = "`nowcast_df` should only contain a single nowcast." # nolint
+    )
+  }
+
+  return(NULL)
 }

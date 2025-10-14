@@ -99,7 +99,7 @@ as_reporting_triangle.data.frame <- function(
   .validate_rep_tri_df(data, delays_unit)
   if (!is.null(strata_map) && !is.null(strata)) {
     cli_abort(
-      message = "Cannot specify both `strata_map` and `strata`. Use `strata` to derive `strata_map` from the columns in `data`."
+      message = "Cannot specify both `strata_map` and `strata`. Use `strata` to derive `strata_map` from the columns in `data`." # nolint
     )
   }
   # Create the named list of strata
@@ -268,7 +268,7 @@ as_reporting_triangle.matrix <- function(data,
 #' @inheritParams construct_triangle
 #' @inheritParams as_reporting_triangle
 #'
-#' @returns An object of class `reporting_triangle`
+#' @returns An object of class \code{\link{reporting_triangle}]
 #'
 #' @export
 new_reporting_triangle <- function(reporting_triangle_matrix,
@@ -301,7 +301,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
 
 #' Assert validity of `reporting_triangle` objects
 #'
-#' @param data A `reporting_triangle` object to check for validity.
+#' @param data A \code{\link{reporting_triangle}} object to check for validity.
 #' @return NULL
 #' @export
 #' @importFrom checkmate assert_matrix assert_date assert_numeric

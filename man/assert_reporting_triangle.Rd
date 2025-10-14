@@ -7,7 +7,7 @@
 assert_reporting_triangle(data)
 }
 \arguments{
-\item{data}{A \code{reporting_triangle} object to check for validity.}
+\item{data}{A \code{\link{reporting_triangle}} object to check for validity.}
 }
 \description{
 Assert validity of \code{reporting_triangle} objects

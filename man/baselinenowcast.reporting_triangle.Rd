@@ -66,7 +66,7 @@ result in computing the uncertainty parameters from the \code{data}.}
 and \code{\link{sample_nowcast}}.}
 }
 \value{
-A data.frame of class \code{nowcast_df}
+Data.frame of class \code{\link{nowcast_df}}
 }
 \description{
 Creating a dataframe of nowcast results from a single reporting
@@ -83,6 +83,7 @@ nowcast_df
 }
 \seealso{
 Other nowcast_df:
-\code{\link{baselinenowcast}()}
+\code{\link{baselinenowcast}()},
+\code{\link{nowcast_df-class}}
 }
 \concept{nowcast_df}

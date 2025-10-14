@@ -52,13 +52,14 @@ negative binomial for each element of the vector.}
 \item{...}{Additional arguments passed to methods.}
 }
 \value{
-\code{nowcast_df} Data.frame of class \code{nowcast_df}
+Data.frame of class \code{\link{nowcast_df}}
 }
 \description{
 Generate a nowcast from a reporting triangle
 }
 \seealso{
 Other nowcast_df:
-\code{\link{baselinenowcast.reporting_triangle}()}
+\code{\link{baselinenowcast.reporting_triangle}()},
+\code{\link{nowcast_df-class}}
 }
 \concept{nowcast_df}

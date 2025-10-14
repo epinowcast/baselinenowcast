@@ -4,6 +4,7 @@
 #' @inheritParams sample_nowcast
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast
+#' @inheritParams allocate_reference_times
 #' @param output_type Character string indicating whether the output should be
 #'   samples (`"samples"`)from the estimate with full uncertainty or whether to
 #'   return the point estimate (`"point"`). Default is `"samples"`.
@@ -41,6 +42,7 @@ baselinenowcast <- function(data,
 #' @inheritParams baselinenowcast
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast
+#' @inheritParams allocate_reference_times
 #' @family nowcast_df
 #' @export
 #' @method baselinenowcast reporting_triangle
@@ -85,34 +87,33 @@ baselinenowcast.reporting_triangle <- function(
     if (!is.null(uncertainty_params)) {
       cli_warn(
         message =
-          "`uncertainty_params` passed in but point estimate was specified as an output type. `uncertainty params` will not be used."
-      ) # nolint
-    }
-  } else { # estimate uncertainty or sample from passed in uncertainty
-    if (is.null(uncertainty_params)) {
-      nowcast_df <- estimate_and_apply_uncertainty(
-        point_nowcast_matrix = pt_nowcast,
-        reporting_triangle = tri,
-        n_history_delay = tv$n_history_delay,
-        n_retrospective_nowcast = tv$n_retrospective_nowcasts,
-        max_delay = ncol(tri) - 1,
-        draws = draws,
-        uncertainty_model = uncertainty_model,
-        uncertainty_sampler = uncertainty_sampler,
-        ...
-      )
-    } else { # uncertainty parameters passed in and not a point estimate
-      # check for uncertainty params being the right length/format
-      .validate_uncertainty(tri, uncertainty_params)
-      nowcast_df <- sample_nowcasts(
-        point_nowcast_matrix = pt_nowcast,
-        reporting_triangle = tri,
-        uncertainty_params = uncertainty_params,
-        draws = draws,
-        uncertainty_sampler = uncertainty_sampler,
-        ...
+          "`uncertainty_params` passed in but point estimate was specified as an output type. `uncertainty params` will not be used." # nolint
       )
     }
+  } else if (is.null(uncertainty_params)) {
+    # estimate uncertainty or sample from passed in uncertainty
+    nowcast_df <- estimate_and_apply_uncertainty(
+      point_nowcast_matrix = pt_nowcast,
+      reporting_triangle = tri,
+      n_history_delay = tv$n_history_delay,
+      n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
+      max_delay = ncol(tri) - 1,
+      draws = draws,
+      uncertainty_model = uncertainty_model,
+      uncertainty_sampler = uncertainty_sampler,
+      ...
+    )
+  } else { # uncertainty parameters passed in and not a point estimate
+    # check for uncertainty params being the right length/format
+    .validate_uncertainty(tri, uncertainty_params)
+    nowcast_df <- sample_nowcasts(
+      point_nowcast_matrix = pt_nowcast,
+      reporting_triangle = tri,
+      uncertainty_params = uncertainty_params,
+      draws = draws,
+      uncertainty_sampler = uncertainty_sampler,
+      ...
+    )
   }
 
 

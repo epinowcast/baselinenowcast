@@ -49,7 +49,7 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
       output_type = "point",
       uncertainty_params = rep(1, 25)
     ),
-    regexp = "`uncertainty_params` passed in but point estimate was specified as an output type" # nolint
+    regexp = "`uncertainty_params` passed in but point estimate was specified as an output" # nolint
   )
 
   test_df2 <- baselinenowcast(rep_tri,

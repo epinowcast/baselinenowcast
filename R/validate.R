@@ -440,6 +440,7 @@
       message = c("`delay_pmf` is not the same length as the number of delays in the reporting triangle.") # nolint
     )
   }
+  return(NULL)
 }
 
 #' Validate each item in the reporting triangle

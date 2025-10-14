@@ -18,6 +18,14 @@ baselinenowcast(
 \arguments{
 \item{data}{Reporting triangle to be nowcasted}
 
+\item{scale_factor}{Numeric value indicating the multiplicative factor on
+the maximum delay to be used for estimation of delay and uncertainty.
+Default is \code{3}.}
+
+\item{prop_delay}{Numeric value <1 indicating what proportion of all
+reference times in the reporting triangle to be used for delay
+estimation. Default is \code{0.5}.}
+
 \item{output_type}{Character string indicating whether the output should be
 samples (\code{"samples"})from the estimate with full uncertainty or whether to
 return the point estimate (\code{"point"}). Default is \code{"samples"}.}

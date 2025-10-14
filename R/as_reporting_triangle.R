@@ -268,7 +268,7 @@ as_reporting_triangle.matrix <- function(data,
 #' @inheritParams construct_triangle
 #' @inheritParams as_reporting_triangle
 #'
-#' @returns An object of class \code{\link{reporting_triangle}]
+#' @returns An object of class \code{\link{reporting_triangle}}
 #'
 #' @export
 new_reporting_triangle <- function(reporting_triangle_matrix,

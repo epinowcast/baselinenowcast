@@ -11,27 +11,28 @@ test_that("baselinenowcast.reporting_triangle() works as expected", {
   expect_s3_class(nowcast_df, "data.frame")
   expect_s3_class(nowcast_df, "nowcast_df")
   expect_true(all(expected_cols %in% colnames(nowcast_df)))
-  
   pt_nowcast_df <- baselinenowcast(rep_tri,
-                                output_type = "point")
+    output_type = "point"
+  )
   expect_s3_class(pt_nowcast_df, "data.frame")
   expect_s3_class(pt_nowcast_df, "nowcast_df")
   expected_cols_pt <- c("pred_count", "reference_date", "age_group")
   expect_true(all(expected_cols_pt %in% colnames(pt_nowcast_df)))
 })
 
-test_that("baselinenowcast.reporting_triangle() errors sensibly with inappropriate inputs", { #nolint
+test_that("baselinenowcast.reporting_triangle() errors sensibly with inappropriate inputs", { # nolint
   expect_error(
     baselinenowcast(rep_tri,
-                    output_type = "pt"),
+      output_type = "pt"
+    ),
     regexp = "Assertion on 'output_type' failed"
   )
   expect_error(
-    baselinenowcast(rep_tri, 
-                    draws = TRUE),
+    baselinenowcast(rep_tri,
+      draws = TRUE
+    ),
     regexp = "Assertion on 'draws' failed: Must be of type 'integerish'"
   )
-  
 })
 
 test_that("baselinenowcast.reporting_triangle() handles separate delay and uncertainty estimates appropriately", { # nolint
@@ -42,7 +43,6 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
     ),
     regexp = "`delay_pmf` is not the same length as the number"
   )
-
   test_df <- expect_no_error(baselinenowcast(rep_tri,
     delay_pmf = rep(1 / 26, 26),
     draws = 100
@@ -143,51 +143,53 @@ test_that("baselinenowcast passing in a separate delay/uncertainty parameters re
   ))
 })
 
-test_that("assert_nowcast_df errors when appropriate",{
+test_that("assert_nowcast_df errors when appropriate", {
   nowcast_df <- baselinenowcast(rep_tri, draws = 100)
   expect_no_error(assert_nowcast_df(nowcast_df))
-  
-  pt_nowcast_df <- baselinenowcast(rep_tri, 
-                                   output_type = "point")
+  pt_nowcast_df <- baselinenowcast(rep_tri,
+    output_type = "point"
+  )
   expect_no_error(assert_nowcast_df(pt_nowcast_df))
-  
+
   expect_error(
     assert_nowcast_df(
-      nowcast_df[, -1]),
+      nowcast_df[, -1]
+    ),
     regexp = "Required columns missing from data"
   )
-  
-  nowcast_df2 <- rbind(nowcast_df,nowcast_df)
+
+  nowcast_df2 <- rbind(nowcast_df, nowcast_df)
   expect_error(
     assert_nowcast_df(
       nowcast_df2
     ),
     regexp = "Data contains multiple `reference_date`s"
   )
-  
+
   nowcast_df$age_group <- "00+"
   expect_no_error(assert_nowcast_df(nowcast_df))
-  # multiple strata within one 
+  # multiple strata within one
   nowcast_df_ms <- nowcast_df
   nowcast_df_ms$age_group[1:10] <- "0-18"
-  
+
   expect_error(assert_nowcast_df(
     nowcast_df_ms,
-    regexp = "Multiple values found in the metadata columns in `nowcast_df`.")
-    )
-  
+    regexp = "Multiple values found in the metadata columns in `nowcast_df`."
+  ))
+
   nowcast_df_dates <- nowcast_df
-  nowcast_df_dates$reference_date <-"dates"
-  expect_error(assert_nowcast_df(
-    nowcast_df_dates),
-    regexp = "Must be of class 'Date', not 'character'" #nolint
+  nowcast_df_dates$reference_date <- "dates"
+  expect_error(
+    assert_nowcast_df(
+      nowcast_df_dates
+    ),
+    regexp = "Must be of class 'Date', not 'character'" # nolint
   )
-  
+
   expect_error(
     assert_nowcast_df(
       list(nowcast_df)
-      ),
-    regexp = "Assertion on 'data' failed: Must be of type 'data.frame', not 'list'" #nolint
-    )
-  
+    ),
+    regexp = "Assertion on 'data' failed: Must be of type 'data.frame', not 'list'" # nolint
+  )
 })

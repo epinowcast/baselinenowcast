@@ -39,7 +39,7 @@ the reporting triangle.  Default is \code{"days"}.}
 variable (e.g. \code{age_group}) and each value is the stratum (e.g. "0-18").}
 }
 \value{
-An object of class \code{\link{reporting_triangle}]
+An object of class \code{\link{reporting_triangle}}
 }
 \description{
 Class constructor for \code{reporting_triangle} objects

@@ -1,4 +1,4 @@
-#' Nowcast Dta.frame Object
+#' Nowcast Data.frame Object
 #' @name nowcast_df-class
 #' @aliases nowcast_df
 #' @family nowcast_df

@@ -3,7 +3,7 @@
 \name{nowcast_df-class}
 \alias{nowcast_df-class}
 \alias{nowcast_df}
-\title{Nowcast Dta.frame Object}
+\title{Nowcast Data.frame Object}
 \description{
 A \code{nowcast_df} object which contains point or probabilistic nowcasts
 alongside reference dates and any additional metadata, in tidy data format.

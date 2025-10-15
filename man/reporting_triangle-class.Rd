@@ -23,8 +23,7 @@ triangle, see \code{\link{construct_triangle}} for more details.}
 \item{max_delay}{Integer indicating the maximum delay.}
 \item{delays_unit}{Character string indicating the unit of the delays.
 Valid options are "days", "weeks", "months", "years".}
-\item{strata_map}{Named list where each item is named by the grouping
-variable and its entry is the strata it corresponds to. }
+\item{strata}{Character string indicating the strata.}
 }
 See the corresponding \code{\link{as_reporting_triangle.matrix}} and
 \code{\link{as_reporting_triangle.data.frame}} functions

@@ -196,16 +196,13 @@ test_that("as_reporting_triangle.data.frame() errors if missing required columns
 
 
 test_that("as_reporting_triangle.data.frame() returns appropriate strata", { # nolint
-  data_as_of_df$age_group <- "00+"
-  data_as_of_df$location <- "south"
   rep_tri <- as_reporting_triangle(
     data_as_of_df,
     max_delay = 25,
     strata = c("age_group", "location")
   )
-  exp_strata_list <- list(age_group = "00+", location = "south")
 
-  expect_identical(exp_strata_list, rep_tri$strata_map)
+  expect_identical(c("age_group", "location"), rep_tri$strata)
 
   # Just pass one
   rep_tri <- as_reporting_triangle(
@@ -215,29 +212,9 @@ test_that("as_reporting_triangle.data.frame() returns appropriate strata", { # n
   )
   exp_strata_list <- list(age_group = "00+")
 
-  expect_identical(exp_strata_list, rep_tri$strata_map)
+  expect_identical("age_group", rep_tri$strata)
 })
 
-test_that("as_reporting_triangle.data.frame() errors if multiple strata", { # nolint
-  data_as_of_df$age_group <- "00+"
-  data_as_of_df$age_group[1:10] <- "5-14"
-  expect_error(
-    as_reporting_triangle(
-      data_as_of_df,
-      max_delay = 25,
-      strata = "age_group"
-    ),
-    regexp = "Multiple values found for the specified `strata` when trying to create a" # nolint
-  )
-  expect_error(
-    as_reporting_triangle(
-      data_as_of_df,
-      max_delay = 25,
-      strata = "region"
-    ),
-    regexp = "`strata` specified are not columns in `data`"
-  )
-})
 
 
 test_that("as_reporting_triangle.matrix() can handle specification of each arg", { # nolint
@@ -361,11 +338,11 @@ test_that("assert on reporting triangle works as expected", {
   expect_error(assert_reporting_triangle(rep_tri2))
 
   rep_tri3 <- rep_tri
-  rep_tri3$strata_map <- NULL
+  rep_tri3$strata <- NULL
   expect_no_error(assert_reporting_triangle(rep_tri3))
-  rep_tri3$strata_map <- list(region = "south")
+  rep_tri3$strata <- "south"
   expect_no_error(assert_reporting_triangle(rep_tri3))
-  rep_tri3$strata_map <- 6
+  rep_tri3$strata <- 6
   expect_error(assert_reporting_triangle(rep_tri3))
 
   rep_tri4 <- rep_tri

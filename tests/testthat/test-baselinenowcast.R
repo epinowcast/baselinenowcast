@@ -3,9 +3,9 @@ data_as_of_df$age_group <- "00+"
 rep_tri <- as_reporting_triangle(
   data = data_as_of_df,
   max_delay = 25,
-  strata = "age_group"
+  strata = "00+"
 )
-expected_cols <- c("pred_count", "draw", "reference_date", "age_group")
+expected_cols <- c("pred_count", "draw", "reference_date", "strata")
 test_that("baselinenowcast.reporting_triangle() works as expected", {
   nowcast_df <- baselinenowcast(rep_tri, draws = 100)
   expect_s3_class(nowcast_df, "data.frame")
@@ -16,8 +16,27 @@ test_that("baselinenowcast.reporting_triangle() works as expected", {
   )
   expect_s3_class(pt_nowcast_df, "data.frame")
   expect_s3_class(pt_nowcast_df, "nowcast_df")
-  expected_cols_pt <- c("pred_count", "reference_date", "age_group")
+  expected_cols_pt <- c("pred_count", "reference_date", "strata")
   expect_true(all(expected_cols_pt %in% colnames(pt_nowcast_df)))
+})
+
+test_that("baselinenowcast.reporting_triangle() works as expected", {
+  rep_tri1 <- as_reporting_triangle(
+    data = data_as_of_df,
+    max_delay = 25
+  )
+  nowcast_df <- baselinenowcast(rep_tri1, draws = 100)
+  expect_s3_class(nowcast_df, "data.frame")
+  expect_s3_class(nowcast_df, "nowcast_df")
+  expect_true(all(c("pred_count", "draw", "reference_date")
+  %in% colnames(nowcast_df)))
+  pt_nowcast_df1 <- baselinenowcast(rep_tri1,
+    output_type = "point"
+  )
+  expect_s3_class(pt_nowcast_df1, "data.frame")
+  expect_s3_class(pt_nowcast_df1, "nowcast_df")
+  expected_cols_pt1 <- c("pred_count", "reference_date")
+  expect_true(all(expected_cols_pt1 %in% colnames(pt_nowcast_df1)))
 })
 
 test_that("baselinenowcast.reporting_triangle() errors sensibly with inappropriate inputs", { # nolint
@@ -88,7 +107,7 @@ test_that("baselinenowcast specifying not to include draws works as expected", {
     output_type = "point"
   )
   expect_s3_class(pt_nowcast, "data.frame")
-  expect_true(all(c("pred_count", "reference_date", "age_group")
+  expect_true(all(c("pred_count", "reference_date", "strata")
   %in% colnames(pt_nowcast)))
   prob_nowcast <- baselinenowcast(rep_tri)
 
@@ -165,17 +184,6 @@ test_that("assert_nowcast_df errors when appropriate", {
     ),
     regexp = "Data contains multiple `reference_date`s"
   )
-
-  nowcast_df$age_group <- "00+"
-  expect_no_error(assert_nowcast_df(nowcast_df))
-  # multiple strata within one
-  nowcast_df_ms <- nowcast_df
-  nowcast_df_ms$age_group[1:10] <- "0-18"
-
-  expect_error(assert_nowcast_df(
-    nowcast_df_ms,
-    regexp = "Multiple values found in the metadata columns in `nowcast_df`."
-  ))
 
   nowcast_df_dates <- nowcast_df
   nowcast_df_dates$reference_date <- "dates"

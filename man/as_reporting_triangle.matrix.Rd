@@ -7,7 +7,7 @@
 \method{as_reporting_triangle}{matrix}(
   data,
   max_delay,
-  strata_map = NULL,
+  strata = NULL,
   delays_unit = "days",
   reference_dates,
   ...
@@ -19,8 +19,7 @@ columns are delays, and entries are the incident counts.}
 
 \item{max_delay}{Integer indicating the maximum delay.}
 
-\item{strata_map}{Named list where each name is the grouping
-variable (e.g. \code{age_group}) and each value is the stratum (e.g. "0-18").}
+\item{strata}{Character string indicating the strata. Default is NULL.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.

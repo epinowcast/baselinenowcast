@@ -7,14 +7,14 @@ ref_dates <- seq(
   from = as.Date("2025-01-01"), to = as.Date("2025-01-10"),
   by = "day"
 )
-strata_list <- list(age_group = "00+", region = "south")
+strata <- c("00+", "south")
 test_that("new_nowcast_df() creates a dataframe from a set of dates and named list of strata", { # nolint
   new_df <- new_nowcast_df(data_df,
     reference_dates = ref_dates,
-    strata_map = strata_list
+    strata = strata
   )
 
-  expected_cols <- c("age_group", "region")
+  expected_cols <- c("draw", "pred_count", "strata")
 
   expect_s3_class(new_df, "data.frame")
   expect_identical(nrow(new_df), 30L)
@@ -24,15 +24,15 @@ test_that("new_nowcast_df() creates a dataframe from a set of dates and named li
   # time corresponds to reference dates starting at 1
   expected_dates <- min(ref_dates) + lubridate::days(unique(data_df$time) - 1)
   expect_equal(expected_dates, sort(unique(new_df$reference_date))) # nolint
-  expect_identical(new_df$age_group, rep("00+", 30))
-  expect_identical(new_df$region, rep("south", 30))
+  expect_identical(new_df$strata, rep("00+-south", 30))
+
 
 
   # no additional columns if no strata are specified
 
   new_df_ns <- new_nowcast_df(data_df,
     reference_dates = ref_dates,
-    strata_map = NULL
+    strata = NULL
   )
   expected_cols <- c("draw", "pred_count", "reference_date")
   expect_identical(expected_cols, colnames(new_df_ns))
@@ -45,10 +45,10 @@ test_that("new_nowcast_df correctly merges reference dates", {
     pred_count = c(100, 200, 300),
     draw = c(1, 1, 1)
   )
-  strata_list <- NULL
+  strata <- NULL
   reference_dates <- as.Date(c("2024-01-01", "2024-01-02", "2024-01-03"))
 
-  result <- new_nowcast_df(nowcast_df, strata_list, reference_dates)
+  result <- new_nowcast_df(nowcast_df, strata, reference_dates)
 
   expect_identical(result$reference_date, reference_dates)
   expect_identical(result$pred_count, c(100, 200, 300))
@@ -61,9 +61,9 @@ test_that("new_nowcast_df removes time column from output", {
     pred_count = c(10, 20, 30),
     draw = c(1, 1, 1)
   )
-  strata_list <- list(age_group = "0-17")
+  strata <- "0-17"
   reference_dates <- as.Date(c("2024-01-01", "2024-01-02", "2024-01-03"))
-  result <- new_nowcast_df(nowcast_df, strata_list, reference_dates)
+  result <- new_nowcast_df(nowcast_df, strata, reference_dates)
 
   expect_false("time" %in% names(result))
 })
@@ -75,17 +75,36 @@ test_that("new_nowcast_df handles non-sequential time values", {
     pred_count = c(10, 30, 50),
     draw = c(1, 1, 1)
   )
-  strata_list <- list(region = "East")
+  strata <- "East"
   reference_dates <- as.Date(c(
     "2024-01-01", "2024-01-02", "2024-01-03",
     "2024-01-04", "2024-01-05"
   ))
 
-  result <- new_nowcast_df(nowcast_df, strata_list, reference_dates)
+  result <- new_nowcast_df(nowcast_df, strata, reference_dates)
 
   expect_identical(nrow(result), 3L)
   expect_identical(
     result$reference_date,
     as.Date(c("2024-01-01", "2024-01-03", "2024-01-05"))
   )
+})
+
+test_that("new_nowcast_df handles multiple strata", {
+  nowcast_df <- data.frame(
+    time = c(1, 3, 5),
+    pred_count = c(10, 30, 50),
+    draw = c(1, 1, 1)
+  )
+  strata <- c("East", "00-17")
+  reference_dates <- as.Date(c(
+    "2024-01-01", "2024-01-02", "2024-01-03",
+    "2024-01-04", "2024-01-05"
+  ))
+
+  result <- new_nowcast_df(nowcast_df, strata, reference_dates)
+
+  expected_val <- "East-00-17"
+  expect_identical(expected_val, result$strata[1])
+  expect_identical(1L, length(unique(result$strata)))
 })

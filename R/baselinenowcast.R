@@ -119,7 +119,7 @@ baselinenowcast.reporting_triangle <- function(
 
 
   result_df <- new_nowcast_df(nowcast_df,
-    strata_map = data$strata_map,
+    strata = data$strata,
     reference_dates = data$reference_dates
   )
 
@@ -141,7 +141,7 @@ baselinenowcast.reporting_triangle <- function(
 #' @returns An object of class \code{\link{nowcast_df}}
 #' @export
 new_nowcast_df <- function(nowcast_df,
-                           strata_map,
+                           strata,
                            reference_dates) {
   spine_df <- data.frame(
     reference_date = reference_dates,
@@ -154,10 +154,8 @@ new_nowcast_df <- function(nowcast_df,
     all.x = TRUE
   )
 
-  if (!is.null(strata_map)) {
-    for (strata_name in names(strata_map)) {
-      nowcast_df_dates[[strata_name]] <- strata_map[[strata_name]]
-    }
+  if (!is.null(strata)) {
+    nowcast_df_dates$strata <- paste0(strata, collapse = "-")
   }
   nowcast_df_dates$time <- NULL
 
@@ -203,14 +201,6 @@ assert_nowcast_df <- function(data) {
     )
   }
 
-  other_cols <- setdiff(names(data), c(required_cols, "draw"))
-  strata_map <- lapply(data[other_cols], unique)
-  if (!all(lengths(strata_map) == 1)) {
-    cli_abort(
-      message = c("Multiple values found in the metadata columns in `nowcast_df`."), # nolint
-      "i" = "`nowcast_df` should only contain a single nowcast." # nolint
-    )
-  }
 
   return(NULL)
 }

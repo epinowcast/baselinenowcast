@@ -7,9 +7,8 @@
 \method{as_reporting_triangle}{data.frame}(
   data,
   max_delay,
-  strata_map = NULL,
-  delays_unit = "days",
   strata = NULL,
+  delays_unit = "days",
   reference_date = "reference_date",
   report_date = "report_date",
   count = "count",
@@ -33,8 +32,10 @@ be no repeated reference dates and report dates.
 
 \item{max_delay}{Integer indicating the maximum delay.}
 
-\item{strata_map}{Named list where each name is the grouping
-variable (e.g. \code{age_group}) and each value is the stratum (e.g. "0-18").}
+\item{strata}{Vector or single character string indicating the name of the
+column(s) of \code{data} which indicate the strata associated with the data.
+Entries of that column must all be the same. Default is \code{NULL}, which
+does not assign metadata to this data.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
@@ -44,11 +45,6 @@ data.frame. For the data.frame method, this is used to compute the delay
 in terms of the specified unit, and to expand the combinations of
 reference dates and delays to the complete set of combinations in
 the reporting triangle.  Default is \code{"days"}.}
-
-\item{strata}{Vector or single character string indicating the name of the
-column(s) of \code{data} which indicate the strata associated with the data.
-Entries of that column must all be the same. Default is \code{NULL}, which
-does not assign metadata to this data.}
 
 \item{reference_date}{Character string indicating the name of the
 column which represents the reference date, or the date of the primary

@@ -2,8 +2,7 @@
 #'
 #' @param data Data to be nowcasted.
 #' @param max_delay Integer indicating the maximum delay.
-#' @param strata_map Named list where each name is the grouping
-#'    variable (e.g. `age_group`) and each value is the stratum (e.g. "0-18").
+#' @param strata Character string indicating the strata. Default is NULL.
 #' @param delays_unit Character string specifying the temporal granularity of
 #'    the delays. Options are `"days"`, `"weeks"`, `"months"`, `"years"`.
 #'    For the matrix method, this is simply passed as an item in the
@@ -20,7 +19,7 @@
 #' @export
 as_reporting_triangle <- function(data,
                                   max_delay,
-                                  strata_map = NULL,
+                                  strata = NULL,
                                   delays_unit = "days",
                                   ...) {
   UseMethod("as_reporting_triangle")
@@ -75,9 +74,8 @@ as_reporting_triangle <- function(data,
 as_reporting_triangle.data.frame <- function(
     data,
     max_delay,
-    strata_map = NULL,
-    delays_unit = "days",
     strata = NULL,
+    delays_unit = "days",
     reference_date = "reference_date",
     report_date = "report_date",
     count = "count",
@@ -97,26 +95,6 @@ as_reporting_triangle.data.frame <- function(
   )]
 
   .validate_rep_tri_df(data, delays_unit)
-  if (!is.null(strata_map) && !is.null(strata)) {
-    cli_abort(
-      message = "Cannot specify both `strata_map` and `strata`. Use `strata` to derive `strata_map` from the columns in `data`." # nolint
-    )
-  }
-  # Create the named list of strata
-  if (!is.null(strata)) {
-    if (!all(strata %in% colnames(data))) {
-      cli_abort(
-        message = "`strata` specified are not columns in `data`."
-      )
-    }
-    strata_map <- lapply(data[c(strata)], unique)
-    if (!all(lengths(strata_map) == 1)) {
-      cli_abort(
-        message = "Multiple values found for the specified `strata` when trying to create a single `reporting_triangle` object." # nolint
-      )
-    }
-  }
-
 
   # Compute delay
   data$delay <- as.numeric(
@@ -180,7 +158,7 @@ as_reporting_triangle.data.frame <- function(
     data = rep_tri_mat,
     reference_dates = reference_dates,
     max_delay = max_delay,
-    strata_map = strata_map,
+    strata = strata,
     delays_unit = delays_unit
   )
   return(rep_tri)
@@ -232,7 +210,7 @@ as_reporting_triangle.data.frame <- function(
 #' rep_tri
 as_reporting_triangle.matrix <- function(data,
                                          max_delay,
-                                         strata_map = NULL,
+                                         strata = NULL,
                                          delays_unit = "days",
                                          reference_dates,
                                          ...) {
@@ -254,7 +232,7 @@ as_reporting_triangle.matrix <- function(data,
     reporting_triangle_matrix = data,
     reference_dates = reference_dates,
     max_delay = max_delay,
-    strata_map = strata_map,
+    strata = strata,
     structure = struct,
     delays_unit = delays_unit
   )
@@ -276,14 +254,14 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
                                    structure,
                                    max_delay,
                                    delays_unit,
-                                   strata_map = NULL) {
+                                   strata = NULL) {
   .validate_rep_tri_args(
     reporting_triangle_matrix,
     reference_dates,
     structure,
     max_delay,
     delays_unit,
-    strata_map
+    strata
   )
   result <- structure(
     list(
@@ -292,7 +270,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
       structure = structure,
       max_delay = max_delay,
       delays_unit = delays_unit,
-      strata_map = strata_map
+      strata = strata
     ),
     class = "reporting_triangle"
   )
@@ -313,7 +291,7 @@ assert_reporting_triangle <- function(data) {
     structure = data$structure,
     max_delay = data$max_delay,
     delays_unit = data$delays_unit,
-    strata_map = data$strata_map
+    strata = data$strata
   )
 
   if (sum(data$structure) > ncol(data$reporting_triangle_matrix)) {

@@ -10,7 +10,7 @@ new_reporting_triangle(
   structure,
   max_delay,
   delays_unit,
-  strata_map = NULL
+  strata = NULL
 )
 }
 \arguments{
@@ -35,8 +35,7 @@ in terms of the specified unit, and to expand the combinations of
 reference dates and delays to the complete set of combinations in
 the reporting triangle.  Default is \code{"days"}.}
 
-\item{strata_map}{Named list where each name is the grouping
-variable (e.g. \code{age_group}) and each value is the stratum (e.g. "0-18").}
+\item{strata}{Character string indicating the strata. Default is NULL.}
 }
 \value{
 An object of class \code{\link{reporting_triangle}}

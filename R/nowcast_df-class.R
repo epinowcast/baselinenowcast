@@ -21,7 +21,8 @@
 #'    across delays at each reference date.}
 #'  \item{draw}{Integer indexing the sample from the probabilistic nowcast
 #'    distribution. Only present if `output_type = "samples"`.}
-#'  \item{...}{Additional columns from `strata_map`}
+#'  \item{strata}{Optional additional column which combines the entries in
+#'     "strata" in the \code{\link{reporting_triangle}} object.}
 #' }
 #' See the corresponding \code{\link{reporting_triangle}} and
 #' \code{\link{baselinenowcast}} function

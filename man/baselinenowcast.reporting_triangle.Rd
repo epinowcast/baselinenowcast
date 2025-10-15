@@ -2,8 +2,19 @@
 % Please edit documentation in R/baselinenowcast.R
 \name{baselinenowcast.reporting_triangle}
 \alias{baselinenowcast.reporting_triangle}
-\title{Creating a dataframe of nowcast results from a single reporting
-triangle}
+\title{Create a dataframe of nowcast results from a single reporting triangle
+
+@description This function ingests a single
+\code{\link{reporting_triangle}} object and generates a nowcast in the
+form of a \code{\link{nowcast_df}} object. This function will by default
+estimate uncertainty using past retrospective nowcast errors and generate
+probabilistic nowcasts, which are samples from the predictive
+distribution of the estimated final case count at each reference date.
+This method specifically computes a nowcast for a single reporting
+triangle. See documentation for the arguments of this function which
+can be used to set the model specifications (things like number of
+reference times for delay and uncertainty estimation, the observation
+model, etc.).}
 \usage{
 \method{baselinenowcast}{reporting_triangle}(
   data,
@@ -69,8 +80,19 @@ and \code{\link{sample_nowcast}}.}
 Data.frame of class \code{\link{nowcast_df}}
 }
 \description{
-Creating a dataframe of nowcast results from a single reporting
-triangle
+Create a dataframe of nowcast results from a single reporting triangle
+
+@description This function ingests a single
+\code{\link{reporting_triangle}} object and generates a nowcast in the
+form of a \code{\link{nowcast_df}} object. This function will by default
+estimate uncertainty using past retrospective nowcast errors and generate
+probabilistic nowcasts, which are samples from the predictive
+distribution of the estimated final case count at each reference date.
+This method specifically computes a nowcast for a single reporting
+triangle. See documentation for the arguments of this function which
+can be used to set the model specifications (things like number of
+reference times for delay and uncertainty estimation, the observation
+model, etc.).
 }
 \examples{
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]

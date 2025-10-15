@@ -105,6 +105,6 @@ test_that("new_nowcast_df handles multiple strata", {
   result <- new_nowcast_df(nowcast_df, strata, reference_dates)
 
   expected_val <- "East-00-17"
-  expect_identical(expected_val, result$strata[1])
-  expect_identical(1L, length(unique(result$strata)))
+  expect_identical(result$strata[1], expected_val)
+  expect_length(unique(result$strata), 1)
 })

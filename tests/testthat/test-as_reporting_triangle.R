@@ -212,7 +212,7 @@ test_that("as_reporting_triangle.data.frame() returns appropriate strata", { # n
   )
   exp_strata_list <- list(age_group = "00+")
 
-  expect_identical("age_group", rep_tri$strata)
+  expect_identical(rep_tri$strata, "age_group")
 })
 
 

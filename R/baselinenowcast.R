@@ -25,8 +25,19 @@ baselinenowcast <- function(data,
   UseMethod("baselinenowcast")
 }
 
-#' @title Creating a dataframe of nowcast results from a single reporting
-#'    triangle
+#' @title Create a dataframe of nowcast results from a single reporting triangle
+#'
+#'  @description This function ingests a single
+#'    \code{\link{reporting_triangle}} object and generates a nowcast in the
+#'    form of a \code{\link{nowcast_df}} object. This function will by default
+#'    estimate uncertainty using past retrospective nowcast errors and generate
+#'    probabilistic nowcasts, which are samples from the predictive
+#'    distribution of the estimated final case count at each reference date.
+#'    This method specifically computes a nowcast for a single reporting
+#'    triangle. See documentation for the arguments of this function which
+#'    can be used to set the model specifications (things like number of
+#'    reference times for delay and uncertainty estimation, the observation
+#'    model, etc.).
 #'
 #' @param data `reporting_triangle` class object to be nowcasted.
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
@@ -155,7 +166,7 @@ new_nowcast_df <- function(nowcast_df,
   )
 
   if (!is.null(strata)) {
-    nowcast_df_dates$strata <- paste0(strata, collapse = "-")
+    nowcast_df_dates$strata <- paste(strata, collapse = "-")
   }
   nowcast_df_dates$time <- NULL
 

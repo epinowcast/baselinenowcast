@@ -22,7 +22,7 @@ navbar:
           href: articles/model_definition.html
         - text: "Nomenclature"
           href: articles/nomenclature.html
-        - text: "NSSP nowcasting"
+        - text: "A case study nowcasting applied to the U.S. National Syndromic Surveillance Program (NSSP) data"
           href: articles/nssp_nowcast.html
 
 # Code folding configuration

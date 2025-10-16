@@ -128,7 +128,6 @@ baselinenowcast.reporting_triangle <- function(
     )
   }
 
-
   result_df <- new_nowcast_df(nowcast_df,
     reference_dates = data$reference_dates
   )

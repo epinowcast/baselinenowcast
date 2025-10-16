@@ -12,7 +12,7 @@
   draws = 1000,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,
-  delay_pmf = estimate_delay(data$reporting_triangle_matrix),
+  delay_pmf = NULL,
   uncertainty_params = NULL,
   ...
 )
@@ -52,10 +52,9 @@ for the corresponding vector of uncertainty parameters, and draws from a
 negative binomial for each element of the vector.}
 
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
-first delay column in \code{data$reporting_triangle_matrix}. Default is to
-estimate from the reporting triangle matrix in \code{data},
-\code{estimate_delay(data$reporting_triangle_matrix)}. See
-\code{\link{estimate_delay}} for more details.}
+first delay column in \code{data$reporting_triangle_matrix}. Default is NULL,
+which will estimate the delay from the reporting triangle matrix in \code{data},
+See \code{\link{estimate_delay}} for more details.}
 
 \item{uncertainty_params}{Vector of uncertainty parameters ordered from
 horizon 1 to the maximum horizon. Default is \code{NULL}, which will

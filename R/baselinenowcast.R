@@ -41,10 +41,9 @@ baselinenowcast <- function(data,
 #'
 #' @param data \code{\link{reporting_triangle}} class object to be nowcasted.
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
-#'   first delay column in `data$reporting_triangle_matrix`. Default is to
-#'   estimate from the reporting triangle matrix in `data`,
-#'   `estimate_delay(data$reporting_triangle_matrix)`. See
-#'   \code{\link{estimate_delay}} for more details.
+#'   first delay column in `data$reporting_triangle_matrix`. Default is NULL,
+#'   which will estimate the delay from the reporting triangle matrix in `data`,
+#'   See \code{\link{estimate_delay}} for more details.
 #' @param uncertainty_params Vector of uncertainty parameters ordered from
 #'   horizon 1 to the maximum horizon. Default is `NULL`, which will
 #'   result in computing the uncertainty parameters from the `data`.
@@ -75,20 +74,27 @@ baselinenowcast.reporting_triangle <- function(
     draws = 1000,
     uncertainty_model = fit_by_horizon,
     uncertainty_sampler = sample_nb,
-    delay_pmf = estimate_delay(data$reporting_triangle_matrix),
+    delay_pmf = NULL,
     uncertainty_params = NULL,
     ...) {
   tri <- data$reporting_triangle_matrix
   assert_choice(output_type, choices = c("samples", "point"))
-
   assert_integerish(draws, null.ok = TRUE)
-  # check for delay pmf being the right length/format
-  .validate_delay(tri, delay_pmf)
 
   tv <- allocate_reference_times(tri,
     scale_factor = scale_factor,
     prop_delay = prop_delay
   )
+
+  if (is.null(delay_pmf)) {
+    delay_pmf <- estimate_delay(
+      reporting_triangle = data$reporting_triangle_matrix,
+      n = tv$n_history_delay
+    )
+  }
+  # check for delay pmf being the right length/format
+  .validate_delay(tri, delay_pmf)
+
   pt_nowcast <- apply_delay(tri, delay_pmf)
 
   if (output_type == "point") {

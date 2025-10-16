@@ -39,6 +39,7 @@ Note that all visits that originate in the emergency department are used for thi
 ## Load packages
 
 We use the `baselinenowcast` package for nowcasting, `dplyr`, and `tidyr` for data manipulation, `stringr` for parsing text data, `lubridate` for formatting dates, `ggplot2` for plotting, and `purrr` for mapping diagnoses codes to text fields in the data.
+For `baselinenowcast`, see the [installation instructions](https://github.com/epinowcast/baselinenowcast#installation).
 ```{r setup, message = FALSE, warning = FALSE, results = 'hide'}
 # Load packages
 library(baselinenowcast)

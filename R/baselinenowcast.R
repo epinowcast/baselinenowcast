@@ -130,7 +130,6 @@ baselinenowcast.reporting_triangle <- function(
 
 
   result_df <- new_nowcast_df(nowcast_df,
-    strata = data$strata,
     reference_dates = data$reference_dates
   )
 
@@ -152,7 +151,6 @@ baselinenowcast.reporting_triangle <- function(
 #' @returns An object of class \code{\link{nowcast_df}}
 #' @export
 new_nowcast_df <- function(nowcast_df,
-                           strata,
                            reference_dates) {
   spine_df <- data.frame(
     reference_date = reference_dates,
@@ -165,9 +163,6 @@ new_nowcast_df <- function(nowcast_df,
     all.x = TRUE
   )
 
-  if (!is.null(strata)) {
-    nowcast_df_dates$strata <- paste(strata, collapse = "-")
-  }
   nowcast_df_dates$time <- NULL
 
   result <- structure(

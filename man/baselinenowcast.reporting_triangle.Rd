@@ -2,19 +2,7 @@
 % Please edit documentation in R/baselinenowcast.R
 \name{baselinenowcast.reporting_triangle}
 \alias{baselinenowcast.reporting_triangle}
-\title{Create a dataframe of nowcast results from a single reporting triangle
-
-@description This function ingests a single
-\code{\link{reporting_triangle}} object and generates a nowcast in the
-form of a \code{\link{nowcast_df}} object. This function will by default
-estimate uncertainty using past retrospective nowcast errors and generate
-probabilistic nowcasts, which are samples from the predictive
-distribution of the estimated final case count at each reference date.
-This method specifically computes a nowcast for a single reporting
-triangle. See documentation for the arguments of this function which
-can be used to set the model specifications (things like number of
-reference times for delay and uncertainty estimation, the observation
-model, etc.).}
+\title{Create a dataframe of nowcast results from a single reporting triangle}
 \usage{
 \method{baselinenowcast}{reporting_triangle}(
   data,
@@ -30,7 +18,7 @@ model, etc.).}
 )
 }
 \arguments{
-\item{data}{\code{reporting_triangle} class object to be nowcasted.}
+\item{data}{\code{\link{reporting_triangle}} class object to be nowcasted.}
 
 \item{scale_factor}{Numeric value indicating the multiplicative factor on
 the maximum delay to be used for estimation of delay and uncertainty.
@@ -66,7 +54,8 @@ negative binomial for each element of the vector.}
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
 first delay column in \code{data$reporting_triangle_matrix}. Default is to
 estimate from the reporting triangle matrix in \code{data},
-\code{estimate_delay(data$reporting_triangle_matrix)}.}
+\code{estimate_delay(data$reporting_triangle_matrix)}. See
+\code{\link{estimate_delay}} for more details.}
 
 \item{uncertainty_params}{Vector of uncertainty parameters ordered from
 horizon 1 to the maximum horizon. Default is \code{NULL}, which will
@@ -77,16 +66,14 @@ result in computing the uncertainty parameters from the \code{data}.}
 and \code{\link{sample_nowcast}}.}
 }
 \value{
-Data.frame of class \code{\link{nowcast_df}}
+Data.frame of class \code{\link{baselinenowcast_df}}
 }
 \description{
-Create a dataframe of nowcast results from a single reporting triangle
-
-@description This function ingests a single
+This function ingests a single
 \code{\link{reporting_triangle}} object and generates a nowcast in the
-form of a \code{\link{nowcast_df}} object. This function will by default
-estimate uncertainty using past retrospective nowcast errors and generate
-probabilistic nowcasts, which are samples from the predictive
+form of a \code{\link{baselinenowcast_df}} object. This function will by
+default estimate uncertainty using past retrospective nowcast errors and
+generate probabilistic nowcasts, which are samples from the predictive
 distribution of the estimated final case count at each reference date.
 This method specifically computes a nowcast for a single reporting
 triangle. See documentation for the arguments of this function which
@@ -105,7 +92,6 @@ nowcast_df
 }
 \seealso{
 Other nowcast_df:
-\code{\link{baselinenowcast}()},
-\code{\link{nowcast_df-class}}
+\code{\link{baselinenowcast}()}
 }
 \concept{nowcast_df}

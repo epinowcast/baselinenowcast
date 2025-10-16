@@ -9,13 +9,13 @@ expected_cols <- c("pred_count", "draw", "reference_date")
 test_that("baselinenowcast.reporting_triangle() works as expected", {
   nowcast_df <- baselinenowcast(rep_tri, draws = 100)
   expect_s3_class(nowcast_df, "data.frame")
-  expect_s3_class(nowcast_df, "nowcast_df")
+  expect_s3_class(nowcast_df, "baselinenowcast_df")
   expect_true(all(expected_cols %in% colnames(nowcast_df)))
   pt_nowcast_df <- baselinenowcast(rep_tri,
     output_type = "point"
   )
   expect_s3_class(pt_nowcast_df, "data.frame")
-  expect_s3_class(pt_nowcast_df, "nowcast_df")
+  expect_s3_class(pt_nowcast_df, "baselinenowcast_df")
   expected_cols_pt <- c("pred_count", "reference_date")
   expect_true(all(expected_cols_pt %in% colnames(pt_nowcast_df)))
 })
@@ -143,16 +143,16 @@ test_that("baselinenowcast passing in a separate delay/uncertainty parameters re
   ))
 })
 
-test_that("assert_nowcast_df errors when appropriate", {
+test_that("assert_baselinenowcast_df errors when appropriate", {
   nowcast_df <- baselinenowcast(rep_tri, draws = 100)
-  expect_no_error(assert_nowcast_df(nowcast_df))
+  expect_no_error(assert_baselinenowcast_df(nowcast_df))
   pt_nowcast_df <- baselinenowcast(rep_tri,
     output_type = "point"
   )
-  expect_no_error(assert_nowcast_df(pt_nowcast_df))
+  expect_no_error(assert_baselinenowcast_df(pt_nowcast_df))
 
   expect_error(
-    assert_nowcast_df(
+    assert_baselinenowcast_df(
       nowcast_df[, -1]
     ),
     regexp = "Required columns missing from data"
@@ -160,7 +160,7 @@ test_that("assert_nowcast_df errors when appropriate", {
 
   nowcast_df2 <- rbind(nowcast_df, nowcast_df)
   expect_error(
-    assert_nowcast_df(
+    assert_baselinenowcast_df(
       nowcast_df2
     ),
     regexp = "Data contains multiple `reference_date`s"
@@ -169,14 +169,14 @@ test_that("assert_nowcast_df errors when appropriate", {
   nowcast_df_dates <- nowcast_df
   nowcast_df_dates$reference_date <- "dates"
   expect_error(
-    assert_nowcast_df(
+    assert_baselinenowcast_df(
       nowcast_df_dates
     ),
     regexp = "Must be of class 'Date', not 'character'" # nolint
   )
 
   expect_error(
-    assert_nowcast_df(
+    assert_baselinenowcast_df(
       list(nowcast_df)
     ),
     regexp = "Assertion on 'data' failed: Must be of type 'data.frame', not 'list'" # nolint

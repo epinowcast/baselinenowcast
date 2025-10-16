@@ -8,7 +8,7 @@ baselinenowcast(
   data,
   scale_factor = 3,
   prop_delay = 0.5,
-  output_type = "samples",
+  output_type = c("samples", "point"),
   draws = 1000,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,
@@ -52,14 +52,13 @@ negative binomial for each element of the vector.}
 \item{...}{Additional arguments passed to methods.}
 }
 \value{
-Data.frame of class \code{\link{nowcast_df}}
+Data.frame of class \code{\link{baselinenowcast_df}}
 }
 \description{
 Generate a nowcast from a reporting triangle
 }
 \seealso{
 Other nowcast_df:
-\code{\link{baselinenowcast.reporting_triangle}()},
-\code{\link{nowcast_df-class}}
+\code{\link{baselinenowcast.reporting_triangle}()}
 }
 \concept{nowcast_df}

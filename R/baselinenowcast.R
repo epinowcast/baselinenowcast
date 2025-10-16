@@ -11,13 +11,13 @@
 #' @param draws Integer indicating the number of probabilistic draws to include
 #'    if `output_type` is `"samples"`. Default is 1000.
 #' @param ... Additional arguments passed to methods.
-#' @returns Data.frame of class \code{\link{nowcast_df}}
+#' @returns Data.frame of class \code{\link{baselinenowcast_df}}
 #' @family nowcast_df
 #' @export
 baselinenowcast <- function(data,
                             scale_factor = 3,
                             prop_delay = 0.5,
-                            output_type = "samples",
+                            output_type = c("samples", "point"),
                             draws = 1000,
                             uncertainty_model = fit_by_horizon,
                             uncertainty_sampler = sample_nb,
@@ -27,11 +27,11 @@ baselinenowcast <- function(data,
 
 #' @title Create a dataframe of nowcast results from a single reporting triangle
 #'
-#'  @description This function ingests a single
+#' @description This function ingests a single
 #'    \code{\link{reporting_triangle}} object and generates a nowcast in the
-#'    form of a \code{\link{nowcast_df}} object. This function will by default
-#'    estimate uncertainty using past retrospective nowcast errors and generate
-#'    probabilistic nowcasts, which are samples from the predictive
+#'    form of a \code{\link{baselinenowcast_df}} object. This function will by
+#'    default estimate uncertainty using past retrospective nowcast errors and
+#'    generate probabilistic nowcasts, which are samples from the predictive
 #'    distribution of the estimated final case count at each reference date.
 #'    This method specifically computes a nowcast for a single reporting
 #'    triangle. See documentation for the arguments of this function which
@@ -39,11 +39,12 @@ baselinenowcast <- function(data,
 #'    reference times for delay and uncertainty estimation, the observation
 #'    model, etc.).
 #'
-#' @param data `reporting_triangle` class object to be nowcasted.
+#' @param data \code{\link{reporting_triangle}} class object to be nowcasted.
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
 #'   first delay column in `data$reporting_triangle_matrix`. Default is to
 #'   estimate from the reporting triangle matrix in `data`,
-#'   `estimate_delay(data$reporting_triangle_matrix)`.
+#'   `estimate_delay(data$reporting_triangle_matrix)`. See
+#'   \code{\link{estimate_delay}} for more details.
 #' @param uncertainty_params Vector of uncertainty parameters ordered from
 #'   horizon 1 to the maximum horizon. Default is `NULL`, which will
 #'   result in computing the uncertainty parameters from the `data`.
@@ -57,7 +58,7 @@ baselinenowcast <- function(data,
 #' @family nowcast_df
 #' @export
 #' @method baselinenowcast reporting_triangle
-#' @returns Data.frame of class \code{\link{nowcast_df}}
+#' @returns Data.frame of class \code{\link{baselinenowcast_df}}
 #' @examples
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 #' rep_tri <- as_reporting_triangle(
@@ -78,12 +79,11 @@ baselinenowcast.reporting_triangle <- function(
     uncertainty_params = NULL,
     ...) {
   tri <- data$reporting_triangle_matrix
-
   assert_choice(output_type, choices = c("samples", "point"))
+
   assert_integerish(draws, null.ok = TRUE)
   # check for delay pmf being the right length/format
   .validate_delay(tri, delay_pmf)
-
 
   tv <- allocate_reference_times(tri,
     scale_factor = scale_factor,
@@ -102,7 +102,14 @@ baselinenowcast.reporting_triangle <- function(
           "`uncertainty_params` passed in but point estimate was specified as an output type. `uncertainty params` will not be used." # nolint
       )
     }
-  } else if (is.null(uncertainty_params)) {
+    # early return
+    result_df <- new_baselinenowcast_df(nowcast_df,
+      reference_dates = data$reference_dates
+    )
+    return(result_df)
+  }
+
+  if (is.null(uncertainty_params)) {
     # estimate uncertainty or sample from passed in uncertainty
     nowcast_df <- estimate_and_apply_uncertainty(
       point_nowcast_matrix = pt_nowcast,
@@ -129,84 +136,9 @@ baselinenowcast.reporting_triangle <- function(
   }
 
 
-  result_df <- new_nowcast_df(nowcast_df,
+  result_df <- new_baselinenowcast_df(nowcast_df,
     reference_dates = data$reference_dates
   )
 
   return(result_df)
-}
-
-#' Combine data from a nowcast dataframe, strata, and reference dates
-#' @description Combines data from a nowcast dataframe, a named list of the
-#'    strata associated with the nowcast dataframe, and a vector of reference
-#'    dates corresponding to the time column in the `nowcast_df`
-#'
-#' @param nowcast_df Data.frame containing information for multiple draws with
-#'  columns for the reference time (`time`), the predicted counts
-#'  (`pred_count`), and optionally the draw number (`draw`).
-#' @inheritParams as_reporting_triangle
-#' @param reference_dates Vector of reference dates corresponding to the
-#'    reference times in the `nowcast_df`.
-#'
-#' @returns An object of class \code{\link{nowcast_df}}
-#' @export
-new_nowcast_df <- function(nowcast_df,
-                           reference_dates) {
-  spine_df <- data.frame(
-    reference_date = reference_dates,
-    time = seq_along(reference_dates)
-  )
-
-  nowcast_df_dates <- merge(nowcast_df,
-    spine_df,
-    by = "time",
-    all.x = TRUE
-  )
-
-  nowcast_df_dates$time <- NULL
-
-  result <- structure(
-    data.frame(nowcast_df_dates),
-    class = c("nowcast_df", class(nowcast_df_dates))
-  )
-
-  return(result)
-}
-
-#' Assert validity of `nowcast_df` objects
-#'
-#' @param data A \code{\link{nowcast_df}} object to check for validity.
-#' @return NULL
-#' @export
-assert_nowcast_df <- function(data) {
-  assert_data_frame(data)
-
-  required_cols <- c("reference_date", "pred_count")
-  missing_cols <- setdiff(required_cols, names(data))
-  if (length(missing_cols) > 0) {
-    cli_abort(
-      message = c(
-        "Required columns missing from data",
-        "x" = "Missing: {.val {missing_cols}}" # nolint
-      )
-    )
-  }
-
-  assert_date(data$reference_date)
-  # Check for duplicated reference dates
-  cols_to_check <- names(data)[names(data) %in% c("reference_date", "draw")]
-
-  dups <- duplicated(data[, c(cols_to_check)])
-  if (any(dups)) {
-    cli_abort(
-      message = c(
-        "Data contains multiple `reference_date`s", # nolint
-        "x" = "Found {sum(dups)} duplicate `reference_date`{?s}", # nolint
-        "i" = "`nowcast_df` objects should only contain a single estimate for each reference date." # nolint
-      )
-    )
-  }
-
-
-  return(NULL)
 }

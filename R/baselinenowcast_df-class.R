@@ -28,8 +28,8 @@ NULL
 #'    strata associated with the nowcast dataframe, and a vector of reference
 #'    dates corresponding to the time column in the `baselinenowcast_df`
 #'
-#' @param baselinenowcast_df Data.frame containing information for multiple draws with
-#'  columns for the reference time (`time`), the predicted counts
+#' @param baselinenowcast_df Data.frame containing information for multiple
+#'  draws with columns for the reference time (`time`), the predicted counts
 #'  (`pred_count`), and optionally the draw number (`draw`).
 #' @param reference_dates Vector of reference dates corresponding to the
 #'    reference times in the `baselinenowcast_df`.

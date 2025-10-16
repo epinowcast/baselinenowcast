@@ -7,8 +7,8 @@
 new_baselinenowcast_df(baselinenowcast_df, reference_dates)
 }
 \arguments{
-\item{baselinenowcast_df}{Data.frame containing information for multiple draws with
-columns for the reference time (\code{time}), the predicted counts
+\item{baselinenowcast_df}{Data.frame containing information for multiple
+draws with columns for the reference time (\code{time}), the predicted counts
 (\code{pred_count}), and optionally the draw number (\code{draw}).}
 
 \item{reference_dates}{Vector of reference dates corresponding to the

@@ -73,7 +73,10 @@ test_that("detect_structure returns 0 if there are no NAs", {
     ncol = 4
   )
   exp_structure <- 0
-  detected_structure <- detect_structure(rep_mat)
+  detected_structure <- expect_warning(
+    detect_structure(rep_mat),
+    regexp = "The reporting triangle does not contain any missing values"
+  )
 
   expect_identical(exp_structure, detected_structure)
 })

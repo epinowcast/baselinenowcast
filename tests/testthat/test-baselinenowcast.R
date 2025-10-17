@@ -194,6 +194,6 @@ test_that("baselinenowcast.reporting_triangle errors if nothing to nowcast", {
   ) # nolint
 
   expect_error(baselinenowcast(rep_tri),
-    regexp = "doesn't contain any missing values, there is nothing to nowcast"
+    regexp = "doesn't contain any missing values"
   ) # nolint
 })

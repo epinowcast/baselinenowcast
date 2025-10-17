@@ -12,7 +12,7 @@ nowcasted, with rows representing the time points of reference and columns
 representing the delays}
 
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
-first delay column in \code{rep_mat_to_nowcast}}
+first delay column in \code{reporting_triangle}.}
 }
 \value{
 \code{point_nowcast_matrix} Matrix of the same number of rows and columns

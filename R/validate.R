@@ -399,6 +399,50 @@
   return(NULL)
 }
 
+#' Validate the uncertainty parameters if they are passed in
+#'
+#' @inheritParams .validate_delay_and_triangle
+#' @inheritParams sample_prediction
+#'
+#' @returns NULL invisibly
+.validate_uncertainty <- function(triangle,
+                                  uncertainty_params) {
+  assert_numeric(uncertainty_params)
+  n_possible_horizons <- sum(is.na(rowSums(triangle)))
+  if (n_possible_horizons != length(uncertainty_params)) {
+    cli_abort(
+      message = c("`uncertainty_params` are not the same length as the number of horizons in the reporting triangle.") # nolint
+    )
+  }
+  return(NULL)
+}
+
+
+#' Validate the delay PMF if it is passed in
+#'
+#' @inheritParams .validate_delay_and_triangle
+#' @inheritParams sample_prediction
+#'
+#' @returns NULL invisibly
+#' @importFrom checkmate check_numeric
+.validate_delay <- function(triangle,
+                            delay_pmf) {
+  test <- check_numeric(sum(delay_pmf), lower = 0.99, upper = 1.01, len = 1)
+  if (!isTRUE(test)) {
+    cli_warn(
+      message = "`delay_pmf` does not sum to approximately one."
+    )
+  }
+
+  n_delays <- ncol(triangle)
+  if (n_delays != length(delay_pmf)) {
+    cli_abort(
+      message = c("`delay_pmf` is not the same length as the number of delays in the reporting triangle.") # nolint
+    )
+  }
+  return(NULL)
+}
+
 #' Validate each item in the reporting triangle
 #'
 #' @inheritParams new_reporting_triangle
@@ -420,11 +464,13 @@
     min.len = 1,
     len = nrow(reporting_triangle_matrix)
   )
+
   assert_numeric(structure, lower = 1)
   assert_integerish(structure, min.len = 1)
   assert_integerish(max_delay, min.len = 1, lower = 1)
   assert_character(delays_unit, len = 1)
-  assert_character(strata, null.ok = TRUE, len = 1)
+  assert_character(strata, null.ok = TRUE)
+
   assert_character(delays_unit, len = 1)
   assert_choice(delays_unit,
     choices = c("days", "weeks", "months", "years")

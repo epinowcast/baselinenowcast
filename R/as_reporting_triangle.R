@@ -2,8 +2,7 @@
 #'
 #' @param data Data to be nowcasted.
 #' @param max_delay Integer indicating the maximum delay.
-#' @param strata Character string indicating the metadata on the strata of this
-#'    reporting triangle. Default is `NULL`.
+#' @param strata Character string indicating the strata. Default is NULL.
 #' @param delays_unit Character string specifying the temporal granularity of
 #'    the delays. Options are `"days"`, `"weeks"`, `"months"`, `"years"`.
 #'    For the matrix method, this is simply passed as an item in the
@@ -44,6 +43,10 @@ as_reporting_triangle <- function(data,
 #'  Additional columns can be included but will not be used. The input
 #'  dataframe for this function must contain only a single strata, there can
 #'  be no repeated reference dates and report dates.
+#' @param strata Vector or single character string indicating the name of the
+#'    column(s) of `data` which indicate the strata associated with the data.
+#'    Entries of that column must all be the same. Default is `NULL`, which
+#'    does not assign metadata to this data.
 #' @inheritParams as_reporting_triangle
 #' @param reference_date Character string indicating the name of the
 #'    column which represents the reference date, or the date of the primary
@@ -175,7 +178,7 @@ as_reporting_triangle.data.frame <- function(
 #' @inheritParams as_reporting_triangle
 #' @param reference_dates Vector of character strings indicating the reference
 #'   dates corresponding to each row of the reporting triangle matrix (`data`).
-#' @param ... Additional arguments passed to methods.
+#' @param ... Additional arguments not used.
 #' @export
 #' @return A \code{\link{reporting_triangle}} object
 #' @method as_reporting_triangle matrix
@@ -234,71 +237,4 @@ as_reporting_triangle.matrix <- function(data,
     delays_unit = delays_unit
   )
   return(reporting_triangle_obj)
-}
-
-#' Class constructor for `reporting_triangle` objects
-#'
-#' @param reporting_triangle_matrix Matrix of reporting triangle
-#' @inheritParams as_reporting_triangle.matrix
-#' @inheritParams construct_triangle
-#' @inheritParams as_reporting_triangle
-#'
-#' @returns An object of class `reporting_triangle`
-#'
-#' @export
-new_reporting_triangle <- function(reporting_triangle_matrix,
-                                   reference_dates,
-                                   structure,
-                                   max_delay,
-                                   delays_unit,
-                                   strata = NULL) {
-  .validate_rep_tri_args(
-    reporting_triangle_matrix,
-    reference_dates,
-    structure,
-    max_delay,
-    delays_unit,
-    strata
-  )
-  result <- structure(
-    list(
-      reporting_triangle_matrix = reporting_triangle_matrix,
-      reference_dates = reference_dates,
-      structure = structure,
-      max_delay = max_delay,
-      delays_unit = delays_unit,
-      strata = strata
-    ),
-    class = "reporting_triangle"
-  )
-  return(result)
-}
-
-#' Assert validity of `reporting_triangle` objects
-#'
-#' @param data A `reporting_triangle` object to check for validity.
-#' @return NULL
-#' @export
-#' @importFrom checkmate assert_matrix assert_date assert_numeric
-#'    assert_character assert_choice
-assert_reporting_triangle <- function(data) {
-  .validate_rep_tri_args(
-    reporting_triangle_matrix = data$reporting_triangle_matrix,
-    reference_dates = data$reference_dates,
-    structure = data$structure,
-    max_delay = data$max_delay,
-    delays_unit = data$delays_unit,
-    strata = data$strata
-  )
-
-  if (sum(data$structure) > ncol(data$reporting_triangle_matrix)) {
-    cli_abort(message = c(
-      message = c(
-        "Sum of `structure` must not be greater than or equal",
-        "to the number of columns in matrix"
-      )
-    ))
-  }
-
-  return(NULL)
 }

@@ -15,7 +15,7 @@
 #'   nowcasted, with rows representing the time points of reference and columns
 #'   representing the delays
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
-#'   first delay column in `rep_mat_to_nowcast`
+#'   first delay column in `reporting_triangle`.
 #' @return `point_nowcast_matrix` Matrix of the same number of rows and columns
 #'    as the `rep_mat_to_nowcast` but with the missing values filled in as point
 #'    estimates

@@ -19,8 +19,7 @@ columns are delays, and entries are the incident counts.}
 
 \item{max_delay}{Integer indicating the maximum delay.}
 
-\item{strata}{Character string indicating the metadata on the strata of this
-reporting triangle. Default is \code{NULL}.}
+\item{strata}{Character string indicating the strata. Default is NULL.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
@@ -34,7 +33,7 @@ the reporting triangle.  Default is \code{"days"}.}
 \item{reference_dates}{Vector of character strings indicating the reference
 dates corresponding to each row of the reporting triangle matrix (\code{data}).}
 
-\item{...}{Additional arguments passed to methods.}
+\item{...}{Additional arguments not used.}
 }
 \value{
 A \code{\link{reporting_triangle}} object

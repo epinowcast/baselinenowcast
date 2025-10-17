@@ -180,13 +180,13 @@ test_that("assert_baselinenowcast_df errors when appropriate", {
 test_that("baselinenowcast.reporting_triangle errors if nothing to nowcast", {
   skip_if_not_installed("tidyr")
   skip_if_not_installed("dplyr")
-  data <- expand_grid(
+  data <- tidyr::expand_grid(
     reference_date = seq(as.Date("2021-04-01"), as.Date("2021-04-30"),
       by = "day"
     ),
     report_date = seq(as.Date("2021-04-01"), as.Date("2021-05-15"), by = "day")
   ) |>
-    mutate(count = 5)
+    dplyr::mutate(count = 5)
 
   rep_tri <- expect_warning(
     as_reporting_triangle(data, max_delay = 10),

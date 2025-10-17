@@ -366,13 +366,13 @@ test_that("assert on reporting triangle works as expected", {
 test_that("`as_reporting_triangle()` appropriately warns if there is nothing to be nowcasted (no unobserved cases in reporting triangle)", { # nolint
   skip_if_not_installed("tidyr")
   skip_if_not_installed("dplyr")
-  data <- expand_grid(
+  data <- tidyr::expand_grid(
     reference_date = seq(as.Date("2021-04-01"), as.Date("2021-04-30"),
       by = "day"
     ),
     report_date = seq(as.Date("2021-04-01"), as.Date("2021-05-15"), by = "day")
   ) |>
-    mutate(count = 5)
+    dplyr::mutate(count = 5)
 
   rep_tri <- expect_warning(
     as_reporting_triangle(data, max_delay = 10),

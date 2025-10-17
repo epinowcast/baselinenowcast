@@ -212,10 +212,12 @@ baselinenowcast.reporting_triangle <- function(
 #' @examples
 #' covid_data
 #' nowcasts_df <- baselinenowcast(covid_data,
-#'              nowcast_unit = c("age_group", "location"))
+#'   nowcast_unit = c("age_group", "location")
+#' )
 #' nowcasts_df
-baselinenowcast.reporting_triangle <- function(
+baselinenowcast.data.frame <- function(
     data,
+    max_delay,
     delays_unit = "days",
     reference_date = "reference_date",
     report_date = "report_date",
@@ -230,3 +232,69 @@ baselinenowcast.reporting_triangle <- function(
     delay_pmf = NULL,
     uncertainty_params = NULL,
     ...) {
+  # Extract the additional columns not in the required columns
+  if (is.null(nowcast_unit)) {
+    nowcast_unit <- colnames(data)[!colnames(data) %in%
+      c(
+        {{ reference_date }},
+        {{ report_date }},
+        {{ count }}
+      )]
+  }
+
+  # Split dataframe into a list of dataframes for each nowcast unit
+  list_of_dfs <- split(data, data[nowcast_unit])
+
+  for (i in 1:length(list_of_dfs)) {
+    rep_tri_df <- list_of_dfs[[i]]
+
+    rep_tri <- as_reporting_triangle.data.frame(
+      data = rep_tri_df,
+      max_delay = max_delay,
+      delays_unit = delays_unit,
+      reference_date = reference_date,
+      report_date = report_date,
+      count = count
+    )
+
+    nowcast_df <- baselinenowcast.reporting_triangle(
+      data = rep_tri,
+      scale_factor = scale_factor,
+      prop_delay = prop_delay,
+      output_type = output_type,
+      draws = draws,
+      uncertainty_model = uncertainty_model,
+      uncertainty_sampler = uncertainty_sampler,
+      delay_pmf = delay_pmf,
+      uncertainty_params = uncertainty_params,
+      ...
+    )
+  }
+
+  split_result <- lapply(list_of_dfs, function(rep_tri_df) {
+    rep_tri <- as_reporting_triangle.data.frame(
+      data = rep_tri_df,
+      max_delay = max_delay,
+      delays_unit = delays_unit,
+      reference_date = reference_date,
+      report_date = report_date,
+      count = count
+    )
+
+    nowcast_df <- baselinenowcast.reporting_triangle(
+      data = rep_tri,
+      scale_factor = scale_factor,
+      prop_delay = prop_delay,
+      output_type = output_type,
+      draws = draws,
+      uncertainty_model = uncertainty_model,
+      uncertainty_sampler = uncertainty_sampler,
+      delay_pmf = delay_pmf,
+      uncertainty_params = uncertainty_params,
+      ...
+    )
+    return(nowcast_df)
+  })
+
+  nowcasts_df <- rbind_list(split_result, fill = TRUE)
+}

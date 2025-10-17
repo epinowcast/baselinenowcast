@@ -1,5 +1,5 @@
 Package: baselinenowcast
-Title: Methods for baseline nowcasting right-truncated epidemiological data
+Title: Methods for Baseline Nowcasting Right-Truncated Epidemiological Data
 Version: 0.0.0.1000
 Authors@R:
   c(person(given = "Kaitlyn",
@@ -42,8 +42,8 @@ Description: Nowcasting right-truncated epidemiological data is critical
   supports sharing delay distributions and uncertainty estimates between strata,
   as well as custom uncertainty models and delay estimation methods.
   For more details on the performance of the method(s) in this package applied
-  to case studies of COVID-19 and norovirus, see our recent
-  [pre-print](https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2).
+  to case studies of COVID-19 and norovirus, see our recent pre-print at
+  <https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2>.
 License: MIT + file LICENSE
 URL: https://baselinenowcast.epinowcast.org, https://github.com/epinowcast/baselinenowcast/
 BugReports: https://github.com/epinowcast/baselinenowcast/issues

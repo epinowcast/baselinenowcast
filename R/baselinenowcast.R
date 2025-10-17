@@ -147,3 +147,84 @@ baselinenowcast.reporting_triangle <- function(
 
   return(result_df)
 }
+
+#' @title Create a dataframe of nowcast results from a dataframe of cases
+#'   indexed by reference date and report date
+#'
+#' @description This function ingests a data.frame with the number of incident
+#'    cases indexed by reference date and report date for potentially multiple
+#'    strata (e.g. age groups or locations) and returns a data.frame containing
+#'    nowcasts by reference dates for each of the specified strata.
+#'    For each strata, this function will by default estimate uncertainty using
+#'    past retrospective nowcast errors and generate probabilistic nowcasts,
+#'    which are samples from the predictive distribution of the estimated final
+#'    case count at each reference date. See documentation for the arguments of
+#'    this function which can be used to set the model specifications (things
+#'    like number of reference times for delay and uncertainty estimation,
+#'    the observation model, etc.). The function expects that each strata in
+#'    the dataframe has the same maximum delay and the same number of reference
+#'    dates.
+#'
+#' @param data Data.frame in a long tidy format with counts by reference date
+#'    and report date for one or more strata. Must contain the following
+#'    columns:
+#' .    - Column of type `date` or character with the dates of
+#'     the primary event occurrence (reference date).
+#'    - Column of type `date` or character with the dates of
+#'     report of the primary event (report_date).
+#'    - Column of numeric or integer indicating the new confirmed counts
+#'     pertaining to that reference and report date (count).
+#'  Additional columns can be included, and the user can specify which columns
+#'  set the unit of a single nowcast  ( i.e. the combination of columns that
+#'  uniquely define a single nowcast with the `nowcast_unit` argument.).
+#' @param nowcast_unit Vector of character strings indicting the names of the
+#'   columns in `data` (after any renaming of columns) that denote the unit of
+#'    a single nowcast.Within a nowcast unit, there can be no repeated unique
+#'    combinations of reference dates and report dates. Default is `NULL` which
+#'    assumes that all columns that are not required columns form the unit of
+#'    a single forecast. This may lead to unexpected behavior, so setting the
+#'    nowcast unit explicitly can help make the code easier to debug and easier
+#'    to read. If specified, all columns that are not part of the forecast unit
+#'    (or required columns) will be removed.
+#' @param delay_pmf Vector of delays assumed to be indexed starting at the
+#'   first delay. Default is NULL,
+#'   which will estimate the delay from the reporting triangle in each
+#'   nowcast unit in `data`. See \code{\link{estimate_delay}} for more details.
+#' @param uncertainty_params Vector of uncertainty parameters ordered from
+#'   horizon 1 to the maximum horizon. Default is `NULL`, which will
+#'   estimate the uncertainty parameters from the reporting triangle in each
+#'   nowcast unit in `data`. See \code{\link{estimate_uncertainty}} for more
+#'   details.
+#' @param ... Additional arguments passed to
+#'    \code{\link{estimate_uncertainty}}
+#'    and \code{\link{sample_nowcast}}.
+#' @inheritParams baselinenowcast
+#' @inheritParams as_reporting_triangle.data.frame
+#' @inheritParams estimate_uncertainty
+#' @inheritParams sample_nowcast
+#' @inheritParams allocate_reference_times
+#' @family nowcast_df
+#' @export
+#' @method baselinenowcast data.frame
+#' @returns Data.frame of class \code{\link{baselinenowcast_df}}
+#' @examples
+#' covid_data
+#' nowcasts_df <- baselinenowcast(covid_data,
+#'              nowcast_unit = c("age_group", "location"))
+#' nowcasts_df
+baselinenowcast.reporting_triangle <- function(
+    data,
+    delays_unit = "days",
+    reference_date = "reference_date",
+    report_date = "report_date",
+    count = "count",
+    nowcast_unit = NULL,
+    scale_factor = 3,
+    prop_delay = 0.5,
+    output_type = "samples",
+    draws = 1000,
+    uncertainty_model = fit_by_horizon,
+    uncertainty_sampler = sample_nb,
+    delay_pmf = NULL,
+    uncertainty_params = NULL,
+    ...) {

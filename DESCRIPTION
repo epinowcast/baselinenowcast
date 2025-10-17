@@ -53,7 +53,8 @@ Imports:
   cli,
   checkmate,
   stats,
-  utils
+  utils,
+  rlang
 Suggests:
     epinowcast,
     bookdown,

@@ -17,8 +17,7 @@ as_reporting_triangle(
 
 \item{max_delay}{Integer indicating the maximum delay.}
 
-\item{strata}{Character string indicating the metadata on the strata of this
-reporting triangle. Default is \code{NULL}.}
+\item{strata}{Character string indicating the strata. Default is NULL.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.

@@ -16,7 +16,11 @@
 #'  \item{pred_count}{Numeric indicating the estimated total counts aggregated
 #'    across delays at each reference date.}
 #'  \item{draw}{Integer indexing the sample from the probabilistic nowcast
-#'    distribution. Only present if `output_type = "samples"`.}
+#'    distribution. If `output_type = "point"`, this will be set to 1.}
+#'  \item{output_type}{Character string indicating whether the `pred_count`
+#'   represents a probabilistic draw from the observation model indicated by
+#'   `"samples"` or whether the `pred_count` is a point estimate indicated by
+#'   `"point"`.}
 #' }
 #' See the corresponding \code{\link{reporting_triangle}} and
 #' \code{\link{baselinenowcast}} function
@@ -33,11 +37,14 @@ NULL
 #'  (`pred_count`), and optionally the draw number (`draw`).
 #' @param reference_dates Vector of reference dates corresponding to the
 #'    reference times in the `baselinenowcast_df`.
+#' @inheritParams baselinenowcast
 #'
 #' @returns An object of class \code{\link{baselinenowcast_df}}
 #' @export
 new_baselinenowcast_df <- function(baselinenowcast_df,
-                                   reference_dates) {
+                                   reference_dates,
+                                   output_type) {
+  assert_choice(output_type, choices = c("samples", "point"))
   spine_df <- data.frame(
     reference_date = reference_dates,
     time = seq_along(reference_dates)
@@ -50,6 +57,7 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
   )
 
   baselinenowcast_df_dates$time <- NULL
+  baselinenowcast_df_dates$output_type <- output_type
 
   result <- structure(
     data.frame(baselinenowcast_df_dates),

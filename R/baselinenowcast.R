@@ -111,8 +111,10 @@ baselinenowcast.reporting_triangle <- function(
       time = seq_len(nrow(pt_nowcast)),
       pred_count = rowSums(pt_nowcast)
     )
+    nowcast_df$draw <- 1
     result_df <- new_baselinenowcast_df(nowcast_df,
-      reference_dates = data$reference_dates
+      reference_dates = data$reference_dates,
+      output_type = output_type
     )
     return(result_df)
   }
@@ -142,7 +144,8 @@ baselinenowcast.reporting_triangle <- function(
   }
 
   result_df <- new_baselinenowcast_df(nowcast_df,
-    reference_dates = data$reference_dates
+    reference_dates = data$reference_dates,
+    output_type = output_type
   )
 
   return(result_df)

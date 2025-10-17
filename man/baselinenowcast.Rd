@@ -58,7 +58,8 @@ Data.frame of class \code{\link{baselinenowcast_df}}
 Generate a nowcast from a reporting triangle
 }
 \seealso{
-Other nowcast_df:
-\code{\link{baselinenowcast.reporting_triangle}()}
+Other baselinenowcast_df:
+\code{\link{baselinenowcast.reporting_triangle}()},
+\code{\link{baselinenowcast_df-class}}
 }
-\concept{nowcast_df}
+\concept{baselinenowcast_df}

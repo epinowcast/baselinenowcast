@@ -26,7 +26,7 @@ test_that("baselinenowcast.reporting_triangle() errors sensibly with inappropria
     baselinenowcast(rep_tri,
       output_type = "pt"
     ),
-    regexp = "Assertion on 'output_type' failed"
+    regexp = "`output_type` must be one of "
   )
   expect_error(
     baselinenowcast(rep_tri,
@@ -64,14 +64,6 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
       uncertainty_params = rep(1, 10)
     ),
     regexp = "`uncertainty_params` are not the same length"
-  )
-
-  expect_warning(
-    baselinenowcast(rep_tri,
-      output_type = "point",
-      uncertainty_params = rep(1, 25)
-    ),
-    regexp = "`uncertainty_params` passed in but point estimate was specified as an output" # nolint
   )
 
   test_df2 <- baselinenowcast(rep_tri,

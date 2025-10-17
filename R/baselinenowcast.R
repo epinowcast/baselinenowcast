@@ -1,6 +1,12 @@
-#' @title Generate a nowcast from a reporting triangle
+#' @title Generate a nowcast
 #'
-#' @param data Reporting triangle to be nowcasted
+#' @description This function ingests data to be nowcasted and generates a
+#'   a \code{\link{baselinenowcast_df}} which contains a probabilistic or point
+#'   estimate of the final case counts at each reference date in the `data`.
+#'   See \code{\link{baselinenowcast.reporting_triangle}} for details on the
+#'   input requirements.
+#'
+#' @param data Data to be nowcasted
 #' @inheritParams sample_nowcast
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast
@@ -56,6 +62,7 @@ baselinenowcast <- function(data,
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast
 #' @inheritParams allocate_reference_times
+#' @importFrom rlang arg_match
 #' @family baselinenowcast_df
 #' @export
 #' @method baselinenowcast reporting_triangle
@@ -72,7 +79,7 @@ baselinenowcast.reporting_triangle <- function(
     data,
     scale_factor = 3,
     prop_delay = 0.5,
-    output_type = "samples",
+    output_type = c("samples", "point"),
     draws = 1000,
     uncertainty_model = fit_by_horizon,
     uncertainty_sampler = sample_nb,
@@ -80,7 +87,7 @@ baselinenowcast.reporting_triangle <- function(
     uncertainty_params = NULL,
     ...) {
   tri <- data$reporting_triangle_matrix
-  assert_choice(output_type, choices = c("samples", "point"))
+  output_type <- arg_match(output_type)
   assert_integerish(draws, null.ok = TRUE)
 
   tv <- allocate_reference_times(tri,
@@ -104,13 +111,6 @@ baselinenowcast.reporting_triangle <- function(
       time = seq_len(nrow(pt_nowcast)),
       pred_count = rowSums(pt_nowcast)
     )
-    if (!is.null(uncertainty_params)) {
-      cli_warn(
-        message =
-          "`uncertainty_params` passed in but point estimate was specified as an output type. `uncertainty params` will not be used." # nolint
-      )
-    }
-    # early return
     result_df <- new_baselinenowcast_df(nowcast_df,
       reference_dates = data$reference_dates
     )
@@ -118,7 +118,6 @@ baselinenowcast.reporting_triangle <- function(
   }
 
   if (is.null(uncertainty_params)) {
-    # estimate uncertainty or sample from passed in uncertainty
     nowcast_df <- estimate_and_apply_uncertainty(
       point_nowcast_matrix = pt_nowcast,
       reporting_triangle = tri,
@@ -130,8 +129,7 @@ baselinenowcast.reporting_triangle <- function(
       uncertainty_sampler = uncertainty_sampler,
       ...
     )
-  } else { # uncertainty parameters passed in and not a point estimate
-    # check for uncertainty params being the right length/format
+  } else {
     .validate_uncertainty(tri, uncertainty_params)
     nowcast_df <- sample_nowcasts(
       point_nowcast_matrix = pt_nowcast,

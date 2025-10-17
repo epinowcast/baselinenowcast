@@ -194,7 +194,6 @@ test_that("as_reporting_triangle.data.frame() errors if missing required columns
   )
 })
 
-
 test_that("as_reporting_triangle.data.frame() returns appropriate strata", { # nolint
   rep_tri <- as_reporting_triangle(
     data_as_of_df,

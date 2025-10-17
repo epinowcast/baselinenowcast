@@ -8,7 +8,7 @@
   data,
   scale_factor = 3,
   prop_delay = 0.5,
-  output_type = "samples",
+  output_type = c("samples", "point"),
   draws = 1000,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,

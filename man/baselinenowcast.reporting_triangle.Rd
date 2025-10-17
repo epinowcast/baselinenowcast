@@ -58,7 +58,9 @@ See \code{\link{estimate_delay}} for more details.}
 
 \item{uncertainty_params}{Vector of uncertainty parameters ordered from
 horizon 1 to the maximum horizon. Default is \code{NULL}, which will
-result in computing the uncertainty parameters from the \code{data}.}
+result in computing the uncertainty parameters from the reporting
+triangle matrix \code{data}. See \code{\link{estimate_uncertainty}} for more
+details.}
 
 \item{...}{Additional arguments passed to
 \code{\link{estimate_uncertainty}}
@@ -90,7 +92,8 @@ nowcast_df <- baselinenowcast(rep_tri)
 nowcast_df
 }
 \seealso{
-Other nowcast_df:
-\code{\link{baselinenowcast}()}
+Other baselinenowcast_df:
+\code{\link{baselinenowcast}()},
+\code{\link{baselinenowcast_df-class}}
 }
-\concept{nowcast_df}
+\concept{baselinenowcast_df}

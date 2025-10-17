@@ -25,4 +25,9 @@ See the corresponding \code{\link{reporting_triangle}} and
 for more details on the required inputs to generate the object.
 }
 
+\seealso{
+Other baselinenowcast_df:
+\code{\link{baselinenowcast}()},
+\code{\link{baselinenowcast.reporting_triangle}()}
+}
 \concept{baselinenowcast_df}

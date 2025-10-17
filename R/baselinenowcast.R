@@ -12,7 +12,7 @@
 #'    if `output_type` is `"samples"`. Default is 1000.
 #' @param ... Additional arguments passed to methods.
 #' @returns Data.frame of class \code{\link{baselinenowcast_df}}
-#' @family nowcast_df
+#' @family baselinenowcast_df
 #' @export
 baselinenowcast <- function(data,
                             scale_factor = 3,
@@ -46,7 +46,9 @@ baselinenowcast <- function(data,
 #'   See \code{\link{estimate_delay}} for more details.
 #' @param uncertainty_params Vector of uncertainty parameters ordered from
 #'   horizon 1 to the maximum horizon. Default is `NULL`, which will
-#'   result in computing the uncertainty parameters from the `data`.
+#'   result in computing the uncertainty parameters from the reporting
+#'   triangle matrix `data`. See \code{\link{estimate_uncertainty}} for more
+#'   details.
 #' @param ... Additional arguments passed to
 #'    \code{\link{estimate_uncertainty}}
 #'    and \code{\link{sample_nowcast}}.
@@ -54,7 +56,7 @@ baselinenowcast <- function(data,
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast
 #' @inheritParams allocate_reference_times
-#' @family nowcast_df
+#' @family baselinenowcast_df
 #' @export
 #' @method baselinenowcast reporting_triangle
 #' @returns Data.frame of class \code{\link{baselinenowcast_df}}

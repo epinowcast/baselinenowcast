@@ -37,8 +37,8 @@ also supports sharing delay distributions and uncertainty estimates
 between strata, as well as custom uncertainty models and delay
 estimation methods. For more details on the performance of the method(s)
 in this package applied to case studies of COVID-19 and norovirus, see
-our recent
-[pre-print](https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2).
+our recent pre-print at
+<https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2>.
 
 ## Installation
 

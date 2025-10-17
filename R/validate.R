@@ -465,7 +465,7 @@
     len = nrow(reporting_triangle_matrix)
   )
 
-  assert_numeric(structure, lower = 1)
+  assert_numeric(structure, lower = 0)
   assert_integerish(structure, min.len = 1)
   assert_integerish(max_delay, min.len = 1, lower = 1)
   assert_character(delays_unit, len = 1)

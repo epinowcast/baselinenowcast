@@ -46,6 +46,8 @@ baselinenowcast <- function(data,
 #'    model, etc.).
 #'
 #' @param data \code{\link{reporting_triangle}} class object to be nowcasted.
+#'   The `data$reporting_triangle_matrix` must contain missing observations
+#'   in the form of NAs in order to generate an output from this function.
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
 #'   first delay column in `data$reporting_triangle_matrix`. Default is NULL,
 #'   which will estimate the delay from the reporting triangle matrix in `data`,
@@ -89,6 +91,14 @@ baselinenowcast.reporting_triangle <- function(
   tri <- data$reporting_triangle_matrix
   output_type <- arg_match(output_type)
   assert_integerish(draws, null.ok = TRUE)
+  n_row_nas <- sum(is.na(rowSums(data$reporting_triangle_matrix)))
+  if (n_row_nas == 0) {
+    cli_abort(
+      message = c("`data$reporting_triangle_matrix` doesn't contain any missing values, there is nothing to nowcast.", # nolint
+        "i" = "Check to make sure missing observations are coded as NAs rather than 0s."
+      ) # nolint
+    )
+  }
 
   tv <- allocate_reference_times(tri,
     scale_factor = scale_factor,

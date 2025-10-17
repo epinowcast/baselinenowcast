@@ -103,8 +103,10 @@ be no repeated reference dates and report dates.</p></li>
 
 
 <dt id="arg-strata">strata<a class="anchor" aria-label="anchor" href="#arg-strata"></a></dt>
-<dd><p>Character string indicating the metadata on the strata of this
-reporting triangle. Default is <code>NULL</code>.</p></dd>
+<dd><p>Vector or single character string indicating the name of the
+column(s) of <code>data</code> which indicate the strata associated with the data.
+Entries of that column must all be the same. Default is <code>NULL</code>, which
+does not assign metadata to this data.</p></dd>
 
 
 <dt id="arg-delays-unit">delays_unit<a class="anchor" aria-label="anchor" href="#arg-delays-unit"></a></dt>

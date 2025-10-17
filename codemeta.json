@@ -299,9 +299,21 @@
       "identifier": "utils",
       "name": "utils"
     },
+    "6": {
+      "@type": "SoftwareApplication",
+      "identifier": "rlang",
+      "name": "rlang",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=rlang"
+    },
     "SystemRequirements": null
   },
-  "fileSize": "2945.286KB",
+  "fileSize": "2979.199KB",
   "citation": [
     {
       "@type": "ScholarlyArticle",

@@ -188,7 +188,7 @@ test_that("baselinenowcast.reporting_triangle errors if nothing to nowcast", {
   ) |>
     dplyr::mutate(count = 5)
 
-  rep_tri <- expect_warning(
+  rep_tri <- expect_message(
     as_reporting_triangle(data, max_delay = 10),
     regexp = "The reporting triangle does not contain any missing values."
   ) # nolint

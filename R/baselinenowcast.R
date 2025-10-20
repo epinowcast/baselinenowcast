@@ -95,7 +95,8 @@ baselinenowcast.reporting_triangle <- function(
   if (n_row_nas == 0) {
     cli_abort(
       message = c("`data$reporting_triangle_matrix` doesn't contain any missing values, there is nothing to nowcast.", # nolint
-        "i" = "Check to make sure missing observations are coded as NAs rather than 0s." # nolint
+        "i" = "Check to make sure missing observations are coded as NAs rather than 0s.", # nolint
+        "i" = "If performing nowcasts retrospectively, check to make sure that report dates after the data of the nowcast (the last reference date) have been excluded." # nolint
       )
     )
   }

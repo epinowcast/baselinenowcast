@@ -379,8 +379,8 @@
   }
 
   if (max(data$report_date) > max(data$reference_date)) {
-    cli_warn(
-      message = "The dataframe contains report dates beyond the final reference date." # nolint
+    cli_alert_info(
+      text = "The dataframe contains report dates beyond the final reference date." # nolint
     )
   }
 

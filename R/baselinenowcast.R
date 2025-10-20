@@ -270,18 +270,21 @@ baselinenowcast.data.frame <- function(
   # Apply strata sharing if specified
   if (!is.null(strata_sharing)) {
     assert_subset(strata_sharing,
-                  choices = c("delay", "uncertainty"),
-                  empty.ok = TRUE
+      choices = c("delay", "uncertainty"),
+      empty.ok = TRUE
     )
-    pooled_df <- combine_triangle_dfs(data = data,
-                                      reference_date = reference_date,
-                                      report_date = report_date,
-                                      count = count)
+    pooled_df <- combine_triangle_dfs(
+      data = data,
+      reference_date = reference_date,
+      report_date = report_date,
+      count = count
+    )
     pooled_triangle <- as_reporting_triangle(pooled_df,
-                                             max_delay = max_delay,
-                                             reference_date = reference_date,
-                                             report_date = report_date,
-                                             count = count)
+      max_delay = max_delay,
+      reference_date = reference_date,
+      report_date = report_date,
+      count = count
+    )
     if ("delay" %in% strata_sharing) {
       # Estimate delay once on pooled data
       delay_pmf <- estimate_delay(
@@ -293,65 +296,66 @@ baselinenowcast.data.frame <- function(
       # Estimate uncertainty once on pooled data
       trunc_rep_tris <- truncate_triangles(
         reporting_triangle = pooled_triangle$reporting_triangle_matrix,
-        n = tv$n_history_uncertainty
+        n = tv$n_retrospective_nowcasts
       )
       retro_rep_tris <- construct_triangles(trunc_rep_tris)
       retro_pt_nowcasts <- fill_triangles(retro_rep_tris,
-                                          max_delay = max_delay,
-                                          n = tv$n_history_delay
+        max_delay = max_delay,
+        n = tv$n_history_delay
       )
       uncertainty_params <- estimate_uncertainty(
         point_nowcast_matrices = retro_pt_nowcasts,
         truncated_reporting_triangles = trunc_rep_tris,
         retro_reporting_triangles = retro_rep_tris,
-        n = tv$n_history_uncertainty,
+        n = tv$n_retrospective_nowcasts,
         uncertainty_model = uncertainty_model,
         ...
       )
     }
   }
 
-    combined_result <- imap(list_of_dfs, function(rep_tri_df, name) {
-      rep_tri <- as_reporting_triangle.data.frame(
-        data = rep_tri_df,
-        max_delay = max_delay,
-        delays_unit = delays_unit,
-        reference_date = reference_date,
-        report_date = report_date,
-        count = count
-      )
+  combined_result <- imap(list_of_dfs, function(rep_tri_df, name) {
+    rep_tri <- as_reporting_triangle.data.frame(
+      data = rep_tri_df,
+      max_delay = max_delay,
+      delays_unit = delays_unit,
+      reference_date = reference_date,
+      report_date = report_date,
+      count = count
+    )
 
-      nowcast_df <- baselinenowcast.reporting_triangle(
-        data = rep_tri,
-        scale_factor = scale_factor,
-        prop_delay = prop_delay,
-        output_type = output_type,
-        draws = draws,
-        uncertainty_model = uncertainty_model,
-        uncertainty_sampler = uncertainty_sampler,
-        delay_pmf = delay_pmf,
-        uncertainty_params = uncertainty_params,
-        ...)
-      
-      # Split the name of the element in the last and add as a separate column
-      # based on nowcast unit entry
-      if(!is.null(nowcast_unit)){
-        for (i in seq_along(nowcast_unit)){
-          split_name <- strsplit(name, "\\.")[[1]]
-          nowcast_df[[nowcast_unit[i]]] <- split_name[i]
-        }
+    nowcast_df <- baselinenowcast.reporting_triangle(
+      data = rep_tri,
+      scale_factor = scale_factor,
+      prop_delay = prop_delay,
+      output_type = output_type,
+      draws = draws,
+      uncertainty_model = uncertainty_model,
+      uncertainty_sampler = uncertainty_sampler,
+      delay_pmf = delay_pmf,
+      uncertainty_params = uncertainty_params,
+      ...
+    )
+
+    # Split the name of the element in the last and add as a separate column
+    # based on nowcast unit entry
+    if (!is.null(nowcast_unit)) {
+      for (i in seq_along(nowcast_unit)) {
+        split_name <- strsplit(name, "\\.")[[1]]
+        nowcast_df[[nowcast_unit[i]]] <- split_name[i]
       }
-      
-      
-      return(nowcast_df)
-    }) |> list_rbind()
+    }
+
+
+    return(nowcast_df)
+  }) |> list_rbind()
 
   return(combined_result)
 }
 
 
 #' Combine triangle data.frames
-#' 
+#'
 #' @description This function ingests a dataframe with case counts indexed by
 #' reference dates and report dates for multiple strata and sums all the case
 #' counts, returning a data.frame with a single set of counts for all
@@ -367,35 +371,35 @@ baselinenowcast.data.frame <- function(
 #'
 #' @examples
 #' example_data <- data.frame(
-#'  ref_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), #nolint
-#'  rep_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), #nolint
-#' location = c("DE", "FR", "DE", "FR"),
-#' age_group = c("00+", "00+", "05-14", "00+"),
-#' cases = c(50, 30, 20, 40)
+#'   ref_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
+#'   rep_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
+#'   location = c("DE", "FR", "DE", "FR"),
+#'   age_group = c("00+", "00+", "05-14", "00+"),
+#'   cases = c(50, 30, 20, 40)
 #' )
 #' example_data
 #' combined <- combine_triangle_dfs(
-#' data = example_data,
-#' reference_date = "ref_date",
-#' report_date = "rep_date",
-#' count = "cases"
+#'   data = example_data,
+#'   reference_date = "ref_date",
+#'   report_date = "rep_date",
+#'   count = "cases"
 #' )
 #' combined
 combine_triangle_dfs <- function(data,
                                  reference_date,
                                  report_date,
-                                 count){
+                                 count) {
   group_cols <- c(reference_date, report_date)
   value_col <- count
-  
+
   formula_str <- paste(value_col, "~", paste(group_cols, collapse = " + "))
   formula_obj <- as.formula(formula_str)
-  
+
   result <- aggregate(
     formula_obj,
     data = data,
     FUN = sum,
     na.rm = TRUE
-    )
+  )
   return(result)
 }

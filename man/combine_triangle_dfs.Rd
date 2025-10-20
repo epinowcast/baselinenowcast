@@ -45,18 +45,18 @@ reference and report date combinations present in the original data
 }
 \examples{
 example_data <- data.frame(
- ref_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), #nolint
- rep_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), #nolint
-location = c("DE", "FR", "DE", "FR"),
-age_group = c("00+", "00+", "05-14", "00+"),
-cases = c(50, 30, 20, 40)
+  ref_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
+  rep_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
+  location = c("DE", "FR", "DE", "FR"),
+  age_group = c("00+", "00+", "05-14", "00+"),
+  cases = c(50, 30, 20, 40)
 )
 example_data
 combined <- combine_triangle_dfs(
-data = example_data,
-reference_date = "ref_date",
-report_date = "rep_date",
-count = "cases"
+  data = example_data,
+  reference_date = "ref_date",
+  report_date = "rep_date",
+  count = "cases"
 )
 combined
 }

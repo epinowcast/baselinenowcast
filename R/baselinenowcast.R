@@ -234,6 +234,10 @@ baselinenowcast.data.frame <- function(
     delay_pmf = NULL,
     uncertainty_params = NULL,
     ...) {
+  assert_choice(strata_sharing,
+    choices = c("delay", "uncertainty"),
+    null.ok = TRUE
+  )
   # Extract the additional columns not in the required columns
   if (is.null(nowcast_unit)) {
     nowcast_unit <- colnames(data)[!colnames(data) %in%
@@ -246,31 +250,46 @@ baselinenowcast.data.frame <- function(
 
   # Split dataframe into a list of dataframes for each nowcast unit
   list_of_dfs <- split(data, data[nowcast_unit])
+  # Make sure they are all the same training volume length and that
+  # they have the required columns etc
+  # .validate_list_of_dfs(list_of_dfs, max_delay, reference_date, report_date, count, delays_unit) #nolint
+
+  # Get the training volume for all reporting triangles
+  rep_tri1 <- as_reporting_triangle.data.frame(
+    data = list_of_dfs[[1]],
+    max_delay = max_delay,
+    delays_unit = delays_unit,
+    reference_date = reference_date,
+    report_date = report_date,
+    count = count
+  )
+  tv <- allocate_reference_times(
+    reporting_triangle = rep_tri1$reporting_triangle_matrix,
+    scale_factor = scale_factor,
+    prop_delay = prop_delay
+  )
 
   # Apply strata sharing if specified
-  if (!is.null(strata_sharing) && length(strata_sharing) > 0) {
+  if (!is.null(strata_sharing)) {
     pooled_triangle <- combine_triangles(data)
-    tv_pool <- allocate_reference_times(pooled_triangle$reporting_triangle_matrix,
-      scale_factor = scale_factor,
-      prop_delay = prop_delay
-    )
     if ("delay" %in% strata_sharing) {
       # Estimate delay once on pooled data
-      shared_delay <- estimate_delay(pooled_triangle$reporting_triangle_matrix,
-        n = tv_pool$n_history_delay
+      delay_pmf <- estimate_delay(
+        reporting_triangle = pooled_triangle$reporting_triangle_matrix,
+        n = tv$n_history_delay
       )
     }
     if ("uncertainty" %in% strata_sharing) {
       # Estimate uncertainty once on pooled data
-      shared_uncertainty <- estimate_uncertainty(pooled_triangle$reporting_triangle_matrix,
-        n = tv_pool$n_history_uncertainty
+      uncertainty_params <- estimate_uncertainty(
+        reporting_triangle = pooled_triangle$reporting_triangle_matrix,
+        n = tv$n_history_uncertainty
       )
     }
   }
 
-
-
-
+  # Process each nowcast unit
+  nowcasts_df <- data.frame()
   for (i in 1:length(list_of_dfs)) {
     rep_tri_df <- list_of_dfs[[i]]
 
@@ -292,35 +311,40 @@ baselinenowcast.data.frame <- function(
       uncertainty_model = uncertainty_model,
       uncertainty_sampler = uncertainty_sampler,
       delay_pmf = delay_pmf,
-      uncertainty_params = uncertainty_params,
-      ...
+      uncertainty_params = uncertainty_params
     )
+    # ,...)
+
+    nowcast_df$strata <- names(list_of_dfs[1])
+
+    # lapply version
+    # split_result <- lapply(list_of_dfs, function(rep_tri_df) {
+    #   rep_tri <- as_reporting_triangle.data.frame(
+    #     data = rep_tri_df,
+    #     max_delay = max_delay,
+    #     delays_unit = delays_unit,
+    #     reference_date = reference_date,
+    #     report_date = report_date,
+    #     count = count
+    #   )
+    #
+    #   nowcast_df <- baselinenowcast.reporting_triangle(
+    #     data = rep_tri,
+    #     scale_factor = scale_factor,
+    #     prop_delay = prop_delay,
+    #     output_type = output_type,
+    #     draws = draws,
+    #     uncertainty_model = uncertainty_model,
+    #     uncertainty_sampler = uncertainty_sampler,
+    #     delay_pmf = delay_pmf,
+    #     uncertainty_params = uncertainty_params,
+    #     ...
+    #   )
+    #   return(nowcast_df)
+    # })
+
+    # Use purrr to bind output based on the names of the list
+    nowcasts_df <- rbind(nowcasts_df, nowcast_df)
   }
-
-  split_result <- lapply(list_of_dfs, function(rep_tri_df) {
-    rep_tri <- as_reporting_triangle.data.frame(
-      data = rep_tri_df,
-      max_delay = max_delay,
-      delays_unit = delays_unit,
-      reference_date = reference_date,
-      report_date = report_date,
-      count = count
-    )
-
-    nowcast_df <- baselinenowcast.reporting_triangle(
-      data = rep_tri,
-      scale_factor = scale_factor,
-      prop_delay = prop_delay,
-      output_type = output_type,
-      draws = draws,
-      uncertainty_model = uncertainty_model,
-      uncertainty_sampler = uncertainty_sampler,
-      delay_pmf = delay_pmf,
-      uncertainty_params = uncertainty_params,
-      ...
-    )
-    return(nowcast_df)
-  })
-
-  nowcasts_df <- rbind_list(split_result, fill = TRUE)
+  return(nowcasts_df)
 }

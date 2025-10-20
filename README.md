@@ -55,6 +55,13 @@ package](https://pak.r-lib.org/):
 pak::pak(file.path("epinowcast", "baselinenowcast"))
 ```
 
+Another option for installation is using the [`remotes`
+package](https://cran.r-project.org/web/packages/remotes/index.html):
+
+``` r
+remotes::install_github(file.path("epinowcast", "baselinenowcast"))
+```
+
 </details>
 
 ## Resources
@@ -178,7 +185,8 @@ specification. Contributions of any kind are welcome!
 
 <a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Ajonathonmellor">jonathonmellor</a>,
 <a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Aswo">swo</a>,
-<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Ajcblemai">jcblemai</a>
+<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Ajcblemai">jcblemai</a>,
+<a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Alauraajones2">lauraajones2</a>
 
 ### Issue Contributors
 

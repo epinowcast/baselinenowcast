@@ -4,3 +4,9 @@ To install the development version from GitHub (warning! this version may contai
 ```{r, eval = FALSE}
 pak::pak(file.path("epinowcast", "baselinenowcast"))
 ```
+
+Another option for installation is using the [`remotes` package](https://cran.r-project.org/web/packages/remotes/index.html):
+
+```{r, eval = FALSE}
+remotes::install_github(file.path("epinowcast", "baselinenowcast"))
+```

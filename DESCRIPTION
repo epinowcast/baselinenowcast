@@ -63,7 +63,6 @@ Suggests:
     tidyr,
     stringr,
     lubridate,
-    purrr,
     readr,
     ggplot2,
     spelling,

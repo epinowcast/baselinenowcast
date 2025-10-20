@@ -3,7 +3,8 @@ test_data <- data.frame(
   report_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
   location = c("DE", "FR", "DE", "FR"),
   age_group = c("00+", "00+", "05-14", "00+"),
-  count = c(50, 30, 20, 40)
+  count = c(50, 30, 20, 40),
+  stringsAsFactors = FALSE
 )
 
 test_that("combine_triangle_dfs combines data across strata correctly", {
@@ -35,7 +36,8 @@ test_that("combine_triangle_dfs returns correct column names", {
   test_data <- data.frame(
     ref_date = as.Date(c("2021-04-06", "2021-04-06")),
     rpt_date = as.Date(c("2021-04-08", "2021-04-08")),
-    n = c(10, 20)
+    n = c(10, 20),
+    stringsAsFactors = FALSE
   )
 
   result <- combine_triangle_dfs(
@@ -54,7 +56,8 @@ test_that("combine_triangle_dfs handles all same date combinations by summing ev
     reference_date = as.Date(rep("2021-04-06", 4)),
     report_date = as.Date(rep("2021-04-08", 4)),
     location = c("DE", "FR", "IT", "ES"),
-    count = c(10, 20, 30, 40)
+    count = c(10, 20, 30, 40),
+    stringsAsFactors = FALSE
   )
   result <- combine_triangle_dfs(
     data = test_data,

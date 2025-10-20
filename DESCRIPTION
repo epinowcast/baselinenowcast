@@ -54,7 +54,8 @@ Imports:
   checkmate,
   stats,
   utils,
-  rlang
+  rlang,
+  purrr
 Suggests:
     epinowcast,
     bookdown,

@@ -4,7 +4,7 @@
 \alias{new_baselinenowcast_df}
 \title{Combine data from a nowcast dataframe, strata, and reference dates}
 \usage{
-new_baselinenowcast_df(baselinenowcast_df, reference_dates)
+new_baselinenowcast_df(baselinenowcast_df, reference_dates, output_type)
 }
 \arguments{
 \item{baselinenowcast_df}{Data.frame containing information for multiple
@@ -13,6 +13,10 @@ draws with columns for the reference time (\code{time}), the predicted counts
 
 \item{reference_dates}{Vector of reference dates corresponding to the
 reference times in the \code{baselinenowcast_df}.}
+
+\item{output_type}{Character string indicating whether the output should be
+samples (\code{"samples"})from the estimate with full uncertainty or whether to
+return the point estimate (\code{"point"}). Default is \code{"samples"}.}
 }
 \value{
 An object of class \code{\link{baselinenowcast_df}}

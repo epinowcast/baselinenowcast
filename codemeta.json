@@ -2,8 +2,8 @@
   "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
   "@type": "SoftwareSourceCode",
   "identifier": "baselinenowcast",
-  "description": "Nowcasting right-truncated epidemiological data is critical for timely public health decision-making, as reporting delays can create misleading impressions of declining trends in recent data. This package provides simple nowcasting methods for practical use based on using empirical delay distributions and uncertainty from past performance. It is also designed to be used as a baseline method for developers of new nowcasting methods. It supports standard data frame inputs with reference date, report date, and count columns, is compatible with 'epinowcast' objects, and also supports direct use of reporting triangles. Alongside an opinionated default workflow, it has a low-level pipe-friendly modular interface, allowing context-specific workflows. It can accommodate a wide spectrum of reporting schedules, including mixed patterns of reference and reporting (daily-weekly, weekly-daily). It also supports sharing delay distributions and uncertainty estimates between strata, as well as custom uncertainty models and delay estimation methods. For more details on the performance of the method(s) in this package applied to case studies of COVID-19 and norovirus, see our recent [pre-print](https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2).",
-  "name": "baselinenowcast: Methods for baseline nowcasting right-truncated epidemiological data",
+  "description": "Nowcasting right-truncated epidemiological data is critical for timely public health decision-making, as reporting delays can create misleading impressions of declining trends in recent data. This package provides simple nowcasting methods for practical use based on using empirical delay distributions and uncertainty from past performance. It is also designed to be used as a baseline method for developers of new nowcasting methods. It supports standard data frame inputs with reference date, report date, and count columns, is compatible with 'epinowcast' objects, and also supports direct use of reporting triangles. Alongside an opinionated default workflow, it has a low-level pipe-friendly modular interface, allowing context-specific workflows. It can accommodate a wide spectrum of reporting schedules, including mixed patterns of reference and reporting (daily-weekly, weekly-daily). It also supports sharing delay distributions and uncertainty estimates between strata, as well as custom uncertainty models and delay estimation methods. For more details on the performance of the method(s) in this package applied to case studies of COVID-19 and norovirus, see our recent pre-print at <https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2>.",
+  "name": "baselinenowcast: Methods for Baseline Nowcasting Right-Truncated Epidemiological Data",
   "relatedLink": "https://baselinenowcast.epinowcast.org",
   "codeRepository": "https://github.com/epinowcast/baselinenowcast/",
   "issueTracker": "https://github.com/epinowcast/baselinenowcast/issues",
@@ -299,9 +299,21 @@
       "identifier": "utils",
       "name": "utils"
     },
+    "6": {
+      "@type": "SoftwareApplication",
+      "identifier": "rlang",
+      "name": "rlang",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=rlang"
+    },
     "SystemRequirements": null
   },
-  "fileSize": "2945.286KB",
+  "fileSize": "2586.693KB",
   "citation": [
     {
       "@type": "ScholarlyArticle",

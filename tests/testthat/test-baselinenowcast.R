@@ -5,19 +5,21 @@ rep_tri <- as_reporting_triangle(
   max_delay = 25,
   strata = "00+"
 )
-expected_cols <- c("pred_count", "draw", "reference_date")
+expected_cols <- c("pred_count", "draw", "reference_date", "output_type")
 test_that("baselinenowcast.reporting_triangle() works as expected", {
   nowcast_df <- baselinenowcast(rep_tri, draws = 100)
   expect_s3_class(nowcast_df, "data.frame")
   expect_s3_class(nowcast_df, "baselinenowcast_df")
   expect_true(all(expected_cols %in% colnames(nowcast_df)))
+  expect_identical(nowcast_df$output_type[1], "samples")
   pt_nowcast_df <- baselinenowcast(rep_tri,
     output_type = "point"
   )
   expect_s3_class(pt_nowcast_df, "data.frame")
   expect_s3_class(pt_nowcast_df, "baselinenowcast_df")
-  expected_cols_pt <- c("pred_count", "reference_date")
-  expect_true(all(expected_cols_pt %in% colnames(pt_nowcast_df)))
+  expect_identical(pt_nowcast_df$output_type[1], "point")
+  expect_identical(pt_nowcast_df$draw[1], 1)
+  expect_true(all(expected_cols %in% colnames(pt_nowcast_df)))
 })
 
 
@@ -26,7 +28,7 @@ test_that("baselinenowcast.reporting_triangle() errors sensibly with inappropria
     baselinenowcast(rep_tri,
       output_type = "pt"
     ),
-    regexp = "Assertion on 'output_type' failed"
+    regexp = "`output_type` must be one of "
   )
   expect_error(
     baselinenowcast(rep_tri,
@@ -66,14 +68,6 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
     regexp = "`uncertainty_params` are not the same length"
   )
 
-  expect_warning(
-    baselinenowcast(rep_tri,
-      output_type = "point",
-      uncertainty_params = rep(1, 25)
-    ),
-    regexp = "`uncertainty_params` passed in but point estimate was specified as an output" # nolint
-  )
-
   test_df2 <- baselinenowcast(rep_tri,
     uncertainty_params = rep(1, 25),
     draws = 100
@@ -89,7 +83,7 @@ test_that("baselinenowcast specifying not to include draws works as expected", {
     output_type = "point"
   )
   expect_s3_class(pt_nowcast, "data.frame")
-  expect_true(all(c("pred_count", "reference_date") %in% colnames(pt_nowcast)))
+  expect_true(all(expected_cols %in% colnames(pt_nowcast)))
   prob_nowcast <- baselinenowcast(rep_tri)
 
   summarised_prob_nowcast <- prob_nowcast |>

@@ -2,7 +2,7 @@
 % Please edit documentation in R/baselinenowcast.R
 \name{baselinenowcast}
 \alias{baselinenowcast}
-\title{Generate a nowcast from a reporting triangle}
+\title{Generate a nowcast}
 \usage{
 baselinenowcast(
   data,
@@ -16,7 +16,7 @@ baselinenowcast(
 )
 }
 \arguments{
-\item{data}{Reporting triangle to be nowcasted}
+\item{data}{Data to be nowcasted}
 
 \item{scale_factor}{Numeric value indicating the multiplicative factor on
 the maximum delay to be used for estimation of delay and uncertainty.
@@ -55,7 +55,11 @@ negative binomial for each element of the vector.}
 Data.frame of class \code{\link{baselinenowcast_df}}
 }
 \description{
-Generate a nowcast from a reporting triangle
+This function ingests data to be nowcasted and generates a
+a \code{\link{baselinenowcast_df}} which contains a probabilistic or point
+estimate of the final case counts at each reference date in the \code{data}.
+See \code{\link{baselinenowcast.reporting_triangle}} for details on the
+input requirements.
 }
 \seealso{
 Other baselinenowcast_df:

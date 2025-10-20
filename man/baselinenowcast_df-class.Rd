@@ -18,7 +18,11 @@ nowcast.}
 \item{pred_count}{Numeric indicating the estimated total counts aggregated
 across delays at each reference date.}
 \item{draw}{Integer indexing the sample from the probabilistic nowcast
-distribution. Only present if \code{output_type = "samples"}.}
+distribution. If \code{output_type = "point"}, this will be set to 1.}
+\item{output_type}{Character string indicating whether the \code{pred_count}
+represents a probabilistic draw from the observation model indicated by
+\code{"samples"} or whether the \code{pred_count} is a point estimate indicated by
+\code{"point"}.}
 }
 See the corresponding \code{\link{reporting_triangle}} and
 \code{\link{baselinenowcast}} function

@@ -405,8 +405,6 @@ fit_by_horizon <- function(obs,
 #' @importFrom stats dnbinom optimize
 #' @param x Vector of observed values.
 #' @param mu Vector of expected values.
-#' @param mu_padding Scalar value to ensure that there are no ill-defined negative
-#'   binomial likelihoods (which will happen if the expectation is 0).
 #' @returns the maximum likelihood estimate of the dispersion
 #' @export
 #' @examples
@@ -421,7 +419,7 @@ fit_nb <- function(x, mu, mu_padding = 0.001) {
   # Check that all observations are integers
   assert_integerish(x)
   nllik <- function(size) {
-    nll <- -sum(dnbinom(x = x, mu = mu + my_padding, size = size, log = TRUE), na.rm = TRUE)
+    nll <- -sum(dnbinom(x = x, mu = mu, size = size, log = TRUE), na.rm = TRUE)
     return(nll)
   }
   opt <- optimize(nllik, c(0.1, 1000))

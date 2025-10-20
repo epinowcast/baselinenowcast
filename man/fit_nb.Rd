@@ -10,9 +10,6 @@ fit_nb(x, mu, mu_padding = 0.001)
 \item{x}{Vector of observed values.}
 
 \item{mu}{Vector of expected values.}
-
-\item{mu_padding}{Scalar value to ensure that there are no ill-defined negative
-binomial likelihoods (which will happen if the expectation is 0).}
 }
 \value{
 the maximum likelihood estimate of the dispersion

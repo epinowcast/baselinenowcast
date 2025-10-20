@@ -178,7 +178,8 @@ test_that("assert_baselinenowcast_df errors when appropriate", {
 })
 
 # Remove the 00-04 age group because it is too sparse
-covid_data <- germany_covid19_hosp[germany_covid19_hosp$report_date <= max(germany_covid19_hosp$reference_date), ] # nolint
+covid_data <- germany_covid19_hosp[germany_covid19_hosp$report_date <= max(germany_covid19_hosp$reference_date) & # nolint
+  germany_covid19_hosp$age_group %in% c("00+", "60-79", "80+"), ] # nolint
 test_that("baselinenowcast.data.frame works as expected with and without strata sharing", { # nolint
   nowcasts_df <- baselinenowcast(
     data = covid_data,
@@ -199,7 +200,7 @@ test_that("baselinenowcast.data.frame works as expected with and without strata 
   expect_failure(
     expect_equal(
       mean(nowcasts_df$pred_count[nowcasts_df$age_group == "00+"]),
-      mean(nowcasts_df$pred_count[nowcasts_df$age_group == "35-59"])
+      mean(nowcasts_df$pred_count[nowcasts_df$age_group == "60-79"])
     )
   )
 
@@ -225,9 +226,9 @@ test_that("baselinenowcast.data.frame works as expected with and without strata 
   # Check that the outputs are different between with and without strata sharing
   expect_failure(
     expect_equal(
-      mean(nowcasts_df$pred_count[nowcasts_df$age_group == "05-14" &
+      mean(nowcasts_df$pred_count[nowcasts_df$age_group == "60-79" &
         nowcasts_df$reference_date == max(nowcasts_df$reference_date)]), # nolint
-      mean(nowcasts_df2$pred_count[nowcasts_df2$age_group == "05-14" &
+      mean(nowcasts_df2$pred_count[nowcasts_df2$age_group == "60-79" &
         nowcasts_df2$reference_date == max(nowcasts_df$reference_date)]) # nolint
     )
   )

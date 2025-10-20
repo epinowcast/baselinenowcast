@@ -13,9 +13,10 @@ indexed by reference date and report date}
   report_date = "report_date",
   count = "count",
   nowcast_unit = NULL,
+  strata_sharing = NULL,
   scale_factor = 3,
   prop_delay = 0.5,
-  output_type = "samples",
+  output_type = c("samples", "point"),
   draws = 1000,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,
@@ -136,8 +137,8 @@ the dataframe has the same maximum delay and the same number of reference
 dates.
 }
 \examples{
-covid_data
-nowcasts_df <- baselinenowcast(covid_data,
+nowcasts_df <- baselinenowcast(germany_covid_hosp,
+  max_delay = 40,
   nowcast_unit = c("age_group", "location")
 )
 nowcasts_df

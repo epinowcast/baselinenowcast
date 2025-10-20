@@ -176,3 +176,56 @@ test_that("assert_baselinenowcast_df errors when appropriate", {
     regexp = "Assertion on 'data' failed: Must be of type 'data.frame', not 'list'" # nolint
   )
 })
+
+covid_data <- germany_covid19_hosp[germany_covid19_hosp$report_date <= max(germany_covid19_hosp$reference_date), ]
+test_that("baselinenowcast.data.frame works as expected with and without strata sharing", { # nolint
+  nowcasts_df <- baselinenowcast(
+    data = covid_data,
+    max_delay = 40,
+    draws = 100,
+    nowcast_unit = c("age_group", "location")
+  )
+  expected_cols <- c(
+    "pred_count", "draw", "reference_date", "output_type",
+    "location", "age_group"
+  )
+  expect_s3_class(nowcasts_df, "data.frame")
+  expect_s3_class(nowcasts_df, "baselinenowcast_df")
+  expect_true(all(expected_cols %in% colnames(nowcasts_df)))
+  expect_identical(nowcasts_df$output_type[1], "samples")
+
+  # Check that the outputs are different for different age groups
+  expect_failure(
+    expect_equal(
+      mean(nowcasts_df$pred_count[nowcasts_df$age_group == "00+"]),
+      mean(nowcasts_df$pred_count[nowcasts_df$age_group == "35-59"])
+    )
+  )
+
+  # Use strata sharing
+  # First need to remove all age groups
+  covid_data_age_groups <- covid_data[covid_data$age_group != "00+", ]
+  nowcasts_df2 <- baselinenowcast(
+    data = covid_data_age_groups,
+    max_delay = 40,
+    draws = 100,
+    nowcast_unit = c("age_group", "location"),
+    strata_sharing = c("delay", "uncertainty")
+  )
+  expected_cols <- c(
+    "pred_count", "draw", "reference_date", "output_type",
+    "location", "age_group"
+  )
+  expect_s3_class(nowcasts_df2, "data.frame")
+  expect_s3_class(nowcasts_df2, "baselinenowcast_df")
+  expect_true(all(expected_cols %in% colnames(nowcasts_df2)))
+  expect_identical(nowcasts_df2$output_type[1], "samples")
+
+  # Check that the outputs are different between with and without strata sharing
+  expect_failure(
+    expect_equal(
+      mean(nowcasts_df$pred_count[nowcasts_df$age_group == "00-04"]),
+      mean(nowcasts_df3$pred_count[nowcasts_df3$age_group == "00-04"])
+    )
+  )
+})

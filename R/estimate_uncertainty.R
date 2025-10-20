@@ -412,7 +412,7 @@ fit_by_horizon <- function(obs,
 #' pred <- c(3.1, 7.2, 11)
 #' disp <- fit_nb(obs, pred)
 #' disp
-fit_nb <- function(x, mu, mu_padding = 0.001) {
+fit_nb <- function(x, mu) {
   if (length(x) == 0) {
     return(NA)
   }

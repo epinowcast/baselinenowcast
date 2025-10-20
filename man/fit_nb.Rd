@@ -4,7 +4,7 @@
 \alias{fit_nb}
 \title{Fit a negative binomial to a vector of observations and expectations}
 \usage{
-fit_nb(x, mu, mu_padding = 0.001)
+fit_nb(x, mu)
 }
 \arguments{
 \item{x}{Vector of observed values.}

@@ -7,6 +7,12 @@ indexed by reference date and report date}
 \usage{
 \method{baselinenowcast}{data.frame}(
   data,
+  scale_factor = 3,
+  prop_delay = 0.5,
+  output_type = c("samples", "point"),
+  draws = 1000,
+  uncertainty_model = fit_by_horizon,
+  uncertainty_sampler = sample_nb,
   max_delay,
   delays_unit = "days",
   reference_date = "reference_date",
@@ -14,12 +20,6 @@ indexed by reference date and report date}
   count = "count",
   nowcast_unit = NULL,
   strata_sharing = NULL,
-  scale_factor = 3,
-  prop_delay = 0.5,
-  output_type = c("samples", "point"),
-  draws = 1000,
-  uncertainty_model = fit_by_horizon,
-  uncertainty_sampler = sample_nb,
   delay_pmf = NULL,
   uncertainty_params = NULL,
   ...
@@ -40,37 +40,6 @@ Additional columns can be included, and the user can specify which columns
 set the unit of a single nowcast  ( i.e. the combination of columns that
 uniquely define a single nowcast with the \code{nowcast_unit} argument.).
 }}
-
-\item{max_delay}{Integer indicating the maximum delay.}
-
-\item{delays_unit}{Character string specifying the temporal granularity of
-the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
-For the matrix method, this is simply passed as an item in the
-\code{reporting_triangle} object which will later be used to create a nowcast
-data.frame. For the data.frame method, this is used to compute the delay
-in terms of the specified unit, and to expand the combinations of
-reference dates and delays to the complete set of combinations in
-the reporting triangle.  Default is \code{"days"}.}
-
-\item{reference_date}{Character string indicating the name of the
-column which represents the reference date, or the date of the primary
-event occurrence.}
-
-\item{report_date}{Character string indicating the name of the
-column which represents the date the primary event was reported.}
-
-\item{count}{Character string indicating the name of the column
-containing the number of incident cases on each reference and report date.}
-
-\item{nowcast_unit}{Vector of character strings indicting the names of the
-columns in \code{data} (after any renaming of columns) that denote the unit of
-a single nowcast.Within a nowcast unit, there can be no repeated unique
-combinations of reference dates and report dates. Default is \code{NULL} which
-assumes that all columns that are not required columns form the unit of
-a single forecast. This may lead to unexpected behavior, so setting the
-nowcast unit explicitly can help make the code easier to debug and easier
-to read. If specified, all columns that are not part of the forecast unit
-(or required columns) will be removed.}
 
 \item{scale_factor}{Numeric value indicating the multiplicative factor on
 the maximum delay to be used for estimation of delay and uncertainty.
@@ -102,6 +71,43 @@ from the observation model. Default is \code{sample_nb} which expects
 arguments \code{pred} for the vector of predictions and uncertainty parameters
 for the corresponding vector of uncertainty parameters, and draws from a
 negative binomial for each element of the vector.}
+
+\item{max_delay}{Integer indicating the maximum delay.}
+
+\item{delays_unit}{Character string specifying the temporal granularity of
+the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
+For the matrix method, this is simply passed as an item in the
+\code{reporting_triangle} object which will later be used to create a nowcast
+data.frame. For the data.frame method, this is used to compute the delay
+in terms of the specified unit, and to expand the combinations of
+reference dates and delays to the complete set of combinations in
+the reporting triangle.  Default is \code{"days"}.}
+
+\item{reference_date}{Character string indicating the name of the
+column which represents the reference date, or the date of the primary
+event occurrence.}
+
+\item{report_date}{Character string indicating the name of the
+column which represents the date the primary event was reported.}
+
+\item{count}{Character string indicating the name of the column
+containing the number of incident cases on each reference and report date.}
+
+\item{nowcast_unit}{Vector of character strings indicating the names of the
+columns in \code{data} (after any renaming of columns) that denote the unit of
+a single nowcast.Within a nowcast unit, there can be no repeated unique
+combinations of reference dates and report dates. Default is \code{NULL} which
+assumes that all columns that are not required columns form the unit of
+a single forecast. This may lead to unexpected behaviour, so setting the
+nowcast unit explicitly can help make the code easier to debug and easier
+to read. If specified, all columns that are not part of the forecast unit
+(or required columns) will be removed.}
+
+\item{strata_sharing}{Vector of character strings indicating the estimand
+for which estimates that are "borrowed" from across all strata should
+be used. Options are \code{"delay"} and/or \code{"uncertainty"}. NULL indicates that
+delay and uncertainty estimates should be computed for each \code{nowcast_unit}
+independently.}
 
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
 first delay. Default is NULL,
@@ -137,7 +143,7 @@ the dataframe has the same maximum delay and the same number of reference
 dates.
 }
 \examples{
-nowcasts_df <- baselinenowcast(germany_covid_hosp,
+nowcasts_df <- baselinenowcast(germany_covid19_hosp,
   max_delay = 40,
   nowcast_unit = c("age_group", "location")
 )

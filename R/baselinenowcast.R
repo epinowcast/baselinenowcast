@@ -180,15 +180,20 @@ baselinenowcast.reporting_triangle <- function(
 #'  Additional columns can be included, and the user can specify which columns
 #'  set the unit of a single nowcast  ( i.e. the combination of columns that
 #'  uniquely define a single nowcast with the `nowcast_unit` argument.).
-#' @param nowcast_unit Vector of character strings indicting the names of the
+#' @param nowcast_unit Vector of character strings indicating the names of the
 #'   columns in `data` (after any renaming of columns) that denote the unit of
 #'    a single nowcast.Within a nowcast unit, there can be no repeated unique
 #'    combinations of reference dates and report dates. Default is `NULL` which
 #'    assumes that all columns that are not required columns form the unit of
-#'    a single forecast. This may lead to unexpected behavior, so setting the
+#'    a single forecast. This may lead to unexpected behaviour, so setting the
 #'    nowcast unit explicitly can help make the code easier to debug and easier
 #'    to read. If specified, all columns that are not part of the forecast unit
 #'    (or required columns) will be removed.
+#' @param strata_sharing Vector of character strings indicating the estimand
+#'   for which estimates that are "borrowed" from across all strata should
+#'   be used. Options are `"delay"` and/or `"uncertainty"`. NULL indicates that
+#'   delay and uncertainty estimates should be computed for each `nowcast_unit`
+#'   independently.
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
 #'   first delay. Default is NULL,
 #'   which will estimate the delay from the reporting triangle in each
@@ -213,13 +218,19 @@ baselinenowcast.reporting_triangle <- function(
 #' @method baselinenowcast data.frame
 #' @returns Data.frame of class \code{\link{baselinenowcast_df}}
 #' @examples
-#' nowcasts_df <- baselinenowcast(germany_covid_hosp,
+#' nowcasts_df <- baselinenowcast(germany_covid19_hosp,
 #'   max_delay = 40,
 #'   nowcast_unit = c("age_group", "location")
 #' )
 #' nowcasts_df
 baselinenowcast.data.frame <- function(
     data,
+    scale_factor = 3,
+    prop_delay = 0.5,
+    output_type = c("samples", "point"),
+    draws = 1000,
+    uncertainty_model = fit_by_horizon,
+    uncertainty_sampler = sample_nb,
     max_delay,
     delays_unit = "days",
     reference_date = "reference_date",
@@ -227,12 +238,6 @@ baselinenowcast.data.frame <- function(
     count = "count",
     nowcast_unit = NULL,
     strata_sharing = NULL,
-    scale_factor = 3,
-    prop_delay = 0.5,
-    output_type = c("samples", "point"),
-    draws = 1000,
-    uncertainty_model = fit_by_horizon,
-    uncertainty_sampler = sample_nb,
     delay_pmf = NULL,
     uncertainty_params = NULL,
     ...) {
@@ -368,7 +373,7 @@ baselinenowcast.data.frame <- function(
 #' report date, and case count as in `data` but summed across all strata in
 #' the original data.
 #' @export
-#'
+#' @importFrom stats aggregate as.formula
 #' @examples
 #' example_data <- data.frame(
 #'   ref_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint

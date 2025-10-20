@@ -205,7 +205,7 @@ baselinenowcast.reporting_triangle <- function(
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast
 #' @inheritParams allocate_reference_times
-#' @family nowcast_df
+#' @family baselinenowcast_df
 #' @export
 #' @method baselinenowcast data.frame
 #' @returns Data.frame of class \code{\link{baselinenowcast_df}}

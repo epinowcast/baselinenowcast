@@ -94,6 +94,7 @@ nowcast_df
 \seealso{
 Other baselinenowcast_df:
 \code{\link{baselinenowcast}()},
+\code{\link{baselinenowcast.data.frame}()},
 \code{\link{baselinenowcast_df-class}}
 }
 \concept{baselinenowcast_df}

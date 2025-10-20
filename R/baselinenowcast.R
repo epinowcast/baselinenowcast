@@ -346,7 +346,7 @@ baselinenowcast.data.frame <- function(
     # based on nowcast unit entry
     if (!is.null(nowcast_unit)) {
       for (i in seq_along(nowcast_unit)) {
-        split_name <- strsplit(name, "\\.")[[1]]
+        split_name <- strsplit(name, ".", fixed = TRUE)[[1]]
         nowcast_df[[nowcast_unit[i]]] <- split_name[i]
       }
     }

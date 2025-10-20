@@ -1,6 +1,6 @@
 test_data <- data.frame(
-  reference_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")),
-  report_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")),
+  reference_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
+  report_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
   location = c("DE", "FR", "DE", "FR"),
   age_group = c("00+", "00+", "05-14", "00+"),
   count = c(50, 30, 20, 40)
@@ -20,15 +20,12 @@ test_that("combine_triangle_dfs combines data across strata correctly", {
   expect_true("report_date" %in% names(result))
   expect_true("count" %in% names(result))
 
-  # Test correct aggregation
-  expect_equal(nrow(result), 3) # 3 unique ref_date + report_date combinations
+  expect_identical(nrow(result), 3L)
 
-  # Test specific sum (2021-04-06 + 2021-04-08 should be 50 + 30 = 80)
   row1 <- result[result$reference_date == as.Date("2021-04-06") &
     result$report_date == as.Date("2021-04-08"), ]
   expect_identical(row1$count, 80)
 
-  # Test that single row combinations remain unchanged
   row2 <- result[result$reference_date == as.Date("2021-04-06") &
     result$report_date == as.Date("2021-04-10"), ]
   expect_identical(row2$count, 20)
@@ -48,7 +45,7 @@ test_that("combine_triangle_dfs returns correct column names", {
     count = "n"
   )
 
-  expect_identical(names(result), c("ref_date", "rpt_date", "n"))
+  expect_named(result, c("ref_date", "rpt_date", "n"))
 })
 
 

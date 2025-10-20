@@ -200,13 +200,14 @@ test_that("baselinenowcast.data.frame works as expected with and without strata 
   expect_failure(
     expect_equal(
       mean(nowcasts_df$pred_count[nowcasts_df$age_group == "00+"]),
-      mean(nowcasts_df$pred_count[nowcasts_df$age_group == "60-79"])
+      mean(nowcasts_df$pred_count[nowcasts_df$age_group == "60-79"]),
+      tol = 0.01
     )
   )
 
   # Use strata sharing
   # First need to remove all age groups
-  covid_data_age_groups <- covid_data[!covid_data$age_group != "00+", ]
+  covid_data_age_groups <- covid_data[covid_data$age_group != "00+", ]
   nowcasts_df2 <- baselinenowcast(
     data = covid_data_age_groups,
     max_delay = 40,
@@ -229,7 +230,8 @@ test_that("baselinenowcast.data.frame works as expected with and without strata 
       mean(nowcasts_df$pred_count[nowcasts_df$age_group == "60-79" &
         nowcasts_df$reference_date == max(nowcasts_df$reference_date)]), # nolint
       mean(nowcasts_df2$pred_count[nowcasts_df2$age_group == "60-79" &
-        nowcasts_df2$reference_date == max(nowcasts_df$reference_date)]) # nolint
+        nowcasts_df2$reference_date == max(nowcasts_df$reference_date)]), # nolint
+      tol = 0.01
     )
   )
 })

@@ -210,8 +210,8 @@ baselinenowcast.reporting_triangle <- function(
 #' @method baselinenowcast data.frame
 #' @returns Data.frame of class \code{\link{baselinenowcast_df}}
 #' @examples
-#' covid_data
-#' nowcasts_df <- baselinenowcast(covid_data,
+#' nowcasts_df <- baselinenowcast(germany_covid_hosp,
+#'   max_delay = 40,
 #'   nowcast_unit = c("age_group", "location")
 #' )
 #' nowcasts_df
@@ -223,6 +223,7 @@ baselinenowcast.data.frame <- function(
     report_date = "report_date",
     count = "count",
     nowcast_unit = NULL,
+    strata_sharing = NULL,
     scale_factor = 3,
     prop_delay = 0.5,
     output_type = "samples",
@@ -244,6 +245,30 @@ baselinenowcast.data.frame <- function(
 
   # Split dataframe into a list of dataframes for each nowcast unit
   list_of_dfs <- split(data, data[nowcast_unit])
+
+  # Apply strata sharing if specified
+  if (!is.null(strata_sharing) && length(strata_sharing) > 0) {
+    pooled_triangle <- combine_triangles(data)
+    tv_pool <- allocate_reference_times(pooled_triangle$reporting_triangle_matrix,
+      scale_factor = scale_factor,
+      prop_delay = prop_delay
+    )
+    if ("delay" %in% strata_sharing) {
+      # Estimate delay once on pooled data
+      shared_delay <- estimate_delay(pooled_triangle$reporting_triangle_matrix,
+        n = tv_pool$n_history_delay
+      )
+    }
+    if ("uncertainty" %in% strata_sharing) {
+      # Estimate uncertainty once on pooled data
+      shared_uncertainty <- estimate_uncertainty(pooled_triangle$reporting_triangle_matrix,
+        n = tv_pool$n_history_uncertainty
+      )
+    }
+  }
+
+
+
 
   for (i in 1:length(list_of_dfs)) {
     rep_tri_df <- list_of_dfs[[i]]

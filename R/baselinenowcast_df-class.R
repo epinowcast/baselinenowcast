@@ -34,7 +34,7 @@ NULL
 #'
 #' @param baselinenowcast_df Data.frame containing information for multiple
 #'  draws with columns for the reference time (`time`), the predicted counts
-#'  (`pred_count`), and optionally the draw number (`draw`).
+#'  (`pred_count`), and the draw number (`draw`).
 #' @param reference_dates Vector of reference dates corresponding to the
 #'    reference times in the `baselinenowcast_df`.
 #' @inheritParams baselinenowcast
@@ -58,10 +58,14 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
 
   baselinenowcast_df_dates$time <- NULL
   baselinenowcast_df_dates$output_type <- output_type
+  baselinenowcast_df_ordered <- baselinenowcast_df_dates[order(
+    baselinenowcast_df_dates$reference_date,
+    baselinenowcast_df_dates$draw
+  ), ]
 
   result <- structure(
-    data.frame(baselinenowcast_df_dates),
-    class = c("baselinenowcast_df", class(baselinenowcast_df_dates))
+    data.frame(baselinenowcast_df_ordered),
+    class = c("baselinenowcast_df", class(baselinenowcast_df_ordered))
   )
 
   return(result)

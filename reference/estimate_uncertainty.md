@@ -1,0 +1,119 @@
+# Estimate uncertainty parameters
+
+This function ingests a list of point nowcast matrices and a
+corresponding list of truncated reporting matrices and uses both to
+estimate a vector of uncertainty parameters from the observations and
+estimates at each horizon, starting at 0 up until the max delay number
+of horizons.
+
+## Usage
+
+``` r
+estimate_uncertainty(
+  point_nowcast_matrices,
+  truncated_reporting_triangles,
+  retro_reporting_triangles,
+  n = length(point_nowcast_matrices),
+  uncertainty_model = fit_by_horizon,
+  ref_time_aggregator = identity,
+  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+)
+```
+
+## Arguments
+
+- point_nowcast_matrices:
+
+  List of point nowcast matrices where rows represent reference time
+  points and columns represent delays.
+
+- truncated_reporting_triangles:
+
+  List of truncated reporting matrices, containing all observations as
+  of the latest reference time. Elements of list are paired with
+  elements of `point_nowcast_matrices`.
+
+- retro_reporting_triangles:
+
+  List of `n` truncated reporting triangle matrices with as many rows as
+  available given the truncation.
+
+- n:
+
+  Integer indicating the number of reporting matrices to use to estimate
+  the uncertainty parameters.
+
+- uncertainty_model:
+
+  Function that ingests a matrix of observations and a matrix of
+  predictions and returns a vector that can be used to apply uncertainty
+  using the same error model. Default is `fit_by_horizon` with arguments
+  of `obs` matrix of observations and `pred` the matrix of predictions
+  that fits each column (horizon) to a negative binomial observation
+  model by default. The user can specify a different fitting model by
+  replacing the `fit_model` argument in `fit_by_horizon`.
+
+- ref_time_aggregator:
+
+  Function that operates along the rows (reference times) of the
+  retrospective point nowcast matrix before it has been aggregated
+  across columns (delays). Default is `identity` which does not
+  aggregate across reference times.
+
+- delay_aggregator:
+
+  Function that operates along the columns (delays) of the retrospective
+  point nowcast matrix after it has been aggregated across reference
+  times. Default is `function(x) rowSums(x, na.rm = TRUE)`.
+
+## Value
+
+`uncertainty_params` Vector of length of the number of horizons, with
+each element representing the estimate of the uncertainty parameter for
+each horizon. The specific parameter type depends on the chosen error
+model.
+
+## Examples
+
+``` r
+triangle <- matrix(
+  c(
+    78, 40, 24, 9,
+    65, 46, 21, 7,
+    70, 40, 20, 5,
+    80, 50, 10, 10,
+    100, 40, 31, 20,
+    95, 45, 21, NA,
+    82, 42, NA, NA,
+    70, NA, NA, NA
+  ),
+  nrow = 8,
+  byrow = TRUE
+)
+
+trunc_rts <- truncate_triangles(triangle, n = 3)
+retro_rts <- construct_triangles(trunc_rts)
+
+retro_nowcasts <- fill_triangles(retro_rts, n = 5)
+# Estimate dispersion parameters using default (negative binomial error
+# model on the sums)
+disp_params <- estimate_uncertainty(
+  point_nowcast_matrices = retro_nowcasts,
+  truncated_reporting_triangles = trunc_rts,
+  retro_reporting_triangles = retro_rts
+)
+disp_params
+#> [1] 999.999942   4.995964   3.937042
+
+# Estimate dispersion parameters from rolling sum on the reference times
+if (requireNamespace("zoo", quietly = TRUE)) {
+  disp_params_agg <- estimate_uncertainty(
+    point_nowcast_matrices = retro_nowcasts,
+    truncated_reporting_triangles = trunc_rts,
+    retro_reporting_triangles = retro_rts,
+    ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+  )
+  disp_params_agg
+}
+#> [1] 333.84093  10.32929  16.76673
+```

@@ -1,0 +1,90 @@
+# Changelog
+
+## baselinenowcast 0.0.0.1000
+
+- Add a
+  [`baselinenowcast.reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.reporting_triangle.md)
+  method which ingests a `reporting_triangle` object and produces a
+  `baselinenowcast_df` object which is a data.frame with nowcasts and
+  associated metadata.
+- Include the pre-print as well as the package in the citation.
+- Add a
+  [`as_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.md)
+  S3 method which ingests a data.frame or matrix and returns a
+  `reporting_triangle` object, which will be used as an input to the
+  eventual
+  [`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md)
+  function.
+- Add a vignette which demonstrates how to pre-process for nowcasting
+  syndromic surveillance system data using the U.S. National Syndromic
+  Surveillance Program (NSSP) data as a case study, and then use
+  `baselinenowcast` to nowcast cases of a specific syndromic
+  surveillance definition.
+- Add intermediate-level grouping functions to generate a point nowcast
+  from a reporting triangle and to take a point nowcast and estimate and
+  apply uncertainty.
+- Refactor `estimate_uncertainty` to take in an error model function, an
+  aggregator function for aggregating across reference times, and an
+  aggregator function for aggregating across delays.
+- Fix internal checks that ensure there is sufficient data for the
+  specified target choice, using the number of NA rows rather than the
+  number of columns as a proxy for the number of horizons.
+- Replace argument names with more complete versions where possible.
+- Replace most function names with action-oriented function naming.
+- Add new logo.
+- Add a check to ensure that there are sufficient non-zero values in the
+  reporting triangle.
+- Add a check to ensure that sufficient `n` are specified for the delay
+  estimate.
+- Change the requirement so that the number of rows used for delay
+  estimation need not be greater than or equal to the number of columns,
+  but instead that at least one row contains a full set of observations.
+- Bug fix to change the requirement so that the sum of the elements in
+  the `structure` vector must not be greater than the number of columns.
+- Add support for passing in a restricted set of functions to the
+  `estimate_dispersion()` function to transform the “target” dataset
+  across reference dates.
+- Implements a safe iterator in the step where retrospective point
+  nowcasts are generated from a list of retrospective reporting
+  triangles, ensuring that the iterations continue even if not all
+  retrospective point nowcasts can be generated.
+- Modify vignette to be consistent with the decided upon defaults for
+  the number of reference times used for delay estimation and
+  uncertainty.
+- Replace function named `replace_lower_right_with_NA()` with
+  `generate_triangle()`.
+- Removes requirement that all elements of the reporting triangle are
+  integers.
+- Modify the method used to estimate dispersion. Instead of estimating
+  dispersion on individual elements of the nowcast matrix, we now
+  estimate dispersion on the predicted nowcasts summed across reporting
+  dates as a function of forecast horizon.
+- Standardises naming of objects that are matrices vs vectors and
+  objects that contain observations, point estimates, and probabilistic
+  draws.
+- Modifies functions that estimate a delay and generate a point nowcast
+  to ensure that they throw an error/warning if the first element of the
+  delay PMF is 0.
+- Adjusts function to estimate delay distribution to be able to handle
+  complete and partially complete reporting triangles.
+- Add function to convert a list of expected observed reporting squares
+  to a long tidy dataframe indexed by reference time, delay, and a
+  sample index.
+- Implement zero-handling in the bottom left of the reporting triangle
+  when applying the delay to generate a point nowcast.
+- Add function to generate a list of expected observed reporting
+  squares.
+- Add function to generate an expected observed reporting square from a
+  point nowcast and a vector of dispersion parameters.
+- Add function to estimate dispersion parameters from a match list of
+  nowcasts and observed reporting triangles.
+- Add functions to generate retrospective nowcasts from a single
+  reporting triangle.
+- Refactor uncertainty estimation to use a user-facing function to
+  generate retrospective reporting triangles.
+- Methods write-up as a separate vignette.
+- Introduced function to estimate the uncertainty from a triangle to be
+  nowcasted and a delay distribution.
+- Introduced functions to get the delay estimate and apply the delay,
+  and used these in the Getting Started vignette.
+- Added package skeleton.

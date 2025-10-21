@@ -276,8 +276,7 @@ test_that("`baselinenowcast` works for all differet nowcast units", { # nolint
   expect_s3_class(single_nowcast_df_w_metadata, "baselinenowcast_df")
   expect_true(all(expected_cols2 %in% colnames(single_nowcast_df_w_metadata)))
 
-  covid_data_delay_rm <- covid_data |>
-    select(-delay)
+  covid_data_delay_rm <- select(covid_data, -delay)
   test_df <- baselinenowcast(
     data = covid_data_delay_rm,
     draws = 100,
@@ -289,13 +288,13 @@ test_that("`baselinenowcast` works for all differet nowcast units", { # nolint
   expect_true(all(unique(test_df$age_group) %in% c("00+", "60-79", "80+")))
 })
 
-test_that("baselinenowcast errors if extra delay column is passed in because it treats this as a nowcast unit", {
+test_that("baselinenowcast errors if extra delay column is passed in because it treats this as a nowcast unit", { # nolint
   expect_error(
     baselinenowcast(
       data = covid_data,
       draws = 100,
       max_delay = 40
     ),
-    regexp = "`max_delay` specified is larger than the maximum delay in the data."
+    regexp = "`max_delay` specified is larger than the maximum delay in the data." # nolint
   ) # nolint
 })

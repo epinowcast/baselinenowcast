@@ -218,7 +218,10 @@ baselinenowcast.reporting_triangle <- function(
 #' @method baselinenowcast data.frame
 #' @returns Data.frame of class \code{\link{baselinenowcast_df}}
 #' @examples
-#' covid_data_to_nowcast <- germany_covid19_hosp[germany_covid19_hosp$report_date < max(germany_covid19_hosp$reference_date), ] # nolint
+#' covid_data_to_nowcast <- germany_covid19_hosp[
+#'   germany_covid19_hosp$report_date <
+#'     max(germany_covid19_hosp$reference_date),
+#' ] # nolint
 #' nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
 #'   max_delay = 40,
 #'   nowcast_unit = c("age_group", "location")
@@ -250,14 +253,13 @@ baselinenowcast.data.frame <- function(
 
   # Split dataframe into a list of dataframes for each nowcast unit
   if (length(nowcast_unit) != 0) {
-    list_of_dfs <- split(data, data[nowcast_unit])
+    list_of_dfs <- split(data, interaction(data[nowcast_unit],
+      sep = "___",
+      drop = TRUE
+    ))
   } else {
     list_of_dfs <- list(data)
   }
-
-  # Make sure they are all the same training volume length and that
-  # they have the required columns etc
-  # .validate_list_of_dfs(list_of_dfs, max_delay, reference_date, report_date, count, delays_unit) #nolint
 
   # Get the training volume for all reporting triangles
   rep_tri1 <- as_reporting_triangle.data.frame(
@@ -348,7 +350,7 @@ baselinenowcast.data.frame <- function(
     # based on nowcast unit entry
     if (length(nowcast_unit) != 0) {
       for (i in seq_along(nowcast_unit)) {
-        split_name <- strsplit(name, ".", fixed = TRUE)[[1]]
+        split_name <- strsplit(name, "___", fixed = TRUE)[[1]]
         nowcast_df[[nowcast_unit[i]]] <- split_name[i]
       }
     }

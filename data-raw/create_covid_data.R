@@ -10,8 +10,8 @@ if (!requireNamespace("lubridate", quietly = TRUE)) {
 if (!requireNamespace("dplyr", quietly = TRUE)) {
   stop("Package 'dplyr' is required to run this script. Please install it with install.packages('dplyr').") # nolint
 }
-if (!requireNamespace("dplyr", quietly = TRUE)) {
-  stop("Package 'dplyr' is required to run this script. Please install it with install.packages('dplyr').") # nolint
+if (!requireNamespace("tidyr", quietly = TRUE)) {
+  stop("Package 'tidyr' is required to run this script. Please install it with install.packages('tidyr').") # nolint
 }
 library(readr)
 library(lubridate)

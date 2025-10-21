@@ -245,15 +245,16 @@ baselinenowcast.data.frame <- function(
   # Extract the additional columns not in the required columns
   if (is.null(nowcast_unit)) {
     nowcast_unit <- colnames(data)[!colnames(data) %in%
-      c(
-        {{ reference_date }},
-        {{ report_date }},
-        {{ count }}
-      )]
+      c(reference_date, report_date, count)]
   }
 
   # Split dataframe into a list of dataframes for each nowcast unit
-  list_of_dfs <- split(data, data[nowcast_unit])
+  if (length(nowcast_unit) != 0) {
+    list_of_dfs <- split(data, data[nowcast_unit])
+  } else {
+    list_of_dfs <- list(data)
+  }
+
   # Make sure they are all the same training volume length and that
   # they have the required columns etc
   # .validate_list_of_dfs(list_of_dfs, max_delay, reference_date, report_date, count, delays_unit) #nolint
@@ -345,7 +346,7 @@ baselinenowcast.data.frame <- function(
 
     # Split the name of the element in the last and add as a separate column
     # based on nowcast unit entry
-    if (!is.null(nowcast_unit)) {
+    if (length(nowcast_unit) != 0) {
       for (i in seq_along(nowcast_unit)) {
         split_name <- strsplit(name, ".", fixed = TRUE)[[1]]
         nowcast_df[[nowcast_unit[i]]] <- split_name[i]

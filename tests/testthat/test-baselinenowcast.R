@@ -244,6 +244,7 @@ test_that("baselinenowcast.data.frame works as expected with and without strata 
 
 test_that("`baselinenowcast` works for all differet nowcast units", { # nolint
   skip_if_not_installed("dplyr")
+  library(dplyr)
   single_tri_data <- covid_data |>
     filter(age_group == "00+") |>
     select(reference_date, report_date, count)

@@ -150,3 +150,265 @@ baselinenowcast.reporting_triangle <- function(
 
   return(result_df)
 }
+
+#' @title Create a dataframe of nowcast results from a dataframe of cases
+#'   indexed by reference date and report date
+#'
+#' @description This function ingests a data.frame with the number of incident
+#'    cases indexed by reference date and report date for potentially multiple
+#'    strata (e.g. age groups or locations) and returns a data.frame containing
+#'    nowcasts by reference dates for each of the specified strata.
+#'    For each strata, this function will by default estimate uncertainty using
+#'    past retrospective nowcast errors and generate probabilistic nowcasts,
+#'    which are samples from the predictive distribution of the estimated final
+#'    case count at each reference date. See documentation for the arguments of
+#'    this function which can be used to set the model specifications (things
+#'    like number of reference times for delay and uncertainty estimation,
+#'    the observation model, etc.). The function expects that each strata in
+#'    the dataframe has the same maximum delay and the same number of reference
+#'    dates.
+#'
+#' @param data Data.frame in a long tidy format with counts by reference date
+#'    and report date for one or more strata. Must contain the following
+#'    columns:
+#' .    - Column of type `date` or character with the dates of
+#'     the primary event occurrence (reference date).
+#'    - Column of type `date` or character with the dates of
+#'     report of the primary event (report_date).
+#'    - Column of numeric or integer indicating the new confirmed counts
+#'     pertaining to that reference and report date (count).
+#'  Additional columns can be included, and the user can specify which columns
+#'  set the unit of a single nowcast  ( i.e. the combination of columns that
+#'  uniquely define a single nowcast with the `nowcast_unit` argument.).
+#' @param nowcast_unit Vector of character strings indicating the names of the
+#'   columns in `data` (after any renaming of columns) that denote the unit of
+#'    a single nowcast.Within a nowcast unit, there can be no repeated unique
+#'    combinations of reference dates and report dates. Default is `NULL` which
+#'    assumes that all columns that are not required columns form the unit of
+#'    a single forecast. This may lead to unexpected behaviour, so setting the
+#'    nowcast unit explicitly can help make the code easier to debug and easier
+#'    to read. If specified, all columns that are not part of the forecast unit
+#'    (or required columns) will be removed.
+#' @param strata_sharing Vector of character strings indicating the estimand
+#'   for which estimates that are "borrowed" from across all strata should
+#'   be used. Options are `"delay"` and/or `"uncertainty"`. NULL indicates that
+#'   delay and uncertainty estimates should be computed for each `nowcast_unit`
+#'   independently.
+#' @param delay_pmf Vector of delays assumed to be indexed starting at the
+#'   first delay. Default is NULL,
+#'   which will estimate the delay from the reporting triangle in each
+#'   nowcast unit in `data`. See \code{\link{estimate_delay}} for more details.
+#' @param uncertainty_params Vector of uncertainty parameters ordered from
+#'   horizon 1 to the maximum horizon. Default is `NULL`, which will
+#'   estimate the uncertainty parameters from the reporting triangle in each
+#'   nowcast unit in `data`. See \code{\link{estimate_uncertainty}} for more
+#'   details.
+#' @param ... Additional arguments passed to
+#'    \code{\link{estimate_uncertainty}}
+#'    and \code{\link{sample_nowcast}}.
+#' @inheritParams baselinenowcast
+#' @inheritParams as_reporting_triangle.data.frame
+#' @inheritParams estimate_uncertainty
+#' @inheritParams sample_nowcast
+#' @inheritParams allocate_reference_times
+#' @importFrom purrr imap list_rbind
+#' @importFrom checkmate assert_subset
+#' @family baselinenowcast_df
+#' @export
+#' @method baselinenowcast data.frame
+#' @returns Data.frame of class \code{\link{baselinenowcast_df}}
+#' @examples
+#' covid_data_to_nowcast <- germany_covid19_hosp[
+#'   germany_covid19_hosp$report_date <
+#'     max(germany_covid19_hosp$reference_date),
+#' ] # nolint
+#' nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
+#'   max_delay = 40,
+#'   nowcast_unit = c("age_group", "location")
+#' )
+#' nowcasts_df
+baselinenowcast.data.frame <- function(
+    data,
+    scale_factor = 3,
+    prop_delay = 0.5,
+    output_type = c("samples", "point"),
+    draws = 1000,
+    uncertainty_model = fit_by_horizon,
+    uncertainty_sampler = sample_nb,
+    max_delay,
+    delays_unit = "days",
+    reference_date = "reference_date",
+    report_date = "report_date",
+    count = "count",
+    nowcast_unit = NULL,
+    strata_sharing = NULL,
+    delay_pmf = NULL,
+    uncertainty_params = NULL,
+    ...) {
+  # Extract the additional columns not in the required columns
+  if (is.null(nowcast_unit)) {
+    nowcast_unit <- colnames(data)[!colnames(data) %in%
+      c(reference_date, report_date, count)]
+  }
+
+  # Split dataframe into a list of dataframes for each nowcast unit
+  if (length(nowcast_unit) != 0) {
+    list_of_dfs <- split(data, interaction(data[nowcast_unit],
+      sep = "___",
+      drop = TRUE
+    ))
+  } else {
+    list_of_dfs <- list(data)
+  }
+
+  # Get the training volume for all reporting triangles
+  rep_tri1 <- as_reporting_triangle.data.frame(
+    data = list_of_dfs[[1]],
+    max_delay = max_delay,
+    delays_unit = delays_unit,
+    reference_date = reference_date,
+    report_date = report_date,
+    count = count
+  )
+  tv <- allocate_reference_times(
+    reporting_triangle = rep_tri1$reporting_triangle_matrix,
+    scale_factor = scale_factor,
+    prop_delay = prop_delay
+  )
+
+  # Apply strata sharing if specified
+  if (!is.null(strata_sharing)) {
+    assert_subset(strata_sharing,
+      choices = c("delay", "uncertainty"),
+      empty.ok = TRUE
+    )
+    pooled_df <- combine_triangle_dfs(
+      data = data,
+      reference_date = reference_date,
+      report_date = report_date,
+      count = count
+    )
+    pooled_triangle <- as_reporting_triangle(pooled_df,
+      max_delay = max_delay,
+      reference_date = reference_date,
+      report_date = report_date,
+      count = count
+    )
+    if ("delay" %in% strata_sharing) {
+      # Estimate delay once on pooled data
+      delay_pmf <- estimate_delay(
+        reporting_triangle = pooled_triangle$reporting_triangle_matrix,
+        n = tv$n_history_delay
+      )
+    }
+    if ("uncertainty" %in% strata_sharing) {
+      # Estimate uncertainty once on pooled data
+      trunc_rep_tris <- truncate_triangles(
+        reporting_triangle = pooled_triangle$reporting_triangle_matrix,
+        n = tv$n_retrospective_nowcasts
+      )
+      retro_rep_tris <- construct_triangles(trunc_rep_tris)
+      retro_pt_nowcasts <- fill_triangles(retro_rep_tris,
+        max_delay = max_delay,
+        n = tv$n_history_delay
+      )
+      uncertainty_params <- estimate_uncertainty(
+        point_nowcast_matrices = retro_pt_nowcasts,
+        truncated_reporting_triangles = trunc_rep_tris,
+        retro_reporting_triangles = retro_rep_tris,
+        n = tv$n_retrospective_nowcasts,
+        uncertainty_model = uncertainty_model,
+        ...
+      )
+    }
+  }
+
+  combined_result <- imap(list_of_dfs, function(rep_tri_df, name) {
+    rep_tri <- as_reporting_triangle.data.frame(
+      data = rep_tri_df,
+      max_delay = max_delay,
+      delays_unit = delays_unit,
+      reference_date = reference_date,
+      report_date = report_date,
+      count = count
+    )
+
+    nowcast_df <- baselinenowcast.reporting_triangle(
+      data = rep_tri,
+      scale_factor = scale_factor,
+      prop_delay = prop_delay,
+      output_type = output_type,
+      draws = draws,
+      uncertainty_model = uncertainty_model,
+      uncertainty_sampler = uncertainty_sampler,
+      delay_pmf = delay_pmf,
+      uncertainty_params = uncertainty_params,
+      ...
+    )
+
+    # Split the name of the element in the last and add as a separate column
+    # based on nowcast unit entry
+    if (length(nowcast_unit) != 0) {
+      for (i in seq_along(nowcast_unit)) {
+        split_name <- strsplit(name, "___", fixed = TRUE)[[1]]
+        nowcast_df[[nowcast_unit[i]]] <- split_name[i]
+      }
+    }
+
+
+    return(nowcast_df)
+  }) |> list_rbind()
+
+  return(combined_result)
+}
+
+
+#' Combine triangle data.frames
+#'
+#' @description This function ingests a dataframe with case counts indexed by
+#' reference dates and report dates for multiple strata and sums all the case
+#' counts, returning a data.frame with a single set of counts for all
+#' reference and report date combinations present in the original data
+#'
+#' @inheritParams baselinenowcast.data.frame
+#' @inheritParams as_reporting_triangle.data.frame
+#'
+#' @returns `result` Data.frame with the same column names for reference date,
+#' report date, and case count as in `data` but summed across all strata in
+#' the original data.
+#' @export
+#' @importFrom stats aggregate as.formula
+#' @examples
+#' example_data <- data.frame(
+#'   ref_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
+#'   rep_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
+#'   location = c("DE", "FR", "DE", "FR"),
+#'   age_group = c("00+", "00+", "05-14", "00+"),
+#'   cases = c(50, 30, 20, 40)
+#' )
+#' example_data
+#' combined <- combine_triangle_dfs(
+#'   data = example_data,
+#'   reference_date = "ref_date",
+#'   report_date = "rep_date",
+#'   count = "cases"
+#' )
+#' combined
+combine_triangle_dfs <- function(data,
+                                 reference_date,
+                                 report_date,
+                                 count) {
+  group_cols <- c(reference_date, report_date)
+  value_col <- count
+
+  formula_str <- paste(value_col, "~", paste(group_cols, collapse = " + "))
+  formula_obj <- as.formula(formula_str)
+
+  result <- aggregate(
+    formula_obj,
+    data = data,
+    FUN = sum,
+    na.rm = TRUE
+  )
+  return(result)
+}

@@ -445,7 +445,7 @@ test_that("estimate_uncertainty: can handle weekday filter with large ragged tri
 
   # Use the covid data to test, using only one age group and filtering to
   # a single weekday
-  covid_data <- readRDS(test_path("fixtures", "covid_data.rds")) |>
+  covid_data <- germany_covid19_hosp |>
     dplyr::filter(
       age_group == "00+",
       lubridate::wday(reference_date) == 1

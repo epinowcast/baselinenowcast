@@ -33,7 +33,7 @@ detect_structure <- function(reporting_triangle) {
   if (n_row_nas == 0) {
     cli_alert_info(
       text =
-        "The reporting triangle does not contain any missing values, check to make sure missing observations are coded as NAs rather than 0s." # nolint
+        "The reporting triangle does not contain any missing values." # nolint
     )
     return(0)
   }

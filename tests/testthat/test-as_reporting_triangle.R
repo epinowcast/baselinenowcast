@@ -363,7 +363,7 @@ test_that("assert on reporting triangle works as expected", {
   expect_error(assert_reporting_triangle(rep_tri5))
 })
 
-test_that("`as_reporting_triangle()` appropriately warns if there is nothing to be nowcasted (no unobserved cases in reporting triangle)", { # nolint
+test_that("`as_reporting_triangle()` appropriately messages if there is nothing to be nowcasted (no unobserved cases in reporting triangle)", { # nolint
   skip_if_not_installed("tidyr")
   skip_if_not_installed("dplyr")
   data <- tidyr::expand_grid(

@@ -79,7 +79,8 @@ test_that("combine_triangle_dfs handles multiple strata columns", {
     location = rep(c("DE", "FR"), each = 4),
     age_group = rep(c("00+", "05-14"), 4),
     sex = rep(c("M", "F"), 4),
-    count = c(10, 15, 20, 25, 30, 35, 40, 45)
+    count = c(10, 15, 20, 25, 30, 35, 40, 45),
+    stringsAsFactors = FALSE
   )
 
   result <- combine_triangle_dfs(

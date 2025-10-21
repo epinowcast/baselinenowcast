@@ -143,7 +143,8 @@ the dataframe has the same maximum delay and the same number of reference
 dates.
 }
 \examples{
-nowcasts_df <- baselinenowcast(germany_covid19_hosp,
+covid_data_to_nowcast <- germany_covid19_hosp[germany_covid19_hosp$report_date < max(germany_covid19_hosp$reference_date),] #nolint
+nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
   max_delay = 40,
   nowcast_unit = c("age_group", "location")
 )

@@ -20,6 +20,12 @@ test_that("baselinenowcast.reporting_triangle() works as expected", {
   expect_identical(pt_nowcast_df$output_type[1], "point")
   expect_identical(pt_nowcast_df$draw[1], 1)
   expect_true(all(expected_cols %in% colnames(pt_nowcast_df)))
+
+  # Expect draws are ordered
+  expect_identical(
+    nowcast_df$draw[nowcast_df$reference_date == "2026-04-01"],
+    1:100
+  )
 })
 
 

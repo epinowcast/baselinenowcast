@@ -362,3 +362,20 @@ test_that("assert on reporting triangle works as expected", {
   rep_tri5$structure <- rep(6, ncol(rep_tri$reporting_triangle_matrix))
   expect_error(assert_reporting_triangle(rep_tri5))
 })
+
+test_that("`as_reporting_triangle()` appropriately messages if there is nothing to be nowcasted (no unobserved cases in reporting triangle)", { # nolint
+  skip_if_not_installed("tidyr")
+  skip_if_not_installed("dplyr")
+  data <- tidyr::expand_grid(
+    reference_date = seq(as.Date("2021-04-01"), as.Date("2021-04-30"),
+      by = "day"
+    ),
+    report_date = seq(as.Date("2021-04-01"), as.Date("2021-05-15"), by = "day")
+  ) |>
+    dplyr::mutate(count = 5)
+
+  rep_tri <- expect_message(
+    as_reporting_triangle(data, max_delay = 10),
+    regexp = "The reporting triangle does not contain any missing values."
+  ) # nolint
+})

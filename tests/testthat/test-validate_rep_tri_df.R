@@ -27,7 +27,7 @@ test_that(".validate_rep_tri_df() can handle a ragged triangle with a single mis
 })
 
 test_that(".validate_rep_tri_df() warns when maximum report date is greater than the reference date", { # nolint
-  expect_warning(.validate_rep_tri_df(syn_nssp_df, delays_unit = "days"),
+  expect_message(.validate_rep_tri_df(syn_nssp_df, delays_unit = "days"),
     regexp = "The dataframe contains report dates beyond the final reference date." # nolint
   )
 })

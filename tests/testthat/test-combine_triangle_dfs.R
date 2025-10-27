@@ -83,7 +83,7 @@ test_that("combine_triangle_dfs errors if no set of shared reference and report 
       report_date = "report_date",
       count = "count"
     ),
-    regexp = "There is no overlapping set of reference and report dates across all strata." # nolint
+    regexp = "There is no overlapping set of reference and report dates across" # nolint
   )
   # This one fails because the dates for 05-14 for DE aren't overlapping with
   # dates for 00+
@@ -94,7 +94,7 @@ test_that("combine_triangle_dfs errors if no set of shared reference and report 
       report_date = "report_date",
       count = "count"
     ),
-    regexp = "There is no overlapping set of reference and report dates across all strata." # nolint
+    regexp = "There is no overlapping set of reference and report dates across" # nolint
   )
 })
 

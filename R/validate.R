@@ -477,3 +477,27 @@
   )
   return(NULL)
 }
+
+#' Validate each the nowcast unit passed to baselinenowcast
+#'
+#' @inheritParams baselinenowcast.data.frame
+#' @returns NULL
+.validate_nowcast_unit <- function(nowcast_unit,
+                                   data) {
+  # Ensure nowcast_unit is not reference_date, report_date, count
+  if (any(c(reference_date, report_date, count) %in% nowcast_unit)) {
+    cli_abort(
+      message =
+        "`nowcast_unit` cannot contain any of the required columns of {c(reference_date, report_date, count)}" # nolint
+    )
+  }
+  if (!all(nowcast_unit %in% colnames(data))) {
+    cli_abort(
+      message =
+        c("`nowcast_unit`, if specified, must be a column in `data`.",
+          "i" = "{nowcast_unit[!nowcast_unit %in% colnames(data)]} is not a column in `data`."
+        )
+    )
+  }
+  return(NULL)
+}

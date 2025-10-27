@@ -186,6 +186,7 @@ test_that("assert_baselinenowcast_df errors when appropriate", {
 # Keep only selected age groups
 covid_data <- germany_covid19_hosp[germany_covid19_hosp$report_date <= max(germany_covid19_hosp$reference_date) & # nolint
   germany_covid19_hosp$age_group %in% c("00+", "60-79", "80+"), ] # nolint
+covid_data_delay_rm <- covid_data[, names(covid_data)!= "delay"]
 test_that("baselinenowcast.data.frame works as expected with and without strata sharing", { # nolint
   nowcasts_df <- baselinenowcast(
     data = covid_data,
@@ -277,7 +278,6 @@ test_that("`baselinenowcast` works for all differet nowcast units", { # nolint
   expect_s3_class(single_nowcast_df_w_metadata, "baselinenowcast_df")
   expect_true(all(expected_cols2 %in% colnames(single_nowcast_df_w_metadata)))
 
-  covid_data_delay_rm <- select(covid_data, -delay)
   test_df <- baselinenowcast(
     data = covid_data_delay_rm,
     draws = 100,
@@ -298,4 +298,33 @@ test_that("baselinenowcast errors if extra delay column is passed in because it 
     ),
     regexp = "`max_delay` specified is larger than the maximum delay in the data." # nolint
   ) # nolint
+})
+
+test_that("baselinenowcast errors if nowcast unit is specified incorrectly",{
+  expect_error(
+    baselinenowcast(
+      data = covid_data_delay_rm,
+      draws = 100,
+      nowcast_unit = c("age_group", "location", "reference_date")
+    ),
+    regexp = "`nowcast_unit` cannot contain any of the required columns"
+  )
+  expect_error(
+    baselinenowcast(
+      data = covid_data_delay_rm,
+      draws = 100,
+      reference_date = "ref_date",
+      nowcast_unit = c("age_group", "location", "ref_date")
+    ),
+    regexp = "`nowcast_unit` cannot contain any of the required columns"
+  )
+  expect_error(
+    baselinenowcast(
+      data = covid_data_delay_rm,
+      draws = 100,
+      nowcast_unit = c("region", "age_group")
+    ),
+    regexp = "`nowcast_unit`, if specified, must be a column in `data`."
+    )
+  )
 })

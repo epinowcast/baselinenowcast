@@ -181,19 +181,19 @@ baselinenowcast.reporting_triangle <- function(
 #'  set the unit of a single nowcast  ( i.e. the combination of columns that
 #'  uniquely define a single nowcast with the `nowcast_unit` argument.).
 #' @param nowcast_unit Vector of character strings indicating the names of the
-#'   columns in `data` (after any renaming of columns) that denote the unit of
-#'    a single nowcast.Within a nowcast unit, there can be no repeated unique
-#'    combinations of reference dates and report dates. Default is `NULL` which
-#'    assumes that all columns that are not required columns form the unit of
-#'    a single forecast. This may lead to unexpected behaviour, so setting the
-#'    nowcast unit explicitly can help make the code easier to debug and easier
-#'    to read. If specified, all columns that are not part of the forecast unit
-#'    (or required columns) will be removed.
+#'   columns in `data` that denote the unit of a single nowcast. Within a
+#'   nowcast unit, there can be no repeated unique combinations of reference
+#'   dates and report dates. Default is `NULL` which assumes that all columns
+#'   that are not required columns (reference date, report date, count) form
+#'   the unit of a single forecast. This may lead to unexpected behaviour, so
+#'   setting the nowcast unit explicitly can help make the code easier to debug
+#'   and easier to read. If specified, all columns that are not part of the
+#'   forecast unit (or required columns) will be removed.
 #' @param strata_sharing Vector of character strings indicating the estimand
-#'   for which estimates that are "borrowed" from across all strata should
-#'   be used. Options are `"delay"` and/or `"uncertainty"`. NULL indicates that
-#'   delay and uncertainty estimates should be computed for each `nowcast_unit`
-#'   independently.
+#'   for which estimates that are "borrowed" from pooled estimates across all
+#'   strata should be used. Options are `"delay"` and/or `"uncertainty"`. NULL
+#'   indicates that delay and uncertainty estimates should be computed for
+#'   each `nowcast_unit` independently.
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
 #'   first delay. Default is NULL,
 #'   which will estimate the delay from the reporting triangle in each
@@ -245,6 +245,7 @@ baselinenowcast.data.frame <- function(
     delay_pmf = NULL,
     uncertainty_params = NULL,
     ...) {
+  .validate_nowcast_unit(nowcast_unit, data)
   # Extract the additional columns not in the required columns
   if (is.null(nowcast_unit)) {
     nowcast_unit <- colnames(data)[!colnames(data) %in%

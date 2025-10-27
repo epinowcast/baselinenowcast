@@ -94,20 +94,20 @@ column which represents the date the primary event was reported.}
 containing the number of incident cases on each reference and report date.}
 
 \item{nowcast_unit}{Vector of character strings indicating the names of the
-columns in \code{data} (after any renaming of columns) that denote the unit of
-a single nowcast.Within a nowcast unit, there can be no repeated unique
-combinations of reference dates and report dates. Default is \code{NULL} which
-assumes that all columns that are not required columns form the unit of
-a single forecast. This may lead to unexpected behaviour, so setting the
-nowcast unit explicitly can help make the code easier to debug and easier
-to read. If specified, all columns that are not part of the forecast unit
-(or required columns) will be removed.}
+columns in \code{data} that denote the unit of a single nowcast. Within a
+nowcast unit, there can be no repeated unique combinations of reference
+dates and report dates. Default is \code{NULL} which assumes that all columns
+that are not required columns (reference date, report date, count) form
+the unit of a single forecast. This may lead to unexpected behaviour, so
+setting the nowcast unit explicitly can help make the code easier to debug
+and easier to read. If specified, all columns that are not part of the
+forecast unit (or required columns) will be removed.}
 
 \item{strata_sharing}{Vector of character strings indicating the estimand
-for which estimates that are "borrowed" from across all strata should
-be used. Options are \code{"delay"} and/or \code{"uncertainty"}. NULL indicates that
-delay and uncertainty estimates should be computed for each \code{nowcast_unit}
-independently.}
+for which estimates that are "borrowed" from pooled estimates across all
+strata should be used. Options are \code{"delay"} and/or \code{"uncertainty"}. NULL
+indicates that delay and uncertainty estimates should be computed for
+each \code{nowcast_unit} independently.}
 
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
 first delay. Default is NULL,
@@ -143,7 +143,10 @@ the dataframe has the same maximum delay and the same number of reference
 dates.
 }
 \examples{
-covid_data_to_nowcast <- germany_covid19_hosp[germany_covid19_hosp$report_date < max(germany_covid19_hosp$reference_date),] #nolint
+covid_data_to_nowcast <- germany_covid19_hosp[
+  germany_covid19_hosp$report_date <
+    max(germany_covid19_hosp$reference_date),
+] # nolint
 nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
   max_delay = 40,
   nowcast_unit = c("age_group", "location")

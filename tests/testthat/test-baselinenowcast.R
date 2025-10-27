@@ -327,3 +327,111 @@ test_that("baselinenowcast errors if nowcast unit is specified incorrectly", {
     regexp = "`nowcast_unit`, if specified, must be a column in `data`."
   )
 })
+
+test_that("baselinenowcast results are equivalent if first creating a reporting triangle and then running", { # nolint
+  skip_if_not_installed("dplyr")
+  library(dplyr)
+  set.seed(123)
+  covid_data_single_strata <- covid_data_delay_rm |>
+    filter(age_group == "00+")
+  rep_tri <- as_reporting_triangle(covid_data_single_strata,
+    max_delay = 40
+  )
+  nowcast_df1 <- baselinenowcast(rep_tri,
+    draws = 100
+  )
+
+  set.seed(123)
+  # Vs using .datamframe method
+  nowcast_df2 <- baselinenowcast(covid_data_single_strata,
+    max_delay = 40,
+    draws = 100
+  )
+  expect_equal(nowcast_df1$pred_count, nowcast_df2$pred_count, tol = 0.1)
+  expect_equal(mean(nowcast_df1$pred_count), mean(nowcast_df2$pred_count),
+    tol = 0.01
+  )
+})
+
+test_that("baselinenowcast works with weekday strata", {
+  skip_if_not_installed("dplyr")
+  skip_if_not_installed("lubridate")
+  library(dplyr)
+  library(lubridate)
+  set.seed(123)
+  covid_data_single_strata <- covid_data_delay_rm |>
+    filter(age_group == "00+")
+  covid_data_single_strata$weekday_ref_date <- wday(covid_data_single_strata$reference_date, # nolint
+    label = TRUE
+  )
+  nowcast_df2 <- expect_warning(
+    baselinenowcast(covid_data_single_strata,
+      max_delay = 40,
+      draws = 100,
+      scale_factor = 3 / 7,
+      nowcast_unit = "weekday_ref_date"
+    )
+  )
+  nowcast_df_Tue1 <- nowcast_df2 |>
+    filter(weekday_ref_date == "Tue") |>
+    arrange(desc(reference_date), draw)
+
+  set.seed(123)
+  covid_data_Tue <- covid_data_single_strata |>
+    filter(weekday_ref_date == "Tue")
+  nowcast_df_Tue2 <- expect_warning(
+    baselinenowcast(
+      covid_data_Tue,
+      max_delay = 40,
+      draws = 100,
+      scale_factor = 3 / 7,
+      nowcast_unit = "weekday_ref_date"
+    )
+  ) |>
+    arrange(desc(reference_date), draw)
+
+  expect_equal(mean(nowcast_df_Tue1$pred_count),
+    mean(nowcast_df_Tue2$pred_count),
+    tol = 0.001
+  )
+})
+
+test_that("baselinenowcast works with sharing when dates not aligned between strata", { # nolint
+  skip_if_not_installed("dplyr")
+  skip_if_not_installed("lubridate")
+  library(dplyr)
+  library(lubridate)
+  set.seed(123)
+  covid_data_incomplete <- covid_data_delay_rm |>
+    filter(
+      !(report_date >= "2022-08-08" & age_group == "60-79"),
+      age_group != "00+"
+    )
+  nowcast_df <- baselinenowcast(
+    covid_data_incomplete,
+    max_delay = 40,
+    draws = 100,
+    strata_sharing = c("delay", "uncertainty")
+  )
+  expect_s3_class(nowcast_df, "data.frame")
+  expect_s3_class(nowcast_df, "baselinenowcast_df")
+  max_ref_date_60_79 <- nowcast_df |>
+    filter(age_group == "60-79") |>
+    summarise(max_ref_date = max(reference_date)) |>
+    pull()
+  expect_identical(max_ref_date_60_79, ymd("2022-08-07"))
+
+  covid_data_full <- covid_data_delay_rm |>
+    filter(age_group != "00+")
+  nowcast_df2 <- baselinenowcast(
+    covid_data_full,
+    max_delay = 40,
+    draws = 100,
+    strata_sharing = c("delay", "uncertainty")
+  )
+  max_ref_date_60_792 <- nowcast_df2 |>
+    filter(age_group == "60-79") |>
+    summarise(max_ref_date = max(reference_date)) |>
+    pull()
+  expect_identical(max_ref_date_60_792, ymd("2022-08-08"))
+})

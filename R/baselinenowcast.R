@@ -125,6 +125,7 @@ baselinenowcast.reporting_triangle <- function(
       reporting_triangle = tri,
       n_history_delay = tv$n_history_delay,
       n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
+      structure = data$structure,
       max_delay = ncol(tri) - 1,
       draws = draws,
       uncertainty_model = uncertainty_model,
@@ -333,7 +334,7 @@ baselinenowcast.data.frame <- function(
 
     nowcast_df <- baselinenowcast.reporting_triangle(
       data = rep_tri,
-      scale_factor = scale_factor,
+      scale_factor = 2 * scale_factor,
       prop_delay = prop_delay,
       output_type = output_type,
       draws = draws,

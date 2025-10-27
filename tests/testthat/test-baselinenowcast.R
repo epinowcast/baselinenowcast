@@ -362,7 +362,7 @@ test_that("baselinenowcast works with weekday strata", {
     covid_data_delay_rm,
     age_group == "00+"
   )
-  covid_data_single_strata$weekday_ref_date <- wday(covid_data_single_strata$reference_date, # nolint
+  covid_data_single_strata$weekday_ref_date <- lubridate::wday(covid_data_single_strata$reference_date, # nolint
     label = TRUE
   )
   nowcast_df2 <- expect_warning(

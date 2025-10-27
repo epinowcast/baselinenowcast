@@ -4,7 +4,12 @@
 \alias{combine_triangle_dfs}
 \title{Combine triangle data.frames}
 \usage{
-combine_triangle_dfs(data, reference_date, report_date, count)
+combine_triangle_dfs(
+  data,
+  reference_date = "reference_date",
+  report_date = "report_date",
+  count = "count"
+)
 }
 \arguments{
 \item{data}{Data.frame in a long tidy format with counts by reference date
@@ -40,15 +45,22 @@ the original data.
 \description{
 This function ingests a dataframe with case counts indexed by
 reference dates and report dates for multiple strata and sums all the case
-counts, returning a data.frame with a single set of counts for all
-reference and report date combinations present in the original data
+counts across the shared set of reference and report dates. It requires that
+the strata have some overlapping set of reference and report dates,
+otherwise it will return an error to indicate to the user that strata
+sharing with the set of strata passed in is not possible. If overlapping
+sets of reference and report dates are input, it returns a data.frame with
+a single set of counts for all the reference and report date combinations
+present in all strata in the original data. Note that this may be a subset
+of the unique set of reference and report date combinations in the original
+data.
 }
 \examples{
 example_data <- data.frame(
-  ref_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
-  rep_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
+  ref_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-06")), # nolint
+  rep_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-10")), # nolint
   location = c("DE", "FR", "DE", "FR"),
-  age_group = c("00+", "00+", "05-14", "00+"),
+  age_group = c("00+", "00+", "00+", "00+"),
   cases = c(50, 30, 20, 40)
 )
 example_data

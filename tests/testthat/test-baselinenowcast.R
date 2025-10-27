@@ -214,7 +214,7 @@ test_that("baselinenowcast.data.frame works as expected with and without strata 
 
   # Use strata sharing
   # First need to remove all age groups otherwise double count
-  covid_data_age_groups <- covid_data[covid_data$age_group != "00+", ]
+  covid_data_age_groups <- covid_data_delay_rm[covid_data_delay_rm$age_group != "00+", ] # nolint
   nowcasts_df2 <- baselinenowcast(
     data = covid_data_age_groups,
     max_delay = 40,

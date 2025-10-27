@@ -353,7 +353,6 @@ baselinenowcast.data.frame <- function(
       }
     }
 
-
     return(nowcast_df)
   }) |> list_rbind()
 
@@ -365,8 +364,15 @@ baselinenowcast.data.frame <- function(
 #'
 #' @description This function ingests a dataframe with case counts indexed by
 #' reference dates and report dates for multiple strata and sums all the case
-#' counts, returning a data.frame with a single set of counts for all
-#' reference and report date combinations present in the original data
+#' counts across the shared set of reference and report dates. It requires that
+#' the strata have some overlapping set of reference and report dates,
+#' otherwise it will return an error to indicate to the user that strata
+#' sharing with the set of strata passed in is not possible. If overlapping
+#' sets of reference and report dates are input, it returns a data.frame with
+#' a single set of counts for all the reference and report date combinations
+#' present in all strata in the original data. Note that this may be a subset
+#' of the unique set of reference and report date combinations in the original
+#' data.
 #'
 #' @inheritParams baselinenowcast.data.frame
 #' @inheritParams as_reporting_triangle.data.frame
@@ -378,10 +384,10 @@ baselinenowcast.data.frame <- function(
 #' @importFrom stats aggregate as.formula
 #' @examples
 #' example_data <- data.frame(
-#'   ref_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
-#'   rep_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
+#'   ref_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-06")), # nolint
+#'   rep_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-10")), # nolint
 #'   location = c("DE", "FR", "DE", "FR"),
-#'   age_group = c("00+", "00+", "05-14", "00+"),
+#'   age_group = c("00+", "00+", "00+", "00+"),
 #'   cases = c(50, 30, 20, 40)
 #' )
 #' example_data
@@ -393,18 +399,51 @@ baselinenowcast.data.frame <- function(
 #' )
 #' combined
 combine_triangle_dfs <- function(data,
-                                 reference_date,
-                                 report_date,
-                                 count) {
+                                 reference_date = "reference_date",
+                                 report_date = "report_date",
+                                 count = "count") {
   group_cols <- c(reference_date, report_date)
+  strata_cols <- setdiff(names(data), c(group_cols, count))
   value_col <- count
+
+  if (length(strata_cols) == 0) {
+    # If no strata columns, create stratum_id based on unique date combinations
+    data$stratum_id <- as.integer(factor(
+      paste(data[[reference_date]], data[[report_date]], sep = "___")
+    ))
+  } else {
+    # Create a unique identifier for each stratum
+    data$stratum_id <- do.call(paste, c(data[strata_cols], sep = "_"))
+  }
+
+  n_strata <- length(unique(data$stratum_id))
+
+  date_strata <- unique(data[, c(group_cols, "stratum_id")])
+  date_counts <- aggregate(
+    stratum_id ~ .,
+    data = date_strata[, c(group_cols, "stratum_id")],
+    FUN = function(x) length(unique(x))
+  )
+
+  names(date_counts)[ncol(date_counts)] <- "n_strata"
+
+  common_dates <- date_counts[date_counts$n_strata == n_strata, group_cols]
+
+  if (nrow(common_dates) == 0) {
+    cli_abort(
+      message = "There is no overlapping set of reference and report dates across all strata. `strata_sharing` is not possible" # nolint
+    )
+  }
+
+  filtered_data <- merge(data, common_dates, by = group_cols)
+  filtered_data$stratum_id <- NULL
 
   formula_str <- paste(value_col, "~", paste(group_cols, collapse = " + "))
   formula_obj <- as.formula(formula_str)
 
   result <- aggregate(
     formula_obj,
-    data = data,
+    data = filtered_data,
     FUN = sum,
     na.rm = TRUE
   )

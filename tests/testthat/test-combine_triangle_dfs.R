@@ -1,4 +1,22 @@
-test_data <- data.frame(
+test_data_to_fail <- data.frame(
+  reference_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
+  report_date = as.Date(c("2021-04-08", "2021-04-07", "2021-04-10", "2021-04-09")), # nolint
+  location = c("DE", "FR", "DE", "FR"),
+  age_group = c("00+", "00+", "05-14", "00+"),
+  count = c(50, 30, 20, 40),
+  stringsAsFactors = FALSE
+)
+
+test_data_partial_overlap <- data.frame(
+  reference_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
+  report_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
+  location = c("DE", "FR", "DE", "FR"),
+  age_group = c("00+", "00+", "00+", "00+"),
+  count = c(50, 30, 20, 40),
+  stringsAsFactors = FALSE
+)
+
+test_data_also_fail <- data.frame(
   reference_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
   report_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
   location = c("DE", "FR", "DE", "FR"),
@@ -7,47 +25,77 @@ test_data <- data.frame(
   stringsAsFactors = FALSE
 )
 
+example_data <- data.frame(
+  ref_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-06")), # nolint
+  rep_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-10")), # nolint
+  location = c("DE", "FR", "DE", "FR"),
+  age_group = c("00+", "00+", "00+", "00+"),
+  cases = c(50, 30, 20, 40),
+  stringsAsFactors = FALSE
+)
+
 test_that("combine_triangle_dfs combines data across strata correctly", {
   result <- combine_triangle_dfs(
-    data = test_data,
-    reference_date = "reference_date",
-    report_date = "report_date",
-    count = "count"
+    data = example_data,
+    reference_date = "ref_date",
+    report_date = "rep_date",
+    count = "cases"
   )
   # Correct columns
   expect_false("location" %in% names(result))
   expect_false("age_group" %in% names(result))
-  expect_true("reference_date" %in% names(result))
-  expect_true("report_date" %in% names(result))
-  expect_true("count" %in% names(result))
+  expect_true("ref_date" %in% names(result))
+  expect_true("rep_date" %in% names(result))
+  expect_true("cases" %in% names(result))
 
-  expect_identical(nrow(result), 3L)
+  expect_identical(nrow(result), 2L)
 
-  row1 <- result[result$reference_date == as.Date("2021-04-06") &
-    result$report_date == as.Date("2021-04-08"), ]
+  row1 <- result[result$ref_date == as.Date("2021-04-06") &
+    result$rep_date == as.Date("2021-04-08"), ]
+  expect_identical(row1$cases, 80)
+
+  row2 <- result[result$ref_date == as.Date("2021-04-06") &
+    result$rep_date == as.Date("2021-04-10"), ]
+  expect_identical(row2$cases, 60)
+
+  result2 <- combine_triangle_dfs(
+    data = test_data_partial_overlap
+  )
+  # Correct columns
+  expect_false("location" %in% names(result2))
+  expect_false("age_group" %in% names(result2))
+  expect_true("reference_date" %in% names(result2))
+  expect_true("report_date" %in% names(result2))
+  expect_true("count" %in% names(result2))
+
+  expect_identical(nrow(result2), 1L)
+
+  row1 <- result2[result2$reference_date == as.Date("2021-04-06") &
+    result2$report_date == as.Date("2021-04-08"), ]
   expect_identical(row1$count, 80)
-
-  row2 <- result[result$reference_date == as.Date("2021-04-06") &
-    result$report_date == as.Date("2021-04-10"), ]
-  expect_identical(row2$count, 20)
 })
 
-test_that("combine_triangle_dfs returns correct column names", {
-  test_data <- data.frame(
-    ref_date = as.Date(c("2021-04-06", "2021-04-06")),
-    rpt_date = as.Date(c("2021-04-08", "2021-04-08")),
-    n = c(10, 20),
-    stringsAsFactors = FALSE
+test_that("combine_triangle_dfs errors if no set of shared reference and report dates exists", { # nolint
+  expect_error(
+    combine_triangle_dfs(
+      data = test_data_to_fail,
+      reference_date = "reference_date",
+      report_date = "report_date",
+      count = "count"
+    ),
+    regexp = "There is no overlapping set of reference and report dates across all strata." # nolint
   )
-
-  result <- combine_triangle_dfs(
-    data = test_data,
-    reference_date = "ref_date",
-    report_date = "rpt_date",
-    count = "n"
+  # This one fails because the dates for 05-14 for DE aren't overlapping with
+  # dates for 00+
+  expect_error(
+    combine_triangle_dfs(
+      data = test_data_also_fail,
+      reference_date = "reference_date",
+      report_date = "report_date",
+      count = "count"
+    ),
+    regexp = "There is no overlapping set of reference and report dates across all strata." # nolint
   )
-
-  expect_named(result, c("ref_date", "rpt_date", "n"))
 })
 
 

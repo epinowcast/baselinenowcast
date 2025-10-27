@@ -12,7 +12,6 @@ tv <- allocate_reference_times(triangle)
 n_delay_valid <- tv$n_history_delay
 n_retro_valid <- tv$n_retrospective_nowcasts
 
-
 test_that("estimate_and_apply_uncertainty works as expected with the default settings", { # nolint
   set.seed(123)
   nowcast_draws_df <- estimate_and_apply_uncertainty(
@@ -91,5 +90,40 @@ test_that("estimate_and_apply_uncertainty error when things are specified incorr
       n_retrospective_nowcasts = 2
     ),
     regexp = "Insufficient reference times in reporting triangle"
+  )
+})
+
+test_that("estimate_and_apply_uncertainty works for jagged reporting triangle", {
+  jagged_triangle <- matrix(
+    data = sample.int(10, 12 * 5, replace = TRUE),
+    nrow = 12,
+    ncol = 5
+  ) |> construct_triangle(structure = 2)
+  pt_nowcast_matrix2 <- estimate_and_apply_delay(
+    reporting_triangle = jagged_triangle,
+    n = 6
+  )
+
+  tv <- allocate_reference_times(jagged_triangle)
+  n_delay_valid <- tv$n_history_delay
+  n_retro_valid <- tv$n_retrospective_nowcasts
+  set.seed(123)
+  nowcast_draws_df <- estimate_and_apply_uncertainty(
+    pt_nowcast_matrix2,
+    jagged_triangle,
+    n_history_delay = n_delay_valid,
+    n_retrospective_nowcasts = n_retro_valid
+  )
+  set.seed(123)
+  nowcast_draws_df2 <- estimate_and_apply_uncertainty(
+    pt_nowcast_matrix2,
+    jagged_triangle,
+    n_history_delay = n_delay_valid,
+    n_retrospective_nowcasts = n_retro_valid,
+    structure = 2
+  )
+  expect_equal(mean(nowcast_draws_df$pred_count),
+    mean(nowcast_draws_df2$pred_count),
+    tol = 0.01
   )
 })

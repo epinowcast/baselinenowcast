@@ -483,7 +483,10 @@
 #' @inheritParams baselinenowcast.data.frame
 #' @returns NULL
 .validate_nowcast_unit <- function(nowcast_unit,
-                                   data) {
+                                   data,
+                                   reference_date,
+                                   report_date,
+                                   count) {
   # Ensure nowcast_unit is not reference_date, report_date, count
   if (any(c(reference_date, report_date, count) %in% nowcast_unit)) {
     cli_abort(
@@ -495,7 +498,7 @@
     cli_abort(
       message =
         c("`nowcast_unit`, if specified, must be a column in `data`.",
-          "i" = "{nowcast_unit[!nowcast_unit %in% colnames(data)]} is not a column in `data`."
+          "i" = "{nowcast_unit[!nowcast_unit %in% colnames(data)]} is not a column in `data`." # nolint
         )
     )
   }

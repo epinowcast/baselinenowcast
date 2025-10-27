@@ -186,7 +186,7 @@ test_that("assert_baselinenowcast_df errors when appropriate", {
 # Keep only selected age groups
 covid_data <- germany_covid19_hosp[germany_covid19_hosp$report_date <= max(germany_covid19_hosp$reference_date) & # nolint
   germany_covid19_hosp$age_group %in% c("00+", "60-79", "80+"), ] # nolint
-covid_data_delay_rm <- covid_data[, names(covid_data)!= "delay"]
+covid_data_delay_rm <- covid_data[, names(covid_data) != "delay"]
 test_that("baselinenowcast.data.frame works as expected with and without strata sharing", { # nolint
   nowcasts_df <- baselinenowcast(
     data = covid_data,
@@ -235,15 +235,15 @@ test_that("baselinenowcast.data.frame works as expected with and without strata 
   expect_failure(
     expect_equal(
       mean(nowcasts_df$pred_count[nowcasts_df$age_group == "60-79" &
-        nowcasts_df$reference_date == max(nowcasts_df$reference_date)]), # nolint
+        nowcasts_df$reference_date == max(nowcasts_df$reference_date)]),
       mean(nowcasts_df2$pred_count[nowcasts_df2$age_group == "60-79" &
-        nowcasts_df2$reference_date == max(nowcasts_df$reference_date)]), # nolint
+        nowcasts_df2$reference_date == max(nowcasts_df$reference_date)]),
       tol = 0.01
     )
   )
 })
 
-test_that("`baselinenowcast` works for all differet nowcast units", { # nolint
+test_that("`baselinenowcast` works for all differet nowcast units", {
   skip_if_not_installed("dplyr")
   library(dplyr)
   single_tri_data <- covid_data |>
@@ -300,7 +300,7 @@ test_that("baselinenowcast errors if extra delay column is passed in because it 
   ) # nolint
 })
 
-test_that("baselinenowcast errors if nowcast unit is specified incorrectly",{
+test_that("baselinenowcast errors if nowcast unit is specified incorrectly", {
   expect_error(
     baselinenowcast(
       data = covid_data_delay_rm,
@@ -325,6 +325,5 @@ test_that("baselinenowcast errors if nowcast unit is specified incorrectly",{
       nowcast_unit = c("region", "age_group")
     ),
     regexp = "`nowcast_unit`, if specified, must be a column in `data`."
-    )
   )
 })

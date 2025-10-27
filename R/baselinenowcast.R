@@ -245,7 +245,13 @@ baselinenowcast.data.frame <- function(
     delay_pmf = NULL,
     uncertainty_params = NULL,
     ...) {
-  .validate_nowcast_unit(nowcast_unit, data)
+  .validate_nowcast_unit(
+    nowcast_unit,
+    data,
+    reference_date,
+    report_date,
+    count
+  )
   # Extract the additional columns not in the required columns
   if (is.null(nowcast_unit)) {
     nowcast_unit <- colnames(data)[!colnames(data) %in%
@@ -261,21 +267,6 @@ baselinenowcast.data.frame <- function(
   } else {
     list_of_dfs <- list(data)
   }
-
-  # Get the training volume for all reporting triangles
-  rep_tri1 <- as_reporting_triangle.data.frame(
-    data = list_of_dfs[[1]],
-    max_delay = max_delay,
-    delays_unit = delays_unit,
-    reference_date = reference_date,
-    report_date = report_date,
-    count = count
-  )
-  tv <- allocate_reference_times(
-    reporting_triangle = rep_tri1$reporting_triangle_matrix,
-    scale_factor = scale_factor,
-    prop_delay = prop_delay
-  )
 
   # Apply strata sharing if specified
   if (!is.null(strata_sharing)) {
@@ -294,6 +285,12 @@ baselinenowcast.data.frame <- function(
       reference_date = reference_date,
       report_date = report_date,
       count = count
+    )
+    # Get the training volume for all reporting triangles
+    tv <- allocate_reference_times(
+      reporting_triangle = pooled_triangle$reporting_triangle_matrix,
+      scale_factor = scale_factor,
+      prop_delay = prop_delay
     )
     if ("delay" %in% strata_sharing) {
       # Estimate delay once on pooled data

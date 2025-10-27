@@ -93,7 +93,7 @@ test_that("estimate_and_apply_uncertainty error when things are specified incorr
   )
 })
 
-test_that("estimate_and_apply_uncertainty works for jagged reporting triangle", {
+test_that("estimate_and_apply_uncertainty works for jagged reporting triangle", { # nolint
   jagged_triangle <- matrix(
     data = sample.int(10, 12 * 5, replace = TRUE),
     nrow = 12,

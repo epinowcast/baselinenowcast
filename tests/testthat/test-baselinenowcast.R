@@ -331,8 +331,10 @@ test_that("baselinenowcast errors if nowcast unit is specified incorrectly", {
 test_that("baselinenowcast results are equivalent if first creating a reporting triangle and then running", { # nolint
   skip_if_not_installed("dplyr")
   set.seed(123)
-  covid_data_single_strata <- covid_data_delay_rm |>
-    dplyr::filter(age_group == "00+")
+  covid_data_single_strata <- dplyr::filter(
+    covid_data_delay_rm,
+    age_group == "00+"
+  )
   rep_tri <- as_reporting_triangle(covid_data_single_strata,
     max_delay = 40
   )
@@ -355,10 +357,8 @@ test_that("baselinenowcast results are equivalent if first creating a reporting 
 test_that("baselinenowcast works with weekday strata", {
   skip_if_not_installed("dplyr")
   skip_if_not_installed("lubridate")
-  library(dplyr)
-  library(lubridate)
   set.seed(123)
-  covid_data_single_strata <- filter(
+  covid_data_single_strata <- dplyr::filter(
     covid_data_delay_rm,
     age_group == "00+"
   )
@@ -378,7 +378,7 @@ test_that("baselinenowcast works with weekday strata", {
     arrange(desc(reference_date), draw)
 
   set.seed(123)
-  covid_data_Tue <- filter(
+  covid_data_Tue <- dplyr::filter(
     covid_data_single_strata,
     weekday_ref_date == "Tue"
   )
@@ -391,7 +391,7 @@ test_that("baselinenowcast works with weekday strata", {
       nowcast_unit = "weekday_ref_date"
     )
   ) |>
-    arrange(desc(reference_date), draw)
+    dplyr::arrange(desc(reference_date), draw)
 
   expect_equal(mean(nowcast_df_Tue1$pred_count),
     mean(nowcast_df_Tue2$pred_count),

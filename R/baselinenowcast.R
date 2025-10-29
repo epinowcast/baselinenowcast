@@ -436,6 +436,14 @@ combine_triangle_dfs <- function(data,
     )
   }
 
+  if (!all(date_counts$n_strata == n_strata)) {
+    cli_warn(
+      message = c("Not all reference dates and report dates combinations are available for all strata.", # nolint
+        "i" = "Only the subset of reference and report dates that are available for all strata will be used to aggregate cases." # nolint
+      )
+    )
+  }
+
   filtered_data <- merge(data, common_dates, by = group_cols)
   filtered_data$stratum_id <- NULL
 

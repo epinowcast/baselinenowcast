@@ -408,11 +408,14 @@ test_that("baselinenowcast works with sharing when dates not aligned between str
     !(report_date >= "2022-08-08" & age_group == "60-79"),
     age_group != "00+"
   )
-  nowcast_df <- baselinenowcast(
-    covid_data_incomplete,
-    max_delay = 40,
-    draws = 100,
-    strata_sharing = c("delay", "uncertainty")
+  nowcast_df <- expect_warning(
+    baselinenowcast(
+      covid_data_incomplete,
+      max_delay = 40,
+      draws = 100,
+      strata_sharing = c("delay", "uncertainty")
+    ),
+    regexp = "Not all reference dates and report dates combinations are available"
   )
   expect_s3_class(nowcast_df, "data.frame")
   expect_s3_class(nowcast_df, "baselinenowcast_df")

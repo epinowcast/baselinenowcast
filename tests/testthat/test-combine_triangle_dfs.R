@@ -58,8 +58,11 @@ test_that("combine_triangle_dfs combines data across strata correctly", {
     result$rep_date == as.Date("2021-04-10"), ]
   expect_identical(row2$cases, 60)
 
-  result2 <- combine_triangle_dfs(
-    data = test_data_partial_overlap
+  result2 <- expect_warning(
+    combine_triangle_dfs(
+      data = test_data_partial_overlap
+    ),
+    regexp = "Not all reference dates and report dates combinations are available"
   )
   # Correct columns
   expect_false("location" %in% names(result2))

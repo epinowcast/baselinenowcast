@@ -415,7 +415,7 @@ test_that("baselinenowcast works with sharing when dates not aligned between str
       draws = 100,
       strata_sharing = c("delay", "uncertainty")
     ),
-    regexp = "Not all reference dates and report dates combinations are available"
+    regexp = "Not all reference dates and report dates combinations are available" # nolint
   )
   expect_s3_class(nowcast_df, "data.frame")
   expect_s3_class(nowcast_df, "baselinenowcast_df")

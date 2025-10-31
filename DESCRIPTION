@@ -54,7 +54,8 @@ Imports:
   checkmate,
   stats,
   utils,
-  rlang
+  rlang,
+  purrr
 Suggests:
     epinowcast,
     bookdown,
@@ -62,7 +63,6 @@ Suggests:
     tidyr,
     stringr,
     lubridate,
-    purrr,
     readr,
     ggplot2,
     spelling,

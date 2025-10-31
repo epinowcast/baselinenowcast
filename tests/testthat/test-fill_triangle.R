@@ -83,7 +83,8 @@ test_that("fill_triangle NA patterns are handled correctly", {
 })
 
 test_that("fill_triangle: Output dimensions match input", {
-  odd_dim_tri <- matrix(1:6, nrow = 3, ncol = 2)
+  odd_dim_tri <- matrix(1:6, nrow = 3, ncol = 2) |>
+    construct_triangle()
   result <- fill_triangle(odd_dim_tri)
   expect_identical(dim(result), c(3L, 2L))
 })

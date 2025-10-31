@@ -91,15 +91,6 @@ baselinenowcast.reporting_triangle <- function(
   tri <- data$reporting_triangle_matrix
   output_type <- arg_match(output_type)
   assert_integerish(draws, null.ok = TRUE)
-  n_row_nas <- sum(is.na(rowSums(data$reporting_triangle_matrix)))
-  if (n_row_nas == 0) {
-    cli_abort(
-      message = c("`data$reporting_triangle_matrix` doesn't contain any missing values, there is nothing to nowcast.", # nolint
-        "i" = "Check to make sure missing observations are coded as NAs rather than 0s.", # nolint
-        "i" = "If performing nowcasts retrospectively, check to make sure that report times after the time of the nowcast (the last reference time) have been excluded." # nolint
-      )
-    )
-  }
 
   tv <- allocate_reference_times(tri,
     scale_factor = scale_factor,

@@ -83,7 +83,8 @@ test_that("apply_delay function works as expected when result is known", {
 test_that("apply_delay function works correctly on simple triangle", {
   set.seed(123)
   # Make a simple triangle of ones
-  triangle <- matrix(nrow = 5, ncol = 4, data = 1)
+  triangle <- matrix(nrow = 5, ncol = 4, data = 1) |>
+    construct_triangle()
   delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
   result <- apply_delay(
     reporting_triangle = triangle,
@@ -91,6 +92,15 @@ test_that("apply_delay function works correctly on simple triangle", {
   )
 
   expect_is(result, "matrix")
+
+  mat <- matrix(nrow = 5, ncol = 4, data = 1)
+  expect_error(
+    apply_delay(
+      reporting_triangle = mat,
+      delay_pmf = delay_pmf
+    ),
+    regexp = "`reporting_triangle` doesn't contain any missing values"
+  )
 
   # Test that the dimensions of the output match the input
   expect_identical(dim(result), dim(triangle))

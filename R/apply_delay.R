@@ -56,8 +56,8 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
     cli_abort(
       message = c("`reporting_triangle` doesn't contain any missing values, there is nothing to nowcast.", # nolint
         "i" = "Check to make sure missing observations are coded as NAs rather than 0s.", # nolint
-        "i" = "If performing nowcasts retrospectively, report times after the last reference date should not be available." # nolint
-        "i" = "See `?construct_triangle` for more details on creating a reporting triangle from a complete set of observations."
+        "i" = "If performing nowcasts retrospectively, report times after the last reference date should not be available.", # nolint
+        "i" = "See `?construct_triangle` for more details on creating a reporting triangle from a complete set of observations." # nolint
       )
     )
   }

@@ -438,4 +438,24 @@ test_that("baselinenowcast works with sharing when dates not aligned between str
     dplyr::summarise(max_ref_date = max(reference_date)) |>
     dplyr::pull()
   expect_identical(max_ref_date_60_792, lubridate::ymd("2022-08-08"))
+
+test_that("baselinenowcast.reporting_triangle errors if nothing to nowcast", {
+  skip_if_not_installed("tidyr")
+  skip_if_not_installed("dplyr")
+  data <- tidyr::expand_grid(
+    reference_date = seq(as.Date("2021-04-01"), as.Date("2021-04-30"),
+      by = "day"
+    ),
+    report_date = seq(as.Date("2021-04-01"), as.Date("2021-05-15"), by = "day")
+  ) |>
+    dplyr::mutate(count = 5)
+
+  rep_tri <- expect_message(
+    as_reporting_triangle(data, max_delay = 10),
+    regexp = "The reporting triangle does not contain any missing values."
+  ) # nolint
+
+  expect_error(baselinenowcast(rep_tri),
+    regexp = "doesn't contain any missing values"
+  ) # nolint
 })

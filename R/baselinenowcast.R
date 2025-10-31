@@ -46,6 +46,8 @@ baselinenowcast <- function(data,
 #'    model, etc.).
 #'
 #' @param data \code{\link{reporting_triangle}} class object to be nowcasted.
+#'   The `data$reporting_triangle_matrix` must contain missing observations
+#'   in the form of NAs in order to generate an output from this function.
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
 #'   first delay column in `data$reporting_triangle_matrix`. Default is NULL,
 #'   which will estimate the delay from the reporting triangle matrix in `data`,

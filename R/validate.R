@@ -379,8 +379,8 @@
   }
 
   if (max(data$report_date) > max(data$reference_date)) {
-    cli_warn(
-      message = "The dataframe contains report dates beyond the final reference date." # nolint
+    cli_alert_info(
+      text = "The dataframe contains report dates beyond the final reference date." # nolint
     )
   }
 
@@ -465,7 +465,7 @@
     len = nrow(reporting_triangle_matrix)
   )
 
-  assert_numeric(structure, lower = 1)
+  assert_numeric(structure, lower = 0)
   assert_integerish(structure, min.len = 1)
   assert_integerish(max_delay, min.len = 1, lower = 1)
   assert_character(delays_unit, len = 1)

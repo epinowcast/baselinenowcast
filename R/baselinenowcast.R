@@ -169,7 +169,7 @@ baselinenowcast.reporting_triangle <- function(
 #'    the observation model, etc.). The function expects that each strata in
 #'    the dataframe has the same maximum delay. If sharing estimates across
 #'    all strata, the shared estimates will be made using the shared set of
-#'    referene and report dates across strata.
+#'    reference and report dates across strata.
 #'
 #' @param data Data.frame in a long tidy format with counts by reference date
 #'    and report date for one or more strata. Must contain the following
@@ -196,7 +196,7 @@ baselinenowcast.reporting_triangle <- function(
 #' @param strata_sharing Vector of character strings. Indicates if and what
 #'   estimates should be shared for different nowcasting steps. Options are
 #'   `"none"` for no sharing (each `nowcast_unit` is fully independent),
-#'   `"delay"` for delay sharing and`"uncertainty"` fpr uncertainty sharing.
+#'   `"delay"` for delay sharing and`"uncertainty"` for uncertainty sharing.
 #'   Both `"delay"` and `"uncertainty"` can be passed at the same time.
 #' @param ... Additional arguments passed to
 #'    \code{\link{estimate_uncertainty}}
@@ -206,7 +206,7 @@ baselinenowcast.reporting_triangle <- function(
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast
 #' @inheritParams allocate_reference_times
-#' @importFrom purrr imap list_rbind map_dfc
+#' @importFrom purrr imap list_rbind map_dfc set_names
 #' @importFrom checkmate assert_subset
 #' @family baselinenowcast_df
 #' @export
@@ -344,12 +344,12 @@ baselinenowcast.data.frame <- function(
     # based on nowcast unit entry
     if (length(nowcast_unit) != 0) {
       split_name <- strsplit(name, "___", fixed = TRUE)[[1]]
-      split_cols <- set_names(as.list(split_name), nowcast_unit)
-      nowcast_df <- bind_cols(nowcast_df, split_cols)
+      nowcast_df[nowcast_unit] <- as.list(split_name)
     }
 
     return(nowcast_df)
   }) |> list_rbind()
+
 
   return(combined_result)
 }

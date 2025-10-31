@@ -488,7 +488,11 @@
                                    report_date,
                                    count) {
   # Ensure nowcast_unit is not reference_date, report_date, count
-  conflicting_cols <- intersect(nowcast_unit, c(reference_date, report_date, count))
+  conflicting_cols <- intersect(nowcast_unit, c(
+    reference_date,
+    report_date,
+    count
+  ))
   if (length(conflicting_cols) > 0) {
     cli_abort(
       message = c(

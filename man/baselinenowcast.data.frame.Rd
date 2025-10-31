@@ -105,7 +105,7 @@ forecast unit (or required columns) will be removed.}
 \item{strata_sharing}{Vector of character strings. Indicates if and what
 estimates should be shared for different nowcasting steps. Options are
 \code{"none"} for no sharing (each \code{nowcast_unit} is fully independent),
-\code{"delay"} for delay sharing and\code{"uncertainty"} fpr uncertainty sharing.
+\code{"delay"} for delay sharing and\code{"uncertainty"} for uncertainty sharing.
 Both \code{"delay"} and \code{"uncertainty"} can be passed at the same time.}
 
 \item{...}{Additional arguments passed to
@@ -130,7 +130,7 @@ like number of reference times for delay and uncertainty estimation,
 the observation model, etc.). The function expects that each strata in
 the dataframe has the same maximum delay. If sharing estimates across
 all strata, the shared estimates will be made using the shared set of
-referene and report dates across strata.
+reference and report dates across strata.
 }
 \examples{
 covid_data_to_nowcast <- germany_covid19_hosp[

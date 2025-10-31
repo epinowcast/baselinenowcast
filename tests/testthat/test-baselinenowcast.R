@@ -9,7 +9,7 @@ expected_cols <- c("pred_count", "draw", "reference_date", "output_type")
 
 # Keep only selected age groups
 covid_data <- germany_covid19_hosp[germany_covid19_hosp$report_date <= max(germany_covid19_hosp$reference_date) & # nolint
-                                     germany_covid19_hosp$age_group %in% c("00+", "60-79", "80+"), ] # nolint
+  germany_covid19_hosp$age_group %in% c("00+", "60-79", "80+"), ] # nolint
 covid_data_delay_rm <- covid_data[, names(covid_data) != "delay"]
 
 expected_cols_nu <- c(
@@ -201,7 +201,7 @@ test_that("baselinenowcast.data.frame returns the expected structure with and wi
     draws = 100,
     nowcast_unit = c("age_group", "location")
   )
-  
+
   expect_s3_class(nowcasts_df, "data.frame")
   expect_s3_class(nowcasts_df, "baselinenowcast_df")
   expect_true(all(expected_cols_nu %in% colnames(nowcasts_df)))
@@ -243,7 +243,7 @@ test_that("baselinenowcast.data.frame returns the expected structure with and wi
   )
 })
 
-test_that("`baselinenowcast` returns expected structure without errors for all different nowcast units", { #nolint
+test_that("`baselinenowcast` returns expected structure without errors for all different nowcast units", { # nolint
   skip_if_not_installed("dplyr")
   library(dplyr)
   single_tri_data <- covid_data |>

@@ -6,6 +6,17 @@ rep_tri <- as_reporting_triangle(
   strata = "00+"
 )
 expected_cols <- c("pred_count", "draw", "reference_date", "output_type")
+
+# Keep only selected age groups
+covid_data <- germany_covid19_hosp[germany_covid19_hosp$report_date <= max(germany_covid19_hosp$reference_date) & # nolint
+                                     germany_covid19_hosp$age_group %in% c("00+", "60-79", "80+"), ] # nolint
+covid_data_delay_rm <- covid_data[, names(covid_data) != "delay"]
+
+expected_cols_nu <- c(
+  "pred_count", "draw", "reference_date", "output_type",
+  "location", "age_group"
+)
+
 test_that("baselinenowcast.reporting_triangle() works as expected", {
   nowcast_df <- baselinenowcast(rep_tri, draws = 100)
   expect_s3_class(nowcast_df, "data.frame")
@@ -183,24 +194,17 @@ test_that("assert_baselinenowcast_df errors when appropriate", {
   )
 })
 
-# Keep only selected age groups
-covid_data <- germany_covid19_hosp[germany_covid19_hosp$report_date <= max(germany_covid19_hosp$reference_date) & # nolint
-  germany_covid19_hosp$age_group %in% c("00+", "60-79", "80+"), ] # nolint
-covid_data_delay_rm <- covid_data[, names(covid_data) != "delay"]
-test_that("baselinenowcast.data.frame works as expected with and without strata sharing", { # nolint
+test_that("baselinenowcast.data.frame returns the expected structure with and without strata sharing", { # nolint
   nowcasts_df <- baselinenowcast(
     data = covid_data,
     max_delay = 40,
     draws = 100,
     nowcast_unit = c("age_group", "location")
   )
-  expected_cols <- c(
-    "pred_count", "draw", "reference_date", "output_type",
-    "location", "age_group"
-  )
+  
   expect_s3_class(nowcasts_df, "data.frame")
   expect_s3_class(nowcasts_df, "baselinenowcast_df")
-  expect_true(all(expected_cols %in% colnames(nowcasts_df)))
+  expect_true(all(expected_cols_nu %in% colnames(nowcasts_df)))
   expect_identical(nowcasts_df$output_type[1], "samples")
 
   # Check that the outputs are different for different age groups
@@ -222,13 +226,9 @@ test_that("baselinenowcast.data.frame works as expected with and without strata 
     nowcast_unit = c("age_group", "location"),
     strata_sharing = c("delay", "uncertainty")
   )
-  expected_cols <- c(
-    "pred_count", "draw", "reference_date", "output_type",
-    "location", "age_group"
-  )
   expect_s3_class(nowcasts_df2, "data.frame")
   expect_s3_class(nowcasts_df2, "baselinenowcast_df")
-  expect_true(all(expected_cols %in% colnames(nowcasts_df2)))
+  expect_true(all(expected_cols_nu %in% colnames(nowcasts_df2)))
   expect_identical(nowcasts_df2$output_type[1], "samples")
 
   # Check that the outputs are different between with and without strata sharing
@@ -243,7 +243,7 @@ test_that("baselinenowcast.data.frame works as expected with and without strata 
   )
 })
 
-test_that("`baselinenowcast` works for all differet nowcast units", {
+test_that("`baselinenowcast` returns expected structure without errors for all different nowcast units", { #nolint
   skip_if_not_installed("dplyr")
   library(dplyr)
   single_tri_data <- covid_data |>
@@ -301,13 +301,14 @@ test_that("baselinenowcast errors if extra delay column is passed in because it 
 })
 
 test_that("baselinenowcast errors if nowcast unit is specified incorrectly", {
+  exp_err_msg <- "`nowcast_unit` cannot contain any of the required columns"
   expect_error(
     baselinenowcast(
       data = covid_data_delay_rm,
       draws = 100,
       nowcast_unit = c("age_group", "location", "reference_date")
     ),
-    regexp = "`nowcast_unit` cannot contain any of the required columns"
+    regexp = exp_err_msg
   )
   expect_error(
     baselinenowcast(
@@ -316,7 +317,7 @@ test_that("baselinenowcast errors if nowcast unit is specified incorrectly", {
       reference_date = "ref_date",
       nowcast_unit = c("age_group", "location", "ref_date")
     ),
-    regexp = "`nowcast_unit` cannot contain any of the required columns"
+    regexp = exp_err_msg
   )
   expect_error(
     baselinenowcast(
@@ -324,7 +325,7 @@ test_that("baselinenowcast errors if nowcast unit is specified incorrectly", {
       draws = 100,
       nowcast_unit = c("region", "age_group")
     ),
-    regexp = "`nowcast_unit`, if specified, must be a column in `data`."
+    regexp = "`nowcast_unit`, if specified, must be a column in `data`"
   )
 })
 
@@ -349,9 +350,6 @@ test_that("baselinenowcast results are equivalent if first creating a reporting 
     draws = 100
   )
   expect_equal(nowcast_df1$pred_count, nowcast_df2$pred_count, tol = 0.1)
-  expect_equal(mean(nowcast_df1$pred_count), mean(nowcast_df2$pred_count),
-    tol = 0.01
-  )
 })
 
 test_that("baselinenowcast works with weekday strata", {

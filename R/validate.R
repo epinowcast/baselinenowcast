@@ -488,12 +488,16 @@
                                    report_date,
                                    count) {
   # Ensure nowcast_unit is not reference_date, report_date, count
-  if (any(c(reference_date, report_date, count) %in% nowcast_unit)) {
+  conflicting_cols <- intersect(nowcast_unit, c(reference_date, report_date, count))
+  if (length(conflicting_cols) > 0) {
     cli_abort(
-      message =
-        "`nowcast_unit` cannot contain any of the required columns of {c(reference_date, report_date, count)}" # nolint
+      message = c(
+        "`nowcast_unit` cannot contain any of the required columns of {c(reference_date, report_date, count)}.", # nolint
+        "i" = "Found: {conflicting_cols} in `nowcast_unit'`" # nolint
+      )
     )
   }
+
   if (!all(nowcast_unit %in% colnames(data))) {
     cli_abort(
       message =

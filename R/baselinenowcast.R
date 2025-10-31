@@ -206,7 +206,7 @@ baselinenowcast.reporting_triangle <- function(
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast
 #' @inheritParams allocate_reference_times
-#' @importFrom purrr imap list_rbind
+#' @importFrom purrr imap list_rbind map_dfc
 #' @importFrom checkmate assert_subset
 #' @family baselinenowcast_df
 #' @export
@@ -327,9 +327,9 @@ baselinenowcast.data.frame <- function(
       count = count
     )
 
-    nowcast_df <- baselinenowcast.reporting_triangle(
+    nowcast_df <- baselinenowcast(
       data = rep_tri,
-      scale_factor = 2 * scale_factor,
+      scale_factor = scale_factor,
       prop_delay = prop_delay,
       output_type = output_type,
       draws = draws,
@@ -343,10 +343,9 @@ baselinenowcast.data.frame <- function(
     # Split the name of the element in the last and add as a separate column
     # based on nowcast unit entry
     if (length(nowcast_unit) != 0) {
-      for (i in seq_along(nowcast_unit)) {
-        split_name <- strsplit(name, "___", fixed = TRUE)[[1]]
-        nowcast_df[[nowcast_unit[i]]] <- split_name[i]
-      }
+      split_name <- strsplit(name, "___", fixed = TRUE)[[1]]
+      split_cols <- set_names(as.list(split_name), nowcast_unit)
+      nowcast_df <- bind_cols(nowcast_df, split_cols)
     }
 
     return(nowcast_df)
@@ -354,7 +353,6 @@ baselinenowcast.data.frame <- function(
 
   return(combined_result)
 }
-
 
 #' Combine triangle data.frames
 #'

@@ -36,7 +36,9 @@ baselinenowcast(
 - data:
 
   [`reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
-  class object to be nowcasted.
+  class object to be nowcasted. The `data$reporting_triangle_matrix`
+  must contain missing observations in the form of NAs in order to
+  generate an output from this function.
 
 - scale_factor:
 

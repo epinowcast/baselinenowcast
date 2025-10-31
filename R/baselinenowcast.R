@@ -270,7 +270,7 @@ baselinenowcast.data.frame <- function(
     uncertainty_params <- NULL
   } else if (all(strata_sharing != "none")) {
     assert_subset(strata_sharing,
-      choices = c("delay", "uncertainty"),
+      choices = c("delay", "uncertainty")
     )
     pooled_df <- combine_triangle_dfs(
       data = data,

@@ -18,7 +18,9 @@
 )
 }
 \arguments{
-\item{data}{\code{\link{reporting_triangle}} class object to be nowcasted.}
+\item{data}{\code{\link{reporting_triangle}} class object to be nowcasted.
+The \code{data$reporting_triangle_matrix} must contain missing observations
+in the form of NAs in order to generate an output from this function.}
 
 \item{scale_factor}{Numeric value indicating the multiplicative factor on
 the maximum delay to be used for estimation of delay and uncertainty.

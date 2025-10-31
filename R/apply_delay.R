@@ -51,6 +51,17 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
   n_delays <- length(delay_pmf)
   n_rows <- nrow(reporting_triangle)
 
+  n_row_nas <- sum(is.na(rowSums(reporting_triangle)))
+  if (n_row_nas == 0) {
+    cli_abort(
+      message = c("`reporting_triangle` doesn't contain any missing values, there is nothing to nowcast.", # nolint
+        "i" = "Check to make sure missing observations are coded as NAs rather than 0s.", # nolint
+        "i" = "If performing nowcasts retrospectively, report times after the last reference date should not be available.", # nolint
+        "i" = "See `?construct_triangle` for more details on creating a reporting triangle from a complete set of observations." # nolint
+      )
+    )
+  }
+
   # Precompute CDFs for the delay PMF
   delay_cdf <- cumsum(delay_pmf)
 

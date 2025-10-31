@@ -12,7 +12,7 @@ columns in \code{data} that denote the unit of a single nowcast. Within a
 nowcast unit, there can be no repeated unique combinations of reference
 dates and report dates. Default is \code{NULL} which assumes that all columns
 that are not required columns (reference date, report date, count) form
-the unit of a single forecast. This may lead to unexpected behaviour, so
+the unit of a single nowcast. This may lead to unexpected behaviour, so
 setting the nowcast unit explicitly can help make the code easier to debug
 and easier to read. If specified, all columns that are not part of the
 forecast unit (or required columns) will be removed.}
@@ -27,9 +27,10 @@ the primary event occurrence (reference date).
 report of the primary event (report_date).
 \item Column of numeric or integer indicating the new confirmed counts
 pertaining to that reference and report date (count).
-Additional columns can be included, and the user can specify which columns
-set the unit of a single nowcast  ( i.e. the combination of columns that
-uniquely define a single nowcast with the \code{nowcast_unit} argument.).
+Additional columns indicating the columns which set the unit of a single
+nowcast must be included. The user must specify these columns with the
+\code{nowcast_unit} argument, or all columns will be assumed to specify the
+unit of a single nowcast.
 }}
 
 \item{reference_date}{Character string indicating the name of the

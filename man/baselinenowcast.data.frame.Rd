@@ -19,9 +19,7 @@ indexed by reference date and report date}
   report_date = "report_date",
   count = "count",
   nowcast_unit = NULL,
-  strata_sharing = NULL,
-  delay_pmf = NULL,
-  uncertainty_params = NULL,
+  strata_sharing = "none",
   ...
 )
 }
@@ -36,9 +34,10 @@ the primary event occurrence (reference date).
 report of the primary event (report_date).
 \item Column of numeric or integer indicating the new confirmed counts
 pertaining to that reference and report date (count).
-Additional columns can be included, and the user can specify which columns
-set the unit of a single nowcast  ( i.e. the combination of columns that
-uniquely define a single nowcast with the \code{nowcast_unit} argument.).
+Additional columns indicating the columns which set the unit of a single
+nowcast must be included. The user must specify these columns with the
+\code{nowcast_unit} argument, or all columns will be assumed to specify the
+unit of a single nowcast.
 }}
 
 \item{scale_factor}{Numeric value indicating the multiplicative factor on
@@ -98,27 +97,16 @@ columns in \code{data} that denote the unit of a single nowcast. Within a
 nowcast unit, there can be no repeated unique combinations of reference
 dates and report dates. Default is \code{NULL} which assumes that all columns
 that are not required columns (reference date, report date, count) form
-the unit of a single forecast. This may lead to unexpected behaviour, so
+the unit of a single nowcast. This may lead to unexpected behaviour, so
 setting the nowcast unit explicitly can help make the code easier to debug
 and easier to read. If specified, all columns that are not part of the
 forecast unit (or required columns) will be removed.}
 
-\item{strata_sharing}{Vector of character strings indicating the estimand
-for which estimates that are "borrowed" from pooled estimates across all
-strata should be used. Options are \code{"delay"} and/or \code{"uncertainty"}. NULL
-indicates that delay and uncertainty estimates should be computed for
-each \code{nowcast_unit} independently.}
-
-\item{delay_pmf}{Vector of delays assumed to be indexed starting at the
-first delay. Default is NULL,
-which will estimate the delay from the reporting triangle in each
-nowcast unit in \code{data}. See \code{\link{estimate_delay}} for more details.}
-
-\item{uncertainty_params}{Vector of uncertainty parameters ordered from
-horizon 1 to the maximum horizon. Default is \code{NULL}, which will
-estimate the uncertainty parameters from the reporting triangle in each
-nowcast unit in \code{data}. See \code{\link{estimate_uncertainty}} for more
-details.}
+\item{strata_sharing}{Vector of character strings. Indicates if and what
+estimates should be shared for different nowcasting steps. Options are
+\code{"none"} for no sharing (each \code{nowcast_unit} is fully independent),
+\code{"delay"} for delay sharing and\code{"uncertainty"} fpr uncertainty sharing.
+Both \code{"delay"} and \code{"uncertainty"} can be passed at the same time.}
 
 \item{...}{Additional arguments passed to
 \code{\link{estimate_uncertainty}}
@@ -129,18 +117,20 @@ Data.frame of class \code{\link{baselinenowcast_df}}
 }
 \description{
 This function ingests a data.frame with the number of incident
-cases indexed by reference date and report date for potentially multiple
-strata (e.g. age groups or locations) and returns a data.frame containing
-nowcasts by reference dates for each of the specified strata.
-For each strata, this function will by default estimate uncertainty using
+cases indexed by reference date and report date for one or multiple
+strata, which define the unit of a single nowcast (e.g. age groups or
+locations). It returns a data.frame containing nowcasts by reference
+date for each strata, which are by default estimated independently.
+This function will by default estimate uncertainty using
 past retrospective nowcast errors and generate probabilistic nowcasts,
 which are samples from the predictive distribution of the estimated final
 case count at each reference date. See documentation for the arguments of
 this function which can be used to set the model specifications (things
 like number of reference times for delay and uncertainty estimation,
 the observation model, etc.). The function expects that each strata in
-the dataframe has the same maximum delay and the same number of reference
-dates.
+the dataframe has the same maximum delay. If sharing estimates across
+all strata, the shared estimates will be made using the shared set of
+referene and report dates across strata.
 }
 \examples{
 covid_data_to_nowcast <- germany_covid19_hosp[

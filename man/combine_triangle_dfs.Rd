@@ -22,9 +22,10 @@ the primary event occurrence (reference date).
 report of the primary event (report_date).
 \item Column of numeric or integer indicating the new confirmed counts
 pertaining to that reference and report date (count).
-Additional columns can be included, and the user can specify which columns
-set the unit of a single nowcast  ( i.e. the combination of columns that
-uniquely define a single nowcast with the \code{nowcast_unit} argument.).
+Additional columns indicating the columns which set the unit of a single
+nowcast must be included. The user must specify these columns with the
+\code{nowcast_unit} argument, or all columns will be assumed to specify the
+unit of a single nowcast.
 }}
 
 \item{reference_date}{Character string indicating the name of the

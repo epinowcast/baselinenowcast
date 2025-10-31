@@ -156,18 +156,20 @@ baselinenowcast.reporting_triangle <- function(
 #'   indexed by reference date and report date
 #'
 #' @description This function ingests a data.frame with the number of incident
-#'    cases indexed by reference date and report date for potentially multiple
-#'    strata (e.g. age groups or locations) and returns a data.frame containing
-#'    nowcasts by reference dates for each of the specified strata.
-#'    For each strata, this function will by default estimate uncertainty using
+#'    cases indexed by reference date and report date for one or multiple
+#'    strata, which define the unit of a single nowcast (e.g. age groups or
+#'    locations). It returns a data.frame containing nowcasts by reference
+#'    date for each strata, which are by default estimated independently.
+#'    This function will by default estimate uncertainty using
 #'    past retrospective nowcast errors and generate probabilistic nowcasts,
 #'    which are samples from the predictive distribution of the estimated final
 #'    case count at each reference date. See documentation for the arguments of
 #'    this function which can be used to set the model specifications (things
 #'    like number of reference times for delay and uncertainty estimation,
 #'    the observation model, etc.). The function expects that each strata in
-#'    the dataframe has the same maximum delay and the same number of reference
-#'    dates.
+#'    the dataframe has the same maximum delay. If sharing estimates across
+#'    all strata, the shared estimates will be made using the shared set of
+#'    referene and report dates across strata.
 #'
 #' @param data Data.frame in a long tidy format with counts by reference date
 #'    and report date for one or more strata. Must contain the following
@@ -178,32 +180,24 @@ baselinenowcast.reporting_triangle <- function(
 #'     report of the primary event (report_date).
 #'    - Column of numeric or integer indicating the new confirmed counts
 #'     pertaining to that reference and report date (count).
-#'  Additional columns can be included, and the user can specify which columns
-#'  set the unit of a single nowcast  ( i.e. the combination of columns that
-#'  uniquely define a single nowcast with the `nowcast_unit` argument.).
+#'  Additional columns indicating the columns which set the unit of a single
+#'  nowcast must be included. The user must specify these columns with the
+#'  `nowcast_unit` argument, or all columns will be assumed to specify the
+#'  unit of a single nowcast.
 #' @param nowcast_unit Vector of character strings indicating the names of the
 #'   columns in `data` that denote the unit of a single nowcast. Within a
 #'   nowcast unit, there can be no repeated unique combinations of reference
 #'   dates and report dates. Default is `NULL` which assumes that all columns
 #'   that are not required columns (reference date, report date, count) form
-#'   the unit of a single forecast. This may lead to unexpected behaviour, so
+#'   the unit of a single nowcast. This may lead to unexpected behaviour, so
 #'   setting the nowcast unit explicitly can help make the code easier to debug
 #'   and easier to read. If specified, all columns that are not part of the
 #'   forecast unit (or required columns) will be removed.
-#' @param strata_sharing Vector of character strings indicating the estimand
-#'   for which estimates that are "borrowed" from pooled estimates across all
-#'   strata should be used. Options are `"delay"` and/or `"uncertainty"`. NULL
-#'   indicates that delay and uncertainty estimates should be computed for
-#'   each `nowcast_unit` independently.
-#' @param delay_pmf Vector of delays assumed to be indexed starting at the
-#'   first delay. Default is NULL,
-#'   which will estimate the delay from the reporting triangle in each
-#'   nowcast unit in `data`. See \code{\link{estimate_delay}} for more details.
-#' @param uncertainty_params Vector of uncertainty parameters ordered from
-#'   horizon 1 to the maximum horizon. Default is `NULL`, which will
-#'   estimate the uncertainty parameters from the reporting triangle in each
-#'   nowcast unit in `data`. See \code{\link{estimate_uncertainty}} for more
-#'   details.
+#' @param strata_sharing Vector of character strings. Indicates if and what
+#'   estimates should be shared for different nowcasting steps. Options are
+#'   `"none"` for no sharing (each `nowcast_unit` is fully independent),
+#'   `"delay"` for delay sharing and`"uncertainty"` fpr uncertainty sharing.
+#'   Both `"delay"` and `"uncertainty"` can be passed at the same time.
 #' @param ... Additional arguments passed to
 #'    \code{\link{estimate_uncertainty}}
 #'    and \code{\link{sample_nowcast}}.
@@ -242,9 +236,7 @@ baselinenowcast.data.frame <- function(
     report_date = "report_date",
     count = "count",
     nowcast_unit = NULL,
-    strata_sharing = NULL,
-    delay_pmf = NULL,
-    uncertainty_params = NULL,
+    strata_sharing = "none",
     ...) {
   .validate_nowcast_unit(
     nowcast_unit,
@@ -261,19 +253,22 @@ baselinenowcast.data.frame <- function(
 
   # Split dataframe into a list of dataframes for each nowcast unit
   if (length(nowcast_unit) != 0) {
-    list_of_dfs <- split(data, interaction(data[nowcast_unit],
+    data[nowcast_unit] <- lapply(data[nowcast_unit], as.factor)
+    list_of_dfs <- split(data, data[nowcast_unit],
       sep = "___",
       drop = TRUE
-    ))
+    )
   } else {
     list_of_dfs <- list(data)
   }
 
   # Apply strata sharing if specified
-  if (!is.null(strata_sharing)) {
+  if (all(strata_sharing == "none")) {
+    delay_pmf <- NULL
+    uncertainty_params <- NULL
+  } else if (all(strata_sharing != "none")) {
     assert_subset(strata_sharing,
       choices = c("delay", "uncertainty"),
-      empty.ok = TRUE
     )
     pooled_df <- combine_triangle_dfs(
       data = data,

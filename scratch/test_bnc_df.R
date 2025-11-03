@@ -14,6 +14,31 @@ covid_data_single_strata$weekday_ref_date <- lubridate::wday(covid_data_single_s
   label = TRUE
 )
 
+# Make a very small subset of an example
+df1 <- covid_data_single_strata |>
+  filter(
+    reference_date >= "2022-08-01",
+    report_date >= "2022-08-01",
+    weekday_ref_date %in% c("Mon", "Tue")
+  )
+print(df1)
+
+df1 |>
+  ungroup() |>
+  group_by(delay, weekday_ref_date) |>
+  summarise(n_rows = n())
+print(df1)
+
+# In this example, we obviously have no set of overlapping reference date
+# report date pairs. If we were to just naively add up the counts we would have
+# 2 observations for a delay of 0 on Monday by 1 everywhere else which
+# would result in a biased estimate of the delay on Mondays (upweighting 0
+# delays). So what we want to do is somehow systematically only include the same
+# number of delays for each strata. One way to do this with any strata that are
+# not following the reference date is just to use the overlapping set of
+# ref and report dates, but this isn't possible here because there are none.
+
+
 set.seed(123)
 full_ag <- baselinenowcast(covid_data_single_strata,
   max_delay = 40,

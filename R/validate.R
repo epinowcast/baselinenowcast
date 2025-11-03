@@ -391,8 +391,8 @@
     by = {{ delays_unit }}
   ))
   if (all_dates_length != length(unique(data$reference_date))) {
-    cli_warn(
-      message =
+    cli_alert_info(
+      text =
         "Data does not contain case counts for all possible reference dates."
     )
   }
@@ -537,7 +537,7 @@
   if (!.is_date_convertible(data[[date_col]])) {
     cli_abort(message = c(
       "{date_col} must be of Date class or be convertible to a Date class.",
-      "i" = "Accepted formats are c('%Y-%m-%d', 'Y/%m/%d')."
+      "i" = "Accepted formats are c('%Y-%m-%d', 'Y/%m/%d')." # nolint
     ))
   }
   return(NULL)

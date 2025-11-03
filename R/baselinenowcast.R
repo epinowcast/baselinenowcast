@@ -371,14 +371,7 @@ baselinenowcast.data.frame <- function(
     return(nowcast_df)
   }) |> list_rbind()
 
-  data_renamed <- .return_to_name_cols(combined_result,
-    old_names = c(
-      reference_date,
-      report_date,
-      count
-    )
-  )
-  return(data_renamed)
+  return(combined_result)
 }
 
 #' Combine triangle data.frames

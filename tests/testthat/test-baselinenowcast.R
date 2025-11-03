@@ -245,35 +245,30 @@ test_that("baselinenowcast.data.frame returns the expected structure with and wi
 test_that("baselinenowcast returns expected structure without errors for all different nowcast units", { # nolint
   skip_if_not_installed("dplyr")
   library(dplyr)
-  single_tri_data <- covid_data |>
-    filter(age_group == "00+")
+  single_tri_data <- filter(
+    covid_data,
+    age_group == "00+"
+  ) |>
+    select(reference_date, report_date, count)
 
   single_nowcast_df <- baselinenowcast(single_tri_data,
     draws = 100,
     max_delay = 40
   )
-  expected_cols1 <- c(
-    "pred_count", "draw", "reference_date", "output_type"
-  )
   expect_s3_class(single_nowcast_df, "data.frame")
   expect_s3_class(single_nowcast_df, "baselinenowcast_df")
-  expect_true(all(expected_cols1 %in% colnames(single_nowcast_df)))
+  expect_true(all(expected_cols %in% colnames(single_nowcast_df)))
 
-  single_tri_w_metadata <- covid_data |>
-    filter(age_group == "00+")
+  single_tri_w_metadata <- filter(covid_data, age_group == "00+")
 
   single_nowcast_df_w_metadata <- baselinenowcast(
     data = single_tri_w_metadata,
     draws = 100,
     max_delay = 40
   )
-  expected_cols2 <- c(
-    "pred_count", "draw", "reference_date", "output_type",
-    "location", "age_group"
-  )
   expect_s3_class(single_nowcast_df_w_metadata, "data.frame")
   expect_s3_class(single_nowcast_df_w_metadata, "baselinenowcast_df")
-  expect_true(all(expected_cols2 %in% colnames(single_nowcast_df_w_metadata)))
+  expect_true(all(expected_cols %in% colnames(single_nowcast_df_w_metadata)))
 
   test_df <- baselinenowcast(
     data = covid_data,
@@ -283,7 +278,7 @@ test_that("baselinenowcast returns expected structure without errors for all dif
   )
   expect_s3_class(test_df, "data.frame")
   expect_s3_class(test_df, "baselinenowcast_df")
-  expect_true(all(expected_cols2 %in% colnames(test_df)))
+  expect_true(all(expected_cols_nu %in% colnames(test_df)))
   expect_true(all(unique(test_df$age_group) %in% c("00+", "60-79", "80+")))
 })
 
@@ -329,10 +324,11 @@ test_that("baselinenowcast errors if nowcast unit is specified incorrectly", {
   )
 })
 
-test_that("baselinenowcast handles renamed columns and returns the same columns", { # nolint
+test_that("baselinenowcast handles renamed columns and returns the standard columns", { # nolint
   skip_if_not_installed("dplyr")
-  covid_data_renamed <- covid_data |>
-    rename(ref_date = reference_date)
+  covid_data_renamed <- rename(covid_data,
+    ref_date = reference_date
+  )
   result <- baselinenowcast(
     data = covid_data_renamed,
     max_delay = 40,
@@ -340,7 +336,7 @@ test_that("baselinenowcast handles renamed columns and returns the same columns"
     reference_date = "ref_date",
     nowcast_unit = c("age_group", "location")
   )
-  expect_true("ref_date" %in% colnames(result))
+  expect_false("ref_date" %in% colnames(result))
 })
 
 test_that("baselinenowcast results are equivalent if first creating a reporting triangle and then running", { # nolint
@@ -377,14 +373,14 @@ test_that("baselinenowcast works with weekday strata", {
   covid_data_single_strata$weekday_ref_date <- lubridate::wday(covid_data_single_strata$reference_date, # nolint
     label = TRUE
   )
-  nowcast_df2 <- expect_warning(
+  nowcast_df2 <- expect_message(
     baselinenowcast(covid_data_single_strata,
       max_delay = 40,
       draws = 100,
-      scale_factor = 3 / 7,
+      scale_factor = 4 / 7,
       nowcast_unit = "weekday_ref_date"
     ),
-    regexp = "`prop_delay` not identical to the proportion of reference times used for delay" # nolint
+    regexp = "Data does not contain case counts for all possible reference dates" # nolint
   )
   nowcast_df_Tue1 <- nowcast_df2 |>
     filter(weekday_ref_date == "Tue") |>
@@ -395,14 +391,15 @@ test_that("baselinenowcast works with weekday strata", {
     covid_data_single_strata,
     weekday_ref_date == "Tue"
   )
-  nowcast_df_Tue2 <- expect_warning(
+  nowcast_df_Tue2 <- expect_message(
     baselinenowcast(
       covid_data_Tue,
       max_delay = 40,
       draws = 100,
-      scale_factor = 3 / 7,
+      scale_factor = 4 / 7,
       nowcast_unit = "weekday_ref_date"
-    )
+    ),
+    regexp = "Data does not contain case counts for all possible reference dates" # nolint
   ) |>
     dplyr::arrange(desc(reference_date), draw)
 
@@ -426,6 +423,7 @@ test_that("baselinenowcast returns expected structure even when dates not aligne
       covid_data_incomplete,
       max_delay = 40,
       draws = 100,
+      nowcast_unit = c("age_group", "location"),
       strata_sharing = c("delay", "uncertainty")
     ),
     regexp = "Not all reference dates and report dates combinations are available" # nolint
@@ -446,6 +444,7 @@ test_that("baselinenowcast returns expected structure even when dates not aligne
     covid_data_full,
     max_delay = 40,
     draws = 100,
+    nowcast_unit = c("age_group", "location"),
     strata_sharing = c("delay", "uncertainty")
   )
   max_ref_date_60_792 <- nowcast_df2 |>

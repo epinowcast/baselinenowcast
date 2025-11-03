@@ -65,10 +65,16 @@ arguments \code{pred} for the vector of predictions and uncertainty parameters
 for the corresponding vector of uncertainty parameters, and draws from a
 negative binomial for each element of the vector.}
 
+\item{delay_pmf}{Vector of delays assumed to be indexed starting at the
+first delay column in \code{data$reporting_triangle_matrix}. Default is NULL,
+which will estimate the delay from the reporting triangle matrix in \code{data},
+See \code{\link{estimate_delay}} for more details.}
+
 \item{uncertainty_params}{Vector of uncertainty parameters ordered from
-horizon 1 to the maximum horizon. Note that these will be reversed
-internally to match the ordering of the \code{point_nowcast_matrix} (where
-a horizon of 1 is the last entry).}
+horizon 1 to the maximum horizon. Default is \code{NULL}, which will
+result in computing the uncertainty parameters from the reporting
+triangle matrix \code{data}. See \code{\link{estimate_uncertainty}} for more
+details.}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been

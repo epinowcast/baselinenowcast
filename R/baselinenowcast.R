@@ -294,7 +294,7 @@ baselinenowcast.data.frame <- function(
     delays_unit = delays_unit
   )
   # Combine if needed
-  if (all(strata_sharing == "none")) {
+  if (strata_sharing == "none") {
     delay_pmf <- NULL
     uncertainty_params <- NULL
   } else if (all(strata_sharing != "none")) {
@@ -372,6 +372,7 @@ baselinenowcast.data.frame <- function(
 #' @param name Name of the reporting triangle class object
 #' @inheritParams baselinenowcast
 #' @inheritParams baselinenowcast.data.frame
+#' @inheritParams baselinenowcast.reporting_triangle
 #' @inheritParams as_reporting_triangle.data.frame
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast

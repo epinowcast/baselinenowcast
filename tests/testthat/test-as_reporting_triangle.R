@@ -76,7 +76,7 @@ test_that("as_reporting_triangle.data.frame() can handle different temporal gran
       max_delay = 25,
       delays_unit = "days"
     ),
-    regexp = "Data does not contain case counts for all possible reference dates"
+    regexp = "Data does not contain case counts for all possible reference dates" # nolint
   )
   expected_days_diff <- as.numeric(difftime(
     rep_tri2$reference_dates[2],

@@ -26,50 +26,46 @@ test_data_also_fail <- data.frame(
 )
 
 example_data <- data.frame(
-  ref_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-06")), # nolint
-  rep_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-10")), # nolint
+  reference_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-06")), # nolint
+  report_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-10")), # nolint
   location = c("DE", "FR", "DE", "FR"),
   age_group = c("00+", "00+", "00+", "00+"),
-  cases = c(50, 30, 20, 40),
+  count = c(50, 30, 20, 40),
   stringsAsFactors = FALSE
 )
-
-test_that("combine_triangle_dfs combines data across strata correctly", {
-  result <- combine_triangle_dfs(
+expected_cols <- c("reference_date", "report_date", "count")
+strata_cols <- c("location", "age_group")
+test_that(".combine_triangle_dfs combines data across strata correctly", {
+  result <- .combine_triangle_dfs(
     data = example_data,
-    reference_date = "ref_date",
-    report_date = "rep_date",
-    count = "cases"
+    strata_cols = strata_cols
   )
   # Correct columns
+  expect_true(all(expected_cols %in% colnames(result)))
   expect_false("location" %in% names(result))
   expect_false("age_group" %in% names(result))
-  expect_true("ref_date" %in% names(result))
-  expect_true("rep_date" %in% names(result))
-  expect_true("cases" %in% names(result))
 
   expect_identical(nrow(result), 2L)
 
-  row1 <- result[result$ref_date == as.Date("2021-04-06") &
-    result$rep_date == as.Date("2021-04-08"), ]
-  expect_identical(row1$cases, 80)
+  row1 <- result[result$reference_date == as.Date("2021-04-06") &
+    result$report_date == as.Date("2021-04-08"), ]
+  expect_identical(row1$count, 80)
 
-  row2 <- result[result$ref_date == as.Date("2021-04-06") &
-    result$rep_date == as.Date("2021-04-10"), ]
-  expect_identical(row2$cases, 60)
+  row2 <- result[result$reference_date == as.Date("2021-04-06") &
+    result$report_date == as.Date("2021-04-10"), ]
+  expect_identical(row2$count, 60)
 
   result2 <- expect_warning(
-    combine_triangle_dfs(
-      data = test_data_partial_overlap
+    .combine_triangle_dfs(
+      data = test_data_partial_overlap,
+      strata_cols = strata_cols
     ),
     regexp = "Not all reference dates and report dates combinations are available" # nolint
   )
   # Correct columns
+  expect_true(all(expected_cols %in% colnames(result2)))
   expect_false("location" %in% names(result2))
   expect_false("age_group" %in% names(result2))
-  expect_true("reference_date" %in% names(result2))
-  expect_true("report_date" %in% names(result2))
-  expect_true("count" %in% names(result2))
 
   expect_identical(nrow(result2), 1L)
 
@@ -78,31 +74,27 @@ test_that("combine_triangle_dfs combines data across strata correctly", {
   expect_identical(row1$count, 80)
 })
 
-test_that("combine_triangle_dfs errors if no set of shared reference and report dates exists", { # nolint
+test_that("..combine_triangle_dfs errors if no set of shared reference and report dates exists", { # nolint
   expect_error(
-    combine_triangle_dfs(
+    .combine_triangle_dfs(
       data = test_data_to_fail,
-      reference_date = "reference_date",
-      report_date = "report_date",
-      count = "count"
+      strata_cols = strata_cols
     ),
     regexp = "There is no overlapping set of reference and report dates across" # nolint
   )
   # This one fails because the dates for 05-14 for DE aren't overlapping with
   # dates for 00+
   expect_error(
-    combine_triangle_dfs(
+    .combine_triangle_dfs(
       data = test_data_also_fail,
-      reference_date = "reference_date",
-      report_date = "report_date",
-      count = "count"
+      strata_cols = strata_cols
     ),
     regexp = "There is no overlapping set of reference and report dates across" # nolint
   )
 })
 
 
-test_that("combine_triangle_dfs handles all same date combinations by summing everything", { # nolint
+test_that(".combine_triangle_dfs handles all same date combinations by summing everything", { # nolint
   test_data <- data.frame(
     reference_date = as.Date(rep("2021-04-06", 4)),
     report_date = as.Date(rep("2021-04-08", 4)),
@@ -110,20 +102,17 @@ test_that("combine_triangle_dfs handles all same date combinations by summing ev
     count = c(10, 20, 30, 40),
     stringsAsFactors = FALSE
   )
-  result <- combine_triangle_dfs(
+  result <- .combine_triangle_dfs(
     data = test_data,
-    reference_date = "reference_date",
-    report_date = "report_date",
-    count = "count"
+    strata_cols = "location"
   )
-
   expect_identical(nrow(result), 1L)
   expect_identical(result$count, 100)
 })
 
 
 
-test_that("combine_triangle_dfs handles multiple strata columns", {
+test_that(".combine_triangle_dfs handles multiple strata columns", {
   test_data <- data.frame(
     reference_date = as.Date(rep("2021-04-06", 8)),
     report_date = as.Date(rep("2021-04-08", 8)),
@@ -134,11 +123,9 @@ test_that("combine_triangle_dfs handles multiple strata columns", {
     stringsAsFactors = FALSE
   )
 
-  result <- combine_triangle_dfs(
+  result <- .combine_triangle_dfs(
     data = test_data,
-    reference_date = "reference_date",
-    report_date = "report_date",
-    count = "count"
+    strata_cols = c(strata_cols, "sex")
   )
 
   # Should collapse all strata
@@ -151,19 +138,15 @@ test_that("combine_triangle_dfs handles multiple strata columns", {
   expect_false("sex" %in% names(result))
 })
 
-test_that("combine_triangle_dfs works with numeric counts", {
+test_that(".combine_triangle_dfs works with numeric counts", {
   test_data <- data.frame(
     reference_date = as.Date(c("2021-04-06", "2021-04-06")),
     report_date = as.Date(c("2021-04-08", "2021-04-08")),
     count = c(10.5, 20.3)
   )
 
-  result <- combine_triangle_dfs(
-    data = test_data,
-    reference_date = "reference_date",
-    report_date = "report_date",
-    count = "count"
+  result <- .combine_triangle_dfs(
+    data = test_data
   )
-
   expect_equal(result$count, 30.8, tolerance = 1e-10)
 })

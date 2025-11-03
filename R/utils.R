@@ -108,3 +108,35 @@
   }
   return(has_non_zeros)
 }
+
+#' Rename required columns
+#'
+#' @param data Data.frame with the original column names
+#' @param old_names The names of the columns for, in order, reference date,
+#'    report date, and count
+#'
+#' @returns Data.frame with columns renamed
+.rename_cols <- function(data,
+                         old_names) {
+  new_names <- c("reference_date", "report_date", "count")
+  names(data)[names(data) %in% old_names] <- new_names[match(
+    names(data)[names(data) %in% old_names], old_names
+  )]
+  return(data)
+}
+
+#' Rename required columns back to original names
+#'
+#' @param data Data.frame with the standard column names
+#' @param old_names The original names of the columns for, in order,
+#'   reference date, report date, and count
+#'
+#' @returns Data.frame with columns renamed back to their original values
+.return_to_name_cols <- function(data,
+                                 old_names) {
+  new_names <- c("reference_date", "report_date", "count")
+  names(data)[names(data) %in% new_names] <- old_names[match(
+    names(data)[names(data) %in% new_names], new_names
+  )]
+  return(data)
+}

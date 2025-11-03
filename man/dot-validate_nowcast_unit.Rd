@@ -4,7 +4,7 @@
 \alias{.validate_nowcast_unit}
 \title{Validate each of the nowcast unit passed to baselinenowcast}
 \usage{
-.validate_nowcast_unit(nowcast_unit, data, reference_date, report_date, count)
+.validate_nowcast_unit(nowcast_unit, data)
 }
 \arguments{
 \item{nowcast_unit}{Vector of character strings indicating the names of the
@@ -32,16 +32,6 @@ nowcast must be included. The user must specify these columns with the
 \code{nowcast_unit} argument, or all columns will be assumed to specify the
 unit of a single nowcast.
 }}
-
-\item{reference_date}{Character string indicating the name of the
-column which represents the reference date, or the date of the primary
-event occurrence.}
-
-\item{report_date}{Character string indicating the name of the
-column which represents the date the primary event was reported.}
-
-\item{count}{Character string indicating the name of the column
-containing the number of incident cases on each reference and report date.}
 }
 \description{
 Validate each of the nowcast unit passed to baselinenowcast

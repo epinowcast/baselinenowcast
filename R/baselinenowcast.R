@@ -240,32 +240,48 @@ baselinenowcast.data.frame <- function(
     nowcast_unit = NULL,
     strata_sharing = "none",
     ...) {
-  .validate_nowcast_unit(
-    nowcast_unit,
-    data,
+  assert_character(reference_date)
+  assert_character(report_date)
+  assert_character(count)
+  assert_character(delays_unit)
+  assert_character(strata_sharing)
+  assert_character(output_type)
+  # Start by renaming the columns to avoid passing around colname args
+  data_renamed <- .rename_cols(data, old_names = c(
     reference_date,
     report_date,
     count
+  ))
+  # filter to max delay
+  data_renamed$delay <- as.numeric(
+    difftime(
+      as.Date(data_renamed$report_date),
+      as.Date(data_renamed$reference_date),
+      units = delays_unit
+    )
   )
-  # Extract the additional columns not in the required columns
-  if (is.null(nowcast_unit)) {
-    nowcast_unit <- colnames(data)[!colnames(data) %in%
-      c(reference_date, report_date, count)]
-  }
+  data_clean <- data_renamed[data_renamed$delay <= max_delay, ]
+
+  .validate_nowcast_unit(
+    nowcast_unit,
+    data_clean
+  )
+  .validate_date_cols(data_clean, "reference_date")
+  .validate_date_cols(data_clean, "report_date")
 
   # Split dataframe into a list of dataframes for each nowcast unit
   if (length(nowcast_unit) != 0) {
-    data[nowcast_unit] <- lapply(data[nowcast_unit], as.factor)
-    list_of_dfs <- split(data, data[nowcast_unit],
+    data[nowcast_unit] <- lapply(data_clean[nowcast_unit], as.factor)
+    list_of_dfs <- split(data_clean, data_clean[nowcast_unit],
       sep = "___",
       drop = TRUE
     )
   } else {
-    list_of_dfs <- list(data)
+    list_of_dfs <- list(data_clean)
   }
 
   # Apply strata sharing if specified
-  assert_choices(strata_sharing,
+  assert_subset(strata_sharing,
     choices = c("delay", "uncertainty", "none")
   )
   if (length(strata_sharing) == 2 && "none" %in% strata_sharing) {
@@ -277,11 +293,9 @@ baselinenowcast.data.frame <- function(
     delay_pmf <- NULL
     uncertainty_params <- NULL
   } else if (all(strata_sharing != "none")) {
-    pooled_df <- combine_triangle_dfs(
-      data = data,
-      reference_date = reference_date,
-      report_date = report_date,
-      count = count
+    pooled_df <- .combine_triangle_dfs(
+      data = data_clean,
+      strata_cols = nowcast_unit
     )
     pooled_triangle <- as_reporting_triangle(pooled_df,
       max_delay = max_delay,
@@ -325,7 +339,7 @@ baselinenowcast.data.frame <- function(
   }
 
   combined_result <- imap(list_of_dfs, function(rep_tri_df, name) {
-    rep_tri <- as_reporting_triangle.data.frame(
+    rep_tri <- as_reporting_triangle(
       data = rep_tri_df,
       max_delay = max_delay,
       delays_unit = delays_unit,
@@ -357,8 +371,14 @@ baselinenowcast.data.frame <- function(
     return(nowcast_df)
   }) |> list_rbind()
 
-
-  return(combined_result)
+  data_renamed <- .return_to_name_cols(combined_result,
+    old_names = c(
+      reference_date,
+      report_date,
+      count
+    )
+  )
+  return(data_renamed)
 }
 
 #' Combine triangle data.frames
@@ -381,36 +401,15 @@ baselinenowcast.data.frame <- function(
 #' @returns `result` Data.frame with the same column names for reference date,
 #' report date, and case count as in `data` but summed across all strata in
 #' the original data.
-#' @export
-#' @importFrom stats aggregate as.formula
-#' @examples
-#' example_data <- data.frame(
-#'   ref_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-06")), # nolint
-#'   rep_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-10")), # nolint
-#'   location = c("DE", "FR", "DE", "FR"),
-#'   age_group = c("00+", "00+", "00+", "00+"),
-#'   cases = c(50, 30, 20, 40)
-#' )
-#' example_data
-#' combined <- combine_triangle_dfs(
-#'   data = example_data,
-#'   reference_date = "ref_date",
-#'   report_date = "rep_date",
-#'   count = "cases"
-#' )
-#' combined
-combine_triangle_dfs <- function(data,
-                                 reference_date = "reference_date",
-                                 report_date = "report_date",
-                                 count = "count") {
-  group_cols <- c(reference_date, report_date)
-  strata_cols <- setdiff(names(data), c(group_cols, count))
-  value_col <- count
+.combine_triangle_dfs <- function(data,
+                                  strata_cols = NULL) {
+  group_cols <- c("reference_date", "report_date")
+  value_col <- "count"
 
   if (length(strata_cols) == 0) {
     # If no strata columns, create stratum_id based on unique date combinations
     data$stratum_id <- as.integer(factor(
-      paste(data[[reference_date]], data[[report_date]], sep = "___")
+      paste(data[["reference_date"]], data[["report_date"]], sep = "___")
     ))
   } else {
     # Create a unique identifier for each stratum

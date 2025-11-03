@@ -483,20 +483,17 @@
 #' @inheritParams baselinenowcast.data.frame
 #' @returns NULL
 .validate_nowcast_unit <- function(nowcast_unit,
-                                   data,
-                                   reference_date,
-                                   report_date,
-                                   count) {
+                                   data) {
   # Ensure nowcast_unit is not reference_date, report_date, count
   conflicting_cols <- intersect(nowcast_unit, c(
-    reference_date,
-    report_date,
-    count
+    "reference_date",
+    "report_date",
+    "count"
   ))
   if (length(conflicting_cols) > 0) {
     cli_abort(
       message = c(
-        "`nowcast_unit` cannot contain any of the required columns of {c(reference_date, report_date, count)}.", # nolint
+        "`nowcast_unit` cannot contain any of the required columns of: reference_date, report_date, count .", # nolint
         "i" = "Found: {conflicting_cols} in `nowcast_unit'`" # nolint
       )
     )
@@ -509,6 +506,39 @@
           "i" = "{nowcast_unit[!nowcast_unit %in% colnames(data)]} is not a column in `data`." # nolint
         )
     )
+  }
+  return(NULL)
+}
+
+#' Test if something can be converted to a date object using as.Date
+#'
+#' @param x Single or vector of either a character string or Date class to
+#'   be tested.
+#'
+#' @returns Boolean indicating whether x can be converted to a Date object
+.is_date_convertible <- function(x) {
+  bool <- tryCatch(
+    {
+      as.Date(x)
+      TRUE
+    },
+    error = function(e) FALSE
+  )
+  return(bool)
+}
+
+#' Validate the date columns can be converted to Dates
+#'
+#' @param data Data.frame containing the date_col
+#' @param date_col Name of the column to be tested
+#'
+#' @returns NULL
+.validate_date_cols <- function(data, date_col) {
+  if (!.is_date_convertible(data[[date_col]])) {
+    cli_abort(message = c(
+      "{date_col} must be of Date class or be convertible to a Date class.",
+      "i" = "Accepted formats are c('%Y-%m-%d', 'Y/%m/%d')."
+    ))
   }
   return(NULL)
 }

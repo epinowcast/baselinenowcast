@@ -10,7 +10,6 @@ expected_cols <- c("pred_count", "draw", "reference_date", "output_type")
 # Keep only selected age groups
 covid_data <- germany_covid19_hosp[germany_covid19_hosp$report_date <= max(germany_covid19_hosp$reference_date) & # nolint
   germany_covid19_hosp$age_group %in% c("00+", "60-79", "80+"), ] # nolint
-covid_data_delay_rm <- covid_data[, names(covid_data) != "delay"]
 
 expected_cols_nu <- c(
   "pred_count", "draw", "reference_date", "output_type",
@@ -218,7 +217,7 @@ test_that("baselinenowcast.data.frame returns the expected structure with and wi
 
   # Use strata sharing
   # First need to remove all age groups otherwise double count
-  covid_data_age_groups <- covid_data_delay_rm[covid_data_delay_rm$age_group != "00+", ] # nolint
+  covid_data_age_groups <- covid_data[covid_data$age_group != "00+", ] # nolint
   nowcasts_df2 <- baselinenowcast(
     data = covid_data_age_groups,
     max_delay = 40,
@@ -243,12 +242,11 @@ test_that("baselinenowcast.data.frame returns the expected structure with and wi
   )
 })
 
-test_that("`baselinenowcast` returns expected structure without errors for all different nowcast units", { # nolint
+test_that("baselinenowcast returns expected structure without errors for all different nowcast units", { # nolint
   skip_if_not_installed("dplyr")
   library(dplyr)
   single_tri_data <- covid_data |>
-    filter(age_group == "00+") |>
-    select(reference_date, report_date, count)
+    filter(age_group == "00+")
 
   single_nowcast_df <- baselinenowcast(single_tri_data,
     draws = 100,
@@ -262,8 +260,7 @@ test_that("`baselinenowcast` returns expected structure without errors for all d
   expect_true(all(expected_cols1 %in% colnames(single_nowcast_df)))
 
   single_tri_w_metadata <- covid_data |>
-    filter(age_group == "00+") |>
-    select(-delay)
+    filter(age_group == "00+")
 
   single_nowcast_df_w_metadata <- baselinenowcast(
     data = single_tri_w_metadata,
@@ -279,9 +276,10 @@ test_that("`baselinenowcast` returns expected structure without errors for all d
   expect_true(all(expected_cols2 %in% colnames(single_nowcast_df_w_metadata)))
 
   test_df <- baselinenowcast(
-    data = covid_data_delay_rm,
+    data = covid_data,
     draws = 100,
-    max_delay = 40
+    max_delay = 40,
+    nowcast_unit = c("age_group", "location")
   )
   expect_s3_class(test_df, "data.frame")
   expect_s3_class(test_df, "baselinenowcast_df")
@@ -289,14 +287,14 @@ test_that("`baselinenowcast` returns expected structure without errors for all d
   expect_true(all(unique(test_df$age_group) %in% c("00+", "60-79", "80+")))
 })
 
-test_that("baselinenowcast errors if extra delay column is passed in because it treats this as a nowcast unit", { # nolint
+test_that("baselinenowcast errors if multiple strata are passed in and this is not specified by nowcast unit", { # nolint
   expect_error(
     baselinenowcast(
       data = covid_data,
       draws = 100,
       max_delay = 40
     ),
-    regexp = "`max_delay` specified is larger than the maximum delay in the data." # nolint
+    regexp = "Data contains duplicate `reference_date` and `report_date`"
   ) # nolint
 })
 
@@ -304,7 +302,8 @@ test_that("baselinenowcast errors if nowcast unit is specified incorrectly", {
   exp_err_msg <- "`nowcast_unit` cannot contain any of the required columns"
   expect_error(
     baselinenowcast(
-      data = covid_data_delay_rm,
+      data = covid_data,
+      max_delay = 40,
       draws = 100,
       nowcast_unit = c("age_group", "location", "reference_date")
     ),
@@ -312,16 +311,17 @@ test_that("baselinenowcast errors if nowcast unit is specified incorrectly", {
   )
   expect_error(
     baselinenowcast(
-      data = covid_data_delay_rm,
+      data = covid_data,
+      max_delay = 40,
       draws = 100,
-      reference_date = "ref_date",
-      nowcast_unit = c("age_group", "location", "ref_date")
+      nowcast_unit = c("age_group", "location", "reference_date")
     ),
     regexp = exp_err_msg
   )
   expect_error(
     baselinenowcast(
-      data = covid_data_delay_rm,
+      data = covid_data,
+      max_delay = 40,
       draws = 100,
       nowcast_unit = c("region", "age_group")
     ),
@@ -329,11 +329,25 @@ test_that("baselinenowcast errors if nowcast unit is specified incorrectly", {
   )
 })
 
+test_that("baselinenowcast handles renamed columns and returns the same columns", { # nolint
+  skip_if_not_installed("dplyr")
+  covid_data_renamed <- covid_data |>
+    rename(ref_date = reference_date)
+  result <- baselinenowcast(
+    data = covid_data_renamed,
+    max_delay = 40,
+    draws = 100,
+    reference_date = "ref_date",
+    nowcast_unit = c("age_group", "location")
+  )
+  expect_true("ref_date" %in% colnames(result))
+})
+
 test_that("baselinenowcast results are equivalent if first creating a reporting triangle and then running", { # nolint
   skip_if_not_installed("dplyr")
   set.seed(123)
   covid_data_single_strata <- dplyr::filter(
-    covid_data_delay_rm,
+    covid_data,
     age_group == "00+"
   )
   rep_tri <- as_reporting_triangle(covid_data_single_strata,
@@ -357,7 +371,7 @@ test_that("baselinenowcast works with weekday strata", {
   skip_if_not_installed("lubridate")
   set.seed(123)
   covid_data_single_strata <- dplyr::filter(
-    covid_data_delay_rm,
+    covid_data,
     age_group == "00+"
   )
   covid_data_single_strata$weekday_ref_date <- lubridate::wday(covid_data_single_strata$reference_date, # nolint
@@ -403,7 +417,7 @@ test_that("baselinenowcast returns expected structure even when dates not aligne
   skip_if_not_installed("lubridate")
   set.seed(123)
   covid_data_incomplete <- dplyr::filter(
-    covid_data_delay_rm,
+    covid_data,
     !(report_date >= "2022-08-08" & age_group == "60-79"),
     age_group != "00+"
   )
@@ -425,7 +439,7 @@ test_that("baselinenowcast returns expected structure even when dates not aligne
   expect_identical(max_ref_date_60_79, lubridate::ymd("2022-08-07"))
 
   covid_data_full <- dplyr::filter(
-    covid_data_delay_rm,
+    covid_data,
     age_group != "00+"
   )
   nowcast_df2 <- baselinenowcast(

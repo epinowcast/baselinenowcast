@@ -86,15 +86,12 @@ as_reporting_triangle.data.frame <- function(
   assert_character(count)
   assert_character(delays_unit)
   assert_choice(delays_unit, choices = c("days", "weeks", "months", "years"))
-  # Create a named vector for renaming
-  old_names <- c(reference_date, report_date, count)
-  new_names <- c("reference_date", "report_date", "count")
-
-  names(data)[names(data) %in% old_names] <- new_names[match(
-    names(data)[names(data) %in% old_names], old_names
-  )]
+  # Rename columns
+  data <- .rename_cols(data, old_names = c(reference_date, report_date, count))
 
   .validate_rep_tri_df(data, delays_unit)
+  .validate_date_cols(data, "reference_date")
+  .validate_date_cols(data, "report_date")
 
   # Compute delay
   data$delay <- as.numeric(

@@ -252,7 +252,7 @@ baselinenowcast.data.frame <- function(
     report_date,
     count
   ))
-  # filter to max delay
+  # Filter to max delay
   data_renamed$delay <- as.numeric(
     difftime(
       as.Date(data_renamed$report_date),
@@ -324,7 +324,6 @@ baselinenowcast.data.frame <- function(
       )
       retro_rep_tris <- construct_triangles(trunc_rep_tris)
       retro_pt_nowcasts <- fill_triangles(retro_rep_tris,
-        max_delay = max_delay,
         n = tv$n_history_delay
       )
       uncertainty_params <- estimate_uncertainty(
@@ -398,46 +397,29 @@ baselinenowcast.data.frame <- function(
                                   strata_cols = NULL) {
   group_cols <- c("reference_date", "report_date")
   value_col <- "count"
-
-  if (length(strata_cols) == 0) {
-    # If no strata columns, create stratum_id based on unique date combinations
-    data$stratum_id <- as.integer(factor(
-      paste(data[["reference_date"]], data[["report_date"]], sep = "___")
-    ))
+  if (!is.null(strata_cols) && length(strata_cols) > 0) {
+    n_strata <- nrow(unique(data[, strata_cols, drop = FALSE]))
   } else {
-    # Create a unique identifier for each stratum
-    data$stratum_id <- do.call(paste, c(data[strata_cols], sep = "_"))
+    n_strata <- 1
   }
-
-  n_strata <- length(unique(data$stratum_id))
-
-  date_strata <- unique(data[, c(group_cols, "stratum_id")])
-  date_counts <- aggregate(
-    stratum_id ~ .,
-    data = date_strata[, c(group_cols, "stratum_id")],
-    FUN = function(x) length(unique(x))
-  )
-
-  names(date_counts)[ncol(date_counts)] <- "n_strata"
-
-  common_dates <- date_counts[date_counts$n_strata == n_strata, group_cols]
-
-  if (nrow(common_dates) == 0) {
+  data$pair_id <- paste(data$reference_date, data$report_date, sep = "|")
+  pair_counts <- table(data$pair_id)
+  valid_pairs <- names(pair_counts[pair_counts >= n_strata])
+  n_dropped <- sum(pair_counts < n_strata)
+  if (length(valid_pairs) == 0) {
     cli_abort(
-      message = "There is no overlapping set of reference and report dates across all strata. `strata_sharing` is not possible" # nolint
+      message = "There is no overlapping set of reference and report dates across all strata. `strata_sharing` is not possible." # nolint
     )
   }
-
-  if (!all(date_counts$n_strata == n_strata)) {
+  if (n_dropped > 0) {
     cli_warn(
       message = c("Not all reference dates and report dates combinations are available for all strata.", # nolint
         "i" = "Only the subset of reference and report dates that are available for all strata will be used to aggregate cases." # nolint
       )
     )
   }
-
-  filtered_data <- merge(data, common_dates, by = group_cols)
-  filtered_data$stratum_id <- NULL
+  filtered_data <- data[data$pair_id %in% valid_pairs, ]
+  filtered_data$pair_id <- NULL
 
   formula_str <- paste(value_col, "~", paste(group_cols, collapse = " + "))
   formula_obj <- as.formula(formula_str)

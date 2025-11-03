@@ -74,7 +74,7 @@ test_that(".combine_triangle_dfs combines data across strata correctly", {
   expect_identical(row1$count, 80)
 })
 
-test_that("..combine_triangle_dfs errors if no set of shared reference and report dates exists", { # nolint
+test_that(".combine_triangle_dfs errors if no set of shared reference and report dates exists", { # nolint
   expect_error(
     .combine_triangle_dfs(
       data = test_data_to_fail,
@@ -114,7 +114,7 @@ test_that(".combine_triangle_dfs handles all same date combinations by summing e
 
 test_that(".combine_triangle_dfs handles multiple strata columns", {
   test_data <- data.frame(
-    reference_date = as.Date(rep("2021-04-06", 8)),
+    reference_date = as.Date(c(rep("2021-04-06", 8))),
     report_date = as.Date(rep("2021-04-08", 8)),
     location = rep(c("DE", "FR"), each = 4),
     age_group = rep(c("00+", "05-14"), 4),

@@ -183,21 +183,20 @@ baselinenowcast.reporting_triangle <- function(
 #'    - Column of numeric or integer indicating the new confirmed counts
 #'     pertaining to that reference and report date (count).
 #'  Additional columns indicating the columns which set the unit of a single
-#'  nowcast must be included. The user must specify these columns with the
-#'  `nowcast_unit` argument, or all columns will be assumed to specify the
-#'  unit of a single nowcast.
-#' @param nowcast_unit Vector of character strings indicating the names of the
-#'   columns in `data` that denote the unit of a single nowcast. Within a
-#'   nowcast unit, there can be no repeated unique combinations of reference
-#'   dates and report dates. Default is `NULL` which assumes that all columns
-#'   that are not required columns (reference date, report date, count) form
-#'   the unit of a single nowcast. This may lead to unexpected behaviour, so
-#'   setting the nowcast unit explicitly can help make the code easier to debug
-#'   and easier to read. If specified, all columns that are not part of the
-#'   forecast unit (or required columns) will be removed.
+#'  can be included. The user can specify these columns with the
+#'  `strata_cols` argument, otherwise it will be assumed that the `data`
+#'  contains only data for a single strata.
+#' @param strata_cols Vector of character strings indicating the names of the
+#'   columns in `data` that determine how to stratify the data for nowcasting.
+#'   The unique combinations of the entries in the `strata_cols` denote the
+#'   unit of a single nowcast. Within a strata, there can be no repeated
+#'   unique combinations of reference dates and report dates. Default is `NULL`
+#'   which assumes that the data.frame being passed in represents a single
+#'   strata (only one nowcast will be produced). All columns that are not
+#'   part of the `strata_cols` will be removed.
 #' @param strata_sharing Vector of character strings. Indicates if and what
 #'   estimates should be shared for different nowcasting steps. Options are
-#'   `"none"` for no sharing (each `nowcast_unit` is fully independent),
+#'   `"none"` for no sharing (each `strata_cols` is fully independent),
 #'   `"delay"` for delay sharing and `"uncertainty"` for uncertainty sharing.
 #'   Both `"delay"` and `"uncertainty"` can be passed at the same time.
 #' @param ... Additional arguments passed to
@@ -221,7 +220,7 @@ baselinenowcast.reporting_triangle <- function(
 #' ] # nolint
 #' nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
 #'   max_delay = 40,
-#'   nowcast_unit = c("age_group", "location")
+#'   strata_cols = c("age_group", "location")
 #' )
 #' nowcasts_df
 baselinenowcast.data.frame <- function(
@@ -237,7 +236,7 @@ baselinenowcast.data.frame <- function(
     reference_date = "reference_date",
     report_date = "report_date",
     count = "count",
-    nowcast_unit = NULL,
+    strata_cols = NULL,
     strata_sharing = "none",
     ...) {
   assert_character(reference_date)
@@ -246,6 +245,14 @@ baselinenowcast.data.frame <- function(
   assert_character(delays_unit)
   assert_character(strata_sharing)
   assert_character(output_type)
+  assert_subset(strata_sharing,
+    choices = c("delay", "uncertainty", "none")
+  )
+  if (length(strata_sharing) == 2 && "none" %in% strata_sharing) {
+    cli_abort(
+      message = c("`strata_sharing` cannot be both 'none' and 'delay'/'uncertainty'") # nolint
+    )
+  }
   # Start by renaming the columns to avoid passing around colname args
   data_renamed <- .rename_cols(data, old_names = c(
     reference_date,
@@ -262,17 +269,17 @@ baselinenowcast.data.frame <- function(
   )
   data_clean <- data_renamed[data_renamed$delay <= max_delay, ]
 
-  .validate_nowcast_unit(
-    nowcast_unit,
+  .validate_strata_cols(
+    strata_cols,
     data_clean
   )
   .validate_date_cols(data_clean, "reference_date")
   .validate_date_cols(data_clean, "report_date")
 
   # Split dataframe into a list of dataframes for each nowcast unit
-  if (length(nowcast_unit) != 0) {
-    data[nowcast_unit] <- lapply(data_clean[nowcast_unit], as.factor)
-    list_of_dfs <- split(data_clean, data_clean[nowcast_unit],
+  if (length(strata_cols) != 0) {
+    data[strata_cols] <- lapply(data_clean[strata_cols], as.factor)
+    list_of_dfs <- split(data_clean, data_clean[strata_cols],
       sep = "___",
       drop = TRUE
     )
@@ -280,22 +287,20 @@ baselinenowcast.data.frame <- function(
     list_of_dfs <- list(data_clean)
   }
 
-  # Apply strata sharing if specified
-  assert_subset(strata_sharing,
-    choices = c("delay", "uncertainty", "none")
+  # Create a list of reporting triangles
+  list_of_rep_tris <- lapply(list_of_dfs,
+    as_reporting_triangle,
+    max_delay = max_delay,
+    delays_unit = delays_unit
   )
-  if (length(strata_sharing) == 2 && "none" %in% strata_sharing) {
-    cli_abort(
-      message = c("`strata_sharing` cannot be both 'none' and 'delay'/'uncertainty'") # nolint
-    )
-  }
+  # Combine if needed
   if (all(strata_sharing == "none")) {
     delay_pmf <- NULL
     uncertainty_params <- NULL
   } else if (all(strata_sharing != "none")) {
     pooled_df <- .combine_triangle_dfs(
       data = data_clean,
-      strata_cols = nowcast_unit
+      strata_cols = strata_cols
     )
     pooled_triangle <- as_reporting_triangle(pooled_df,
       max_delay = max_delay,
@@ -337,40 +342,79 @@ baselinenowcast.data.frame <- function(
     }
   }
 
-  combined_result <- imap(list_of_dfs, function(rep_tri_df, name) {
-    rep_tri <- as_reporting_triangle(
-      data = rep_tri_df,
-      max_delay = max_delay,
-      delays_unit = delays_unit,
-      reference_date = reference_date,
-      report_date = report_date,
-      count = count
-    )
-
-    nowcast_df <- baselinenowcast(
-      data = rep_tri,
+  # Nowcast
+  combined_result <- imap(
+    list_of_rep_tris,
+    ~ .nowcast_from_rep_tris(
+      rep_tri = .x,
+      name = .y,
+      strata_cols = strata_cols,
       scale_factor = scale_factor,
       prop_delay = prop_delay,
       output_type = output_type,
       draws = draws,
-      uncertainty_model = uncertainty_model,
-      uncertainty_sampler = uncertainty_sampler,
+      uncertainty_model =
+        uncertainty_model,
+      uncertainty_sampler =
+        uncertainty_sampler,
       delay_pmf = delay_pmf,
-      uncertainty_params = uncertainty_params,
-      ...
+      uncertainty_params =
+        uncertainty_params
     )
-
-    # Split the name of the element in the last and add as a separate column
-    # based on nowcast unit entry
-    if (length(nowcast_unit) != 0) {
-      split_name <- strsplit(name, "___", fixed = TRUE)[[1]]
-      nowcast_df[nowcast_unit] <- as.list(split_name)
-    }
-
-    return(nowcast_df)
-  }) |> list_rbind()
-
+  ) |> list_rbind()
   return(combined_result)
+}
+
+
+#' Produce a nowcast from a named reporting triangle object
+#'
+#' @param rep_tri Object of reporting triangle class
+#' @param name Name of the reporting triangle class object
+#' @inheritParams baselinenowcast
+#' @inheritParams baselinenowcast.data.frame
+#' @inheritParams as_reporting_triangle.data.frame
+#' @inheritParams estimate_uncertainty
+#' @inheritParams sample_nowcast
+#' @inheritParams allocate_reference_times
+#'
+#' @returns Data.frame of nowcasts with columns obtained from the name of the
+#'   original list and the nowcast unit.
+.nowcast_from_rep_tris <- function(
+    rep_tri,
+    name,
+    strata_cols,
+    scale_factor,
+    prop_delay,
+    output_type,
+    draws,
+    uncertainty_model,
+    uncertainty_sampler,
+    delay_pmf,
+    uncertainty_params,
+    ref_time_aggregator = identity,
+    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
+  nowcast_df <- baselinenowcast(
+    data = rep_tri,
+    scale_factor = scale_factor,
+    prop_delay = prop_delay,
+    output_type = output_type,
+    draws = draws,
+    uncertainty_model = uncertainty_model,
+    uncertainty_sampler = uncertainty_sampler,
+    delay_pmf = delay_pmf,
+    uncertainty_params = uncertainty_params,
+    ref_time_aggregator = ref_time_aggregator,
+    delay_aggregator = delay_aggregator
+  )
+
+  # Split the name of the element in the last and add as a separate column
+  # based on nowcast unit entry
+  if (length(strata_cols) != 0) {
+    split_name <- strsplit(name, "___", fixed = TRUE)[[1]]
+    nowcast_df[strata_cols] <- as.list(split_name)
+  }
+
+  return(nowcast_df)
 }
 
 #' Combine triangle data.frames
@@ -389,7 +433,7 @@ baselinenowcast.data.frame <- function(
 #'
 #' @inheritParams baselinenowcast.data.frame
 #' @inheritParams as_reporting_triangle.data.frame
-#'
+#' @importFrom stats aggregate as.formula
 #' @returns `result` Data.frame with the same column names for reference date,
 #' report date, and case count as in `data` but summed across all strata in
 #' the original data.

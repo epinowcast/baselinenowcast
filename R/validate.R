@@ -478,14 +478,14 @@
   return(NULL)
 }
 
-#' Validate each of the nowcast unit passed to baselinenowcast
+#' Validate each of the strata columns passed to baselinenowcast
 #'
 #' @inheritParams baselinenowcast.data.frame
 #' @returns NULL
-.validate_nowcast_unit <- function(nowcast_unit,
-                                   data) {
+.validate_strata_cols <- function(strata_cols,
+                                  data) {
   # Ensure nowcast_unit is not reference_date, report_date, count
-  conflicting_cols <- intersect(nowcast_unit, c(
+  conflicting_cols <- intersect(strata_cols, c(
     "reference_date",
     "report_date",
     "count"
@@ -493,17 +493,17 @@
   if (length(conflicting_cols) > 0) {
     cli_abort(
       message = c(
-        "`nowcast_unit` cannot contain any of the required columns of: reference_date, report_date, count .", # nolint
-        "i" = "Found: {conflicting_cols} in `nowcast_unit'`" # nolint
+        "`strata_cols` cannot contain any of the required columns of: reference_date, report_date, count .", # nolint
+        "i" = "Found: {conflicting_cols} in `strata_cols`" # nolint
       )
     )
   }
 
-  if (!all(nowcast_unit %in% colnames(data))) {
+  if (!all(strata_cols %in% colnames(data))) {
     cli_abort(
       message =
-        c("`nowcast_unit`, if specified, must be a column in `data`.",
-          "i" = "{nowcast_unit[!nowcast_unit %in% colnames(data)]} is not a column in `data`." # nolint
+        c("`strata_cols`, if specified, must be a column in `data`.",
+          "i" = "{strata_cols[!strata_cols %in% colnames(data)]} is not a column in `data`." # nolint
         )
     )
   }

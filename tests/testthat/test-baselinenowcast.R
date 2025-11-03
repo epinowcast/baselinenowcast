@@ -198,7 +198,7 @@ test_that("baselinenowcast.data.frame returns the expected structure with and wi
     data = covid_data,
     max_delay = 40,
     draws = 100,
-    nowcast_unit = c("age_group", "location")
+    strata_cols = c("age_group", "location")
   )
 
   expect_s3_class(nowcasts_df, "data.frame")
@@ -222,7 +222,7 @@ test_that("baselinenowcast.data.frame returns the expected structure with and wi
     data = covid_data_age_groups,
     max_delay = 40,
     draws = 100,
-    nowcast_unit = c("age_group", "location"),
+    strata_cols = c("age_group", "location"),
     strata_sharing = c("delay", "uncertainty")
   )
   expect_s3_class(nowcasts_df2, "data.frame")
@@ -274,7 +274,7 @@ test_that("baselinenowcast returns expected structure without errors for all dif
     data = covid_data,
     draws = 100,
     max_delay = 40,
-    nowcast_unit = c("age_group", "location")
+    strata_cols = c("age_group", "location")
   )
   expect_s3_class(test_df, "data.frame")
   expect_s3_class(test_df, "baselinenowcast_df")
@@ -294,13 +294,13 @@ test_that("baselinenowcast errors if multiple strata are passed in and this is n
 })
 
 test_that("baselinenowcast errors if nowcast unit is specified incorrectly", {
-  exp_err_msg <- "`nowcast_unit` cannot contain any of the required columns"
+  exp_err_msg <- "`strata_cols` cannot contain any of the required columns"
   expect_error(
     baselinenowcast(
       data = covid_data,
       max_delay = 40,
       draws = 100,
-      nowcast_unit = c("age_group", "location", "reference_date")
+      strata_cols = c("age_group", "location", "reference_date")
     ),
     regexp = exp_err_msg
   )
@@ -309,7 +309,7 @@ test_that("baselinenowcast errors if nowcast unit is specified incorrectly", {
       data = covid_data,
       max_delay = 40,
       draws = 100,
-      nowcast_unit = c("age_group", "location", "reference_date")
+      strata_cols = c("age_group", "location", "reference_date")
     ),
     regexp = exp_err_msg
   )
@@ -318,9 +318,9 @@ test_that("baselinenowcast errors if nowcast unit is specified incorrectly", {
       data = covid_data,
       max_delay = 40,
       draws = 100,
-      nowcast_unit = c("region", "age_group")
+      strata_cols = c("region", "age_group")
     ),
-    regexp = "`nowcast_unit`, if specified, must be a column in `data`"
+    regexp = "`strata_cols`, if specified, must be a column in `data`"
   )
 })
 
@@ -334,7 +334,7 @@ test_that("baselinenowcast handles renamed columns and returns the standard colu
     max_delay = 40,
     draws = 100,
     reference_date = "ref_date",
-    nowcast_unit = c("age_group", "location")
+    strata_cols = c("age_group", "location")
   )
   expect_false("ref_date" %in% colnames(result))
 })
@@ -378,7 +378,7 @@ test_that("baselinenowcast works with weekday strata", {
       max_delay = 40,
       draws = 100,
       scale_factor = 4 / 7,
-      nowcast_unit = "weekday_ref_date"
+      strata_cols = "weekday_ref_date"
     ),
     regexp = "Data does not contain case counts for all possible reference dates" # nolint
   )
@@ -397,7 +397,7 @@ test_that("baselinenowcast works with weekday strata", {
       max_delay = 40,
       draws = 100,
       scale_factor = 4 / 7,
-      nowcast_unit = "weekday_ref_date"
+      strata_cols = "weekday_ref_date"
     ),
     regexp = "Data does not contain case counts for all possible reference dates" # nolint
   ) |>
@@ -423,7 +423,7 @@ test_that("baselinenowcast returns expected structure even when dates not aligne
       covid_data_incomplete,
       max_delay = 40,
       draws = 100,
-      nowcast_unit = c("age_group", "location"),
+      strata_cols = c("age_group", "location"),
       strata_sharing = c("delay", "uncertainty")
     ),
     regexp = "Not all reference dates and report dates combinations are available" # nolint
@@ -444,7 +444,7 @@ test_that("baselinenowcast returns expected structure even when dates not aligne
     covid_data_full,
     max_delay = 40,
     draws = 100,
-    nowcast_unit = c("age_group", "location"),
+    strata_cols = c("age_group", "location"),
     strata_sharing = c("delay", "uncertainty")
   )
   max_ref_date_60_792 <- nowcast_df2 |>

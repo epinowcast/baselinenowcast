@@ -18,10 +18,19 @@ report of the primary event (report_date).
 \item Column of numeric or integer indicating the new confirmed counts
 pertaining to that reference and report date (count).
 Additional columns indicating the columns which set the unit of a single
-nowcast must be included. The user must specify these columns with the
-\code{nowcast_unit} argument, or all columns will be assumed to specify the
-unit of a single nowcast.
+can be included. The user can specify these columns with the
+\code{strata_cols} argument, otherwise it will be assumed that the \code{data}
+contains only data for a single strata.
 }}
+
+\item{strata_cols}{Vector of character strings indicating the names of the
+columns in \code{data} that determine how to stratify the data for nowcasting.
+The unique combinations of the entries in the \code{strata_cols} denote the
+unit of a single nowcast. Within a strata, there can be no repeated
+unique combinations of reference dates and report dates. Default is \code{NULL}
+which assumes that the data.frame being passed in represents a single
+strata (only one nowcast will be produced). All columns that are not
+part of the \code{strata_cols} will be removed.}
 }
 \value{
 \code{result} Data.frame with the same column names for reference date,

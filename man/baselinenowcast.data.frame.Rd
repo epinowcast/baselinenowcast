@@ -18,7 +18,7 @@ indexed by reference date and report date}
   reference_date = "reference_date",
   report_date = "report_date",
   count = "count",
-  nowcast_unit = NULL,
+  strata_cols = NULL,
   strata_sharing = "none",
   ...
 )
@@ -35,9 +35,9 @@ report of the primary event (report_date).
 \item Column of numeric or integer indicating the new confirmed counts
 pertaining to that reference and report date (count).
 Additional columns indicating the columns which set the unit of a single
-nowcast must be included. The user must specify these columns with the
-\code{nowcast_unit} argument, or all columns will be assumed to specify the
-unit of a single nowcast.
+can be included. The user can specify these columns with the
+\code{strata_cols} argument, otherwise it will be assumed that the \code{data}
+contains only data for a single strata.
 }}
 
 \item{scale_factor}{Numeric value indicating the multiplicative factor on
@@ -92,19 +92,18 @@ column which represents the date the primary event was reported.}
 \item{count}{Character string indicating the name of the column
 containing the number of incident cases on each reference and report date.}
 
-\item{nowcast_unit}{Vector of character strings indicating the names of the
-columns in \code{data} that denote the unit of a single nowcast. Within a
-nowcast unit, there can be no repeated unique combinations of reference
-dates and report dates. Default is \code{NULL} which assumes that all columns
-that are not required columns (reference date, report date, count) form
-the unit of a single nowcast. This may lead to unexpected behaviour, so
-setting the nowcast unit explicitly can help make the code easier to debug
-and easier to read. If specified, all columns that are not part of the
-forecast unit (or required columns) will be removed.}
+\item{strata_cols}{Vector of character strings indicating the names of the
+columns in \code{data} that determine how to stratify the data for nowcasting.
+The unique combinations of the entries in the \code{strata_cols} denote the
+unit of a single nowcast. Within a strata, there can be no repeated
+unique combinations of reference dates and report dates. Default is \code{NULL}
+which assumes that the data.frame being passed in represents a single
+strata (only one nowcast will be produced). All columns that are not
+part of the \code{strata_cols} will be removed.}
 
 \item{strata_sharing}{Vector of character strings. Indicates if and what
 estimates should be shared for different nowcasting steps. Options are
-\code{"none"} for no sharing (each \code{nowcast_unit} is fully independent),
+\code{"none"} for no sharing (each \code{strata_cols} is fully independent),
 \code{"delay"} for delay sharing and \code{"uncertainty"} for uncertainty sharing.
 Both \code{"delay"} and \code{"uncertainty"} can be passed at the same time.}
 
@@ -139,7 +138,7 @@ covid_data_to_nowcast <- germany_covid19_hosp[
 ] # nolint
 nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
   max_delay = 40,
-  nowcast_unit = c("age_group", "location")
+  strata_cols = c("age_group", "location")
 )
 nowcasts_df
 }

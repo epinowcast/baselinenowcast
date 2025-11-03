@@ -198,7 +198,7 @@ baselinenowcast.reporting_triangle <- function(
 #' @param strata_sharing Vector of character strings. Indicates if and what
 #'   estimates should be shared for different nowcasting steps. Options are
 #'   `"none"` for no sharing (each `nowcast_unit` is fully independent),
-#'   `"delay"` for delay sharing and`"uncertainty"` for uncertainty sharing.
+#'   `"delay"` for delay sharing and `"uncertainty"` for uncertainty sharing.
 #'   Both `"delay"` and `"uncertainty"` can be passed at the same time.
 #' @param ... Additional arguments passed to
 #'    \code{\link{estimate_uncertainty}}
@@ -265,13 +265,18 @@ baselinenowcast.data.frame <- function(
   }
 
   # Apply strata sharing if specified
+  assert_choices(strata_sharing,
+    choices = c("delay", "uncertainty", "none")
+  )
+  if (length(strata_sharing) == 2 && "none" %in% strata_sharing) {
+    cli_abort(
+      message = c("`strata_sharing` cannot be both 'none' and 'delay'/'uncertainty'") # nolint
+    )
+  }
   if (all(strata_sharing == "none")) {
     delay_pmf <- NULL
     uncertainty_params <- NULL
   } else if (all(strata_sharing != "none")) {
-    assert_subset(strata_sharing,
-      choices = c("delay", "uncertainty")
-    )
     pooled_df <- combine_triangle_dfs(
       data = data,
       reference_date = reference_date,

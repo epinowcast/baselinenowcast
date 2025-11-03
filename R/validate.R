@@ -478,7 +478,7 @@
   return(NULL)
 }
 
-#' Validate each the nowcast unit passed to baselinenowcast
+#' Validate each of the nowcast unit passed to baselinenowcast
 #'
 #' @inheritParams baselinenowcast.data.frame
 #' @returns NULL

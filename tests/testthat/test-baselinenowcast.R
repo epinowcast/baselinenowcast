@@ -369,7 +369,8 @@ test_that("baselinenowcast works with weekday strata", {
       draws = 100,
       scale_factor = 3 / 7,
       nowcast_unit = "weekday_ref_date"
-    )
+    ),
+    regexp = "`prop_delay` not identical to the proportion of reference times used for delay" # nolint
   )
   nowcast_df_Tue1 <- nowcast_df2 |>
     filter(weekday_ref_date == "Tue") |>
@@ -397,7 +398,7 @@ test_that("baselinenowcast works with weekday strata", {
   )
 })
 
-test_that("baselinenowcast works with sharing when dates not aligned between strata", { # nolint
+test_that("baselinenowcast returns expected structure even when dates not aligned between strata", { # nolint
   skip_if_not_installed("dplyr")
   skip_if_not_installed("lubridate")
   set.seed(123)
@@ -438,7 +439,7 @@ test_that("baselinenowcast works with sharing when dates not aligned between str
     dplyr::summarise(max_ref_date = max(reference_date)) |>
     dplyr::pull()
   expect_identical(max_ref_date_60_792, lubridate::ymd("2022-08-08"))
-)}
+})
 
 test_that("baselinenowcast.reporting_triangle errors if nothing to nowcast", {
   skip_if_not_installed("tidyr")

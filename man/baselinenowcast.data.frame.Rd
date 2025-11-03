@@ -105,7 +105,7 @@ forecast unit (or required columns) will be removed.}
 \item{strata_sharing}{Vector of character strings. Indicates if and what
 estimates should be shared for different nowcasting steps. Options are
 \code{"none"} for no sharing (each \code{nowcast_unit} is fully independent),
-\code{"delay"} for delay sharing and\code{"uncertainty"} for uncertainty sharing.
+\code{"delay"} for delay sharing and \code{"uncertainty"} for uncertainty sharing.
 Both \code{"delay"} and \code{"uncertainty"} can be passed at the same time.}
 
 \item{...}{Additional arguments passed to

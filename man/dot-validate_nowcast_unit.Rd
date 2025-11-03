@@ -2,7 +2,7 @@
 % Please edit documentation in R/validate.R
 \name{.validate_nowcast_unit}
 \alias{.validate_nowcast_unit}
-\title{Validate each the nowcast unit passed to baselinenowcast}
+\title{Validate each of the nowcast unit passed to baselinenowcast}
 \usage{
 .validate_nowcast_unit(nowcast_unit, data, reference_date, report_date, count)
 }
@@ -44,5 +44,5 @@ column which represents the date the primary event was reported.}
 containing the number of incident cases on each reference and report date.}
 }
 \description{
-Validate each the nowcast unit passed to baselinenowcast
+Validate each of the nowcast unit passed to baselinenowcast
 }

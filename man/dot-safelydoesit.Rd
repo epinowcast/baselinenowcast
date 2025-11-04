@@ -10,7 +10,9 @@
 \item{fun}{Function to wrap around}
 }
 \value{
-Function that will return a NULL if an error occurs
+Function that returns a list with \code{result} and \code{error} components.
+On success: \code{result} contains the function output and \code{error} is NULL.
+On failure: \code{result} is NULL and \code{error} contains the error object.
 }
 \description{
 Safe iterator

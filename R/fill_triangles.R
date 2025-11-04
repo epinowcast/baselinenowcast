@@ -129,7 +129,9 @@ fill_triangles <- function(retro_reporting_triangles,
 #'
 #' @param fun Function to wrap around
 #'
-#' @returns Function that will return a NULL if an error occurs
+#' @returns Function that returns a list with `result` and `error` components.
+#'   On success: `result` contains the function output and `error` is NULL.
+#'   On failure: `result` is NULL and `error` contains the error object.
 .safelydoesit <- function(fun) {
   stopifnot(is.function(fun))
   return(

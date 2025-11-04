@@ -36,8 +36,6 @@ home:
 
 reference:
 - subtitle: High-level interface
-  desc: >
-    Functions most users will interact with for typical nowcasting workflows.
 - title: Reporting triangle data structures
   desc: >
     Functions for creating, converting, and validating reporting triangle
@@ -57,8 +55,6 @@ reference:
   contents:
   - has_concept("workflow_wrappers")
 - subtitle: Lower-level components
-  desc: >
-    Modular functions for building custom nowcasting workflows and advanced use cases.
 - title: Estimate delay distributions
   desc: >
     Functions for estimating empirical delay distributions from reporting

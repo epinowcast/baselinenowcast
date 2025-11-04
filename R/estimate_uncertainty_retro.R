@@ -78,10 +78,8 @@ estimate_uncertainty_retro <- function(
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
     structure = 1,
     uncertainty_model = fit_by_horizon) {
-  # Validate input triangle
   .validate_triangle(reporting_triangle)
 
-  # Validate inputs are sufficient for uncertainty estimation
   n_ref_times <- nrow(reporting_triangle)
   min_ref_times_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
   .validate_inputs_uncertainty(

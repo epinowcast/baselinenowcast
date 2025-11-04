@@ -125,6 +125,71 @@
   return(NULL)
 }
 
+#' Check if matrix has valid NA pattern
+#'
+#' @param mat Matrix
+#'
+#' @returns Boolean indicating whether the matrix only contains NAs in the
+#'    bottom right (TRUE if only in bottom right, FALSE if elsewhere).
+#' @keywords internal
+.check_na_bottom_right <- function(mat) {
+  n_rows <- nrow(mat)
+  n_cols <- ncol(mat)
+
+  for (i in 1:n_rows) {
+    row_data <- mat[i, ]
+    na_indices <- which(is.na(row_data))
+
+    # If there are NAs in this row
+    if (length(na_indices) > 0) {
+      min_na_idx <- min(na_indices)
+      # Check that all entries from the first NA onwards are also NA
+      if (!all(is.na(row_data[min_na_idx:n_cols]))) {
+        return(FALSE)
+      }
+    }
+  }
+
+  # Check column consistency (if a cell is NA, all cells below it must be NA)
+  for (j in 1:n_cols) {
+    col_data <- mat[, j]
+    na_indices <- which(is.na(col_data))
+
+    if (length(na_indices) > 0) {
+      min_na_idx <- min(na_indices)
+      if (!all(is.na(col_data[min_na_idx:n_rows]))) {
+        return(FALSE)
+      }
+      # Check that all entries above the first NA are not NA
+      if (min_na_idx > 1 && anyNA(col_data[1:(min_na_idx - 1)])) {
+        return(FALSE)
+      }
+    }
+  }
+
+  return(TRUE)
+}
+
+#' Check if there are non-zero-values on the LHS of NAs
+#'
+#' @param mat Matrix to check
+#'
+#' @returns Boolean indicating whether or not there are non-zero values on the
+#'    LHS of the first NA (TRUE = has non-zeros, FALSE = only zeros)
+.check_lhs_not_only_zeros <- function(mat) {
+  # Find first NA
+  first_na <- which(is.na(mat[nrow(mat), ]))[1]
+  if (is.na(first_na)) {
+    has_non_zeros <- TRUE
+  } else if (first_na == 1) {
+    has_non_zeros <- TRUE # No columns to check
+  } else {
+    mat_LHS <- mat[, 1:(first_na) - 1]
+    has_non_zeros <- !all(mat_LHS == 0)
+  }
+  return(has_non_zeros)
+}
+
 #' Check that the maximum delay is not too large, error if it is
 #'
 #' @inheritParams .validate_delay_and_triangle
@@ -239,6 +304,35 @@
       "x" = "Inconsistent `max_delay`.", # nolint
       "i" = "`ncol(reporting_triangle)` = {ncol(reporting_triangle)} but `max_delay + 1` = {max_delay + 1}." # nolint
     ))
+  }
+
+  return(NULL)
+}
+
+#' Validate aggregation function
+#' Checks that the aggregation function is one of the allowed functions.
+#' @param fun_to_aggregate Function to validate
+#' @returns NULL, invisibly
+#' @keywords internal
+.validate_aggregation_function <- function(fun_to_aggregate) {
+  # Define allowed functions
+  allowed_functions <- list(
+    sum = sum
+  )
+
+  # Validate function
+  fun_name <- deparse(substitute(fun_to_aggregate))
+  if (is.name(fun_to_aggregate)) {
+    fun_name <- as.character(fun_to_aggregate)
+  }
+
+  # Check if function is in allowed list
+  if (!identical(fun_to_aggregate, allowed_functions[[fun_name]]) &&
+    !any(sapply(allowed_functions, identical, fun_to_aggregate))) {
+    allowed_names <- toString(names(allowed_functions))
+    stop(sprintf("'fun_to_aggregate' should be one of: %s", allowed_names),
+      call. = FALSE
+    )
   }
 
   return(NULL)

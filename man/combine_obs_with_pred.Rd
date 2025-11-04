@@ -53,6 +53,7 @@ reporting_matrix <- matrix(
 )
 reporting_triangle <- construct_triangle(reporting_matrix)
 combine_obs_with_pred(pred_counts, reporting_triangle)
+
 # Another example with rolling sum
 if (requireNamespace("zoo", quietly = TRUE)) {
   combine_obs_with_pred(pred_counts,

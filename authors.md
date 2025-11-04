@@ -15,6 +15,8 @@
 - **[Sam Abbott](https://www.samabbott.co.uk/)**. Author.
   [](https://orcid.org/0000-0001-8057-8037)
 
+- **Tim Taylor**. Contributor. [](https://orcid.org/0000-0002-8587-7113)
+
 ## Citation
 
 Source:

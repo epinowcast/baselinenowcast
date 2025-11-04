@@ -111,7 +111,7 @@ estimate_uncertainty_retro <- function(
     cli_warn(
       message = c(
         "Insufficient data to generate point nowcasts",
-        "i" = "Returning NULL for uncertainty parameter"
+        i = "Returning NULL for uncertainty parameter"
       )
     )
     return(NULL)

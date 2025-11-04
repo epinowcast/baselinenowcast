@@ -17,10 +17,11 @@ estimate_uncertainty_parameters(
 )
 }
 \arguments{
-\item{reporting_triangle}{A reporting triangle matrix with reference dates
-as rows and delays as columns. Should be the output of
-\code{\link[=construct_triangle]{construct_triangle()}} or a compatible matrix structure with NAs in the
-bottom right triangle.}
+\item{reporting_triangle}{Matrix of the reporting triangle, with rows
+representing the time points of reference and columns representing the
+delays. Can be a reporting matrix or incomplete reporting matrix.
+Can also be a ragged reporting triangle, where multiple columns are
+reported for the same row. (e.g. weekly reporting of daily data).}
 
 \item{n_delay}{Integer. Number of past observations (rows) to use for
 estimating the delay distribution in each retrospective snapshot.
@@ -30,30 +31,32 @@ triangle.}
 \item{n_retro}{Integer. Number of retrospective snapshots to generate for
 uncertainty estimation. Required parameter with no default.}
 
-\item{max_delay}{Integer. Maximum delay to consider in days. Default is
-\code{ncol(reporting_triangle) - 1}.}
-
-\item{delay_pmf}{Numeric vector or NULL. Optional custom delay probability
-mass function. If NULL (default), the delay distribution is estimated
-from the data.}
+\item{max_delay}{Integer indicating the maximum delay to estimate, in units
+of the delay. The default is to use the whole reporting triangle,
+\code{ncol(reporting_triangle) -1}.}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
-aggregated across columns (delays). Default is \code{identity} which does not
-aggregate across reference times.}
+aggregated across columns (delays). Default is \code{identity}
+which does not aggregate across reference times.}
 
 \item{delay_aggregator}{Function that operates along the columns (delays)
 of the retrospective point nowcast matrix after it has been aggregated
 across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
 
-\item{structure}{Integer or vector specifying the reporting structure for
-retrospective triangles. If integer, divides columns evenly. If vector,
-must sum to number of columns minus 1. Default is 1 (standard triangular
-structure).}
+\item{structure}{Integer or vector specifying the reporting structure.
+If integer, divides columns evenly by that integer (with last possibly
+truncated).  If vector, the sum must not be greater than or equal to the
+number of columns. Default is 1 (standard triangular structure).}
 
-\item{uncertainty_model}{Function that ingests a matrix of observations and
-a matrix of predictions and returns a vector that can be used to apply
-uncertainty using the same error model. Default is \link{fit_by_horizon}.}
+\item{uncertainty_model}{Function that ingests a matrix of observations and a
+matrix of predictions and returns a vector that can be used to
+apply uncertainty using the same error model. Default is
+\code{fit_by_horizon} with arguments of \code{obs} matrix of observations and
+\code{pred} the matrix of predictions that fits each column (horizon)
+to a negative binomial observation model by default. The user can
+specify a different fitting model by replacing the
+\code{fit_model} argument in \code{fit_by_horizon}.}
 }
 \value{
 A numeric vector of uncertainty parameters with length equal to

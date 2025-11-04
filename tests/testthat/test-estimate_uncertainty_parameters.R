@@ -41,20 +41,20 @@ test_that("estimate_uncertainty_parameters matches manual workflow", {
   structure <- 1
 
   trunc_rep_tri_list <- truncate_triangles(triangle, n = n_retro)
-  reporting_triangle_list <- generate_triangles(
+  reporting_triangle_list <- construct_triangles(
     trunc_rep_tri_list,
     structure = structure
   )
   n_delay <- min(sapply(reporting_triangle_list, nrow))
-  pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
+  pt_nowcast_mat_list <- fill_triangles(
     reporting_triangle_list,
     max_delay = max_delay,
     n = n_delay
   )
-  manual_result <- estimate_dispersion(
-    pt_nowcast_mat_list = pt_nowcast_mat_list,
-    trunc_rep_tri_list = trunc_rep_tri_list,
-    reporting_triangle_list = reporting_triangle_list,
+  manual_result <- estimate_uncertainty(
+    point_nowcast_matrices = pt_nowcast_mat_list,
+    truncated_reporting_triangles = trunc_rep_tri_list,
+    retro_reporting_triangles = reporting_triangle_list,
     n = n_retro
   )
 
@@ -151,7 +151,7 @@ test_that("estimate_uncertainty_parameters works with custom delay_pmf", {
   expect_true(length(result) > 0)
 })
 
-test_that("estimate_uncertainty_parameters works with custom k parameter", {
+test_that("estimate_uncertainty_parameters works with custom aggregators", {
   triangle <- matrix(
     c(
       65, 46, 21, 7,
@@ -166,10 +166,19 @@ test_that("estimate_uncertainty_parameters works with custom k parameter", {
     byrow = TRUE
   )
 
-  result <- estimate_uncertainty_parameters(triangle, k = 2)
+  if (requireNamespace("zoo", quietly = TRUE)) {
+    result <- estimate_uncertainty_parameters(
+      triangle,
+      ref_time_aggregator = function(x) {
+        zoo::rollsum(x, k = 2, align = "right")
+      }
+    )
 
-  expect_type(result, "double")
-  expect_true(length(result) > 0)
+    expect_type(result, "double")
+    expect_true(length(result) > 0)
+  } else {
+    skip("zoo package not available")
+  }
 })
 
 test_that(
@@ -243,11 +252,6 @@ test_that("estimate_uncertainty_parameters validates integer parameters", {
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, k = 0),
-    "k"
-  )
-
-  expect_error(
     estimate_uncertainty_parameters(triangle, structure = 0),
     "structure"
   )
@@ -284,7 +288,7 @@ test_that("estimate_uncertainty_parameters validates delay_pmf", {
   )
 })
 
-test_that("estimate_uncertainty_parameters validates fun_to_aggregate", {
+test_that("estimate_uncertainty_parameters validates function arguments", {
   triangle <- matrix(
     c(
       65, 46, 21, 7,
@@ -300,8 +304,18 @@ test_that("estimate_uncertainty_parameters validates fun_to_aggregate", {
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, fun_to_aggregate = mean),
-    "fun_to_aggregate"
+    estimate_uncertainty_parameters(triangle, ref_time_aggregator = "mean"),
+    "ref_time_aggregator"
+  )
+
+  expect_error(
+    estimate_uncertainty_parameters(triangle, delay_aggregator = "sum"),
+    "delay_aggregator"
+  )
+
+  expect_error(
+    estimate_uncertainty_parameters(triangle, uncertainty_model = "nb"),
+    "uncertainty_model"
   )
 })
 
@@ -328,9 +342,10 @@ test_that(
       n_retro = 2,
       max_delay = 3,
       delay_pmf = c(0.4, 0.3, 0.2, 0.1),
-      fun_to_aggregate = sum,
-      k = 2,
-      structure = 1
+      ref_time_aggregator = identity,
+      delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
+      structure = 1,
+      uncertainty_model = fit_by_horizon
     )
 
     expect_type(result, "double")

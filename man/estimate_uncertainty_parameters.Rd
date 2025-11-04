@@ -10,15 +10,16 @@ estimate_uncertainty_parameters(
   n_retro = 2,
   max_delay = ncol(reporting_triangle) - 1,
   delay_pmf = NULL,
-  fun_to_aggregate = sum,
-  k = 1,
-  structure = 1
+  ref_time_aggregator = identity,
+  delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
+  structure = 1,
+  uncertainty_model = fit_by_horizon
 )
 }
 \arguments{
 \item{reporting_triangle}{A reporting triangle matrix with reference dates
 as rows and delays as columns. Should be the output of
-\code{\link[=generate_triangle]{generate_triangle()}} or a compatible matrix structure with NAs in the
+\code{\link[=construct_triangle]{construct_triangle()}} or a compatible matrix structure with NAs in the
 bottom right triangle.}
 
 \item{n_delay}{Integer. Number of past observations (rows) to use for
@@ -27,7 +28,7 @@ Default is to use all available rows in the smallest retrospective
 triangle.}
 
 \item{n_retro}{Integer. Number of retrospective snapshots to generate for
-dispersion estimation. Default is 2.}
+uncertainty estimation. Default is 2.}
 
 \item{max_delay}{Integer. Maximum delay to consider in days. Default is
 \code{ncol(reporting_triangle) - 1}.}
@@ -36,38 +37,42 @@ dispersion estimation. Default is 2.}
 mass function. If NULL (default), the delay distribution is estimated
 from the data.}
 
-\item{fun_to_aggregate}{Function. Function to aggregate counts when
-estimating dispersion. Default is \code{sum}. Currently only \code{sum} is
-supported.}
+\item{ref_time_aggregator}{Function that operates along the rows (reference
+times) of the retrospective point nowcast matrix before it has been
+aggregated across columns (delays). Default is \code{identity} which does not
+aggregate across reference times.}
 
-\item{k}{Integer. Number of reference times to apply the
-\code{fun_to_aggregate} over to create target used to compute the nowcast
-errors. Default is 1.}
+\item{delay_aggregator}{Function that operates along the columns (delays)
+of the retrospective point nowcast matrix after it has been aggregated
+across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
 
 \item{structure}{Integer or vector specifying the reporting structure for
 retrospective triangles. If integer, divides columns evenly. If vector,
 must sum to number of columns minus 1. Default is 1 (standard triangular
 structure).}
+
+\item{uncertainty_model}{Function that ingests a matrix of observations and
+a matrix of predictions and returns a vector that can be used to apply
+uncertainty using the same error model. Default is \link{fit_by_horizon}.}
 }
 \value{
-A numeric vector of dispersion parameters with length equal to
+A numeric vector of uncertainty parameters with length equal to
 one less than the number of columns in the reporting triangle, with each
-element representing the estimate of the dispersion parameter for each
-delay d, starting at delay d=1. Returns NULL if insufficient data is
-available for estimation.
+element representing the estimate of the uncertainty parameter for each
+horizon. Returns NULL if insufficient data is available for estimation.
 }
 \description{
-Estimates dispersion parameters for uncertainty quantification in nowcasts
+Estimates uncertainty parameters for uncertainty quantification in nowcasts
 by generating retrospective snapshots, creating reporting triangles,
-producing point nowcasts, and estimating dispersion from the nowcast
+producing point nowcasts, and estimating uncertainty from the nowcast
 performance.
 
 This function wraps the workflow of:
 \enumerate{
 \item \code{\link[=truncate_triangles]{truncate_triangles()}} - Create retrospective snapshots
-\item \code{\link[=generate_triangles]{generate_triangles()}} - Generate retrospective reporting triangles
-\item \code{\link[=generate_pt_nowcast_mat_list]{generate_pt_nowcast_mat_list()}} - Generate point nowcasts
-\item \code{\link[=estimate_dispersion]{estimate_dispersion()}} - Estimate dispersion parameters
+\item \code{\link[=construct_triangles]{construct_triangles()}} - Generate retrospective reporting triangles
+\item \code{\link[=fill_triangles]{fill_triangles()}} - Generate point nowcasts
+\item \code{\link[=estimate_uncertainty]{estimate_uncertainty()}} - Estimate uncertainty parameters
 }
 }
 \examples{
@@ -87,14 +92,13 @@ triangle <- matrix(
 )
 
 # Estimate uncertainty parameters with defaults
-dispersion <- estimate_uncertainty_parameters(triangle)
+uncertainty_params <- estimate_uncertainty_parameters(triangle)
 
 # Estimate with custom parameters
-dispersion <- estimate_uncertainty_parameters(
+uncertainty_params <- estimate_uncertainty_parameters(
   triangle,
   n_delay = 5,
   n_retro = 3,
-  max_delay = 3,
-  k = 2
+  max_delay = 3
 )
 }

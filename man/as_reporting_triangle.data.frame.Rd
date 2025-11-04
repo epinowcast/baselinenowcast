@@ -75,7 +75,7 @@ as_reporting_triangle(
 )
 }
 \seealso{
-Other reporting_triangle:
+Other reporting_triangle: 
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.matrix}()},
 \code{\link{reporting_triangle-class}}

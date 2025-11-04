@@ -53,7 +53,6 @@ reporting_matrix <- matrix(
 )
 reporting_triangle <- construct_triangle(reporting_matrix)
 combine_obs_with_pred(pred_counts, reporting_triangle)
-<<<<<<< HEAD
 # Another example with rolling sum
 if (requireNamespace("zoo", quietly = TRUE)) {
   combine_obs_with_pred(pred_counts,
@@ -61,9 +60,4 @@ if (requireNamespace("zoo", quietly = TRUE)) {
     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
   )
 }
-=======
-
-# Another example with rolling sum
-combine_obs_with_pred(pred_counts, reporting_triangle, k = 2)
->>>>>>> 6619f96 (Add estimate_uncertainty_parameters wrapper function)
 }

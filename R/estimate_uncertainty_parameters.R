@@ -1,53 +1,56 @@
 #' Estimate uncertainty parameters for nowcasting
 #'
 #' @description
-#' Estimates dispersion parameters for uncertainty quantification in nowcasts
+#' Estimates uncertainty parameters for uncertainty quantification in nowcasts
 #'   by generating retrospective snapshots, creating reporting triangles,
-#'   producing point nowcasts, and estimating dispersion from the nowcast
+#'   producing point nowcasts, and estimating uncertainty from the nowcast
 #'   performance.
 #'
 #' This function wraps the workflow of:
 #' \enumerate{
 #'   \item [truncate_triangles()] - Create retrospective snapshots
-#'   \item [generate_triangles()] - Generate retrospective reporting triangles
-#'   \item [generate_pt_nowcast_mat_list()] - Generate point nowcasts
-#'   \item [estimate_dispersion()] - Estimate dispersion parameters
+#'   \item [construct_triangles()] - Generate retrospective reporting triangles
+#'   \item [fill_triangles()] - Generate point nowcasts
+#'   \item [estimate_uncertainty()] - Estimate uncertainty parameters
 #' }
 #'
 #' @param reporting_triangle A reporting triangle matrix with reference dates
 #'   as rows and delays as columns. Should be the output of
-#'   [generate_triangle()] or a compatible matrix structure with NAs in the
+#'   [construct_triangle()] or a compatible matrix structure with NAs in the
 #'   bottom right triangle.
 #' @param n_delay Integer. Number of past observations (rows) to use for
 #'   estimating the delay distribution in each retrospective snapshot.
 #'   Default is to use all available rows in the smallest retrospective
 #'   triangle.
 #' @param n_retro Integer. Number of retrospective snapshots to generate for
-#'   dispersion estimation. Default is 2.
+#'   uncertainty estimation. Default is 2.
 #' @param max_delay Integer. Maximum delay to consider in days. Default is
 #'   `ncol(reporting_triangle) - 1`.
 #' @param delay_pmf Numeric vector or NULL. Optional custom delay probability
 #'   mass function. If NULL (default), the delay distribution is estimated
 #'   from the data.
-#' @param fun_to_aggregate Function. Function to aggregate counts when
-#'   estimating dispersion. Default is `sum`. Currently only `sum` is
-#'   supported.
-#' @param k Integer. Number of reference times to apply the
-#'   `fun_to_aggregate` over to create target used to compute the nowcast
-#'   errors. Default is 1.
+#' @param ref_time_aggregator Function that operates along the rows (reference
+#'   times) of the retrospective point nowcast matrix before it has been
+#'   aggregated across columns (delays). Default is `identity` which does not
+#'   aggregate across reference times.
+#' @param delay_aggregator Function that operates along the columns (delays)
+#'   of the retrospective point nowcast matrix after it has been aggregated
+#'   across reference times. Default is `function(x) rowSums(x, na.rm = TRUE)`.
 #' @param structure Integer or vector specifying the reporting structure for
 #'   retrospective triangles. If integer, divides columns evenly. If vector,
 #'   must sum to number of columns minus 1. Default is 1 (standard triangular
 #'   structure).
+#' @param uncertainty_model Function that ingests a matrix of observations and
+#'   a matrix of predictions and returns a vector that can be used to apply
+#'   uncertainty using the same error model. Default is [fit_by_horizon].
 #'
-#' @returns A numeric vector of dispersion parameters with length equal to
+#' @returns A numeric vector of uncertainty parameters with length equal to
 #'   one less than the number of columns in the reporting triangle, with each
-#'   element representing the estimate of the dispersion parameter for each
-#'   delay d, starting at delay d=1. Returns NULL if insufficient data is
-#'   available for estimation.
+#'   element representing the estimate of the uncertainty parameter for each
+#'   horizon. Returns NULL if insufficient data is available for estimation.
 #'
 #' @export
-#' @importFrom checkmate assert_integerish assert_numeric assert_function
+#' @importFrom checkmate assert_integerish assert_function
 #' @importFrom cli cli_warn cli_abort
 #'
 #' @examples
@@ -67,15 +70,14 @@
 #' )
 #'
 #' # Estimate uncertainty parameters with defaults
-#' dispersion <- estimate_uncertainty_parameters(triangle)
+#' uncertainty_params <- estimate_uncertainty_parameters(triangle)
 #'
 #' # Estimate with custom parameters
-#' dispersion <- estimate_uncertainty_parameters(
+#' uncertainty_params <- estimate_uncertainty_parameters(
 #'   triangle,
 #'   n_delay = 5,
 #'   n_retro = 3,
-#'   max_delay = 3,
-#'   k = 2
+#'   max_delay = 3
 #' )
 estimate_uncertainty_parameters <- function(
     reporting_triangle,
@@ -83,9 +85,10 @@ estimate_uncertainty_parameters <- function(
     n_retro = 2,
     max_delay = ncol(reporting_triangle) - 1,
     delay_pmf = NULL,
-    fun_to_aggregate = sum,
-    k = 1,
-    structure = 1) {
+    ref_time_aggregator = identity,
+    delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
+    structure = 1,
+    uncertainty_model = fit_by_horizon) {
   # Validate input triangle
   .validate_triangle(reporting_triangle)
 
@@ -100,7 +103,6 @@ estimate_uncertainty_parameters <- function(
   # Validate integer parameters
   assert_integerish(n_retro, lower = 1, len = 1, any.missing = FALSE)
   assert_integerish(max_delay, lower = 0, len = 1, any.missing = FALSE)
-  assert_integerish(k, lower = 1, len = 1, any.missing = FALSE)
   if (length(structure) == 1) {
     assert_integerish(structure, lower = 1, len = 1, any.missing = FALSE)
   } else {
@@ -109,7 +111,7 @@ estimate_uncertainty_parameters <- function(
 
   # Validate delay_pmf if provided
   if (!is.null(delay_pmf)) {
-    assert_numeric(
+    checkmate::assert_numeric(
       delay_pmf,
       lower = 0,
       upper = 1,
@@ -126,9 +128,10 @@ estimate_uncertainty_parameters <- function(
     }
   }
 
-  # Validate fun_to_aggregate
-  assert_function(fun_to_aggregate)
-  .validate_aggregation_function(fun_to_aggregate)
+  # Validate aggregation functions
+  assert_function(ref_time_aggregator)
+  assert_function(delay_aggregator)
+  assert_function(uncertainty_model)
 
   # Step 1: Create retrospective snapshots by truncating the triangle
   trunc_rep_tri_list <- truncate_triangles(
@@ -137,8 +140,8 @@ estimate_uncertainty_parameters <- function(
   )
 
   # Step 2: Generate retrospective reporting triangles with structure
-  reporting_triangle_list <- generate_triangles(
-    trunc_rep_tri_list = trunc_rep_tri_list,
+  reporting_triangle_list <- construct_triangles(
+    truncated_reporting_triangles = trunc_rep_tri_list,
     structure = structure
   )
 
@@ -148,34 +151,35 @@ estimate_uncertainty_parameters <- function(
   }
 
   # Step 3: Generate point nowcasts
-  pt_nowcast_mat_list <- generate_pt_nowcast_mat_list(
-    reporting_triangle_list = reporting_triangle_list,
+  pt_nowcast_mat_list <- fill_triangles(
+    retro_reporting_triangles = reporting_triangle_list,
     max_delay = max_delay,
     n = n_delay,
     delay_pmf = delay_pmf
   )
 
-  # Handle NULL return or all NULL elements from generate_pt_nowcast_mat_list
+  # Handle NULL return or all NULL elements from fill_triangles
   if (is.null(pt_nowcast_mat_list) ||
     all(sapply(pt_nowcast_mat_list, is.null))) {
     cli_warn(
       message = c(
         "Insufficient data to generate point nowcasts",
-        "i" = "Returning NULL for dispersion parameter"
+        "i" = "Returning NULL for uncertainty parameter"
       )
     )
     return(NULL)
   }
 
-  # Step 4: Estimate dispersion parameters
-  dispersion <- estimate_dispersion(
-    pt_nowcast_mat_list = pt_nowcast_mat_list,
-    trunc_rep_tri_list = trunc_rep_tri_list,
-    reporting_triangle_list = reporting_triangle_list,
+  # Step 4: Estimate uncertainty parameters
+  uncertainty_params <- estimate_uncertainty(
+    point_nowcast_matrices = pt_nowcast_mat_list,
+    truncated_reporting_triangles = trunc_rep_tri_list,
+    retro_reporting_triangles = reporting_triangle_list,
     n = n_retro,
-    fun_to_aggregate = fun_to_aggregate,
-    k = k
+    uncertainty_model = uncertainty_model,
+    ref_time_aggregator = ref_time_aggregator,
+    delay_aggregator = delay_aggregator
   )
 
-  return(dispersion)
+  return(uncertainty_params)
 }

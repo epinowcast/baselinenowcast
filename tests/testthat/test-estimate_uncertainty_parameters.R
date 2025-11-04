@@ -1,4 +1,4 @@
-test_that("estimate_uncertainty_parameters works with default parameters", {
+test_that("estimate_uncertainty_parameters works with required parameters", {
   triangle <- matrix(
     c(
       65, 46, 21, 7,
@@ -13,7 +13,7 @@ test_that("estimate_uncertainty_parameters works with default parameters", {
     byrow = TRUE
   )
 
-  result <- estimate_uncertainty_parameters(triangle)
+  result <- estimate_uncertainty_parameters(triangle, n_retro = 2)
 
   expect_type(result, "double")
   expect_true(length(result) > 0)
@@ -58,7 +58,7 @@ test_that("estimate_uncertainty_parameters matches manual workflow", {
     n = n_retro
   )
 
-  wrapper_result <- estimate_uncertainty_parameters(triangle)
+  wrapper_result <- estimate_uncertainty_parameters(triangle, n_retro = n_retro)
 
   expect_identical(wrapper_result, manual_result)
 })
@@ -78,7 +78,7 @@ test_that("estimate_uncertainty_parameters works with custom n_delay", {
     byrow = TRUE
   )
 
-  result <- estimate_uncertainty_parameters(triangle, n_delay = 5)
+  result <- estimate_uncertainty_parameters(triangle, n_retro = 2, n_delay = 5)
 
   expect_type(result, "double")
   expect_true(length(result) > 0)
@@ -122,7 +122,7 @@ test_that("estimate_uncertainty_parameters works with custom max_delay", {
     byrow = TRUE
   )
 
-  result <- estimate_uncertainty_parameters(triangle, max_delay = 3)
+  result <- estimate_uncertainty_parameters(triangle, n_retro = 2, max_delay = 3)
 
   expect_type(result, "double")
   expect_true(length(result) > 0)
@@ -145,7 +145,7 @@ test_that("estimate_uncertainty_parameters works with custom delay_pmf", {
 
   custom_pmf <- c(0.4, 0.3, 0.2, 0.1)
 
-  result <- estimate_uncertainty_parameters(triangle, delay_pmf = custom_pmf)
+  result <- estimate_uncertainty_parameters(triangle, n_retro = 2, delay_pmf = custom_pmf)
 
   expect_type(result, "double")
   expect_true(length(result) > 0)
@@ -169,6 +169,7 @@ test_that("estimate_uncertainty_parameters works with custom aggregators", {
   if (requireNamespace("zoo", quietly = TRUE)) {
     result <- estimate_uncertainty_parameters(
       triangle,
+      n_retro = 2,
       ref_time_aggregator = function(x) {
         zoo::rollsum(x, k = 2, align = "right")
       }
@@ -198,7 +199,7 @@ test_that(
       byrow = TRUE
     )
 
-    result <- estimate_uncertainty_parameters(triangle, structure = 2)
+    result <- estimate_uncertainty_parameters(triangle, n_retro = 2, structure = 2)
 
     expect_type(result, "double")
     expect_true(length(result) > 0)
@@ -237,7 +238,7 @@ test_that("estimate_uncertainty_parameters validates integer parameters", {
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_delay = -1),
+    estimate_uncertainty_parameters(triangle, n_retro = 2, n_delay = -1),
     "n_delay"
   )
 
@@ -247,12 +248,12 @@ test_that("estimate_uncertainty_parameters validates integer parameters", {
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, max_delay = -1),
+    estimate_uncertainty_parameters(triangle, n_retro = 2, max_delay = -1),
     "max_delay"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, structure = 0),
+    estimate_uncertainty_parameters(triangle, n_retro = 2, structure = 0),
     "structure"
   )
 })
@@ -273,17 +274,17 @@ test_that("estimate_uncertainty_parameters validates delay_pmf", {
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, delay_pmf = c(0.3, 0.4, 0.2)),
+    estimate_uncertainty_parameters(triangle, n_retro = 2, delay_pmf = c(0.3, 0.4, 0.2)),
     "sum to 1"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, delay_pmf = c(0.5, -0.2, 0.7)),
+    estimate_uncertainty_parameters(triangle, n_retro = 2, delay_pmf = c(0.5, -0.2, 0.7)),
     "delay_pmf"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, delay_pmf = c(0.5, 1.5, -0.2)),
+    estimate_uncertainty_parameters(triangle, n_retro = 2, delay_pmf = c(0.5, 1.5, -0.2)),
     "delay_pmf"
   )
 })
@@ -304,17 +305,17 @@ test_that("estimate_uncertainty_parameters validates function arguments", {
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, ref_time_aggregator = "mean"),
+    estimate_uncertainty_parameters(triangle, n_retro = 2, ref_time_aggregator = "mean"),
     "ref_time_aggregator"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, delay_aggregator = "sum"),
+    estimate_uncertainty_parameters(triangle, n_retro = 2, delay_aggregator = "sum"),
     "delay_aggregator"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, uncertainty_model = "nb"),
+    estimate_uncertainty_parameters(triangle, n_retro = 2, uncertainty_model = "nb"),
     "uncertainty_model"
   )
 })
@@ -338,8 +339,8 @@ test_that(
 
     result <- estimate_uncertainty_parameters(
       reporting_triangle = triangle,
-      n_delay = 5,
       n_retro = 2,
+      n_delay = 5,
       max_delay = 3,
       delay_pmf = c(0.4, 0.3, 0.2, 0.1),
       ref_time_aggregator = identity,

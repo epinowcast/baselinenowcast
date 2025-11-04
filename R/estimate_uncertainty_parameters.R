@@ -23,7 +23,7 @@
 #'   Default is to use all available rows in the smallest retrospective
 #'   triangle.
 #' @param n_retro Integer. Number of retrospective snapshots to generate for
-#'   uncertainty estimation. Default is 2.
+#'   uncertainty estimation. Required parameter with no default.
 #' @param max_delay Integer. Maximum delay to consider in days. Default is
 #'   `ncol(reporting_triangle) - 1`.
 #' @param delay_pmf Numeric vector or NULL. Optional custom delay probability
@@ -69,8 +69,11 @@
 #'   byrow = TRUE
 #' )
 #'
-#' # Estimate uncertainty parameters with defaults
-#' uncertainty_params <- estimate_uncertainty_parameters(triangle)
+#' # Estimate uncertainty parameters
+#' uncertainty_params <- estimate_uncertainty_parameters(
+#'   triangle,
+#'   n_retro = 2
+#' )
 #'
 #' # Estimate with custom parameters
 #' uncertainty_params <- estimate_uncertainty_parameters(
@@ -82,7 +85,7 @@
 estimate_uncertainty_parameters <- function(
     reporting_triangle,
     n_delay = NULL,
-    n_retro = 2,
+    n_retro,
     max_delay = ncol(reporting_triangle) - 1,
     delay_pmf = NULL,
     ref_time_aggregator = identity,

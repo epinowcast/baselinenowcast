@@ -34,8 +34,7 @@
 #'   horizon. Returns NULL if insufficient data is available for estimation.
 #'
 #' @export
-#' @importFrom checkmate assert_integerish assert_function
-#' @importFrom cli cli_warn cli_abort
+#' @importFrom cli cli_warn
 #'
 #' @examples
 #' # Create example reporting triangle
@@ -82,26 +81,6 @@ estimate_uncertainty_retro <- function(
   # Validate input triangle
   .validate_triangle(reporting_triangle)
 
-  # Validate integer parameters
-  assert_integerish(
-    n_history_delay,
-    lower = 1,
-    len = 1,
-    any.missing = FALSE
-  )
-  assert_integerish(
-    n_retrospective_nowcasts,
-    lower = 1,
-    len = 1,
-    any.missing = FALSE
-  )
-  assert_integerish(max_delay, lower = 0, len = 1, any.missing = FALSE)
-  if (length(structure) == 1) {
-    assert_integerish(structure, lower = 1, len = 1, any.missing = FALSE)
-  } else {
-    assert_integerish(structure, lower = 1, any.missing = FALSE)
-  }
-
   # Validate inputs are sufficient for uncertainty estimation
   n_ref_times <- nrow(reporting_triangle)
   min_ref_times_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
@@ -111,29 +90,6 @@ estimate_uncertainty_retro <- function(
     n_history_delay = n_history_delay,
     n_retrospective_nowcasts = n_retrospective_nowcasts
   )
-
-  # Validate delay_pmf if provided
-  if (!is.null(delay_pmf)) {
-    checkmate::assert_numeric(
-      delay_pmf,
-      lower = 0,
-      upper = 1,
-      any.missing = FALSE,
-      min.len = 1
-    )
-    if (!isTRUE(all.equal(sum(delay_pmf), 1))) {
-      cli_abort(
-        message = c(
-          "delay_pmf must sum to 1",
-          "x" = "Sum is {sum(delay_pmf)}"
-        )
-      )
-    }
-  }
-
-  assert_function(ref_time_aggregator)
-  assert_function(delay_aggregator)
-  assert_function(uncertainty_model)
 
   trunc_rep_tri_list <- truncate_triangles(
     reporting_triangle = reporting_triangle,

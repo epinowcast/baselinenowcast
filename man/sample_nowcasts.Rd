@@ -66,8 +66,8 @@ nowcast_draws
 \seealso{
 Other generate_probabilistic_nowcasts: 
 \code{\link{combine_obs_with_pred}()},
-\code{\link{get_nowcast_draw}()},
-\code{\link{get_nowcast_pred_draw}()},
-\code{\link{get_nowcast_pred_draws}()}
+\code{\link{sample_nowcast}()},
+\code{\link{sample_prediction}()},
+\code{\link{sample_predictions}()}
 }
 \concept{generate_probabilistic_nowcasts}

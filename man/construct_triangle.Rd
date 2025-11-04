@@ -53,7 +53,7 @@ rep_custom
 }
 \seealso{
 Other generate_retrospective_data: 
-\code{\link{generate_triangles}()},
+\code{\link{construct_triangles}()},
 \code{\link{truncate_triangle}()},
 \code{\link{truncate_triangles}()}
 }

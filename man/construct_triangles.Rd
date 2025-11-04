@@ -54,7 +54,7 @@ retro_rts_custom
 }
 \seealso{
 Other generate_retrospective_data: 
-\code{\link{generate_triangle}()},
+\code{\link{construct_triangle}()},
 \code{\link{truncate_triangle}()},
 \code{\link{truncate_triangles}()}
 }

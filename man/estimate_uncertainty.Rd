@@ -99,3 +99,4 @@ if (requireNamespace("zoo", quietly = TRUE)) {
   disp_params_agg
 }
 }
+\concept{estimate_observation_error}

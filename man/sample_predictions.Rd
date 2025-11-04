@@ -79,8 +79,8 @@ if (requireNamespace("zoo", quietly = TRUE)) {
 \seealso{
 Other generate_probabilistic_nowcasts: 
 \code{\link{combine_obs_with_pred}()},
-\code{\link{get_nowcast_draw}()},
-\code{\link{get_nowcast_draws}()},
-\code{\link{get_nowcast_pred_draw}()}
+\code{\link{sample_nowcast}()},
+\code{\link{sample_nowcasts}()},
+\code{\link{sample_prediction}()}
 }
 \concept{generate_probabilistic_nowcasts}

@@ -57,7 +57,7 @@ print(point_nowcast_matrix)
 }
 \seealso{
 Other generate_point_nowcasts: 
-\code{\link{generate_pt_nowcast_mat}()},
-\code{\link{generate_pt_nowcast_mat_list}()}
+\code{\link{fill_triangle}()},
+\code{\link{fill_triangles}()}
 }
 \concept{generate_point_nowcasts}

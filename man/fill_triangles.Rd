@@ -64,6 +64,6 @@ retro_pt_nowcast_mat_list[1:3]
 \seealso{
 Other generate_point_nowcasts: 
 \code{\link{apply_delay}()},
-\code{\link{generate_pt_nowcast_mat}()}
+\code{\link{fill_triangle}()}
 }
 \concept{generate_point_nowcasts}

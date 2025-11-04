@@ -35,54 +35,54 @@ home:
   title: Baseline nowcast for right-truncated epidemiological data
 
 reference:
-- subtitle: High-level interface
+- title: High-level interface
   desc: Functions most users will interact with for typical nowcasting workflows.
-- title: Reporting triangle data structures
+- subtitle: Reporting triangle data structures
   desc: >
     Functions for creating, converting, and validating reporting triangle
     objects from matrices or data frames.
   contents:
   - has_concept("reporting_triangle")
-- title: Nowcast data frames
+- subtitle: Nowcast data frames
   desc: >
     The main nowcasting interface. Functions for creating and validating
     nowcast data frame objects containing point or probabilistic nowcast results.
   contents:
   - has_concept("baselinenowcast_df")
-- title: Workflow wrappers
+- subtitle: Workflow wrappers
   desc: >
     High-level wrapper functions that combine multiple steps for end-to-end
     nowcasting workflows.
   contents:
   - has_concept("workflow_wrappers")
-- subtitle: Lower-level components
+- title: Lower-level components
   desc: Modular functions for building custom nowcasting workflows and advanced use cases.
-- title: Estimate delay distributions
+- subtitle: Estimate delay distributions
   desc: >
     Functions for estimating empirical delay distributions from reporting
     triangles.
   contents:
   - has_concept("estimate_delay")
-- title: Generate retrospective data
+- subtitle: Generate retrospective data
   desc: >
     Functions for creating retrospective reporting triangles by truncating
     and generating incomplete data structures for validation and uncertainty
     estimation.
   contents:
   - has_concept("generate_retrospective_data")
-- title: Generate point nowcasts
+- subtitle: Generate point nowcasts
   desc: >
     Functions for applying delay distributions to incomplete reporting
     data to generate point nowcast estimates.
   contents:
   - has_concept("generate_point_nowcasts")
-- title: Estimate observation error
+- subtitle: Estimate observation error
   desc: >
     Functions for estimating observation error parameters from retrospective
     nowcast performance to quantify uncertainty.
   contents:
   - has_concept("estimate_observation_error")
-- title: Generate probabilistic nowcasts
+- subtitle: Generate probabilistic nowcasts
   desc: >
     Functions for generating probabilistic nowcasts by combining point
     estimates with uncertainty quantification from observation error

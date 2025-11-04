@@ -72,7 +72,7 @@ rep_tri <- as_reporting_triangle(
 rep_tri
 }
 \seealso{
-Other reporting_triangle:
+Other reporting_triangle: 
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{reporting_triangle-class}}

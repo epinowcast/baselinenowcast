@@ -1,22 +1,3 @@
-#' Safe iterator
-#'
-#' @param fun Function to wrap around
-#'
-#' @returns Function that will return a NULL if an error occurs
-.safelydoesit <- function(fun) {
-  stopifnot(is.function(fun))
-  return(
-    function(...) {
-      return(tryCatch(
-        list(result = fun(...), error = NULL),
-        error = function(e) {
-          return(list(result = NULL, error = e))
-        }
-      ))
-    }
-  )
-}
-
 #' Generate retrospective nowcasts
 #'
 #' This function ingests a list of incomplete reporting triangles and
@@ -142,6 +123,25 @@ fill_triangles <- function(retro_reporting_triangles,
 
 
   return(point_nowcast_matrices)
+}
+
+#' Safe iterator
+#'
+#' @param fun Function to wrap around
+#'
+#' @returns Function that will return a NULL if an error occurs
+.safelydoesit <- function(fun) {
+  stopifnot(is.function(fun))
+  return(
+    function(...) {
+      return(tryCatch(
+        list(result = fun(...), error = NULL),
+        error = function(e) {
+          return(list(result = NULL, error = e))
+        }
+      ))
+    }
+  )
 }
 
 #' Generate point nowcast

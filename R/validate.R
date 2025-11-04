@@ -309,35 +309,6 @@
   return(NULL)
 }
 
-#' Validate aggregation function
-#' Checks that the aggregation function is one of the allowed functions.
-#' @param fun_to_aggregate Function to validate
-#' @returns NULL, invisibly
-#' @keywords internal
-.validate_aggregation_function <- function(fun_to_aggregate) {
-  # Define allowed functions
-  allowed_functions <- list(
-    sum = sum
-  )
-
-  # Validate function
-  fun_name <- deparse(substitute(fun_to_aggregate))
-  if (is.name(fun_to_aggregate)) {
-    fun_name <- as.character(fun_to_aggregate)
-  }
-
-  # Check if function is in allowed list
-  if (!identical(fun_to_aggregate, allowed_functions[[fun_name]]) &&
-    !any(sapply(allowed_functions, identical, fun_to_aggregate))) {
-    allowed_names <- toString(names(allowed_functions))
-    stop(sprintf("'fun_to_aggregate' should be one of: %s", allowed_names),
-      call. = FALSE
-    )
-  }
-
-  return(NULL)
-}
-
 #' Helper function to validate allocation parameters
 #'
 #'

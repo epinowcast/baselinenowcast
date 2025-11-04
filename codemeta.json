@@ -14,7 +14,7 @@
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.5.1 (2025-06-13)",
+  "runtimePlatform": "R version 4.5.2 (2025-10-31)",
   "author": [
     {
       "@type": "Person",
@@ -50,6 +50,15 @@
       "familyName": "Abbott",
       "email": "contact@samabbott.co.uk",
       "@id": "https://orcid.org/0000-0001-8057-8037"
+    }
+  ],
+  "contributor": [
+    {
+      "@type": "Person",
+      "givenName": "Tim",
+      "familyName": "Taylor",
+      "email": "tim.taylor@hiddenelephants.co.uk",
+      "@id": "https://orcid.org/0000-0002-8587-7113"
     }
   ],
   "copyrightHolder": [
@@ -313,7 +322,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "2586.693KB",
+  "fileSize": "2590.158KB",
   "citation": [
     {
       "@type": "ScholarlyArticle",

@@ -53,7 +53,7 @@ retro_rts_custom <- construct_triangles(
 retro_rts_custom
 }
 \seealso{
-Other generate_retrospective_data: 
+Retrospective data generation functions
 \code{\link{construct_triangle}()},
 \code{\link{truncate_triangle}()},
 \code{\link{truncate_triangles}()}

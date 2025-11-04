@@ -74,7 +74,7 @@ nowcast_draw <- sample_nowcast(
 nowcast_draw
 }
 \seealso{
-Other generate_probabilistic_nowcasts: 
+Probabilistic nowcast generation functions
 \code{\link{combine_obs_with_pred}()},
 \code{\link{sample_nowcasts}()},
 \code{\link{sample_prediction}()},

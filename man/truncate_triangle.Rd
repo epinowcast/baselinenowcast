@@ -44,7 +44,7 @@ trunc_rep_tri <- truncate_triangle(t = 1, reporting_triangle = triangle)
 trunc_rep_tri
 }
 \seealso{
-Other generate_retrospective_data: 
+Retrospective data generation functions
 \code{\link{construct_triangle}()},
 \code{\link{construct_triangles}()},
 \code{\link{truncate_triangles}()}

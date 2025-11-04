@@ -54,7 +54,7 @@ truncated_rts <- truncate_triangles(triangle, n = 2)
 truncated_rts[1:2]
 }
 \seealso{
-Other generate_retrospective_data: 
+Retrospective data generation functions
 \code{\link{construct_triangle}()},
 \code{\link{construct_triangles}()},
 \code{\link{truncate_triangle}()}

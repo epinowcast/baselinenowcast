@@ -56,7 +56,7 @@ point_nowcast_matrix <- apply_delay(
 print(point_nowcast_matrix)
 }
 \seealso{
-Other generate_point_nowcasts: 
+Point nowcast generation functions
 \code{\link{fill_triangle}()},
 \code{\link{fill_triangles}()}
 }

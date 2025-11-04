@@ -85,7 +85,7 @@ if (requireNamespace("zoo", quietly = TRUE)) {
 }
 }
 \seealso{
-Other generate_probabilistic_nowcasts: 
+Probabilistic nowcast generation functions
 \code{\link{combine_obs_with_pred}()},
 \code{\link{sample_nowcast}()},
 \code{\link{sample_nowcasts}()},

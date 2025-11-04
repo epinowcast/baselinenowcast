@@ -43,8 +43,8 @@ reference:
   - has_concept("reporting_triangle")
 - title: Nowcast data frames
   desc: >
-    Functions for creating and validating nowcast data frame objects containing
-    point or probabilistic nowcast results.
+    The main nowcasting interface. Functions for creating and validating
+    nowcast data frame objects containing point or probabilistic nowcast results.
   contents:
   - has_concept("baselinenowcast_df")
 - title: Workflow wrappers

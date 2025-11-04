@@ -17,12 +17,10 @@
 #' @inheritParams estimate_delay
 #' @inheritParams construct_triangles
 #' @inheritParams estimate_uncertainty
-#' @param n_delay Integer. Number of past observations (rows) to use for
-#'   estimating the delay distribution in each retrospective snapshot.
-#'   Default is to use all available rows in the smallest retrospective
-#'   triangle.
-#' @param n_retro Integer. Number of retrospective snapshots to generate for
-#'   uncertainty estimation. Required parameter with no default.
+#' @inheritParams estimate_and_apply_uncertainty
+#' @param delay_pmf Numeric vector representing a discrete probability mass
+#'   function for the delay distribution. If NULL (default), the delay
+#'   distribution is estimated from the data.
 #'
 #' @returns A numeric vector of uncertainty parameters with length equal to
 #'   one less than the number of columns in the reporting triangle, with each
@@ -52,20 +50,20 @@
 #' # Estimate uncertainty parameters
 #' uncertainty_params <- estimate_uncertainty_parameters(
 #'   triangle,
-#'   n_retro = 2
+#'   n_retrospective_nowcasts = 2
 #' )
 #'
 #' # Estimate with custom parameters
 #' uncertainty_params <- estimate_uncertainty_parameters(
 #'   triangle,
-#'   n_delay = 5,
-#'   n_retro = 3,
+#'   n_history_delay = 4,
+#'   n_retrospective_nowcasts = 2,
 #'   max_delay = 3
 #' )
 estimate_uncertainty_parameters <- function(
     reporting_triangle,
-    n_delay = NULL,
-    n_retro,
+    n_history_delay = NULL,
+    n_retrospective_nowcasts,
     max_delay = ncol(reporting_triangle) - 1,
     delay_pmf = NULL,
     ref_time_aggregator = identity,
@@ -75,22 +73,46 @@ estimate_uncertainty_parameters <- function(
   # Validate input triangle
   .validate_triangle(reporting_triangle)
 
-  # Set default n_delay if not provided (will be calculated after truncation)
-  if (is.null(n_delay)) {
-    use_default_n_delay <- TRUE
+  n_ref_times <- nrow(reporting_triangle)
+  min_ref_times_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
+
+  # Set default n_history_delay if not provided
+  if (is.null(n_history_delay)) {
+    use_default_n_history_delay <- TRUE
+    # Will be calculated after truncation
+    n_history_delay_for_validation <- min_ref_times_delay
   } else {
-    use_default_n_delay <- FALSE
-    assert_integerish(n_delay, lower = 1, len = 1, any.missing = FALSE)
+    use_default_n_history_delay <- FALSE
+    n_history_delay_for_validation <- n_history_delay
+    assert_integerish(
+      n_history_delay,
+      lower = 1,
+      len = 1,
+      any.missing = FALSE
+    )
   }
 
   # Validate integer parameters
-  assert_integerish(n_retro, lower = 1, len = 1, any.missing = FALSE)
+  assert_integerish(
+    n_retrospective_nowcasts,
+    lower = 1,
+    len = 1,
+    any.missing = FALSE
+  )
   assert_integerish(max_delay, lower = 0, len = 1, any.missing = FALSE)
   if (length(structure) == 1) {
     assert_integerish(structure, lower = 1, len = 1, any.missing = FALSE)
   } else {
     assert_integerish(structure, lower = 1, any.missing = FALSE)
   }
+
+  # Validate inputs are sufficient for uncertainty estimation
+  .validate_inputs_uncertainty(
+    n_min_delay = min_ref_times_delay,
+    n_ref_times = n_ref_times,
+    n_history_delay = n_history_delay_for_validation,
+    n_retrospective_nowcasts = n_retrospective_nowcasts
+  )
 
   # Validate delay_pmf if provided
   if (!is.null(delay_pmf)) {
@@ -117,7 +139,7 @@ estimate_uncertainty_parameters <- function(
 
   trunc_rep_tri_list <- truncate_triangles(
     reporting_triangle = reporting_triangle,
-    n = n_retro
+    n = n_retrospective_nowcasts
   )
 
   reporting_triangle_list <- construct_triangles(
@@ -125,14 +147,14 @@ estimate_uncertainty_parameters <- function(
     structure = structure
   )
 
-  if (use_default_n_delay) {
-    n_delay <- min(sapply(reporting_triangle_list, nrow))
+  if (use_default_n_history_delay) {
+    n_history_delay <- min(sapply(reporting_triangle_list, nrow))
   }
 
   pt_nowcast_mat_list <- fill_triangles(
     retro_reporting_triangles = reporting_triangle_list,
     max_delay = max_delay,
-    n = n_delay,
+    n = n_history_delay,
     delay_pmf = delay_pmf
   )
 
@@ -151,7 +173,7 @@ estimate_uncertainty_parameters <- function(
     point_nowcast_matrices = pt_nowcast_mat_list,
     truncated_reporting_triangles = trunc_rep_tri_list,
     retro_reporting_triangles = reporting_triangle_list,
-    n = n_retro,
+    n = n_retrospective_nowcasts,
     uncertainty_model = uncertainty_model,
     ref_time_aggregator = ref_time_aggregator,
     delay_aggregator = delay_aggregator

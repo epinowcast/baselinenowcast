@@ -70,8 +70,8 @@ estimate_and_apply_uncertainty <- function(
 
   uncertainty_params <- estimate_uncertainty_parameters(
     reporting_triangle = reporting_triangle,
-    n_delay = n_history_delay,
-    n_retro = n_retrospective_nowcasts,
+    n_history_delay = n_history_delay,
+    n_retrospective_nowcasts = n_retrospective_nowcasts,
     max_delay = max_delay,
     uncertainty_model = uncertainty_model,
     ...

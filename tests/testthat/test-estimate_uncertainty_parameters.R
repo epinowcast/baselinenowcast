@@ -13,7 +13,7 @@ test_that("estimate_uncertainty_parameters works with required parameters", {
     byrow = TRUE
   )
 
-  result <- estimate_uncertainty_parameters(triangle, n_retro = 2)
+  result <- estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2)
 
   expect_type(result, "double")
   expect_true(length(result) > 0)
@@ -36,29 +36,35 @@ test_that("estimate_uncertainty_parameters matches manual workflow", {
   )
 
   # Manual workflow
-  n_retro <- 2
+  n_retrospective_nowcasts <- 2
   max_delay <- ncol(triangle) - 1
   structure <- 1
 
-  trunc_rep_tri_list <- truncate_triangles(triangle, n = n_retro)
+  trunc_rep_tri_list <- truncate_triangles(
+    triangle,
+    n = n_retrospective_nowcasts
+  )
   reporting_triangle_list <- construct_triangles(
     trunc_rep_tri_list,
     structure = structure
   )
-  n_delay <- min(sapply(reporting_triangle_list, nrow))
+  n_history_delay <- min(sapply(reporting_triangle_list, nrow))
   pt_nowcast_mat_list <- fill_triangles(
     reporting_triangle_list,
     max_delay = max_delay,
-    n = n_delay
+    n = n_history_delay
   )
   manual_result <- estimate_uncertainty(
     point_nowcast_matrices = pt_nowcast_mat_list,
     truncated_reporting_triangles = trunc_rep_tri_list,
     retro_reporting_triangles = reporting_triangle_list,
-    n = n_retro
+    n = n_retrospective_nowcasts
   )
 
-  wrapper_result <- estimate_uncertainty_parameters(triangle, n_retro = n_retro)
+  wrapper_result <- estimate_uncertainty_parameters(
+    triangle,
+    n_retrospective_nowcasts = n_retrospective_nowcasts
+  )
 
   expect_identical(wrapper_result, manual_result)
 })
@@ -78,7 +84,7 @@ test_that("estimate_uncertainty_parameters works with custom n_delay", {
     byrow = TRUE
   )
 
-  result <- estimate_uncertainty_parameters(triangle, n_retro = 2, n_delay = 5)
+  result <- estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, n_history_delay =5)
 
   expect_type(result, "double")
   expect_true(length(result) > 0)
@@ -100,7 +106,7 @@ test_that("estimate_uncertainty_parameters works with custom n_retro", {
   )
 
   suppressWarnings({
-    result <- estimate_uncertainty_parameters(triangle, n_retro = 3)
+    result <- estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =3)
   })
 
   expect_type(result, "double")
@@ -122,7 +128,7 @@ test_that("estimate_uncertainty_parameters works with custom max_delay", {
     byrow = TRUE
   )
 
-  result <- estimate_uncertainty_parameters(triangle, n_retro = 2, max_delay = 3)
+  result <- estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, max_delay = 3)
 
   expect_type(result, "double")
   expect_true(length(result) > 0)
@@ -145,7 +151,7 @@ test_that("estimate_uncertainty_parameters works with custom delay_pmf", {
 
   custom_pmf <- c(0.4, 0.3, 0.2, 0.1)
 
-  result <- estimate_uncertainty_parameters(triangle, n_retro = 2, delay_pmf = custom_pmf)
+  result <- estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, delay_pmf = custom_pmf)
 
   expect_type(result, "double")
   expect_true(length(result) > 0)
@@ -169,7 +175,7 @@ test_that("estimate_uncertainty_parameters works with custom aggregators", {
   if (requireNamespace("zoo", quietly = TRUE)) {
     result <- estimate_uncertainty_parameters(
       triangle,
-      n_retro = 2,
+      n_retrospective_nowcasts =2,
       ref_time_aggregator = function(x) {
         zoo::rollsum(x, k = 2, align = "right")
       }
@@ -197,7 +203,7 @@ test_that("estimate_uncertainty_parameters accepts custom structure", {
     byrow = TRUE
   )
 
-  result <- estimate_uncertainty_parameters(triangle, n_retro = 2, structure = 2)
+  result <- estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, structure = 2)
 
   expect_type(result, "double")
   expect_true(length(result) > 0)
@@ -235,22 +241,22 @@ test_that("estimate_uncertainty_parameters validates integer parameters", {
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retro = 2, n_delay = -1),
-    "n_delay"
+    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, n_history_delay =-1),
+    "n_history_delay"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retro = 0),
-    "n_retro"
+    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =0),
+    "n_retrospective_nowcasts"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retro = 2, max_delay = -1),
+    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, max_delay = -1),
     "max_delay"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retro = 2, structure = 0),
+    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, structure = 0),
     "structure"
   )
 })
@@ -271,17 +277,17 @@ test_that("estimate_uncertainty_parameters validates delay_pmf", {
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retro = 2, delay_pmf = c(0.3, 0.4, 0.2)),
+    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, delay_pmf = c(0.3, 0.4, 0.2)),
     "sum to 1"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retro = 2, delay_pmf = c(0.5, -0.2, 0.7)),
+    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, delay_pmf = c(0.5, -0.2, 0.7)),
     "delay_pmf"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retro = 2, delay_pmf = c(0.5, 1.5, -0.2)),
+    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, delay_pmf = c(0.5, 1.5, -0.2)),
     "delay_pmf"
   )
 })
@@ -302,17 +308,17 @@ test_that("estimate_uncertainty_parameters validates function arguments", {
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retro = 2, ref_time_aggregator = "mean"),
+    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, ref_time_aggregator = "mean"),
     "ref_time_aggregator"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retro = 2, delay_aggregator = "sum"),
+    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, delay_aggregator = "sum"),
     "delay_aggregator"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retro = 2, uncertainty_model = "nb"),
+    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, uncertainty_model = "nb"),
     "uncertainty_model"
   )
 })
@@ -336,8 +342,8 @@ test_that(
 
     result <- estimate_uncertainty_parameters(
       reporting_triangle = triangle,
-      n_retro = 2,
-      n_delay = 5,
+      n_retrospective_nowcasts =2,
+      n_history_delay =5,
       max_delay = 3,
       delay_pmf = c(0.4, 0.3, 0.2, 0.1),
       ref_time_aggregator = identity,
@@ -351,7 +357,7 @@ test_that(
   }
 )
 
-test_that("estimate_uncertainty_parameters errors when all nowcasts fail", {
+test_that("estimate_uncertainty_parameters validates insufficient data", {
   triangle <- matrix(
     c(
       10, 5, 2, 1,
@@ -364,8 +370,12 @@ test_that("estimate_uncertainty_parameters errors when all nowcasts fail", {
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retro = 1, n_delay = 2),
-    "Errors occurred in all"
+    estimate_uncertainty_parameters(
+      triangle,
+      n_retrospective_nowcasts = 1,
+      n_history_delay = 2
+    ),
+    "Insufficient `n_history_delay`"
   )
 })
 
@@ -385,7 +395,7 @@ test_that("estimate_uncertainty_parameters handles partial failures", {
   )
 
   suppressWarnings({
-    result <- estimate_uncertainty_parameters(triangle, n_retro = 3)
+    result <- estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =3)
   })
 
   expect_type(result, "double")

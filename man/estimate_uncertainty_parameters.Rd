@@ -6,8 +6,8 @@
 \usage{
 estimate_uncertainty_parameters(
   reporting_triangle,
-  n_delay = NULL,
-  n_retro,
+  n_history_delay = NULL,
+  n_retrospective_nowcasts,
   max_delay = ncol(reporting_triangle) - 1,
   delay_pmf = NULL,
   ref_time_aggregator = identity,
@@ -23,17 +23,20 @@ delays. Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row. (e.g. weekly reporting of daily data).}
 
-\item{n_delay}{Integer. Number of past observations (rows) to use for
-estimating the delay distribution in each retrospective snapshot.
-Default is to use all available rows in the smallest retrospective
-triangle.}
+\item{n_history_delay}{Integer indicating the number of reference times
+(observations) to be used in the estimate of the reporting delay, always
+starting from the most recent reporting delay.}
 
-\item{n_retro}{Integer. Number of retrospective snapshots to generate for
-uncertainty estimation. Required parameter with no default.}
+\item{n_retrospective_nowcasts}{Integer indicating the number of
+retrospective nowcast times to use for uncertainty estimation.}
 
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
 \code{ncol(reporting_triangle) -1}.}
+
+\item{delay_pmf}{Numeric vector representing a discrete probability mass
+function for the delay distribution. If NULL (default), the delay
+distribution is estimated from the data.}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
@@ -97,14 +100,14 @@ triangle <- matrix(
 # Estimate uncertainty parameters
 uncertainty_params <- estimate_uncertainty_parameters(
   triangle,
-  n_retro = 2
+  n_retrospective_nowcasts = 2
 )
 
 # Estimate with custom parameters
 uncertainty_params <- estimate_uncertainty_parameters(
   triangle,
-  n_delay = 5,
-  n_retro = 3,
+  n_history_delay = 4,
+  n_retrospective_nowcasts = 2,
   max_delay = 3
 )
 }

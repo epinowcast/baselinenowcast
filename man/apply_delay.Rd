@@ -55,3 +55,9 @@ point_nowcast_matrix <- apply_delay(
 )
 print(point_nowcast_matrix)
 }
+\seealso{
+Other generate_point_nowcasts: 
+\code{\link{generate_pt_nowcast_mat}()},
+\code{\link{generate_pt_nowcast_mat_list}()}
+}
+\concept{generate_point_nowcasts}

@@ -53,3 +53,10 @@ triangle <- matrix(
 truncated_rts <- truncate_triangles(triangle, n = 2)
 truncated_rts[1:2]
 }
+\seealso{
+Other generate_retrospective_data: 
+\code{\link{generate_triangle}()},
+\code{\link{generate_triangles}()},
+\code{\link{truncate_triangle}()}
+}
+\concept{generate_retrospective_data}

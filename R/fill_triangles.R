@@ -20,6 +20,7 @@
 #' @returns `point_nowcast_matrices` List of the same number of elements as the
 #'    input `retro_reporting_triangles`but with each reporting triangle filled
 #'    in based on the delay estimated in that reporting triangle.
+#' @family generate_point_nowcasts
 #' @export
 #' @importFrom cli cli_abort cli_alert_danger cli_alert_info
 #' @examples
@@ -161,6 +162,7 @@ fill_triangles <- function(retro_reporting_triangles,
 #' @returns `point_nowcast_matrix` Matrix of the same number of rows and
 #'   columns as the `reporting_triangle` but with the missing values filled
 #'   in as point estimates.
+#' @family generate_point_nowcasts
 #' @export
 #'
 #' @examples

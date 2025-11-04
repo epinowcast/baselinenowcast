@@ -61,3 +61,12 @@ if (requireNamespace("zoo", quietly = TRUE)) {
   )
 }
 }
+\seealso{
+Other generate_probabilistic_nowcasts:
+\code{\link{sample_nb}()},
+\code{\link{sample_nowcast}()},
+\code{\link{sample_nowcasts}()},
+\code{\link{sample_prediction}()},
+\code{\link{sample_predictions}()}
+}
+\concept{generate_probabilistic_nowcasts}

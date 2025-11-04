@@ -43,3 +43,10 @@ triangle <- matrix(
 trunc_rep_tri <- truncate_triangle(t = 1, reporting_triangle = triangle)
 trunc_rep_tri
 }
+\seealso{
+Other generate_retrospective_data: 
+\code{\link{generate_triangle}()},
+\code{\link{generate_triangles}()},
+\code{\link{truncate_triangles}()}
+}
+\concept{generate_retrospective_data}

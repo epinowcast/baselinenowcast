@@ -33,3 +33,37 @@ code:
 
 home:
   title: Baseline nowcast for right-truncated epidemiological data
+
+reference:
+- title: Estimate delay distributions
+  desc: >
+    Functions for estimating empirical delay distributions from reporting
+    triangles using iterative algorithms.
+  contents:
+  - has_concept("estimate_delay")
+- title: Generate retrospective data
+  desc: >
+    Functions for creating retrospective reporting triangles by truncating
+    and generating incomplete data structures for validation and uncertainty
+    estimation.
+  contents:
+  - has_concept("generate_retrospective_data")
+- title: Generate point nowcasts
+  desc: >
+    Functions for applying delay distributions to incomplete reporting
+    data to generate point nowcast estimates.
+  contents:
+  - has_concept("generate_point_nowcasts")
+- title: Estimate observation error
+  desc: >
+    Functions for estimating dispersion parameters from retrospective
+    nowcast performance to quantify observation uncertainty.
+  contents:
+  - has_concept("estimate_observation_error")
+- title: Generate probabilistic nowcasts
+  desc: >
+    Functions for generating probabilistic nowcasts by combining point
+    estimates with uncertainty quantification from observation error
+    models.
+  contents:
+  - has_concept("generate_probabilistic_nowcasts")

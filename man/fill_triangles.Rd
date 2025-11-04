@@ -61,3 +61,9 @@ retro_rts <- construct_triangles(trunc_rts)
 retro_pt_nowcast_mat_list <- fill_triangles(retro_rts)
 retro_pt_nowcast_mat_list[1:3]
 }
+\seealso{
+Other generate_point_nowcasts: 
+\code{\link{apply_delay}()},
+\code{\link{generate_pt_nowcast_mat}()}
+}
+\concept{generate_point_nowcasts}

@@ -76,3 +76,11 @@ if (requireNamespace("zoo", quietly = TRUE)) {
   nowcast_pred_draws_rolling_df
 }
 }
+\seealso{
+Other generate_probabilistic_nowcasts: 
+\code{\link{combine_obs_with_pred}()},
+\code{\link{get_nowcast_draw}()},
+\code{\link{get_nowcast_draws}()},
+\code{\link{get_nowcast_pred_draw}()}
+}
+\concept{generate_probabilistic_nowcasts}

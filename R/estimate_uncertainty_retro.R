@@ -1,18 +1,24 @@
-#' Estimate uncertainty parameters for nowcasting
+#' Estimate uncertainty parameters using retrospective validation
 #'
 #' @description
-#' Estimates uncertainty parameters for uncertainty quantification in nowcasts
-#'   by generating retrospective snapshots, creating reporting triangles,
-#'   producing point nowcasts, and estimating uncertainty from the nowcast
-#'   performance.
+#' Estimates uncertainty parameters for nowcasting by performing retrospective
+#'   validation: creating historical snapshots of the reporting triangle,
+#'   generating point nowcasts for those snapshots, and calibrating uncertainty
+#'   parameters based on retrospective nowcast performance.
 #'
-#' This function wraps the workflow of:
+#' This function chains the retrospective validation workflow:
 #' \enumerate{
 #'   \item [truncate_triangles()] - Create retrospective snapshots
 #'   \item [construct_triangles()] - Generate retrospective reporting triangles
 #'   \item [fill_triangles()] - Generate point nowcasts
 #'   \item [estimate_uncertainty()] - Estimate uncertainty parameters
 #' }
+#'
+#' For full probabilistic nowcasts (uncertainty estimation + sampling), use
+#'   [estimate_and_apply_uncertainty()].
+#'
+#' For more control over individual steps (e.g., custom matrix preparation,
+#'   alternative aggregation), use the low-level functions directly.
 #'
 #' @inheritParams estimate_delay
 #' @inheritParams construct_triangles
@@ -48,21 +54,24 @@
 #' )
 #'
 #' # Estimate uncertainty parameters
-#' uncertainty_params <- estimate_uncertainty_parameters(
+#' uncertainty_params <- estimate_uncertainty_retro(
 #'   triangle,
+#'   n_history_delay = 5,
 #'   n_retrospective_nowcasts = 2
 #' )
+#' uncertainty_params
 #'
 #' # Estimate with custom parameters
-#' uncertainty_params <- estimate_uncertainty_parameters(
+#' uncertainty_params_custom <- estimate_uncertainty_retro(
 #'   triangle,
 #'   n_history_delay = 4,
 #'   n_retrospective_nowcasts = 2,
 #'   max_delay = 3
 #' )
-estimate_uncertainty_parameters <- function(
+#' uncertainty_params_custom
+estimate_uncertainty_retro <- function(
     reporting_triangle,
-    n_history_delay = NULL,
+    n_history_delay,
     n_retrospective_nowcasts,
     max_delay = ncol(reporting_triangle) - 1,
     delay_pmf = NULL,
@@ -73,26 +82,13 @@ estimate_uncertainty_parameters <- function(
   # Validate input triangle
   .validate_triangle(reporting_triangle)
 
-  n_ref_times <- nrow(reporting_triangle)
-  min_ref_times_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
-
-  # Set default n_history_delay if not provided
-  if (is.null(n_history_delay)) {
-    use_default_n_history_delay <- TRUE
-    # Will be calculated after truncation
-    n_history_delay_for_validation <- min_ref_times_delay
-  } else {
-    use_default_n_history_delay <- FALSE
-    n_history_delay_for_validation <- n_history_delay
-    assert_integerish(
-      n_history_delay,
-      lower = 1,
-      len = 1,
-      any.missing = FALSE
-    )
-  }
-
   # Validate integer parameters
+  assert_integerish(
+    n_history_delay,
+    lower = 1,
+    len = 1,
+    any.missing = FALSE
+  )
   assert_integerish(
     n_retrospective_nowcasts,
     lower = 1,
@@ -107,10 +103,12 @@ estimate_uncertainty_parameters <- function(
   }
 
   # Validate inputs are sufficient for uncertainty estimation
+  n_ref_times <- nrow(reporting_triangle)
+  min_ref_times_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
   .validate_inputs_uncertainty(
     n_min_delay = min_ref_times_delay,
     n_ref_times = n_ref_times,
-    n_history_delay = n_history_delay_for_validation,
+    n_history_delay = n_history_delay,
     n_retrospective_nowcasts = n_retrospective_nowcasts
   )
 
@@ -146,10 +144,6 @@ estimate_uncertainty_parameters <- function(
     truncated_reporting_triangles = trunc_rep_tri_list,
     structure = structure
   )
-
-  if (use_default_n_history_delay) {
-    n_history_delay <- min(sapply(reporting_triangle_list, nrow))
-  }
 
   pt_nowcast_mat_list <- fill_triangles(
     retro_reporting_triangles = reporting_triangle_list,

@@ -1,4 +1,4 @@
-test_that("estimate_uncertainty_parameters works with required parameters", {
+test_that("estimate_uncertainty_retro works with required parameters", {
   triangle <- matrix(
     c(
       65, 46, 21, 7,
@@ -13,14 +13,18 @@ test_that("estimate_uncertainty_parameters works with required parameters", {
     byrow = TRUE
   )
 
-  result <- estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2)
+  result <- estimate_uncertainty_retro(
+    triangle,
+    n_history_delay = 5,
+    n_retrospective_nowcasts = 2
+  )
 
   expect_type(result, "double")
   expect_true(length(result) > 0)
   expect_true(all(result > 0))
 })
 
-test_that("estimate_uncertainty_parameters matches manual workflow", {
+test_that("estimate_uncertainty_retro matches manual workflow", {
   triangle <- matrix(
     c(
       65, 46, 21, 7,
@@ -61,15 +65,16 @@ test_that("estimate_uncertainty_parameters matches manual workflow", {
     n = n_retrospective_nowcasts
   )
 
-  wrapper_result <- estimate_uncertainty_parameters(
+  wrapper_result <- estimate_uncertainty_retro(
     triangle,
+    n_history_delay = n_history_delay,
     n_retrospective_nowcasts = n_retrospective_nowcasts
   )
 
   expect_identical(wrapper_result, manual_result)
 })
 
-test_that("estimate_uncertainty_parameters works with custom n_delay", {
+test_that("estimate_uncertainty_retro works with custom n_delay", {
   triangle <- matrix(
     c(
       65, 46, 21, 7,
@@ -84,13 +89,13 @@ test_that("estimate_uncertainty_parameters works with custom n_delay", {
     byrow = TRUE
   )
 
-  result <- estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, n_history_delay =5)
+  result <- estimate_uncertainty_retro(triangle, n_retrospective_nowcasts =2, n_history_delay =5)
 
   expect_type(result, "double")
   expect_true(length(result) > 0)
 })
 
-test_that("estimate_uncertainty_parameters works with custom n_retro", {
+test_that("estimate_uncertainty_retro works with custom n_retro", {
   triangle <- matrix(
     c(
       65, 46, 21, 7,
@@ -106,14 +111,18 @@ test_that("estimate_uncertainty_parameters works with custom n_retro", {
   )
 
   suppressWarnings({
-    result <- estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =3)
+    result <- estimate_uncertainty_retro(
+      triangle,
+      n_history_delay = 4,
+      n_retrospective_nowcasts = 3
+    )
   })
 
   expect_type(result, "double")
   expect_true(length(result) > 0)
 })
 
-test_that("estimate_uncertainty_parameters works with custom max_delay", {
+test_that("estimate_uncertainty_retro works with custom max_delay", {
   triangle <- matrix(
     c(
       65, 46, 21, 7,
@@ -128,13 +137,18 @@ test_that("estimate_uncertainty_parameters works with custom max_delay", {
     byrow = TRUE
   )
 
-  result <- estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, max_delay = 3)
+  result <- estimate_uncertainty_retro(
+    triangle,
+    n_history_delay = 5,
+    n_retrospective_nowcasts = 2,
+    max_delay = 3
+  )
 
   expect_type(result, "double")
   expect_true(length(result) > 0)
 })
 
-test_that("estimate_uncertainty_parameters works with custom delay_pmf", {
+test_that("estimate_uncertainty_retro works with custom delay_pmf", {
   triangle <- matrix(
     c(
       65, 46, 21, 7,
@@ -151,13 +165,18 @@ test_that("estimate_uncertainty_parameters works with custom delay_pmf", {
 
   custom_pmf <- c(0.4, 0.3, 0.2, 0.1)
 
-  result <- estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, delay_pmf = custom_pmf)
+  result <- estimate_uncertainty_retro(
+    triangle,
+    n_history_delay = 5,
+    n_retrospective_nowcasts = 2,
+    delay_pmf = custom_pmf
+  )
 
   expect_type(result, "double")
   expect_true(length(result) > 0)
 })
 
-test_that("estimate_uncertainty_parameters works with custom aggregators", {
+test_that("estimate_uncertainty_retro works with custom aggregators", {
   triangle <- matrix(
     c(
       65, 46, 21, 7,
@@ -173,9 +192,10 @@ test_that("estimate_uncertainty_parameters works with custom aggregators", {
   )
 
   if (requireNamespace("zoo", quietly = TRUE)) {
-    result <- estimate_uncertainty_parameters(
+    result <- estimate_uncertainty_retro(
       triangle,
-      n_retrospective_nowcasts =2,
+      n_history_delay = 5,
+      n_retrospective_nowcasts = 2,
       ref_time_aggregator = function(x) {
         zoo::rollsum(x, k = 2, align = "right")
       }
@@ -188,7 +208,7 @@ test_that("estimate_uncertainty_parameters works with custom aggregators", {
   }
 })
 
-test_that("estimate_uncertainty_parameters accepts custom structure", {
+test_that("estimate_uncertainty_retro accepts custom structure", {
   triangle <- matrix(
     c(
       65, 46, 21, 7,
@@ -203,15 +223,20 @@ test_that("estimate_uncertainty_parameters accepts custom structure", {
     byrow = TRUE
   )
 
-  result <- estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, structure = 2)
+  result <- estimate_uncertainty_retro(
+    triangle,
+    n_history_delay = 5,
+    n_retrospective_nowcasts = 2,
+    structure = 2
+  )
 
   expect_type(result, "double")
   expect_true(length(result) > 0)
 })
 
-test_that("estimate_uncertainty_parameters validates triangle input", {
+test_that("estimate_uncertainty_retro validates triangle input", {
   expect_error(
-    estimate_uncertainty_parameters(data.frame(a = 1:5, b = 6:10)),
+    estimate_uncertainty_retro(data.frame(a = 1:5, b = 6:10)),
     "matrix"
   )
 
@@ -221,11 +246,11 @@ test_that("estimate_uncertainty_parameters validates triangle input", {
     byrow = TRUE
   )
   expect_error(
-    estimate_uncertainty_parameters(invalid_triangle)
+    estimate_uncertainty_retro(invalid_triangle)
   )
 })
 
-test_that("estimate_uncertainty_parameters validates integer parameters", {
+test_that("estimate_uncertainty_retro validates integer parameters", {
   triangle <- matrix(
     c(
       65, 46, 21, 7,
@@ -241,27 +266,41 @@ test_that("estimate_uncertainty_parameters validates integer parameters", {
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, n_history_delay =-1),
+    estimate_uncertainty_retro(triangle, n_retrospective_nowcasts =2, n_history_delay =-1),
     "n_history_delay"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =0),
+    estimate_uncertainty_retro(
+      triangle,
+      n_history_delay = 5,
+      n_retrospective_nowcasts = 0
+    ),
     "n_retrospective_nowcasts"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, max_delay = -1),
+    estimate_uncertainty_retro(
+      triangle,
+      n_history_delay = 5,
+      n_retrospective_nowcasts = 2,
+      max_delay = -1
+    ),
     "max_delay"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, structure = 0),
+    estimate_uncertainty_retro(
+      triangle,
+      n_history_delay = 5,
+      n_retrospective_nowcasts = 2,
+      structure = 0
+    ),
     "structure"
   )
 })
 
-test_that("estimate_uncertainty_parameters validates delay_pmf", {
+test_that("estimate_uncertainty_retro validates delay_pmf", {
   triangle <- matrix(
     c(
       65, 46, 21, 7,
@@ -277,22 +316,37 @@ test_that("estimate_uncertainty_parameters validates delay_pmf", {
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, delay_pmf = c(0.3, 0.4, 0.2)),
+    estimate_uncertainty_retro(
+      triangle,
+      n_history_delay = 5,
+      n_retrospective_nowcasts = 2,
+      delay_pmf = c(0.3, 0.4, 0.2)
+    ),
     "sum to 1"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, delay_pmf = c(0.5, -0.2, 0.7)),
+    estimate_uncertainty_retro(
+      triangle,
+      n_history_delay = 5,
+      n_retrospective_nowcasts = 2,
+      delay_pmf = c(0.5, -0.2, 0.7)
+    ),
     "delay_pmf"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, delay_pmf = c(0.5, 1.5, -0.2)),
+    estimate_uncertainty_retro(
+      triangle,
+      n_history_delay = 5,
+      n_retrospective_nowcasts = 2,
+      delay_pmf = c(0.5, 1.5, -0.2)
+    ),
     "delay_pmf"
   )
 })
 
-test_that("estimate_uncertainty_parameters validates function arguments", {
+test_that("estimate_uncertainty_retro validates function arguments", {
   triangle <- matrix(
     c(
       65, 46, 21, 7,
@@ -308,23 +362,38 @@ test_that("estimate_uncertainty_parameters validates function arguments", {
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, ref_time_aggregator = "mean"),
+    estimate_uncertainty_retro(
+      triangle,
+      n_history_delay = 5,
+      n_retrospective_nowcasts = 2,
+      ref_time_aggregator = "mean"
+    ),
     "ref_time_aggregator"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, delay_aggregator = "sum"),
+    estimate_uncertainty_retro(
+      triangle,
+      n_history_delay = 5,
+      n_retrospective_nowcasts = 2,
+      delay_aggregator = "sum"
+    ),
     "delay_aggregator"
   )
 
   expect_error(
-    estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =2, uncertainty_model = "nb"),
+    estimate_uncertainty_retro(
+      triangle,
+      n_history_delay = 5,
+      n_retrospective_nowcasts = 2,
+      uncertainty_model = "nb"
+    ),
     "uncertainty_model"
   )
 })
 
 test_that(
-  "estimate_uncertainty_parameters works with all custom parameters",
+  "estimate_uncertainty_retro works with all custom parameters",
   {
     triangle <- matrix(
       c(
@@ -340,7 +409,7 @@ test_that(
       byrow = TRUE
     )
 
-    result <- estimate_uncertainty_parameters(
+    result <- estimate_uncertainty_retro(
       reporting_triangle = triangle,
       n_retrospective_nowcasts =2,
       n_history_delay =5,
@@ -357,7 +426,7 @@ test_that(
   }
 )
 
-test_that("estimate_uncertainty_parameters validates insufficient data", {
+test_that("estimate_uncertainty_retro validates insufficient data", {
   triangle <- matrix(
     c(
       10, 5, 2, 1,
@@ -370,7 +439,7 @@ test_that("estimate_uncertainty_parameters validates insufficient data", {
   )
 
   expect_error(
-    estimate_uncertainty_parameters(
+    estimate_uncertainty_retro(
       triangle,
       n_retrospective_nowcasts = 1,
       n_history_delay = 2
@@ -379,7 +448,7 @@ test_that("estimate_uncertainty_parameters validates insufficient data", {
   )
 })
 
-test_that("estimate_uncertainty_parameters handles partial failures", {
+test_that("estimate_uncertainty_retro handles partial failures", {
   triangle <- matrix(
     c(
       65, 46, 21, 7,
@@ -395,7 +464,11 @@ test_that("estimate_uncertainty_parameters handles partial failures", {
   )
 
   suppressWarnings({
-    result <- estimate_uncertainty_parameters(triangle, n_retrospective_nowcasts =3)
+    result <- estimate_uncertainty_retro(
+      triangle,
+      n_history_delay = 4,
+      n_retrospective_nowcasts = 3
+    )
   })
 
   expect_type(result, "double")

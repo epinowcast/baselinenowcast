@@ -1,5 +1,20 @@
 #' Estimate and apply uncertainty to a point nowcast matrix
 #'
+#' @description
+#' Generates probabilistic nowcasts by estimating uncertainty parameters from
+#'   retrospective validation and applying them to a point nowcast matrix.
+#'
+#' This function combines:
+#' \enumerate{
+#'   \item [estimate_uncertainty_retro()] - Estimates uncertainty parameters
+#'     using retrospective validation
+#'   \item [sample_nowcasts()] - Applies uncertainty to generate draws
+#' }
+#'
+#' For more control over the uncertainty estimation workflow (e.g., custom
+#'   aggregation functions, alternative structures), use
+#'   [estimate_uncertainty_retro()] directly followed by [sample_nowcasts()].
+#'
 #' @inheritParams estimate_delay
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_prediction
@@ -9,7 +24,7 @@
 #'    starting from the most recent reporting delay.
 #' @param n_retrospective_nowcasts Integer indicating the number of
 #'   retrospective nowcast times to use for uncertainty estimation.
-#' @param ... Additional arguments to `estimate_uncertainty()` and
+#' @param ... Additional arguments to `estimate_uncertainty_retro()` and
 #'    `sample_prediction()`.
 #' @returns `nowcast_draws_df` Dataframe containing draws of combined
 #'    observations and probabilistic predictions at each reference time.
@@ -58,17 +73,7 @@ estimate_and_apply_uncertainty <- function(
     max_delay = max_delay
   )
 
-  n_ref_times <- nrow(reporting_triangle)
-  min_ref_times_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
-  # Validate that the inputs are valid.
-  .validate_inputs_uncertainty(
-    n_min_delay = min_ref_times_delay,
-    n_ref_times = n_ref_times,
-    n_history_delay = n_history_delay,
-    n_retrospective_nowcasts = n_retrospective_nowcasts
-  )
-
-  uncertainty_params <- estimate_uncertainty_parameters(
+  uncertainty_params <- estimate_uncertainty_retro(
     reporting_triangle = reporting_triangle,
     n_history_delay = n_history_delay,
     n_retrospective_nowcasts = n_retrospective_nowcasts,

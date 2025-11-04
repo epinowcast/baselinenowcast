@@ -57,7 +57,7 @@ arguments \code{pred} for the vector of predictions and uncertainty parameters
 for the corresponding vector of uncertainty parameters, and draws from a
 negative binomial for each element of the vector.}
 
-\item{...}{Additional arguments to \code{estimate_uncertainty()} and
+\item{...}{Additional arguments to \code{estimate_uncertainty_retro()} and
 \code{sample_prediction()}.}
 }
 \value{
@@ -65,7 +65,19 @@ negative binomial for each element of the vector.}
 observations and probabilistic predictions at each reference time.
 }
 \description{
-Estimate and apply uncertainty to a point nowcast matrix
+Generates probabilistic nowcasts by estimating uncertainty parameters from
+retrospective validation and applying them to a point nowcast matrix.
+
+This function combines:
+\enumerate{
+\item \code{\link[=estimate_uncertainty_retro]{estimate_uncertainty_retro()}} - Estimates uncertainty parameters
+using retrospective validation
+\item \code{\link[=sample_nowcasts]{sample_nowcasts()}} - Applies uncertainty to generate draws
+}
+
+For more control over the uncertainty estimation workflow (e.g., custom
+aggregation functions, alternative structures), use
+\code{\link[=estimate_uncertainty_retro]{estimate_uncertainty_retro()}} directly followed by \code{\link[=sample_nowcasts]{sample_nowcasts()}}.
 }
 \examples{
 triangle <- matrix(

@@ -44,7 +44,7 @@ An object of class \code{\link{reporting_triangle}}
 Class constructor for \code{reporting_triangle} objects
 }
 \seealso{
-Reporting triangle data structure functions
+Reporting triangle construction and validation
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.matrix}()},

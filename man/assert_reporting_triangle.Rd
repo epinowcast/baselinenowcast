@@ -13,7 +13,7 @@ assert_reporting_triangle(data)
 Assert validity of \code{reporting_triangle} objects
 }
 \seealso{
-Reporting triangle data structure functions
+Reporting triangle construction and validation
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.matrix}()},

@@ -72,7 +72,7 @@ rep_tri <- as_reporting_triangle(
 rep_tri
 }
 \seealso{
-Reporting triangle data structure functions
+Reporting triangle construction and validation
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{assert_reporting_triangle}()},

@@ -96,7 +96,7 @@ nowcast_draws_df <- estimate_and_apply_uncertainty(
 nowcast_draws_df
 }
 \seealso{
-Workflow wrapper functions
+High-level workflow wrapper functions
 \code{\link{allocate_reference_times}()},
 \code{\link{estimate_and_apply_delay}()}
 }

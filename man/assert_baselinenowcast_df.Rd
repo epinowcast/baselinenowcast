@@ -13,7 +13,7 @@ assert_baselinenowcast_df(data)
 Assert validity of \code{baselinenowcast_df} objects
 }
 \seealso{
-Nowcast data frame functions
+Main nowcasting interface functions
 \code{\link{baselinenowcast}()},
 \code{\link{baselinenowcast.reporting_triangle}()},
 \code{\link{baselinenowcast_df-class}},

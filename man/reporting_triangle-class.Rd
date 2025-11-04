@@ -31,7 +31,7 @@ for more details on the required input formats to generate the object.
 }
 
 \seealso{
-Reporting triangle data structure functions
+Reporting triangle construction and validation
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.matrix}()},

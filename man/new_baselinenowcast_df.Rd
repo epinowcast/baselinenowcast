@@ -27,7 +27,7 @@ strata associated with the nowcast dataframe, and a vector of reference
 dates corresponding to the time column in the \code{baselinenowcast_df}
 }
 \seealso{
-Nowcast data frame functions
+Main nowcasting interface functions
 \code{\link{assert_baselinenowcast_df}()},
 \code{\link{baselinenowcast}()},
 \code{\link{baselinenowcast.reporting_triangle}()},

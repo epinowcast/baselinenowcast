@@ -94,7 +94,7 @@ nowcast_df <- baselinenowcast(rep_tri)
 nowcast_df
 }
 \seealso{
-Nowcast data frame functions
+Main nowcasting interface functions
 \code{\link{assert_baselinenowcast_df}()},
 \code{\link{baselinenowcast}()},
 \code{\link{baselinenowcast_df-class}},

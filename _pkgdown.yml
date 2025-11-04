@@ -89,3 +89,7 @@ reference:
     models.
   contents:
   - has_concept("generate_probabilistic_nowcasts")
+- title: Data
+  desc: Example datasets included with the package.
+  contents:
+  - has_concept("example_data")

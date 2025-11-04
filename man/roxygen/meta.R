@@ -7,6 +7,7 @@ list(
     generate_retrospective_data = "Retrospective data generation functions",
     generate_point_nowcasts = "Point nowcast generation functions",
     estimate_observation_error = "Observation error estimation functions",
-    generate_probabilistic_nowcasts = "Probabilistic nowcast generation functions"
+    generate_probabilistic_nowcasts = "Probabilistic nowcast generation functions",
+    example_data = "Example datasets"
   )
 )

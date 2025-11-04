@@ -196,6 +196,7 @@
 #' @inheritParams estimate_delay
 #'
 #' @returns NULL invisibly
+#' @keywords internal
 .validate_max_delay <- function(triangle,
                                 max_delay) {
   if (max_delay > ncol(triangle) - 1) {

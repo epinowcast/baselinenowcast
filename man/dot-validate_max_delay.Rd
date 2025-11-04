@@ -20,3 +20,4 @@ NULL invisibly
 \description{
 Check that the maximum delay is not too large, error if it is
 }
+\keyword{internal}

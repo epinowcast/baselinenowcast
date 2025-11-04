@@ -42,4 +42,9 @@ syn_nssp_line_list
 For an example of how to produce a nowcast from this data, see
 \code{vignette("nssp_nowcast")}.
 }
+\seealso{
+Example datasets
+\code{\link{syn_nssp_df}}
+}
+\concept{example_data}
 \keyword{datasets}

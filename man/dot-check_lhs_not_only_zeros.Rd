@@ -16,3 +16,4 @@ LHS of the first NA (TRUE = has non-zeros, FALSE = only zeros)
 \description{
 Check if there are non-zero-values on the LHS of NAs
 }
+\keyword{internal}

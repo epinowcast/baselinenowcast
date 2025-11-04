@@ -66,12 +66,12 @@ observations and probabilistic predictions at each reference time.
 }
 \description{
 Generates probabilistic nowcasts by estimating uncertainty parameters from
-retrospective validation and applying them to a point nowcast matrix.
+retrospective nowcasts and applying them to a point nowcast matrix.
 
 This function combines:
 \enumerate{
 \item \code{\link[=estimate_uncertainty_retro]{estimate_uncertainty_retro()}} - Estimates uncertainty parameters
-using retrospective validation
+using retrospective nowcasts
 \item \code{\link[=sample_nowcasts]{sample_nowcasts()}} - Applies uncertainty to generate draws
 }
 

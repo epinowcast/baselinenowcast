@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimate_uncertainty_retro.R
 \name{estimate_uncertainty_retro}
 \alias{estimate_uncertainty_retro}
-\title{Estimate uncertainty parameters using retrospective validation}
+\title{Estimate uncertainty parameters using retrospective nowcasts}
 \usage{
 estimate_uncertainty_retro(
   reporting_triangle,
@@ -68,12 +68,12 @@ element representing the estimate of the uncertainty parameter for each
 horizon. Returns NULL if insufficient data is available for estimation.
 }
 \description{
-Estimates uncertainty parameters for nowcasting by performing retrospective
-validation: creating historical snapshots of the reporting triangle,
-generating point nowcasts for those snapshots, and calibrating uncertainty
-parameters based on retrospective nowcast performance.
+Estimates uncertainty parameters for nowcasting by creating a series of
+retrospective datasets from the input reporting triangle, generating point
+nowcasts for those datasets, and calibrating uncertainty parameters based
+on retrospective nowcast performance.
 
-This function chains the retrospective validation workflow:
+This function chains the retrospective nowcasting workflow:
 \enumerate{
 \item \code{\link[=truncate_triangles]{truncate_triangles()}} - Create retrospective snapshots
 \item \code{\link[=construct_triangles]{construct_triangles()}} - Generate retrospective reporting triangles

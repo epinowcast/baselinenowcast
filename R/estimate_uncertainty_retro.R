@@ -1,12 +1,12 @@
-#' Estimate uncertainty parameters using retrospective validation
+#' Estimate uncertainty parameters using retrospective nowcasts
 #'
 #' @description
-#' Estimates uncertainty parameters for nowcasting by performing retrospective
-#'   validation: creating historical snapshots of the reporting triangle,
-#'   generating point nowcasts for those snapshots, and calibrating uncertainty
-#'   parameters based on retrospective nowcast performance.
+#' Estimates uncertainty parameters for nowcasting by creating a series of
+#'   retrospective datasets from the input reporting triangle, generating point
+#'   nowcasts for those datasets, and calibrating uncertainty parameters based
+#'   on retrospective nowcast performance.
 #'
-#' This function chains the retrospective validation workflow:
+#' This function chains the retrospective nowcasting workflow:
 #' \enumerate{
 #'   \item [truncate_triangles()] - Create retrospective snapshots
 #'   \item [construct_triangles()] - Generate retrospective reporting triangles

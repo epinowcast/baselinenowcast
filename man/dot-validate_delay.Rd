@@ -19,3 +19,4 @@ NULL invisibly
 \description{
 Validate the delay PMF if it is passed in
 }
+\keyword{internal}

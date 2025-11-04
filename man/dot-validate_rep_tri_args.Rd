@@ -40,3 +40,4 @@ the reporting triangle.  Default is \code{"days"}.}
 \description{
 Validate each item in the reporting triangle
 }
+\keyword{internal}

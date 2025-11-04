@@ -37,3 +37,4 @@ NULL, invisibly
 Validate the specified number of reference times meets the minimum
 requirements
 }
+\keyword{internal}

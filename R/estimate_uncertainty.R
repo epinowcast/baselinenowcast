@@ -315,6 +315,7 @@ fit_by_horizon <- function(obs,
 #' @returns `n_iters` Integer indicating the number of iterations, or
 #'    number of retrospective nowcast times, that have sufficient data once
 #'    aggregated to be used to generate a retrospective point nowcast.
+#' @keywords internal
 .calc_n_retro_nowcast_times <- function(
     list_of_obs,
     n_possible_horizons,
@@ -345,6 +346,7 @@ fit_by_horizon <- function(obs,
 #'
 #' @returns `bottom_matrix` Matrix containing the last `n_possible_horizons`
 #'    rows of the matrix.
+#' @keywords internal
 .filter_to_recent_horizons <- function(mat,
                                        n_possible_horizons) {
   max_t <- nrow(mat)
@@ -366,6 +368,7 @@ fit_by_horizon <- function(obs,
 #'
 #' @returns Matrix of same dimensions of `mat` with the overlapping `TRUE`
 #'   elements only.
+#' @keywords internal
 .apply_mask <- function(mat,
                         indices_1,
                         indices_2) {

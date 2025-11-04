@@ -35,3 +35,4 @@ list of the integer sizes
 \description{
 Helper function to calculate various size requirements
 }
+\keyword{internal}

@@ -17,3 +17,4 @@ NULL, invisibly
 \description{
 Check observations and predictions are compatible
 }
+\keyword{internal}

@@ -22,3 +22,4 @@ reporting_triangle
 Check that the reporting triangle contains the correct number of columns for
 the specified maximum delay
 }
+\keyword{internal}

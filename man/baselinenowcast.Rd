@@ -62,8 +62,10 @@ See \code{\link{baselinenowcast.reporting_triangle}} for details on the
 input requirements.
 }
 \seealso{
-Other baselinenowcast_df: 
+Nowcast data frame functions
+\code{\link{assert_baselinenowcast_df}()},
 \code{\link{baselinenowcast.reporting_triangle}()},
-\code{\link{baselinenowcast_df-class}}
+\code{\link{baselinenowcast_df-class}},
+\code{\link{new_baselinenowcast_df}()}
 }
 \concept{baselinenowcast_df}

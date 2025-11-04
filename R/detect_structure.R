@@ -12,6 +12,7 @@
 #'   truncated).  If vector, the sum must not be greater than or equal to the
 #'   number of columns. Default is 1 (standard triangular structure). If
 #'   there are no NAs, will return 0.
+#' @family reporting_triangle
 #' @export
 #'
 #' @examples

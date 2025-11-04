@@ -31,9 +31,12 @@ for more details on the required input formats to generate the object.
 }
 
 \seealso{
-Other reporting_triangle: 
+Reporting triangle data structure functions
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
-\code{\link{as_reporting_triangle.matrix}()}
+\code{\link{as_reporting_triangle.matrix}()},
+\code{\link{assert_reporting_triangle}()},
+\code{\link{detect_structure}()},
+\code{\link{new_reporting_triangle}()}
 }
 \concept{reporting_triangle}

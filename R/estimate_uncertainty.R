@@ -263,6 +263,7 @@ estimate_uncertainty <- function(
 #'
 #' @returns Vector of uncertainty parameters of the same length as the number
 #'    of columns in the `obs` matrix.
+#' @family estimate_observation_error
 #' @export
 #'
 #' @examples
@@ -406,6 +407,7 @@ fit_by_horizon <- function(obs,
 #' @param x Vector of observed values.
 #' @param mu Vector of expected values.
 #' @returns the maximum likelihood estimate of the dispersion
+#' @family estimate_observation_error
 #' @export
 #' @examples
 #' obs <- c(4, 8, 10)

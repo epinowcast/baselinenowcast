@@ -79,6 +79,7 @@ if (requireNamespace("zoo", quietly = TRUE)) {
 \seealso{
 Probabilistic nowcast generation functions
 \code{\link{combine_obs_with_pred}()},
+\code{\link{sample_nb}()},
 \code{\link{sample_nowcast}()},
 \code{\link{sample_nowcasts}()},
 \code{\link{sample_prediction}()}

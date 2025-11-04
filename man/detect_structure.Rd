@@ -40,3 +40,13 @@ ragged_triangle <- matrix(
 detected_structure <- detect_structure(ragged_triangle)
 detected_structure
 }
+\seealso{
+Reporting triangle data structure functions
+\code{\link{as_reporting_triangle}()},
+\code{\link{as_reporting_triangle.data.frame}()},
+\code{\link{as_reporting_triangle.matrix}()},
+\code{\link{assert_reporting_triangle}()},
+\code{\link{new_reporting_triangle}()},
+\code{\link{reporting_triangle-class}}
+}
+\concept{reporting_triangle}

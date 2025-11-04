@@ -43,3 +43,13 @@ An object of class \code{\link{reporting_triangle}}
 \description{
 Class constructor for \code{reporting_triangle} objects
 }
+\seealso{
+Reporting triangle data structure functions
+\code{\link{as_reporting_triangle}()},
+\code{\link{as_reporting_triangle.data.frame}()},
+\code{\link{as_reporting_triangle.matrix}()},
+\code{\link{assert_reporting_triangle}()},
+\code{\link{detect_structure}()},
+\code{\link{reporting_triangle-class}}
+}
+\concept{reporting_triangle}

@@ -35,6 +35,24 @@ home:
   title: Baseline nowcast for right-truncated epidemiological data
 
 reference:
+- title: Reporting triangle data structures
+  desc: >
+    Functions for creating, converting, and validating reporting triangle
+    objects from matrices or data frames.
+  contents:
+  - has_concept("reporting_triangle")
+- title: Nowcast data frames
+  desc: >
+    Functions for creating and validating nowcast data frame objects containing
+    point or probabilistic nowcast results.
+  contents:
+  - has_concept("baselinenowcast_df")
+- title: Workflow wrappers
+  desc: >
+    High-level wrapper functions that combine multiple steps for end-to-end
+    nowcasting workflows.
+  contents:
+  - has_concept("workflow_wrappers")
 - title: Estimate delay distributions
   desc: >
     Functions for estimating empirical delay distributions from reporting

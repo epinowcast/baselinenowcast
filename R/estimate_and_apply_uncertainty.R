@@ -13,6 +13,7 @@
 #'    `sample_prediction()`.
 #' @returns `nowcast_draws_df` Dataframe containing draws of combined
 #'    observations and probabilistic predictions at each reference time.
+#' @family workflow_wrappers
 #' @export
 #' @importFrom cli cli_abort
 #' @examples

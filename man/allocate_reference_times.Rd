@@ -92,3 +92,9 @@ ref_time_allocation_alt <- allocate_reference_times(
 )
 ref_time_allocation_alt
 }
+\seealso{
+Workflow wrapper functions
+\code{\link{estimate_and_apply_delay}()},
+\code{\link{estimate_and_apply_uncertainty}()}
+}
+\concept{workflow_wrappers}

@@ -48,3 +48,9 @@ pt_nowcast_matrix <- estimate_and_apply_delay(
 )
 pt_nowcast_matrix
 }
+\seealso{
+Workflow wrapper functions
+\code{\link{allocate_reference_times}()},
+\code{\link{estimate_and_apply_uncertainty}()}
+}
+\concept{workflow_wrappers}

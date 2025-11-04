@@ -35,8 +35,9 @@
 #'     reference times needed for uncertainty estimation. Default is `2`.
 #' @importFrom cli cli_abort cli_warn
 #' @importFrom checkmate assert_integerish
-#' @export
 #' @returns list of n_history_delay and n_retrospective_nowcasts
+#' @family workflow_wrappers
+#' @export
 #' @examples
 #' triangle <- matrix(
 #'   c(

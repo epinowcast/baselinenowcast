@@ -474,3 +474,28 @@ test_that("baselinenowcast.reporting_triangle errors if nothing to nowcast", {
     regexp = "doesn't contain any missing values"
   ) # nolint
 })
+
+test_that("baselinenowcast errors if strata_sharing is not none and weekdays are used as strata", { # nolint
+  skip_if_not_installed("dplyr")
+  covid_data_with_weekday <- dplyr::mutate(
+    covid_data,
+    weekday_ref_date = lubridate::wday(reference_date, label = TRUE)
+  )
+  covid_data_single_strata_wday <- dplyr::filter(
+    covid_data_with_weekday,
+    age_group == "00+"
+  )
+
+  expect_error(
+    expect_warning(
+      baselinenowcast(
+        covid_data_single_strata_wday,
+        max_delay = 40,
+        draws = 100,
+        strata_cols = "weekday_ref_date",
+        strata_sharing = c("delay", "uncertainty")
+      )
+    ),
+    regexp = "There is no overlapping set of reference and report dates across all strata. `strata_sharing` is not possible." # nolint
+  )
+})

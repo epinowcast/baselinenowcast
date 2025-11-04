@@ -294,10 +294,9 @@ baselinenowcast.data.frame <- function(
     delays_unit = delays_unit
   )
   # Combine if needed
-  if ("none" %in% strata_sharing) {
-    delay_pmf <- NULL
-    uncertainty_params <- NULL
-  } else if (all(strata_sharing != "none")) {
+  delay_pmf <- NULL
+  uncertainty_params <- NULL
+  if (all(strata_sharing != "none")) {
     pooled_df <- .combine_triangle_dfs(
       data = data_clean,
       strata_cols = strata_cols

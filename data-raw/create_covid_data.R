@@ -35,7 +35,8 @@ germany_covid19_hosp <- pivot_longer(
   rename(reference_date = date) |>
   filter(
     location == "DE",
-    delay <= 40
+    delay <= 40,
+    report_date <= "2021-12-01"
   )
 
 usethis::use_data(germany_covid19_hosp, overwrite = TRUE)

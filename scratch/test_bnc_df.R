@@ -16,84 +16,97 @@ covid_data_single_strata <- dplyr::filter(
   age_group == "00+"
 )
 
-# Make a very small subset of an example
-df1 <- covid_data_single_strata |>
-  filter(
-    reference_date >= "2022-08-01",
-    report_date >= "2022-08-01",
-    weekday_ref_date %in% c("Mon", "Tue")
-  ) |>
-  arrange(reference_date, report_date)
-print(df1)
-
-df1 |>
-  ungroup() |>
-  group_by(delay, weekday_ref_date) |>
-  summarise(n_rows = n())
-print(df1)
-
-# In this example, we obviously have no set of overlapping reference date
-# report date pairs. If we were to just naively add up the counts we would have
-# 2 observations for a delay of 0 on Monday by 1 everywhere else which
-# would result in a biased estimate of the delay on Mondays (upweighting 0
-# delays). So what we want to do is somehow systematically only include the same
-# number of delays for each strata. One way to do this with any strata that are
-# not following the reference date is just to use the overlapping set of
-# ref and report dates, but this isn't possible here because there are none.
-
-# In this instance, we want to just get back the same input for aggregation.
-test <- .combine_triangle_dfs(df1) |>
-  arrange(reference_date, report_date)
-expect_identical(test$count, df1$count)
-
-# If we repeat this with multiple age groups, we want them to just be summed
-# across the age groups?
-
-df2 <- covid_data |>
-  filter(
-    reference_date >= "2022-08-01",
-    report_date >= "2022-08-01",
-    weekday_ref_date %in% c("Mon", "Tue")
-  ) |>
-  arrange(reference_date, report_date)
-
-df2 |>
-  ungroup() |>
-  group_by(delay, weekday_ref_date, age_group) |>
-  summarise(n_rows = n()) |>
-  print()
-
-test2 <- .combine_triangle_dfs(df2) |>
-  arrange(reference_date, report_date)
-expect_identical(test2$count[1], sum(df2$count[1:3]))
-
-# What if we exclude a date only from one age group
-df3 <- df2[-1, ]
-df3 |>
-  ungroup() |>
-  group_by(delay, weekday_ref_date, age_group) |>
-  summarise(n_rows = n()) |>
-  print()
-
-test3 <- .combine_triangle_dfs(df3) |>
-  arrange(reference_date, report_date)
-# Everything will be the same but the first row sums will be excluded
-# because these are incomplete
-expect_identical(test3$count, test2$count[2:nrow(test2)])
-
-
-
+# These will work
 set.seed(123)
-full_ag <- baselinenowcast(covid_data_single_strata,
+single_age_group <- baselinenowcast(covid_data_single_strata,
+  max_delay = 40,
+  draws = 100
+) |> mutate(type = "full aggregation")
+wday_stratified <- baselinenowcast(covid_data_single_strata,
   max_delay = 40,
   draws = 100,
-  scale_factor = 4
-) |> mutate(type = "full aggregation")
+  scale_factor = 3 / 7,
+  strata_cols = "weekday_ref_date"
+)
+no_wday <- baselinenowcast(covid_data_single_strata,
+  max_delay = 40,
+  draws = 100,
+  scale_factor = 3
+)
+weekday_stratified_data <- wday_stratified |>
+  left_join(covid_data_summed |> filter(age_group == "00+"))
+# Confirm that they are different (green is lower )
+ggplot(weekday_stratified_data |> dplyr::filter(reference_date >= max(reference_date) - lubridate::days(40))) +
+  geom_line(aes(x = reference_date, y = pred_count, group = draw),
+    color = "darkgreen", size = 0.3, alpha = 0.5
+  ) +
+  geom_line(
+    data = no_wday |>
+      dplyr::filter(reference_date >= max(reference_date) - lubridate::days(40)),
+    aes(x = reference_date, y = pred_count, group = draw),
+    color = "blue", size = 0.1, alpha = 0.5
+  ) +
+  geom_point(aes(x = reference_date, y = cases))
+#  Tests to make:
+# - not the same average final value
+# - not the same as the data
+
+# Across age groups now with and without different kinds of pooling
+multiple_ags_fp <- baselinenowcast(
+  covid_data,
+  max_delay = 40,
+  draws = 100,
+  strata_cols = c("age_group")
+)
+multiple_ags_full_ag <- baselinenowcast(
+  covid_data,
+  max_delay = 40,
+  draws = 100,
+  strata_cols = c("age_group"),
+  strata_sharing = c("delay", "uncertainty")
+)
+multiple_ags_just_delay <- baselinenowcast(
+  covid_data,
+  max_delay = 40,
+  draws = 100,
+  strata_cols = c("age_group"),
+  strata_sharing = c("delay")
+)
+multiple_ags_just_uq <- baselinenowcast(
+  covid_data,
+  max_delay = 40,
+  draws = 100,
+  strata_cols = c("age_group"),
+  strata_sharing = c("uncertainty")
+)
+covid_data_summed <- covid_data |>
+  group_by(reference_date, age_group) |>
+  summarise(cases = sum(count)) |>
+  ungroup()
+multiple_ags_fp_data <- multiple_ags_fp |>
+  left_join(covid_data_summed)
+ggplot(multiple_ags_fp_data |> dplyr::filter(reference_date >= max(reference_date) - lubridate::days(40))) +
+  geom_line(aes(x = reference_date, y = pred_count, group = draw),
+    color = "blue", size = 0.1, alpha = 0.5
+  ) +
+  geom_point(aes(x = reference_date, y = cases)) +
+  facet_wrap(~age_group, nrow = 3)
+
+
+
+
+
+# These will fail
 set.seed(123)
+muliple_ags_forgot_strata <- baselinenowcast(
+  covid_data,
+  max_delay = 40,
+  draws = 100
+)
 all_shared_dow <- baselinenowcast(covid_data_single_strata,
   max_delay = 40,
   draws = 100,
-  scale_factor = 4 ,
+  scale_factor = 4,
   strata_cols = "weekday_ref_date",
   strata_sharing = c("delay", "uncertainty")
 ) |> mutate(type = "all_shared_dow")

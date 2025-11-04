@@ -60,7 +60,7 @@ test_that(".combine_triangle_dfs combines data across strata correctly", {
     .combine_triangle_dfs(
       data = test_data_partial_overlap
     ),
-    regexp = "The data being aggregated contains a different number of unique reference and report date combinations" # nolint
+    regexp = "The data being aggregated contains a different number of unique reference and" # nolint
   )
   # Correct columns
   expect_true(all(expected_cols %in% colnames(result2)))
@@ -84,7 +84,7 @@ test_that(".combine_triangle_dfs can handle weekday with overlaps.", {
     .combine_triangle_dfs(
       data = test_data_overlap_wday
     ),
-    regexp = "The data being aggregated contains a different number of unique reference and report date combinations" # nolint
+    regexp = "The data being aggregated contains a different number of unique reference and" # nolint
   )
   expect_identical(nrow(result3), 1L)
   expect_identical(sum(test_data_overlap_wday$count[1:2]), result3$count[1])
@@ -165,8 +165,10 @@ test_that(".combine_triangle_dfs works with numeric counts", {
 
 test_that(".combine_triangles_df returns the the full set of refernce and report dates when none overlap", { # nolint
   skip_if_not_installed("dplyr")
-  df1 <- covid_data_single_strata |>
-    dplyr::arrange(reference_date, report_date)
+  df1 <- dplyr::arrange(
+    covid_data_single_strata,
+    reference_date, report_date
+  )
   result <- .combine_triangle_dfs(
     data = df1
   ) |> dplyr::arrange(reference_date, report_date)
@@ -175,8 +177,10 @@ test_that(".combine_triangles_df returns the the full set of refernce and report
 
 test_that(".combine_triangles_df returns the sum across multiple age groups correctly given complete and non overlapping dates", { # nolint
   skip_if_not_installed("dplyr")
-  df2 <- covid_data |>
-    dplyr::arrange(reference_date, report_date)
+  df2 <- dplyr::arrange(
+    covid_data,
+    reference_date, report_date
+  )
   test2 <- .combine_triangle_dfs(df2) |>
     arrange(reference_date, report_date)
   expect_identical(test2$count[1], sum(df2$count[1:3]))
@@ -185,8 +189,11 @@ test_that(".combine_triangles_df returns the sum across multiple age groups corr
   df3 <- df2[-1, ]
   test3 <- expect_warning(
     .combine_triangle_dfs(df3),
-    regexp = "The data being aggregated contains a different number of unique reference and report date combinations."
-  ) |> # nolint
-    arrange(reference_date, report_date)
+    regexp = "The data being aggregated contains a different number of unique reference and" # nolint
+  )
+  test3 <- dplyr::arrange(
+    test3,
+    reference_date, report_date
+  )
   expect_identical(test3$count, test2$count[2:nrow(test2)])
 })

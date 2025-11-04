@@ -20,8 +20,8 @@
   data$pair_id <- paste(data$reference_date, data$report_date, sep = "|")
   # Count of how many times we see that reference and report date combination
   pair_counts <- table(data$pair_id)
-  # If there are a different set of reference and report dates per strata, subset to
-  # the overlapping set.
+  # If there are a different set of reference and report dates per strata,
+  # subset to the overlapping set.
   if (length(unique(pair_counts)) != 1) {
     cli_warn(
       message = c("The data being aggregated contains a different number of unique reference and report date combinations.", # nolint
@@ -29,7 +29,6 @@
       )
     )
     valid_pairs <- names(pair_counts[pair_counts >= max(pair_counts)])
-    n_dropped <- sum(pair_counts < max(pair_counts))
     filtered_data <- data[data$pair_id %in% valid_pairs, ]
     filtered_data$pair_id <- NULL
     data <- filtered_data

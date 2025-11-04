@@ -93,7 +93,7 @@ set.seed(123)
 all_shared_dow <- baselinenowcast(covid_data_single_strata,
   max_delay = 40,
   draws = 100,
-  scale_factor = 4 / 7,
+  scale_factor = 4 ,
   strata_cols = "weekday_ref_date",
   strata_sharing = c("delay", "uncertainty")
 ) |> mutate(type = "all_shared_dow")

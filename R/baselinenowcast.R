@@ -299,7 +299,8 @@ baselinenowcast.data.frame <- function(
     uncertainty_params <- NULL
   } else if (all(strata_sharing != "none")) {
     pooled_df <- .combine_triangle_dfs(
-      data = data_clean
+      data = data_clean,
+      strata_cols = strata_cols
     )
     pooled_triangle <- as_reporting_triangle(pooled_df,
       max_delay = max_delay,

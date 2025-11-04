@@ -426,7 +426,7 @@ test_that("baselinenowcast returns expected structure even when dates not aligne
       strata_cols = c("age_group", "location"),
       strata_sharing = c("delay", "uncertainty")
     ),
-    regexp = "The data being aggregated contains a different number of unique reference and" # nolint
+    regexp = "Not all reference dates and report dates combinations are available for all strata." # nolint
   )
   expect_s3_class(nowcast_df, "data.frame")
   expect_s3_class(nowcast_df, "baselinenowcast_df")

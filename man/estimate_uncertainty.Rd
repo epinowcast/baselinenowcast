@@ -99,3 +99,9 @@ if (requireNamespace("zoo", quietly = TRUE)) {
   disp_params_agg
 }
 }
+\seealso{
+Observation error estimation functions
+\code{\link{fit_by_horizon}()},
+\code{\link{fit_nb}()}
+}
+\concept{estimate_observation_error}

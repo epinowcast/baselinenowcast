@@ -36,6 +36,7 @@
 #'    with each element representing the estimate of the uncertainty parameter
 #'    for each horizon. The specific parameter type depends on the chosen error
 #'    model.
+#' @family estimate_observation_error
 #' @export
 #'
 #' @examples

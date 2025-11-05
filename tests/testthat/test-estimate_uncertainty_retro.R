@@ -1,5 +1,5 @@
 test_that(
-  "estimate_uncertainty_retro produces valid output with required parameters",
+  "estimate_uncertainty_retro returns positive numeric vector",
   {
     triangle <- matrix(
       c(
@@ -77,8 +77,10 @@ test_that("estimate_uncertainty_retro matches manual workflow", {
   expect_identical(wrapper_result, manual_result)
 })
 
-test_that("estimate_uncertainty_retro accepts custom n_history_delay", {
-  triangle <- matrix(
+test_that(
+  "estimate_uncertainty_retro returns numeric vector with custom n_history_delay",
+  {
+    triangle <- matrix(
     c(
       65, 46, 21, 7,
       70, 40, 20, 5,
@@ -98,120 +100,133 @@ test_that("estimate_uncertainty_retro accepts custom n_history_delay", {
     n_history_delay = 5
   )
 
-  expect_type(result, "double")
-  expect_gt(length(result), 0)
-})
+    expect_type(result, "double")
+    expect_gt(length(result), 0)
+  }
+)
 
-test_that("estimate_uncertainty_retro accepts custom n_retro", {
-  triangle <- matrix(
-    c(
-      65, 46, 21, 7,
-      70, 40, 20, 5,
-      80, 50, 10, 10,
-      100, 40, 31, 20,
-      95, 45, 21, NA,
-      82, 42, NA, NA,
-      70, NA, NA, NA
-    ),
-    nrow = 7,
-    byrow = TRUE
-  )
-
-  suppressWarnings({
-    result <- estimate_uncertainty_retro(
-      triangle,
-      n_history_delay = 4,
-      n_retrospective_nowcasts = 3
+test_that(
+  "estimate_uncertainty_retro returns numeric vector with custom n_retro",
+  {
+    triangle <- matrix(
+      c(
+        65, 46, 21, 7,
+        70, 40, 20, 5,
+        80, 50, 10, 10,
+        100, 40, 31, 20,
+        95, 45, 21, NA,
+        82, 42, NA, NA,
+        70, NA, NA, NA
+      ),
+      nrow = 7,
+      byrow = TRUE
     )
-  })
 
-  expect_type(result, "double")
-  expect_gt(length(result), 0)
-})
+    suppressWarnings({
+      result <- estimate_uncertainty_retro(
+        triangle,
+        n_history_delay = 4,
+        n_retrospective_nowcasts = 3
+      )
+    })
 
-test_that("estimate_uncertainty_retro accepts custom max_delay", {
-  triangle <- matrix(
-    c(
-      65, 46, 21, 7,
-      70, 40, 20, 5,
-      80, 50, 10, 10,
-      100, 40, 31, 20,
-      95, 45, 21, NA,
-      82, 42, NA, NA,
-      70, NA, NA, NA
-    ),
-    nrow = 7,
-    byrow = TRUE
-  )
+    expect_type(result, "double")
+    expect_gt(length(result), 0)
+  }
+)
 
-  result <- estimate_uncertainty_retro(
-    triangle,
-    n_history_delay = 5,
-    n_retrospective_nowcasts = 2,
-    max_delay = 3
-  )
+test_that(
+  "estimate_uncertainty_retro returns numeric vector with custom max_delay",
+  {
+    triangle <- matrix(
+      c(
+        65, 46, 21, 7,
+        70, 40, 20, 5,
+        80, 50, 10, 10,
+        100, 40, 31, 20,
+        95, 45, 21, NA,
+        82, 42, NA, NA,
+        70, NA, NA, NA
+      ),
+      nrow = 7,
+      byrow = TRUE
+    )
 
-  expect_type(result, "double")
-  expect_gt(length(result), 0)
-})
-
-test_that("estimate_uncertainty_retro accepts custom aggregators", {
-  triangle <- matrix(
-    c(
-      65, 46, 21, 7,
-      70, 40, 20, 5,
-      80, 50, 10, 10,
-      100, 40, 31, 20,
-      95, 45, 21, NA,
-      82, 42, NA, NA,
-      70, NA, NA, NA
-    ),
-    nrow = 7,
-    byrow = TRUE
-  )
-
-  if (requireNamespace("zoo", quietly = TRUE)) {
     result <- estimate_uncertainty_retro(
       triangle,
       n_history_delay = 5,
       n_retrospective_nowcasts = 2,
-      ref_time_aggregator = function(x) {
-        return(zoo::rollsum(x, k = 2, align = "right"))
-      }
+      max_delay = 3
     )
 
     expect_type(result, "double")
     expect_gt(length(result), 0)
-  } else {
-    skip("zoo package not available")
   }
-})
+)
 
-test_that("estimate_uncertainty_retro accepts custom structure", {
-  triangle <- matrix(
-    c(
-      65, 46, 21, 7,
-      70, 40, 20, 5,
-      80, 50, 10, 10,
-      100, 40, 31, 20,
-      95, 45, 21, NA,
-      82, 42, NA, NA,
-      70, NA, NA, NA
-    ),
-    nrow = 7,
-    byrow = TRUE
-  )
+test_that(
+  "estimate_uncertainty_retro returns numeric vector with custom aggregators",
+  {
+    triangle <- matrix(
+      c(
+        65, 46, 21, 7,
+        70, 40, 20, 5,
+        80, 50, 10, 10,
+        100, 40, 31, 20,
+        95, 45, 21, NA,
+        82, 42, NA, NA,
+        70, NA, NA, NA
+      ),
+      nrow = 7,
+      byrow = TRUE
+    )
 
-  result <- estimate_uncertainty_retro(
-    triangle,
-    n_history_delay = 5,
-    n_retrospective_nowcasts = 2,
-    structure = 2
-  )
+    if (requireNamespace("zoo", quietly = TRUE)) {
+      result <- estimate_uncertainty_retro(
+        triangle,
+        n_history_delay = 5,
+        n_retrospective_nowcasts = 2,
+        ref_time_aggregator = function(x) {
+          return(zoo::rollsum(x, k = 2, align = "right"))
+        }
+      )
 
-  expect_type(result, "double")
-  expect_gt(length(result), 0)
-})
+      expect_type(result, "double")
+      expect_gt(length(result), 0)
+    } else {
+      skip("zoo package not available")
+    }
+  }
+)
+
+test_that(
+  "estimate_uncertainty_retro returns numeric vector with custom structure",
+  {
+    triangle <- matrix(
+      c(
+        65, 46, 21, 7,
+        70, 40, 20, 5,
+        80, 50, 10, 10,
+        100, 40, 31, 20,
+        95, 45, 21, NA,
+        82, 42, NA, NA,
+        70, NA, NA, NA
+      ),
+      nrow = 7,
+      byrow = TRUE
+    )
+
+    result <- estimate_uncertainty_retro(
+      triangle,
+      n_history_delay = 5,
+      n_retrospective_nowcasts = 2,
+      structure = 2
+    )
+
+    expect_type(result, "double")
+    expect_gt(length(result), 0)
+  }
+)
 
 test_that("estimate_uncertainty_retro validates triangle input", {
   expect_error(
@@ -268,7 +283,7 @@ test_that(
 
 
 test_that(
-  "estimate_uncertainty_retro accepts all custom parameters",
+  "estimate_uncertainty_retro returns numeric vector with all custom parameters",
   {
     triangle <- matrix(
       c(
@@ -322,29 +337,32 @@ test_that("estimate_uncertainty_retro validates insufficient data", {
   )
 })
 
-test_that("estimate_uncertainty_retro handles partial failures", {
-  triangle <- matrix(
-    c(
-      65, 46, 21, 7,
-      70, 40, 20, 5,
-      80, 50, 10, 10,
-      100, 40, 31, 20,
-      95, 45, 21, NA,
-      82, 42, NA, NA,
-      70, NA, NA, NA
-    ),
-    nrow = 7,
-    byrow = TRUE
-  )
-
-  suppressWarnings({
-    result <- estimate_uncertainty_retro(
-      triangle,
-      n_history_delay = 4,
-      n_retrospective_nowcasts = 3
+test_that(
+  "estimate_uncertainty_retro returns numeric vector despite warnings",
+  {
+    triangle <- matrix(
+      c(
+        65, 46, 21, 7,
+        70, 40, 20, 5,
+        80, 50, 10, 10,
+        100, 40, 31, 20,
+        95, 45, 21, NA,
+        82, 42, NA, NA,
+        70, NA, NA, NA
+      ),
+      nrow = 7,
+      byrow = TRUE
     )
-  })
 
-  expect_type(result, "double")
-  expect_gt(length(result), 0)
-})
+    suppressWarnings({
+      result <- estimate_uncertainty_retro(
+        triangle,
+        n_history_delay = 4,
+        n_retrospective_nowcasts = 3
+      )
+    })
+
+    expect_type(result, "double")
+    expect_gt(length(result), 0)
+  }
+)

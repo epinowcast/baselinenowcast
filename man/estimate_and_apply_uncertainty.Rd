@@ -11,7 +11,7 @@ estimate_and_apply_uncertainty(
   n_retrospective_nowcasts,
   max_delay = ncol(reporting_triangle) - 1,
   draws = 1000,
-  structure = 1,
+  structure = detect_structure(reporting_triangle),
   delay_pmf = NULL,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,

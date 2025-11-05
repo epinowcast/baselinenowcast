@@ -9,7 +9,7 @@ estimate_uncertainty_retro(
   n_history_delay,
   n_retrospective_nowcasts,
   max_delay = ncol(reporting_triangle) - 1,
-  structure = 1,
+  structure = detect_structure(reporting_triangle),
   delay_pmf = NULL,
   ...
 )

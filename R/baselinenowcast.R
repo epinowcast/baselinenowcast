@@ -315,7 +315,10 @@ baselinenowcast.data.frame <- function(
         reporting_triangle = pooled_triangle$reporting_triangle_matrix,
         n = tv$n_retrospective_nowcasts
       )
-      retro_rep_tris <- construct_triangles(trunc_rep_tris)
+      retro_rep_tris <- construct_triangles(
+        trunc_rep_tris,
+        structure = pooled_triangle$structure
+      )
       retro_pt_nowcasts <- fill_triangles(retro_rep_tris,
         n = tv$n_history_delay
       )

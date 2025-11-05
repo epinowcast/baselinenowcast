@@ -126,6 +126,33 @@ sample_prediction <- function(
   return(draw_pred_agg)
 }
 
+#' Extract from one matrix only elements that are missing in another
+#'
+#' @inheritParams sample_predictions
+#' @returns Matrix containing the elements from `point_nowcast_matrix` for
+#'    only the elements that are missing in `reporting_triangle`
+#' @keywords internal
+.extract_predictions <- function(point_nowcast_matrix,
+                                 reporting_triangle) {
+  assert_matrix(point_nowcast_matrix, all.missing = FALSE)
+  assert_matrix(reporting_triangle, all.missing = FALSE)
+  # Check that the observations are the same
+  all_equal <- all(point_nowcast_matrix[!is.na(reporting_triangle)] == reporting_triangle[!is.na(reporting_triangle)]) # nolint
+  if (isFALSE(all_equal)) {
+    cli_abort(
+      message =
+        "`reporting_triangle` is not a subset of `point_nowcast_matrix`. Check
+        to make sure that the matrix combining predictions and observations
+        aligns with the matrix containing only the observed values in the
+        reporting triangle. "
+    )
+  }
+
+  pred_mat <- point_nowcast_matrix
+  pred_mat[!is.na(reporting_triangle)] <- NA
+  return(pred_mat)
+}
+
 #' Combine observed data with a single prediction draw
 #'
 #' Internally it sums observed counts from the reporting triangle by reference

@@ -125,6 +125,27 @@ fill_triangles <- function(retro_reporting_triangles,
   return(point_nowcast_matrices)
 }
 
+#' Safe iterator
+#'
+#' @param fun Function to wrap around
+#'
+#' @returns Function that returns a list with `result` and `error` components.
+#'   On success: `result` contains the function output and `error` is NULL.
+#'   On failure: `result` is NULL and `error` contains the error object.
+.safelydoesit <- function(fun) {
+  stopifnot(is.function(fun))
+  return(
+    function(...) {
+      return(tryCatch(
+        list(result = fun(...), error = NULL),
+        error = function(e) {
+          return(list(result = NULL, error = e))
+        }
+      ))
+    }
+  )
+}
+
 #' Generate point nowcast
 #'
 #' This function ingests a reporting triangle matrix and optionally, a delay

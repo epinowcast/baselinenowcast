@@ -235,3 +235,19 @@ as_reporting_triangle.matrix <- function(data,
   )
   return(reporting_triangle_obj)
 }
+
+#' Rename required columns
+#'
+#' @param data Data.frame with the original column names
+#' @param old_names The names of the columns for, in order, reference date,
+#'    report date, and count
+#'
+#' @returns Data.frame with columns renamed
+.rename_cols <- function(data,
+                         old_names) {
+  new_names <- c("reference_date", "report_date", "count")
+  names(data)[names(data) %in% old_names] <- new_names[match(
+    names(data)[names(data) %in% old_names], old_names
+  )]
+  return(data)
+}

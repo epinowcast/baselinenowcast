@@ -283,7 +283,7 @@ test_that(
 
 
 test_that(
-  "estimate_uncertainty_retro returns numeric vector with all custom parameters",
+  "estimate_uncertainty_retro returns numeric with all custom params",
   {
     triangle <- matrix(
       c(

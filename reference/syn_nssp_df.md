@@ -42,3 +42,8 @@ of a specific syndromic surveillance definition, indexed by the date of
 admission (reference date) and the date of the diagnoses being reported
 to the surveillance system (report date) (e.g. a reporting triangle in
 long format).
+
+## See also
+
+Example datasets
+[`syn_nssp_line_list`](https://baselinenowcast.epinowcast.org/reference/syn_nssp_line_list.md)

@@ -65,9 +65,12 @@ object
 
 ## See also
 
-Other reporting_triangle:
+Reporting triangle construction and validation
 [`as_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.md),
 [`as_reporting_triangle.data.frame()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.data.frame.md),
+[`assert_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/assert_reporting_triangle.md),
+[`detect_structure()`](https://baselinenowcast.epinowcast.org/reference/detect_structure.md),
+[`new_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/new_reporting_triangle.md),
 [`reporting_triangle-class`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
 
 ## Examples

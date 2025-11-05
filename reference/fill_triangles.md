@@ -50,6 +50,12 @@ fill_triangles(
 input `retro_reporting_triangles`but with each reporting triangle filled
 in based on the delay estimated in that reporting triangle.
 
+## See also
+
+Point nowcast generation functions
+[`apply_delay()`](https://baselinenowcast.epinowcast.org/reference/apply_delay.md),
+[`fill_triangle()`](https://baselinenowcast.epinowcast.org/reference/fill_triangle.md)
+
 ## Examples
 
 ``` r

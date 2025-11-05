@@ -51,9 +51,14 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="high-level-interface">High-level interface<a class="anchor" aria-label="anchor" href="#high-level-interface"></a></h2>
 
+      <div class="section-desc"><p>Functions most users will interact with for typical nowcasting workflows.</p></div>
 
+      <dl></dl></div><div class="section level2">
+
+      <h3 id="reporting-triangle-data-structures">Reporting triangle data structures<a class="anchor" aria-label="anchor" href="#reporting-triangle-data-structures"></a></h3>
+      <div class="section-desc"><p>Functions for creating, converting, and validating reporting triangle objects from matrices or data frames.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -61,20 +66,6 @@
 
 
       <dl><dt>
-
-          <code><a href="allocate_reference_times.html">allocate_reference_times()</a></code>
-
-        </dt>
-        <dd>Allocate training volume based on combination of defaults and user-specified values for training volume for delay and uncertainty estimation.</dd>
-
-        <dt>
-
-          <code><a href="apply_delay.html">apply_delay()</a></code>
-
-        </dt>
-        <dd>Apply the delay to generate a point nowcast</dd>
-
-        <dt>
 
           <code><a href="as_reporting_triangle.html">as_reporting_triangle()</a></code>
 
@@ -97,17 +88,47 @@
 
         <dt>
 
-          <code><a href="assert_baselinenowcast_df.html">assert_baselinenowcast_df()</a></code>
-
-        </dt>
-        <dd>Assert validity of <code>baselinenowcast_df</code> objects</dd>
-
-        <dt>
-
           <code><a href="assert_reporting_triangle.html">assert_reporting_triangle()</a></code>
 
         </dt>
         <dd>Assert validity of <code>reporting_triangle</code> objects</dd>
+
+        <dt>
+
+          <code><a href="detect_structure.html">detect_structure()</a></code>
+
+        </dt>
+        <dd>Detect the structure of a reporting triangle</dd>
+
+        <dt>
+
+          <code><a href="new_reporting_triangle.html">new_reporting_triangle()</a></code>
+
+        </dt>
+        <dd>Class constructor for <code>reporting_triangle</code> objects</dd>
+
+        <dt>
+
+          <code><a href="reporting_triangle-class.html">reporting_triangle-class</a></code> <code><a href="reporting_triangle-class.html">reporting_triangle</a></code>
+
+        </dt>
+        <dd>Reporting Triangle Object</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="nowcast-data-frames">Nowcast data frames<a class="anchor" aria-label="anchor" href="#nowcast-data-frames"></a></h3>
+      <div class="section-desc"><p>The main nowcasting interface. Functions for creating and validating nowcast data frame objects containing point or probabilistic nowcast results.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="assert_baselinenowcast_df.html">assert_baselinenowcast_df()</a></code>
+
+        </dt>
+        <dd>Assert validity of <code>baselinenowcast_df</code> objects</dd>
 
         <dt>
 
@@ -132,12 +153,72 @@
 
         <dt>
 
-          <code><a href="combine_obs_with_pred.html">combine_obs_with_pred()</a></code>
+          <code><a href="new_baselinenowcast_df.html">new_baselinenowcast_df()</a></code>
 
         </dt>
-        <dd>Combine observed data with a single prediction draw</dd>
+        <dd>Combine data from a nowcast dataframe, strata, and reference dates</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="workflow-wrappers">Workflow wrappers<a class="anchor" aria-label="anchor" href="#workflow-wrappers"></a></h3>
+      <div class="section-desc"><p>High-level wrapper functions that combine multiple steps for end-to-end nowcasting workflows.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="allocate_reference_times.html">allocate_reference_times()</a></code>
+
+        </dt>
+        <dd>Allocate training volume based on combination of defaults and user-specified values for training volume for delay and uncertainty estimation.</dd>
 
         <dt>
+
+          <code><a href="estimate_and_apply_delay.html">estimate_and_apply_delay()</a></code>
+
+        </dt>
+        <dd>Estimate and apply delay from a reporting triangle</dd>
+
+        <dt>
+
+          <code><a href="estimate_and_apply_uncertainty.html">estimate_and_apply_uncertainty()</a></code>
+
+        </dt>
+        <dd>Estimate and apply uncertainty to a point nowcast matrix</dd>
+      </dl></div><div class="section level2">
+      <h2 id="lower-level-components">Lower-level components<a class="anchor" aria-label="anchor" href="#lower-level-components"></a></h2>
+
+      <div class="section-desc"><p>Modular functions for building custom nowcasting workflows and advanced use cases.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+      <h3 id="estimate-delay-distributions">Estimate delay distributions<a class="anchor" aria-label="anchor" href="#estimate-delay-distributions"></a></h3>
+      <div class="section-desc"><p>Functions for estimating empirical delay distributions from reporting triangles.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="estimate_delay.html">estimate_delay()</a></code>
+
+        </dt>
+        <dd>Estimate a delay distribution from a reporting triangle</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="generate-retrospective-data">Generate retrospective data<a class="anchor" aria-label="anchor" href="#generate-retrospective-data"></a></h3>
+      <div class="section-desc"><p>Functions for creating retrospective reporting triangles by truncating and generating incomplete data structures for validation and uncertainty estimation.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="construct_triangle.html">construct_triangle()</a></code>
 
@@ -153,171 +234,33 @@
 
         <dt>
 
-          <code><a href="detect_structure.html">detect_structure()</a></code>
+          <code><a href="truncate_triangle.html">truncate_triangle()</a></code>
 
         </dt>
-        <dd>Detect the structure of a reporting triangle</dd>
+        <dd>Get a single truncated triangle</dd>
 
         <dt>
 
-          <code><a href="dot-apply_mask.html">.apply_mask()</a></code>
+          <code><a href="truncate_triangles.html">truncate_triangles()</a></code>
 
         </dt>
-        <dd>Apply mask to extract the elements of the matrix that are both true</dd>
+        <dd>Generate truncated reporting triangles</dd>
+      </dl></div><div class="section level2">
 
-        <dt>
+      <h3 id="generate-point-nowcasts">Generate point nowcasts<a class="anchor" aria-label="anchor" href="#generate-point-nowcasts"></a></h3>
+      <div class="section-desc"><p>Functions for applying delay distributions to incomplete reporting data to generate point nowcast estimates.</p></div>
 
-          <code><a href="dot-assign_allocation_from_ns.html">.assign_allocation_from_ns()</a></code>
+      <dl></dl></div><div class="section level2">
 
-        </dt>
-        <dd>Assign number of reference times to delay and uncertainty from the sizes</dd>
 
-        <dt>
 
-          <code><a href="dot-calc_n_retro_nowcast_times.html">.calc_n_retro_nowcast_times()</a></code>
 
-        </dt>
-        <dd>Calculate the number of retrospective nowcast times that can be used after aggregating</dd>
+      <dl><dt>
 
-        <dt>
-
-          <code><a href="dot-calculate_ns.html">.calculate_ns()</a></code>
+          <code><a href="apply_delay.html">apply_delay()</a></code>
 
         </dt>
-        <dd>Helper function to calculate various size requirements</dd>
-
-        <dt>
-
-          <code><a href="dot-check_against_requirements.html">.check_against_requirements()</a></code>
-
-        </dt>
-        <dd>Check target size against number of reference times available and the number required</dd>
-
-        <dt>
-
-          <code><a href="dot-check_lhs_not_only_zeros.html">.check_lhs_not_only_zeros()</a></code>
-
-        </dt>
-        <dd>Check if there are non-zero-values on the LHS of NAs</dd>
-
-        <dt>
-
-          <code><a href="dot-check_obs_and_pred.html">.check_obs_and_pred()</a></code>
-
-        </dt>
-        <dd>Check observations and predictions are compatible</dd>
-
-        <dt>
-
-          <code><a href="dot-check_to_filter_to_max_delay.html">.check_to_filter_to_max_delay()</a></code>
-
-        </dt>
-        <dd>Check that the reporting triangle contains the correct number of columns for the specified maximum delay</dd>
-
-        <dt>
-
-          <code><a href="dot-filter_to_recent_horizons.html">.filter_to_recent_horizons()</a></code>
-
-        </dt>
-        <dd>Filter to recent horizons</dd>
-
-        <dt>
-
-          <code><a href="dot-handle_target_exceeds_avail.html">.handle_target_exceeds_avail()</a></code>
-
-        </dt>
-        <dd>Helper for when target exceeds available reference times</dd>
-
-        <dt>
-
-          <code><a href="dot-perform_allocation_process.html">.perform_allocation_process()</a></code>
-
-        </dt>
-        <dd>Perform the allocation process</dd>
-
-        <dt>
-
-          <code><a href="dot-safelydoesit.html">.safelydoesit()</a></code>
-
-        </dt>
-        <dd>Safe iterator</dd>
-
-        <dt>
-
-          <code><a href="dot-validate_delay.html">.validate_delay()</a></code>
-
-        </dt>
-        <dd>Validate the delay PMF if it is passed in</dd>
-
-        <dt>
-
-          <code><a href="dot-validate_inputs_allocation.html">.validate_inputs_allocation()</a></code>
-
-        </dt>
-        <dd>Helper function to validate allocation parameters</dd>
-
-        <dt>
-
-          <code><a href="dot-validate_inputs_uncertainty.html">.validate_inputs_uncertainty()</a></code>
-
-        </dt>
-        <dd>Validate the specified number of reference times meets the minimum requirements</dd>
-
-        <dt>
-
-          <code><a href="dot-validate_max_delay.html">.validate_max_delay()</a></code>
-
-        </dt>
-        <dd>Check that the maximum delay is not too large, error if it is</dd>
-
-        <dt>
-
-          <code><a href="dot-validate_rep_tri_args.html">.validate_rep_tri_args()</a></code>
-
-        </dt>
-        <dd>Validate each item in the reporting triangle</dd>
-
-        <dt>
-
-          <code><a href="dot-validate_rep_tri_df.html">.validate_rep_tri_df()</a></code>
-
-        </dt>
-        <dd>Validate the reporting triangle data.frame</dd>
-
-        <dt>
-
-          <code><a href="dot-validate_uncertainty.html">.validate_uncertainty()</a></code>
-
-        </dt>
-        <dd>Validate the uncertainty parameters if they are passed in</dd>
-
-        <dt>
-
-          <code><a href="estimate_and_apply_delay.html">estimate_and_apply_delay()</a></code>
-
-        </dt>
-        <dd>Estimate and apply delay from a reporting triangle</dd>
-
-        <dt>
-
-          <code><a href="estimate_and_apply_uncertainty.html">estimate_and_apply_uncertainty()</a></code>
-
-        </dt>
-        <dd>Estimate and apply uncertainty to a point nowcast matrix</dd>
-
-        <dt>
-
-          <code><a href="estimate_delay.html">estimate_delay()</a></code>
-
-        </dt>
-        <dd>Estimate a delay distribution from a reporting triangle</dd>
-
-        <dt>
-
-          <code><a href="estimate_uncertainty.html">estimate_uncertainty()</a></code>
-
-        </dt>
-        <dd>Estimate uncertainty parameters</dd>
+        <dd>Apply the delay to generate a point nowcast</dd>
 
         <dt>
 
@@ -332,6 +275,22 @@
 
         </dt>
         <dd>Generate retrospective nowcasts</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="estimate-observation-error">Estimate observation error<a class="anchor" aria-label="anchor" href="#estimate-observation-error"></a></h3>
+      <div class="section-desc"><p>Functions for estimating observation error parameters from retrospective nowcast performance to quantify uncertainty.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="estimate_uncertainty.html">estimate_uncertainty()</a></code>
+
+        </dt>
+        <dd>Estimate uncertainty parameters</dd>
 
         <dt>
 
@@ -346,27 +305,22 @@
 
         </dt>
         <dd>Fit a negative binomial to a vector of observations and expectations</dd>
+      </dl></div><div class="section level2">
 
-        <dt>
+      <h3 id="generate-probabilistic-nowcasts">Generate probabilistic nowcasts<a class="anchor" aria-label="anchor" href="#generate-probabilistic-nowcasts"></a></h3>
+      <div class="section-desc"><p>Functions for generating probabilistic nowcasts by combining point estimates with uncertainty quantification from observation error models.</p></div>
 
-          <code><a href="new_baselinenowcast_df.html">new_baselinenowcast_df()</a></code>
+      <dl></dl></div><div class="section level2">
 
-        </dt>
-        <dd>Combine data from a nowcast dataframe, strata, and reference dates</dd>
 
-        <dt>
 
-          <code><a href="new_reporting_triangle.html">new_reporting_triangle()</a></code>
 
-        </dt>
-        <dd>Class constructor for <code>reporting_triangle</code> objects</dd>
+      <dl><dt>
 
-        <dt>
-
-          <code><a href="reporting_triangle-class.html">reporting_triangle-class</a></code> <code><a href="reporting_triangle-class.html">reporting_triangle</a></code>
+          <code><a href="combine_obs_with_pred.html">combine_obs_with_pred()</a></code>
 
         </dt>
-        <dd>Reporting Triangle Object</dd>
+        <dd>Combine observed data with a single prediction draw</dd>
 
         <dt>
 
@@ -402,8 +356,17 @@
 
         </dt>
         <dd>Get a dataframe of multiple draws of only the predicted elements of the nowcast vector</dd>
+      </dl></div><div class="section level2">
+      <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a></h2>
 
-        <dt>
+      <div class="section-desc"><p>Example datasets included with the package.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="syn_nssp_df.html">syn_nssp_df</a></code>
 
@@ -416,22 +379,9 @@
 
         </dt>
         <dd>A synthetic dataset resembling line-list (each row is a patient) data from the United States' National Syndromic Surveillance System (NSSP) accessed via the Essence platform. All entries are synthetic, formatted to look as close to the real raw data as possible.</dd>
-
-        <dt>
-
-          <code><a href="truncate_triangle.html">truncate_triangle()</a></code>
-
-        </dt>
-        <dd>Get a single truncated triangle</dd>
-
-        <dt>
-
-          <code><a href="truncate_triangles.html">truncate_triangles()</a></code>
-
-        </dt>
-        <dd>Generate truncated reporting triangles</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

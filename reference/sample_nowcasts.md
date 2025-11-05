@@ -52,6 +52,15 @@ Dataframe containing information for multiple draws with columns for the
 reference time (`time`), the predicted counts (`pred_count`), and the
 draw number (`draw`).
 
+## See also
+
+Probabilistic nowcast generation functions
+[`combine_obs_with_pred()`](https://baselinenowcast.epinowcast.org/reference/combine_obs_with_pred.md),
+[`sample_nb()`](https://baselinenowcast.epinowcast.org/reference/sample_nb.md),
+[`sample_nowcast()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcast.md),
+[`sample_prediction()`](https://baselinenowcast.epinowcast.org/reference/sample_prediction.md),
+[`sample_predictions()`](https://baselinenowcast.epinowcast.org/reference/sample_predictions.md)
+
 ## Examples
 
 ``` r

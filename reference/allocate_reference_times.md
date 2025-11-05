@@ -75,6 +75,12 @@ allocate_reference_times(
 
 list of n_history_delay and n_retrospective_nowcasts
 
+## See also
+
+High-level workflow wrapper functions
+[`estimate_and_apply_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delay.md),
+[`estimate_and_apply_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_uncertainty.md)
+
 ## Examples
 
 ``` r

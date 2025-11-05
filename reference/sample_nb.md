@@ -24,6 +24,15 @@ sample_nb(pred, uncertainty_params)
 single draw from the negative binomial distribution with the specified
 `uncertainty params`.
 
+## See also
+
+Probabilistic nowcast generation functions
+[`combine_obs_with_pred()`](https://baselinenowcast.epinowcast.org/reference/combine_obs_with_pred.md),
+[`sample_nowcast()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcast.md),
+[`sample_nowcasts()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcasts.md),
+[`sample_prediction()`](https://baselinenowcast.epinowcast.org/reference/sample_prediction.md),
+[`sample_predictions()`](https://baselinenowcast.epinowcast.org/reference/sample_predictions.md)
+
 ## Examples
 
 ``` r

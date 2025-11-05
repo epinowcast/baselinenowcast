@@ -38,6 +38,8 @@ function for more details on the required inputs to generate the object.
 
 ## See also
 
-Other baselinenowcast_df:
+Main nowcasting interface functions
+[`assert_baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/assert_baselinenowcast_df.md),
 [`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md),
-[`baselinenowcast.reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.reporting_triangle.md)
+[`baselinenowcast.reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.reporting_triangle.md),
+[`new_baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/new_baselinenowcast_df.md)

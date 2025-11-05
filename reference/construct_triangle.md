@@ -29,6 +29,13 @@ construct_triangle(truncated_reporting_triangle, structure = 1)
 A single retrospective reporting triangle matrix with NAs in the
 appropriate positions.
 
+## See also
+
+Retrospective data generation functions
+[`construct_triangles()`](https://baselinenowcast.epinowcast.org/reference/construct_triangles.md),
+[`truncate_triangle()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangle.md),
+[`truncate_triangles()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangles.md)
+
 ## Examples
 
 ``` r

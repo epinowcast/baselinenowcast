@@ -36,6 +36,12 @@ estimate_and_apply_delay(
 
 `pt_nowcast_matrix` Matrix of point nowcasts
 
+## See also
+
+High-level workflow wrapper functions
+[`allocate_reference_times()`](https://baselinenowcast.epinowcast.org/reference/allocate_reference_times.md),
+[`estimate_and_apply_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_uncertainty.md)
+
 ## Examples
 
 ``` r

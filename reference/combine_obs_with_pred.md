@@ -48,6 +48,15 @@ combine_obs_with_pred(
 
 A vector of predicted counts at each reference time
 
+## See also
+
+Probabilistic nowcast generation functions
+[`sample_nb()`](https://baselinenowcast.epinowcast.org/reference/sample_nb.md),
+[`sample_nowcast()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcast.md),
+[`sample_nowcasts()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcasts.md),
+[`sample_prediction()`](https://baselinenowcast.epinowcast.org/reference/sample_prediction.md),
+[`sample_predictions()`](https://baselinenowcast.epinowcast.org/reference/sample_predictions.md)
+
 ## Examples
 
 ``` r

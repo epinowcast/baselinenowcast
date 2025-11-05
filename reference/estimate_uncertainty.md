@@ -73,6 +73,12 @@ each element representing the estimate of the uncertainty parameter for
 each horizon. The specific parameter type depends on the chosen error
 model.
 
+## See also
+
+Observation error estimation functions
+[`fit_by_horizon()`](https://baselinenowcast.epinowcast.org/reference/fit_by_horizon.md),
+[`fit_nb()`](https://baselinenowcast.epinowcast.org/reference/fit_nb.md)
+
 ## Examples
 
 ``` r

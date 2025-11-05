@@ -65,6 +65,15 @@ sample_nowcast(
 Vector of predicted counts at each reference time based on combining the
 observed counts and the predicted counts for the unobserved elements.
 
+## See also
+
+Probabilistic nowcast generation functions
+[`combine_obs_with_pred()`](https://baselinenowcast.epinowcast.org/reference/combine_obs_with_pred.md),
+[`sample_nb()`](https://baselinenowcast.epinowcast.org/reference/sample_nb.md),
+[`sample_nowcasts()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcasts.md),
+[`sample_prediction()`](https://baselinenowcast.epinowcast.org/reference/sample_prediction.md),
+[`sample_predictions()`](https://baselinenowcast.epinowcast.org/reference/sample_predictions.md)
+
 ## Examples
 
 ``` r

@@ -29,6 +29,12 @@ fit_by_horizon(obs, pred, fit_model = fit_nb)
 Vector of uncertainty parameters of the same length as the number of
 columns in the `obs` matrix.
 
+## See also
+
+Observation error estimation functions
+[`estimate_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md),
+[`fit_nb()`](https://baselinenowcast.epinowcast.org/reference/fit_nb.md)
+
 ## Examples
 
 ``` r

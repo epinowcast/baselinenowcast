@@ -57,3 +57,8 @@ Created for package demonstration to provide an example of how to
 pre-process this dataset to obtain a reporting triangle. This is made to
 look like the data that one would pull directly an API to access
 patient-level line-list data.
+
+## See also
+
+Example datasets
+[`syn_nssp_df`](https://baselinenowcast.epinowcast.org/reference/syn_nssp_df.md)

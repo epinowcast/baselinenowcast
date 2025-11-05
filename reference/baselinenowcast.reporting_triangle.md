@@ -113,9 +113,11 @@ Data.frame of class
 
 ## See also
 
-Other baselinenowcast_df:
+Main nowcasting interface functions
+[`assert_baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/assert_baselinenowcast_df.md),
 [`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md),
-[`baselinenowcast_df-class`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast_df-class.md)
+[`baselinenowcast_df-class`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast_df-class.md),
+[`new_baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/new_baselinenowcast_df.md)
 
 ## Examples
 

@@ -86,6 +86,12 @@ estimate_and_apply_uncertainty(
 `nowcast_draws_df` Dataframe containing draws of combined observations
 and probabilistic predictions at each reference time.
 
+## See also
+
+High-level workflow wrapper functions
+[`allocate_reference_times()`](https://baselinenowcast.epinowcast.org/reference/allocate_reference_times.md),
+[`estimate_and_apply_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delay.md)
+
 ## Examples
 
 ``` r

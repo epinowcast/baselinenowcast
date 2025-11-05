@@ -52,6 +52,15 @@ Dataframe containing the predicted point nowcast vectors indexed by
 reference time (`pred_count`), reference time (`time`), and the draw
 index (`draw`).
 
+## See also
+
+Probabilistic nowcast generation functions
+[`combine_obs_with_pred()`](https://baselinenowcast.epinowcast.org/reference/combine_obs_with_pred.md),
+[`sample_nb()`](https://baselinenowcast.epinowcast.org/reference/sample_nb.md),
+[`sample_nowcast()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcast.md),
+[`sample_nowcasts()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcasts.md),
+[`sample_prediction()`](https://baselinenowcast.epinowcast.org/reference/sample_prediction.md)
+
 ## Examples
 
 ``` r

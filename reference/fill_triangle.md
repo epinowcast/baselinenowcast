@@ -52,6 +52,12 @@ fill_triangle(
 the `reporting_triangle` but with the missing values filled in as point
 estimates.
 
+## See also
+
+Point nowcast generation functions
+[`apply_delay()`](https://baselinenowcast.epinowcast.org/reference/apply_delay.md),
+[`fill_triangles()`](https://baselinenowcast.epinowcast.org/reference/fill_triangles.md)
+
 ## Examples
 
 ``` r

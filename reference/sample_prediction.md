@@ -64,6 +64,15 @@ sample_prediction(
 Vector of predicted draws at each reference time, for all reference
 times in the input `point_nowcast_matrix`.
 
+## See also
+
+Probabilistic nowcast generation functions
+[`combine_obs_with_pred()`](https://baselinenowcast.epinowcast.org/reference/combine_obs_with_pred.md),
+[`sample_nb()`](https://baselinenowcast.epinowcast.org/reference/sample_nb.md),
+[`sample_nowcast()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcast.md),
+[`sample_nowcasts()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcasts.md),
+[`sample_predictions()`](https://baselinenowcast.epinowcast.org/reference/sample_predictions.md)
+
 ## Examples
 
 ``` r

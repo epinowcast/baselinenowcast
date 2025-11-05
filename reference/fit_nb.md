@@ -28,6 +28,12 @@ fit_nb(x, mu)
 
 the maximum likelihood estimate of the dispersion
 
+## See also
+
+Observation error estimation functions
+[`estimate_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md),
+[`fit_by_horizon()`](https://baselinenowcast.epinowcast.org/reference/fit_by_horizon.md)
+
 ## Examples
 
 ``` r

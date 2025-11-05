@@ -56,3 +56,13 @@ new_reporting_triangle(
 
 An object of class
 [`reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+
+## See also
+
+Reporting triangle construction and validation
+[`as_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.md),
+[`as_reporting_triangle.data.frame()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.data.frame.md),
+[`as_reporting_triangle.matrix()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.matrix.md),
+[`assert_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/assert_reporting_triangle.md),
+[`detect_structure()`](https://baselinenowcast.epinowcast.org/reference/detect_structure.md),
+[`reporting_triangle-class`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)

@@ -39,6 +39,13 @@ truncate_triangles(
 with as many rows as available given the truncation, and the same number
 of columns as `reporting_triangle`.
 
+## See also
+
+Retrospective data generation functions
+[`construct_triangle()`](https://baselinenowcast.epinowcast.org/reference/construct_triangle.md),
+[`construct_triangles()`](https://baselinenowcast.epinowcast.org/reference/construct_triangles.md),
+[`truncate_triangle()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangle.md)
+
 ## Examples
 
 ``` r

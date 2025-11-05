@@ -29,6 +29,13 @@ truncate_triangle(t, reporting_triangle)
 
 `trunc_rep_tri` Matrix with `t` fewer rows than `reporting_triangle`.
 
+## See also
+
+Retrospective data generation functions
+[`construct_triangle()`](https://baselinenowcast.epinowcast.org/reference/construct_triangle.md),
+[`construct_triangles()`](https://baselinenowcast.epinowcast.org/reference/construct_triangles.md),
+[`truncate_triangles()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangles.md)
+
 ## Examples
 
 ``` r

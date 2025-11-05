@@ -21,6 +21,7 @@
 #' @inheritParams construct_triangles
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcasts
+#' @inheritParams sample_prediction
 #' @param n_history_delay Integer indicating the number of reference times
 #'   (observations) to be used in the estimate of the reporting delay, always
 #'    starting from the most recent reporting delay.

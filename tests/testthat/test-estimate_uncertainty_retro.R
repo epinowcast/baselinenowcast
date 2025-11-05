@@ -78,7 +78,7 @@ test_that("estimate_uncertainty_retro matches manual workflow", {
 })
 
 test_that(
-  "estimate_uncertainty_retro returns numeric vector with custom n_history_delay",
+  "estimate_uncertainty_retro returns numeric with custom n_history_delay",
   {
     triangle <- matrix(
     c(

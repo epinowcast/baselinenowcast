@@ -56,6 +56,13 @@ to a negative binomial observation model by default. The user can
 specify a different fitting model by replacing the
 \code{fit_model} argument in \code{fit_by_horizon}.}
 
+\item{uncertainty_sampler}{Function that ingests a vector or matrix of
+predictions and a vector of uncertainty parameters and generates draws
+from the observation model. Default is \code{sample_nb} which expects
+arguments \code{pred} for the vector of predictions and uncertainty parameters
+for the corresponding vector of uncertainty parameters, and draws from a
+negative binomial for each element of the vector.}
+
 \item{...}{Additional arguments to \code{\link[=estimate_uncertainty_retro]{estimate_uncertainty_retro()}} and
 \code{\link[=sample_nowcasts]{sample_nowcasts()}}.}
 }

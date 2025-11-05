@@ -30,7 +30,6 @@ disp
 }
 \seealso{
 Observation error estimation functions
-\code{\link{estimate_uncertainty}()},
 \code{\link{fit_by_horizon}()}
 }
 \concept{estimate_observation_error}

@@ -176,6 +176,7 @@
 #'
 #' @returns Boolean indicating whether or not there are non-zero values on the
 #'    LHS of the first NA (TRUE = has non-zeros, FALSE = only zeros)
+#' @keywords internal
 .check_lhs_not_only_zeros <- function(mat) {
   # Find first NA
   first_na <- which(is.na(mat[nrow(mat), ]))[1]

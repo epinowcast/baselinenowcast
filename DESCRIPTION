@@ -26,7 +26,12 @@ Authors@R:
            family = "Abbott",
            role = c("aut"),
            email = "contact@samabbott.co.uk",
-           comment = c(ORCID = "0000-0001-8057-8037")))
+           comment = c(ORCID = "0000-0001-8057-8037")),
+    person(given   = "Tim",
+           family  = "Taylor",
+           role    = "ctb",
+           email   = "tim.taylor@hiddenelephants.co.uk",
+           comment = c(ORCID = "0000-0002-8587-7113")))
 Description: Nowcasting right-truncated epidemiological data is critical
   for timely public health decision-making, as reporting delays can create
   misleading impressions of declining trends in recent data. This package

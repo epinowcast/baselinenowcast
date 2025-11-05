@@ -11,7 +11,7 @@
 #'   \item [sample_nowcasts()] - Applies uncertainty to generate draws
 #' }
 #'
-#' For uncertainty estimation without sampling, use
+#' To obtain estimates of uncertainty parameters, use
 #'   [estimate_uncertainty_retro()]. For full control over individual steps
 #'   (e.g., custom matrix preparation, alternative aggregation), use the
 #'   low-level functions ([truncate_triangles()], [construct_triangles()],

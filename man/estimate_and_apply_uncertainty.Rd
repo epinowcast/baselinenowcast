@@ -81,7 +81,7 @@ using retrospective nowcasts
 \item \code{\link[=sample_nowcasts]{sample_nowcasts()}} - Applies uncertainty to generate draws
 }
 
-For uncertainty estimation without sampling, use
+To obtain estimates of uncertainty parameters, use
 \code{\link[=estimate_uncertainty_retro]{estimate_uncertainty_retro()}}. For full control over individual steps
 (e.g., custom matrix preparation, alternative aggregation), use the
 low-level functions (\code{\link[=truncate_triangles]{truncate_triangles()}}, \code{\link[=construct_triangles]{construct_triangles()}},

@@ -31,6 +31,7 @@
 #'   element representing the estimate of the uncertainty parameter for each
 #'   horizon. Returns NULL if insufficient data is available for estimation.
 #'
+#' @family workflow_wrappers
 #' @export
 #' @importFrom cli cli_warn
 #'

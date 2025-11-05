@@ -324,19 +324,84 @@ test_that("baselinenowcast errors if nowcast unit is specified incorrectly", {
   )
 })
 
-test_that("baselinenowcast handles renamed columns and returns the standard columns", { # nolint
+test_that("baselinenowcast errors if column names are incorrect", { # nolint
   skip_if_not_installed("dplyr")
   covid_data_renamed <- rename(covid_data,
     ref_date = reference_date
   )
-  result <- baselinenowcast(
-    data = covid_data_renamed,
-    max_delay = 40,
-    draws = 100,
-    reference_date = "ref_date",
-    strata_cols = c("age_group", "location")
+  expect_error(
+    baselinenowcast(
+      data = covid_data_renamed,
+      max_delay = 40,
+      draws = 100,
+      strata_cols = c("age_group", "location")
+    ),
+    regexp = "Names must include the elements"
   )
-  expect_false("ref_date" %in% colnames(result))
+  covid_data_renamed2 <- rename(covid_data,
+    rep_date = report_date
+  )
+  expect_error(
+    baselinenowcast(
+      data = covid_data_renamed2,
+      max_delay = 40,
+      draws = 100,
+      strata_cols = c("age_group", "location")
+    ),
+    regexp = "Names must include the elements"
+  )
+
+  covid_data_renamed3 <- rename(covid_data,
+    cases = count
+  )
+  expect_error(
+    baselinenowcast(
+      data = covid_data_renamed3,
+      max_delay = 40,
+      draws = 100,
+      strata_cols = c("age_group", "location")
+    ),
+    regexp = "Names must include the elements"
+  )
+})
+
+test_that("baselinenowcast errors if date columns are not of date class", {
+  covid_data1 <- covid_data
+  covid_data1$reference_date <- as.character(covid_data1$reference_date)
+  expect_error(
+    baselinenowcast(
+      data = covid_data1,
+      max_delay = 40,
+      draws = 100,
+      strata_cols = c("age_group", "location")
+    ),
+    regexp = "reference_date must be of Date class"
+  )
+
+  covid_data2 <- covid_data
+  covid_data2$report_date <- as.character(covid_data2$report_date)
+  expect_error(
+    baselinenowcast(
+      data = covid_data2,
+      max_delay = 40,
+      draws = 100,
+      strata_cols = c("age_group", "location")
+    ),
+    regexp = "report_date must be of Date class"
+  )
+})
+
+test_that("baselinenowcast errors if strata sharig args are invalid", {
+  expect_error(
+    baselinenowcast(
+      data = covid_data,
+      max_delay = 40,
+      draws = 100,
+      strata_cols = c("age_group", "location"),
+      strata_sharing = "all"
+    ),
+    regexp = "Assertion on 'strata_sharing' failed:"
+  )
 })
 
 test_that("baselinenowcast results are equivalent if first creating a reporting triangle and then running", { # nolint

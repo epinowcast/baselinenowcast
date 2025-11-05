@@ -510,23 +510,6 @@
   return(NULL)
 }
 
-#' Test if something can be converted to a date object using as.Date
-#'
-#' @param x Single or vector of either a character string or Date class to
-#'   be tested.
-#'
-#' @returns Boolean indicating whether x can be converted to a Date object
-.is_date_convertible <- function(x) {
-  bool <- tryCatch(
-    {
-      as.Date(x)
-      TRUE
-    },
-    error = function(e) FALSE
-  )
-  return(bool)
-}
-
 #' Validate the date columns can be converted to Dates
 #'
 #' @param data Data.frame containing the date_col
@@ -534,11 +517,11 @@
 #'
 #' @returns NULL
 .validate_date_cols <- function(data, date_col) {
-  if (!.is_date_convertible(data[[date_col]])) {
-    cli_abort(message = c(
-      "{date_col} must be of Date class or be convertible to a Date class.",
-      "i" = "Accepted formats are c('%Y-%m-%d', 'Y/%m/%d')." # nolint
-    ))
+  if (!("Date" %in% class(data[[date_col]]))) {
+    cli_abort(
+      message =
+        "{date_col} must be of Date class"
+    )
   }
   return(NULL)
 }

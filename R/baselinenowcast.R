@@ -176,12 +176,12 @@ baselinenowcast.reporting_triangle <- function(
 #' @param data Data.frame in a long tidy format with counts by reference date
 #'    and report date for one or more strata. Must contain the following
 #'    columns:
-#' .    - Column of type `date` or character with the dates of
-#'     the primary event occurrence (reference date).
-#'    - Column of type `date` or character with the dates of
-#'     report of the primary event (report_date).
-#'    - Column of numeric or integer indicating the new confirmed counts
-#'     pertaining to that reference and report date (count).
+#'     - `reference_date`: Column of type `Date` containing the dates
+#'      of the primary event occurrence.
+#'    - `report_date`: Column of type `Date` containing the dates of
+#'     report of the primary event.
+#'    - `count`: Column of numeric or integer indicating the new confirmed counts
+#'     pertaining to that reference and report date.
 #'  Additional columns indicating the columns which set the unit of a single
 #'  can be included. The user can specify these columns with the
 #'  `strata_cols` argument, otherwise it will be assumed that the `data`
@@ -208,7 +208,7 @@ baselinenowcast.reporting_triangle <- function(
 #' @inheritParams sample_nowcast
 #' @inheritParams allocate_reference_times
 #' @importFrom purrr imap list_rbind map_dfc set_names
-#' @importFrom checkmate assert_subset
+#' @importFrom checkmate assert_subset assert_character assert_names
 #' @family baselinenowcast_df
 #' @export
 #' @method baselinenowcast data.frame
@@ -233,15 +233,13 @@ baselinenowcast.data.frame <- function(
     uncertainty_sampler = sample_nb,
     max_delay,
     delays_unit = "days",
-    reference_date = "reference_date",
-    report_date = "report_date",
-    count = "count",
     strata_cols = NULL,
     strata_sharing = "none",
     ...) {
-  assert_character(reference_date)
-  assert_character(report_date)
-  assert_character(count)
+  output_type <- arg_match(output_type)
+  assert_names(colnames(data),
+    must.include = c("reference_date", "report_date", "count")
+  )
   assert_character(delays_unit)
   assert_character(strata_sharing)
   assert_character(output_type)
@@ -253,21 +251,15 @@ baselinenowcast.data.frame <- function(
       message = c("`strata_sharing` cannot be both 'none' and 'delay'/'uncertainty'") # nolint
     )
   }
-  # Start by renaming the columns to avoid passing around colname args
-  data_renamed <- .rename_cols(data, old_names = c(
-    reference_date,
-    report_date,
-    count
-  ))
   # Filter to max delay
-  data_renamed$delay <- as.numeric(
+  data$delay <- as.numeric(
     difftime(
-      as.Date(data_renamed$report_date),
-      as.Date(data_renamed$reference_date),
+      as.Date(data$report_date),
+      as.Date(data$reference_date),
       units = delays_unit
     )
   )
-  data_clean <- data_renamed[data_renamed$delay <= max_delay, ]
+  data_clean <- data[data$delay <= max_delay, ]
 
   .validate_strata_cols(
     strata_cols,
@@ -302,10 +294,7 @@ baselinenowcast.data.frame <- function(
       strata_cols = strata_cols
     )
     pooled_triangle <- as_reporting_triangle(pooled_df,
-      max_delay = max_delay,
-      reference_date = reference_date,
-      report_date = report_date,
-      count = count
+      max_delay = max_delay
     )
     # Get the training volume for all reporting triangles
     tv <- allocate_reference_times(

@@ -155,34 +155,6 @@ test_that("estimate_uncertainty_retro accepts custom max_delay", {
   expect_gt(length(result), 0)
 })
 
-test_that("estimate_uncertainty_retro accepts custom delay_pmf", {
-  triangle <- matrix(
-    c(
-      65, 46, 21, 7,
-      70, 40, 20, 5,
-      80, 50, 10, 10,
-      100, 40, 31, 20,
-      95, 45, 21, NA,
-      82, 42, NA, NA,
-      70, NA, NA, NA
-    ),
-    nrow = 7,
-    byrow = TRUE
-  )
-
-  custom_pmf <- c(0.4, 0.3, 0.2, 0.1)
-
-  result <- estimate_uncertainty_retro(
-    triangle,
-    n_history_delay = 5,
-    n_retrospective_nowcasts = 2,
-    delay_pmf = custom_pmf
-  )
-
-  expect_type(result, "double")
-  expect_gt(length(result), 0)
-})
-
 test_that("estimate_uncertainty_retro accepts custom aggregators", {
   triangle <- matrix(
     c(
@@ -317,10 +289,9 @@ test_that(
       n_retrospective_nowcasts = 2,
       n_history_delay = 5,
       max_delay = 3,
-      delay_pmf = c(0.4, 0.3, 0.2, 0.1),
       ref_time_aggregator = identity,
       delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
-      structure = 1,
+      structure = 2,
       uncertainty_model = fit_by_horizon
     )
 

@@ -9,11 +9,8 @@ estimate_uncertainty_retro(
   n_history_delay,
   n_retrospective_nowcasts,
   max_delay = ncol(reporting_triangle) - 1,
-  delay_pmf = NULL,
-  ref_time_aggregator = identity,
-  delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
   structure = 1,
-  uncertainty_model = fit_by_horizon
+  ...
 )
 }
 \arguments{
@@ -34,32 +31,12 @@ retrospective nowcast times to use for uncertainty estimation.}
 of the delay. The default is to use the whole reporting triangle,
 \code{ncol(reporting_triangle) -1}.}
 
-\item{delay_pmf}{Numeric vector representing a discrete probability mass
-function for the delay distribution. If NULL (default), the delay
-distribution is estimated from the data.}
-
-\item{ref_time_aggregator}{Function that operates along the rows (reference
-times) of the retrospective point nowcast matrix before it has been
-aggregated across columns (delays). Default is \code{identity}
-which does not aggregate across reference times.}
-
-\item{delay_aggregator}{Function that operates along the columns (delays)
-of the retrospective point nowcast matrix after it has been aggregated
-across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
-
 \item{structure}{Integer or vector specifying the reporting structure.
 If integer, divides columns evenly by that integer (with last possibly
 truncated).  If vector, the sum must not be greater than or equal to the
 number of columns. Default is 1 (standard triangular structure).}
 
-\item{uncertainty_model}{Function that ingests a matrix of observations and a
-matrix of predictions and returns a vector that can be used to
-apply uncertainty using the same error model. Default is
-\code{fit_by_horizon} with arguments of \code{obs} matrix of observations and
-\code{pred} the matrix of predictions that fits each column (horizon)
-to a negative binomial observation model by default. The user can
-specify a different fitting model by replacing the
-\code{fit_model} argument in \code{fit_by_horizon}.}
+\item{...}{Additional arguments passed to \code{\link[=estimate_uncertainty]{estimate_uncertainty()}}.}
 }
 \value{
 A numeric vector of uncertainty parameters with length equal to

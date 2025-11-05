@@ -22,11 +22,8 @@
 #'
 #' @inheritParams estimate_delay
 #' @inheritParams construct_triangles
-#' @inheritParams estimate_uncertainty
 #' @inheritParams estimate_and_apply_uncertainty
-#' @param delay_pmf Numeric vector representing a discrete probability mass
-#'   function for the delay distribution. If NULL (default), the delay
-#'   distribution is estimated from the data.
+#' @param ... Additional arguments passed to [estimate_uncertainty()].
 #'
 #' @returns A numeric vector of uncertainty parameters with length equal to
 #'   one less than the number of columns in the reporting triangle, with each
@@ -73,11 +70,8 @@ estimate_uncertainty_retro <- function(
     n_history_delay,
     n_retrospective_nowcasts,
     max_delay = ncol(reporting_triangle) - 1,
-    delay_pmf = NULL,
-    ref_time_aggregator = identity,
-    delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
     structure = 1,
-    uncertainty_model = fit_by_horizon) {
+    ...) {
   .validate_triangle(reporting_triangle)
 
   n_ref_times <- nrow(reporting_triangle)
@@ -102,8 +96,7 @@ estimate_uncertainty_retro <- function(
   pt_nowcast_mat_list <- fill_triangles(
     retro_reporting_triangles = reporting_triangle_list,
     max_delay = max_delay,
-    n = n_history_delay,
-    delay_pmf = delay_pmf
+    n = n_history_delay
   )
 
   if (is.null(pt_nowcast_mat_list) ||
@@ -122,9 +115,7 @@ estimate_uncertainty_retro <- function(
     truncated_reporting_triangles = trunc_rep_tri_list,
     retro_reporting_triangles = reporting_triangle_list,
     n = n_retrospective_nowcasts,
-    uncertainty_model = uncertainty_model,
-    ref_time_aggregator = ref_time_aggregator,
-    delay_aggregator = delay_aggregator
+    ...
   )
 
   return(uncertainty_params)

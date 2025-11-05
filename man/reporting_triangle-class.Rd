@@ -31,7 +31,7 @@ for more details on the required input formats to generate the object.
 }
 
 \seealso{
-Other reporting_triangle:
+Other reporting_triangle: 
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.matrix}()}

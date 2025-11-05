@@ -22,11 +22,12 @@
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcasts
 #' @inheritParams sample_prediction
+#' @inheritParams fill_triangles
 #' @param n_history_delay Integer indicating the number of reference times
 #'   (observations) to be used in the estimate of the reporting delay, always
 #'    starting from the most recent reporting delay.
 #' @param n_retrospective_nowcasts Integer indicating the number of
-#'   retrospective nowcast times to use for uncertainty estimation.
+#'   retrospective nowcasts to use for uncertainty estimation.
 #' @param ... Additional arguments to [estimate_uncertainty_retro()] and
 #'   [sample_nowcasts()].
 #' @returns `nowcast_draws_df` Dataframe containing draws of combined
@@ -68,6 +69,7 @@ estimate_and_apply_uncertainty <- function(
     max_delay = ncol(reporting_triangle) - 1,
     draws = 1000,
     structure = 1,
+    delay_pmf = NULL,
     uncertainty_model = fit_by_horizon,
     uncertainty_sampler = sample_nb,
     ...) {
@@ -83,6 +85,7 @@ estimate_and_apply_uncertainty <- function(
     n_retrospective_nowcasts = n_retrospective_nowcasts,
     max_delay = max_delay,
     structure = structure,
+    delay_pmf = delay_pmf,
     uncertainty_model = uncertainty_model,
     ...
   )

@@ -10,6 +10,7 @@ estimate_uncertainty_retro(
   n_retrospective_nowcasts,
   max_delay = ncol(reporting_triangle) - 1,
   structure = 1,
+  delay_pmf = NULL,
   ...
 )
 }
@@ -25,7 +26,7 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 starting from the most recent reporting delay.}
 
 \item{n_retrospective_nowcasts}{Integer indicating the number of
-retrospective nowcast times to use for uncertainty estimation.}
+retrospective nowcasts to use for uncertainty estimation.}
 
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
@@ -35,6 +36,11 @@ of the delay. The default is to use the whole reporting triangle,
 If integer, divides columns evenly by that integer (with last possibly
 truncated).  If vector, the sum must not be greater than or equal to the
 number of columns. Default is 1 (standard triangular structure).}
+
+\item{delay_pmf}{Vector or list of vectors of delays assumed to be indexed
+starting at the first delay column in each of the matrices in
+\code{retro_reporting_triangles}. If a list, must of the same length as
+\code{retro_reporting_triangles}, with elements aligning. Default is \code{NULL}}
 
 \item{...}{Additional arguments passed to \code{\link[=estimate_uncertainty]{estimate_uncertainty()}}.}
 }

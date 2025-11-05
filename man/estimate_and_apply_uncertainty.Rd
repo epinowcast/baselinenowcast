@@ -12,6 +12,7 @@ estimate_and_apply_uncertainty(
   max_delay = ncol(reporting_triangle) - 1,
   draws = 1000,
   structure = 1,
+  delay_pmf = NULL,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,
   ...
@@ -33,7 +34,7 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 starting from the most recent reporting delay.}
 
 \item{n_retrospective_nowcasts}{Integer indicating the number of
-retrospective nowcast times to use for uncertainty estimation.}
+retrospective nowcasts to use for uncertainty estimation.}
 
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
@@ -46,6 +47,11 @@ nowcast vector to generate. Default is \code{1000}.}
 If integer, divides columns evenly by that integer (with last possibly
 truncated).  If vector, the sum must not be greater than or equal to the
 number of columns. Default is 1 (standard triangular structure).}
+
+\item{delay_pmf}{Vector or list of vectors of delays assumed to be indexed
+starting at the first delay column in each of the matrices in
+\code{retro_reporting_triangles}. If a list, must of the same length as
+\code{retro_reporting_triangles}, with elements aligning. Default is \code{NULL}}
 
 \item{uncertainty_model}{Function that ingests a matrix of observations and a
 matrix of predictions and returns a vector that can be used to

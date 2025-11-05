@@ -23,6 +23,7 @@
 #' @inheritParams estimate_delay
 #' @inheritParams construct_triangles
 #' @inheritParams estimate_and_apply_uncertainty
+#' @inheritParams fill_triangles
 #' @param ... Additional arguments passed to [estimate_uncertainty()].
 #'
 #' @returns A numeric vector of uncertainty parameters with length equal to
@@ -71,6 +72,7 @@ estimate_uncertainty_retro <- function(
     n_retrospective_nowcasts,
     max_delay = ncol(reporting_triangle) - 1,
     structure = 1,
+    delay_pmf = NULL,
     ...) {
   .validate_triangle(reporting_triangle)
 
@@ -96,7 +98,8 @@ estimate_uncertainty_retro <- function(
   pt_nowcast_mat_list <- fill_triangles(
     retro_reporting_triangles = reporting_triangle_list,
     max_delay = max_delay,
-    n = n_history_delay
+    n = n_history_delay,
+    delay_pmf = delay_pmf
   )
 
   if (is.null(pt_nowcast_mat_list) ||

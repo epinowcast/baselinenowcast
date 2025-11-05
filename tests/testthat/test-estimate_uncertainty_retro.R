@@ -337,6 +337,43 @@ test_that("estimate_uncertainty_retro validates insufficient data", {
   )
 })
 
+test_that("estimate_uncertainty_retro works with custom delay_pmf", {
+  triangle <- matrix(
+    c(
+      65, 46, 21, 7,
+      70, 40, 20, 5,
+      80, 50, 10, 10,
+      100, 40, 31, 20,
+      95, 45, 21, NA,
+      82, 42, NA, NA,
+      70, NA, NA, NA
+    ),
+    nrow = 7,
+    byrow = TRUE
+  )
+
+  custom_delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
+
+  result <- estimate_uncertainty_retro(
+    triangle,
+    n_history_delay = 5,
+    n_retrospective_nowcasts = 2,
+    delay_pmf = custom_delay_pmf
+  )
+
+  expect_type(result, "double")
+  expect_gt(length(result), 0)
+  expect_true(all(result > 0))
+
+  result_default <- estimate_uncertainty_retro(
+    triangle,
+    n_history_delay = 5,
+    n_retrospective_nowcasts = 2
+  )
+
+  expect_false(identical(result, result_default))
+})
+
 test_that(
   "estimate_uncertainty_retro returns numeric vector despite warnings",
   {

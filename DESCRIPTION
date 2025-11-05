@@ -76,7 +76,8 @@ Suggests:
     usethis,
     withr,
     knitr,
-    zoo
+    zoo,
+    glue
 Encoding: UTF-8
 Language: en-GB
 LazyData: true

@@ -72,7 +72,7 @@ test_that(".combine_triangle_dfs combines data across strata correctly", {
       data = test_data_partial_overlap,
       strata_cols = strata_cols
     ),
-    regexp = "Not all reference dates and report dates combinations are available for all strata" # nolint
+    regexp = "Not all reference dates and report dates combinations are available for all" # nolint
   )
   # Correct columns
   expect_true(all(expected_cols %in% colnames(result2)))

@@ -592,7 +592,7 @@
 #'
 #' @returns NULL
 .validate_date_cols <- function(data, date_col) {
-  if (!("Date" %in% class(data[[date_col]]))) {
+  if (!inherits(data[[date_col]], "Date")) {
     cli_abort(
       message =
         "{date_col} must be of Date class"

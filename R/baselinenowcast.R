@@ -180,8 +180,8 @@ baselinenowcast.reporting_triangle <- function(
 #'      of the primary event occurrence.
 #'    - `report_date`: Column of type `Date` containing the dates of
 #'     report of the primary event.
-#'    - `count`: Column of numeric or integer indicating the new confirmed counts
-#'     pertaining to that reference and report date.
+#'    - `count`: Column of numeric or integer indicating the new confirmed
+#'     counts pertaining to that reference and report date.
 #'  Additional columns indicating the columns which set the unit of a single
 #'  can be included. The user can specify these columns with the
 #'  `strata_cols` argument, otherwise it will be assumed that the `data`

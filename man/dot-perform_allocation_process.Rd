@@ -40,3 +40,4 @@ list of reference time allocations
 \description{
 Perform the allocation process
 }
+\keyword{internal}

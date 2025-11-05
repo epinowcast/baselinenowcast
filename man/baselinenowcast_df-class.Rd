@@ -30,9 +30,11 @@ for more details on the required inputs to generate the object.
 }
 
 \seealso{
-Other baselinenowcast_df: 
+Main nowcasting interface functions
+\code{\link{assert_baselinenowcast_df}()},
 \code{\link{baselinenowcast}()},
 \code{\link{baselinenowcast.data.frame}()},
-\code{\link{baselinenowcast.reporting_triangle}()}
+\code{\link{baselinenowcast.reporting_triangle}()},
+\code{\link{new_baselinenowcast_df}()}
 }
 \concept{baselinenowcast_df}

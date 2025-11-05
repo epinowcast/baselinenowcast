@@ -15,9 +15,6 @@ indexed by reference date and report date}
   uncertainty_sampler = sample_nb,
   max_delay,
   delays_unit = "days",
-  reference_date = "reference_date",
-  report_date = "report_date",
-  count = "count",
   strata_cols = NULL,
   strata_sharing = "none",
   ...
@@ -27,13 +24,13 @@ indexed by reference date and report date}
 \item{data}{Data.frame in a long tidy format with counts by reference date
 and report date for one or more strata. Must contain the following
 columns:
-.    - Column of type \code{date} or character with the dates of
-the primary event occurrence (reference date).
+- \code{reference_date}: Column of type \code{Date} containing the dates
+of the primary event occurrence.
 \itemize{
-\item Column of type \code{date} or character with the dates of
-report of the primary event (report_date).
-\item Column of numeric or integer indicating the new confirmed counts
-pertaining to that reference and report date (count).
+\item \code{report_date}: Column of type \code{Date} containing the dates of
+report of the primary event.
+\item \code{count}: Column of numeric or integer indicating the new confirmed counts
+pertaining to that reference and report date.
 Additional columns indicating the columns which set the unit of a single
 can be included. The user can specify these columns with the
 \code{strata_cols} argument, otherwise it will be assumed that the \code{data}
@@ -81,16 +78,6 @@ data.frame. For the data.frame method, this is used to compute the delay
 in terms of the specified unit, and to expand the combinations of
 reference dates and delays to the complete set of combinations in
 the reporting triangle.  Default is \code{"days"}.}
-
-\item{reference_date}{Character string indicating the name of the
-column which represents the reference date, or the date of the primary
-event occurrence.}
-
-\item{report_date}{Character string indicating the name of the
-column which represents the date the primary event was reported.}
-
-\item{count}{Character string indicating the name of the column
-containing the number of incident cases on each reference and report date.}
 
 \item{strata_cols}{Vector of character strings indicating the names of the
 columns in \code{data} that determine how to stratify the data for nowcasting.
@@ -143,9 +130,11 @@ nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
 nowcasts_df
 }
 \seealso{
-Other baselinenowcast_df: 
+Main nowcasting interface functions
+\code{\link{assert_baselinenowcast_df}()},
 \code{\link{baselinenowcast}()},
 \code{\link{baselinenowcast.reporting_triangle}()},
-\code{\link{baselinenowcast_df-class}}
+\code{\link{baselinenowcast_df-class}},
+\code{\link{new_baselinenowcast_df}()}
 }
 \concept{baselinenowcast_df}

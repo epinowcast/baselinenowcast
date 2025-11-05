@@ -35,8 +35,9 @@
 #'     reference times needed for uncertainty estimation. Default is `2`.
 #' @importFrom cli cli_abort cli_warn
 #' @importFrom checkmate assert_integerish
-#' @export
 #' @returns list of n_history_delay and n_retrospective_nowcasts
+#' @family workflow_wrappers
+#' @export
 #' @examples
 #' triangle <- matrix(
 #'   c(
@@ -92,6 +93,7 @@ allocate_reference_times <- function(reporting_triangle,
 #' @inheritParams allocate_reference_times
 #'
 #' @return list of reference time allocations
+#' @keywords internal
 .perform_allocation_process <- function(reporting_triangle,
                                         max_delay,
                                         scale_factor,
@@ -143,6 +145,7 @@ allocate_reference_times <- function(reporting_triangle,
 #' @inheritParams allocate_reference_times
 #'
 #' @returns list of the integer sizes
+#' @keywords internal
 .calculate_ns <- function(reporting_triangle,
                           max_delay,
                           scale_factor,
@@ -171,6 +174,7 @@ allocate_reference_times <- function(reporting_triangle,
 #'
 #' @returns `n_used` Integer indicating how many reference times will be
 #'    used
+#' @keywords internal
 .check_against_requirements <- function(n_ref_times,
                                         n_required,
                                         n_target,
@@ -205,6 +209,7 @@ allocate_reference_times <- function(reporting_triangle,
 #' @inheritParams allocate_reference_times
 #'
 #' @returns number of reference times to use or NULL, invisibly
+#' @keywords internal
 .handle_target_exceeds_avail <- function(n_ref_times,
                                          n_required,
                                          n_target,
@@ -259,6 +264,7 @@ allocate_reference_times <- function(reporting_triangle,
 #'     estimation.
 #'
 #' @returns List of number of reference times to use for delay and uncertainty
+#' @keywords internal
 .assign_allocation_from_ns <- function(n_used,
                                        n_target,
                                        n_min_delay,

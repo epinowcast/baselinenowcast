@@ -19,13 +19,13 @@ part of the \code{strata_cols} will be removed.}
 \item{data}{Data.frame in a long tidy format with counts by reference date
 and report date for one or more strata. Must contain the following
 columns:
-.    - Column of type \code{date} or character with the dates of
-the primary event occurrence (reference date).
+- \code{reference_date}: Column of type \code{Date} containing the dates
+of the primary event occurrence.
 \itemize{
-\item Column of type \code{date} or character with the dates of
-report of the primary event (report_date).
-\item Column of numeric or integer indicating the new confirmed counts
-pertaining to that reference and report date (count).
+\item \code{report_date}: Column of type \code{Date} containing the dates of
+report of the primary event.
+\item \code{count}: Column of numeric or integer indicating the new confirmed counts
+pertaining to that reference and report date.
 Additional columns indicating the columns which set the unit of a single
 can be included. The user can specify these columns with the
 \code{strata_cols} argument, otherwise it will be assumed that the \code{data}

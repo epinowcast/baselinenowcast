@@ -20,6 +20,7 @@
 #'   admission (reference date) and the date of the diagnoses being reported to
 #'   the surveillance system (report date) (e.g. a reporting triangle in
 #'   long format).
+#' @family example_data
 "syn_nssp_df"
 
 #' A synthetic dataset resembling line-list (each row is a patient) data from
@@ -54,6 +55,7 @@
 #'    pre-process this dataset to obtain a reporting triangle. This is made to
 #'    look like the data that one would pull directly an API to access
 #'    patient-level line-list data.
+#' @family example_data
 "syn_nssp_line_list"
 
 #' Incident COVID-19 hospitalisations indexed by the date of positive test

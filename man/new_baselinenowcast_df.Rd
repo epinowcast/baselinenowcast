@@ -26,3 +26,12 @@ Combines data from a nowcast dataframe, a named list of the
 strata associated with the nowcast dataframe, and a vector of reference
 dates corresponding to the time column in the \code{baselinenowcast_df}
 }
+\seealso{
+Main nowcasting interface functions
+\code{\link{assert_baselinenowcast_df}()},
+\code{\link{baselinenowcast}()},
+\code{\link{baselinenowcast.data.frame}()},
+\code{\link{baselinenowcast.reporting_triangle}()},
+\code{\link{baselinenowcast_df-class}}
+}
+\concept{baselinenowcast_df}

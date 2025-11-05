@@ -672,15 +672,13 @@ test_that("baselinenowcast produces different results when stratifying by weekda
 test_that("baselinenowcast produces different results when sharing across age groups for both delay and uncertainty and just each one independently", { # nolint
   skip_if_not_installed("dplyr")
   set.seed(123)
-  covid_data <- covid_data |>
-    dplyr::filter(age_group != "00+")
+  covid_data <- dplyr::filter(covid_data, age_group != "00+")
   multiple_ags_fp <- baselinenowcast(
     covid_data,
     max_delay = 40,
     draws = 100,
     strata_cols = "age_group"
-  ) |>
-    dplyr::mutate(type = "no share")
+  ) |> dplyr::mutate(type = "no share")
   final_day_mean_no_share <- multiple_ags_fp |>
     dplyr::filter(reference_date == max(reference_date)) |>
     dplyr::group_by(reference_date, age_group) |>
@@ -692,8 +690,7 @@ test_that("baselinenowcast produces different results when sharing across age gr
     draws = 100,
     strata_cols = "age_group",
     strata_sharing = c("delay", "uncertainty")
-  ) |>
-    dplyr::mutate(type = "share delay & uncertainty")
+  ) |> dplyr::mutate(type = "share delay & uncertainty")
   final_day_mean_full_share <- multiple_ags_full_ag |>
     dplyr::filter(reference_date == max(reference_date)) |>
     dplyr::group_by(reference_date, age_group) |>
@@ -705,8 +702,7 @@ test_that("baselinenowcast produces different results when sharing across age gr
     draws = 100,
     strata_cols = "age_group",
     strata_sharing = "delay"
-  ) |>
-    dplyr::mutate(type = "share delay")
+  ) |> dplyr::mutate(type = "share delay")
   final_day_mean_share_delay <- multiple_ags_just_delay |>
     dplyr::filter(reference_date == max(reference_date)) |>
     dplyr::group_by(reference_date, age_group) |>
@@ -718,8 +714,7 @@ test_that("baselinenowcast produces different results when sharing across age gr
     draws = 100,
     strata_cols = "age_group",
     strata_sharing = "uncertainty"
-  ) |>
-    dplyr::mutate(type = "share uncertainty")
+  ) |> dplyr::mutate(type = "share uncertainty")
   final_day_mean_share_uq <- multiple_ags_just_uq |>
     dplyr::filter(reference_date == max(reference_date)) |>
     dplyr::group_by(reference_date, age_group) |>
@@ -803,7 +798,7 @@ test_that("baselinenowcast produces different results when sharing across age gr
 
 test_that("baselinenowcast fails with coherent error messages necessarys strata are missing", { # nolint
   expect_error(
-    muliple_ags_forgot_strata <- baselinenowcast(
+    baselinenowcast(
       covid_data,
       max_delay = 40,
       draws = 100
@@ -825,7 +820,10 @@ test_that("baselinenowcast fails with coherent error messages when we ask it to 
     label = TRUE
   )
   exp_err <- "There is no overlapping set of reference and report dates across all" # nolint
-  covid_data_00 <- covid_data |> filter(age_group == "00+")
+  covid_data_00 <- dplyr::filter(
+    covid_data,
+    age_group == "00+"
+  )
   expect_error(
     baselinenowcast(covid_data_00,
       max_delay = 40,
@@ -870,12 +868,10 @@ test_that("baselinenowcast fails with coherent error messages when we ask it to 
 
 test_that("baselinenowcast errors when trying to do strata sharing with weekday strata, but works if separated", { # nolint
   skip_if_not_installed("dplyr")
-  library(dplyr)
   covid_data$weekday_ref_date <- lubridate::wday(covid_data$reference_date,
     label = TRUE
   )
-  covid_data <- covid_data |>
-    dplyr::filter(age_group != "00+")
+  covid_data <- dplyr::filter(covid_data, age_group != "00+")
   expect_error(
     baselinenowcast(covid_data,
       max_delay = 40,
@@ -893,7 +889,8 @@ test_that("baselinenowcast errors when trying to do strata sharing with weekday 
   wdays <- unique(covid_data$weekday_ref_date)
   bnc_df <- data.frame()
   for (i in 1:7) {
-    covid_data_single_wday <- covid_data |> filter(
+    covid_data_single_wday <- dplyr::filter(
+      covid_data,
       weekday_ref_date == wdays[i]
     )
     bnc_df_i <- baselinenowcast(covid_data_single_wday,
@@ -906,8 +903,7 @@ test_that("baselinenowcast errors when trying to do strata sharing with weekday 
 
     bnc_df <- bind_rows(bnc_df, bnc_df_i)
   }
-  bnc_df <- bnc_df |>
-    dplyr::mutate(type = "age group sharing")
+  bnc_df <- dplyr::mutate(bnc_df, type = "age group sharing")
   # Compare to no strata sharing
   no_share_ag <- baselinenowcast(covid_data,
     max_delay = 40,

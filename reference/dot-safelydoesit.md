@@ -16,4 +16,6 @@ Safe iterator
 
 ## Value
 
-Function that will return a NULL if an error occurs
+Function that returns a list with `result` and `error` components. On
+success: `result` contains the function output and `error` is NULL. On
+failure: `result` is NULL and `error` contains the error object.

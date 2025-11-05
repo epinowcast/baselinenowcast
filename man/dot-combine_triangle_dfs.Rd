@@ -31,3 +31,4 @@ counts across the shared set of reference and report dates. Note that this
 may be a subset of the unique set of reference and report date combinations
 in the original data.
 }
+\keyword{internal}

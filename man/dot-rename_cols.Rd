@@ -18,3 +18,4 @@ Data.frame with columns renamed
 \description{
 Rename required columns
 }
+\keyword{internal}

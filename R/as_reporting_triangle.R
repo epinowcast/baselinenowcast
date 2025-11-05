@@ -241,7 +241,7 @@ as_reporting_triangle.matrix <- function(data,
 #' @param data Data.frame with the original column names
 #' @param old_names The names of the columns for, in order, reference date,
 #'    report date, and count
-#'
+#' @keywords internal
 #' @returns Data.frame with columns renamed
 .rename_cols <- function(data,
                          old_names) {

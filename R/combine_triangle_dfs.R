@@ -10,6 +10,7 @@
 #'   date and report date for one or more strata.
 #' @inheritParams baselinenowcast.data.frame
 #' @importFrom stats aggregate as.formula
+#' @keywords internal
 #' @returns `result` Data.frame with the same column names for reference date,
 #'   report date, and case count as in `data` but summed across all strata in
 #'   the original data.

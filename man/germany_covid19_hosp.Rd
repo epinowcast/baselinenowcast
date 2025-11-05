@@ -34,4 +34,10 @@ germany_covid19_hosp
 Incident COVID-19 hospitalisations indexed by the date of positive test
 (reference date) and report date from Germany in 2021 and 2022.
 }
+\seealso{
+Example datasets
+\code{\link{syn_nssp_df}},
+\code{\link{syn_nssp_line_list}}
+}
+\concept{example_data}
 \keyword{datasets}

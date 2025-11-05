@@ -368,7 +368,7 @@ baselinenowcast.data.frame <- function(
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast
 #' @inheritParams allocate_reference_times
-#'
+#' @keywords internal
 #' @returns Data.frame of nowcasts with columns obtained from the name of the
 #'   original list and the nowcast unit.
 .nowcast_from_rep_tris <- function(

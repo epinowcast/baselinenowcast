@@ -556,6 +556,7 @@
 #' Validate each of the strata columns passed to baselinenowcast
 #'
 #' @inheritParams baselinenowcast.data.frame
+#' @keywords internal
 #' @returns NULL
 .validate_strata_cols <- function(strata_cols,
                                   data) {
@@ -589,7 +590,7 @@
 #'
 #' @param data Data.frame containing the date_col
 #' @param date_col Name of the column to be tested
-#'
+#' @keywords internal
 #' @returns NULL
 .validate_date_cols <- function(data, date_col) {
   if (!inherits(data[[date_col]], "Date")) {

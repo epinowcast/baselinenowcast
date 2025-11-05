@@ -92,3 +92,4 @@ original list and the nowcast unit.
 \description{
 Produce a nowcast from a named reporting triangle object
 }
+\keyword{internal}

@@ -24,8 +24,8 @@ of the primary event occurrence.
 \itemize{
 \item \code{report_date}: Column of type \code{Date} containing the dates of
 report of the primary event.
-\item \code{count}: Column of numeric or integer indicating the new confirmed counts
-pertaining to that reference and report date.
+\item \code{count}: Column of numeric or integer indicating the new confirmed
+counts pertaining to that reference and report date.
 Additional columns indicating the columns which set the unit of a single
 can be included. The user can specify these columns with the
 \code{strata_cols} argument, otherwise it will be assumed that the \code{data}
@@ -35,3 +35,4 @@ contains only data for a single strata.
 \description{
 Validate each of the strata columns passed to baselinenowcast
 }
+\keyword{internal}

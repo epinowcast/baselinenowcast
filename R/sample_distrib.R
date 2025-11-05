@@ -2,6 +2,7 @@
 #'
 #' @param pred Vector of predictions.
 #' @param uncertainty_params Vector of uncertainty parameters.
+#' @family generate_probabilistic_nowcasts
 #' @importFrom stats rnbinom
 #' @importFrom cli cli_abort
 #' @export

@@ -36,7 +36,7 @@ NULL
 #' @inheritParams as_reporting_triangle
 #'
 #' @returns An object of class \code{\link{reporting_triangle}}
-#'
+#' @family reporting_triangle
 #' @export
 new_reporting_triangle <- function(reporting_triangle_matrix,
                                    reference_dates,
@@ -70,6 +70,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
 #'
 #' @param data A \code{\link{reporting_triangle}} object to check for validity.
 #' @return NULL
+#' @family reporting_triangle
 #' @export
 #' @importFrom checkmate assert_matrix assert_date assert_numeric
 #'    assert_character assert_choice assert_list

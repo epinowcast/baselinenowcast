@@ -33,3 +33,4 @@ number of reference times to use or NULL, invisibly
 \description{
 Helper for when target exceeds available reference times
 }
+\keyword{internal}

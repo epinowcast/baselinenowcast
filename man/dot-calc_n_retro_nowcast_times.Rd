@@ -31,3 +31,4 @@ aggregated to be used to generate a retrospective point nowcast.
 Calculate the number of retrospective nowcast times that can be used after
 aggregating
 }
+\keyword{internal}

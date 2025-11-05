@@ -176,6 +176,7 @@
 #'
 #' @returns Boolean indicating whether or not there are non-zero values on the
 #'    LHS of the first NA (TRUE = has non-zeros, FALSE = only zeros)
+#' @keywords internal
 .check_lhs_not_only_zeros <- function(mat) {
   # Find first NA
   first_na <- which(is.na(mat[nrow(mat), ]))[1]
@@ -196,6 +197,7 @@
 #' @inheritParams estimate_delay
 #'
 #' @returns NULL invisibly
+#' @keywords internal
 .validate_max_delay <- function(triangle,
                                 max_delay) {
   if (max_delay > ncol(triangle) - 1) {
@@ -214,6 +216,7 @@
 #' @importFrom cli cli_alert_info
 #'
 #' @returns reporting_triangle
+#' @keywords internal
 .check_to_filter_to_max_delay <- function(triangle,
                                           max_delay) {
   if (max_delay < ncol(triangle) - 1) {
@@ -316,6 +319,7 @@
 #' @importFrom checkmate assert_scalar assert_numeric assert_integerish
 #'
 #' @returns NULL invisibly
+#' @keywords internal
 .validate_inputs_allocation <- function(scale_factor,
                                         prop_delay,
                                         n_min_retro_nowcasts) {
@@ -338,6 +342,7 @@
 #' @inheritParams estimate_and_apply_uncertainty
 #' @inheritParams allocate_reference_times
 #' @returns NULL, invisibly
+#' @keywords internal
 .validate_inputs_uncertainty <- function(n_ref_times,
                                          n_min_delay,
                                          n_history_delay,
@@ -382,6 +387,7 @@
 #' @param pred Matrix or vector of predictions.
 #'
 #' @returns NULL, invisibly
+#' @keywords internal
 .check_obs_and_pred <- function(obs, pred) {
   if (is.null(obs) || is.null(pred)) {
     cli_abort("Missing `obs` and/or `pred`") # nolint
@@ -411,6 +417,7 @@
 #'
 #' @importFrom checkmate assert_data_frame
 #' @returns NULL, invisibly
+#' @keywords internal
 .validate_rep_tri_df <- function(data,
                                  delays_unit) {
   assert_data_frame(data)
@@ -470,6 +477,7 @@
 #' @inheritParams sample_prediction
 #'
 #' @returns NULL invisibly
+#' @keywords internal
 .validate_uncertainty <- function(triangle,
                                   uncertainty_params) {
   assert_numeric(uncertainty_params)
@@ -490,6 +498,7 @@
 #'
 #' @returns NULL invisibly
 #' @importFrom checkmate check_numeric
+#' @keywords internal
 .validate_delay <- function(triangle,
                             delay_pmf) {
   test <- check_numeric(sum(delay_pmf), lower = 0.99, upper = 1.01, len = 1)
@@ -516,6 +525,7 @@
 #' @inheritParams as_reporting_triangle
 #'
 #' @returns NULL
+#' @keywords internal
 .validate_rep_tri_args <- function(reporting_triangle_matrix,
                                    reference_dates,
                                    structure,

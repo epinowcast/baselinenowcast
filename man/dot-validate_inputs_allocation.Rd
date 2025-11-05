@@ -24,3 +24,4 @@ NULL invisibly
 \description{
 Helper function to validate allocation parameters
 }
+\keyword{internal}

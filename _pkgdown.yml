@@ -33,3 +33,63 @@ code:
 
 home:
   title: Baseline nowcast for right-truncated epidemiological data
+
+reference:
+- title: High-level interface
+  desc: Functions most users will interact with for typical nowcasting workflows.
+- subtitle: Reporting triangle data structures
+  desc: >
+    Functions for creating, converting, and validating reporting triangle
+    objects from matrices or data frames.
+  contents:
+  - has_concept("reporting_triangle")
+- subtitle: Nowcast data frames
+  desc: >
+    The main nowcasting interface. Functions for creating and validating
+    nowcast data frame objects containing point or probabilistic nowcast results.
+  contents:
+  - has_concept("baselinenowcast_df")
+- subtitle: Workflow wrappers
+  desc: >
+    High-level wrapper functions that combine multiple steps for end-to-end
+    nowcasting workflows.
+  contents:
+  - has_concept("workflow_wrappers")
+- title: Lower-level components
+  desc: Modular functions for building custom nowcasting workflows and advanced use cases.
+- subtitle: Estimate delay distributions
+  desc: >
+    Functions for estimating empirical delay distributions from reporting
+    triangles.
+  contents:
+  - has_concept("estimate_delay")
+- subtitle: Generate retrospective data
+  desc: >
+    Functions for creating retrospective reporting triangles by truncating
+    and generating incomplete data structures for validation and uncertainty
+    estimation.
+  contents:
+  - has_concept("generate_retrospective_data")
+- subtitle: Generate point nowcasts
+  desc: >
+    Functions for applying delay distributions to incomplete reporting
+    data to generate point nowcast estimates.
+  contents:
+  - has_concept("generate_point_nowcasts")
+- subtitle: Estimate observation error
+  desc: >
+    Functions for estimating observation error parameters from retrospective
+    nowcast performance to quantify uncertainty.
+  contents:
+  - has_concept("estimate_observation_error")
+- subtitle: Generate probabilistic nowcasts
+  desc: >
+    Functions for generating probabilistic nowcasts by combining point
+    estimates with uncertainty quantification from observation error
+    models.
+  contents:
+  - has_concept("generate_probabilistic_nowcasts")
+- title: Data
+  desc: Example datasets included with the package.
+  contents:
+  - has_concept("example_data")

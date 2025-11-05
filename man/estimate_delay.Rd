@@ -61,3 +61,4 @@ delay_pmf <- estimate_delay(
 )
 delay_pmf
 }
+\concept{estimate_delay}

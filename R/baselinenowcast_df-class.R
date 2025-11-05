@@ -40,6 +40,7 @@ NULL
 #' @inheritParams baselinenowcast
 #'
 #' @returns An object of class \code{\link{baselinenowcast_df}}
+#' @family baselinenowcast_df
 #' @export
 new_baselinenowcast_df <- function(baselinenowcast_df,
                                    reference_dates,
@@ -75,6 +76,7 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
 #'
 #' @param data A \code{\link{baselinenowcast_df}} object to check for validity.
 #' @return NULL
+#' @family baselinenowcast_df
 #' @export
 assert_baselinenowcast_df <- function(data) {
   assert_data_frame(data)

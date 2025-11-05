@@ -73,3 +73,12 @@ nowcast_draw <- sample_nowcast(
 )
 nowcast_draw
 }
+\seealso{
+Probabilistic nowcast generation functions
+\code{\link{combine_obs_with_pred}()},
+\code{\link{sample_nb}()},
+\code{\link{sample_nowcasts}()},
+\code{\link{sample_prediction}()},
+\code{\link{sample_predictions}()}
+}
+\concept{generate_probabilistic_nowcasts}

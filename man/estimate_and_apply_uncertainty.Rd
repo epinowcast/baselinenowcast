@@ -56,8 +56,8 @@ to a negative binomial observation model by default. The user can
 specify a different fitting model by replacing the
 \code{fit_model} argument in \code{fit_by_horizon}.}
 
-\item{...}{Additional arguments to \code{estimate_uncertainty_retro()} and
-\code{sample_nowcasts()}.}
+\item{...}{Additional arguments to \code{\link[=estimate_uncertainty_retro]{estimate_uncertainty_retro()}} and
+\code{\link[=sample_nowcasts]{sample_nowcasts()}}.}
 }
 \value{
 \code{nowcast_draws_df} Dataframe containing draws of combined

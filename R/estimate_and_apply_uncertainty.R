@@ -26,8 +26,8 @@
 #'    starting from the most recent reporting delay.
 #' @param n_retrospective_nowcasts Integer indicating the number of
 #'   retrospective nowcast times to use for uncertainty estimation.
-#' @param ... Additional arguments to `estimate_uncertainty_retro()` and
-#'    `sample_nowcasts()`.
+#' @param ... Additional arguments to [estimate_uncertainty_retro()] and
+#'   [sample_nowcasts()].
 #' @returns `nowcast_draws_df` Dataframe containing draws of combined
 #'    observations and probabilistic predictions at each reference time.
 #' @export

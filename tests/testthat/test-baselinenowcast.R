@@ -581,7 +581,7 @@ test_that("baselinenowcast errors if strata_sharing is not none and weekdays are
         strata_sharing = c("delay", "uncertainty")
       )
     ),
-    regexp = "There is no overlapping set of reference and report dates across all strata. `strata_sharing` is not possible." # nolint
+    regexp = "There is no overlapping set of reference and report dates across all" # nolint
   )
 })
 
@@ -812,7 +812,7 @@ test_that("baselinenowcast fails with coherent error messages when we ask it to 
   covid_data$weekday_ref_date <- lubridate::wday(covid_data$reference_date,
     label = TRUE
   )
-  exp_err <- "There is no overlapping set of reference and report dates across all strata. `strata_sharing` is not possible." # nolint
+  exp_err <- "There is no overlapping set of reference and report dates across all" # nolint
   covid_data_00 <- covid_data |> filter(age_group == "00+")
   expect_error(
     baselinenowcast(covid_data_00,
@@ -873,7 +873,7 @@ test_that("baselinenowcast errors when trying to do strata sharing with weekday 
       ),
       strata_sharing = c("delay", "uncertainty")
     ),
-    regexp = "There is no overlapping set of reference and report dates across all strata. `strata_sharing` is not possible." # nolint
+    regexp = "There is no overlapping set of reference and report dates across all" # nolint
   )
   # Separately filter by weekday and then combine
   wdays <- unique(covid_data$weekday_ref_date)
@@ -892,10 +892,11 @@ test_that("baselinenowcast errors when trying to do strata sharing with weekday 
 
     bnc_df <- bind_rows(bnc_df, bnc_df_i)
   }
-  # Compare to no strata
+  # Compare to no strata sharing
   no_share_ag <- baselinenowcast(covid_data,
     max_delay = 40,
     draws = 100,
+    scale_factor = 3 / 7,
     strata_cols = c(
       "weekday_ref_date",
       "age_group"

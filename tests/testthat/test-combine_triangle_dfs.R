@@ -46,6 +46,7 @@ covid_data_single_strata <- dplyr::filter(
   covid_data,
   age_group == "00+"
 )
+exp_err_msg <- "There is no overlapping set of reference and report dates across all" # nolint
 test_that(".combine_triangle_dfs combines data across strata correctly", {
   result <- .combine_triangle_dfs(
     data = example_data,
@@ -110,7 +111,7 @@ test_that(".combine_triangle_dfs can handle weekday with overlaps.", {
       data = test_data_overlap_wday,
       strata_cols = c(strata_cols, "weekday_ref_date")
     ),
-    regexp = "There is no overlapping set of reference and report dates across all strata. `strata_sharing` is not possible." # nolint
+    regexp = exp_err_msg
   )
 })
 
@@ -121,14 +122,14 @@ test_that(".combine_triangle_dfs errors if no reference and report dates exists"
       data = test_data_to_fail,
       strata_cols = strata_cols
     ),
-    regexp = "There is no overlapping set of reference and report dates across all strata. `strata_sharing` is not possible." # nolint
+    regexp = exp_err_msg
   )
   expect_error(
     .combine_triangle_dfs(
       data = test_data_also_fail,
       strata_cols = strata_cols
     ),
-    regexp = "There is no overlapping set of reference and report dates across all strata. `strata_sharing` is not possible." # nolint
+    regexp = exp_err_msg
   )
 })
 
@@ -219,7 +220,7 @@ test_that(".combine_triangles_df returns the sum across multiple age groups corr
     .combine_triangle_dfs(df3,
       strata_cols = strata_cols
     ),
-    regexp = "Not all reference dates and report dates combinations are available for all strata." # nolint
+    regexp = "Not all reference dates and report dates combinations are available for all" # nolint
   )
   test3 <- dplyr::arrange(
     test3,

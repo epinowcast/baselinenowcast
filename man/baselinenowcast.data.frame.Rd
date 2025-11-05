@@ -143,7 +143,7 @@ nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
 nowcasts_df
 }
 \seealso{
-Other baselinenowcast_df:
+Other baselinenowcast_df: 
 \code{\link{baselinenowcast}()},
 \code{\link{baselinenowcast.reporting_triangle}()},
 \code{\link{baselinenowcast_df-class}}

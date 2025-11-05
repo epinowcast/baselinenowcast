@@ -16,7 +16,7 @@ covid_data_single_strata <- dplyr::filter(
   age_group == "00+"
 )
 
-# These will work
+# Compare weekday stratification vs no weekday stratification----------------
 set.seed(123)
 single_age_group <- baselinenowcast(covid_data_single_strata,
   max_delay = 40,
@@ -33,6 +33,10 @@ no_wday <- baselinenowcast(covid_data_single_strata,
   draws = 100,
   scale_factor = 3
 )
+covid_data_summed <- covid_data |>
+  group_by(reference_date, age_group) |>
+  summarise(cases = sum(count)) |>
+  ungroup()
 weekday_stratified_data <- wday_stratified |>
   left_join(covid_data_summed |> filter(age_group == "00+"))
 # Confirm that they are different (green is lower )
@@ -51,7 +55,7 @@ ggplot(weekday_stratified_data |> dplyr::filter(reference_date >= max(reference_
 # - not the same average final value
 # - not the same as the data
 
-# Across age groups now with and without different kinds of pooling
+# Compare across multiple age groups with different pooling ----------------
 multiple_ags_fp <- baselinenowcast(
   covid_data,
   max_delay = 40,
@@ -85,12 +89,39 @@ covid_data_summed <- covid_data |>
   ungroup()
 multiple_ags_fp_data <- multiple_ags_fp |>
   left_join(covid_data_summed)
-ggplot(multiple_ags_fp_data |> dplyr::filter(reference_date >= max(reference_date) - lubridate::days(40))) +
+ggplot(multiple_ags_fp_data |> dplyr::filter(
+  reference_date >= max(reference_date) - lubridate::days(40)
+)) +
   geom_line(aes(x = reference_date, y = pred_count, group = draw),
     color = "blue", size = 0.1, alpha = 0.5
   ) +
+  geom_line(
+    data = multiple_ags_full_ag |> dplyr::filter(
+      reference_date >= max(reference_date) - lubridate::days(40)
+    ),
+    aes(x = reference_date, y = pred_count, group = draw),
+    color = "red", size = 0.1, alpha = 0.5
+  ) +
+  geom_line(
+    data = multiple_ags_just_delay |> dplyr::filter(
+      reference_date >= max(reference_date) - lubridate::days(40)
+    ),
+    aes(x = reference_date, y = pred_count, group = draw),
+    color = "green", size = 0.1, alpha = 0.5
+  ) +
+  geom_line(
+    data = multiple_ags_just_uq |> dplyr::filter(
+      reference_date >= max(reference_date) - lubridate::days(40)
+    ),
+    aes(x = reference_date, y = pred_count, group = draw),
+    color = "darkorange", size = 0.1, alpha = 0.5
+  ) +
   geom_point(aes(x = reference_date, y = cases)) +
-  facet_wrap(~age_group, nrow = 3)
+  facet_wrap(~age_group, nrow = 3, scales = "free_y")
+# Tests to make:
+# - final values are all different
+# - upper and lower bounds are different
+
 
 
 

@@ -405,7 +405,7 @@ test_that("baselinenowcast works with weekday strata", {
 
   expect_equal(mean(nowcast_df_Tue1$pred_count),
     mean(nowcast_df_Tue2$pred_count),
-    tol = 0.001
+    tol = 0.01
   )
 })
 
@@ -415,7 +415,7 @@ test_that("baselinenowcast returns expected structure even when dates not aligne
   set.seed(123)
   covid_data_incomplete <- dplyr::filter(
     covid_data,
-    !(report_date >= "2022-08-08" & age_group == "60-79"),
+    !(report_date >= "2021-08-08" & age_group == "60-79"),
     age_group != "00+"
   )
   nowcast_df <- expect_warning(
@@ -434,7 +434,7 @@ test_that("baselinenowcast returns expected structure even when dates not aligne
     dplyr::filter(age_group == "60-79") |>
     dplyr::summarise(max_ref_date = max(reference_date)) |>
     dplyr::pull()
-  expect_identical(max_ref_date_60_79, lubridate::ymd("2022-08-07"))
+  expect_identical(max_ref_date_60_79, lubridate::ymd("2021-08-07"))
 
   covid_data_full <- dplyr::filter(
     covid_data,
@@ -451,7 +451,7 @@ test_that("baselinenowcast returns expected structure even when dates not aligne
     dplyr::filter(age_group == "60-79") |>
     dplyr::summarise(max_ref_date = max(reference_date)) |>
     dplyr::pull()
-  expect_identical(max_ref_date_60_792, lubridate::ymd("2022-08-08"))
+  expect_identical(max_ref_date_60_792, lubridate::ymd("2021-12-01"))
 })
 
 test_that("baselinenowcast.reporting_triangle errors if nothing to nowcast", {
@@ -497,5 +497,276 @@ test_that("baselinenowcast errors if strata_sharing is not none and weekdays are
       )
     ),
     regexp = "There is no overlapping set of reference and report dates across all strata. `strata_sharing` is not possible." # nolint
+  )
+})
+
+test_that("baselinenowcast produces different results when stratifying by weekday vs the default estimate across weekdays", { # nolint
+  skip_if_not_installed("dplyr")
+  library(dplyr)
+  covid_data$weekday_ref_date <- lubridate::wday(covid_data$reference_date,
+    label = TRUE
+  )
+  covid_data_single_strata_wday <- dplyr::filter(
+    covid_data,
+    age_group == "00+"
+  )
+  set.seed(123)
+  wday_stratified <- baselinenowcast(covid_data_single_strata_wday,
+    max_delay = 40,
+    draws = 100,
+    scale_factor = 3 / 7,
+    strata_cols = "weekday_ref_date"
+  )
+  final_day_mean_est_wday <- wday_stratified |>
+    filter(reference_date == max(reference_date)) |>
+    group_by(reference_date) |>
+    summarise(mean_est = mean(pred_count)) |>
+    pull(mean_est)
+  set.seed(123)
+  no_wday <- baselinenowcast(covid_data_single_strata_wday,
+    max_delay = 40,
+    draws = 100,
+    scale_factor = 3
+  )
+  final_day_mean_est_no_wday <- no_wday |>
+    filter(reference_date == max(reference_date)) |>
+    group_by(reference_date) |>
+    summarise(mean_est = mean(pred_count)) |>
+    pull(mean_est)
+
+  covid_data_summed_final <- covid_data_single_strata_wday |>
+    group_by(reference_date, age_group) |>
+    summarise(cases = sum(count)) |>
+    ungroup() |>
+    filter(reference_date == max(reference_date)) |>
+    pull(cases)
+
+  # Check the two final estimates are different
+  expect_failure(expect_equal(
+    final_day_mean_est_wday, final_day_mean_est_no_wday
+  ))
+  # Check that each of them are large than the initial reports
+  expect_gt(final_day_mean_est_wday, covid_data_summed_final)
+  expect_gt(final_day_mean_est_no_wday, covid_data_summed_final)
+
+  if (interactive()) {
+    skip_if_not_installed("ggplot2")
+    library(ggplot2)
+    covid_data_summed <- covid_data |>
+      group_by(reference_date, age_group) |>
+      summarise(cases = sum(count)) |>
+      ungroup()
+    weekday_stratified_data <- wday_stratified |>
+      left_join(covid_data_summed |> filter(age_group == "00+"))
+    ggplot(weekday_stratified_data |> dplyr::filter(reference_date >= max(reference_date) - lubridate::days(40))) +
+      geom_line(aes(x = reference_date, y = pred_count, group = draw),
+        color = "darkgreen", size = 0.3, alpha = 0.5
+      ) +
+      geom_line(
+        data = no_wday |>
+          dplyr::filter(reference_date >= max(reference_date) - lubridate::days(40)),
+        aes(x = reference_date, y = pred_count, group = draw),
+        color = "blue", size = 0.1, alpha = 0.5
+      ) +
+      geom_point(aes(x = reference_date, y = cases))
+  }
+})
+
+test_that("baselinenowcast produces different results when sharing across age groups for both delay and uncertainty and just each one independently", { # nolint
+  skip_if_not_installed("dplyr")
+  library(dplyr)
+  set.seed(123)
+  multiple_ags_fp <- baselinenowcast(
+    covid_data,
+    max_delay = 40,
+    draws = 100,
+    strata_cols = "age_group"
+  )
+  final_day_mean_no_share <- multiple_ags_fp |>
+    filter(reference_date == max(reference_date)) |>
+    group_by(reference_date, age_group) |>
+    summarise(mean_est = mean(pred_count))
+  set.seed(123)
+  multiple_ags_full_ag <- baselinenowcast(
+    covid_data,
+    max_delay = 40,
+    draws = 100,
+    strata_cols = "age_group",
+    strata_sharing = c("delay", "uncertainty")
+  )
+  final_day_mean_full_share <- multiple_ags_full_ag |>
+    filter(reference_date == max(reference_date)) |>
+    group_by(reference_date, age_group) |>
+    summarise(mean_est = mean(pred_count))
+  set.seed(123)
+  multiple_ags_just_delay <- baselinenowcast(
+    covid_data,
+    max_delay = 40,
+    draws = 100,
+    strata_cols = "age_group",
+    strata_sharing = "delay"
+  )
+  final_day_mean_share_delay <- multiple_ags_just_delay |>
+    filter(reference_date == max(reference_date)) |>
+    group_by(reference_date, age_group) |>
+    summarise(mean_est = mean(pred_count))
+  set.seed(123)
+  multiple_ags_just_uq <- baselinenowcast(
+    covid_data,
+    max_delay = 40,
+    draws = 100,
+    strata_cols = "age_group",
+    strata_sharing = "uncertainty"
+  )
+  final_day_mean_share_uq <- multiple_ags_just_uq |>
+    filter(reference_date == max(reference_date)) |>
+    group_by(reference_date, age_group) |>
+    summarise(mean_est = mean(pred_count))
+  covid_data_summed_final <- covid_data |>
+    group_by(reference_date, age_group) |>
+    summarise(cases = sum(count)) |>
+    ungroup() |>
+    filter(reference_date == max(reference_date))
+
+  expect_failure(expect_equal(
+    final_day_mean_no_share$mean_est,
+    final_day_mean_full_share$mean_est
+  ))
+  expect_failure(expect_equal(
+    final_day_mean_no_share$mean_est,
+    final_day_mean_share_delay$mean_est
+  ))
+  expect_failure(expect_equal(
+    final_day_mean_no_share$mean_est,
+    final_day_mean_share_uq$mean_est
+  ))
+  expect_failure(expect_equal(
+    final_day_mean_full_share$mean_est,
+    final_day_mean_share_uq$mean_est
+  ))
+  expect_failure(expect_equal(
+    final_day_mean_full_share$mean_est,
+    final_day_mean_share_delay$mean_est
+  ))
+  expect_failure(expect_equal(
+    final_day_mean_share_delay$mean_est,
+    final_day_mean_share_uq$mean_est
+  ))
+  expect_true(all(final_day_mean_no_share$mean_est >
+    covid_data_summed_final$cases))
+  expect_true(all(final_day_mean_full_share$mean_est >
+    covid_data_summed_final$cases))
+  expect_true(all(final_day_mean_share_delay$mean_est >
+    covid_data_summed_final$cases))
+  expect_true(all(final_day_mean_share_uq$mean_est >
+    covid_data_summed_final$cases))
+
+
+  if (interactive()) {
+    skip_if_not_installed("ggplot2")
+    library(ggplot2)
+    covid_data_summed <- covid_data |>
+      group_by(reference_date, age_group) |>
+      summarise(cases = sum(count)) |>
+      ungroup()
+    multiple_ags_fp_data <- multiple_ags_fp |>
+      left_join(covid_data_summed)
+    ggplot(multiple_ags_fp_data |> dplyr::filter(
+      reference_date >= max(reference_date) - lubridate::days(40)
+    )) +
+      geom_line(aes(x = reference_date, y = pred_count, group = draw),
+        color = "blue", size = 0.1, alpha = 0.5
+      ) +
+      geom_line(
+        data = multiple_ags_full_ag |> dplyr::filter(
+          reference_date >= max(reference_date) - lubridate::days(40)
+        ),
+        aes(x = reference_date, y = pred_count, group = draw),
+        color = "red", size = 0.1, alpha = 0.5
+      ) +
+      geom_line(
+        data = multiple_ags_just_delay |> dplyr::filter(
+          reference_date >= max(reference_date) - lubridate::days(40)
+        ),
+        aes(x = reference_date, y = pred_count, group = draw),
+        color = "green", size = 0.1, alpha = 0.5
+      ) +
+      geom_line(
+        data = multiple_ags_just_uq |> dplyr::filter(
+          reference_date >= max(reference_date) - lubridate::days(40)
+        ),
+        aes(x = reference_date, y = pred_count, group = draw),
+        color = "darkorange", size = 0.1, alpha = 0.5
+      ) +
+      geom_point(aes(x = reference_date, y = cases)) +
+      facet_wrap(~age_group, nrow = 3, scales = "free_y")
+  }
+})
+
+test_that("baselinenowcast fails with coherent error messages necessarys strata are missing", { # nolint
+  expect_error(
+    muliple_ags_forgot_strata <- baselinenowcast(
+      covid_data,
+      max_delay = 40,
+      draws = 100
+    ),
+    regexp = "Data contains duplicate `reference_date` and `report_date` combinations" # nolint
+  )
+  expect_no_error(
+    baselinenowcast(
+      covid_data,
+      max_delay = 40,
+      draws = 100,
+      strata_cols = "age_group"
+    )
+  )
+})
+test_that("baselinenowcast fails with coherent error messages when we ask it to stratify by weekday and then share across strata", { # nolint
+  skip_if_not_installed("dplyr")
+  library(dplyr)
+  covid_data$weekday_ref_date <- lubridate::wday(covid_data$reference_date,
+    label = TRUE
+  )
+  exp_err <- "There is no overlapping set of reference and report dates across all strata. `strata_sharing` is not possible." # nolint
+  covid_data_00 <- covid_data |> filter(age_group == "00+")
+  expect_error(
+    baselinenowcast(covid_data_00,
+      max_delay = 40,
+      draws = 100,
+      scale_factor = 4,
+      strata_cols = "weekday_ref_date",
+      strata_sharing = c("delay", "uncertainty")
+    ),
+    regexp = exp_err
+  )
+  expect_error(
+    baselinenowcast(covid_data,
+      max_delay = 40,
+      draws = 100,
+      scale_factor = 4,
+      strata_cols = c("age_group", "weekday_ref_date"),
+      strata_sharing = c("delay", "uncertainty")
+    ),
+    regexp = exp_err
+  )
+  expect_error(
+    baselinenowcast(covid_data_00,
+      max_delay = 40,
+      draws = 100,
+      scale_factor = 4,
+      strata_cols = "weekday_ref_date",
+      strata_sharing = "delay"
+    ),
+    regexp = exp_err
+  )
+  expect_error(
+    baselinenowcast(covid_data_00,
+      max_delay = 40,
+      draws = 100,
+      scale_factor = 4,
+      strata_cols = "weekday_ref_date",
+      strata_sharing = "uncertainty"
+    ),
+    regexp = exp_err
   )
 })

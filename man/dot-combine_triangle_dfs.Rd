@@ -4,11 +4,20 @@
 \alias{.combine_triangle_dfs}
 \title{Combine triangle data.frames}
 \usage{
-.combine_triangle_dfs(data)
+.combine_triangle_dfs(data, strata_cols = NULL)
 }
 \arguments{
 \item{data}{Data.frame containing the incident count of cases by reference
 date and report date for one or more strata.}
+
+\item{strata_cols}{Vector of character strings indicating the names of the
+columns in \code{data} that determine how to stratify the data for nowcasting.
+The unique combinations of the entries in the \code{strata_cols} denote the
+unit of a single nowcast. Within a strata, there can be no repeated
+unique combinations of reference dates and report dates. Default is \code{NULL}
+which assumes that the data.frame being passed in represents a single
+strata (only one nowcast will be produced). All columns that are not
+part of the \code{strata_cols} will be removed.}
 }
 \value{
 \code{result} Data.frame with the same column names for reference date,

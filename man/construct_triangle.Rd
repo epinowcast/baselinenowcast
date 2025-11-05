@@ -51,3 +51,10 @@ rep_ragged
 rep_custom <- construct_triangle(triangle, c(1, 2))
 rep_custom
 }
+\seealso{
+Retrospective data generation functions
+\code{\link{construct_triangles}()},
+\code{\link{truncate_triangle}()},
+\code{\link{truncate_triangles}()}
+}
+\concept{generate_retrospective_data}

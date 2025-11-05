@@ -21,3 +21,4 @@ NULL invisibly
 \description{
 Validate the uncertainty parameters if they are passed in
 }
+\keyword{internal}

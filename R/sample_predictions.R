@@ -17,6 +17,7 @@
 #' @inheritParams estimate_uncertainty
 #' @returns Vector of predicted draws at each reference time, for all reference
 #'    times in the input `point_nowcast_matrix`.
+#' @family generate_probabilistic_nowcasts
 #' @export
 #' @importFrom cli cli_abort cli_warn
 #' @importFrom utils tail
@@ -165,6 +166,7 @@ sample_prediction <- function(
 #' @inheritParams sample_prediction
 #'
 #' @returns A vector of predicted counts at each reference time
+#' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
 #' pred_counts <- c(10, 20, 30, 40)
@@ -208,6 +210,7 @@ combine_obs_with_pred <- function(
 #' @returns Dataframe containing the predicted point nowcast vectors indexed by
 #'    reference time (`pred_count`), reference time (`time`), and the draw index
 #'    (`draw`).
+#' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
 #' point_nowcast_matrix <- matrix(
@@ -282,6 +285,7 @@ sample_predictions <- function(
 #' @inheritParams sample_prediction
 #' @returns Vector of predicted counts at each reference time based on combining
 #'    the observed counts and the predicted counts for the unobserved elements.
+#' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
 #' point_nowcast_matrix <- matrix(
@@ -338,6 +342,7 @@ sample_nowcast <- function(
 #' @returns Dataframe containing information for multiple draws with columns
 #'  for the reference time (`time`), the predicted counts (`pred_count`), and
 #'  the draw number (`draw`).
+#' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
 #' point_nowcast_matrix <- matrix(

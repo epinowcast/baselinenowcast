@@ -20,3 +20,4 @@ elements only.
 \description{
 Apply mask to extract the elements of the matrix that are both true
 }
+\keyword{internal}

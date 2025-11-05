@@ -19,3 +19,4 @@ rows of the matrix.
 \description{
 Filter to recent horizons
 }
+\keyword{internal}

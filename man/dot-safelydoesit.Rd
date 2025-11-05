@@ -17,3 +17,4 @@ On failure: \code{result} is NULL and \code{error} contains the error object.
 \description{
 Safe iterator
 }
+\keyword{internal}

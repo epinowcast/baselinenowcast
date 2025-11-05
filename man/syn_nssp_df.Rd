@@ -38,4 +38,9 @@ source, this data is meant to represent the output of pre-processing the
 \link{syn_nssp_line_list} dataset, which is a synthetic patient-level line list
 data from the United State's National Syndromic Surveillance System (NSSP).
 }
+\seealso{
+Example datasets
+\code{\link{syn_nssp_line_list}}
+}
+\concept{example_data}
 \keyword{datasets}

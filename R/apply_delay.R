@@ -19,6 +19,7 @@
 #' @return `point_nowcast_matrix` Matrix of the same number of rows and columns
 #'    as the `rep_mat_to_nowcast` but with the missing values filled in as point
 #'    estimates
+#' @family generate_point_nowcasts
 #' @export
 #' @examples
 #' triangle <- matrix(

@@ -28,3 +28,9 @@ pred <- c(3.1, 7.2, 11)
 disp <- fit_nb(obs, pred)
 disp
 }
+\seealso{
+Observation error estimation functions
+\code{\link{estimate_uncertainty}()},
+\code{\link{fit_by_horizon}()}
+}
+\concept{estimate_observation_error}

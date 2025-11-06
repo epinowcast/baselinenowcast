@@ -16,36 +16,30 @@
 \arguments{
 \item{data}{A ChainLadder triangle object (class "triangle").}
 
-\item{max_delay}{Integer indicating the maximum delay.
-Must be greater than or equal to 0.}
+\item{max_delay}{Integer indicating the maximum delay.}
 
-\item{strata}{Character string indicating the strata.
-Default is NULL.}
+\item{strata}{Character string indicating the strata. Default is NULL.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
-the delays.
-Options are "days", "weeks", "months", "years".
-Default is "days".}
+the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
+For the matrix method, this is simply passed as an item in the
+\code{reporting_triangle} object which will later be used to create a nowcast
+data.frame. For the data.frame method, this is used to compute the delay
+in terms of the specified unit, and to expand the combinations of
+reference dates and delays to the complete set of combinations in
+the reporting triangle.  Default is \code{"days"}.}
 
 \item{reference_dates}{Vector of dates corresponding to the rows of the
-triangle. Must have the same length as the number of rows in the triangle.
-If the triangle has row names that can be coerced to dates, these will be
-used automatically if \code{reference_dates} is not provided.
-If row names cannot be coerced to dates and \code{reference_dates} is not
-provided, an error will be raised.}
+triangle.
+If not provided, will attempt to coerce row names to dates.
+If row names cannot be coerced to dates and this is not provided,
+an error will be raised.}
 
 \item{...}{Additional arguments (not currently used).}
 }
 \value{
-A \code{\link{reporting_triangle}} object containing:
-\itemize{
-\item \code{reporting_triangle_matrix}: The reporting triangle matrix
-\item \code{reference_dates}: Vector of reference dates
-\item \code{structure}: Structure of the reporting triangle
-\item \code{max_delay}: Maximum delay
-\item \code{delays_unit}: Unit of delays
-\item \code{strata}: Strata information (if provided)
-}
+A \code{\link{reporting_triangle}} object.
+See \code{\link{reporting_triangle-class}} for details on the structure.
 }
 \description{
 This S3 method converts a ChainLadder triangle object to a
@@ -66,7 +60,6 @@ The conversion uses \code{\link{as_reporting_triangle.matrix}()} internally
 after extracting the matrix from the ChainLadder triangle object.
 }
 \examples{
-\dontrun{
 # Create a reporting triangle
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 rep_tri <- as_reporting_triangle(
@@ -74,22 +67,15 @@ rep_tri <- as_reporting_triangle(
   max_delay = 25
 )
 
-# Convert to ChainLadder triangle
-cl_triangle <- as_ChainLadder_triangle(rep_tri)
+if (requireNamespace("ChainLadder", quietly = TRUE)) {
+  # Convert to ChainLadder triangle
+  cl_triangle <- as_ChainLadder_triangle(rep_tri)
 
-# Convert back to reporting_triangle
-rep_tri_2 <- as_reporting_triangle(
-  data = cl_triangle,
-  max_delay = 25,
-  reference_dates = rep_tri$reference_dates
-)
-
-# Alternative: if row names are dates, reference_dates can be inferred
-rownames(cl_triangle) <- as.character(rep_tri$reference_dates)
-rep_tri_3 <- as_reporting_triangle(
-  data = cl_triangle,
-  max_delay = 25
-)
+  # Convert back to reporting_triangle (seamless round-trip)
+  rep_tri_2 <- as_reporting_triangle(
+    data = cl_triangle,
+    max_delay = 25
+  )
 }
 }
 \seealso{

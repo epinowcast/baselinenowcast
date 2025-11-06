@@ -8,18 +8,18 @@
 #' and diagnostic plots.
 #'
 #' @param x A \code{\link{reporting_triangle}} object to convert.
-#' @param ... Additional arguments (not currently used).
+#' @param ... Additional arguments passed to
+#'   \code{ChainLadder::as.triangle()}.
 #'
-#' @return A ChainLadder triangle object (class "triangle" and "matrix").
-#'   The triangle will have the same structure as the input
-#'   \code{reporting_triangle_matrix}, with rows representing origin periods
-#'   (reference dates) and columns representing development periods (delays).
-#'   Row names will be set to the reference dates from the input object.
+#' @return A ChainLadder triangle object (class "triangle" and "matrix"),
+#'   with rows representing origin periods (reference dates) and columns
+#'   representing development periods (delays).
+#'   Row names are set to the reference dates for seamless round-trip
+#'   conversion.
 #'
 #' @details
-#' This function extracts the \code{reporting_triangle_matrix} component from a
-#' \code{\link{reporting_triangle}} object and converts it to ChainLadder's
-#' triangle format using \code{ChainLadder::as.triangle()}.
+#' This function converts the reporting triangle to ChainLadder's triangle
+#' format using \code{ChainLadder::as.triangle()}.
 #'
 #' The ChainLadder package must be installed to use this function.
 #' If ChainLadder is not available, an informative error message will be
@@ -46,7 +46,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Create a reporting triangle from synthetic NSSP data
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 #' rep_tri <- as_reporting_triangle(
@@ -55,22 +54,14 @@
 #' )
 #'
 #' # Convert to ChainLadder triangle format (requires ChainLadder package)
-#' cl_triangle <- as_ChainLadder_triangle(rep_tri)
+#' if (requireNamespace("ChainLadder", quietly = TRUE)) {
+#'   cl_triangle <- as_ChainLadder_triangle(rep_tri)
 #'
-#' # Now you can use ChainLadder methods, for example:
-#' # summary(cl_triangle)
-#' # plot(cl_triangle)
-#' # MackChainLadder(cl_triangle)
-#'
-#' # Convert back to reporting_triangle format
-#' rep_tri_restored <- as_reporting_triangle(
-#'   data = cl_triangle,
-#'   max_delay = rep_tri$max_delay,
-#'   reference_dates = rep_tri$reference_dates
-#' )
+#'   # Now you can use ChainLadder methods, for example:
+#'   summary(cl_triangle)
+#'   plot(cl_triangle)
 #' }
 as_ChainLadder_triangle <- function(x, ...) {
-  # Check that ChainLadder is available
   if (!requireNamespace("ChainLadder", quietly = TRUE)) {
     cli::cli_abort(
       c(
@@ -81,14 +72,12 @@ as_ChainLadder_triangle <- function(x, ...) {
     )
   }
 
-  # Validate input
   assert_reporting_triangle(x)
 
-  # Extract the reporting triangle matrix
   triangle_matrix <- x$reporting_triangle_matrix
+  rownames(triangle_matrix) <- as.character(x$reference_dates)
 
-  # Convert to ChainLadder triangle format
-  cl_triangle <- ChainLadder::as.triangle(triangle_matrix)
+  cl_triangle <- ChainLadder::as.triangle(triangle_matrix, ...)
 
   return(cl_triangle)
 }
@@ -100,31 +89,16 @@ as_ChainLadder_triangle <- function(x, ...) {
 #' nowcasting methods.
 #'
 #' @param data A ChainLadder triangle object (class "triangle").
-#' @param max_delay Integer indicating the maximum delay.
-#'   Must be greater than or equal to 0.
-#' @param strata Character string indicating the strata.
-#'   Default is NULL.
-#' @param delays_unit Character string specifying the temporal granularity of
-#'   the delays.
-#'   Options are "days", "weeks", "months", "years".
-#'   Default is "days".
 #' @param reference_dates Vector of dates corresponding to the rows of the
-#'   triangle. Must have the same length as the number of rows in the triangle.
-#'   If the triangle has row names that can be coerced to dates, these will be
-#'   used automatically if \code{reference_dates} is not provided.
-#'   If row names cannot be coerced to dates and \code{reference_dates} is not
-#'   provided, an error will be raised.
+#'   triangle.
+#'   If not provided, will attempt to coerce row names to dates.
+#'   If row names cannot be coerced to dates and this is not provided,
+#'   an error will be raised.
+#' @inheritParams as_reporting_triangle
 #' @param ... Additional arguments (not currently used).
 #'
-#' @return A \code{\link{reporting_triangle}} object containing:
-#'   \itemize{
-#'     \item \code{reporting_triangle_matrix}: The reporting triangle matrix
-#'     \item \code{reference_dates}: Vector of reference dates
-#'     \item \code{structure}: Structure of the reporting triangle
-#'     \item \code{max_delay}: Maximum delay
-#'     \item \code{delays_unit}: Unit of delays
-#'     \item \code{strata}: Strata information (if provided)
-#'   }
+#' @return A \code{\link{reporting_triangle}} object.
+#'   See \code{\link{reporting_triangle-class}} for details on the structure.
 #'
 #' @details
 #' This method converts a ChainLadder triangle back to baselinenowcast's
@@ -152,7 +126,6 @@ as_ChainLadder_triangle <- function(x, ...) {
 #' @method as_reporting_triangle triangle
 #'
 #' @examples
-#' \dontrun{
 #' # Create a reporting triangle
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 #' rep_tri <- as_reporting_triangle(
@@ -160,22 +133,15 @@ as_ChainLadder_triangle <- function(x, ...) {
 #'   max_delay = 25
 #' )
 #'
-#' # Convert to ChainLadder triangle
-#' cl_triangle <- as_ChainLadder_triangle(rep_tri)
+#' if (requireNamespace("ChainLadder", quietly = TRUE)) {
+#'   # Convert to ChainLadder triangle
+#'   cl_triangle <- as_ChainLadder_triangle(rep_tri)
 #'
-#' # Convert back to reporting_triangle
-#' rep_tri_2 <- as_reporting_triangle(
-#'   data = cl_triangle,
-#'   max_delay = 25,
-#'   reference_dates = rep_tri$reference_dates
-#' )
-#'
-#' # Alternative: if row names are dates, reference_dates can be inferred
-#' rownames(cl_triangle) <- as.character(rep_tri$reference_dates)
-#' rep_tri_3 <- as_reporting_triangle(
-#'   data = cl_triangle,
-#'   max_delay = 25
-#' )
+#'   # Convert back to reporting_triangle (seamless round-trip)
+#'   rep_tri_2 <- as_reporting_triangle(
+#'     data = cl_triangle,
+#'     max_delay = 25
+#'   )
 #' }
 as_reporting_triangle.triangle <- function(data,
                                            max_delay,
@@ -183,7 +149,6 @@ as_reporting_triangle.triangle <- function(data,
                                            delays_unit = "days",
                                            reference_dates = NULL,
                                            ...) {
-  # Check that ChainLadder is available
   if (!requireNamespace("ChainLadder", quietly = TRUE)) {
     cli::cli_abort(
       c(
@@ -194,7 +159,6 @@ as_reporting_triangle.triangle <- function(data,
     )
   }
 
-  # Try to extract reference dates from row names if not provided
   if (is.null(reference_dates)) {
     if (!is.null(rownames(data))) {
       reference_dates <- tryCatch(
@@ -216,10 +180,8 @@ as_reporting_triangle.triangle <- function(data,
     }
   }
 
-  # Convert triangle to plain matrix
   triangle_matrix <- as.matrix(data)
 
-  # Use the existing matrix method
   rep_tri <- as_reporting_triangle.matrix(
     data = triangle_matrix,
     max_delay = max_delay,

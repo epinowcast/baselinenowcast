@@ -9,14 +9,15 @@ as_ChainLadder_triangle(x, ...)
 \arguments{
 \item{x}{A \code{\link{reporting_triangle}} object to convert.}
 
-\item{...}{Additional arguments (not currently used).}
+\item{...}{Additional arguments passed to
+\code{ChainLadder::as.triangle()}.}
 }
 \value{
-A ChainLadder triangle object (class "triangle" and "matrix").
-The triangle will have the same structure as the input
-\code{reporting_triangle_matrix}, with rows representing origin periods
-(reference dates) and columns representing development periods (delays).
-Row names will be set to the reference dates from the input object.
+A ChainLadder triangle object (class "triangle" and "matrix"),
+with rows representing origin periods (reference dates) and columns
+representing development periods (delays).
+Row names are set to the reference dates for seamless round-trip
+conversion.
 }
 \description{
 This function converts a \code{\link{reporting_triangle}} object to a
@@ -27,9 +28,8 @@ triangles, including chain ladder reserving methods, bootstrap techniques,
 and diagnostic plots.
 }
 \details{
-This function extracts the \code{reporting_triangle_matrix} component from a
-\code{\link{reporting_triangle}} object and converts it to ChainLadder's
-triangle format using \code{ChainLadder::as.triangle()}.
+This function converts the reporting triangle to ChainLadder's triangle
+format using \code{ChainLadder::as.triangle()}.
 
 The ChainLadder package must be installed to use this function.
 If ChainLadder is not available, an informative error message will be
@@ -46,7 +46,6 @@ To convert back to a \code{\link{reporting_triangle}} object, use
 \code{\link{as_reporting_triangle.triangle}()}.
 }
 \examples{
-\dontrun{
 # Create a reporting triangle from synthetic NSSP data
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 rep_tri <- as_reporting_triangle(
@@ -55,19 +54,12 @@ rep_tri <- as_reporting_triangle(
 )
 
 # Convert to ChainLadder triangle format (requires ChainLadder package)
-cl_triangle <- as_ChainLadder_triangle(rep_tri)
+if (requireNamespace("ChainLadder", quietly = TRUE)) {
+  cl_triangle <- as_ChainLadder_triangle(rep_tri)
 
-# Now you can use ChainLadder methods, for example:
-# summary(cl_triangle)
-# plot(cl_triangle)
-# MackChainLadder(cl_triangle)
-
-# Convert back to reporting_triangle format
-rep_tri_restored <- as_reporting_triangle(
-  data = cl_triangle,
-  max_delay = rep_tri$max_delay,
-  reference_dates = rep_tri$reference_dates
-)
+  # Now you can use ChainLadder methods, for example:
+  summary(cl_triangle)
+  plot(cl_triangle)
 }
 }
 \seealso{

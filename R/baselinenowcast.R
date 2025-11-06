@@ -320,8 +320,8 @@ baselinenowcast.data.frame <- function(
   # Nowcast
   combined_result <- imap_dfr(
     list_of_rep_tris,
-    {
-      \(rep_tri, name) .nowcast_from_rep_tris(
+    \(rep_tri, name) {
+      .nowcast_from_rep_tris(
         rep_tri = rep_tri,
         name = name,
         strata_cols = strata_cols,

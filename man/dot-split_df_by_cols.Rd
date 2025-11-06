@@ -20,3 +20,4 @@ List of data.frames named by the concatenated entries in col_names
 Split dataframe into a list of dataframes by the entries in the specified
 columns
 }
+\keyword{internal}

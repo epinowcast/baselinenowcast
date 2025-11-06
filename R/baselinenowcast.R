@@ -427,6 +427,7 @@ baselinenowcast.data.frame <- function(
 #'   to create the new data.frames.
 #'
 #' @returns List of data.frames named by the concatenated entries in col_names
+#' @keywords internal
 .split_df_by_cols <- function(long_df,
                               col_names) {
   if (length(col_names) != 0) {

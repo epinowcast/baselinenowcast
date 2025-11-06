@@ -14,6 +14,7 @@
   uncertainty_sampler = sample_nb,
   delay_pmf = NULL,
   uncertainty_params = NULL,
+  preprocess = preprocess_negative_values,
   ...
 )
 }
@@ -63,6 +64,13 @@ horizon 1 to the maximum horizon. Default is \code{NULL}, which will
 result in computing the uncertainty parameters from the reporting
 triangle matrix \code{data}. See \code{\link{estimate_uncertainty}} for more
 details.}
+
+\item{preprocess}{Function to apply to the truncated triangle before
+estimation, or NULL to skip preprocessing. Default is
+\code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
+redistributing them to earlier delays. Set to NULL if you want to preserve
+negative PMF entries (e.g., when working with corrections or differenced
+data where negative probabilities are expected).}
 
 \item{...}{Additional arguments passed to
 \code{\link{estimate_uncertainty}}

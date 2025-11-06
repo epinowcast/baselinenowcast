@@ -7,7 +7,8 @@
 estimate_delay(
   reporting_triangle,
   max_delay = ncol(reporting_triangle) - 1,
-  n = nrow(reporting_triangle)
+  n = nrow(reporting_triangle),
+  preprocess = preprocess_negative_values
 )
 }
 \arguments{
@@ -25,6 +26,13 @@ of the delay. The default is to use the whole reporting triangle,
 be used in the estimate of the reporting delay, always starting from the
 most recent reporting delay. The default is to use the whole reporting
 triangle, so \code{nrow(reporting_triangle)}.}
+
+\item{preprocess}{Function to apply to the truncated triangle before
+estimation, or NULL to skip preprocessing. Default is
+\code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
+redistributing them to earlier delays. Set to NULL if you want to preserve
+negative PMF entries (e.g., when working with corrections or differenced
+data where negative probabilities are expected).}
 }
 \value{
 Vector indexed at 0 of length \code{max_delay + 1} with columns
@@ -60,5 +68,9 @@ delay_pmf <- estimate_delay(
   n = 4
 )
 delay_pmf
+}
+\seealso{
+Delay distribution estimation functions
+\code{\link{preprocess_negative_values}()}
 }
 \concept{estimate_delay}

@@ -40,6 +40,7 @@ data from the United State's National Syndromic Surveillance System (NSSP).
 }
 \seealso{
 Example datasets
+\code{\link{example_negative_pmf}},
 \code{\link{syn_nssp_line_list}}
 }
 \concept{example_data}

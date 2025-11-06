@@ -44,6 +44,7 @@ For an example of how to produce a nowcast from this data, see
 }
 \seealso{
 Example datasets
+\code{\link{example_negative_pmf}},
 \code{\link{syn_nssp_df}}
 }
 \concept{example_data}

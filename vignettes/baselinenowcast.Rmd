@@ -16,9 +16,29 @@ vignette: >
   %\VignetteIndexEntry{Getting Started with baselinenowcast}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteDepends{epinowcast, ggplot2, dplyr, tidyr}
 ---
 
 
+```{r setup, echo=FALSE}
+if (!requireNamespace("epinowcast", quietly = TRUE)) {
+  cli::cli_warn(
+    c(
+      "These vignettes require epinowcast but it is not installed.",
+      paste(
+        "Currently epinowcast is not on CRAN but can be installed",
+        "from r-universe with:"
+      ),
+      paste(
+        "install.packages('epinowcast',",
+        "repos = c('epinowcast.r-universe.dev',",
+        "'https://cloud.r-project.org'))"
+      )
+    )
+  )
+  knitr::knit_exit()
+}
+```
 
 # Introduction
 
@@ -45,7 +65,7 @@ The installation of `epinowcast` is not required for using the package.
 However, its pre and post-processing functions provide a lot of the data wrangling needed to set up the nowcasting problem.
 We note that we will just be using components of `epinowcast`, which can be installed using the following:
 
-```{r setup, message = FALSE, warning = FALSE, results = 'hide'}
+```{r setup2, message = FALSE, warning = FALSE, results = 'hide'}
 # nolint start
 # Installing epinowcast
 # install.packages(

@@ -252,7 +252,7 @@ Code
 ``` r
 training_data <- enw_filter_reference_dates(
   observed_data,
-  include_days = n_training_volume - 1
+  include_days = n_training_volume
 )
 ```
 
@@ -278,7 +278,7 @@ Code
 ``` r
 eval_data <- enw_filter_reference_dates(
   latest_data,
-  include_days = n_training_volume - 1
+  include_days = n_training_volume
 )
 ```
 

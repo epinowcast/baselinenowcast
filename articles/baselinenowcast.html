@@ -222,7 +222,7 @@ Note this uses the most recent observations.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">training_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_reference_dates.html" class="external-link">enw_filter_reference_dates</a></span><span class="op">(</span></span>
 <span>  <span class="va">observed_data</span>,</span>
-<span>  include_days <span class="op">=</span> <span class="va">n_training_volume</span> <span class="op">-</span> <span class="fl">1</span></span>
+<span>  include_days <span class="op">=</span> <span class="va">n_training_volume</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><p>The <code>epinowcast</code> function <code><a href="https://package.epinowcast.org/reference/enw_latest_data.html" class="external-link">enw_latest_data()</a></code> will be used to filter for the latest available reported total counts for each reference date.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
@@ -231,7 +231,7 @@ Note this uses the most recent observations.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">eval_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://package.epinowcast.org/reference/enw_filter_reference_dates.html" class="external-link">enw_filter_reference_dates</a></span><span class="op">(</span></span>
 <span>  <span class="va">latest_data</span>,</span>
-<span>  include_days <span class="op">=</span> <span class="va">n_training_volume</span> <span class="op">-</span> <span class="fl">1</span></span>
+<span>  include_days <span class="op">=</span> <span class="va">n_training_volume</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><p>Next we obtain the reporting triangle, adding an additional day to the <code>max_delay</code> because we want the <code>max_delay + 1</code> entries since 0 is a valid delay.
 This also validates that the data is in the correct format and runs preprocessing see <code><a href="https://package.epinowcast.org/reference/enw_preprocess_data.html" class="external-link">enw_preprocess_data()</a></code> for more details.</p>

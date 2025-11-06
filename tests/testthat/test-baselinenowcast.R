@@ -202,3 +202,47 @@ test_that("baselinenowcast.reporting_triangle errors if nothing to nowcast", {
     regexp = "doesn't contain any missing values"
   ) # nolint
 })
+
+test_that(
+  "baselinenowcast with preprocess = NULL produces point nowcast",
+  {
+    # Convert matrix to reporting_triangle object
+    reference_dates <- seq(
+      from = as.Date("2025-01-01"),
+      length.out = nrow(example_downward_corrections_mat),
+      by = "day"
+    )
+    triangle <- as_reporting_triangle(
+      data = example_downward_corrections_mat,
+      reference_dates = reference_dates,
+      max_delay = 3
+    )
+
+    # Test that baselinenowcast() completes with preprocess = NULL
+    # Using output_type = "point" since uncertainty estimation
+    # does not support negative predictions from negative PMF
+    result <- expect_no_error(
+      suppressWarnings(
+        baselinenowcast(
+          data = triangle,
+          preprocess = NULL,
+          output_type = "point"
+        )
+      )
+    )
+
+    # Verify output structure
+    expect_s3_class(result, "data.frame")
+    expected_cols <- c("reference_date", "pred_count", "draw", "output_type")
+    expect_true(all(expected_cols %in% colnames(result)))
+
+    # Verify nowcast values exist
+    expect_false(anyNA(result$pred_count))
+
+    # Verify output has rows
+    expect_gt(nrow(result), 0)
+
+    # Verify output_type is correct
+    expect_identical(unique(result$output_type), "point")
+  }
+)

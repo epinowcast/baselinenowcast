@@ -42,9 +42,11 @@ detected_structure
 }
 \seealso{
 Reporting triangle construction and validation
+\code{\link{as_ChainLadder_triangle}()},
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.matrix}()},
+\code{\link{as_reporting_triangle.triangle}()},
 \code{\link{assert_reporting_triangle}()},
 \code{\link{new_reporting_triangle}()},
 \code{\link{reporting_triangle-class}}

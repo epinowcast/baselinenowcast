@@ -23,9 +23,17 @@ vignette: >
 ```{r setup, echo=FALSE}
 if (!requireNamespace("epinowcast", quietly = TRUE)) {
   cli::cli_warn(
-    c("These vignettes require epinowcast but it is not installed.",
-      "Currently epinowcast is not on CRAN but can be installed from r-universe with:",
-      "install.packages('epinowcast', repos = c('epinowcast.r-universe.dev', 'https://cloud.r-project.org'))"
+    c(
+      "These vignettes require epinowcast but it is not installed.",
+      paste(
+        "Currently epinowcast is not on CRAN but can be installed",
+        "from r-universe with:"
+      ),
+      paste(
+        "install.packages('epinowcast',",
+        "repos = c('epinowcast.r-universe.dev',",
+        "'https://cloud.r-project.org'))"
+      )
     )
   )
   knitr::knit_exit()

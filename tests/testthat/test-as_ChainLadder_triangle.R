@@ -69,7 +69,7 @@ test_that(
   expect_identical(rep_tri_2$structure, rep_tri$structure)
 })
 
-test_that("round-trip conversion preserves all data", { # nolint
+test_that("as_ChainLadder_triangle() and as_reporting_triangle.triangle() round-trip conversion preserves all data", { # nolint
   skip_if_not_installed("ChainLadder")
 
   rep_tri_original <- as_reporting_triangle(data_as_of_df,

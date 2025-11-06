@@ -37,7 +37,7 @@
 #' @family reporting_triangle
 #' @export
 #'
-#' @examples
+#' @examplesIf requireNamespace("ChainLadder", quietly = TRUE)
 #' # Create a reporting triangle from synthetic NSSP data
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 #' rep_tri <- as_reporting_triangle(
@@ -45,14 +45,13 @@
 #'   max_delay = 25
 #' )
 #'
-#' # Convert to ChainLadder triangle format (requires ChainLadder package)
-#' if (requireNamespace("ChainLadder", quietly = TRUE)) {
-#'   cl_triangle <- as_ChainLadder_triangle(rep_tri)
+#' # Convert to ChainLadder triangle format
+#' cl_triangle <- as_ChainLadder_triangle(rep_tri)
+#' print(cl_triangle)
 #'
-#'   # Now you can use ChainLadder methods, for example:
-#'   summary(cl_triangle)
-#'   plot(cl_triangle)
-#' }
+#' # Use ChainLadder methods
+#' summary(cl_triangle)
+#' plot(cl_triangle)
 as_ChainLadder_triangle <- function(x, ...) {
   if (!requireNamespace("ChainLadder", quietly = TRUE)) {
     cli::cli_abort(
@@ -114,7 +113,7 @@ as_ChainLadder_triangle <- function(x, ...) {
 #' @export
 #' @method as_reporting_triangle triangle
 #'
-#' @examples
+#' @examplesIf requireNamespace("ChainLadder", quietly = TRUE)
 #' # Create a reporting triangle
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 #' rep_tri <- as_reporting_triangle(
@@ -122,16 +121,15 @@ as_ChainLadder_triangle <- function(x, ...) {
 #'   max_delay = 25
 #' )
 #'
-#' if (requireNamespace("ChainLadder", quietly = TRUE)) {
-#'   # Convert to ChainLadder triangle
-#'   cl_triangle <- as_ChainLadder_triangle(rep_tri)
+#' # Convert to ChainLadder triangle
+#' cl_triangle <- as_ChainLadder_triangle(rep_tri)
 #'
-#'   # Convert back to reporting_triangle (seamless round-trip)
-#'   rep_tri_2 <- as_reporting_triangle(
-#'     data = cl_triangle,
-#'     max_delay = 25
-#'   )
-#' }
+#' # Convert back to reporting_triangle (seamless round-trip)
+#' rep_tri_2 <- as_reporting_triangle(
+#'   data = cl_triangle,
+#'   max_delay = 25
+#' )
+#' print(rep_tri_2)
 as_reporting_triangle.triangle <- function(data,
                                            max_delay,
                                            strata = NULL,

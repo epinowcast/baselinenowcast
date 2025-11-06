@@ -180,7 +180,8 @@ as_reporting_triangle.triangle <- function(data,
     }
   }
 
-  triangle_matrix <- as.matrix(data)
+  triangle_matrix <- unclass(as.matrix(data))
+  dimnames(triangle_matrix) <- dimnames(data)
 
   rep_tri <- as_reporting_triangle.matrix(
     data = triangle_matrix,

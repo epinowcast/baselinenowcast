@@ -248,10 +248,12 @@ test_that(
     # Using output_type = "point" since uncertainty estimation
     # does not support negative predictions from negative PMF
     result <- expect_no_error(
-      baselinenowcast(
-        data = triangle,
-        preprocess = NULL,
-        output_type = "point"
+      suppressWarnings(
+        baselinenowcast(
+          data = triangle,
+          preprocess = NULL,
+          output_type = "point"
+        )
       )
     )
 
@@ -261,10 +263,10 @@ test_that(
     expect_true(all(expected_cols %in% colnames(result)))
 
     # Verify nowcast values exist
-    expect_true(all(!is.na(result$pred_count)))
+    expect_true(!any(is.na(result$pred_count)))
 
     # Verify output has rows
-    expect_true(nrow(result) > 0)
+    expect_gt(nrow(result), 0)
 
     # Verify output_type is correct
     expect_identical(unique(result$output_type), "point")

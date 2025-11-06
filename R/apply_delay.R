@@ -50,7 +50,7 @@
 #' delay_pmf_negative <- c(0.7, 0.4, -0.15, 0.05)
 #'
 #' nowcast_with_corrections <- apply_delay(
-#'   reporting_triangle = example_downward_corrections_matrix,
+#'   reporting_triangle = example_downward_corrections_mat,
 #'   delay_pmf = delay_pmf_negative
 #' )
 #' # The nowcast includes negative predictions at delay 2,

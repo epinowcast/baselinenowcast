@@ -51,6 +51,7 @@ German Hospitalization Nowcasting Hub.
 Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
 }
 \examples{
+# Example 1: Standard usage with default preprocessing
 triangle <- matrix(
   c(
     80, 50, 25, 10,
@@ -68,6 +69,18 @@ delay_pmf <- estimate_delay(
   n = 4
 )
 delay_pmf
+
+# Example 2: Using data with downward corrections without preprocessing
+# This preserves negative PMF entries reflecting systematic corrections
+delay_pmf_negative <- estimate_delay(
+  reporting_triangle = example_downward_corrections_matrix,
+  max_delay = 3,
+  n = 5,
+  preprocess = NULL
+)
+delay_pmf_negative
+# Note: PMF may contain negative values and not sum to 1
+sum(delay_pmf_negative)
 }
 \seealso{
 Delay distribution estimation functions

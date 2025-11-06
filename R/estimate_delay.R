@@ -34,6 +34,7 @@
 #' @family estimate_delay
 #' @export
 #' @examples
+#' # Example 1: Standard usage with default preprocessing
 #' triangle <- matrix(
 #'   c(
 #'     80, 50, 25, 10,
@@ -51,6 +52,18 @@
 #'   n = 4
 #' )
 #' delay_pmf
+#'
+#' # Example 2: Using data with downward corrections without preprocessing
+#' # This preserves negative PMF entries reflecting systematic corrections
+#' delay_pmf_negative <- estimate_delay(
+#'   reporting_triangle = example_downward_corrections_matrix,
+#'   max_delay = 3,
+#'   n = 5,
+#'   preprocess = NULL
+#' )
+#' delay_pmf_negative
+#' # Note: PMF may contain negative values and not sum to 1
+#' sum(delay_pmf_negative)
 estimate_delay <- function(
     reporting_triangle,
     max_delay = ncol(reporting_triangle) - 1,

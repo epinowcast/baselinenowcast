@@ -17,6 +17,7 @@
 #'   matrices with as many rows as available given the truncation, and the same
 #'   number of columns as `reporting_triangle`.
 #' @importFrom checkmate assert_integerish
+#' @family generate_retrospective_data
 #' @export
 #' @examples
 #' triangle <- matrix(
@@ -61,6 +62,7 @@ truncate_triangles <- function(reporting_triangle,
 #'    `reporting_triangle`.
 #' @importFrom checkmate assert_integerish
 #' @importFrom cli cli_abort
+#' @family generate_retrospective_data
 #' @export
 #' @examples
 #' # example code

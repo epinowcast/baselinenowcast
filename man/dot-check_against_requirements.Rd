@@ -46,3 +46,4 @@ used
 Check target size against number of reference times available and the number
 required
 }
+\keyword{internal}

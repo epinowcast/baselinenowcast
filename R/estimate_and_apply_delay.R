@@ -4,6 +4,7 @@
 #' @param ... Additional arguments passed to the `estimate_delay` function
 #'
 #' @returns `pt_nowcast_matrix` Matrix of point nowcasts
+#' @family workflow_wrappers
 #' @export
 #' @importFrom cli cli_alert_info
 #' @examples

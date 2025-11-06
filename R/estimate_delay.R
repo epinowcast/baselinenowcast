@@ -25,6 +25,7 @@
 #'   indicating the point estimate of the empirical probability
 #'   mass on each delay.
 #' @importFrom cli cli_warn
+#' @family estimate_delay
 #' @export
 #' @examples
 #' triangle <- matrix(

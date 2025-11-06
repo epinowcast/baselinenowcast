@@ -27,3 +27,4 @@ Checks for duplicate reference date report dates, missing
 columns, report dates beyond the final reference date, and missing
 combinations of delays and reports.
 }
+\keyword{internal}

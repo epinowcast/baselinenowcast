@@ -17,6 +17,7 @@
 #' @inheritParams estimate_uncertainty
 #' @returns Vector of predicted draws at each reference time, for all reference
 #'    times in the input `point_nowcast_matrix`.
+#' @family generate_probabilistic_nowcasts
 #' @export
 #' @importFrom cli cli_abort cli_warn
 #' @importFrom utils tail
@@ -126,6 +127,33 @@ sample_prediction <- function(
   return(draw_pred_agg)
 }
 
+#' Extract from one matrix only elements that are missing in another
+#'
+#' @inheritParams sample_predictions
+#' @returns Matrix containing the elements from `point_nowcast_matrix` for
+#'    only the elements that are missing in `reporting_triangle`
+#' @keywords internal
+.extract_predictions <- function(point_nowcast_matrix,
+                                 reporting_triangle) {
+  assert_matrix(point_nowcast_matrix, all.missing = FALSE)
+  assert_matrix(reporting_triangle, all.missing = FALSE)
+  # Check that the observations are the same
+  all_equal <- all(point_nowcast_matrix[!is.na(reporting_triangle)] == reporting_triangle[!is.na(reporting_triangle)]) # nolint
+  if (isFALSE(all_equal)) {
+    cli_abort(
+      message =
+        "`reporting_triangle` is not a subset of `point_nowcast_matrix`. Check
+        to make sure that the matrix combining predictions and observations
+        aligns with the matrix containing only the observed values in the
+        reporting triangle. "
+    )
+  }
+
+  pred_mat <- point_nowcast_matrix
+  pred_mat[!is.na(reporting_triangle)] <- NA
+  return(pred_mat)
+}
+
 #' Combine observed data with a single prediction draw
 #'
 #' Internally it sums observed counts from the reporting triangle by reference
@@ -138,6 +166,7 @@ sample_prediction <- function(
 #' @inheritParams sample_prediction
 #'
 #' @returns A vector of predicted counts at each reference time
+#' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
 #' pred_counts <- c(10, 20, 30, 40)
@@ -181,6 +210,7 @@ combine_obs_with_pred <- function(
 #' @returns Dataframe containing the predicted point nowcast vectors indexed by
 #'    reference time (`pred_count`), reference time (`time`), and the draw index
 #'    (`draw`).
+#' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
 #' point_nowcast_matrix <- matrix(
@@ -255,6 +285,7 @@ sample_predictions <- function(
 #' @inheritParams sample_prediction
 #' @returns Vector of predicted counts at each reference time based on combining
 #'    the observed counts and the predicted counts for the unobserved elements.
+#' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
 #' point_nowcast_matrix <- matrix(
@@ -311,6 +342,7 @@ sample_nowcast <- function(
 #' @returns Dataframe containing information for multiple draws with columns
 #'  for the reference time (`time`), the predicted counts (`pred_count`), and
 #'  the draw number (`draw`).
+#' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
 #' point_nowcast_matrix <- matrix(

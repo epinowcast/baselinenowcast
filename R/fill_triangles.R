@@ -20,6 +20,7 @@
 #' @returns `point_nowcast_matrices` List of the same number of elements as the
 #'    input `retro_reporting_triangles`but with each reporting triangle filled
 #'    in based on the delay estimated in that reporting triangle.
+#' @family generate_point_nowcasts
 #' @export
 #' @importFrom cli cli_abort cli_alert_danger cli_alert_info
 #' @examples
@@ -125,6 +126,28 @@ fill_triangles <- function(retro_reporting_triangles,
   return(point_nowcast_matrices)
 }
 
+#' Safe iterator
+#'
+#' @param fun Function to wrap around
+#'
+#' @returns Function that returns a list with `result` and `error` components.
+#'   On success: `result` contains the function output and `error` is NULL.
+#'   On failure: `result` is NULL and `error` contains the error object.
+#' @keywords internal
+.safelydoesit <- function(fun) {
+  stopifnot(is.function(fun))
+  return(
+    function(...) {
+      return(tryCatch(
+        list(result = fun(...), error = NULL),
+        error = function(e) {
+          return(list(result = NULL, error = e))
+        }
+      ))
+    }
+  )
+}
+
 #' Generate point nowcast
 #'
 #' This function ingests a reporting triangle matrix and optionally, a delay
@@ -140,6 +163,7 @@ fill_triangles <- function(retro_reporting_triangles,
 #' @returns `point_nowcast_matrix` Matrix of the same number of rows and
 #'   columns as the `reporting_triangle` but with the missing values filled
 #'   in as point estimates.
+#' @family generate_point_nowcasts
 #' @export
 #'
 #' @examples

@@ -26,3 +26,12 @@ sampled_preds <- sample_nb(pred,
 )
 sampled_preds
 }
+\seealso{
+Probabilistic nowcast generation functions
+\code{\link{combine_obs_with_pred}()},
+\code{\link{sample_nowcast}()},
+\code{\link{sample_nowcasts}()},
+\code{\link{sample_prediction}()},
+\code{\link{sample_predictions}()}
+}
+\concept{generate_probabilistic_nowcasts}

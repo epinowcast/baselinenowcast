@@ -27,6 +27,9 @@
 #' - [ChainLadder::BootChainLadder()] for bootstrap chain ladder
 #' - Standard plotting and summary methods
 #'
+#' Note that some ChainLadder methods may require preprocessing for sparse
+#' triangles with many zeros, which can occur in syndromic surveillance data.
+#'
 #' To convert back to a [reporting_triangle] object, use
 #' [as_reporting_triangle.triangle()].
 #'
@@ -49,12 +52,8 @@
 #' cl_triangle <- as_ChainLadder_triangle(rep_tri)
 #' print(cl_triangle)
 #'
-#' # Use ChainLadder's Mack chain ladder method for nowcasting
-#' mack_result <- ChainLadder::MackChainLadder(cl_triangle)
-#' print(mack_result)
-#'
-#' # Plot the results
-#' plot(mack_result)
+#' # Visualize the reporting triangle structure
+#' plot(cl_triangle)
 as_ChainLadder_triangle <- function(x, ...) {
   if (!requireNamespace("ChainLadder", quietly = TRUE)) {
     cli::cli_abort(

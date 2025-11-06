@@ -9,7 +9,7 @@ as_ChainLadder_triangle(x, ...)
 \arguments{
 \item{x}{A \link{reporting_triangle} object to convert.}
 
-\item{...}{Additional arguments passed to \code{\link[ChainLadder:as.triangle]{ChainLadder::as.triangle()}}.}
+\item{...}{Additional arguments passed to \code{\link[ChainLadder:Triangles]{ChainLadder::as.triangle()}}.}
 }
 \value{
 A ChainLadder triangle object (class "triangle" and "matrix"),
@@ -29,7 +29,7 @@ alongside baselinenowcast's nowcasting functionality.
 }
 \details{
 This function converts the reporting triangle to ChainLadder's triangle
-format using \code{\link[ChainLadder:as.triangle]{ChainLadder::as.triangle()}}.
+format using \code{\link[ChainLadder:Triangles]{ChainLadder::as.triangle()}}.
 The ChainLadder package must be installed to use this function.
 
 Once converted, you can use any ChainLadder methods such as:
@@ -38,6 +38,9 @@ Once converted, you can use any ChainLadder methods such as:
 \item \code{\link[ChainLadder:BootChainLadder]{ChainLadder::BootChainLadder()}} for bootstrap chain ladder
 \item Standard plotting and summary methods
 }
+
+Note that some ChainLadder methods may require preprocessing for sparse
+triangles with many zeros, which can occur in syndromic surveillance data.
 
 To convert back to a \link{reporting_triangle} object, use
 \code{\link[=as_reporting_triangle.triangle]{as_reporting_triangle.triangle()}}.
@@ -55,12 +58,8 @@ rep_tri <- as_reporting_triangle(
 cl_triangle <- as_ChainLadder_triangle(rep_tri)
 print(cl_triangle)
 
-# Use ChainLadder's Mack chain ladder method for nowcasting
-mack_result <- ChainLadder::MackChainLadder(cl_triangle)
-print(mack_result)
-
-# Plot the results
-plot(mack_result)
+# Visualize the reporting triangle structure
+plot(cl_triangle)
 \dontshow{\}) # examplesIf}
 }
 \seealso{

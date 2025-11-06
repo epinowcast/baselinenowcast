@@ -11,7 +11,6 @@ estimate_uncertainty_retro(
   max_delay = ncol(reporting_triangle) - 1,
   structure = detect_structure(reporting_triangle),
   delay_pmf = NULL,
-  uncertainty_model = fit_by_horizon,
   ...
 )
 }
@@ -42,15 +41,6 @@ number of columns. Default is 1 (standard triangular structure).}
 starting at the first delay column in each of the matrices in
 \code{retro_reporting_triangles}. If a list, must of the same length as
 \code{retro_reporting_triangles}, with elements aligning. Default is \code{NULL}}
-
-\item{uncertainty_model}{Function that ingests a matrix of observations and a
-matrix of predictions and returns a vector that can be used to
-apply uncertainty using the same error model. Default is
-\code{fit_by_horizon} with arguments of \code{obs} matrix of observations and
-\code{pred} the matrix of predictions that fits each column (horizon)
-to a negative binomial observation model by default. The user can
-specify a different fitting model by replacing the
-\code{fit_model} argument in \code{fit_by_horizon}.}
 
 \item{...}{Additional arguments passed to \code{\link[=estimate_uncertainty]{estimate_uncertainty()}}.}
 }

@@ -25,7 +25,7 @@ reference times needed for delay estimation.}
 starting from the most recent reporting delay.}
 
 \item{n_retrospective_nowcasts}{Integer indicating the number of
-retrospective nowcast times to use for uncertainty estimation.}
+retrospective nowcasts to use for uncertainty estimation.}
 
 \item{n_min_retro_nowcasts}{Integer indicating the minimum number of
 reference times needed for uncertainty estimation. Default is \code{2}.}

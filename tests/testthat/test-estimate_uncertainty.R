@@ -572,3 +572,61 @@ test_that("estimate_uncertainty: errors if insufficient data", {
     )
   )
 })
+
+test_that("fit_nb rejects negative observed values with clear error", {
+  # Create test data with negative observations
+  x_negative <- c(10, 15, -5, 20)
+  mu <- c(12, 14, 8, 18)
+
+  expect_error(
+    fit_nb(x_negative, mu),
+    regexp = "Negative values detected in observations"
+  )
+
+  # Error message should mention preprocessing option
+  expect_error(
+    fit_nb(x_negative, mu),
+    regexp = "preprocess = preprocess_negative_values"
+  )
+})
+
+test_that("fit_nb rejects negative predicted values with clear error", {
+  # Create test data with negative predictions
+  x <- c(10, 15, 5, 20)
+  mu_negative <- c(12, 14, -8, 18)
+
+  expect_error(
+    fit_nb(x, mu_negative),
+    regexp = "Negative values detected in predictions"
+  )
+
+  # Error message should mention preprocessing
+  expect_error(
+    fit_nb(x, mu_negative),
+    regexp = "This may indicate an issue with the delay estimation or preprocessing" # nolint
+  )
+})
+
+test_that("fit_nb works with valid non-negative inputs", {
+  # Create valid test data
+  x <- c(10, 15, 8, 20, 12)
+  mu <- c(12, 14, 9, 18, 13)
+
+  # Should work without error
+  result <- fit_nb(x, mu)
+
+  # Result should be a positive number (dispersion parameter)
+  expect_type(result, "double")
+  expect_gt(result, 0)
+  expect_true(is.finite(result))
+})
+
+test_that("fit_nb handles zero values correctly", {
+  # Zero values should be acceptable (not negative)
+  x <- c(0, 15, 8, 20, 12)
+  mu <- c(1, 14, 9, 18, 13)
+
+  result <- fit_nb(x, mu)
+  expect_type(result, "double")
+  expect_gt(result, 0)
+})

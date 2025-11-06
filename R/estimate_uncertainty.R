@@ -422,6 +422,25 @@ fit_nb <- function(x, mu) {
   if (length(x) == 0) {
     return(NA)
   }
+
+  # Check for negative values in observations
+  if (any(x < 0, na.rm = TRUE)) {
+    cli_abort(c(
+      "Negative values detected in observations for uncertainty estimation",
+      x = "fit_nb() requires non-negative integer observations",
+      i = "Consider using preprocess = preprocess_negative_values in estimate_delay() if appropriate" # nolint: line_length_linter
+    ))
+  }
+
+  # Check for negative values in predictions
+  if (any(mu < 0, na.rm = TRUE)) {
+    cli_abort(c(
+      "Negative values detected in predictions for uncertainty estimation",
+      x = "fit_nb() requires non-negative predictions",
+      i = "This may indicate an issue with the delay estimation or preprocessing" # nolint: line_length_linter
+    ))
+  }
+
   # Check that all observations are integers
   assert_integerish(x)
   nllik <- function(size) {

@@ -263,7 +263,7 @@ test_that(
     expect_true(all(expected_cols %in% colnames(result)))
 
     # Verify nowcast values exist
-    expect_true(!any(is.na(result$pred_count)))
+    expect_false(anyNA(result$pred_count))
 
     # Verify output has rows
     expect_gt(nrow(result), 0)

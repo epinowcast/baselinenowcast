@@ -74,10 +74,21 @@ Data.frame of class \code{\link{baselinenowcast_df}}
 \description{
 This function ingests a single
 \code{\link{reporting_triangle}} object and generates a nowcast in the
-form of a \code{\link{baselinenowcast_df}} object. This function will by
-default estimate uncertainty using past retrospective nowcast errors and
-generate probabilistic nowcasts, which are samples from the predictive
-distribution of the estimated final case count at each reference date.
+form of a \code{\link{baselinenowcast_df}} object.
+
+This function chains the full nowcasting workflow on a single reporting
+triangle:
+\enumerate{
+\item \code{\link[=estimate_delay]{estimate_delay()}} - Estimate a reporting delay PMF
+\item \code{\link[=apply_delay]{apply_delay()}} - Generate a point nowcast using the delay PMF
+\item \code{\link[=estimate_and_apply_uncertainty]{estimate_and_apply_uncertainty()}} - Generate probabilistic
+nowcasts from point nowcast and reporting triangle
+}
+
+This function will by default estimate uncertainty using past
+retrospective nowcast errors and generate probabilistic nowcasts, which
+are samples from the predictive distribution of the estimated final case
+count at each reference date.
 This method specifically computes a nowcast for a single reporting
 triangle. See documentation for the arguments of this function which
 can be used to set the model specifications (things like number of

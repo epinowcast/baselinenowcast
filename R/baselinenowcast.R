@@ -34,11 +34,22 @@ baselinenowcast <- function(data,
 #' @title Create a dataframe of nowcast results from a single reporting triangle
 #'
 #' @description This function ingests a single
-#'    \code{\link{reporting_triangle}} object and generates a nowcast in the
-#'    form of a \code{\link{baselinenowcast_df}} object. This function will by
-#'    default estimate uncertainty using past retrospective nowcast errors and
-#'    generate probabilistic nowcasts, which are samples from the predictive
-#'    distribution of the estimated final case count at each reference date.
+#'  \code{\link{reporting_triangle}} object and generates a nowcast in the
+#'  form of a \code{\link{baselinenowcast_df}} object.
+#'
+#'  This function chains the full nowcasting workflow on a single reporting
+#'  triangle:
+#'  \enumerate{
+#'      \item [estimate_delay()] - Estimate a reporting delay PMF
+#'      \item [apply_delay()] - Generate a point nowcast using the delay PMF
+#'      \item [estimate_and_apply_uncertainty()] - Generate probabilistic
+#'       nowcasts from point nowcast and reporting triangle
+#' }
+#'
+#'    This function will by default estimate uncertainty using past
+#'    retrospective nowcast errors and generate probabilistic nowcasts, which
+#'    are samples from the predictive distribution of the estimated final case
+#'    count at each reference date.
 #'    This method specifically computes a nowcast for a single reporting
 #'    triangle. See documentation for the arguments of this function which
 #'    can be used to set the model specifications (things like number of
@@ -158,20 +169,36 @@ baselinenowcast.reporting_triangle <- function(
 #'   indexed by reference date and report date
 #'
 #' @description This function ingests a data.frame with the number of incident
-#'    cases indexed by reference date and report date for one or multiple
-#'    strata, which define the unit of a single nowcast (e.g. age groups or
-#'    locations). It returns a data.frame containing nowcasts by reference
-#'    date for each strata, which are by default estimated independently.
-#'    This function will by default estimate uncertainty using
-#'    past retrospective nowcast errors and generate probabilistic nowcasts,
-#'    which are samples from the predictive distribution of the estimated final
-#'    case count at each reference date. See documentation for the arguments of
-#'    this function which can be used to set the model specifications (things
-#'    like number of reference times for delay and uncertainty estimation,
-#'    the observation model, etc.). The function expects that each strata in
-#'    the dataframe has the same maximum delay. If sharing estimates across
-#'    all strata, the shared estimates will be made using the shared set of
-#'    reference and report dates across strata.
+#'  cases indexed by reference date and report date for one or multiple
+#'  strata, which define the unit of a single nowcast (e.g. age groups or
+#'  locations). It returns a data.frame containing nowcasts by reference
+#'  date for each strata, which are by default estimated independently.
+#'  This function will by default estimate uncertainty using
+#'  past retrospective nowcast errors and generate probabilistic nowcasts,
+#'  which are samples from the predictive distribution of the estimated final
+#'  case count at each reference date.
+#'
+#'  This function chains the full nowcasting workflow on multiple reporting
+#'  triangles, generating estimates of the delay and uncertainty parameters
+#'  from across strata if specified.
+#'  \enumerate{
+#'      \item [estimate_delay()] - Estimate a delay PMF across strata if
+#'      `strata_sharing` contains `"delay "`
+#'      \item [estimate_uncertainty_retro()] - Estimates uncertainty parameters
+#'      from across strata if `strata_sharing` contains `"uncertainty"`
+#'      \item [as_reporting_triangle()] - Generates a reporting triangle object
+#'      from a data.frame
+#'      \item[baselinenowcast()] - Generates point or probabilistic nowcasts
+#'      depending on `output_type` for each strata.
+#' }
+#'
+#'  See documentation for the arguments of
+#'  this function which can be used to set the model specifications (things
+#'  like number of reference times for delay and uncertainty estimation,
+#'  the observation model, etc.). The function expects that each strata in
+#'  the dataframe has the same maximum delay. If sharing estimates across
+#'  all strata, the shared estimates will be made using the shared set of
+#'  reference and report dates across strata.
 #'
 #' @param data Data.frame in a long tidy format with counts by reference date
 #'    and report date for one or more strata. Must contain the following

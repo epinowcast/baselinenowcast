@@ -110,7 +110,23 @@ date for each strata, which are by default estimated independently.
 This function will by default estimate uncertainty using
 past retrospective nowcast errors and generate probabilistic nowcasts,
 which are samples from the predictive distribution of the estimated final
-case count at each reference date. See documentation for the arguments of
+case count at each reference date.
+
+This function chains the full nowcasting workflow on multiple reporting
+triangles, generating estimates of the delay and uncertainty parameters
+from across strata if specified.
+\enumerate{
+\item \code{\link[=estimate_delay]{estimate_delay()}} - Estimate a delay PMF across strata if
+\code{strata_sharing} contains \code{"delay "}
+\item \code{\link[=estimate_uncertainty_retro]{estimate_uncertainty_retro()}} - Estimates uncertainty parameters
+from across strata if \code{strata_sharing} contains \code{"uncertainty"}
+\item \code{\link[=as_reporting_triangle]{as_reporting_triangle()}} - Generates a reporting triangle object
+from a data.frame
+\item\code{\link[=baselinenowcast]{baselinenowcast()}} - Generates point or probabilistic nowcasts
+depending on \code{output_type} for each strata.
+}
+
+See documentation for the arguments of
 this function which can be used to set the model specifications (things
 like number of reference times for delay and uncertainty estimation,
 the observation model, etc.). The function expects that each strata in

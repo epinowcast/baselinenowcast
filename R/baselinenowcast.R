@@ -347,6 +347,7 @@ baselinenowcast.data.frame <- function(
   # Nowcast
   combined_result <- imap_dfr(
     list_of_rep_tris,
+    # nolint start: brace_linter, unnecessary_nesting_linter
     \(rep_tri, name) {
       .nowcast_from_rep_tris(
         rep_tri = rep_tri,
@@ -361,7 +362,7 @@ baselinenowcast.data.frame <- function(
         delay_pmf = shared_delay_pmf,
         uncertainty_params = shared_uncertainty_params
       )
-    }
+    } # nolint end
   )
   return(combined_result)
 }

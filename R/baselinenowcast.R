@@ -37,7 +37,7 @@ baselinenowcast <- function(data,
 #'  \code{\link{reporting_triangle}} object and generates a nowcast in the
 #'  form of a \code{\link{baselinenowcast_df}} object.
 #'
-#'  This function implements the full nowcasting workflow on a single reporting
+#'  This function implements a nowcasting workflow for a single reporting
 #'  triangle:
 #'  \enumerate{
 #'      \item [estimate_delay()] - Estimate a reporting delay PMF

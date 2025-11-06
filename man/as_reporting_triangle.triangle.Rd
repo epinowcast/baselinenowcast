@@ -43,16 +43,14 @@ See \linkS4class{reporting_triangle} for details on the structure.
 }
 \description{
 This S3 method converts a ChainLadder triangle object to a
-\code{\link{reporting_triangle}} object, enabling use of baselinenowcast's
-nowcasting methods.
+\link{reporting_triangle} object, enabling use of baselinenowcast's nowcasting
+methods.
 }
 \details{
 This method converts a ChainLadder triangle back to baselinenowcast's
 \link{reporting_triangle} format.
 If \code{reference_dates} is not provided, the function will attempt to extract
 dates from the triangle's row names.
-For triangles created with \code{\link[=as_ChainLadder_triangle]{as_ChainLadder_triangle()}}, this happens
-automatically enabling seamless round-trip conversion.
 
 The ChainLadder package must be installed to use this function.
 

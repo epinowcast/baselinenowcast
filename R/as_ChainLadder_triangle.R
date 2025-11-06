@@ -76,8 +76,8 @@ as_ChainLadder_triangle <- function(x, ...) {
 #' Convert ChainLadder triangle to reporting_triangle format
 #'
 #' This S3 method converts a ChainLadder triangle object to a
-#' \code{\link{reporting_triangle}} object, enabling use of baselinenowcast's
-#' nowcasting methods.
+#' [reporting_triangle] object, enabling use of baselinenowcast's nowcasting
+#' methods.
 #'
 #' @param data A ChainLadder triangle object (class "triangle").
 #' @param reference_dates Vector of dates corresponding to the rows of the
@@ -96,8 +96,6 @@ as_ChainLadder_triangle <- function(x, ...) {
 #' [reporting_triangle] format.
 #' If `reference_dates` is not provided, the function will attempt to extract
 #' dates from the triangle's row names.
-#' For triangles created with [as_ChainLadder_triangle()], this happens
-#' automatically enabling seamless round-trip conversion.
 #'
 #' The ChainLadder package must be installed to use this function.
 #'

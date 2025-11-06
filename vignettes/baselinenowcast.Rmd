@@ -199,7 +199,7 @@ Next we will use the `epinowcast` function, `enw_filter_reference_dates()` to fi
 ```{r}
 training_data <- enw_filter_reference_dates(
   observed_data,
-  include_days = n_training_volume - 1
+  include_days = n_training_volume
 )
 ```
 
@@ -214,7 +214,7 @@ To obtain the data we want to evaluate the forecasts against, we will use `enw_f
 ```{r}
 eval_data <- enw_filter_reference_dates(
   latest_data,
-  include_days = n_training_volume - 1
+  include_days = n_training_volume
 )
 ```
 

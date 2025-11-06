@@ -585,19 +585,3 @@
   }
   return(NULL)
 }
-
-#' Validate the date columns can be converted to Dates
-#'
-#' @param data Data.frame containing the date_col
-#' @param date_col Name of the column to be tested
-#' @keywords internal
-#' @returns NULL
-.validate_date_cols <- function(data, date_col) {
-  if (!inherits(data[[date_col]], "Date")) {
-    cli_abort(
-      message =
-        "{date_col} must be of Date class"
-    )
-  }
-  return(NULL)
-}

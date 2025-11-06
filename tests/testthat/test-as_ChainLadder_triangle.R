@@ -27,9 +27,10 @@ test_that(
   )
 
   # Check that the matrix values are preserved
-  expect_equal(
+  expect_identical(
     unclass(as.matrix(cl_triangle)),
-    rep_tri$reporting_triangle_matrix
+    rep_tri$reporting_triangle_matrix,
+    ignore_attr = TRUE
   )
 })
 
@@ -56,10 +57,11 @@ test_that(
   expect_s3_class(rep_tri_2, "reporting_triangle")
   expect_no_error(assert_reporting_triangle(rep_tri_2))
 
-  # Check that key components match (use equal to handle dimname attributes)
-  expect_equal(
+  # Check that key components match (ignore dimname attributes)
+  expect_identical(
     rep_tri_2$reporting_triangle_matrix,
-    rep_tri$reporting_triangle_matrix
+    rep_tri$reporting_triangle_matrix,
+    ignore_attr = TRUE
   )
   expect_identical(rep_tri_2$reference_dates, rep_tri$reference_dates)
   expect_identical(rep_tri_2$max_delay, rep_tri$max_delay)
@@ -87,9 +89,10 @@ test_that("round-trip conversion preserves all data", { # nolint
   )
 
   # Everything should be identical after round trip
-  expect_equal(
+  expect_identical(
     rep_tri_final$reporting_triangle_matrix,
-    rep_tri_original$reporting_triangle_matrix
+    rep_tri_original$reporting_triangle_matrix,
+    ignore_attr = TRUE
   )
   expect_identical(
     rep_tri_final$reference_dates,
@@ -176,9 +179,10 @@ test_that(
   )
 
   expect_identical(rep_tri_2$delays_unit, "weeks")
-  expect_equal(
+  expect_identical(
     rep_tri_2$reporting_triangle_matrix,
-    rep_tri$reporting_triangle_matrix
+    rep_tri$reporting_triangle_matrix,
+    ignore_attr = TRUE
   )
 })
 

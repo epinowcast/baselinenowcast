@@ -49,9 +49,12 @@
 #' cl_triangle <- as_ChainLadder_triangle(rep_tri)
 #' print(cl_triangle)
 #'
-#' # Use ChainLadder methods
-#' summary(cl_triangle)
-#' plot(cl_triangle)
+#' # Use ChainLadder's Mack chain ladder method for nowcasting
+#' mack_result <- ChainLadder::MackChainLadder(cl_triangle)
+#' print(mack_result)
+#'
+#' # Plot the results
+#' plot(mack_result)
 as_ChainLadder_triangle <- function(x, ...) {
   if (!requireNamespace("ChainLadder", quietly = TRUE)) {
     cli::cli_abort(

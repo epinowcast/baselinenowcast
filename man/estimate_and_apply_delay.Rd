@@ -51,6 +51,7 @@ pt_nowcast_matrix
 \seealso{
 High-level workflow wrapper functions
 \code{\link{allocate_reference_times}()},
-\code{\link{estimate_and_apply_uncertainty}()}
+\code{\link{estimate_and_apply_uncertainty}()},
+\code{\link{estimate_uncertainty_retro}()}
 }
 \concept{workflow_wrappers}

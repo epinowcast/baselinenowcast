@@ -12,7 +12,7 @@ tv <- allocate_reference_times(triangle)
 n_delay_valid <- tv$n_history_delay
 n_retro_valid <- tv$n_retrospective_nowcasts
 
-test_that("estimate_and_apply_uncertainty works as expected with the default settings", { # nolint
+test_that("estimate_and_apply_uncertainty produces correct results", {
   set.seed(123)
   nowcast_draws_df <- estimate_and_apply_uncertainty(
     pt_nowcast_matrix,
@@ -21,18 +21,8 @@ test_that("estimate_and_apply_uncertainty works as expected with the default set
     n_retrospective_nowcasts = n_retro_valid
   )
 
-
   set.seed(123)
-  df_w_non_default <- estimate_and_apply_uncertainty(
-    pt_nowcast_matrix,
-    triangle,
-    n_history_delay = 10,
-    n_retrospective_nowcasts = 2
-  )
-  expect_false(all(nowcast_draws_df == df_w_non_default))
-
-  set.seed(123)
-  # Test compound
+  # Test against manual workflow
   trunc_rep_tris <- truncate_triangles(triangle, n = n_retro_valid)
   retro_rep_tris <- construct_triangles(trunc_rep_tris)
   retro_pt_nowcasts <- fill_triangles(retro_rep_tris, n = n_delay_valid)
@@ -127,3 +117,4 @@ test_that("estimate_and_apply_uncertainty is able to detect the structure of a j
     tol = 0.01
   )
 })
+

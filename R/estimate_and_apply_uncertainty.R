@@ -1,9 +1,28 @@
 #' Estimate and apply uncertainty to a point nowcast matrix
 #'
+#' @description
+#' Generates probabilistic nowcasts by estimating uncertainty parameters from
+#'   retrospective nowcasts and applying them to a point nowcast matrix.
+#'
+#' This function combines:
+#' \enumerate{
+#'   \item [estimate_uncertainty_retro()] - Estimates uncertainty parameters
+#'     using retrospective nowcasts
+#'   \item [sample_nowcasts()] - Applies uncertainty to generate draws
+#' }
+#'
+#' To obtain estimates of uncertainty parameters, use
+#'   [estimate_uncertainty_retro()]. For full control over individual steps
+#'   (e.g., custom matrix preparation, alternative aggregation), use the
+#'   low-level functions ([truncate_triangles()], [construct_triangles()],
+#'   [fill_triangles()], [estimate_uncertainty()]) directly.
+#'
 #' @inheritParams estimate_delay
+#' @inheritParams construct_triangles
 #' @inheritParams estimate_uncertainty
-#' @inheritParams sample_prediction
 #' @inheritParams sample_nowcasts
+#' @inheritParams sample_prediction
+#' @inheritParams fill_triangles
 #' @param n_history_delay Integer indicating the number of reference times
 #'   (observations) to be used in the estimate of the reporting delay, always
 #'    starting from the most recent reporting delay.
@@ -56,6 +75,8 @@ estimate_and_apply_uncertainty <- function(
     structure = detect_structure(reporting_triangle),
     max_delay = ncol(reporting_triangle) - 1,
     draws = 1000,
+    structure = detect_structure(reporting_triangle),
+    delay_pmf = NULL,
     uncertainty_model = fit_by_horizon,
     uncertainty_sampler = sample_nb,
     ...) {
@@ -65,35 +86,13 @@ estimate_and_apply_uncertainty <- function(
     max_delay = max_delay
   )
 
-  n_ref_times <- nrow(reporting_triangle)
-  min_ref_times_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
-  # Validate that the inputs are valid.
-  .validate_inputs_uncertainty(
-    n_min_delay = min_ref_times_delay,
-    n_ref_times = n_ref_times,
+  uncertainty_params <- estimate_uncertainty_retro(
+    reporting_triangle = reporting_triangle,
     n_history_delay = n_history_delay,
-    n_retrospective_nowcasts = n_retrospective_nowcasts
-  )
-
-  # Estimate uncertainty from the reporting triangle passed in.
-  trunc_rep_tris <- truncate_triangles(reporting_triangle,
-    n = n_retrospective_nowcasts
-  )
-
-  retro_rep_tris <- construct_triangles(trunc_rep_tris,
-    structure = structure
-  )
-
-  retro_pt_nowcasts <- fill_triangles(retro_rep_tris,
+    n_retrospective_nowcasts = n_retrospective_nowcasts,
     max_delay = max_delay,
-    n = n_history_delay
-  )
-
-  uncertainty_params <- estimate_uncertainty(
-    point_nowcast_matrices = retro_pt_nowcasts,
-    truncated_reporting_triangles = trunc_rep_tris,
-    retro_reporting_triangles = retro_rep_tris,
-    n = n_retrospective_nowcasts,
+    structure = structure,
+    delay_pmf = delay_pmf,
     uncertainty_model = uncertainty_model,
     ...
   )

@@ -8,7 +8,8 @@ fill_triangles(
   retro_reporting_triangles,
   max_delay = min(sapply(retro_reporting_triangles, ncol)) - 1,
   n = min(sapply(retro_reporting_triangles, nrow)),
-  delay_pmf = NULL
+  delay_pmf = NULL,
+  preprocess = preprocess_negative_values
 )
 }
 \arguments{
@@ -28,6 +29,13 @@ all the matrices in the \code{list_of_rts}.}
 starting at the first delay column in each of the matrices in
 \code{retro_reporting_triangles}. If a list, must of the same length as
 \code{retro_reporting_triangles}, with elements aligning. Default is \code{NULL}}
+
+\item{preprocess}{Function to apply to the truncated triangle before
+estimation, or NULL to skip preprocessing. Default is
+\code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
+redistributing them to earlier delays. Set to NULL if you want to preserve
+negative PMF entries (e.g., when working with downward corrections where
+negative probabilities reflect systematic adjustments).}
 }
 \value{
 \code{point_nowcast_matrices} List of the same number of elements as the

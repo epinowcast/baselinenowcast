@@ -8,7 +8,8 @@ fill_triangle(
   reporting_triangle,
   max_delay = ncol(reporting_triangle) - 1,
   n = nrow(reporting_triangle),
-  delay_pmf = NULL
+  delay_pmf = NULL,
+  preprocess = preprocess_negative_values
 )
 }
 \arguments{
@@ -31,6 +32,13 @@ triangle, so \code{nrow(reporting_triangle)}.}
 starting at the first delay column in \code{reporting_triangle}.
 Default is \code{NULL}, which will estimate a delay from the
 \code{reporting_triangle}.}
+
+\item{preprocess}{Function to apply to the truncated triangle before
+estimation, or NULL to skip preprocessing. Default is
+\code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
+redistributing them to earlier delays. Set to NULL if you want to preserve
+negative PMF entries (e.g., when working with downward corrections where
+negative probabilities reflect systematic adjustments).}
 }
 \value{
 \code{point_nowcast_matrix} Matrix of the same number of rows and

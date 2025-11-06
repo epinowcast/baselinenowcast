@@ -86,7 +86,7 @@ as_ChainLadder_triangle <- function(x, ...) {
 #'   If row names cannot be coerced to dates and this is not provided,
 #'   an error will be raised.
 #' @inheritParams as_reporting_triangle
-#' @param ... Additional arguments (not currently used).
+#' @param ... Additional arguments passed to [as_reporting_triangle.matrix()].
 #'
 #' @return A [reporting_triangle] object.
 #'   See [reporting_triangle-class] for details on the structure.
@@ -94,10 +94,10 @@ as_ChainLadder_triangle <- function(x, ...) {
 #' @details
 #' This method converts a ChainLadder triangle back to baselinenowcast's
 #' [reporting_triangle] format.
-#' Since ChainLadder triangles do not store date information by default, you
-#' must provide `reference_dates` that correspond to the origin periods (rows)
-#' of the triangle, or ensure the triangle has row names that can be coerced
-#' to dates.
+#' If `reference_dates` is not provided, the function will attempt to extract
+#' dates from the triangle's row names.
+#' For triangles created with [as_ChainLadder_triangle()], this happens
+#' automatically enabling seamless round-trip conversion.
 #'
 #' The ChainLadder package must be installed to use this function.
 #'
@@ -175,7 +175,8 @@ as_reporting_triangle.triangle <- function(data,
     max_delay = max_delay,
     reference_dates = reference_dates,
     strata = strata,
-    delays_unit = delays_unit
+    delays_unit = delays_unit,
+    ...
   )
 
   return(rep_tri)

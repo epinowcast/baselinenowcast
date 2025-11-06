@@ -35,7 +35,7 @@ If not provided, will attempt to coerce row names to dates.
 If row names cannot be coerced to dates and this is not provided,
 an error will be raised.}
 
-\item{...}{Additional arguments (not currently used).}
+\item{...}{Additional arguments passed to \code{\link[=as_reporting_triangle.matrix]{as_reporting_triangle.matrix()}}.}
 }
 \value{
 A \link{reporting_triangle} object.
@@ -49,10 +49,10 @@ nowcasting methods.
 \details{
 This method converts a ChainLadder triangle back to baselinenowcast's
 \link{reporting_triangle} format.
-Since ChainLadder triangles do not store date information by default, you
-must provide \code{reference_dates} that correspond to the origin periods (rows)
-of the triangle, or ensure the triangle has row names that can be coerced
-to dates.
+If \code{reference_dates} is not provided, the function will attempt to extract
+dates from the triangle's row names.
+For triangles created with \code{\link[=as_ChainLadder_triangle]{as_ChainLadder_triangle()}}, this happens
+automatically enabling seamless round-trip conversion.
 
 The ChainLadder package must be installed to use this function.
 

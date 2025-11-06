@@ -31,8 +31,8 @@ triangle, so \code{nrow(reporting_triangle)}.}
 estimation, or NULL to skip preprocessing. Default is
 \code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
 redistributing them to earlier delays. Set to NULL if you want to preserve
-negative PMF entries (e.g., when working with corrections or differenced
-data where negative probabilities are expected).}
+negative PMF entries (e.g., when working with downward corrections where
+negative probabilities reflect systematic adjustments).}
 }
 \value{
 Vector indexed at 0 of length \code{max_delay + 1} with columns

@@ -6,7 +6,7 @@ test_that(
   "Full workflow with negative PMF entries from example data works",
   {
     # Use the example data
-    triangle <- example_negative_pmf
+    triangle <- example_downward_corrections_matrix
 
     # Estimate delay with preprocess = NULL
     delay_pmf <- estimate_delay(
@@ -33,7 +33,7 @@ test_that(
 )
 
 test_that("Verify PMF has negative entries with example data", {
-  triangle <- example_negative_pmf
+  triangle <- example_downward_corrections_matrix
 
   delay_pmf <- estimate_delay(
     reporting_triangle = triangle,
@@ -54,7 +54,7 @@ test_that("Verify PMF has negative entries with example data", {
 })
 
 test_that("Verify CDF is not strictly increasing with example data", {
-  triangle <- example_negative_pmf
+  triangle <- example_downward_corrections_matrix
 
   delay_pmf <- estimate_delay(
     reporting_triangle = triangle,
@@ -76,7 +76,7 @@ test_that("Verify CDF is not strictly increasing with example data", {
 
 test_that("Low-level workflow with preprocess = NULL completes", {
   # Test that the low-level functions work together
-  triangle <- example_negative_pmf
+  triangle <- example_downward_corrections_matrix
 
   # Estimate delay with preprocess = NULL
   delay_pmf <- estimate_delay(
@@ -103,7 +103,7 @@ test_that("Low-level workflow with preprocess = NULL completes", {
 test_that(
   "Workflow with negative PMF produces sensible nowcast values",
   {
-    triangle <- example_negative_pmf
+    triangle <- example_downward_corrections_matrix
 
     # Estimate delay with preprocess = NULL
     delay_pmf <- estimate_delay(
@@ -173,7 +173,7 @@ test_that(
 )
 
 test_that("Default preprocessing still works as expected", {
-  triangle <- example_negative_pmf
+  triangle <- example_downward_corrections_matrix
 
   # Use default preprocessing
   delay_pmf_default <- estimate_delay(
@@ -198,7 +198,7 @@ test_that("Default preprocessing still works as expected", {
 })
 
 test_that("Comparison: preprocess NULL vs default preprocessing", {
-  triangle <- example_negative_pmf
+  triangle <- example_downward_corrections_matrix
 
   # Get PMF with NULL preprocessing
   pmf_null <- estimate_delay(
@@ -235,11 +235,11 @@ test_that(
     # Convert matrix to reporting_triangle object
     reference_dates <- seq(
       from = as.Date("2025-01-01"),
-      length.out = nrow(example_negative_pmf),
+      length.out = nrow(example_downward_corrections_matrix),
       by = "day"
     )
     triangle <- as_reporting_triangle(
-      data = example_negative_pmf,
+      data = example_downward_corrections_matrix,
       reference_dates = reference_dates,
       max_delay = 3
     )

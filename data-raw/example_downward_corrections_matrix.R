@@ -1,15 +1,15 @@
-# Script to generate synthetic example data with negative PMF entries
+# Script to generate synthetic example data with downward corrections
 # This demonstrates a scenario where corrections result in net downward
 # adjustments at a specific delay, producing a PMF with negative entries
 # when estimated with preprocess = NULL
 
 # Load package
-library(baselinenowcast) # nolint: unused_import_linter
+devtools::load_all() # nolint: namespace_linter
 
 # Create a reporting triangle with systematic downward corrections at delay 2
 # This represents a realistic scenario where data quality reviews at day 2
 # consistently reclassify cases to earlier delays or remove false positives
-example_negative_pmf <- matrix(
+example_downward_corrections_matrix <- matrix(
   c(
     # Reference dates with day 0, 1, 2, 3 delays
     100, 60, -20, 10, # Day 1: 20 cases removed at delay 2
@@ -27,7 +27,7 @@ example_negative_pmf <- matrix(
 
 # Verify that this produces a PMF with negative entries
 delay_pmf_null <- estimate_delay(
-  reporting_triangle = example_negative_pmf,
+  reporting_triangle = example_downward_corrections_matrix,
   max_delay = 3,
   n = 5,
   preprocess = NULL
@@ -70,7 +70,7 @@ if (any(cdf_diffs < 0)) {
 
 # Compare with default preprocessing
 delay_pmf_preprocessed <- estimate_delay(
-  reporting_triangle = example_negative_pmf,
+  reporting_triangle = example_downward_corrections_matrix,
   max_delay = 3,
   n = 5,
   preprocess = preprocess_negative_values
@@ -96,5 +96,5 @@ cat(" and the negative\n")
 cat("PMF reflects the net probability of downward correction at that delay.\n")
 
 # Save the example data
-usethis::use_data(example_negative_pmf, overwrite = TRUE)
-cat("\nExample data saved to data/example_negative_pmf.rda\n")
+usethis::use_data(example_downward_corrections_matrix, overwrite = TRUE)
+cat("\nExample data saved to data/example_downward_corrections_matrix.rda\n")

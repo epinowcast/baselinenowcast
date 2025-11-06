@@ -58,30 +58,33 @@
 #' @family example_data
 "syn_nssp_line_list"
 
-#' Example reporting triangle with negative PMF entries
+#' Example reporting triangle with downward corrections
 #'
-#' @description A synthetic reporting triangle that demonstrates a scenario
-#'   where systematic downward corrections occur at a specific delay.
+#' @description A synthetic reporting triangle demonstrating downward
+#'   corrections at a specific delay.
 #'   This represents a realistic case where data quality reviews at delay 2
 #'   consistently identify false positives or reclassify cases, resulting in
-#'   net downward adjustments.
+#'   net downward adjustments that produce negative values.
 #'
 #'   When estimated with `preprocess = NULL`, this triangle produces a PMF with
-#'   at least one negative entry and a CDF that is not strictly increasing.
+#'   negative entries and a CDF that is not strictly increasing, reflecting
+#'   the downward correction process.
 #'
 #' @format A matrix with 8 rows and 4 columns.
 #' \describe{
 #'   Rows represent reference dates (time points when events occurred).
 #'   Columns represent reporting delays (0 to 3 days).
-#'   Values represent counts, including negative values at delay 2.
+#'   Values represent counts, with negative values at delay 2 representing
+#'     downward corrections.
 #'   Lower-right triangle contains NA values (unobserved future reports).
 #' }
 #'
 #' @details
-#' This example demonstrates the relaxed assumptions for PMF and CDF:
+#' This example demonstrates relaxed assumptions for PMF and CDF when working
+#' with downward corrections:
 #' - With `preprocess = NULL`, the PMF can have negative entries
 #' - The CDF may not be strictly increasing
-#' - This reflects real reporting processes with systematic corrections
+#' - This reflects real reporting processes with systematic downward corrections
 #'
 #' @seealso
 #' - [estimate_delay()] with `preprocess = NULL` to preserve negative entries
@@ -89,4 +92,4 @@
 #'
 #' @family example_data
 #' @keywords internal
-"example_negative_pmf"
+"example_downward_corrections_matrix"

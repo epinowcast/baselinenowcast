@@ -1,5 +1,4 @@
-# Script to generate large covid dataset with mutliple age groups.
-# Used for tests and examples.
+# Script to generate large covid dataset with multiple age groups.
 # Run this script when the data needs to be updated
 if (!requireNamespace("readr", quietly = TRUE)) {
   stop("Package 'readr' is required to run this script. Please install it with install.packages('readr').") # nolint

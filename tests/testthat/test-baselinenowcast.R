@@ -376,7 +376,7 @@ test_that("baselinenowcast errors if date columns are not of date class", {
       draws = 100,
       strata_cols = c("age_group", "location")
     ),
-    regexp = "reference_date must be of Date class"
+    regexp = "Must be of class 'Date', not 'character'"
   )
 
   covid_data2 <- covid_data
@@ -388,11 +388,11 @@ test_that("baselinenowcast errors if date columns are not of date class", {
       draws = 100,
       strata_cols = c("age_group", "location")
     ),
-    regexp = "report_date must be of Date class"
+    regexp = "Must be of class 'Date', not 'character'"
   )
 })
 
-test_that("baselinenowcast errors if strata sharig args are invalid", {
+test_that("baselinenowcast errors if strata sharing args are invalid", {
   expect_error(
     baselinenowcast(
       data = covid_data,
@@ -591,10 +591,12 @@ test_that("baselinenowcast produces different results when stratifying by weekda
   covid_data$weekday_ref_date <- lubridate::wday(covid_data$reference_date,
     label = TRUE
   )
+
   covid_data_single_strata_wday <- dplyr::filter(
     covid_data,
     age_group == "00+"
   )
+
   set.seed(123)
   wday_stratified <- baselinenowcast(covid_data_single_strata_wday,
     max_delay = 40,
@@ -603,11 +605,13 @@ test_that("baselinenowcast produces different results when stratifying by weekda
     strata_cols = "weekday_ref_date"
   ) |>
     dplyr::mutate(type = "wday stratified")
+
   final_day_mean_est_wday <- wday_stratified |>
     dplyr::filter(reference_date == max(reference_date)) |>
     dplyr::group_by(reference_date) |>
     dplyr::summarise(mean_est = mean(pred_count)) |>
     dplyr::pull(mean_est)
+
   set.seed(123)
   no_wday <- baselinenowcast(covid_data_single_strata_wday,
     max_delay = 40,
@@ -615,6 +619,7 @@ test_that("baselinenowcast produces different results when stratifying by weekda
     scale_factor = 3
   ) |>
     dplyr::mutate(type = "no wday strata")
+
   final_day_mean_est_no_wday <- no_wday |>
     dplyr::filter(reference_date == max(reference_date)) |>
     dplyr::group_by(reference_date) |>
@@ -633,6 +638,7 @@ test_that("baselinenowcast produces different results when stratifying by weekda
     final_day_mean_est_wday, final_day_mean_est_no_wday,
     tol = 0.01
   ))
+
   # Check that each of them are large than the initial reports
   expect_gt(final_day_mean_est_wday, covid_data_summed_final)
   expect_gt(final_day_mean_est_no_wday, covid_data_summed_final)
@@ -671,7 +677,7 @@ test_that("baselinenowcast produces different results when stratifying by weekda
 
 test_that("baselinenowcast produces different results when sharing across age groups for both delay and uncertainty and just each one independently", { # nolint
   skip_if_not_installed("dplyr")
-  set.seed(123)
+
   covid_data <- dplyr::filter(covid_data, age_group != "00+")
   multiple_ags_fp <- baselinenowcast(
     covid_data,
@@ -679,10 +685,12 @@ test_that("baselinenowcast produces different results when sharing across age gr
     draws = 100,
     strata_cols = "age_group"
   ) |> dplyr::mutate(type = "no share")
+
   final_day_mean_no_share <- multiple_ags_fp |>
     dplyr::filter(reference_date == max(reference_date)) |>
     dplyr::group_by(reference_date, age_group) |>
     dplyr::summarise(mean_est = mean(pred_count))
+
   set.seed(123)
   multiple_ags_full_ag <- baselinenowcast(
     covid_data,
@@ -691,10 +699,12 @@ test_that("baselinenowcast produces different results when sharing across age gr
     strata_cols = "age_group",
     strata_sharing = c("delay", "uncertainty")
   ) |> dplyr::mutate(type = "share delay & uncertainty")
+
   final_day_mean_full_share <- multiple_ags_full_ag |>
     dplyr::filter(reference_date == max(reference_date)) |>
     dplyr::group_by(reference_date, age_group) |>
     dplyr::summarise(mean_est = mean(pred_count))
+
   set.seed(123)
   multiple_ags_just_delay <- baselinenowcast(
     covid_data,
@@ -703,10 +713,12 @@ test_that("baselinenowcast produces different results when sharing across age gr
     strata_cols = "age_group",
     strata_sharing = "delay"
   ) |> dplyr::mutate(type = "share delay")
+
   final_day_mean_share_delay <- multiple_ags_just_delay |>
     dplyr::filter(reference_date == max(reference_date)) |>
     dplyr::group_by(reference_date, age_group) |>
     dplyr::summarise(mean_est = mean(pred_count))
+
   set.seed(123)
   multiple_ags_just_uq <- baselinenowcast(
     covid_data,
@@ -715,10 +727,12 @@ test_that("baselinenowcast produces different results when sharing across age gr
     strata_cols = "age_group",
     strata_sharing = "uncertainty"
   ) |> dplyr::mutate(type = "share uncertainty")
+
   final_day_mean_share_uq <- multiple_ags_just_uq |>
     dplyr::filter(reference_date == max(reference_date)) |>
     dplyr::group_by(reference_date, age_group) |>
     dplyr::summarise(mean_est = mean(pred_count))
+
   covid_data_summed_final <- covid_data |>
     dplyr::group_by(reference_date, age_group) |>
     dplyr::summarise(cases = sum(count)) |>
@@ -764,15 +778,16 @@ test_that("baselinenowcast produces different results when sharing across age gr
   expect_true(all(final_day_mean_share_uq$mean_est >
     covid_data_summed_final$cases))
 
-
   if (interactive()) {
     skip_if_not_installed("ggplot2")
     skip_if_not_installed("glue")
     library(ggplot2) # nolint
+
     covid_data_summed <- covid_data |>
       dplyr::group_by(reference_date, age_group) |>
       dplyr::summarise(cases = sum(count)) |>
       dplyr::ungroup()
+
     comb_data <- bind_rows(
       multiple_ags_fp,
       multiple_ags_full_ag,
@@ -816,10 +831,12 @@ test_that("baselinenowcast fails with coherent error messages necessarys strata 
 })
 test_that("baselinenowcast fails with coherent error messages when we ask it to stratify by weekday and then share across strata", { # nolint
   skip_if_not_installed("lubridate")
+
   covid_data$weekday_ref_date <- lubridate::wday(covid_data$reference_date,
     label = TRUE
   )
   exp_err <- "There is no overlapping set of reference and report dates across all" # nolint
+
   covid_data_00 <- dplyr::filter(
     covid_data,
     age_group == "00+"
@@ -868,10 +885,13 @@ test_that("baselinenowcast fails with coherent error messages when we ask it to 
 
 test_that("baselinenowcast errors when trying to do strata sharing with weekday strata, but works if separated", { # nolint
   skip_if_not_installed("dplyr")
+
   covid_data$weekday_ref_date <- lubridate::wday(covid_data$reference_date,
     label = TRUE
   )
+
   covid_data <- dplyr::filter(covid_data, age_group != "00+")
+
   expect_error(
     baselinenowcast(covid_data,
       max_delay = 40,
@@ -885,6 +905,7 @@ test_that("baselinenowcast errors when trying to do strata sharing with weekday 
     ),
     regexp = "There is no overlapping set of reference and report dates across all" # nolint
   )
+
   # Separately filter by weekday and then combine
   wdays <- unique(covid_data$weekday_ref_date)
   bnc_df <- data.frame()
@@ -904,6 +925,7 @@ test_that("baselinenowcast errors when trying to do strata sharing with weekday 
     bnc_df <- bind_rows(bnc_df, bnc_df_i)
   }
   bnc_df <- dplyr::mutate(bnc_df, type = "age group sharing")
+
   # Compare to no strata sharing
   no_share_ag <- baselinenowcast(covid_data,
     max_delay = 40,
@@ -915,6 +937,7 @@ test_that("baselinenowcast errors when trying to do strata sharing with weekday 
     )
   ) |>
     dplyr::mutate(type = "no sharing")
+
   final_day_mean_no_share <- bnc_df |>
     filter(reference_date == max(reference_date)) |>
     group_by(reference_date, age_group) |>
@@ -935,6 +958,7 @@ test_that("baselinenowcast errors when trying to do strata sharing with weekday 
     skip_if_not_installed("ggplot2")
     skip_if_not_installed("glue")
     library(ggplot2) # nolint
+
     covid_data_summed <- covid_data |>
       dplyr::group_by(reference_date, age_group) |>
       dplyr::summarise(cases = sum(count)) |>

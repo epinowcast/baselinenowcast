@@ -209,6 +209,7 @@ baselinenowcast.reporting_triangle <- function(
 #' @inheritParams allocate_reference_times
 #' @importFrom purrr imap list_rbind map_dfc set_names
 #' @importFrom checkmate assert_subset assert_character assert_names
+#'   assert_date
 #' @family baselinenowcast_df
 #' @export
 #' @method baselinenowcast data.frame
@@ -265,8 +266,8 @@ baselinenowcast.data.frame <- function(
     strata_cols,
     data_clean
   )
-  .validate_date_cols(data_clean, "reference_date")
-  .validate_date_cols(data_clean, "report_date")
+  assert_date(data_clean$reference_date)
+  assert_date(data_clean$report_date)
 
   # Split dataframe into a list of dataframes for each nowcast unit
   if (length(strata_cols) != 0) {
@@ -355,7 +356,6 @@ baselinenowcast.data.frame <- function(
   ) |> list_rbind()
   return(combined_result)
 }
-
 
 #' Produce a nowcast from a named reporting triangle object
 #'

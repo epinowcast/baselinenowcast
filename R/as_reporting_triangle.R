@@ -63,7 +63,7 @@ as_reporting_triangle <- function(data,
 #' @return A \code{\link{reporting_triangle}} object
 #' @method as_reporting_triangle data.frame
 #' @family reporting_triangle
-#' @importFrom checkmate check_integerish
+#' @importFrom checkmate check_integerish assert_date
 #' @importFrom stats reshape
 #' @examples
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
@@ -90,8 +90,8 @@ as_reporting_triangle.data.frame <- function(
   data <- .rename_cols(data, old_names = c(reference_date, report_date, count))
 
   .validate_rep_tri_df(data, delays_unit)
-  .validate_date_cols(data, "reference_date")
-  .validate_date_cols(data, "report_date")
+  assert_date(data$reference_date)
+  assert_date(data$report_date)
 
   # Compute delay
   data$delay <- as.numeric(

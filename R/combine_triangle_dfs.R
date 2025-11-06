@@ -16,8 +16,6 @@
 #'   the original data.
 .combine_triangle_dfs <- function(data,
                                   strata_cols = NULL) {
-  group_cols <- c("reference_date", "report_date")
-  value_col <- "count"
   if (!is.null(strata_cols) && length(strata_cols) > 0) {
     n_strata <- nrow(unique(data[, strata_cols, drop = FALSE]))
   } else {
@@ -44,7 +42,7 @@
   filtered_data <- data[data$pair_id %in% valid_pairs, ]
   filtered_data$pair_id <- NULL
 
-  formula_str <- paste(value_col, "~", paste(group_cols, collapse = " + "))
+  formula_str <- "count ~ reference_date + report_date"
   formula_obj <- as.formula(formula_str)
 
   result <- aggregate(

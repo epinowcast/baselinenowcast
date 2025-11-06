@@ -40,7 +40,7 @@ n_retrospective_nowcasts <- 0.5 * n_training_volume
 # Preprocess the observed data
 training_data <- enw_filter_reference_dates(
   observed_data,
-  include_days = n_training_volume - 1
+  include_days = n_training_volume
 )
 
 # Preprocess the training data
@@ -49,7 +49,7 @@ latest_training_data <- enw_latest_data(training_data)
 # Filter the target data to include only the latest reference date
 target_data <- enw_filter_reference_dates(
   latest_data,
-  include_days = n_training_volume - 1
+  include_days = n_training_volume
 )
 
 # Preprocess the observed data for nowcasting

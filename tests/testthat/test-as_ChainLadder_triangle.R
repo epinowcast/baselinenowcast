@@ -27,11 +27,11 @@ test_that(
   )
 
   # Check that the matrix values are preserved
-  expect_identical(
-    unclass(as.matrix(cl_triangle)),
-    rep_tri$reporting_triangle_matrix,
-    ignore_attr = TRUE
-  )
+  cl_mat <- unclass(as.matrix(cl_triangle))
+  dimnames(cl_mat) <- NULL
+  orig_mat <- rep_tri$reporting_triangle_matrix
+  dimnames(orig_mat) <- NULL
+  expect_equal(cl_mat, orig_mat)
 })
 
 test_that(
@@ -58,11 +58,11 @@ test_that(
   expect_no_error(assert_reporting_triangle(rep_tri_2))
 
   # Check that key components match (ignore dimname attributes)
-  expect_identical(
-    rep_tri_2$reporting_triangle_matrix,
-    rep_tri$reporting_triangle_matrix,
-    ignore_attr = TRUE
-  )
+  mat_2 <- rep_tri_2$reporting_triangle_matrix
+  dimnames(mat_2) <- NULL
+  mat_1 <- rep_tri$reporting_triangle_matrix
+  dimnames(mat_1) <- NULL
+  expect_equal(mat_2, mat_1)
   expect_identical(rep_tri_2$reference_dates, rep_tri$reference_dates)
   expect_identical(rep_tri_2$max_delay, rep_tri$max_delay)
   expect_identical(rep_tri_2$delays_unit, rep_tri$delays_unit)
@@ -89,11 +89,11 @@ test_that("as_ChainLadder_triangle() and as_reporting_triangle.triangle() round-
   )
 
   # Everything should be identical after round trip
-  expect_identical(
-    rep_tri_final$reporting_triangle_matrix,
-    rep_tri_original$reporting_triangle_matrix,
-    ignore_attr = TRUE
-  )
+  mat_final <- rep_tri_final$reporting_triangle_matrix
+  dimnames(mat_final) <- NULL
+  mat_orig <- rep_tri_original$reporting_triangle_matrix
+  dimnames(mat_orig) <- NULL
+  expect_equal(mat_final, mat_orig)
   expect_identical(
     rep_tri_final$reference_dates,
     rep_tri_original$reference_dates
@@ -179,11 +179,11 @@ test_that(
   )
 
   expect_identical(rep_tri_2$delays_unit, "weeks")
-  expect_identical(
-    rep_tri_2$reporting_triangle_matrix,
-    rep_tri$reporting_triangle_matrix,
-    ignore_attr = TRUE
-  )
+  mat_2 <- rep_tri_2$reporting_triangle_matrix
+  dimnames(mat_2) <- NULL
+  mat_1 <- rep_tri$reporting_triangle_matrix
+  dimnames(mat_1) <- NULL
+  expect_equal(mat_2, mat_1)
 })
 
 test_that("as_ChainLadder_triangle() validates input", { # nolint

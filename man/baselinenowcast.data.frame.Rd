@@ -112,9 +112,9 @@ past retrospective nowcast errors and generate probabilistic nowcasts,
 which are samples from the predictive distribution of the estimated final
 case count at each reference date.
 
-This function chains the full nowcasting workflow on multiple reporting
+This function implements the full nowcasting workflow on multiple reporting
 triangles, generating estimates of the delay and uncertainty parameters
-from across strata if specified.
+for all strata using estimates from across strata if specified.
 \enumerate{
 \item \code{\link[=estimate_delay]{estimate_delay()}} - Estimate a delay PMF across strata if
 \code{strata_sharing} contains \code{"delay "}

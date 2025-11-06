@@ -37,7 +37,7 @@ baselinenowcast <- function(data,
 #'  \code{\link{reporting_triangle}} object and generates a nowcast in the
 #'  form of a \code{\link{baselinenowcast_df}} object.
 #'
-#'  This function chains the full nowcasting workflow on a single reporting
+#'  This function implements the full nowcasting workflow on a single reporting
 #'  triangle:
 #'  \enumerate{
 #'      \item [estimate_delay()] - Estimate a reporting delay PMF
@@ -178,9 +178,9 @@ baselinenowcast.reporting_triangle <- function(
 #'  which are samples from the predictive distribution of the estimated final
 #'  case count at each reference date.
 #'
-#'  This function chains the full nowcasting workflow on multiple reporting
+#'  This function implements the full nowcasting workflow on multiple reporting
 #'  triangles, generating estimates of the delay and uncertainty parameters
-#'  from across strata if specified.
+#'  for all strata using estimates from across strata if specified.
 #'  \enumerate{
 #'      \item [estimate_delay()] - Estimate a delay PMF across strata if
 #'      `strata_sharing` contains `"delay "`

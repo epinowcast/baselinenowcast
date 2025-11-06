@@ -337,19 +337,21 @@ baselinenowcast.data.frame <- function(
   # Nowcast
   combined_result <- imap_dfr(
     list_of_rep_tris,
-    \(rep_tri, name) .nowcast_from_rep_tris(
-      rep_tri = rep_tri,
-      name = name,
-      strata_cols = strata_cols,
-      scale_factor = scale_factor,
-      prop_delay = prop_delay,
-      output_type = output_type,
-      draws = draws,
-      uncertainty_model = uncertainty_model,
-      uncertainty_sampler = uncertainty_sampler,
-      delay_pmf = shared_delay_pmf,
-      uncertainty_params = shared_uncertainty_params
-    )
+    \(rep_tri, name) {
+      .nowcast_from_rep_tris(
+        rep_tri = rep_tri,
+        name = name,
+        strata_cols = strata_cols,
+        scale_factor = scale_factor,
+        prop_delay = prop_delay,
+        output_type = output_type,
+        draws = draws,
+        uncertainty_model = uncertainty_model,
+        uncertainty_sampler = uncertainty_sampler,
+        delay_pmf = shared_delay_pmf,
+        uncertainty_params = shared_uncertainty_params
+      )
+    }
   )
   return(combined_result)
 }

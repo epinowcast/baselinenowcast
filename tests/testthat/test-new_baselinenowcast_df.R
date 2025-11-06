@@ -96,10 +96,7 @@ test_that(".align_time_to_dates() correctly merges dates with time indices", {
   )
   reference_dates <- as.Date(c("2024-01-01", "2024-01-02", "2024-01-03"))
 
-  result <- baselinenowcast:::.align_time_to_dates(
-    nowcast_df,
-    reference_dates
-  )
+  result <- .align_time_to_dates(nowcast_df, reference_dates)
 
   expect_identical(result$reference_date, reference_dates)
   expect_identical(result$pred_count, c(100, 200, 300))
@@ -117,10 +114,7 @@ test_that(".align_time_to_dates() handles non-sequential time values", {
     "2024-01-04", "2024-01-05"
   ))
 
-  result <- baselinenowcast:::.align_time_to_dates(
-    nowcast_df,
-    reference_dates
-  )
+  result <- .align_time_to_dates(nowcast_df, reference_dates)
 
   expect_identical(nrow(result), 3L)
   expect_identical(

@@ -1,11 +1,14 @@
 #' Convert reporting_triangle to ChainLadder triangle format
 #'
 #' This function converts a \code{\link{reporting_triangle}} object to a
-#' ChainLadder triangle object, enabling use of ChainLadder's functionality for
-#' analysing reporting triangles.
-#' The ChainLadder package provides mature methods for working with reporting
-#' triangles, including chain ladder reserving methods, bootstrap techniques,
-#' and diagnostic plots.
+#' triangle object from the
+#' \href{https://CRAN.R-project.org/package=ChainLadder}{ChainLadder} package.
+#' ChainLadder is a mature package for claims reserving in general insurance
+#' that provides statistical methods for analysing reporting triangles,
+#' including the chain ladder technique, bootstrap methods, and diagnostic
+#' tools.
+#' Converting to ChainLadder format enables use of these specialized methods
+#' alongside baselinenowcast's nowcasting functionality.
 #'
 #' @param x A \code{\link{reporting_triangle}} object to convert.
 #' @param ... Additional arguments passed to

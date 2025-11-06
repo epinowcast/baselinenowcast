@@ -286,8 +286,8 @@ baselinenowcast.data.frame <- function(
     delays_unit = delays_unit
   )
   # Combine if needed
-  delay_pmf <- NULL
-  uncertainty_params <- NULL
+  shared_delay_pmf <- NULL
+  shared_uncertainty_params <- NULL
   if (all(strata_sharing != "none")) {
     pooled_df <- .combine_triangle_dfs(
       data = data_clean,
@@ -304,7 +304,7 @@ baselinenowcast.data.frame <- function(
     )
     if ("delay" %in% strata_sharing) {
       # Estimate delay once on pooled data
-      delay_pmf <- estimate_delay(
+      shared_delay_pmf <- estimate_delay(
         reporting_triangle = pooled_triangle$reporting_triangle_matrix,
         n = tv$n_history_delay
       )
@@ -322,7 +322,7 @@ baselinenowcast.data.frame <- function(
       retro_pt_nowcasts <- fill_triangles(retro_rep_tris,
         n = tv$n_history_delay
       )
-      uncertainty_params <- estimate_uncertainty(
+      shared_uncertainty_params <- estimate_uncertainty(
         point_nowcast_matrices = retro_pt_nowcasts,
         truncated_reporting_triangles = trunc_rep_tris,
         retro_reporting_triangles = retro_rep_tris,
@@ -348,9 +348,9 @@ baselinenowcast.data.frame <- function(
         uncertainty_model,
       uncertainty_sampler =
         uncertainty_sampler,
-      delay_pmf = delay_pmf,
+      delay_pmf = shared_delay_pmf,
       uncertainty_params =
-        uncertainty_params
+        shared_uncertainty_params
     )
   ) |> list_rbind()
   return(combined_result)

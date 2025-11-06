@@ -5,7 +5,31 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Estimate and apply uncertainty to a point nowcast matrix — estimate_and_apply_uncertainty"><meta name="description" content="Estimate and apply uncertainty to a point nowcast matrix"><meta property="og:description" content="Estimate and apply uncertainty to a point nowcast matrix"><meta property="og:image" content="https://baselinenowcast.epinowcast.org/logo.png"></head><body>
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Estimate and apply uncertainty to a point nowcast matrix — estimate_and_apply_uncertainty"><meta name="description" content="Generates probabilistic nowcasts by estimating uncertainty parameters from
+retrospective nowcasts and applying them to a point nowcast matrix.
+This function combines:
+estimate_uncertainty_retro() - Estimates uncertainty parameters
+using retrospective nowcasts
+sample_nowcasts() - Applies uncertainty to generate draws
+
+
+To obtain estimates of uncertainty parameters, use
+estimate_uncertainty_retro(). For full control over individual steps
+(e.g., custom matrix preparation, alternative aggregation), use the
+low-level functions (truncate_triangles(), construct_triangles(),
+fill_triangles(), estimate_uncertainty()) directly."><meta property="og:description" content="Generates probabilistic nowcasts by estimating uncertainty parameters from
+retrospective nowcasts and applying them to a point nowcast matrix.
+This function combines:
+estimate_uncertainty_retro() - Estimates uncertainty parameters
+using retrospective nowcasts
+sample_nowcasts() - Applies uncertainty to generate draws
+
+
+To obtain estimates of uncertainty parameters, use
+estimate_uncertainty_retro(). For full control over individual steps
+(e.g., custom matrix preparation, alternative aggregation), use the
+low-level functions (truncate_triangles(), construct_triangles(),
+fill_triangles(), estimate_uncertainty()) directly."><meta property="og:image" content="https://baselinenowcast.epinowcast.org/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -53,7 +77,16 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Estimate and apply uncertainty to a point nowcast matrix</p>
+    <p>Generates probabilistic nowcasts by estimating uncertainty parameters from
+retrospective nowcasts and applying them to a point nowcast matrix.</p>
+<p>This function combines:</p><ol><li><p><code><a href="estimate_uncertainty_retro.html">estimate_uncertainty_retro()</a></code> - Estimates uncertainty parameters
+using retrospective nowcasts</p></li>
+<li><p><code><a href="sample_nowcasts.html">sample_nowcasts()</a></code> - Applies uncertainty to generate draws</p></li>
+</ol><p>To obtain estimates of uncertainty parameters, use
+<code><a href="estimate_uncertainty_retro.html">estimate_uncertainty_retro()</a></code>. For full control over individual steps
+(e.g., custom matrix preparation, alternative aggregation), use the
+low-level functions (<code><a href="truncate_triangles.html">truncate_triangles()</a></code>, <code><a href="construct_triangles.html">construct_triangles()</a></code>,
+<code><a href="fill_triangles.html">fill_triangles()</a></code>, <code><a href="estimate_uncertainty.html">estimate_uncertainty()</a></code>) directly.</p>
     </div>
 
     <div class="section level2">
@@ -65,6 +98,8 @@
 <span>  <span class="va">n_retrospective_nowcasts</span>,</span>
 <span>  max_delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
 <span>  draws <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  structure <span class="op">=</span> <span class="fu"><a href="detect_structure.html">detect_structure</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span>,</span>
+<span>  delay_pmf <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  uncertainty_model <span class="op">=</span> <span class="va">fit_by_horizon</span>,</span>
 <span>  uncertainty_sampler <span class="op">=</span> <span class="va">sample_nb</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -97,7 +132,7 @@ starting from the most recent reporting delay.</p></dd>
 
 <dt id="arg-n-retrospective-nowcasts">n_retrospective_nowcasts<a class="anchor" aria-label="anchor" href="#arg-n-retrospective-nowcasts"></a></dt>
 <dd><p>Integer indicating the number of
-retrospective nowcast times to use for uncertainty estimation.</p></dd>
+retrospective nowcasts to use for uncertainty estimation.</p></dd>
 
 
 <dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
@@ -109,6 +144,20 @@ of the delay. The default is to use the whole reporting triangle,
 <dt id="arg-draws">draws<a class="anchor" aria-label="anchor" href="#arg-draws"></a></dt>
 <dd><p>Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is <code>1000</code>.</p></dd>
+
+
+<dt id="arg-structure">structure<a class="anchor" aria-label="anchor" href="#arg-structure"></a></dt>
+<dd><p>Integer or vector specifying the reporting structure.
+If integer, divides columns evenly by that integer (with last possibly
+truncated).  If vector, the sum must not be greater than or equal to the
+number of columns. Default is 1 (standard triangular structure).</p></dd>
+
+
+<dt id="arg-delay-pmf">delay_pmf<a class="anchor" aria-label="anchor" href="#arg-delay-pmf"></a></dt>
+<dd><p>Vector or list of vectors of delays assumed to be indexed
+starting at the first delay column in each of the matrices in
+<code>retro_reporting_triangles</code>. If a list, must of the same length as
+<code>retro_reporting_triangles</code>, with elements aligning. Default is <code>NULL</code></p></dd>
 
 
 <dt id="arg-uncertainty-model">uncertainty_model<a class="anchor" aria-label="anchor" href="#arg-uncertainty-model"></a></dt>
@@ -132,8 +181,8 @@ negative binomial for each element of the vector.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments to <code><a href="estimate_uncertainty.html">estimate_uncertainty()</a></code> and
-<code><a href="sample_prediction.html">sample_prediction()</a></code>.</p></dd>
+<dd><p>Additional arguments to <code><a href="estimate_uncertainty_retro.html">estimate_uncertainty_retro()</a></code> and
+<code><a href="sample_nowcasts.html">sample_nowcasts()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -145,7 +194,8 @@ observations and probabilistic predictions at each reference time.</p>
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>High-level workflow wrapper functions
 <code><a href="allocate_reference_times.html">allocate_reference_times()</a></code>,
-<code><a href="estimate_and_apply_delay.html">estimate_and_apply_delay()</a></code></p></div>
+<code><a href="estimate_and_apply_delay.html">estimate_and_apply_delay()</a></code>,
+<code><a href="estimate_uncertainty_retro.html">estimate_uncertainty_retro()</a></code></p></div>
     </div>
 
     <div class="section level2">

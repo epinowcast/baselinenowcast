@@ -80,6 +80,8 @@ nowcasting workflows.
   : Estimate and apply delay from a reporting triangle
 - [`estimate_and_apply_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_uncertainty.md)
   : Estimate and apply uncertainty to a point nowcast matrix
+- [`estimate_uncertainty_retro()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty_retro.md)
+  : Estimate uncertainty parameters using retrospective nowcasts
 
 ## Lower-level components
 

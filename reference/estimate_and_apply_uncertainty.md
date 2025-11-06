@@ -1,6 +1,25 @@
 # Estimate and apply uncertainty to a point nowcast matrix
 
-Estimate and apply uncertainty to a point nowcast matrix
+Generates probabilistic nowcasts by estimating uncertainty parameters
+from retrospective nowcasts and applying them to a point nowcast matrix.
+
+This function combines:
+
+1.  [`estimate_uncertainty_retro()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty_retro.md) -
+    Estimates uncertainty parameters using retrospective nowcasts
+
+2.  [`sample_nowcasts()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcasts.md) -
+    Applies uncertainty to generate draws
+
+To obtain estimates of uncertainty parameters, use
+[`estimate_uncertainty_retro()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty_retro.md).
+For full control over individual steps (e.g., custom matrix preparation,
+alternative aggregation), use the low-level functions
+([`truncate_triangles()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangles.md),
+[`construct_triangles()`](https://baselinenowcast.epinowcast.org/reference/construct_triangles.md),
+[`fill_triangles()`](https://baselinenowcast.epinowcast.org/reference/fill_triangles.md),
+[`estimate_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md))
+directly.
 
 ## Usage
 
@@ -12,6 +31,8 @@ estimate_and_apply_uncertainty(
   n_retrospective_nowcasts,
   max_delay = ncol(reporting_triangle) - 1,
   draws = 1000,
+  structure = detect_structure(reporting_triangle),
+  delay_pmf = NULL,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,
   ...
@@ -41,8 +62,8 @@ estimate_and_apply_uncertainty(
 
 - n_retrospective_nowcasts:
 
-  Integer indicating the number of retrospective nowcast times to use
-  for uncertainty estimation.
+  Integer indicating the number of retrospective nowcasts to use for
+  uncertainty estimation.
 
 - max_delay:
 
@@ -54,6 +75,20 @@ estimate_and_apply_uncertainty(
 
   Integer indicating the number of draws of the predicted nowcast vector
   to generate. Default is `1000`.
+
+- structure:
+
+  Integer or vector specifying the reporting structure. If integer,
+  divides columns evenly by that integer (with last possibly truncated).
+  If vector, the sum must not be greater than or equal to the number of
+  columns. Default is 1 (standard triangular structure).
+
+- delay_pmf:
+
+  Vector or list of vectors of delays assumed to be indexed starting at
+  the first delay column in each of the matrices in
+  `retro_reporting_triangles`. If a list, must of the same length as
+  `retro_reporting_triangles`, with elements aligning. Default is `NULL`
 
 - uncertainty_model:
 
@@ -77,9 +112,9 @@ estimate_and_apply_uncertainty(
 - ...:
 
   Additional arguments to
-  [`estimate_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md)
+  [`estimate_uncertainty_retro()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty_retro.md)
   and
-  [`sample_prediction()`](https://baselinenowcast.epinowcast.org/reference/sample_prediction.md).
+  [`sample_nowcasts()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcasts.md).
 
 ## Value
 
@@ -90,7 +125,8 @@ and probabilistic predictions at each reference time.
 
 High-level workflow wrapper functions
 [`allocate_reference_times()`](https://baselinenowcast.epinowcast.org/reference/allocate_reference_times.md),
-[`estimate_and_apply_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delay.md)
+[`estimate_and_apply_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delay.md),
+[`estimate_uncertainty_retro()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty_retro.md)
 
 ## Examples
 

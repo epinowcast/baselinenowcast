@@ -31,7 +31,7 @@ test_that(
   dimnames(cl_mat) <- NULL
   orig_mat <- rep_tri$reporting_triangle_matrix
   dimnames(orig_mat) <- NULL
-  expect_equal(cl_mat, orig_mat)
+  expect_identical(cl_mat, orig_mat)
 })
 
 test_that(
@@ -62,7 +62,7 @@ test_that(
   dimnames(mat_2) <- NULL
   mat_1 <- rep_tri$reporting_triangle_matrix
   dimnames(mat_1) <- NULL
-  expect_equal(mat_2, mat_1)
+  expect_identical(mat_2, mat_1)
   expect_identical(rep_tri_2$reference_dates, rep_tri$reference_dates)
   expect_identical(rep_tri_2$max_delay, rep_tri$max_delay)
   expect_identical(rep_tri_2$delays_unit, rep_tri$delays_unit)
@@ -93,7 +93,7 @@ test_that("as_ChainLadder_triangle() and as_reporting_triangle.triangle() round-
   dimnames(mat_final) <- NULL
   mat_orig <- rep_tri_original$reporting_triangle_matrix
   dimnames(mat_orig) <- NULL
-  expect_equal(mat_final, mat_orig)
+  expect_identical(mat_final, mat_orig)
   expect_identical(
     rep_tri_final$reference_dates,
     rep_tri_original$reference_dates
@@ -183,7 +183,7 @@ test_that(
   dimnames(mat_2) <- NULL
   mat_1 <- rep_tri$reporting_triangle_matrix
   dimnames(mat_1) <- NULL
-  expect_equal(mat_2, mat_1)
+  expect_identical(mat_2, mat_1)
 })
 
 test_that("as_ChainLadder_triangle() validates input", { # nolint

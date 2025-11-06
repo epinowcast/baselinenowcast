@@ -161,3 +161,129 @@ test_that("estimate_delay handles diagonal reporting triangles", {
   expect_equal(sum(delay_pmf), 1, tolerance = 1e-6)
   expect_equal(delay_pmf, partial_pmf, tolerance = 1e-6)
 })
+
+test_that(
+  "estimate_delay with preprocess = preprocess_negative_values handles negatives", # nolint
+  {
+    # Use example data with negative values
+    triangle_neg <- matrix(
+      c(
+        100, 60, -20, 10,
+        120, 70, -25, 15,
+        110, 65, -22, 12,
+        130, 75, -28, 18,
+        115, 68, -24, 14,
+        125, 72, -26, NA,
+        105, 62, NA, NA,
+        95, NA, NA, NA
+      ),
+      nrow = 8,
+      byrow = TRUE
+    )
+
+    # Default behaviour should handle negatives
+    delay_pmf <- estimate_delay(
+      reporting_triangle = triangle_neg,
+      max_delay = 3,
+      n = 5
+    )
+
+    # Should return valid PMF without negative entries
+    expect_true(all(delay_pmf >= 0))
+    expect_equal(sum(delay_pmf), 1, tolerance = 1e-6)
+  }
+)
+
+test_that("estimate_delay with preprocess = NULL preserves negative values", {
+  # Use example data with negative values
+  triangle_neg <- matrix(
+    c(
+      100, 60, -20, 10,
+      120, 70, -25, 15,
+      110, 65, -22, 12,
+      130, 75, -28, 18,
+      115, 68, -24, 14,
+      125, 72, -26, NA,
+      105, 62, NA, NA,
+      95, NA, NA, NA
+    ),
+    nrow = 8,
+    byrow = TRUE
+  )
+
+  # With preprocess = NULL, negatives should be preserved
+  delay_pmf <- estimate_delay(
+    reporting_triangle = triangle_neg,
+    max_delay = 3,
+    n = 5,
+    preprocess = NULL
+  )
+
+  # Should return a PMF that sums to 1
+  expect_equal(sum(delay_pmf), 1, tolerance = 1e-6)
+
+  # PMF can have negative entries
+  expect_true(any(delay_pmf < 0))
+})
+
+test_that("estimate_delay with negative PMF produces non-increasing CDF", {
+  # Use example data with negative values
+  triangle_neg <- matrix(
+    c(
+      100, 60, -20, 10,
+      120, 70, -25, 15,
+      110, 65, -22, 12,
+      130, 75, -28, 18,
+      115, 68, -24, 14,
+      125, 72, -26, NA,
+      105, 62, NA, NA,
+      95, NA, NA, NA
+    ),
+    nrow = 8,
+    byrow = TRUE
+  )
+
+  delay_pmf <- estimate_delay(
+    reporting_triangle = triangle_neg,
+    max_delay = 3,
+    n = 5,
+    preprocess = NULL
+  )
+
+  # Compute CDF
+  delay_cdf <- cumsum(delay_pmf)
+
+  # CDF differences should include at least one negative value
+  cdf_diffs <- diff(delay_cdf)
+  expect_true(any(cdf_diffs < 0))
+})
+
+test_that("estimate_delay custom preprocessing function works", {
+  # Custom preprocessing that doubles all values
+  custom_preprocess <- function(triangle) {
+    return(triangle * 2)
+  }
+
+  triangle <- matrix(
+    c(
+      10, 5, 3, 2,
+      8, 4, 2, 1,
+      6, 3, NA, NA,
+      4, NA, NA, NA
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+
+  # Apply custom preprocessing
+  delay_pmf <- estimate_delay(
+    reporting_triangle = triangle,
+    max_delay = 3,
+    n = 3,
+    preprocess = custom_preprocess
+  )
+
+  # Should still return valid PMF
+  expect_true(all(delay_pmf >= 0))
+  expect_equal(sum(delay_pmf), 1, tolerance = 1e-6)
+})

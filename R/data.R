@@ -57,3 +57,36 @@
 #'    patient-level line-list data.
 #' @family example_data
 "syn_nssp_line_list"
+
+#' Example reporting triangle with negative PMF entries
+#'
+#' @description A synthetic reporting triangle that demonstrates a scenario
+#'   where systematic downward corrections occur at a specific delay.
+#'   This represents a realistic case where data quality reviews at delay 2
+#'   consistently identify false positives or reclassify cases, resulting in
+#'   net downward adjustments.
+#'
+#'   When estimated with `preprocess = NULL`, this triangle produces a PMF with
+#'   at least one negative entry and a CDF that is not strictly increasing.
+#'
+#' @format A matrix with 8 rows and 4 columns.
+#' \describe{
+#'   Rows represent reference dates (time points when events occurred).
+#'   Columns represent reporting delays (0 to 3 days).
+#'   Values represent counts, including negative values at delay 2.
+#'   Lower-right triangle contains NA values (unobserved future reports).
+#' }
+#'
+#' @details
+#' This example demonstrates the relaxed assumptions for PMF and CDF:
+#' - With `preprocess = NULL`, the PMF can have negative entries
+#' - The CDF may not be strictly increasing
+#' - This reflects real reporting processes with systematic corrections
+#'
+#' @seealso
+#' - [estimate_delay()] with `preprocess = NULL` to preserve negative entries
+#' - [preprocess_negative_values()] to handle negatives by redistribution
+#'
+#' @family example_data
+#' @keywords internal
+"example_negative_pmf"

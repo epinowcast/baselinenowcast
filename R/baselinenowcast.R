@@ -269,16 +269,11 @@ baselinenowcast.data.frame <- function(
   assert_date(data_clean$reference_date)
   assert_date(data_clean$report_date)
 
-  # Split dataframe into a list of dataframes for each nowcast unit
-  if (length(strata_cols) != 0) {
-    data[strata_cols] <- lapply(data_clean[strata_cols], as.factor)
-    list_of_dfs <- split(data_clean, data_clean[strata_cols],
-      sep = "___",
-      drop = TRUE
-    )
-  } else {
-    list_of_dfs <- list(data_clean)
-  }
+  # Split dataframe into a list of dataframes for each strata
+  list_of_dfs <- .split_df_by_cols(
+    long_df = data_clean,
+    col_names = strata_cols
+  )
 
   # Create a list of reporting triangles
   list_of_rep_tris <- lapply(list_of_dfs,
@@ -406,4 +401,26 @@ baselinenowcast.data.frame <- function(
   }
 
   return(nowcast_df)
+}
+
+#' Split dataframe into a list of dataframes by the entries in the specified
+#'   columns
+#'
+#' @param long_df Data.frame to be split into a list of dataframes.
+#' @param col_names Character string indicating the column names to be used
+#'   to create the new data.frames.
+#'
+#' @returns List of data.frames named by the concatenated entries in col_names
+.split_df_by_cols <- function(long_df,
+                              col_names) {
+  if (length(col_names) != 0) {
+    long_df[col_names] <- lapply(long_df[col_names], as.factor)
+    list_of_dfs <- split(long_df, long_df[col_names],
+      sep = "___",
+      drop = TRUE
+    )
+  } else {
+    list_of_dfs <- list(long_df)
+  }
+  return(list_of_dfs)
 }

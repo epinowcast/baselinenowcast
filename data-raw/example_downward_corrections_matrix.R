@@ -80,21 +80,5 @@ cat("\nPMF with default preprocessing:\n")
 print(delay_pmf_preprocessed)
 cat("\nSum of PMF:", sum(delay_pmf_preprocessed), "\n")
 
-# Document the scenario
-cat("\n===== Scenario Documentation =====\n")
-cat("This example represents a reporting process where:\n")
-cat("1. Initial reports arrive at delays 0, 1, and 3\n")
-cat("2. At delay 2, systematic data quality reviews occur\n")
-cat("3. These reviews consistently identify false positives or")
-cat(" reclassify cases\n")
-cat("4. The result is net downward corrections at delay 2\n")
-cat("5. When estimated with preprocess = NULL, this produces a")
-cat(" negative PMF entry\n")
-cat("6. The corresponding CDF is not strictly increasing\n")
-cat("\nThis is a valid representation of the reporting process,")
-cat(" and the negative\n")
-cat("PMF reflects the net probability of downward correction at that delay.\n")
-
 # Save the example data
 usethis::use_data(example_downward_corrections_matrix, overwrite = TRUE)
-cat("\nExample data saved to data/example_downward_corrections_matrix.rda\n")

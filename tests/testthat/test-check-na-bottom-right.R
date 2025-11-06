@@ -140,13 +140,14 @@ test_that(
     ragged_invalid <- matrix(
       c(
         1, 2, 3, 4, 5,
-      6, 7, 8, 9, NA,
-      10, 11, 12, NA, NA,
-      13, 14, NA, 20, NA,
-      15, NA, NA, NA, NA
-    ),
-    nrow = 5,
-    byrow = TRUE
-  )
-  expect_false(.check_na_bottom_right(ragged_invalid))
-})
+        6, 7, 8, 9, NA,
+        10, 11, 12, NA, NA,
+        13, 14, NA, 20, NA,
+        15, NA, NA, NA, NA
+      ),
+      nrow = 5,
+      byrow = TRUE
+    )
+    expect_false(.check_na_bottom_right(ragged_invalid))
+  }
+)

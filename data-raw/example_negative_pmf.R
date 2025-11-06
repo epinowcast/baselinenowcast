@@ -4,7 +4,7 @@
 # when estimated with preprocess = NULL
 
 # Load package
-library(baselinenowcast)
+library(baselinenowcast) # nolint: unused_import_linter
 
 # Create a reporting triangle with systematic downward corrections at delay 2
 # This represents a realistic scenario where data quality reviews at day 2

@@ -3,8 +3,8 @@
 # adjustments at a specific delay, producing a PMF with negative entries
 # when estimated with preprocess = NULL
 
-# Load package functions from source
-devtools::load_all() # nolint: namespace_linter
+# Load package
+library(baselinenowcast)
 
 # Create a reporting triangle with systematic downward corrections at delay 2
 # This represents a realistic scenario where data quality reviews at day 2

@@ -133,29 +133,22 @@ baselinenowcast.reporting_triangle <- function(
   }
 
   if (is.null(uncertainty_params)) {
-    nowcast_df <- estimate_and_apply_uncertainty(
-      point_nowcast_matrix = pt_nowcast,
-      reporting_triangle = tri,
+    uncertainty_params <- estimate_uncertainty_retro(
+      reporting_triangle = data$reporting_triangle_matrix,
       n_history_delay = tv$n_history_delay,
       n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
-      structure = data$structure,
-      max_delay = ncol(tri) - 1,
-      draws = draws,
-      uncertainty_model = uncertainty_model,
-      uncertainty_sampler = uncertainty_sampler,
-      ...
-    )
-  } else {
-    .validate_uncertainty(tri, uncertainty_params)
-    nowcast_df <- sample_nowcasts(
-      point_nowcast_matrix = pt_nowcast,
-      reporting_triangle = tri,
-      uncertainty_params = uncertainty_params,
-      draws = draws,
-      uncertainty_sampler = uncertainty_sampler,
-      ...
+      uncertainty_model = uncertainty_model
     )
   }
+  .validate_uncertainty(tri, uncertainty_params)
+  nowcast_df <- sample_nowcasts(
+    point_nowcast_matrix = pt_nowcast,
+    reporting_triangle = tri,
+    uncertainty_params = uncertainty_params,
+    draws = draws,
+    uncertainty_sampler = uncertainty_sampler,
+    ...
+  )
 
   result_df <- new_baselinenowcast_df(nowcast_df,
     reference_dates = data$reference_dates,
@@ -338,8 +331,7 @@ baselinenowcast.data.frame <- function(
         reporting_triangle = pooled_triangle$reporting_triangle_matrix,
         n_history_delay = tv$n_history_delay,
         n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
-        uncertainty_model = uncertainty_model,
-        ...
+        uncertainty_model = uncertainty_model
       )
     }
   }

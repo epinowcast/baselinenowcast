@@ -292,6 +292,45 @@ test_that("baselinenowcast returns expected structure without errors for all dif
     c("00+", "60-79", "00-04", "80+")))
 })
 
+test_that("baselinenowcast can take explicitly any of the uncertainty args", {
+  single_nowcast_df <- baselinenowcast(
+    covid_data_single_strata_wday,
+    draws = 100,
+    max_delay = 40,
+    uncertainty_model = fit_by_horizon
+  )
+  expect_s3_class(single_nowcast_df, "data.frame")
+  expect_s3_class(single_nowcast_df, "baselinenowcast_df")
+  expect_true(all(expected_cols %in% colnames(single_nowcast_df)))
+  single_nowcast_df2 <- baselinenowcast(
+    covid_data_single_strata_wday,
+    draws = 100,
+    max_delay = 40,
+    uncertainty_sampler = sample_nb
+  )
+  expect_s3_class(single_nowcast_df2, "data.frame")
+  expect_s3_class(single_nowcast_df2, "baselinenowcast_df")
+  expect_true(all(expected_cols %in% colnames(single_nowcast_df2)))
+  single_nowcast_df3 <- baselinenowcast(
+    covid_data_single_strata_wday,
+    draws = 100,
+    max_delay = 40,
+    ref_time_aggregator = identity
+  )
+  expect_s3_class(single_nowcast_df3, "data.frame")
+  expect_s3_class(single_nowcast_df3, "baselinenowcast_df")
+  expect_true(all(expected_cols %in% colnames(single_nowcast_df3)))
+  single_nowcast_df4 <- baselinenowcast(
+    covid_data_single_strata_wday,
+    draws = 100,
+    max_delay = 40,
+    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+  )
+  expect_s3_class(single_nowcast_df4, "data.frame")
+  expect_s3_class(single_nowcast_df4, "baselinenowcast_df")
+  expect_true(all(expected_cols %in% colnames(single_nowcast_df4)))
+})
+
 test_that("baselinenowcast.reporting_triangle errors if nothing to nowcast", {
   skip_if_not_installed("tidyr")
   skip_if_not_installed("dplyr")

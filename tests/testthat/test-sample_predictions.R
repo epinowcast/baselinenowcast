@@ -153,8 +153,9 @@ test_that("sample_predictions works with different number of draws", {
 })
 
 test_that("sample_predictions: errors when too many or too few uncertainty parameters", { # nolint
-  # Should we relax these to warnings since we want this to be flexible (
-  # e.g. the number of ucnertainty parameters doesn't have to equal the number of horizons?
+  # Should we relax these to warnings since we want this to be flexible
+  # (e.g. the number of uncertainty parameters doesn't have to equal
+  # the number of horizons?
   expect_error(
     sample_predictions(
       point_nowcast_matrix,

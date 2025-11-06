@@ -75,7 +75,6 @@ estimate_and_apply_uncertainty <- function(
     structure = detect_structure(reporting_triangle),
     max_delay = ncol(reporting_triangle) - 1,
     draws = 1000,
-    structure = detect_structure(reporting_triangle),
     delay_pmf = NULL,
     uncertainty_model = fit_by_horizon,
     uncertainty_sampler = sample_nb,

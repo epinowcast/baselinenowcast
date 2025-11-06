@@ -9,7 +9,7 @@ devtools::load_all() # nolint: namespace_linter
 # Create a reporting triangle with systematic downward corrections at delay 2
 # This represents a realistic scenario where data quality reviews at day 2
 # consistently reclassify cases to earlier delays or remove false positives
-example_downward_corrections_mat <- matrix(
+example_downward_corr_mat <- matrix(
   c(
     # Reference dates with day 0, 1, 2, 3 delays
     100, 60, -20, 10, # Day 1: 20 cases removed at delay 2
@@ -27,7 +27,7 @@ example_downward_corrections_mat <- matrix(
 
 # Verify that this produces a PMF with negative entries
 delay_pmf_null <- estimate_delay(
-  reporting_triangle = example_downward_corrections_mat,
+  reporting_triangle = example_downward_corr_mat,
   max_delay = 3,
   n = 5,
   preprocess = NULL
@@ -70,7 +70,7 @@ if (any(cdf_diffs < 0)) {
 
 # Compare with default preprocessing
 delay_pmf_preprocessed <- estimate_delay(
-  reporting_triangle = example_downward_corrections_mat,
+  reporting_triangle = example_downward_corr_mat,
   max_delay = 3,
   n = 5,
   preprocess = preprocess_negative_values
@@ -81,4 +81,4 @@ print(delay_pmf_preprocessed)
 cat("\nSum of PMF:", sum(delay_pmf_preprocessed), "\n")
 
 # Save the example data
-usethis::use_data(example_downward_corrections_mat, overwrite = TRUE)
+usethis::use_data(example_downward_corr_mat, overwrite = TRUE)

@@ -45,12 +45,13 @@
 #' )
 #' print(point_nowcast_matrix)
 #'
-#' # Example 2: Using delay PMF with negative entries from downward corrections
-#' # Create a delay PMF with a negative value representing systematic corrections
+#' # Example 2: Using delay PMF with negative entries from downward
+#' # corrections. Create a delay PMF with a negative value representing
+#' # systematic corrections
 #' delay_pmf_negative <- c(0.7, 0.4, -0.15, 0.05)
 #'
 #' nowcast_with_corrections <- apply_delay(
-#'   reporting_triangle = example_downward_corrections_mat,
+#'   reporting_triangle = example_downward_corr_mat,
 #'   delay_pmf = delay_pmf_negative
 #' )
 #' # The nowcast includes negative predictions at delay 2,

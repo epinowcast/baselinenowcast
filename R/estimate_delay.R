@@ -56,7 +56,7 @@
 #' # Example 2: Using data with downward corrections without preprocessing
 #' # This preserves negative PMF entries reflecting systematic corrections
 #' delay_pmf_negative <- estimate_delay(
-#'   reporting_triangle = example_downward_corrections_mat,
+#'   reporting_triangle = example_downward_corr_mat,
 #'   max_delay = 3,
 #'   n = 5,
 #'   preprocess = NULL

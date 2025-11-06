@@ -73,3 +73,41 @@ test_that(
     expect_error(.validate_delay_and_triangle(triangle, delay_pmf))
   }
 )
+
+test_that(
+  ".validate_delay_and_triangle negative first PMF entry causes error",
+  {
+    triangle <- matrix(
+      c(
+        10, 5, 5, 5,
+        20, 10, 10, NA,
+        40, 20, NA, NA
+      ),
+      nrow = 3,
+      byrow = TRUE
+    )
+    delay_pmf <- c(-0.1, 0.5, 0.4, 0.2)
+    expect_error(
+      .validate_delay_and_triangle(triangle, delay_pmf),
+      "First entry of delay PMF .* is negative"
+    )
+  }
+)
+
+test_that(
+  ".validate_delay_and_triangle accepts negative PMF at later delays",
+  {
+    triangle <- matrix(
+      c(
+        10, 5, 5, 5,
+        20, 10, 10, NA,
+        40, 20, NA, NA
+      ),
+      nrow = 3,
+      byrow = TRUE
+    )
+    # Negative at delay 2, not delay 0
+    delay_pmf <- c(0.7, 0.4, -0.1, 0.0)
+    expect_no_error(.validate_delay_and_triangle(triangle, delay_pmf))
+  }
+)

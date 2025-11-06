@@ -275,6 +275,17 @@
     )
   }
 
+  # Check that first PMF entry is not negative
+  if (delay_pmf[1] < 0) {
+    cli_abort(
+      message = c(
+        "x" = "First entry of delay PMF (delay = 0) is negative ({delay_pmf[1]}).", # nolint
+        "i" = "Negative PMF entries are only valid for later delays where they represent systematic downward corrections.", # nolint
+        "i" = "The first delay must have a non-negative probability as it represents the baseline reporting pattern." # nolint
+      )
+    )
+  }
+
   return(NULL)
 }
 

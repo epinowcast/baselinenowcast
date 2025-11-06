@@ -92,4 +92,4 @@
 #'
 #' @family example_data
 #' @keywords internal
-"example_downward_corrections_mat"
+"example_downward_corr_mat"

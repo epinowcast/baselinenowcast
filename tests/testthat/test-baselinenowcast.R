@@ -209,11 +209,11 @@ test_that(
     # Convert matrix to reporting_triangle object
     reference_dates <- seq(
       from = as.Date("2025-01-01"),
-      length.out = nrow(example_downward_corrections_mat),
+      length.out = nrow(example_downward_corr_mat),
       by = "day"
     )
     triangle <- as_reporting_triangle(
-      data = example_downward_corrections_mat,
+      data = example_downward_corr_mat,
       reference_dates = reference_dates,
       max_delay = 3
     )

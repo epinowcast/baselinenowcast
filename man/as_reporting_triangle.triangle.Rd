@@ -38,8 +38,8 @@ an error will be raised.}
 \item{...}{Additional arguments (not currently used).}
 }
 \value{
-A \code{\link{reporting_triangle}} object.
-See \code{\link{reporting_triangle-class}} for details on the structure.
+A \link{reporting_triangle} object.
+See \linkS4class{reporting_triangle} for details on the structure.
 }
 \description{
 This S3 method converts a ChainLadder triangle object to a
@@ -48,16 +48,16 @@ nowcasting methods.
 }
 \details{
 This method converts a ChainLadder triangle back to baselinenowcast's
-\code{\link{reporting_triangle}} format.
+\link{reporting_triangle} format.
 Since ChainLadder triangles do not store date information by default, you
-must provide \code{reference_dates} that correspond to the origin periods
-(rows) of the triangle, or ensure the triangle has row names that can be
-coerced to dates.
+must provide \code{reference_dates} that correspond to the origin periods (rows)
+of the triangle, or ensure the triangle has row names that can be coerced
+to dates.
 
 The ChainLadder package must be installed to use this function.
 
-The conversion uses \code{\link{as_reporting_triangle.matrix}()} internally
-after extracting the matrix from the ChainLadder triangle object.
+The conversion uses \code{\link[=as_reporting_triangle.matrix]{as_reporting_triangle.matrix()}} internally after
+extracting the matrix from the ChainLadder triangle object.
 }
 \examples{
 # Create a reporting triangle
@@ -80,10 +80,9 @@ if (requireNamespace("ChainLadder", quietly = TRUE)) {
 }
 \seealso{
 \itemize{
-\item \code{\link{as_ChainLadder_triangle}} for converting to ChainLadder
-\item \code{\link{as_reporting_triangle.matrix}} for the underlying method
-\item \code{\link{as_reporting_triangle.data.frame}} for creating from
-data frames
+\item \code{\link[=as_ChainLadder_triangle]{as_ChainLadder_triangle()}} for converting to ChainLadder
+\item \code{\link[=as_reporting_triangle.matrix]{as_reporting_triangle.matrix()}} for the underlying method
+\item \code{\link[=as_reporting_triangle.data.frame]{as_reporting_triangle.data.frame()}} for creating from data frames
 }
 
 Reporting triangle construction and validation

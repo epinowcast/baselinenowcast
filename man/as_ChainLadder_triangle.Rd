@@ -7,22 +7,19 @@
 as_ChainLadder_triangle(x, ...)
 }
 \arguments{
-\item{x}{A \code{\link{reporting_triangle}} object to convert.}
+\item{x}{A \link{reporting_triangle} object to convert.}
 
-\item{...}{Additional arguments passed to
-\code{ChainLadder::as.triangle()}.}
+\item{...}{Additional arguments passed to \code{\link[ChainLadder:as.triangle]{ChainLadder::as.triangle()}}.}
 }
 \value{
 A ChainLadder triangle object (class "triangle" and "matrix"),
 with rows representing origin periods (reference dates) and columns
 representing development periods (delays).
-Row names are set to the reference dates for seamless round-trip
-conversion.
 }
 \description{
-This function converts a \code{\link{reporting_triangle}} object to a
-triangle object from the
-\href{https://CRAN.R-project.org/package=ChainLadder}{ChainLadder} package.
+This function converts a \link{reporting_triangle} object to a triangle object
+from the \href{https://CRAN.R-project.org/package=ChainLadder}{ChainLadder}
+package.
 ChainLadder is a mature package for claims reserving in general insurance
 that provides statistical methods for analysing reporting triangles,
 including the chain ladder technique, bootstrap methods, and diagnostic
@@ -32,21 +29,18 @@ alongside baselinenowcast's nowcasting functionality.
 }
 \details{
 This function converts the reporting triangle to ChainLadder's triangle
-format using \code{ChainLadder::as.triangle()}.
-
+format using \code{\link[ChainLadder:as.triangle]{ChainLadder::as.triangle()}}.
 The ChainLadder package must be installed to use this function.
-If ChainLadder is not available, an informative error message will be
-displayed with installation instructions.
 
 Once converted, you can use any ChainLadder methods such as:
 \itemize{
-\item \code{MackChainLadder()} for the Mack chain ladder method
-\item \code{BootChainLadder()} for bootstrap chain ladder
+\item \code{\link[ChainLadder:MackChainLadder]{ChainLadder::MackChainLadder()}} for the Mack chain ladder method
+\item \code{\link[ChainLadder:BootChainLadder]{ChainLadder::BootChainLadder()}} for bootstrap chain ladder
 \item Standard plotting and summary methods
 }
 
-To convert back to a \code{\link{reporting_triangle}} object, use
-\code{\link{as_reporting_triangle.triangle}()}.
+To convert back to a \link{reporting_triangle} object, use
+\code{\link[=as_reporting_triangle.triangle]{as_reporting_triangle.triangle()}}.
 }
 \examples{
 # Create a reporting triangle from synthetic NSSP data
@@ -67,9 +61,8 @@ if (requireNamespace("ChainLadder", quietly = TRUE)) {
 }
 \seealso{
 \itemize{
-\item \code{\link{as_reporting_triangle.triangle}} for converting back
-\item ChainLadder package documentation:
-\url{https://mages.github.io/ChainLadder/}
+\item \code{\link[=as_reporting_triangle.triangle]{as_reporting_triangle.triangle()}} for converting back
+\item \href{https://mages.github.io/ChainLadder/}{ChainLadder package documentation}
 }
 
 Reporting triangle construction and validation

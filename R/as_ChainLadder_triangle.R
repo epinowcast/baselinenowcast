@@ -1,8 +1,8 @@
 #' Convert reporting_triangle to ChainLadder triangle format
 #'
-#' This function converts a \code{\link{reporting_triangle}} object to a
-#' triangle object from the
-#' \href{https://CRAN.R-project.org/package=ChainLadder}{ChainLadder} package.
+#' This function converts a [reporting_triangle] object to a triangle object
+#' from the [ChainLadder](https://CRAN.R-project.org/package=ChainLadder)
+#' package.
 #' ChainLadder is a mature package for claims reserving in general insurance
 #' that provides statistical methods for analysing reporting triangles,
 #' including the chain ladder technique, bootstrap methods, and diagnostic
@@ -10,40 +10,29 @@
 #' Converting to ChainLadder format enables use of these specialized methods
 #' alongside baselinenowcast's nowcasting functionality.
 #'
-#' @param x A \code{\link{reporting_triangle}} object to convert.
-#' @param ... Additional arguments passed to
-#'   \code{ChainLadder::as.triangle()}.
+#' @param x A [reporting_triangle] object to convert.
+#' @param ... Additional arguments passed to [ChainLadder::as.triangle()].
 #'
 #' @return A ChainLadder triangle object (class "triangle" and "matrix"),
 #'   with rows representing origin periods (reference dates) and columns
 #'   representing development periods (delays).
-#'   Row names are set to the reference dates for seamless round-trip
-#'   conversion.
 #'
 #' @details
 #' This function converts the reporting triangle to ChainLadder's triangle
-#' format using \code{ChainLadder::as.triangle()}.
-#'
+#' format using [ChainLadder::as.triangle()].
 #' The ChainLadder package must be installed to use this function.
-#' If ChainLadder is not available, an informative error message will be
-#' displayed with installation instructions.
 #'
 #' Once converted, you can use any ChainLadder methods such as:
-#' \itemize{
-#'   \item \code{MackChainLadder()} for the Mack chain ladder method
-#'   \item \code{BootChainLadder()} for bootstrap chain ladder
-#'   \item Standard plotting and summary methods
-#' }
+#' - [ChainLadder::MackChainLadder()] for the Mack chain ladder method
+#' - [ChainLadder::BootChainLadder()] for bootstrap chain ladder
+#' - Standard plotting and summary methods
 #'
-#' To convert back to a \code{\link{reporting_triangle}} object, use
-#' \code{\link{as_reporting_triangle.triangle}()}.
+#' To convert back to a [reporting_triangle] object, use
+#' [as_reporting_triangle.triangle()].
 #'
 #' @seealso
-#' \itemize{
-#'   \item \code{\link{as_reporting_triangle.triangle}} for converting back
-#'   \item ChainLadder package documentation:
-#'     \url{https://mages.github.io/ChainLadder/}
-#' }
+#' - [as_reporting_triangle.triangle()] for converting back
+#' - [ChainLadder package documentation](https://mages.github.io/ChainLadder/)
 #'
 #' @family reporting_triangle
 #' @export
@@ -100,29 +89,26 @@ as_ChainLadder_triangle <- function(x, ...) {
 #' @inheritParams as_reporting_triangle
 #' @param ... Additional arguments (not currently used).
 #'
-#' @return A \code{\link{reporting_triangle}} object.
-#'   See \code{\link{reporting_triangle-class}} for details on the structure.
+#' @return A [reporting_triangle] object.
+#'   See [reporting_triangle-class] for details on the structure.
 #'
 #' @details
 #' This method converts a ChainLadder triangle back to baselinenowcast's
-#' \code{\link{reporting_triangle}} format.
+#' [reporting_triangle] format.
 #' Since ChainLadder triangles do not store date information by default, you
-#' must provide \code{reference_dates} that correspond to the origin periods
-#' (rows) of the triangle, or ensure the triangle has row names that can be
-#' coerced to dates.
+#' must provide `reference_dates` that correspond to the origin periods (rows)
+#' of the triangle, or ensure the triangle has row names that can be coerced
+#' to dates.
 #'
 #' The ChainLadder package must be installed to use this function.
 #'
-#' The conversion uses \code{\link{as_reporting_triangle.matrix}()} internally
-#' after extracting the matrix from the ChainLadder triangle object.
+#' The conversion uses [as_reporting_triangle.matrix()] internally after
+#' extracting the matrix from the ChainLadder triangle object.
 #'
 #' @seealso
-#' \itemize{
-#'   \item \code{\link{as_ChainLadder_triangle}} for converting to ChainLadder
-#'   \item \code{\link{as_reporting_triangle.matrix}} for the underlying method
-#'   \item \code{\link{as_reporting_triangle.data.frame}} for creating from
-#'     data frames
-#' }
+#' - [as_ChainLadder_triangle()] for converting to ChainLadder
+#' - [as_reporting_triangle.matrix()] for the underlying method
+#' - [as_reporting_triangle.data.frame()] for creating from data frames
 #'
 #' @family reporting_triangle
 #' @export

@@ -61,6 +61,7 @@ baselinenowcast <- function(data,
 #'    \code{\link{estimate_uncertainty}}
 #'    and \code{\link{sample_nowcast}}.
 #' @inheritParams baselinenowcast
+#' @inheritParams estimate_delay
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast
 #' @inheritParams allocate_reference_times
@@ -87,6 +88,7 @@ baselinenowcast.reporting_triangle <- function(
     uncertainty_sampler = sample_nb,
     delay_pmf = NULL,
     uncertainty_params = NULL,
+    preprocess = preprocess_negative_values,
     ...) {
   tri <- data$reporting_triangle_matrix
   output_type <- arg_match(output_type)
@@ -100,7 +102,8 @@ baselinenowcast.reporting_triangle <- function(
   if (is.null(delay_pmf)) {
     delay_pmf <- estimate_delay(
       reporting_triangle = data$reporting_triangle_matrix,
-      n = tv$n_history_delay
+      n = tv$n_history_delay,
+      preprocess = preprocess
     )
   }
   # check for delay pmf being the right length/format

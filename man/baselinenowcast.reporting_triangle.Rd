@@ -81,8 +81,8 @@ triangle:
 \enumerate{
 \item \code{\link[=estimate_delay]{estimate_delay()}} - Estimate a reporting delay PMF
 \item \code{\link[=apply_delay]{apply_delay()}} - Generate a point nowcast using the delay PMF
-\item \code{\link[=estimate_and_apply_uncertainty]{estimate_and_apply_uncertainty()}} - Generate probabilistic
-nowcasts from point nowcast and reporting triangle
+\item \code{\link[=estimate_and_apply_uncertainty]{estimate_and_apply_uncertainty()}} - Generate a probabilistic
+nowcast from a point nowcast and reporting triangle
 }
 
 This function will by default estimate uncertainty using past

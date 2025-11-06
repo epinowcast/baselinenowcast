@@ -42,8 +42,8 @@ baselinenowcast <- function(data,
 #'  \enumerate{
 #'      \item [estimate_delay()] - Estimate a reporting delay PMF
 #'      \item [apply_delay()] - Generate a point nowcast using the delay PMF
-#'      \item [estimate_and_apply_uncertainty()] - Generate probabilistic
-#'       nowcasts from point nowcast and reporting triangle
+#'      \item [estimate_and_apply_uncertainty()] - Generate a probabilistic
+#'       nowcast from a point nowcast and reporting triangle
 #' }
 #'
 #'    This function will by default estimate uncertainty using past
@@ -183,9 +183,9 @@ baselinenowcast.reporting_triangle <- function(
 #'  for all strata using estimates from across strata if specified.
 #'  \enumerate{
 #'      \item [estimate_delay()] - Estimate a delay PMF across strata if
-#'      `strata_sharing` contains `"delay "`
+#'      `strata_sharing` contains `"delay"`
 #'      \item [estimate_uncertainty_retro()] - Estimates uncertainty parameters
-#'      from across strata if `strata_sharing` contains `"uncertainty"`
+#'      across strata if `strata_sharing` contains `"uncertainty"`
 #'      \item [as_reporting_triangle()] - Generates a reporting triangle object
 #'      from a data.frame
 #'      \item[baselinenowcast()] - Generates point or probabilistic nowcasts

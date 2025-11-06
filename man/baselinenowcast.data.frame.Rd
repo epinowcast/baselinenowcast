@@ -117,9 +117,9 @@ triangles, generating estimates of the delay and uncertainty parameters
 for all strata using estimates from across strata if specified.
 \enumerate{
 \item \code{\link[=estimate_delay]{estimate_delay()}} - Estimate a delay PMF across strata if
-\code{strata_sharing} contains \code{"delay "}
+\code{strata_sharing} contains \code{"delay"}
 \item \code{\link[=estimate_uncertainty_retro]{estimate_uncertainty_retro()}} - Estimates uncertainty parameters
-from across strata if \code{strata_sharing} contains \code{"uncertainty"}
+across strata if \code{strata_sharing} contains \code{"uncertainty"}
 \item \code{\link[=as_reporting_triangle]{as_reporting_triangle()}} - Generates a reporting triangle object
 from a data.frame
 \item\code{\link[=baselinenowcast]{baselinenowcast()}} - Generates point or probabilistic nowcasts

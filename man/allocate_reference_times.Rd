@@ -95,6 +95,7 @@ ref_time_allocation_alt
 \seealso{
 High-level workflow wrapper functions
 \code{\link{estimate_and_apply_delay}()},
-\code{\link{estimate_and_apply_uncertainty}()}
+\code{\link{estimate_and_apply_uncertainty}()},
+\code{\link{estimate_uncertainty_retro}()}
 }
 \concept{workflow_wrappers}

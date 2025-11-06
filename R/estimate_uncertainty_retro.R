@@ -22,6 +22,7 @@
 #'
 #' @inheritParams estimate_delay
 #' @inheritParams construct_triangles
+#' @inheritParams estimate_uncertainty
 #' @inheritParams estimate_and_apply_uncertainty
 #' @inheritParams fill_triangles
 #' @param ... Additional arguments passed to [estimate_uncertainty()].
@@ -74,6 +75,7 @@ estimate_uncertainty_retro <- function(
     max_delay = ncol(reporting_triangle) - 1,
     structure = detect_structure(reporting_triangle),
     delay_pmf = NULL,
+    uncertainty_model = fit_by_horizon,
     ...) {
   .validate_triangle(reporting_triangle)
 
@@ -119,6 +121,7 @@ estimate_uncertainty_retro <- function(
     truncated_reporting_triangles = trunc_rep_tri_list,
     retro_reporting_triangles = reporting_triangle_list,
     n = n_retrospective_nowcasts,
+    uncertainty_model = uncertainty_model,
     ...
   )
 

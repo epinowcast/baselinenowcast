@@ -307,22 +307,10 @@ baselinenowcast.data.frame <- function(
     }
     if ("uncertainty" %in% strata_sharing) {
       # Estimate uncertainty once on pooled data
-      trunc_rep_tris <- truncate_triangles(
+      shared_uncertainty_params <- estimate_uncertainty_retro(
         reporting_triangle = pooled_triangle$reporting_triangle_matrix,
-        n = tv$n_retrospective_nowcasts
-      )
-      retro_rep_tris <- construct_triangles(
-        trunc_rep_tris,
-        structure = pooled_triangle$structure
-      )
-      retro_pt_nowcasts <- fill_triangles(retro_rep_tris,
-        n = tv$n_history_delay
-      )
-      shared_uncertainty_params <- estimate_uncertainty(
-        point_nowcast_matrices = retro_pt_nowcasts,
-        truncated_reporting_triangles = trunc_rep_tris,
-        retro_reporting_triangles = retro_rep_tris,
-        n = tv$n_retrospective_nowcasts,
+        n_history_delay = tv$n_history_delay,
+        n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
         uncertainty_model = uncertainty_model,
         ...
       )

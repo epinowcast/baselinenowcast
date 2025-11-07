@@ -342,8 +342,10 @@ nowcast_date <- max(long_df$reference_date) - days(30)
 
 First, we'll remove any reports after the nowcast date, as these wouldn't have been available to us in real-time.
 ```{r}
-training_df <- long_df |>
-  filter(report_date <= nowcast_date)
+training_df <- filter(
+  long_df,
+  report_date <= nowcast_date
+)
 ```
 
 What would happen if we looked at the trend in case counts without correcting for downward bias due to partial observations?

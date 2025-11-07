@@ -48,9 +48,9 @@ summarise_final_day_mean <- function(df, group_vars = c(
                                        "age_group"
                                      )) {
   df |>
-    dplyr::filter(reference_date == max(reference_date)) |>
+    dplyr::filter(.data$reference_date == max(.data$reference_date)) |>
     dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) |>
-    dplyr::summarise(mean_est = mean(pred_count), .groups = "drop")
+    dplyr::summarise(mean_est = mean(.data$pred_count), .groups = "drop")
 }
 
 # Comparison Helpers -------------------------------------------------------
@@ -102,53 +102,56 @@ validate_nowcast_draws <- function(nowcast_df, n_draws, n_dates) {
 #' @return A matrix suitable for testing
 #' @keywords internal
 make_test_triangle <- function(nrow = 5, ncol = 4, type = "simple") {
-  if (type == "simple") {
-    if (nrow != 5 || ncol != 4) {
-      warning(
-        "Simple triangle has fixed dimensions 5x4; nrow and ncol ignored",
-        call. = FALSE
-      )
-    }
-    matrix(
-      c(
-        10, 7, 1, NA,
-        15, 12, 2, NA,
-        14, 16, 3, NA,
-        18, 15, NA, NA,
-        20, NA, NA, NA
-      ),
-      nrow = 5,
-      ncol = 4,
-      byrow = TRUE
-    )
-  } else if (type == "with_nas") {
-    mat <- matrix(
-      seq_len(nrow * ncol),
-      nrow = nrow,
-      ncol = ncol
-    )
-    # Add NAs in bottom-right triangle (reporting triangle pattern)
-    # Row 1: no NAs, Row 2: 1 trailing NA, Row 3: 2 trailing NAs, etc.
-    for (i in seq_len(nrow)) {
-      na_count <- i - 1
-      if (na_count > 0 && na_count <= ncol) {
-        na_start <- ncol - na_count + 1
-        mat[i, na_start:ncol] <- NA
+  switch(type,
+    simple = {
+      if (nrow != 5 || ncol != 4) {
+        warning(
+          "Simple triangle has fixed dimensions 5x4; nrow and ncol ignored",
+          call. = FALSE
+        )
       }
-    }
-    mat
-  } else if (type == "no_nas") {
-    matrix(
-      seq_len(nrow * ncol),
-      nrow = nrow,
-      ncol = ncol
-    )
-  } else {
+      matrix(
+        c(
+          10, 7, 1, NA,
+          15, 12, 2, NA,
+          14, 16, 3, NA,
+          18, 15, NA, NA,
+          20, NA, NA, NA
+        ),
+        nrow = 5,
+        ncol = 4,
+        byrow = TRUE
+      )
+    },
+    with_nas = {
+      mat <- matrix(
+        seq_len(nrow * ncol),
+        nrow = nrow,
+        ncol = ncol
+      )
+      # Add NAs in bottom-right triangle (reporting triangle pattern)
+      # Row 1: no NAs, Row 2: 1 trailing NA, Row 3: 2 trailing NAs, etc.
+      for (i in seq_len(nrow)) {
+        na_count <- i - 1
+        if (na_count > 0 && na_count <= ncol) {
+          na_start <- ncol - na_count + 1
+          mat[i, na_start:ncol] <- NA
+        }
+      }
+      mat
+    },
+    no_nas = {
+      matrix(
+        seq_len(nrow * ncol),
+        nrow = nrow,
+        ncol = ncol
+      )
+    },
     stop(
       "Invalid type: must be 'simple', 'with_nas', or 'no_nas'",
       call. = FALSE
     )
-  }
+  )
 }
 
 #' Create test delay PMF
@@ -158,26 +161,28 @@ make_test_triangle <- function(nrow = 5, ncol = 4, type = "simple") {
 #' @return A numeric vector representing a delay PMF
 #' @keywords internal
 make_delay_pmf <- function(type = "uniform", length = 4) {
-  if (type == "uniform") {
-    pmf <- rep(1 / length, length)
-  } else if (type == "geometric") {
-    pmf <- dgeom(0:(length - 1), prob = 0.3)
-    pmf <- pmf / sum(pmf)
-  } else if (type == "simple") {
-    pmf <- c(0.4, 0.3, 0.2, 0.1)
-    if (length != 4) {
-      warning(
-        "Simple PMF has fixed length 4, ignoring length parameter",
-        call. = FALSE
-      )
-    }
-  } else {
+  switch(type,
+    uniform = {
+      rep(1 / length, length)
+    },
+    geometric = {
+      pmf <- dgeom(0:(length - 1), prob = 0.3)
+      pmf / sum(pmf)
+    },
+    simple = {
+      if (length != 4) {
+        warning(
+          "Simple PMF has fixed length 4, ignoring length parameter",
+          call. = FALSE
+        )
+      }
+      c(0.4, 0.3, 0.2, 0.1)
+    },
     stop(
       "Invalid type: must be 'uniform', 'geometric', or 'simple'",
       call. = FALSE
     )
-  }
-  pmf
+  )
 }
 
 #' Create simple test data frame with reference/report dates
@@ -212,16 +217,16 @@ make_test_data <- function(n_dates = 10, max_delay = 5, add_strata = FALSE,
     )
   })
 
-  df <- do.call(rbind, data_list)
+  test_df <- do.call(rbind, data_list)
 
   if (add_strata) {
-    df$location <- "Location1"
-    df$age_group <- sample(c("00-04", "05-17", "18+"), nrow(df),
+    test_df$location <- "Location1"
+    test_df$age_group <- sample(c("00-04", "05-17", "18+"), nrow(test_df),
       replace = TRUE
     )
   }
 
-  df
+  test_df
 }
 
 #' Create COVID test data
@@ -237,11 +242,13 @@ make_test_data <- function(n_dates = 10, max_delay = 5, add_strata = FALSE,
 create_covid_test_data <- function(
     age_groups = c("00+", "00-04", "60-79", "80+"),
     add_weekday = TRUE) {
+  # nolint start: object_usage_linter
   covid_data <- germany_covid19_hosp[
     germany_covid19_hosp$report_date <=
       max(germany_covid19_hosp$reference_date) &
       germany_covid19_hosp$age_group %in% age_groups,
   ]
+  # nolint end
 
   if (add_weekday) {
     covid_data$weekday_ref_date <- lubridate::wday(

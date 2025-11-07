@@ -5,7 +5,7 @@
 # - Data manipulation helpers (e.g., summarise_final_day_mean)
 # - Comparison helpers (e.g., expect_estimates_differ)
 # - Test data creation functions (e.g., make_test_triangle, make_test_data)
-# - Validation helpers (e.g., validate_triangle_output)
+# - Validation helpers (e.g., expect_triangle_output)
 #
 # By centralizing these patterns, we reduce boilerplate and make test
 # intent clearer.
@@ -56,45 +56,6 @@ summarise_final_day_mean <- function(df, group_vars = c(
     dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) |>
     dplyr::summarise(mean_est = mean(.data$pred_count), .groups = "drop"))
   # nolint end
-}
-
-# Comparison Helpers -------------------------------------------------------
-
-#' Expect estimates differ
-#'
-#' Asserts that two estimates are different (opposite of expect_equal).
-#' Useful for testing that different parameters produce different results.
-#'
-#' @param est1 First estimate
-#' @param est2 Second estimate
-#' @param tol Tolerance for comparison
-#' @keywords internal
-expect_estimates_differ <- function(est1, est2, tol = 0.01) {
-  return(invisible(testthat::expect_failure(
-    testthat::expect_equal(est1, est2, tolerance = tol)
-  )))
-}
-
-# Validation Helpers -------------------------------------------------------
-
-#' Validate triangle output matches input
-#' @keywords internal
-validate_triangle_output <- function(result, input_triangle) {
-  testthat::expect_is(result, "matrix")
-  testthat::expect_identical(dim(result), dim(input_triangle))
-  return(invisible(result))
-}
-
-#' Validate nowcast draws structure
-#' @keywords internal
-validate_nowcast_draws <- function(nowcast_df, n_draws, n_dates) {
-  testthat::expect_s3_class(nowcast_df, "data.frame")
-  testthat::expect_true("draw" %in% colnames(nowcast_df))
-  testthat::expect_length(unique(nowcast_df$draw), n_draws)
-  if ("reference_date" %in% colnames(nowcast_df)) {
-    testthat::expect_length(unique(nowcast_df$reference_date), n_dates)
-  }
-  return(invisible(nowcast_df))
 }
 
 # Test Data Creation Functions ---------------------------------------------

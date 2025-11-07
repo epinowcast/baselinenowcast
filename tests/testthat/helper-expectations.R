@@ -158,3 +158,42 @@ expect_list_structure <- function(object,
   }
   return(invisible(object))
 }
+
+# Comparison Expectations --------------------------------------------------
+
+#' Expect estimates differ
+#'
+#' Asserts that two estimates are different (opposite of expect_equal).
+#' Useful for testing that different parameters produce different results.
+#'
+#' @param est1 First estimate
+#' @param est2 Second estimate
+#' @param tol Tolerance for comparison
+#' @keywords internal
+expect_estimates_differ <- function(est1, est2, tol = 0.01) {
+  return(invisible(testthat::expect_failure(
+    testthat::expect_equal(est1, est2, tolerance = tol)
+  )))
+}
+
+# Validation Expectations --------------------------------------------------
+
+#' Expect triangle output matches input
+#' @keywords internal
+expect_triangle_output <- function(result, input_triangle) {
+  testthat::expect_is(result, "matrix")
+  testthat::expect_identical(dim(result), dim(input_triangle))
+  return(invisible(result))
+}
+
+#' Expect nowcast draws structure
+#' @keywords internal
+expect_nowcast_draws <- function(nowcast_df, n_draws, n_dates) {
+  testthat::expect_s3_class(nowcast_df, "data.frame")
+  testthat::expect_true("draw" %in% colnames(nowcast_df))
+  testthat::expect_length(unique(nowcast_df$draw), n_draws)
+  if ("reference_date" %in% colnames(nowcast_df)) {
+    testthat::expect_length(unique(nowcast_df$reference_date), n_dates)
+  }
+  return(invisible(nowcast_df))
+}

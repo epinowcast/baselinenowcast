@@ -7,7 +7,7 @@ expect_valid_triangle <- function(object, has_nas = TRUE) {
   } else {
     testthat::expect_false(anyNA(object))
   }
-  invisible(object)
+  return(invisible(object))
 }
 
 test_that(

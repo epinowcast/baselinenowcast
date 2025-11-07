@@ -163,12 +163,6 @@ test_that(paste0(
       strata_cols = c("age_group", "location", "reference_date")
     )
   )
-  expect_error_invalid_strata_required(
-    baselinenowcast_test(
-      data = covid_data,
-      strata_cols = c("age_group", "location", "reference_date")
-    )
-  )
   expect_error_invalid_strata_missing(
     baselinenowcast_test(
       data = covid_data,

@@ -1,8 +1,14 @@
 # Helper Functions for baselinenowcast Tests
 #
-# This file contains partial functions with good defaults and data
-# manipulation helpers used across test files. By centralizing these
-# patterns, we reduce boilerplate and make test intent clearer.
+# This file contains helper functions used across test files including:
+# - Partial functions with good defaults (e.g., baselinenowcast_test)
+# - Data manipulation helpers (e.g., summarise_final_day_mean)
+# - Comparison helpers (e.g., expect_estimates_differ)
+# - Test data creation functions (e.g., make_test_triangle, make_test_data)
+# - Validation helpers (e.g., validate_triangle_output)
+#
+# By centralizing these patterns, we reduce boilerplate and make test
+# intent clearer.
 
 # Partial Functions --------------------------------------------------------
 
@@ -92,5 +98,138 @@ validate_nowcast_draws <- function(nowcast_df, n_draws, n_dates) {
   expect_s3_class(nowcast_df, "data.frame")
   expect_true("draw" %in% colnames(nowcast_df))
   expect_length(unique(nowcast_df$draw), n_draws)
+  if ("reference_date" %in% colnames(nowcast_df)) {
+    expect_length(unique(nowcast_df$reference_date), n_dates)
+  }
   invisible(nowcast_df)
+}
+
+# Test Data Creation Functions ---------------------------------------------
+
+#' Create a simple test triangle matrix
+#'
+#' @param nrow Number of rows
+#' @param ncol Number of columns
+#' @param type Type of triangle ("simple" [fixed 5x4], "with_nas", "no_nas")
+#' @return A matrix suitable for testing
+#' @keywords internal
+make_test_triangle <- function(nrow = 5, ncol = 4, type = "simple") {
+  if (type == "simple") {
+    if (nrow != 5 || ncol != 4) {
+      warning(
+        "Simple triangle has fixed dimensions 5x4; nrow and ncol ignored",
+        call. = FALSE
+      )
+    }
+    matrix(
+      c(
+        10, 7, 1, NA,
+        15, 12, 2, NA,
+        14, 16, 3, NA,
+        18, 15, NA, NA,
+        20, NA, NA, NA
+      ),
+      nrow = 5,
+      ncol = 4,
+      byrow = TRUE
+    )
+  } else if (type == "with_nas") {
+    mat <- matrix(
+      seq_len(nrow * ncol),
+      nrow = nrow,
+      ncol = ncol
+    )
+    # Add NAs in bottom-right triangle
+    for (i in seq_len(nrow)) {
+      na_start <- ncol - (nrow - i)
+      if (na_start <= ncol && na_start > 0) {
+        mat[i, na_start:ncol] <- NA
+      }
+    }
+    mat
+  } else if (type == "no_nas") {
+    matrix(
+      seq_len(nrow * ncol),
+      nrow = nrow,
+      ncol = ncol
+    )
+  } else {
+    stop(
+      "Invalid type: must be 'simple', 'with_nas', or 'no_nas'",
+      call. = FALSE
+    )
+  }
+}
+
+#' Create test delay PMF
+#'
+#' @param type Type of distribution ("uniform", "geometric", "simple")
+#' @param length Length of PMF
+#' @return A numeric vector representing a delay PMF
+#' @keywords internal
+make_delay_pmf <- function(type = "uniform", length = 4) {
+  if (type == "uniform") {
+    pmf <- rep(1 / length, length)
+  } else if (type == "geometric") {
+    pmf <- dgeom(0:(length - 1), prob = 0.3)
+    pmf <- pmf / sum(pmf)
+  } else if (type == "simple") {
+    pmf <- c(0.4, 0.3, 0.2, 0.1)
+    if (length != 4) {
+      warning(
+        "Simple PMF has fixed length 4, ignoring length parameter",
+        call. = FALSE
+      )
+    }
+  } else {
+    stop(
+      "Invalid type: must be 'uniform', 'geometric', or 'simple'",
+      call. = FALSE
+    )
+  }
+  pmf
+}
+
+#' Create simple test data frame with reference/report dates
+#'
+#' @param n_dates Number of reference dates
+#' @param max_delay Maximum delay
+#' @param add_strata Whether to add strata columns
+#' @param seed Optional seed for reproducibility (uses rpois and sample)
+#' @return A data frame with reference_date, report_date, count columns
+#' @keywords internal
+make_test_data <- function(n_dates = 10, max_delay = 5, add_strata = FALSE,
+                           seed = NULL) {
+  if (!is.null(seed)) {
+    set.seed(seed)
+  }
+
+  reference_dates <- seq.Date(
+    from = as.Date("2024-01-01"),
+    by = "day",
+    length.out = n_dates
+  )
+
+  data_list <- lapply(reference_dates, function(ref_date) {
+    delays <- 0:max_delay
+    report_dates <- ref_date + delays
+    counts <- rpois(length(delays), lambda = 10)
+
+    data.frame(
+      reference_date = ref_date,
+      report_date = report_dates,
+      count = counts
+    )
+  })
+
+  df <- do.call(rbind, data_list)
+
+  if (add_strata) {
+    df$location <- "Location1"
+    df$age_group <- sample(c("00-04", "05-17", "18+"), nrow(df),
+      replace = TRUE
+    )
+  }
+
+  df
 }

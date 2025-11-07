@@ -2,6 +2,13 @@
 
 ## baselinenowcast 0.0.0.1000
 
+- Add converters between `reporting_triangle` and ChainLadder triangle
+  formats via
+  [`as_ChainLadder_triangle()`](https://baselinenowcast.epinowcast.org/reference/as_ChainLadder_triangle.md)
+  and
+  [`as_reporting_triangle.triangle()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.triangle.md),
+  enabling use of ChainLadder’s mature claims reserving methods
+  alongside baselinenowcast’s nowcasting functionality.
 - Add a
   [`baselinenowcast.reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.reporting_triangle.md)
   method which ingests a `reporting_triangle` object and produces a

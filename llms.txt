@@ -170,6 +170,9 @@ workflows.
 Functions for creating, converting, and validating reporting triangle
 objects from matrices or data frames.
 
+- [`as_ChainLadder_triangle()`](https://baselinenowcast.epinowcast.org/reference/as_ChainLadder_triangle.md)
+  : Convert reporting_triangle to ChainLadder triangle format
+
 - [`as_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.md)
   :
 
@@ -184,6 +187,9 @@ objects from matrices or data frames.
   :
 
   Create a `reporting_triangle` from a matrix
+
+- [`as_reporting_triangle(`*`<triangle>`*`)`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.triangle.md)
+  : Convert ChainLadder triangle to reporting_triangle format
 
 - [`assert_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/assert_reporting_triangle.md)
   :

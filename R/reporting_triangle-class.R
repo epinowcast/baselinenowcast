@@ -109,8 +109,9 @@ get_mean_delay <- function(x) {
     cli_abort(message = "x must have class 'reporting_triangle'")
   }
   delays <- 0:get_max_delay(x)
-  mean_delays <- vapply(seq_len(nrow(x)), function(i) {
-    row_counts <- x[i, ]
+  x_mat <- unclass(x)
+  mean_delays <- vapply(seq_len(nrow(x_mat)), function(i) {
+    row_counts <- x_mat[i, ]
     total_counts <- sum(row_counts, na.rm = TRUE)
     if (total_counts == 0) return(NA_real_)
     return(sum(row_counts * delays, na.rm = TRUE) / total_counts)
@@ -136,8 +137,9 @@ get_quantile_delay <- function(x, p = 0.99) {
   assert_numeric(p, lower = 0, upper = 1, len = 1)
 
   delays <- 0:get_max_delay(x)
-  quantile_delays <- vapply(seq_len(nrow(x)), function(i) {
-    row_counts <- x[i, ]
+  x_mat <- unclass(x)
+  quantile_delays <- vapply(seq_len(nrow(x_mat)), function(i) {
+    row_counts <- x_mat[i, ]
     total_counts <- sum(row_counts, na.rm = TRUE)
     if (total_counts == 0) return(NA_integer_)
 

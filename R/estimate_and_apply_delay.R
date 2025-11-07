@@ -42,7 +42,8 @@ estimate_and_apply_delay <- function(reporting_triangle,
   # This is going to return a matrix that is truncated at the maximum delay
   # if the user specified a maximum delay less than the number of columns in
   # the reporting triangle -1
-  trunc_reporting_triangle <- reporting_triangle[, 1:(max_delay + 1)]
+  # Use unclass to avoid subsetting validation warnings
+  trunc_reporting_triangle <- unclass(reporting_triangle)[, 1:(max_delay + 1)]
 
   if (ncol(trunc_reporting_triangle) < ncol(reporting_triangle)) {
     cli_alert_info(

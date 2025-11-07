@@ -94,8 +94,9 @@ truncate_triangle <- function(t,
     )
   }
   assert_integerish(t, lower = 0)
+  # Use unclass to avoid subsetting validation warnings
   rep_tri_trunc <- matrix(
-    reporting_triangle[1:(n_obs - t), ],
+    unclass(reporting_triangle)[1:(n_obs - t), ],
     nrow = (n_obs - t)
   )
   return(rep_tri_trunc)

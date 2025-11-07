@@ -4,12 +4,14 @@ library(readr)
 library(lubridate)
 library(dplyr)
 library(tidyr)
+# nolint start: nonportable_path_linter
 covid_url <- paste0(
   "https://raw.githubusercontent.com/KITmetricslab/",
   "hospitalization-nowcast-hub/",
   "11c745322c055cfbd4f0c8f72241642a50aea399/",
   "data-truth/COVID-19/COVID-19_hospitalizations_preprocessed.csv"
 )
+# nolint end
 raw_data <- read_csv(covid_url) |>
   rename(value_81d = `value_>80d`)
 

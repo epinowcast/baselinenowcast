@@ -122,14 +122,14 @@ for all strata using estimates from across strata if specified.
 across strata if \code{strata_sharing} contains \code{"uncertainty"}
 \item \code{\link[=as_reporting_triangle]{as_reporting_triangle()}} - Generates a reporting triangle object
 from a data.frame
-\item \code{\link[=baselinenowcast]{baselinenowcast()}} - Generates point or probabilistic nowcasts
-depending on \code{output_type} for each strata.
+\item \code{\link[=baselinenowcast.reporting_triangle]{baselinenowcast.reporting_triangle()}} - Generates point or
+probabilistic nowcasts depending on \code{output_type} for each strata.
 }
 
-See documentation for the arguments of
-this function which can be used to set the model specifications (things
-like number of reference times for delay and uncertainty estimation,
-the observation model, etc.). The function expects that each strata in
+@detail See documentation for the arguments of this function which can be
+used to set the model specifications (things like number of reference times
+for delay and uncertainty estimation, the observation model, etc.).
+The function expects that each strata in
 the dataframe has the same maximum delay. If sharing estimates across
 all strata, the shared estimates will be made using the shared set of
 reference and report dates across strata.

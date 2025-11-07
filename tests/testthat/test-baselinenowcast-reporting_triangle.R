@@ -9,7 +9,7 @@ expected_cols <- c("pred_count", "draw", "reference_date", "output_type")
 
 test_that("baselinenowcast.reporting_triangle() works as expected", {
   nowcast_df <- baselinenowcast(rep_tri, draws = 100)
-  expect_baselinenowcast_structure(
+  expect_blnc_structure(
     nowcast_df,
     expected_cols,
     output_type = "samples"
@@ -17,7 +17,7 @@ test_that("baselinenowcast.reporting_triangle() works as expected", {
   pt_nowcast_df <- baselinenowcast(rep_tri,
     output_type = "point"
   )
-  expect_baselinenowcast_structure(
+  expect_blnc_structure(
     pt_nowcast_df,
     expected_cols,
     output_type = "point"
@@ -58,7 +58,7 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
     delay_pmf = rep(1 / 26, 26),
     draws = 100
   ))
-  expect_baselinenowcast_structure(test_df, expected_cols)
+  expect_blnc_structure(test_df, expected_cols)
 
   expect_no_warning(
     baselinenowcast(rep_tri,
@@ -79,7 +79,7 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
     draws = 100
   )
 
-  expect_baselinenowcast_structure(test_df2, expected_cols)
+  expect_blnc_structure(test_df2, expected_cols)
 })
 
 test_that("baselinenowcast specifying not to include draws works as expected", {
@@ -87,7 +87,7 @@ test_that("baselinenowcast specifying not to include draws works as expected", {
   pt_nowcast <- baselinenowcast(rep_tri,
     output_type = "point"
   )
-  expect_baselinenowcast_structure(pt_nowcast, expected_cols,
+  expect_blnc_structure(pt_nowcast, expected_cols,
     output_type = "point"
   )
   prob_nowcast <- baselinenowcast(rep_tri)
@@ -236,7 +236,7 @@ test_that(
       "draw",
       "output_type"
     )
-    expect_baselinenowcast_structure(
+    expect_blnc_structure(
       result,
       result_expected_cols,
       output_type = "point"

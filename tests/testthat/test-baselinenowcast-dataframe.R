@@ -19,7 +19,7 @@ test_that(paste0(
     strata_cols = c("age_group", "location")
   )
 
-  expect_baselinenowcast_structure(nowcasts_df, expected_cols_nu, "samples")
+  expect_blnc_structure(nowcasts_df, expected_cols_nu, "samples")
 
   # Check that the outputs are different for different age groups
   expect_estimates_differ(
@@ -35,7 +35,7 @@ test_that(paste0(
     strata_cols = c("age_group", "location"),
     strata_sharing = c("delay", "uncertainty")
   )
-  expect_baselinenowcast_structure(nowcasts_df2, expected_cols_nu, "samples")
+  expect_blnc_structure(nowcasts_df2, expected_cols_nu, "samples")
 
   # Check that the outputs are different between with and without
   # strata sharing
@@ -53,7 +53,7 @@ test_that(paste0(
     preprocess = NULL
   )
 
-  expect_baselinenowcast_structure(nowcasts_df3, expected_cols_nu, "samples")
+  expect_blnc_structure(nowcasts_df3, expected_cols_nu, "samples")
 })
 
 test_that(paste0(
@@ -69,7 +69,7 @@ test_that(paste0(
     select(reference_date, report_date, count)
 
   single_nowcast_df <- baselinenowcast_test(single_tri_data)
-  expect_baselinenowcast_structure(
+  expect_blnc_structure(
     single_nowcast_df,
     expected_cols,
     "samples"
@@ -80,7 +80,7 @@ test_that(paste0(
   single_nowcast_df_w_metadata <- baselinenowcast_test(
     data = single_tri_w_metadata
   )
-  expect_baselinenowcast_structure(
+  expect_blnc_structure(
     single_nowcast_df_w_metadata,
     expected_cols,
     "samples"
@@ -90,7 +90,7 @@ test_that(paste0(
     data = covid_data,
     strata_cols = c("age_group", "location")
   )
-  expect_baselinenowcast_structure(test_df, expected_cols_nu, "samples")
+  expect_blnc_structure(test_df, expected_cols_nu, "samples")
   expect_true(all(unique(test_df$age_group) %in%
     c("00+", "60-79", "00-04", "80+")))
 })
@@ -102,7 +102,7 @@ test_that(paste0(
     covid_data_single_strata_wday,
     uncertainty_model = fit_by_horizon
   )
-  expect_baselinenowcast_structure(
+  expect_blnc_structure(
     single_nowcast_df,
     expected_cols,
     "samples"
@@ -111,7 +111,7 @@ test_that(paste0(
     covid_data_single_strata_wday,
     uncertainty_sampler = sample_nb
   )
-  expect_baselinenowcast_structure(
+  expect_blnc_structure(
     single_nowcast_df2,
     expected_cols,
     "samples"
@@ -120,7 +120,7 @@ test_that(paste0(
     covid_data_single_strata_wday,
     ref_time_aggregator = identity
   )
-  expect_baselinenowcast_structure(
+  expect_blnc_structure(
     single_nowcast_df3,
     expected_cols,
     "samples"
@@ -129,7 +129,7 @@ test_that(paste0(
     covid_data_single_strata_wday,
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
   )
-  expect_baselinenowcast_structure(
+  expect_blnc_structure(
     single_nowcast_df4,
     expected_cols,
     "samples"
@@ -148,13 +148,13 @@ test_that(paste0(
 test_that(paste0(
   "baselinenowcast errors if strata_cols is specified incorrectly"
 ), {
-  expect_error_invalid_strata_required(
+  expect_err_strata_required(
     baselinenowcast_test(
       data = covid_data,
       strata_cols = c("age_group", "location", "reference_date")
     )
   )
-  expect_error_invalid_strata_missing(
+  expect_err_strata_missing(
     baselinenowcast_test(
       data = covid_data,
       strata_cols = c("region", "age_group")
@@ -229,14 +229,14 @@ test_that(paste0(
     ),
     regexp = "Assertion on 'strata_sharing' failed:"
   )
-  expect_error_strata_sharing_conflict(
+  expect_err_strata_sharing(
     baselinenowcast_test(
       data = covid_data,
       strata_cols = c("age_group", "location"),
       strata_sharing = c("none", "delay")
     )
   )
-  expect_error_strata_sharing_conflict(
+  expect_err_strata_sharing(
     baselinenowcast_test(
       data = covid_data,
       strata_cols = c("age_group", "location"),

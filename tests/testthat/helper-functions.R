@@ -24,12 +24,14 @@
 #' @return baselinenowcast output
 #' @keywords internal
 baselinenowcast_test <- function(data, max_delay = 40, draws = 100, ...) {
-  baselinenowcast(
+  # nolint start: object_usage_linter
+  return(baselinenowcast(
     data = data,
     max_delay = max_delay,
     draws = draws,
     ...
-  )
+  ))
+  # nolint end
 }
 
 # Data Manipulation Helpers ------------------------------------------------
@@ -47,10 +49,13 @@ summarise_final_day_mean <- function(df, group_vars = c(
                                        "reference_date",
                                        "age_group"
                                      )) {
-  df |>
+  .data <- NULL
+  # nolint start: nested_pipe_linter
+  return(df |>
     dplyr::filter(.data$reference_date == max(.data$reference_date)) |>
     dplyr::group_by(dplyr::across(dplyr::all_of(group_vars))) |>
-    dplyr::summarise(mean_est = mean(.data$pred_count), .groups = "drop")
+    dplyr::summarise(mean_est = mean(.data$pred_count), .groups = "drop"))
+  # nolint end
 }
 
 # Comparison Helpers -------------------------------------------------------
@@ -65,9 +70,9 @@ summarise_final_day_mean <- function(df, group_vars = c(
 #' @param tol Tolerance for comparison
 #' @keywords internal
 expect_estimates_differ <- function(est1, est2, tol = 0.01) {
-  testthat::expect_failure(
+  return(invisible(testthat::expect_failure(
     testthat::expect_equal(est1, est2, tolerance = tol)
-  )
+  )))
 }
 
 # Validation Helpers -------------------------------------------------------
@@ -77,7 +82,7 @@ expect_estimates_differ <- function(est1, est2, tol = 0.01) {
 validate_triangle_output <- function(result, input_triangle) {
   testthat::expect_is(result, "matrix")
   testthat::expect_identical(dim(result), dim(input_triangle))
-  invisible(result)
+  return(invisible(result))
 }
 
 #' Validate nowcast draws structure
@@ -89,7 +94,7 @@ validate_nowcast_draws <- function(nowcast_df, n_draws, n_dates) {
   if ("reference_date" %in% colnames(nowcast_df)) {
     testthat::expect_length(unique(nowcast_df$reference_date), n_dates)
   }
-  invisible(nowcast_df)
+  return(invisible(nowcast_df))
 }
 
 # Test Data Creation Functions ---------------------------------------------
@@ -102,7 +107,7 @@ validate_nowcast_draws <- function(nowcast_df, n_draws, n_dates) {
 #' @return A matrix suitable for testing
 #' @keywords internal
 make_test_triangle <- function(nrow = 5, ncol = 4, type = "simple") {
-  switch(type,
+  return(switch(type,
     simple = {
       if (nrow != 5 || ncol != 4) {
         warning(
@@ -110,7 +115,7 @@ make_test_triangle <- function(nrow = 5, ncol = 4, type = "simple") {
           call. = FALSE
         )
       }
-      matrix(
+      return(matrix(
         c(
           10, 7, 1, NA,
           15, 12, 2, NA,
@@ -121,7 +126,7 @@ make_test_triangle <- function(nrow = 5, ncol = 4, type = "simple") {
         nrow = 5,
         ncol = 4,
         byrow = TRUE
-      )
+      ))
     },
     with_nas = {
       mat <- matrix(
@@ -138,20 +143,20 @@ make_test_triangle <- function(nrow = 5, ncol = 4, type = "simple") {
           mat[i, na_start:ncol] <- NA
         }
       }
-      mat
+      return(mat)
     },
     no_nas = {
-      matrix(
+      return(matrix(
         seq_len(nrow * ncol),
         nrow = nrow,
         ncol = ncol
-      )
+      ))
     },
     stop(
       "Invalid type: must be 'simple', 'with_nas', or 'no_nas'",
       call. = FALSE
     )
-  )
+  ))
 }
 
 #' Create test delay PMF
@@ -161,13 +166,13 @@ make_test_triangle <- function(nrow = 5, ncol = 4, type = "simple") {
 #' @return A numeric vector representing a delay PMF
 #' @keywords internal
 make_delay_pmf <- function(type = "uniform", length = 4) {
-  switch(type,
+  return(switch(type,
     uniform = {
-      rep(1 / length, length)
+      return(rep(1 / length, length))
     },
     geometric = {
       pmf <- dgeom(0:(length - 1), prob = 0.3)
-      pmf / sum(pmf)
+      return(pmf / sum(pmf))
     },
     simple = {
       if (length != 4) {
@@ -176,13 +181,13 @@ make_delay_pmf <- function(type = "uniform", length = 4) {
           call. = FALSE
         )
       }
-      c(0.4, 0.3, 0.2, 0.1)
+      return(c(0.4, 0.3, 0.2, 0.1))
     },
     stop(
       "Invalid type: must be 'uniform', 'geometric', or 'simple'",
       call. = FALSE
     )
-  )
+  ))
 }
 
 #' Create simple test data frame with reference/report dates
@@ -210,11 +215,11 @@ make_test_data <- function(n_dates = 10, max_delay = 5, add_strata = FALSE,
     report_dates <- ref_date + delays
     counts <- rpois(length(delays), lambda = 10)
 
-    data.frame(
+    return(data.frame(
       reference_date = ref_date,
       report_date = report_dates,
       count = counts
-    )
+    ))
   })
 
   test_df <- do.call(rbind, data_list)
@@ -226,7 +231,7 @@ make_test_data <- function(n_dates = 10, max_delay = 5, add_strata = FALSE,
     )
   }
 
-  test_df
+  return(test_df)
 }
 
 #' Create COVID test data

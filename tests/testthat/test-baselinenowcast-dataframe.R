@@ -320,7 +320,7 @@ test_that("baselinenowcast works with weekday strata", {
     regexp = "Data does not contain case counts for all possible reference dates" # nolint
   )
   nowcast_df_Tue1 <- nowcast_df2 |>
-    dplyr::filter(weekday_ref_date == "Tue") |>
+    dplyr::filter(.data[["weekday_ref_date"]] == "Tue") |>
     dplyr::arrange(desc(reference_date), draw)
 
   set.seed(123)

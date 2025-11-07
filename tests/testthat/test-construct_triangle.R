@@ -1,3 +1,15 @@
+#' Expect valid triangle (matrix with potential NAs in bottom-right)
+#' @keywords internal
+expect_valid_triangle <- function(object, has_nas = TRUE) {
+  expect_is(object, "matrix")
+  if (has_nas) {
+    expect_true(anyNA(object))
+  } else {
+    expect_false(anyNA(object))
+  }
+  invisible(object)
+}
+
 test_that(
   "construct_triangle handles square matrix",
   {

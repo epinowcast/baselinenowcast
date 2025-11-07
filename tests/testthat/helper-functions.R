@@ -70,25 +70,13 @@ expect_estimates_differ <- function(est1, est2, tol = 0.01) {
   )
 }
 
-#' Expect all values greater than threshold
-#' @keywords internal
-expect_all_greater_than <- function(vec, threshold) {
-  expect_true(all(vec > threshold, na.rm = TRUE))
-}
-
-#' Expect all values less than threshold
-#' @keywords internal
-expect_all_less_than <- function(vec, threshold) {
-  expect_true(all(vec < threshold, na.rm = TRUE))
-}
-
 # Validation Helpers -------------------------------------------------------
 
 #' Validate triangle output matches input
 #' @keywords internal
 validate_triangle_output <- function(result, input_triangle) {
-  expect_valid_matrix(result)
-  expect_dimensions_match(result, input_triangle)
+  expect_is(result, "matrix")
+  expect_identical(dim(result), dim(input_triangle))
   invisible(result)
 }
 

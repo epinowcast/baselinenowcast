@@ -23,7 +23,7 @@ test_that(
 
     expect_type(result, "double")
     expect_gt(length(result), 0)
-    expect_all_greater_than(result, 0)
+    expect_true(all(result > 0))
   }
 )
 
@@ -363,7 +363,7 @@ test_that("estimate_uncertainty_retro works with custom delay_pmf", {
 
   expect_type(result, "double")
   expect_gt(length(result), 0)
-  expect_all_greater_than(result, 0)
+  expect_true(all(result > 0))
 
   result_default <- estimate_uncertainty_retro(
     triangle,

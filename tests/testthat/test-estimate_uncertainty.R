@@ -56,7 +56,7 @@ test_that("estimate_uncertainty: Basic functionality with valid inputs", {
   # Verify output structure
   expect_type(result, "double")
   expect_length(result, ncol(valid_nowcasts[[1]]) - 1)
-  expect_all_finite(result)
+  expect_true(all(is.finite(result)))
 })
 
 
@@ -68,7 +68,7 @@ test_that("estimate_uncertainty can handle rolling sum with k=3", {
     ref_time_aggregator = function(x) zoo::rollsum(x, k = 3, align = "right")
   )
 
-  expect_all_finite(result)
+  expect_true(all(is.finite(result)))
 })
 
 
@@ -252,7 +252,7 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
   # Test that the function returns the expected result
   expect_is(disp_params, "numeric")
   expect_length(disp_params, n_horizons)
-  expect_all_greater_than(disp_params, 0)
+  expect_true(all(disp_params > 0))
 })
 
 test_that("estimate_uncertainty: works as expected with perfect data", {
@@ -331,7 +331,7 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
     retro_reporting_triangles
   )
   expect_lt(dispersion[1], 500)
-  expect_all_finite(dispersion)
+  expect_true(all(is.finite(dispersion)))
 
   # Fewer reporting matrices can be included here because we are summing.
   dispersion2 <- estimate_uncertainty(
@@ -341,8 +341,8 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
     ref_time_aggregator = function(x) zoo::rollsum(x, k = 3, align = "right")
   )
   expect_lt(dispersion2[1], 500)
-  expect_all_greater_than(dispersion2, 0.1)
-  expect_all_finite(dispersion)
+  expect_true(all(dispersion2 > 0.1))
+  expect_true(all(is.finite(dispersion)))
 
 
   expect_estimates_differ(dispersion, dispersion2, tol = 0.001)
@@ -421,7 +421,7 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
     retro_reporting_triangles
   )
 
-  expect_all_greater_than(dispersion, 700) # Can't distinguish more specific
+  expect_true(all(dispersion > 700)) # Can't distinguish more specific
   # dispersion values
 })
 
@@ -477,8 +477,8 @@ test_that("estimate_uncertainty: can handle weekday filter with large ragged tri
     retro_reporting_triangles = retro_rts,
     n = 5
   )
-  expect_all_finite(disp_params)
-  expect_all_greater_than(disp_params, 0.01)
+  expect_true(all(is.finite(disp_params)))
+  expect_true(all(disp_params > 0.01))
 })
 
 test_that("estimate_uncertainty: can handle weekday filter with small ragged triangle", { # nolint
@@ -519,8 +519,8 @@ test_that("estimate_uncertainty: can handle weekday filter with small ragged tri
     n = 2
   )
 
-  expect_all_finite(disp_params)
-  expect_all_greater_than(disp_params, 0.01)
+  expect_true(all(is.finite(disp_params)))
+  expect_true(all(disp_params > 0.01))
 })
 
 test_that("estimate_uncertainty: errors if ref_time_aggregator isn't appropriate", { # nolint

@@ -91,7 +91,7 @@ test_that("apply_delay function works correctly on simple triangle", {
     delay_pmf = delay_pmf
   )
 
-  expect_valid_matrix(result)
+  expect_is(result, "matrix")
 
   mat <- matrix(nrow = 5, ncol = 4, data = 1)
   expect_error(
@@ -103,7 +103,7 @@ test_that("apply_delay function works correctly on simple triangle", {
   )
 
   # Test that the dimensions of the output match the input
-  expect_dimensions_match(result, triangle)
+  expect_identical(dim(result), dim(triangle))
 
   # Test that the known values remain unchanged
   expect_identical(result[1:3, 1:2], triangle[1:3, 1:2])
@@ -129,10 +129,10 @@ test_that("apply_delay function works on a triangle with 0s", {
     delay_pmf = delay_pmf
   )
 
-  expect_valid_matrix(result)
+  expect_is(result, "matrix")
 
   # Test that the dimensions of the output match the input
-  expect_dimensions_match(result, triangle)
+  expect_identical(dim(result), dim(triangle))
 
   # Test that the known values remain unchanged
   expect_identical(result[1:3, 1:2], triangle[1:3, 1:2])
@@ -161,10 +161,10 @@ test_that("apply_delay function works correctly with larger triangle", {
   result <- apply_delay(triangle_to_nowcast, delay_pmf)
 
   # Test that the output is a matrix
-  expect_valid_matrix(result)
+  expect_is(result, "matrix")
 
   # Test that the dimensions of the output match the input
-  expect_dimensions_match(result, triangle_to_nowcast)
+  expect_identical(dim(result), dim(triangle_to_nowcast))
 
   # Test that the known values remain unchanged
   expect_identical(result[1:3, 1:2], triangle_to_nowcast[1:3, 1:2])
@@ -286,8 +286,8 @@ test_that("apply_delay works with PMF containing negative entries", {
   )
 
   # Result should be a matrix with same dimensions
-  expect_valid_matrix(result)
-  expect_dimensions_match(result, triangle)
+  expect_is(result, "matrix")
+  expect_identical(dim(result), dim(triangle))
 
   # No NAs should remain
   expect_false(anyNA(result))
@@ -366,8 +366,8 @@ test_that("apply_delay completes full workflow with negative PMF", {
   )
 
   # Verify result properties
-  expect_valid_matrix(nowcast)
-  expect_dimensions_match(nowcast, triangle)
+  expect_is(nowcast, "matrix")
+  expect_identical(dim(nowcast), dim(triangle))
   expect_false(anyNA(nowcast))
 
   # Verify observed values are preserved

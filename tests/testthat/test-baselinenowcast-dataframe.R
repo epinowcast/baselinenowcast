@@ -1,14 +1,5 @@
 # Test-specific constants
-covid_data <- germany_covid19_hosp[
-  germany_covid19_hosp$report_date <=
-    max(germany_covid19_hosp$reference_date) &
-    germany_covid19_hosp$age_group %in% c("00+", "00-04", "60-79", "80+"),
-]
-
-covid_data$weekday_ref_date <- lubridate::wday(
-  covid_data$reference_date,
-  label = TRUE
-)
+covid_data <- create_covid_test_data()
 
 covid_data_single_strata_wday <- covid_data[covid_data$age_group == "00+", ]
 covid_data_age_groups_wday <- covid_data[covid_data$age_group != "00+", ]

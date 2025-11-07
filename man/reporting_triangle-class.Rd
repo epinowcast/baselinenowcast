@@ -10,24 +10,24 @@ nowcasting.
 }
 \section{Structure}{
 
-A \code{reporting_triangle} is a list with the following components:
-\describe{
-\item{reporting_triangle_matrix}{Matrix with which rows are reference
-times and columns are delays and
-entries are incident cases at each reference time and delay.}
-\item{reference_dates}{Vector of the same length as the rows of the
-matrix indicating the dates corresponding to the reference times in the
-rows of the reporting triangle.}
-\item{structure}{Vector indicating the "structure" of the reporting
-triangle, see \code{\link[=construct_triangle]{construct_triangle()}} for more details.}
-\item{max_delay}{Integer indicating the maximum delay.}
-\item{delays_unit}{Character string indicating the unit of the delays.
-Valid options are "days", "weeks", "months", "years".}
-\item{strata}{Character string indicating the strata.}
+A \code{reporting_triangle} is a matrix with class
+\code{c("reporting_triangle", "matrix")}:
+\itemize{
+\item Rows: Reference dates
+\item Columns: Delays (0, 1, 2, ...)
+\item Row names: Reference dates as character
+\item Column names: Delays as character
 }
+
+Attributes:
+\itemize{
+\item \code{reference_dates}: Vector of Date objects
+\item \code{delays_unit}: Character ("days", "weeks", "months", "years")
+\item \code{structure}: Integer vector indicating reporting pattern
 See the corresponding \code{\link[=as_reporting_triangle.matrix]{as_reporting_triangle.matrix()}} and
 \code{\link[=as_reporting_triangle.data.frame]{as_reporting_triangle.data.frame()}} functions
 for more details on the required input formats to generate the object.
+}
 }
 
 \seealso{
@@ -39,6 +39,8 @@ Reporting triangle construction and validation
 \code{\link{as_reporting_triangle.triangle}()},
 \code{\link{assert_reporting_triangle}()},
 \code{\link{detect_structure}()},
-\code{\link{new_reporting_triangle}()}
+\code{\link{new_reporting_triangle}()},
+\code{\link{print.reporting_triangle}()},
+\code{\link{summary.reporting_triangle}()}
 }
 \concept{reporting_triangle}

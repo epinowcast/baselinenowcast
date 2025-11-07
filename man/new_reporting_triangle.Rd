@@ -52,6 +52,8 @@ Reporting triangle construction and validation
 \code{\link{as_reporting_triangle.triangle}()},
 \code{\link{assert_reporting_triangle}()},
 \code{\link{detect_structure}()},
-\code{\link{reporting_triangle-class}}
+\code{\link{print.reporting_triangle}()},
+\code{\link{reporting_triangle-class}},
+\code{\link{summary.reporting_triangle}()}
 }
 \concept{reporting_triangle}

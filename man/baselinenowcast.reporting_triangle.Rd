@@ -20,8 +20,8 @@
 }
 \arguments{
 \item{data}{\link{reporting_triangle} class object to be nowcasted.
-The \code{data$reporting_triangle_matrix} must contain missing observations
-in the form of NAs in order to generate an output from this function.}
+The matrix must contain missing observations in the form of NAs in order
+to generate an output from this function.}
 
 \item{scale_factor}{Numeric value indicating the multiplicative factor on
 the maximum delay to be used for estimation of delay and uncertainty.
@@ -55,15 +55,14 @@ for the corresponding vector of uncertainty parameters, and draws from a
 negative binomial for each element of the vector.}
 
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
-first delay column in \code{data$reporting_triangle_matrix}. Default is NULL,
-which will estimate the delay from the reporting triangle matrix in \code{data},
-See \code{\link[=estimate_delay]{estimate_delay()}} for more details.}
+first delay column in the reporting triangle. Default is NULL, which will
+estimate the delay from the reporting triangle in \code{data}. See
+\code{\link[=estimate_delay]{estimate_delay()}} for more details.}
 
 \item{uncertainty_params}{Vector of uncertainty parameters ordered from
-horizon 1 to the maximum horizon. Default is \code{NULL}, which will
-result in computing the uncertainty parameters from the reporting
-triangle matrix \code{data}. See \code{\link[=estimate_uncertainty]{estimate_uncertainty()}} for more
-details.}
+horizon 1 to the maximum horizon. Default is \code{NULL}, which will result in
+computing the uncertainty parameters from the reporting triangle \code{data}.
+See \code{\link[=estimate_uncertainty]{estimate_uncertainty()}} for more details.}
 
 \item{preprocess}{Function to apply to the truncated triangle before
 estimation, or NULL to skip preprocessing. Default is

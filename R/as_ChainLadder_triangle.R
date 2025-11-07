@@ -67,10 +67,7 @@ as_ChainLadder_triangle <- function(x, ...) {
 
   assert_reporting_triangle(x)
 
-  triangle_matrix <- x$reporting_triangle_matrix
-  rownames(triangle_matrix) <- as.character(x$reference_dates)
-
-  cl_triangle <- ChainLadder::as.triangle(triangle_matrix, ...)
+  cl_triangle <- ChainLadder::as.triangle(x, ...)
 
   return(cl_triangle)
 }

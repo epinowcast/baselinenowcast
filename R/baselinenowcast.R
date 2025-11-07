@@ -61,17 +61,16 @@ baselinenowcast <- function(data,
 #'    model, etc.).
 #'
 #' @param data [reporting_triangle] class object to be nowcasted.
-#'   The `data$reporting_triangle_matrix` must contain missing observations
-#'   in the form of NAs in order to generate an output from this function.
+#'   The matrix must contain missing observations in the form of NAs in order
+#'   to generate an output from this function.
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
-#'   first delay column in `data$reporting_triangle_matrix`. Default is NULL,
-#'   which will estimate the delay from the reporting triangle matrix in `data`,
-#'   See [estimate_delay()] for more details.
+#'   first delay column in the reporting triangle. Default is NULL, which will
+#'   estimate the delay from the reporting triangle in `data`. See
+#'   [estimate_delay()] for more details.
 #' @param uncertainty_params Vector of uncertainty parameters ordered from
-#'   horizon 1 to the maximum horizon. Default is `NULL`, which will
-#'   result in computing the uncertainty parameters from the reporting
-#'   triangle matrix `data`. See [estimate_uncertainty()] for more
-#'   details.
+#'   horizon 1 to the maximum horizon. Default is `NULL`, which will result in
+#'   computing the uncertainty parameters from the reporting triangle `data`.
+#'   See [estimate_uncertainty()] for more details.
 #' @param ... Additional arguments passed to
 #'    [estimate_uncertainty()]
 #'    and [sample_nowcast()].
@@ -105,7 +104,7 @@ baselinenowcast.reporting_triangle <- function(
     uncertainty_params = NULL,
     preprocess = preprocess_negative_values,
     ...) {
-  tri <- data$reporting_triangle_matrix
+  tri <- data
   output_type <- arg_match(output_type)
   assert_integerish(draws, null.ok = TRUE)
 
@@ -116,7 +115,7 @@ baselinenowcast.reporting_triangle <- function(
 
   if (is.null(delay_pmf)) {
     delay_pmf <- estimate_delay(
-      reporting_triangle = data$reporting_triangle_matrix,
+      reporting_triangle = data,
       n = tv$n_history_delay,
       preprocess = preprocess
     )
@@ -133,7 +132,7 @@ baselinenowcast.reporting_triangle <- function(
     )
     nowcast_df$draw <- 1
     result_df <- new_baselinenowcast_df(nowcast_df,
-      reference_dates = data$reference_dates,
+      reference_dates = attr(data, "reference_dates"),
       output_type = output_type
     )
     return(result_df)
@@ -141,7 +140,7 @@ baselinenowcast.reporting_triangle <- function(
 
   if (is.null(uncertainty_params)) {
     uncertainty_params <- estimate_uncertainty_retro(
-      reporting_triangle = data$reporting_triangle_matrix,
+      reporting_triangle = data,
       n_history_delay = tv$n_history_delay,
       n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
       uncertainty_model = uncertainty_model
@@ -158,7 +157,7 @@ baselinenowcast.reporting_triangle <- function(
   )
 
   result_df <- new_baselinenowcast_df(nowcast_df,
-    reference_dates = data$reference_dates,
+    reference_dates = attr(data, "reference_dates"),
     output_type = output_type
   )
 
@@ -323,14 +322,14 @@ baselinenowcast.data.frame <- function(
     )
     # Get the training volume for all reporting triangles
     tv <- allocate_reference_times(
-      reporting_triangle = pooled_triangle$reporting_triangle_matrix,
+      reporting_triangle = pooled_triangle,
       scale_factor = scale_factor,
       prop_delay = prop_delay
     )
     if ("delay" %in% strata_sharing) {
       # Estimate delay once on pooled data
       shared_delay_pmf <- estimate_delay(
-        reporting_triangle = pooled_triangle$reporting_triangle_matrix,
+        reporting_triangle = pooled_triangle,
         n = tv$n_history_delay,
         preprocess = preprocess
       )
@@ -338,7 +337,7 @@ baselinenowcast.data.frame <- function(
     if ("uncertainty" %in% strata_sharing) {
       # Estimate uncertainty once on pooled data
       shared_uncertainty_params <- estimate_uncertainty_retro(
-        reporting_triangle = pooled_triangle$reporting_triangle_matrix,
+        reporting_triangle = pooled_triangle,
         n_history_delay = tv$n_history_delay,
         n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
         uncertainty_model = uncertainty_model,

@@ -2,6 +2,29 @@
 
 ## baselinenowcast 0.0.0.1000
 
+- Add `preprocess` parameter to
+  [`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md)
+  to control handling of negative values in reporting triangles. Set to
+  `preprocess_negative_values` by default to redistribute negative
+  values to earlier delays, or set to `NULL` to preserve negative PMF
+  entries. This allows the method to work with reporting corrections
+  that result in net downward adjustments at specific delays
+  ([\#278](https://github.com/epinowcast/baselinenowcast/issues/278)).
+- Export
+  [`preprocess_negative_values()`](https://baselinenowcast.epinowcast.org/reference/preprocess_negative_values.md)
+  function to allow users to manually handle negative values in
+  reporting triangles by redistributing them to earlier delays
+  ([\#278](https://github.com/epinowcast/baselinenowcast/issues/278)).
+- Improve PMF validation message to be more informative when the delay
+  PMF does not sum to approximately 1. The message now shows the actual
+  sum and clarifies that this may be expected when working with downward
+  corrections or incomplete data
+  ([\#148](https://github.com/epinowcast/baselinenowcast/issues/148),
+  [\#278](https://github.com/epinowcast/baselinenowcast/issues/278)).
+- Add `example_downward_corr_mat` data demonstrating a scenario with
+  systematic downward corrections at a specific delay, producing a PMF
+  with negative entries when estimated with `preprocess = NULL`
+  ([\#278](https://github.com/epinowcast/baselinenowcast/issues/278)).
 - Add a
   [`baselinenowcast.data.frame()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.data.frame.md)
   method which ingests a data.frame with one or more strata to nowcast

@@ -265,6 +265,8 @@ triangles.
 
 - [`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md)
   : Estimate a delay distribution from a reporting triangle
+- [`preprocess_negative_values()`](https://baselinenowcast.epinowcast.org/reference/preprocess_negative_values.md)
+  : Preprocess negative values in the reporting triangle
 
 ### Generate retrospective data
 

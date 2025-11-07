@@ -13,7 +13,8 @@ fill_triangles(
   retro_reporting_triangles,
   max_delay = min(sapply(retro_reporting_triangles, ncol)) - 1,
   n = min(sapply(retro_reporting_triangles, nrow)),
-  delay_pmf = NULL
+  delay_pmf = NULL,
+  preprocess = preprocess_negative_values
 )
 ```
 
@@ -43,6 +44,16 @@ fill_triangles(
   the first delay column in each of the matrices in
   `retro_reporting_triangles`. If a list, must of the same length as
   `retro_reporting_triangles`, with elements aligning. Default is `NULL`
+
+- preprocess:
+
+  Function to apply to the truncated triangle before estimation, or NULL
+  to skip preprocessing. Default is
+  [`preprocess_negative_values()`](https://baselinenowcast.epinowcast.org/reference/preprocess_negative_values.md),
+  which handles negative values by redistributing them to earlier
+  delays. Set to NULL if you want to preserve negative PMF entries
+  (e.g., when working with downward corrections where negative
+  probabilities reflect systematic adjustments).
 
 ## Value
 

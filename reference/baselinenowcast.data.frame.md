@@ -54,6 +54,7 @@ baselinenowcast(
   delays_unit = "days",
   strata_cols = NULL,
   strata_sharing = "none",
+  preprocess = preprocess_negative_values,
   ...
 )
 ```
@@ -152,6 +153,16 @@ baselinenowcast(
   sharing (each `strata_cols` is fully independent), `"delay"` for delay
   sharing and `"uncertainty"` for uncertainty sharing. Both `"delay"`
   and `"uncertainty"` can be passed at the same time.
+
+- preprocess:
+
+  Function to apply to the truncated triangle before estimation, or NULL
+  to skip preprocessing. Default is
+  [`preprocess_negative_values()`](https://baselinenowcast.epinowcast.org/reference/preprocess_negative_values.md),
+  which handles negative values by redistributing them to earlier
+  delays. Set to NULL if you want to preserve negative PMF entries
+  (e.g., when working with downward corrections where negative
+  probabilities reflect systematic adjustments).
 
 - ...:
 

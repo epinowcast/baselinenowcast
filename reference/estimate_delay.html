@@ -85,7 +85,8 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">estimate_delay</span><span class="op">(</span></span>
 <span>  <span class="va">reporting_triangle</span>,</span>
 <span>  max_delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
-<span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span></span>
+<span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span>,</span>
+<span>  preprocess <span class="op">=</span> <span class="va">preprocess_negative_values</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -113,6 +114,15 @@ be used in the estimate of the reporting delay, always starting from the
 most recent reporting delay. The default is to use the whole reporting
 triangle, so <code>nrow(reporting_triangle)</code>.</p></dd>
 
+
+<dt id="arg-preprocess">preprocess<a class="anchor" aria-label="anchor" href="#arg-preprocess"></a></dt>
+<dd><p>Function to apply to the truncated triangle before
+estimation, or NULL to skip preprocessing. Default is
+<code><a href="preprocess_negative_values.html">preprocess_negative_values()</a></code>, which handles negative values by
+redistributing them to earlier delays. Set to NULL if you want to preserve
+negative PMF entries (e.g., when working with downward corrections where
+negative probabilities reflect systematic adjustments).</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -120,10 +130,16 @@ triangle, so <code>nrow(reporting_triangle)</code>.</p></dd>
 indicating the point estimate of the empirical probability
 mass on each delay.</p>
     </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Delay distribution estimation functions
+<code><a href="preprocess_negative_values.html">preprocess_negative_values()</a></code></p></div>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example 1: Standard usage with default preprocessing</span></span></span>
+<span class="r-in"><span><span class="va">triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="fl">80</span>, <span class="fl">50</span>, <span class="fl">25</span>, <span class="fl">10</span>,</span></span>
 <span class="r-in"><span>    <span class="fl">100</span>, <span class="fl">50</span>, <span class="fl">30</span>, <span class="fl">20</span>,</span></span>
@@ -141,6 +157,20 @@ mass on each delay.</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">delay_pmf</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5029412 0.2514706 0.1455882 0.1000000</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example 2: Using data with downward corrections without preprocessing</span></span></span>
+<span class="r-in"><span><span class="co"># This preserves negative PMF entries reflecting systematic corrections</span></span></span>
+<span class="r-in"><span><span class="va">delay_pmf_negative</span> <span class="op">&lt;-</span> <span class="fu">estimate_delay</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  reporting_triangle <span class="op">=</span> <span class="va">example_downward_corr_mat</span>,</span></span>
+<span class="r-in"><span>  max_delay <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>  n <span class="op">=</span> <span class="fl">5</span>,</span></span>
+<span class="r-in"><span>  preprocess <span class="op">=</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">delay_pmf_negative</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1]  0.66544955  0.38806216 -0.14046823  0.08695652</span>
+<span class="r-in"><span><span class="co"># Note: PMF may contain negative values and not sum to 1</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">delay_pmf_negative</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

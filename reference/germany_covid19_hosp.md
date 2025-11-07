@@ -50,5 +50,6 @@ Hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/tree/main/data
 ## See also
 
 Example datasets
+[`example_downward_corr_mat`](https://baselinenowcast.epinowcast.org/reference/example_downward_corr_mat.md),
 [`syn_nssp_df`](https://baselinenowcast.epinowcast.org/reference/syn_nssp_df.md),
 [`syn_nssp_line_list`](https://baselinenowcast.epinowcast.org/reference/syn_nssp_line_list.md)

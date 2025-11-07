@@ -46,6 +46,7 @@ baselinenowcast(
   uncertainty_sampler = sample_nb,
   delay_pmf = NULL,
   uncertainty_params = NULL,
+  preprocess = preprocess_negative_values,
   ...
 )
 ```
@@ -117,6 +118,16 @@ baselinenowcast(
   uncertainty parameters from the reporting triangle matrix `data`. See
   [`estimate_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md)
   for more details.
+
+- preprocess:
+
+  Function to apply to the truncated triangle before estimation, or NULL
+  to skip preprocessing. Default is
+  [`preprocess_negative_values()`](https://baselinenowcast.epinowcast.org/reference/preprocess_negative_values.md),
+  which handles negative values by redistributing them to earlier
+  delays. Set to NULL if you want to preserve negative PMF entries
+  (e.g., when working with downward corrections where negative
+  probabilities reflect systematic adjustments).
 
 - ...:
 

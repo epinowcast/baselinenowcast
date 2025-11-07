@@ -135,6 +135,7 @@ model, etc.).</p>
 <span>  uncertainty_sampler <span class="op">=</span> <span class="va">sample_nb</span>,</span>
 <span>  delay_pmf <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  uncertainty_params <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  preprocess <span class="op">=</span> <span class="va">preprocess_negative_values</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -205,6 +206,15 @@ horizon 1 to the maximum horizon. Default is <code>NULL</code>, which will
 result in computing the uncertainty parameters from the reporting
 triangle matrix <code>data</code>. See <code><a href="estimate_uncertainty.html">estimate_uncertainty()</a></code> for more
 details.</p></dd>
+
+
+<dt id="arg-preprocess">preprocess<a class="anchor" aria-label="anchor" href="#arg-preprocess"></a></dt>
+<dd><p>Function to apply to the truncated triangle before
+estimation, or NULL to skip preprocessing. Default is
+<code><a href="preprocess_negative_values.html">preprocess_negative_values()</a></code>, which handles negative values by
+redistributing them to earlier delays. Set to NULL if you want to preserve
+negative PMF entries (e.g., when working with downward corrections where
+negative probabilities reflect systematic adjustments).</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

@@ -41,7 +41,6 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-combine_triangle_dfs.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-extract_predictions.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-filter_to_recent_horizons.html</loc></url>
-<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-handle_neg_vals.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-handle_target_exceeds_avail.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-perform_allocation_process.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-rename_cols.html</loc></url>
@@ -63,6 +62,7 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/estimate_delay.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty_retro.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/example_downward_corr_mat.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/fill_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/fill_triangles.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/fit_by_horizon.html</loc></url>
@@ -71,6 +71,7 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/index.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/new_baselinenowcast_df.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/new_reporting_triangle.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/preprocess_negative_values.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/sample_nb.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/sample_nowcast.html</loc></url>

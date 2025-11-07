@@ -74,7 +74,8 @@ estimated from the <code>reporting_triangle</code>.</p>
 <span>  <span class="va">reporting_triangle</span>,</span>
 <span>  max_delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
 <span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span>,</span>
-<span>  delay_pmf <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  delay_pmf <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  preprocess <span class="op">=</span> <span class="va">preprocess_negative_values</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -108,6 +109,15 @@ triangle, so <code>nrow(reporting_triangle)</code>.</p></dd>
 starting at the first delay column in <code>reporting_triangle</code>.
 Default is <code>NULL</code>, which will estimate a delay from the
 <code>reporting_triangle</code>.</p></dd>
+
+
+<dt id="arg-preprocess">preprocess<a class="anchor" aria-label="anchor" href="#arg-preprocess"></a></dt>
+<dd><p>Function to apply to the truncated triangle before
+estimation, or NULL to skip preprocessing. Default is
+<code><a href="preprocess_negative_values.html">preprocess_negative_values()</a></code>, which handles negative values by
+redistributing them to earlier delays. Set to NULL if you want to preserve
+negative PMF entries (e.g., when working with downward corrections where
+negative probabilities reflect systematic adjustments).</p></dd>
 
 </dl></div>
     <div class="section level2">

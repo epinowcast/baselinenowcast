@@ -121,7 +121,8 @@ estimates</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example 1: Standard usage with positive delay PMF</span></span></span>
+<span class="r-in"><span><span class="va">triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="fl">80</span>, <span class="fl">50</span>, <span class="fl">25</span>, <span class="fl">10</span>,</span></span>
 <span class="r-in"><span>    <span class="fl">100</span>, <span class="fl">50</span>, <span class="fl">30</span>, <span class="fl">20</span>,</span></span>
@@ -148,6 +149,28 @@ estimates</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   90 45.00000 25.00000 17.78889</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [4,]   80 40.00000 23.20529 15.92281</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [5,]   70 35.24853 20.35851 13.96745</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example 2: Using delay PMF with negative entries from downward</span></span></span>
+<span class="r-in"><span><span class="co"># corrections. Create a delay PMF with a negative value representing</span></span></span>
+<span class="r-in"><span><span class="co"># systematic corrections</span></span></span>
+<span class="r-in"><span><span class="va">delay_pmf_negative</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="fl">0.4</span>, <span class="op">-</span><span class="fl">0.15</span>, <span class="fl">0.05</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">nowcast_with_corrections</span> <span class="op">&lt;-</span> <span class="fu">apply_delay</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  reporting_triangle <span class="op">=</span> <span class="va">example_downward_corr_mat</span>,</span></span>
+<span class="r-in"><span>  delay_pmf <span class="op">=</span> <span class="va">delay_pmf_negative</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># The nowcast includes negative predictions at delay 2,</span></span></span>
+<span class="r-in"><span><span class="co"># correctly reflecting expected downward corrections</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nowcast_with_corrections</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1]     [,2]      [,3]      [,4]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]  100 60.00000 -20.00000 10.000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]  120 70.00000 -25.00000 15.000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]  110 65.00000 -22.00000 12.000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]  130 75.00000 -28.00000 18.000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5,]  115 68.00000 -24.00000 14.000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [6,]  125 72.00000 -26.00000  9.002632</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [7,]  105 62.00000 -22.75909  7.594258</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [8,]   95 54.45714 -20.36688  6.796856</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

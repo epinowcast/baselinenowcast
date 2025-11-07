@@ -152,6 +152,7 @@ reference and report dates across strata.</p>
 <span>  delays_unit <span class="op">=</span> <span class="st">"days"</span>,</span>
 <span>  strata_cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  strata_sharing <span class="op">=</span> <span class="st">"none"</span>,</span>
+<span>  preprocess <span class="op">=</span> <span class="va">preprocess_negative_values</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -251,6 +252,15 @@ estimates should be shared for different nowcasting steps. Options are
 <code>"none"</code> for no sharing (each <code>strata_cols</code> is fully independent),
 <code>"delay"</code> for delay sharing and <code>"uncertainty"</code> for uncertainty sharing.
 Both <code>"delay"</code> and <code>"uncertainty"</code> can be passed at the same time.</p></dd>
+
+
+<dt id="arg-preprocess">preprocess<a class="anchor" aria-label="anchor" href="#arg-preprocess"></a></dt>
+<dd><p>Function to apply to the truncated triangle before
+estimation, or NULL to skip preprocessing. Default is
+<code><a href="preprocess_negative_values.html">preprocess_negative_values()</a></code>, which handles negative values by
+redistributing them to earlier delays. Set to NULL if you want to preserve
+negative PMF entries (e.g., when working with downward corrections where
+negative probabilities reflect systematic adjustments).</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

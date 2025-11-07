@@ -104,6 +104,7 @@ alternative aggregation), use the low-level functions directly.</p>
 <span>  max_delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
 <span>  structure <span class="op">=</span> <span class="fu"><a href="detect_structure.html">detect_structure</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span>,</span>
 <span>  delay_pmf <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  preprocess <span class="op">=</span> <span class="va">preprocess_negative_values</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -149,6 +150,15 @@ number of columns. Default is 1 (standard triangular structure).</p></dd>
 starting at the first delay column in each of the matrices in
 <code>retro_reporting_triangles</code>. If a list, must of the same length as
 <code>retro_reporting_triangles</code>, with elements aligning. Default is <code>NULL</code></p></dd>
+
+
+<dt id="arg-preprocess">preprocess<a class="anchor" aria-label="anchor" href="#arg-preprocess"></a></dt>
+<dd><p>Function to apply to the truncated triangle before
+estimation, or NULL to skip preprocessing. Default is
+<code><a href="preprocess_negative_values.html">preprocess_negative_values()</a></code>, which handles negative values by
+redistributing them to earlier delays. Set to NULL if you want to preserve
+negative PMF entries (e.g., when working with downward corrections where
+negative probabilities reflect systematic adjustments).</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

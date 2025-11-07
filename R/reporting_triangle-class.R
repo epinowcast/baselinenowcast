@@ -113,9 +113,45 @@ get_mean_delay <- function(x) {
     row_counts <- x[i, ]
     total_counts <- sum(row_counts, na.rm = TRUE)
     if (total_counts == 0) return(NA_real_)
-    sum(row_counts * delays, na.rm = TRUE) / total_counts
+    return(sum(row_counts * delays, na.rm = TRUE) / total_counts)
   }, numeric(1))
   return(mean_delays)
+}
+
+#' Get quantile delay for each row of reporting_triangle
+#'
+#' @param x A reporting_triangle object
+#' @param p Numeric value between 0 and 1 indicating the quantile to compute.
+#'   For example, p = 0.99 returns the delay at which 99% of cases have been
+#'   reported. Default is 0.99.
+#' @return Vector of quantile delays for each reference date (integer). Returns
+#'   NA for rows with no observations.
+#' @family reporting_triangle
+#' @export
+get_quantile_delay <- function(x, p = 0.99) {
+  if (!is_reporting_triangle(x)) {
+    cli_abort(message = "x must have class 'reporting_triangle'")
+  }
+  if (p < 0 || p > 1) {
+    cli_abort(message = "p must be between 0 and 1")
+  }
+
+  delays <- 0:get_max_delay(x)
+  quantile_delays <- vapply(seq_len(nrow(x)), function(i) {
+    row_counts <- x[i, ]
+    total_counts <- sum(row_counts, na.rm = TRUE)
+    if (total_counts == 0) return(NA_integer_)
+
+    cumulative_counts <- cumsum(row_counts)
+    cumulative_prop <- cumulative_counts / total_counts
+    quantile_idx <- which(cumulative_prop >= p)[1]
+
+    if (is.na(quantile_idx)) {
+      return(delays[length(delays)])
+    }
+    return(delays[quantile_idx])
+  }, integer(1))
+  return(quantile_delays)
 }
 
 #' Class constructor for `reporting_triangle` objects
@@ -192,7 +228,7 @@ validate_reporting_triangle <- function(data) {
     ))
   }
 
-  invisible(data)
+  return(invisible(data))
 }
 
 #' Assert validity of `reporting_triangle` objects
@@ -251,7 +287,7 @@ is_reporting_triangle <- function(x) {
   if (inherits(validation, "try-error")) {
     cli_warn(c(
       "!" = "Subsetting produced an invalid reporting_triangle object.",
-      "i" = "The object structure may be corrupted."
+      i = "The object structure may be corrupted."
     ))
   }
 
@@ -295,24 +331,54 @@ tail.reporting_triangle <- function(x, ...) {
 #' Print a reporting_triangle object
 #'
 #' @param x A [reporting_triangle] object to print.
+#' @param n_rows Maximum number of rows to display. If the triangle has more
+#'   rows, only the first and last `n_rows/2` rows are shown. Default is 10.
+#'   Set to NULL to display all rows.
+#' @param n_cols Maximum number of columns to display. If the triangle has more
+#'   columns, only the first `n_cols` columns are shown. Default is 10.
+#'   Set to NULL to display all columns.
 #' @param ... Additional arguments passed to print methods.
 #' @return Invisibly returns the object.
 #' @family reporting_triangle
 #' @export
 #' @importFrom cli cli_text cli_rule
 #' @method print reporting_triangle
-print.reporting_triangle <- function(x, ...) {
+print.reporting_triangle <- function(x, n_rows = 10, n_cols = 10, ...) {
   cli_text("{.strong Reporting Triangle}")
   cli_rule()
-  ref_dates <- get_reference_dates(x)
+  ref_dates <- get_reference_dates(x) # nolint: object_usage_linter
   cli_text("Delays unit: {attr(x, 'delays_unit')}")
   cli_text(
     "Reference dates: {paste(format(range(ref_dates)), collapse = ' to ')}"
   )
-  cli_text("Max delay: {ncol(x) - 1}")
+  cli_text("Max delay: {get_max_delay(x)}")
   cli_text("Structure: {toString(attr(x, 'structure'))}")
   cli_text("")
-  print(unclass(x), ...)
+
+  to_print <- x
+  total_rows <- nrow(x)
+  total_cols <- ncol(x)
+  row_subset <- NULL
+  col_subset <- NULL
+
+  if (!is.null(n_rows) && total_rows > n_rows) {
+    n_show <- floor(n_rows / 2)
+    row_subset <- c(seq_len(n_show), seq(total_rows - n_show + 1, total_rows))
+    to_print <- to_print[row_subset, , drop = FALSE]
+    cli_text("Showing first and last {n_show} of {total_rows} rows")
+  }
+
+  if (!is.null(n_cols) && total_cols > n_cols) {
+    col_subset <- seq_len(n_cols)
+    to_print <- to_print[, col_subset, drop = FALSE]
+    cli_text("Showing first {n_cols} of {total_cols} columns")
+  }
+
+  if (!is.null(row_subset) || !is.null(col_subset)) {
+    cli_text("")
+  }
+
+  print(unclass(to_print), ...)
   return(invisible(x))
 }
 
@@ -333,7 +399,8 @@ summary.reporting_triangle <- function(object, ...) {
   cli_text(
     "Reference period: {paste(format(range(ref_dates)), collapse = ' to ')}"
   )
-  cli_text("Max delay: {ncol(object) - 1} {attr(object, 'delays_unit')}")
+  max_delay <- get_max_delay(object) # nolint: object_usage_linter
+  cli_text("Max delay: {max_delay} {attr(object, 'delays_unit')}")
   cli_text("Structure: {toString(attr(object, 'structure'))}")
 
   # Find most recent complete date and calculate mean delays
@@ -342,39 +409,35 @@ summary.reporting_triangle <- function(object, ...) {
   mean_delays <- NULL
   if (length(complete_rows) > 0) {
     most_recent_complete_idx <- max(complete_rows)
+    # nolint start: object_usage_linter
     most_recent_complete_date <- ref_dates[most_recent_complete_idx]
     most_recent_complete_count <- sum(
       object[most_recent_complete_idx, ],
       na.rm = TRUE
     )
+    # nolint end
     cli_text(
       "Most recent complete date: {format(most_recent_complete_date)} ",
       "({most_recent_complete_count} cases)"
     )
 
     # Calculate mean delay for complete rows
-    delays <- 0:(ncol(object) - 1)
-    mean_delays <- vapply(complete_rows, function(i) {
-      row_counts <- object[i, ]
-      total_counts <- sum(row_counts)
-      if (total_counts == 0) return(NA_real_)
-      sum(row_counts * delays) / total_counts
-    }, numeric(1))
-
+    all_mean_delays <- get_mean_delay(object)
+    mean_delays <- all_mean_delays[complete_rows]
     mean_delays <- mean_delays[!is.na(mean_delays)]
   }
 
   # Count dates requiring nowcast
-  dates_need_nowcast <- sum(row_has_na)
+  dates_need_nowcast <- sum(row_has_na) # nolint: object_usage_linter
   cli_text("Dates requiring nowcast: {dates_need_nowcast}")
 
   # Count rows with negatives
   row_has_negative <- apply(object, 1, function(x) any(x < 0, na.rm = TRUE))
-  rows_with_negatives <- sum(row_has_negative)
+  rows_with_negatives <- sum(row_has_negative) # nolint: object_usage_linter
   cli_text("Rows with negatives: {rows_with_negatives}")
 
   # Count zeros
-  num_zeros <- sum(object == 0, na.rm = TRUE)
+  num_zeros <- sum(object == 0, na.rm = TRUE) # nolint: object_usage_linter
   cli_text("Number of zeros: {num_zeros}")
 
   # Show summary of mean delays for complete rows
@@ -382,6 +445,19 @@ summary.reporting_triangle <- function(object, ...) {
     cli_text("")
     cli_text("{.strong Mean delay summary (complete rows):}")
     print(summary(mean_delays))
+  }
+
+  # Show 99% quantile delay (when 99% of reporting has occurred)
+  if (length(complete_rows) > 0) {
+    quantile_99_delays <- get_quantile_delay(object, p = 0.99)
+    quantile_99_complete <- quantile_99_delays[complete_rows]
+    quantile_99_complete <- quantile_99_complete[!is.na(quantile_99_complete)]
+
+    if (length(quantile_99_complete) > 0) {
+      cli_text("")
+      cli_text("{.strong 99% quantile delay (complete rows):}")
+      print(summary(quantile_99_complete))
+    }
   }
 
   return(invisible(object))

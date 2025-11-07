@@ -4,10 +4,18 @@
 \alias{print.reporting_triangle}
 \title{Print a reporting_triangle object}
 \usage{
-\method{print}{reporting_triangle}(x, ...)
+\method{print}{reporting_triangle}(x, n_rows = 10, n_cols = 10, ...)
 }
 \arguments{
 \item{x}{A \link{reporting_triangle} object to print.}
+
+\item{n_rows}{Maximum number of rows to display. If the triangle has more
+rows, only the first and last \code{n_rows/2} rows are shown. Default is 10.
+Set to NULL to display all rows.}
+
+\item{n_cols}{Maximum number of columns to display. If the triangle has more
+columns, only the first \code{n_cols} columns are shown. Default is 10.
+Set to NULL to display all columns.}
 
 \item{...}{Additional arguments passed to print methods.}
 }
@@ -29,6 +37,7 @@ Reporting triangle construction and validation
 \code{\link{detect_structure}()},
 \code{\link{get_max_delay}()},
 \code{\link{get_mean_delay}()},
+\code{\link{get_quantile_delay}()},
 \code{\link{get_reference_dates}()},
 \code{\link{head.reporting_triangle}()},
 \code{\link{is_reporting_triangle}()},

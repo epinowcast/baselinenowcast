@@ -78,6 +78,7 @@ Reporting triangle construction and validation
 \code{\link{detect_structure}()},
 \code{\link{get_max_delay}()},
 \code{\link{get_mean_delay}()},
+\code{\link{get_quantile_delay}()},
 \code{\link{get_reference_dates}()},
 \code{\link{head.reporting_triangle}()},
 \code{\link{is_reporting_triangle}()},

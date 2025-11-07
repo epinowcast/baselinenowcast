@@ -443,12 +443,12 @@ summary.reporting_triangle <- function(object, ...) {
   # Count zeros (percentage and row-wise)
   num_zeros <- sum(object == 0, na.rm = TRUE)
   num_non_na <- sum(!is.na(object))
+  # nolint start: object_usage_linter
   pct_zeros <- if (num_non_na > 0) {
     round(100 * num_zeros / num_non_na, 1)
   } else {
     0
   }
-  # nolint start: object_usage_linter
   zeros_per_row <- apply(object, 1, function(x) sum(x == 0, na.rm = TRUE))
   # nolint end
   cli_text("Zeros: {num_zeros} ({pct_zeros}% of non-NA values)")

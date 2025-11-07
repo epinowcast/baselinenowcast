@@ -69,7 +69,40 @@ get_reference_dates <- function(x) {
   if (!inherits(x, "reporting_triangle")) {
     cli_abort(message = "x must have class 'reporting_triangle'")
   }
-  as.Date(rownames(x))
+  return(as.Date(rownames(x)))
+}
+
+#' Get maximum delay from reporting_triangle
+#'
+#' @param x A reporting_triangle object
+#' @return Maximum delay (integer)
+#' @family reporting_triangle
+#' @export
+get_max_delay <- function(x) {
+  if (!inherits(x, "reporting_triangle")) {
+    cli_abort(message = "x must have class 'reporting_triangle'")
+  }
+  return(ncol(x) - 1L)
+}
+
+#' Get mean delay for each row of reporting_triangle
+#'
+#' @param x A reporting_triangle object
+#' @return Vector of mean delays for each reference date (numeric)
+#' @family reporting_triangle
+#' @export
+get_mean_delay <- function(x) {
+  if (!inherits(x, "reporting_triangle")) {
+    cli_abort(message = "x must have class 'reporting_triangle'")
+  }
+  delays <- 0:get_max_delay(x)
+  mean_delays <- vapply(seq_len(nrow(x)), function(i) {
+    row_counts <- x[i, ]
+    total_counts <- sum(row_counts, na.rm = TRUE)
+    if (total_counts == 0) return(NA_real_)
+    sum(row_counts * delays, na.rm = TRUE) / total_counts
+  }, numeric(1))
+  return(mean_delays)
 }
 
 #' Class constructor for `reporting_triangle` objects
@@ -167,7 +200,7 @@ assert_reporting_triangle <- function(data) {
 #' @family reporting_triangle
 #' @export
 is_reporting_triangle <- function(x) {
-  inherits(x, "reporting_triangle")
+  return(inherits(x, "reporting_triangle"))
 }
 
 #' Subset a reporting_triangle object
@@ -224,9 +257,9 @@ is_reporting_triangle <- function(x) {
 head.reporting_triangle <- function(x, ...) {
   # Get default n if not specified
   dots <- list(...)
-  n <- if (!is.null(dots$n)) dots$n else 6L
+  n <- if (!is.null(dots[["n"]])) dots[["n"]] else 6L
   n <- min(n, nrow(x))
-  x[seq_len(n), , drop = FALSE]
+  return(x[seq_len(n), , drop = FALSE])
 }
 
 #' Get last rows of a reporting_triangle
@@ -241,9 +274,9 @@ head.reporting_triangle <- function(x, ...) {
 tail.reporting_triangle <- function(x, ...) {
   # Get default n if not specified
   dots <- list(...)
-  n <- if (!is.null(dots$n)) dots$n else 6L
+  n <- if (!is.null(dots[["n"]])) dots[["n"]] else 6L
   n <- min(n, nrow(x))
-  x[seq.int(to = nrow(x), length.out = n), , drop = FALSE]
+  return(x[seq.int(to = nrow(x), length.out = n), , drop = FALSE])
 }
 
 #' Print a reporting_triangle object

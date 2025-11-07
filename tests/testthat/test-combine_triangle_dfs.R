@@ -1,6 +1,13 @@
+# Test-specific constants
 test_data_partial_overlap <- data.frame(
-  reference_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
-  report_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
+  reference_date = as.Date(c(
+    "2021-04-06", "2021-04-06", "2021-04-06",
+    "2021-04-07"
+  )),
+  report_date = as.Date(c(
+    "2021-04-08", "2021-04-08", "2021-04-10",
+    "2021-04-09"
+  )),
   location = c("DE", "FR", "DE", "FR"),
   age_group = c("00+", "00+", "00+", "00+"),
   count = c(50, 30, 20, 40),
@@ -8,37 +15,41 @@ test_data_partial_overlap <- data.frame(
 )
 
 example_data <- data.frame(
-  reference_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-06")), # nolint
-  report_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-10")), # nolint
+  reference_date = as.Date(c(
+    "2021-04-06", "2021-04-06", "2021-04-06",
+    "2021-04-06"
+  )),
+  report_date = as.Date(c(
+    "2021-04-08", "2021-04-08", "2021-04-10",
+    "2021-04-10"
+  )),
   location = c("DE", "FR", "DE", "FR"),
   age_group = c("00+", "00+", "00+", "00+"),
   count = c(50, 30, 20, 40),
   stringsAsFactors = FALSE
 )
+
 expected_cols <- c("reference_date", "report_date", "count")
 strata_cols <- c("location", "age_group")
-covid_data <- germany_covid19_hosp[germany_covid19_hosp$report_date <= max(germany_covid19_hosp$reference_date) & # nolint
-  germany_covid19_hosp$age_group %in% c("00+", "60-79", "80+"), ] # nolint
-
-covid_data$weekday_ref_date <- lubridate::wday(covid_data$reference_date, # nolint
+covid_data <- germany_covid19_hosp[
+  germany_covid19_hosp$report_date <=
+    max(germany_covid19_hosp$reference_date) &
+    germany_covid19_hosp$age_group %in% c("00+", "60-79", "80+"),
+]
+covid_data$weekday_ref_date <- lubridate::wday(
+  covid_data$reference_date,
   label = TRUE
 )
+covid_data_single_strata <- dplyr::filter(covid_data, age_group == "00+")
 
-covid_data_single_strata <- dplyr::filter(
-  covid_data,
-  age_group == "00+"
-)
-exp_err_msg <- "There is no overlapping set of reference and report dates across all" # nolint
 test_that(".combine_triangle_dfs combines data across strata correctly", {
   result <- .combine_triangle_dfs(
     data = example_data,
     strata_cols = strata_cols
   )
-  # Correct columns
-  expect_true(all(expected_cols %in% colnames(result)))
-  expect_false("location" %in% names(result))
-  expect_false("age_group" %in% names(result))
 
+  expect_columns_present(result, expected_cols)
+  expect_columns_absent(result, c("location", "age_group"))
   expect_identical(nrow(result), 2L)
 
   row1 <- result[result$reference_date == as.Date("2021-04-06") &
@@ -49,27 +60,24 @@ test_that(".combine_triangle_dfs combines data across strata correctly", {
     result$report_date == as.Date("2021-04-10"), ]
   expect_identical(row2$count, sum(example_data$count[3:4]))
 
-  result2 <- expect_warning(
+  result2 <- expect_warning_partial_overlap(
     .combine_triangle_dfs(
       data = test_data_partial_overlap,
       strata_cols = strata_cols
-    ),
-    regexp = "Not all reference dates and report dates combinations are available for all" # nolint
+    )
   )
-  # Correct columns
-  expect_true(all(expected_cols %in% colnames(result2)))
-  expect_false("location" %in% names(result2))
-  expect_false("age_group" %in% names(result2))
 
-  # Should only return the aggregate date
+  expect_columns_present(result2, expected_cols)
+  expect_columns_absent(result2, c("location", "age_group"))
   expect_identical(nrow(result2), 1L)
-  expect_identical(sum(test_data_partial_overlap$count[1:2]), result2$count[1])
+  expect_identical(
+    sum(test_data_partial_overlap$count[1:2]),
+    result2$count[1]
+  )
 })
 
 test_that(".combine_triangle_dfs can handle weekday with overlaps.", {
   skip_if_not_installed("lubridate")
-  # If we add weekday to this, the result should be the same because they are
-  # all the same weekday
   example_data_wday <- example_data
   example_data_wday$weekday_ref_date <- lubridate::wday(
     example_data_wday$reference_date,
@@ -80,59 +88,72 @@ test_that(".combine_triangle_dfs can handle weekday with overlaps.", {
     strata_cols = c(strata_cols, "weekday_ref_date")
   )
   expect_identical(result4$count[1], sum(example_data_wday$count[1:2]))
-  # If we add weekday to the partial overlap data, we now have an additional
-  # strata which does not contain a shared set of overlapping reference
-  # and report dates
+
   test_data_overlap_wday <- test_data_partial_overlap
   test_data_overlap_wday$weekday_ref_date <- lubridate::wday(
     test_data_overlap_wday$reference_date,
     label = TRUE
   )
-  expect_error(
+  expect_error_no_overlap(
     .combine_triangle_dfs(
       data = test_data_overlap_wday,
       strata_cols = c(strata_cols, "weekday_ref_date")
-    ),
-    regexp = exp_err_msg
+    )
   )
 })
 
-test_that(".combine_triangle_dfs errors if no reference and report dates exists", { # nolint
+test_that(paste0(
+  ".combine_triangle_dfs errors if no reference and ",
+  "report dates exists"
+), {
   test_data_to_fail <- data.frame(
-    reference_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
-    report_date = as.Date(c("2021-04-07", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
+    reference_date = as.Date(c(
+      "2021-04-06", "2021-04-06", "2021-04-06",
+      "2021-04-07"
+    )),
+    report_date = as.Date(c(
+      "2021-04-07", "2021-04-08", "2021-04-10",
+      "2021-04-09"
+    )),
     location = c("DE", "FR", "DE", "FR"),
     age_group = c("00+", "00+", "05-14", "00+"),
     count = c(50, 30, 20, 40),
     stringsAsFactors = FALSE
   )
   test_data_also_fail <- data.frame(
-    reference_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
-    report_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
+    reference_date = as.Date(c(
+      "2021-04-06", "2021-04-06", "2021-04-06",
+      "2021-04-07"
+    )),
+    report_date = as.Date(c(
+      "2021-04-08", "2021-04-08", "2021-04-10",
+      "2021-04-09"
+    )),
     location = c("DE", "FR", "DE", "FR"),
     age_group = c("00+", "00+", "05-14", "00+"),
     count = c(50, 30, 20, 40),
     stringsAsFactors = FALSE
   )
   skip_if_not_installed("dplyr")
-  expect_error(
+  expect_error_no_overlap(
     .combine_triangle_dfs(
       data = test_data_to_fail,
       strata_cols = strata_cols
-    ),
-    regexp = exp_err_msg
+    )
   )
-  expect_error(
+  expect_error_no_overlap(
     .combine_triangle_dfs(
       data = test_data_also_fail,
       strata_cols = strata_cols
-    ),
-    regexp = exp_err_msg
+    )
   )
 })
 
 
-test_that(".combine_triangle_dfs handles all same date combinations by summing everything", { # nolint
+test_that(paste0(
+  ".combine_triangle_dfs handles all same date combinations ",
+  "by summing everything"
+), {
   test_data <- data.frame(
     reference_date = as.Date(rep("2021-04-06", 4)),
     report_date = as.Date(rep("2021-04-08", 4)),
@@ -164,14 +185,9 @@ test_that(".combine_triangle_dfs handles multiple strata columns", {
     strata_cols = c(strata_cols, "sex")
   )
 
-  # Should collapse all strata
   expect_identical(nrow(result), 1L)
   expect_identical(result$count, sum(test_data$count))
-
-  # Strata columns should be removed
-  expect_false("location" %in% names(result))
-  expect_false("age_group" %in% names(result))
-  expect_false("sex" %in% names(result))
+  expect_columns_absent(result, c("location", "age_group", "sex"))
 })
 
 test_that(".combine_triangle_dfs works with numeric counts", {
@@ -187,7 +203,10 @@ test_that(".combine_triangle_dfs works with numeric counts", {
   expect_equal(result$count, 30.8, tolerance = 1e-10)
 })
 
-test_that(".combine_triangles_df returns the the full set of reference and report dates when there is only one strata", { # nolint
+test_that(paste0(
+  ".combine_triangles_df returns the the full set of ",
+  "reference and report dates when there is only one strata"
+), {
   skip_if_not_installed("dplyr")
   df1 <- dplyr::arrange(
     covid_data_single_strata,
@@ -200,7 +219,10 @@ test_that(".combine_triangles_df returns the the full set of reference and repor
   expect_identical(result$count, df1$count)
 })
 
-test_that(".combine_triangles_df returns the sum across multiple age groups correctly given complete and non overlapping dates", { # nolint
+test_that(paste0(
+  ".combine_triangles_df returns the sum across multiple age ",
+  "groups correctly given complete and non overlapping dates"
+), {
   skip_if_not_installed("dplyr")
   df2 <- dplyr::arrange(
     covid_data,
@@ -209,16 +231,14 @@ test_that(".combine_triangles_df returns the sum across multiple age groups corr
   test2 <- .combine_triangle_dfs(df2,
     strata_cols = strata_cols
   ) |>
-    arrange(reference_date, report_date)
+    dplyr::arrange(reference_date, report_date)
   expect_identical(test2$count[1], sum(df2$count[1:3]))
 
-  # exclude a single row, get back the same result except missing the first row
   df3 <- df2[-1, ]
-  test3 <- expect_warning(
+  test3 <- expect_warning_partial_overlap(
     .combine_triangle_dfs(df3,
       strata_cols = strata_cols
-    ),
-    regexp = "Not all reference dates and report dates combinations are available for all" # nolint
+    )
   )
   test3 <- dplyr::arrange(
     test3,

@@ -6,6 +6,7 @@ rep_tri <- as_reporting_triangle(
   strata = "00+"
 )
 expected_cols <- c("pred_count", "draw", "reference_date", "output_type")
+
 test_that("baselinenowcast.reporting_triangle() works as expected", {
   nowcast_df <- baselinenowcast(rep_tri, draws = 100)
   expect_s3_class(nowcast_df, "data.frame")
@@ -27,7 +28,6 @@ test_that("baselinenowcast.reporting_triangle() works as expected", {
     1:100
   )
 })
-
 
 test_that("baselinenowcast.reporting_triangle() errors sensibly with inappropriate inputs", { # nolint
   expect_error(

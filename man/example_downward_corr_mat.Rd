@@ -44,6 +44,7 @@ with downward corrections:
 }
 
 Example datasets
+\code{\link{germany_covid19_hosp}},
 \code{\link{syn_nssp_df}},
 \code{\link{syn_nssp_line_list}}
 }

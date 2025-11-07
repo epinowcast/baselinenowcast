@@ -30,6 +30,7 @@ dates corresponding to the time column in the \code{baselinenowcast_df}
 Main nowcasting interface functions
 \code{\link{assert_baselinenowcast_df}()},
 \code{\link{baselinenowcast}()},
+\code{\link{baselinenowcast.data.frame}()},
 \code{\link{baselinenowcast.reporting_triangle}()},
 \code{\link{baselinenowcast_df-class}}
 }

@@ -71,10 +71,13 @@ test_that("as_reporting_triangle.data.frame() can handle different temporal gran
   # weekday filtering)
   weekly_daily <- data_as_of_df |>
     dplyr::filter(lubridate::wday(reference_date) == 1)
-  rep_tri2 <- expect_warning(as_reporting_triangle(weekly_daily,
-    max_delay = 25,
-    delays_unit = "days"
-  ))
+  rep_tri2 <- expect_message(
+    as_reporting_triangle(weekly_daily,
+      max_delay = 25,
+      delays_unit = "days"
+    ),
+    regexp = "Data does not contain case counts for all possible reference dates" # nolint
+  )
   expected_days_diff <- as.numeric(difftime(
     rep_tri2$reference_dates[2],
     rep_tri2$reference_dates[1]
@@ -120,7 +123,7 @@ test_that("as_reporting_triangle.data.frame() can handle different temporal gran
 
   # User specifies daily but the data is weekly. -- this will create a daily
   # matrix with 0s for all the missing report dates
-  rep_tri4 <- expect_warning(
+  rep_tri4 <- expect_message(
     as_reporting_triangle(weekly_weekly,
       max_delay = 25,
       delays_unit = "days"
@@ -136,7 +139,7 @@ test_that("as_reporting_triangle.data.frame() can handle a ragged triangle with 
 
   test <- data_as_of_df[data_as_of_df$reference_date != "2026-03-26", ]
 
-  rep_tri <- expect_warning(
+  rep_tri <- expect_message(
     as_reporting_triangle(test,
       max_delay = 25
     ),

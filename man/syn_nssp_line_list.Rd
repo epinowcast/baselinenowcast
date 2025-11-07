@@ -45,6 +45,7 @@ For an example of how to produce a nowcast from this data, see
 \seealso{
 Example datasets
 \code{\link{example_downward_corr_mat}},
+\code{\link{germany_covid19_hosp}},
 \code{\link{syn_nssp_df}}
 }
 \concept{example_data}

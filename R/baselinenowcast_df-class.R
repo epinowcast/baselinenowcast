@@ -22,8 +22,8 @@
 #'   `"samples"` or whether the `pred_count` is a point estimate indicated by
 #'   `"point"`.}
 #' }
-#' See the corresponding \code{\link{reporting_triangle}} and
-#' \code{\link{baselinenowcast}} function
+#' See the corresponding [reporting_triangle] and
+#' [baselinenowcast()] function
 #' for more details on the required inputs to generate the object.
 NULL
 
@@ -97,7 +97,7 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
 
 #' Assert validity of `baselinenowcast_df` objects
 #'
-#' @param data A \code{\link{baselinenowcast_df}} object to check for validity.
+#' @param data A [baselinenowcast_df] object to check for validity.
 #' @return NULL
 #' @family baselinenowcast_df
 #' @export

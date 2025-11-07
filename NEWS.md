@@ -4,6 +4,7 @@
 -   Export `preprocess_negative_values()` function to allow users to manually handle negative values in reporting triangles by redistributing them to earlier delays (#278).
 -   Improve PMF validation message to be more informative when the delay PMF does not sum to approximately 1. The message now shows the actual sum and clarifies that this may be expected when working with downward corrections or incomplete data (#148, #278).
 -   Add `example_downward_corr_mat` data demonstrating a scenario with systematic downward corrections at a specific delay, producing a PMF with negative entries when estimated with `preprocess = NULL` (#278).
+-   Add a `baselinenowcast.data.frame()` method which ingests a data.frame with one or more strata to nowcast and returns a `baselinenowcast_df` object.
 -   Add converters between `reporting_triangle` and ChainLadder triangle formats via `as_ChainLadder_triangle()` and `as_reporting_triangle.triangle()`, enabling use of ChainLadder's mature claims reserving methods alongside baselinenowcast's nowcasting functionality.
 -   Add a `baselinenowcast.reporting_triangle()` method which ingests a `reporting_triangle` object and produces a `baselinenowcast_df` object which is a data.frame with nowcasts and associated metadata.
 -   Include the pre-print as well as the package in the citation.

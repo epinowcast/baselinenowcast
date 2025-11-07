@@ -81,24 +81,24 @@ test_that(
   "estimate_uncertainty_retro returns numeric with custom n_history_delay",
   {
     triangle <- matrix(
-    c(
-      65, 46, 21, 7,
-      70, 40, 20, 5,
-      80, 50, 10, 10,
-      100, 40, 31, 20,
-      95, 45, 21, NA,
-      82, 42, NA, NA,
-      70, NA, NA, NA
-    ),
-    nrow = 7,
-    byrow = TRUE
-  )
+      c(
+        65, 46, 21, 7,
+        70, 40, 20, 5,
+        80, 50, 10, 10,
+        100, 40, 31, 20,
+        95, 45, 21, NA,
+        82, 42, NA, NA,
+        70, NA, NA, NA
+      ),
+      nrow = 7,
+      byrow = TRUE
+    )
 
-  result <- estimate_uncertainty_retro(
-    triangle,
-    n_retrospective_nowcasts = 2,
-    n_history_delay = 5
-  )
+    result <- estimate_uncertainty_retro(
+      triangle,
+      n_retrospective_nowcasts = 2,
+      n_history_delay = 5
+    )
 
     expect_type(result, "double")
     expect_gt(length(result), 0)

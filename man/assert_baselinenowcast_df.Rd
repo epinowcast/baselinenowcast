@@ -7,7 +7,7 @@
 assert_baselinenowcast_df(data)
 }
 \arguments{
-\item{data}{A \code{\link{baselinenowcast_df}} object to check for validity.}
+\item{data}{A \link{baselinenowcast_df} object to check for validity.}
 }
 \description{
 Assert validity of \code{baselinenowcast_df} objects
@@ -15,6 +15,7 @@ Assert validity of \code{baselinenowcast_df} objects
 \seealso{
 Main nowcasting interface functions
 \code{\link{baselinenowcast}()},
+\code{\link{baselinenowcast.data.frame}()},
 \code{\link{baselinenowcast.reporting_triangle}()},
 \code{\link{baselinenowcast_df-class}},
 \code{\link{new_baselinenowcast_df}()}

@@ -27,7 +27,7 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 starting from the most recent reporting delay.}
 
 \item{n_retrospective_nowcasts}{Integer indicating the number of
-retrospective nowcasts to use for uncertainty estimation.}
+retrospective nowcast times to use for uncertainty estimation.}
 
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,

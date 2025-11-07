@@ -10,8 +10,8 @@ estimate_and_apply_uncertainty(
   n_history_delay,
   n_retrospective_nowcasts,
   max_delay = ncol(reporting_triangle) - 1,
-  draws = 1000,
   structure = detect_structure(reporting_triangle),
+  draws = 1000,
   delay_pmf = NULL,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,
@@ -34,19 +34,19 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 starting from the most recent reporting delay.}
 
 \item{n_retrospective_nowcasts}{Integer indicating the number of
-retrospective nowcasts to use for uncertainty estimation.}
+retrospective nowcast times to use for uncertainty estimation.}
 
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
 \code{ncol(reporting_triangle) -1}.}
 
-\item{draws}{Integer indicating the number of draws of the predicted
-nowcast vector to generate. Default is \code{1000}.}
-
 \item{structure}{Integer or vector specifying the reporting structure.
 If integer, divides columns evenly by that integer (with last possibly
 truncated).  If vector, the sum must not be greater than or equal to the
 number of columns. Default is 1 (standard triangular structure).}
+
+\item{draws}{Integer indicating the number of draws of the predicted
+nowcast vector to generate. Default is \code{1000}.}
 
 \item{delay_pmf}{Vector or list of vectors of delays assumed to be indexed
 starting at the first delay column in each of the matrices in
@@ -69,8 +69,8 @@ arguments \code{pred} for the vector of predictions and uncertainty parameters
 for the corresponding vector of uncertainty parameters, and draws from a
 negative binomial for each element of the vector.}
 
-\item{...}{Additional arguments to \code{\link[=estimate_uncertainty_retro]{estimate_uncertainty_retro()}} and
-\code{\link[=sample_nowcasts]{sample_nowcasts()}}.}
+\item{...}{Additional arguments to \code{estimate_uncertainty()} and
+\code{sample_prediction()}.}
 }
 \value{
 \code{nowcast_draws_df} Dataframe containing draws of combined

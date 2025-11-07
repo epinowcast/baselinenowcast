@@ -9,7 +9,7 @@
 #' @param data Data.frame containing the incident count of cases by reference
 #'   date and report date for one or more strata.
 #' @inheritParams baselinenowcast.data.frame
-#' @importFrom stats aggregate as.formula
+#' @importFrom stats aggregate
 #' @keywords internal
 #' @returns `result` Data.frame with the same column names for reference date,
 #'   report date, and case count as in `data` but summed across all strata in

@@ -41,7 +41,7 @@ test_that("estimate_and_apply_uncertainty produces correct results", {
   expect_equal(nowcast_draws_df, nowcast_draws_df2, tolerance = 0.1)
 })
 
-test_that("estimate_and_apply_uncertainty error when things are specified incorrectly", { # nolint
+test_that("estimate_and_apply_uncertainty errors when things are specified incorrectly", { # nolint
   expect_error(
     estimate_and_apply_uncertainty(
       pt_nowcast_matrix,

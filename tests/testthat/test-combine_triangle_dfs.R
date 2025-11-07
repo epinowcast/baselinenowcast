@@ -1,26 +1,8 @@
-test_data_to_fail <- data.frame(
-  reference_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
-  report_date = as.Date(c("2021-04-07", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
-  location = c("DE", "FR", "DE", "FR"),
-  age_group = c("00+", "00+", "05-14", "00+"),
-  count = c(50, 30, 20, 40),
-  stringsAsFactors = FALSE
-)
-
 test_data_partial_overlap <- data.frame(
   reference_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
   report_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
   location = c("DE", "FR", "DE", "FR"),
   age_group = c("00+", "00+", "00+", "00+"),
-  count = c(50, 30, 20, 40),
-  stringsAsFactors = FALSE
-)
-
-test_data_also_fail <- data.frame(
-  reference_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
-  report_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
-  location = c("DE", "FR", "DE", "FR"),
-  age_group = c("00+", "00+", "05-14", "00+"),
   count = c(50, 30, 20, 40),
   stringsAsFactors = FALSE
 )
@@ -116,6 +98,22 @@ test_that(".combine_triangle_dfs can handle weekday with overlaps.", {
 })
 
 test_that(".combine_triangle_dfs errors if no reference and report dates exists", { # nolint
+  test_data_to_fail <- data.frame(
+    reference_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
+    report_date = as.Date(c("2021-04-07", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
+    location = c("DE", "FR", "DE", "FR"),
+    age_group = c("00+", "00+", "05-14", "00+"),
+    count = c(50, 30, 20, 40),
+    stringsAsFactors = FALSE
+  )
+  test_data_also_fail <- data.frame(
+    reference_date = as.Date(c("2021-04-06", "2021-04-06", "2021-04-06", "2021-04-07")), # nolint
+    report_date = as.Date(c("2021-04-08", "2021-04-08", "2021-04-10", "2021-04-09")), # nolint
+    location = c("DE", "FR", "DE", "FR"),
+    age_group = c("00+", "00+", "05-14", "00+"),
+    count = c(50, 30, 20, 40),
+    stringsAsFactors = FALSE
+  )
   skip_if_not_installed("dplyr")
   expect_error(
     .combine_triangle_dfs(

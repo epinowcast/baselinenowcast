@@ -361,10 +361,10 @@ baselinenowcast.data.frame <- function(
   )
 
   # Split the `name` column and assign to columns by strata cols
-  combined_result[strata_cols] <- do.call(
-    rbind,
-    strsplit(combined_result$name, "___", fixed = TRUE)
-  )
+  split_data <- do.call(rbind, strsplit(combined_result$name, "___", fixed = TRUE))
+  for (i in seq_along(strata_cols)) {
+    combined_result[[strata_cols[i]]] <- split_data[, i]
+  }
   combined_result$name <- NULL
   return(combined_result)
 }

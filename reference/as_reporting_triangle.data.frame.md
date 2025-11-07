@@ -1,10 +1,10 @@
 # Create a `reporting_triangle` object from a data.frame
 
 This method takes a data.frame containing case counts indexed by
-reference date and report date and creates a A
-[`reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+reference date and report date and creates a
+[reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
 object. See
-[`as_reporting_triangle.matrix`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.matrix.md)
+[`as_reporting_triangle.matrix()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.matrix.md)
 for other data input options.
 
 ## Usage

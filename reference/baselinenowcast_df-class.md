@@ -31,9 +31,9 @@ A `baselinenowcast_df` is a data.frame with the following columns:
   `"point"`.
 
 See the corresponding
-[`reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+[reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
 and
-[`baselinenowcast`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md)
+[`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md)
 function for more details on the required inputs to generate the object.
 
 ## See also
@@ -41,5 +41,6 @@ function for more details on the required inputs to generate the object.
 Main nowcasting interface functions
 [`assert_baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/assert_baselinenowcast_df.md),
 [`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md),
+[`baselinenowcast.data.frame()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.data.frame.md),
 [`baselinenowcast.reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.reporting_triangle.md),
 [`new_baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/new_baselinenowcast_df.md)

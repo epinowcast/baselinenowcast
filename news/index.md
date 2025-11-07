@@ -2,6 +2,10 @@
 
 ## baselinenowcast 0.0.0.1000
 
+- Add a
+  [`baselinenowcast.data.frame()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.data.frame.md)
+  method which ingests a data.frame with one or more strata to nowcast
+  and returns a `baselinenowcast_df` object.
 - Add converters between `reporting_triangle` and ChainLadder triangle
   formats via
   [`as_ChainLadder_triangle()`](https://baselinenowcast.epinowcast.org/reference/as_ChainLadder_triangle.md)

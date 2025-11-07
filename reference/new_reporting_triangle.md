@@ -55,7 +55,7 @@ new_reporting_triangle(
 ## Value
 
 An object of class
-[`reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+[reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
 
 ## See also
 

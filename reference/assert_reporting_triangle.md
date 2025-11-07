@@ -13,7 +13,7 @@ assert_reporting_triangle(data)
 - data:
 
   A
-  [`reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+  [reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
   object to check for validity.
 
 ## See also

@@ -7,20 +7,46 @@
   };
 </script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Create a dataframe of nowcast results from a single reporting triangle — baselinenowcast.reporting_triangle"><meta name="description" content="This function ingests a single
 reporting_triangle object and generates a nowcast in the
-form of a baselinenowcast_df object. This function will by
-default estimate uncertainty using past retrospective nowcast errors and
-generate probabilistic nowcasts, which are samples from the predictive
-distribution of the estimated final case count at each reference date.
+form of a baselinenowcast_df object.
+This function implements a nowcasting workflow for a single reporting
+triangle:
+estimate_delay() - Estimate a reporting delay PMF
+apply_delay() - Generate a point nowcast using the delay PMF
+estimate_and_apply_uncertainty() - Generate a probabilistic
+nowcast from a point nowcast and reporting triangle
+
+
+This function will by default estimate the delay from the
+reporting_triangle and estimate uncertainty using past
+retrospective nowcast errors on that reporting_triangle to
+generate probabilistic nowcasts, which
+are samples from the predictive distribution of the estimated final case
+count at each reference date.
+Alternatives include passing in a separate delay_pmf or
+uncertainty_params.
 This method specifically computes a nowcast for a single reporting
 triangle. See documentation for the arguments of this function which
 can be used to set the model specifications (things like number of
 reference times for delay and uncertainty estimation, the observation
 model, etc.)."><meta property="og:description" content="This function ingests a single
 reporting_triangle object and generates a nowcast in the
-form of a baselinenowcast_df object. This function will by
-default estimate uncertainty using past retrospective nowcast errors and
-generate probabilistic nowcasts, which are samples from the predictive
-distribution of the estimated final case count at each reference date.
+form of a baselinenowcast_df object.
+This function implements a nowcasting workflow for a single reporting
+triangle:
+estimate_delay() - Estimate a reporting delay PMF
+apply_delay() - Generate a point nowcast using the delay PMF
+estimate_and_apply_uncertainty() - Generate a probabilistic
+nowcast from a point nowcast and reporting triangle
+
+
+This function will by default estimate the delay from the
+reporting_triangle and estimate uncertainty using past
+retrospective nowcast errors on that reporting_triangle to
+generate probabilistic nowcasts, which
+are samples from the predictive distribution of the estimated final case
+count at each reference date.
+Alternatives include passing in a separate delay_pmf or
+uncertainty_params.
 This method specifically computes a nowcast for a single reporting
 triangle. See documentation for the arguments of this function which
 can be used to set the model specifications (things like number of
@@ -74,11 +100,21 @@ model, etc.)."><meta property="og:image" content="https://baselinenowcast.epinow
 
     <div class="ref-description section level2">
     <p>This function ingests a single
-<code><a href="reporting_triangle-class.html">reporting_triangle</a></code> object and generates a nowcast in the
-form of a <code><a href="baselinenowcast_df-class.html">baselinenowcast_df</a></code> object. This function will by
-default estimate uncertainty using past retrospective nowcast errors and
-generate probabilistic nowcasts, which are samples from the predictive
-distribution of the estimated final case count at each reference date.
+<a href="reporting_triangle-class.html">reporting_triangle</a> object and generates a nowcast in the
+form of a <a href="baselinenowcast_df-class.html">baselinenowcast_df</a> object.</p>
+<p>This function implements a nowcasting workflow for a single reporting
+triangle:</p><ol><li><p><code><a href="estimate_delay.html">estimate_delay()</a></code> - Estimate a reporting delay PMF</p></li>
+<li><p><code><a href="apply_delay.html">apply_delay()</a></code> - Generate a point nowcast using the delay PMF</p></li>
+<li><p><code><a href="estimate_and_apply_uncertainty.html">estimate_and_apply_uncertainty()</a></code> - Generate a probabilistic
+nowcast from a point nowcast and reporting triangle</p></li>
+</ol><p>This function will by default estimate the delay from the
+<a href="reporting_triangle-class.html">reporting_triangle</a> and estimate uncertainty using past
+retrospective nowcast errors on that <a href="reporting_triangle-class.html">reporting_triangle</a> to
+generate probabilistic nowcasts, which
+are samples from the predictive distribution of the estimated final case
+count at each reference date.
+Alternatives include passing in a separate <code>delay_pmf</code> or
+<code>uncertainty_params</code>.
 This method specifically computes a nowcast for a single reporting
 triangle. See documentation for the arguments of this function which
 can be used to set the model specifications (things like number of
@@ -108,7 +144,7 @@ model, etc.).</p>
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p><code><a href="reporting_triangle-class.html">reporting_triangle</a></code> class object to be nowcasted.
+<dd><p><a href="reporting_triangle-class.html">reporting_triangle</a> class object to be nowcasted.
 The <code>data$reporting_triangle_matrix</code> must contain missing observations
 in the form of NAs in order to generate an output from this function.</p></dd>
 
@@ -160,21 +196,21 @@ negative binomial for each element of the vector.</p></dd>
 <dd><p>Vector of delays assumed to be indexed starting at the
 first delay column in <code>data$reporting_triangle_matrix</code>. Default is NULL,
 which will estimate the delay from the reporting triangle matrix in <code>data</code>,
-See <code><a href="estimate_delay.html">estimate_delay</a></code> for more details.</p></dd>
+See <code><a href="estimate_delay.html">estimate_delay()</a></code> for more details.</p></dd>
 
 
 <dt id="arg-uncertainty-params">uncertainty_params<a class="anchor" aria-label="anchor" href="#arg-uncertainty-params"></a></dt>
 <dd><p>Vector of uncertainty parameters ordered from
 horizon 1 to the maximum horizon. Default is <code>NULL</code>, which will
 result in computing the uncertainty parameters from the reporting
-triangle matrix <code>data</code>. See <code><a href="estimate_uncertainty.html">estimate_uncertainty</a></code> for more
+triangle matrix <code>data</code>. See <code><a href="estimate_uncertainty.html">estimate_uncertainty()</a></code> for more
 details.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments passed to
-<code><a href="estimate_uncertainty.html">estimate_uncertainty</a></code>
-and <code><a href="sample_nowcast.html">sample_nowcast</a></code>.</p></dd>
+<code><a href="estimate_uncertainty.html">estimate_uncertainty()</a></code>
+and <code><a href="sample_nowcast.html">sample_nowcast()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -186,6 +222,7 @@ and <code><a href="sample_nowcast.html">sample_nowcast</a></code>.</p></dd>
     <div class="dont-index"><p>Main nowcasting interface functions
 <code><a href="assert_baselinenowcast_df.html">assert_baselinenowcast_df()</a></code>,
 <code><a href="baselinenowcast.html">baselinenowcast()</a></code>,
+<code><a href="baselinenowcast.data.frame.html">baselinenowcast.data.frame()</a></code>,
 <code><a href="baselinenowcast_df-class.html">baselinenowcast_df-class</a></code>,
 <code><a href="new_baselinenowcast_df.html">new_baselinenowcast_df()</a></code></p></div>
     </div>

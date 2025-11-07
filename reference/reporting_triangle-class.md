@@ -21,7 +21,7 @@ A `reporting_triangle` is a list with the following components:
 - structure:
 
   Vector indicating the "structure" of the reporting triangle, see
-  [`construct_triangle`](https://baselinenowcast.epinowcast.org/reference/construct_triangle.md)
+  [`construct_triangle()`](https://baselinenowcast.epinowcast.org/reference/construct_triangle.md)
   for more details.
 
 - max_delay:
@@ -38,9 +38,9 @@ A `reporting_triangle` is a list with the following components:
   Character string indicating the strata.
 
 See the corresponding
-[`as_reporting_triangle.matrix`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.matrix.md)
+[`as_reporting_triangle.matrix()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.matrix.md)
 and
-[`as_reporting_triangle.data.frame`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.data.frame.md)
+[`as_reporting_triangle.data.frame()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.data.frame.md)
 functions for more details on the required input formats to generate the
 object.
 

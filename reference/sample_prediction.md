@@ -98,9 +98,9 @@ nowcast_pred_draw
 #>      [,1]
 #> [1,]    0
 #> [2,]    0
-#> [3,]   15
-#> [4,]   30
-#> [5,]   22
+#> [3,]   13
+#> [4,]   57
+#> [5,]   88
 
 # Get draws on the rolling sum
 if (requireNamespace("zoo", quietly = TRUE)) {
@@ -114,7 +114,7 @@ if (requireNamespace("zoo", quietly = TRUE)) {
 }
 #>      [,1]
 #> [1,]    0
-#> [2,]   29
-#> [3,]  109
-#> [4,]   96
+#> [2,]   36
+#> [3,]   69
+#> [4,]   19
 ```

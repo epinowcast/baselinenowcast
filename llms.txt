@@ -222,6 +222,10 @@ results.
 - [`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md)
   : Generate a nowcast
 
+- [`baselinenowcast(`*`<data.frame>`*`)`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.data.frame.md)
+  : Create a dataframe of nowcast results from a dataframe of cases
+  indexed by reference date and report date
+
 - [`baselinenowcast(`*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.reporting_triangle.md)
   : Create a dataframe of nowcast results from a single reporting
   triangle
@@ -327,6 +331,9 @@ estimates with uncertainty quantification from observation error models.
 
 Example datasets included with the package.
 
+- [`germany_covid19_hosp`](https://baselinenowcast.epinowcast.org/reference/germany_covid19_hosp.md)
+  : Incident COVID-19 hospitalisations indexed by the date of positive
+  test (reference date) and report date from Germany in 2021 and 2022.
 - [`syn_nssp_df`](https://baselinenowcast.epinowcast.org/reference/syn_nssp_df.md)
   : A synthetic dataset containing the number of incident cases indexed
   by reference date and report date. While data of this form could be

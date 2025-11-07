@@ -57,8 +57,8 @@ estimate_uncertainty_retro(
 
 - n_retrospective_nowcasts:
 
-  Integer indicating the number of retrospective nowcasts to use for
-  uncertainty estimation.
+  Integer indicating the number of retrospective nowcast times to use
+  for uncertainty estimation.
 
 - max_delay:
 

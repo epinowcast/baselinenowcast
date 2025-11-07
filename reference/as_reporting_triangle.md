@@ -46,7 +46,7 @@ as_reporting_triangle(
 ## Value
 
 A
-[`reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+[reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
 object
 
 ## See also

@@ -19,6 +19,7 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/assert_baselinenowcast_df.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/assert_reporting_triangle.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/baselinenowcast.data.frame.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/baselinenowcast.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/baselinenowcast.reporting_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/baselinenowcast_df-class.html</loc></url>
@@ -37,12 +38,15 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-check_na_bottom_right.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-check_obs_and_pred.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-check_to_filter_to_max_delay.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-combine_triangle_dfs.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-extract_predictions.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-filter_to_recent_horizons.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-handle_neg_vals.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-handle_target_exceeds_avail.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-perform_allocation_process.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-rename_cols.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-safelydoesit.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-split_df_by_cols.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_delay.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_delay_and_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_inputs_allocation.html</loc></url>
@@ -51,6 +55,7 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_multiple_inputs.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_rep_tri_args.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_rep_tri_df.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_strata_cols.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_uncertainty.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delay.html</loc></url>
@@ -62,6 +67,7 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/fill_triangles.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/fit_by_horizon.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/fit_nb.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/germany_covid19_hosp.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/index.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/new_baselinenowcast_df.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/new_reporting_triangle.html</loc></url>

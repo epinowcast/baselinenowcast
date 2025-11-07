@@ -1,17 +1,36 @@
 # Create a dataframe of nowcast results from a single reporting triangle
 
 This function ingests a single
-[`reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+[reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
 object and generates a nowcast in the form of a
-[`baselinenowcast_df`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast_df-class.md)
-object. This function will by default estimate uncertainty using past
-retrospective nowcast errors and generate probabilistic nowcasts, which
-are samples from the predictive distribution of the estimated final case
-count at each reference date. This method specifically computes a
-nowcast for a single reporting triangle. See documentation for the
-arguments of this function which can be used to set the model
-specifications (things like number of reference times for delay and
-uncertainty estimation, the observation model, etc.).
+[baselinenowcast_df](https://baselinenowcast.epinowcast.org/reference/baselinenowcast_df-class.md)
+object.
+
+This function implements a nowcasting workflow for a single reporting
+triangle:
+
+1.  [`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md) -
+    Estimate a reporting delay PMF
+
+2.  [`apply_delay()`](https://baselinenowcast.epinowcast.org/reference/apply_delay.md) -
+    Generate a point nowcast using the delay PMF
+
+3.  [`estimate_and_apply_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_uncertainty.md) -
+    Generate a probabilistic nowcast from a point nowcast and reporting
+    triangle
+
+This function will by default estimate the delay from the
+[reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+and estimate uncertainty using past retrospective nowcast errors on that
+[reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+to generate probabilistic nowcasts, which are samples from the
+predictive distribution of the estimated final case count at each
+reference date. Alternatives include passing in a separate `delay_pmf`
+or `uncertainty_params`. This method specifically computes a nowcast for
+a single reporting triangle. See documentation for the arguments of this
+function which can be used to set the model specifications (things like
+number of reference times for delay and uncertainty estimation, the
+observation model, etc.).
 
 ## Usage
 
@@ -35,7 +54,7 @@ baselinenowcast(
 
 - data:
 
-  [`reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+  [reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
   class object to be nowcasted. The `data$reporting_triangle_matrix`
   must contain missing observations in the form of NAs in order to
   generate an output from this function.
@@ -88,7 +107,7 @@ baselinenowcast(
   column in `data$reporting_triangle_matrix`. Default is NULL, which
   will estimate the delay from the reporting triangle matrix in `data`,
   See
-  [`estimate_delay`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md)
+  [`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md)
   for more details.
 
 - uncertainty_params:
@@ -96,15 +115,15 @@ baselinenowcast(
   Vector of uncertainty parameters ordered from horizon 1 to the maximum
   horizon. Default is `NULL`, which will result in computing the
   uncertainty parameters from the reporting triangle matrix `data`. See
-  [`estimate_uncertainty`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md)
+  [`estimate_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md)
   for more details.
 
 - ...:
 
   Additional arguments passed to
-  [`estimate_uncertainty`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md)
+  [`estimate_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md)
   and
-  [`sample_nowcast`](https://baselinenowcast.epinowcast.org/reference/sample_nowcast.md).
+  [`sample_nowcast()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcast.md).
 
 ## Value
 
@@ -116,6 +135,7 @@ Data.frame of class
 Main nowcasting interface functions
 [`assert_baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/assert_baselinenowcast_df.md),
 [`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md),
+[`baselinenowcast.data.frame()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.data.frame.md),
 [`baselinenowcast_df-class`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast_df-class.md),
 [`new_baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/new_baselinenowcast_df.md)
 

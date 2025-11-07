@@ -20,7 +20,7 @@ A data.frame with 3795 rows and 3 columns.
 
 - reference_date:
 
-  Date of the primary event occurred (e.g. date of hospital admissions,
+  Date the primary event occurred (e.g. date of hospital admissions,
   specimen collection date, symptom onset), formatted in ISO8601
   standards as YYYY-MM-DD.
 
@@ -46,4 +46,5 @@ long format).
 ## See also
 
 Example datasets
+[`germany_covid19_hosp`](https://baselinenowcast.epinowcast.org/reference/germany_covid19_hosp.md),
 [`syn_nssp_line_list`](https://baselinenowcast.epinowcast.org/reference/syn_nssp_line_list.md)

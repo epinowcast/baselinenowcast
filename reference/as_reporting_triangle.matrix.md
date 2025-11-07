@@ -3,10 +3,10 @@
 This method takes a matrix in the format of a reporting triangle, with
 rows as reference dates and columns as delays and elements as incident
 case counts and creates a
-[`reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+[reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
 object. See other
-[`as_reporting_triangle.data.frame`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.data.frame.md)for
-other data input options.
+[`as_reporting_triangle.data.frame()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.data.frame.md)
+for other data input options.
 
 ## Usage
 

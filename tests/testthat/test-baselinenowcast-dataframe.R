@@ -1,85 +1,74 @@
-# Keep only selected age groups
-covid_data <- germany_covid19_hosp[germany_covid19_hosp$report_date <= max(germany_covid19_hosp$reference_date) & # nolint
-  germany_covid19_hosp$age_group %in% c("00+", "00-04", "60-79", "80+"), ] # nolint
+# Test-specific constants
+covid_data <- germany_covid19_hosp[
+  germany_covid19_hosp$report_date <=
+    max(germany_covid19_hosp$reference_date) &
+    germany_covid19_hosp$age_group %in% c("00+", "00-04", "60-79", "80+"),
+]
 
-# Add weekday column
-covid_data$weekday_ref_date <- lubridate::wday(covid_data$reference_date,
+covid_data$weekday_ref_date <- lubridate::wday(
+  covid_data$reference_date,
   label = TRUE
 )
 
-# Make one with only all age groups
 covid_data_single_strata_wday <- covid_data[covid_data$age_group == "00+", ]
 covid_data_age_groups_wday <- covid_data[covid_data$age_group != "00+", ]
-expected_cols <- c("pred_count", "draw", "reference_date", "output_type")
 
+expected_cols <- c("pred_count", "draw", "reference_date", "output_type")
 expected_cols_nu <- c(
   "pred_count", "draw", "reference_date", "output_type",
   "location", "age_group"
 )
-test_that("baselinenowcast.data.frame returns the expected structure with and without strata sharing", { # nolint
-  nowcasts_df <- baselinenowcast(
+
+test_that(paste0(
+  "baselinenowcast.data.frame returns the expected structure ",
+  "with and without strata sharing"
+), {
+  nowcasts_df <- baselinenowcast_test(
     data = covid_data,
-    max_delay = 40,
-    draws = 100,
     strata_cols = c("age_group", "location")
   )
 
-  expect_s3_class(nowcasts_df, "data.frame")
-  expect_s3_class(nowcasts_df, "baselinenowcast_df")
-  expect_true(all(expected_cols_nu %in% colnames(nowcasts_df)))
-  expect_identical(nowcasts_df$output_type[1], "samples")
+  expect_baselinenowcast_structure(nowcasts_df, expected_cols_nu, "samples")
 
   # Check that the outputs are different for different age groups
-  expect_failure(
-    expect_equal(
-      mean(nowcasts_df$pred_count[nowcasts_df$age_group == "00+"]),
-      mean(nowcasts_df$pred_count[nowcasts_df$age_group == "60-79"]),
-      tol = 0.01
-    )
+  expect_estimates_differ(
+    mean(nowcasts_df$pred_count[nowcasts_df$age_group == "00+"]),
+    mean(nowcasts_df$pred_count[nowcasts_df$age_group == "60-79"])
   )
 
   # Use strata sharing
   # First need to remove all age groups otherwise double count
-  covid_data_age_groups <- covid_data[covid_data$age_group != "00+", ] # nolint
-  nowcasts_df2 <- baselinenowcast(
+  covid_data_age_groups <- covid_data[covid_data$age_group != "00+", ]
+  nowcasts_df2 <- baselinenowcast_test(
     data = covid_data_age_groups,
-    max_delay = 40,
-    draws = 100,
     strata_cols = c("age_group", "location"),
     strata_sharing = c("delay", "uncertainty")
   )
-  expect_s3_class(nowcasts_df2, "data.frame")
-  expect_s3_class(nowcasts_df2, "baselinenowcast_df")
-  expect_true(all(expected_cols_nu %in% colnames(nowcasts_df2)))
-  expect_identical(nowcasts_df2$output_type[1], "samples")
+  expect_baselinenowcast_structure(nowcasts_df2, expected_cols_nu, "samples")
 
-  # Check that the outputs are different between with and without strata sharing
-  expect_failure(
-    expect_equal(
-      mean(nowcasts_df$pred_count[nowcasts_df$age_group == "60-79" &
-        nowcasts_df$reference_date == max(nowcasts_df$reference_date)]),
-      mean(nowcasts_df2$pred_count[nowcasts_df2$age_group == "60-79" &
-        nowcasts_df2$reference_date == max(nowcasts_df$reference_date)]),
-      tol = 0.01
-    )
+  # Check that the outputs are different between with and without
+  # strata sharing
+  expect_estimates_differ(
+    mean(nowcasts_df$pred_count[nowcasts_df$age_group == "60-79" &
+      nowcasts_df$reference_date == max(nowcasts_df$reference_date)]),
+    mean(nowcasts_df2$pred_count[nowcasts_df2$age_group == "60-79" &
+      nowcasts_df2$reference_date == max(nowcasts_df2$reference_date)])
   )
 
   # Check that preprocess can be passed as NULL
-  nowcasts_df3 <- baselinenowcast(
+  nowcasts_df3 <- baselinenowcast_test(
     data = covid_data,
-    max_delay = 40,
-    draws = 100,
     strata_cols = c("age_group", "location"),
     preprocess = NULL
   )
 
-  expect_s3_class(nowcasts_df3, "data.frame")
-  expect_s3_class(nowcasts_df3, "baselinenowcast_df")
-  expect_true(all(expected_cols_nu %in% colnames(nowcasts_df3)))
-  expect_identical(nowcasts_df3$output_type[1], "samples")
+  expect_baselinenowcast_structure(nowcasts_df3, expected_cols_nu, "samples")
 })
 
-test_that("baselinenowcast returns expected structure without errors for all different nowcast units", { # nolint
+test_that(paste0(
+  "baselinenowcast returns expected structure without errors for all ",
+  "different nowcast units"
+), {
   skip_if_not_installed("dplyr")
   library(dplyr)
   single_tri_data <- filter(
@@ -88,235 +77,202 @@ test_that("baselinenowcast returns expected structure without errors for all dif
   ) |>
     select(reference_date, report_date, count)
 
-  single_nowcast_df <- baselinenowcast(single_tri_data,
-    draws = 100,
-    max_delay = 40
+  single_nowcast_df <- baselinenowcast_test(single_tri_data)
+  expect_baselinenowcast_structure(
+    single_nowcast_df,
+    expected_cols,
+    "samples"
   )
-  expect_s3_class(single_nowcast_df, "data.frame")
-  expect_s3_class(single_nowcast_df, "baselinenowcast_df")
-  expect_true(all(expected_cols %in% colnames(single_nowcast_df)))
 
   single_tri_w_metadata <- filter(covid_data, age_group == "00+")
 
-  single_nowcast_df_w_metadata <- baselinenowcast(
-    data = single_tri_w_metadata,
-    draws = 100,
-    max_delay = 40
+  single_nowcast_df_w_metadata <- baselinenowcast_test(
+    data = single_tri_w_metadata
   )
-  expect_s3_class(single_nowcast_df_w_metadata, "data.frame")
-  expect_s3_class(single_nowcast_df_w_metadata, "baselinenowcast_df")
-  expect_true(all(expected_cols %in% colnames(single_nowcast_df_w_metadata)))
+  expect_baselinenowcast_structure(
+    single_nowcast_df_w_metadata,
+    expected_cols,
+    "samples"
+  )
 
-  test_df <- baselinenowcast(
+  test_df <- baselinenowcast_test(
     data = covid_data,
-    draws = 100,
-    max_delay = 40,
     strata_cols = c("age_group", "location")
   )
-  expect_s3_class(test_df, "data.frame")
-  expect_s3_class(test_df, "baselinenowcast_df")
-  expect_true(all(expected_cols_nu %in% colnames(test_df)))
+  expect_baselinenowcast_structure(test_df, expected_cols_nu, "samples")
   expect_true(all(unique(test_df$age_group) %in%
     c("00+", "60-79", "00-04", "80+")))
 })
 
-test_that("baselinenowcast can take explicitly any of the uncertainty args", {
-  single_nowcast_df <- baselinenowcast(
+test_that(paste0(
+  "baselinenowcast can take explicitly any of the uncertainty args"
+), {
+  single_nowcast_df <- baselinenowcast_test(
     covid_data_single_strata_wday,
-    draws = 100,
-    max_delay = 40,
     uncertainty_model = fit_by_horizon
   )
-  expect_s3_class(single_nowcast_df, "data.frame")
-  expect_s3_class(single_nowcast_df, "baselinenowcast_df")
-  expect_true(all(expected_cols %in% colnames(single_nowcast_df)))
-  single_nowcast_df2 <- baselinenowcast(
+  expect_baselinenowcast_structure(
+    single_nowcast_df,
+    expected_cols,
+    "samples"
+  )
+  single_nowcast_df2 <- baselinenowcast_test(
     covid_data_single_strata_wday,
-    draws = 100,
-    max_delay = 40,
     uncertainty_sampler = sample_nb
   )
-  expect_s3_class(single_nowcast_df2, "data.frame")
-  expect_s3_class(single_nowcast_df2, "baselinenowcast_df")
-  expect_true(all(expected_cols %in% colnames(single_nowcast_df2)))
-  single_nowcast_df3 <- baselinenowcast(
+  expect_baselinenowcast_structure(
+    single_nowcast_df2,
+    expected_cols,
+    "samples"
+  )
+  single_nowcast_df3 <- baselinenowcast_test(
     covid_data_single_strata_wday,
-    draws = 100,
-    max_delay = 40,
     ref_time_aggregator = identity
   )
-  expect_s3_class(single_nowcast_df3, "data.frame")
-  expect_s3_class(single_nowcast_df3, "baselinenowcast_df")
-  expect_true(all(expected_cols %in% colnames(single_nowcast_df3)))
-  single_nowcast_df4 <- baselinenowcast(
+  expect_baselinenowcast_structure(
+    single_nowcast_df3,
+    expected_cols,
+    "samples"
+  )
+  single_nowcast_df4 <- baselinenowcast_test(
     covid_data_single_strata_wday,
-    draws = 100,
-    max_delay = 40,
     delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
   )
-  expect_s3_class(single_nowcast_df4, "data.frame")
-  expect_s3_class(single_nowcast_df4, "baselinenowcast_df")
-  expect_true(all(expected_cols %in% colnames(single_nowcast_df4)))
+  expect_baselinenowcast_structure(
+    single_nowcast_df4,
+    expected_cols,
+    "samples"
+  )
 })
 
-test_that("baselinenowcast errors if multiple strata are passed in and this is not specified by nowcast unit", { # nolint
-  expect_error(
-    baselinenowcast(
-      data = covid_data,
-      draws = 100,
-      max_delay = 40
-    ),
-    regexp = "Data contains duplicate `reference_date` and `report_date`"
-  ) # nolint
+test_that(paste0(
+  "baselinenowcast errors if multiple strata are passed in and this ",
+  "is not specified by nowcast unit"
+), {
+  expect_error_duplicate_dates(
+    baselinenowcast_test(data = covid_data)
+  )
 })
 
-test_that("baselinenowcast errors if strata_cols is specified incorrectly", {
-  exp_err_msg <- "`strata_cols` cannot contain any of the required columns"
-  expect_error(
-    baselinenowcast(
+test_that(paste0(
+  "baselinenowcast errors if strata_cols is specified incorrectly"
+), {
+  expect_error_invalid_strata_required(
+    baselinenowcast_test(
       data = covid_data,
-      max_delay = 40,
-      draws = 100,
       strata_cols = c("age_group", "location", "reference_date")
-    ),
-    regexp = exp_err_msg
+    )
   )
-  expect_error(
-    baselinenowcast(
+  expect_error_invalid_strata_required(
+    baselinenowcast_test(
       data = covid_data,
-      max_delay = 40,
-      draws = 100,
       strata_cols = c("age_group", "location", "reference_date")
-    ),
-    regexp = exp_err_msg
+    )
   )
-  expect_error(
-    baselinenowcast(
+  expect_error_invalid_strata_missing(
+    baselinenowcast_test(
       data = covid_data,
-      max_delay = 40,
-      draws = 100,
       strata_cols = c("region", "age_group")
-    ),
-    regexp = "`strata_cols`, if specified, must be a column in `data`"
+    )
   )
 })
 
-test_that("baselinenowcast errors if column names are incorrect", { # nolint
+test_that(paste0(
+  "baselinenowcast errors if column names are incorrect"
+), {
   skip_if_not_installed("dplyr")
   covid_data_renamed <- rename(covid_data,
     ref_date = reference_date
   )
-  expect_error(
-    baselinenowcast(
+  expect_error_missing_names(
+    baselinenowcast_test(
       data = covid_data_renamed,
-      max_delay = 40,
-      draws = 100,
       strata_cols = c("age_group", "location")
-    ),
-    regexp = "Names must include the elements"
+    )
   )
   covid_data_renamed2 <- rename(covid_data,
     rep_date = report_date
   )
-  expect_error(
-    baselinenowcast(
+  expect_error_missing_names(
+    baselinenowcast_test(
       data = covid_data_renamed2,
-      max_delay = 40,
-      draws = 100,
       strata_cols = c("age_group", "location")
-    ),
-    regexp = "Names must include the elements"
+    )
   )
 
   covid_data_renamed3 <- rename(covid_data,
     cases = count
   )
-  expect_error(
-    baselinenowcast(
+  expect_error_missing_names(
+    baselinenowcast_test(
       data = covid_data_renamed3,
-      max_delay = 40,
-      draws = 100,
       strata_cols = c("age_group", "location")
-    ),
-    regexp = "Names must include the elements"
+    )
   )
 })
 
-test_that("baselinenowcast errors if date columns are not of date class", {
+test_that(paste0(
+  "baselinenowcast errors if date columns are not of date class"
+), {
   covid_data1 <- covid_data
   covid_data1$reference_date <- as.character(covid_data1$reference_date)
-  expect_error(
-    baselinenowcast(
+  expect_error_wrong_date_class(
+    baselinenowcast_test(
       data = covid_data1,
-      max_delay = 40,
-      draws = 100,
       strata_cols = c("age_group", "location")
-    ),
-    regexp = "Must be of class 'Date', not 'character'"
+    )
   )
 
   covid_data2 <- covid_data
   covid_data2$report_date <- as.character(covid_data2$report_date)
-  expect_error(
-    baselinenowcast(
+  expect_error_wrong_date_class(
+    baselinenowcast_test(
       data = covid_data2,
-      max_delay = 40,
-      draws = 100,
       strata_cols = c("age_group", "location")
-    ),
-    regexp = "Must be of class 'Date', not 'character'"
+    )
   )
 })
 
-test_that("baselinenowcast errors if strata sharing args are invalid", {
+test_that(paste0(
+  "baselinenowcast errors if strata sharing args are invalid"
+), {
   expect_error(
-    baselinenowcast(
+    baselinenowcast_test(
       data = covid_data,
-      max_delay = 40,
-      draws = 100,
       strata_cols = c("age_group", "location"),
       strata_sharing = "all"
     ),
     regexp = "Assertion on 'strata_sharing' failed:"
   )
-  expect_error(
-    baselinenowcast(
+  expect_error_strata_sharing_conflict(
+    baselinenowcast_test(
       data = covid_data,
-      max_delay = 40,
-      draws = 100,
       strata_cols = c("age_group", "location"),
       strata_sharing = c("none", "delay")
-    ),
-    regexp = "`strata_sharing` cannot be both 'none' and 'delay'/'uncertainty'"
+    )
   )
-  expect_error(
-    baselinenowcast(
+  expect_error_strata_sharing_conflict(
+    baselinenowcast_test(
       data = covid_data,
-      max_delay = 40,
-      draws = 100,
       strata_cols = c("age_group", "location"),
       strata_sharing = c("none", "uncertainty")
-    ),
-    regexp = "`strata_sharing` cannot be both 'none' and 'delay'/'uncertainty'"
+    )
   )
 })
 
-test_that("baselinenowcast results are equivalent if first creating a reporting triangle and then running", { # nolint
+test_that(paste0(
+  "baselinenowcast results are equivalent if first creating a ",
+  "reporting triangle and then running"
+), {
   skip_if_not_installed("dplyr")
   set.seed(123)
   rep_tri <- as_reporting_triangle(covid_data_single_strata_wday,
     max_delay = 40
   )
-  nowcast_df1 <- baselinenowcast(rep_tri,
-    draws = 100
-  )
+  nowcast_df1 <- baselinenowcast(rep_tri, draws = 100)
 
   set.seed(123)
-  # Vs using .datamframe method
-  nowcast_df2 <- baselinenowcast(covid_data_single_strata_wday,
-    max_delay = 40,
-    draws = 100
-  )
+  nowcast_df2 <- baselinenowcast_test(covid_data_single_strata_wday)
   expect_equal(nowcast_df1$pred_count, nowcast_df2$pred_count, tol = 0.1)
 })
 
@@ -325,13 +281,14 @@ test_that("baselinenowcast works with weekday strata", {
   skip_if_not_installed("lubridate")
   set.seed(123)
   nowcast_df2 <- expect_message(
-    baselinenowcast(covid_data_single_strata_wday,
-      max_delay = 40,
-      draws = 100,
+    baselinenowcast_test(
+      covid_data_single_strata_wday,
       scale_factor = 4 / 7,
       strata_cols = "weekday_ref_date"
     ),
-    regexp = "Data does not contain case counts for all possible reference dates" # nolint
+    regexp = paste0(
+      "Data does not contain case counts for all possible reference dates"
+    )
   )
   nowcast_df_Tue1 <- nowcast_df2 |>
     dplyr::filter(weekday_ref_date == "Tue") |>
@@ -343,14 +300,14 @@ test_that("baselinenowcast works with weekday strata", {
     weekday_ref_date == "Tue"
   )
   nowcast_df_Tue2 <- expect_message(
-    baselinenowcast(
+    baselinenowcast_test(
       covid_data_Tue,
-      max_delay = 40,
-      draws = 100,
       scale_factor = 4 / 7,
       strata_cols = "weekday_ref_date"
     ),
-    regexp = "Data does not contain case counts for all possible reference dates" # nolint
+    regexp = paste0(
+      "Data does not contain case counts for all possible reference dates"
+    )
   ) |>
     dplyr::arrange(desc(reference_date), draw)
 
@@ -360,7 +317,10 @@ test_that("baselinenowcast works with weekday strata", {
   )
 })
 
-test_that("baselinenowcast returns expected structure even when dates not aligned between strata", { # nolint
+test_that(paste0(
+  "baselinenowcast returns expected structure even when dates not ",
+  "aligned between strata"
+), {
   skip_if_not_installed("dplyr")
   skip_if_not_installed("lubridate")
   set.seed(123)
@@ -368,15 +328,12 @@ test_that("baselinenowcast returns expected structure even when dates not aligne
     covid_data_age_groups_wday,
     !(report_date >= "2021-08-08" & age_group == "60-79")
   )
-  nowcast_df <- expect_warning(
-    baselinenowcast(
+  nowcast_df <- expect_warning_partial_overlap(
+    baselinenowcast_test(
       covid_data_incomplete,
-      max_delay = 40,
-      draws = 100,
       strata_cols = c("age_group", "location"),
       strata_sharing = c("delay", "uncertainty")
-    ),
-    regexp = "Not all reference dates and report dates combinations are available for all" # nolint
+    )
   )
   expect_s3_class(nowcast_df, "data.frame")
   expect_s3_class(nowcast_df, "baselinenowcast_df")
@@ -386,10 +343,8 @@ test_that("baselinenowcast returns expected structure even when dates not aligne
     dplyr::pull()
   expect_identical(max_ref_date_60_79, lubridate::ymd("2021-08-07"))
 
-  nowcast_df2 <- baselinenowcast(
+  nowcast_df2 <- baselinenowcast_test(
     covid_data_age_groups_wday,
-    max_delay = 40,
-    draws = 100,
     strata_cols = c("age_group", "location"),
     strata_sharing = c("delay", "uncertainty")
   )
@@ -400,52 +355,53 @@ test_that("baselinenowcast returns expected structure even when dates not aligne
   expect_identical(max_ref_date_60_792, lubridate::ymd("2021-12-01"))
 })
 
-test_that("baselinenowcast errors if strata_sharing is not none and weekdays are used as strata", { # nolint
+test_that(paste0(
+  "baselinenowcast errors if strata_sharing is not none and ",
+  "weekdays are used as strata"
+), {
   skip_if_not_installed("dplyr")
-  expect_error(
+  expect_error_no_overlap(
     expect_warning(
-      baselinenowcast(
+      baselinenowcast_test(
         covid_data_single_strata_wday,
-        max_delay = 40,
-        draws = 100,
         strata_cols = "weekday_ref_date",
         strata_sharing = c("delay", "uncertainty")
       )
-    ),
-    regexp = "There is no overlapping set of reference and report dates across all" # nolint
+    )
   )
 })
 
-test_that("baselinenowcast produces different results when stratifying by weekday vs the default estimate across weekdays", { # nolint
+test_that(paste0(
+  "baselinenowcast produces different results when stratifying by ",
+  "weekday vs the default estimate across weekdays"
+), {
   skip_if_not_installed("dplyr")
 
   set.seed(123)
-  wday_stratified <- baselinenowcast(covid_data_single_strata_wday,
-    max_delay = 40,
-    draws = 100,
+  wday_stratified <- baselinenowcast_test(
+    covid_data_single_strata_wday,
     scale_factor = 3 / 7,
     strata_cols = "weekday_ref_date"
   ) |>
     dplyr::mutate(type = "wday stratified")
 
-  final_day_mean_est_wday <- wday_stratified |>
-    dplyr::filter(reference_date == max(reference_date)) |>
-    dplyr::group_by(reference_date) |>
-    dplyr::summarise(mean_est = mean(pred_count)) |>
+  final_day_mean_est_wday <- summarise_final_day_mean(
+    wday_stratified,
+    "reference_date"
+  ) |>
     dplyr::pull(mean_est)
 
   set.seed(123)
-  no_wday <- baselinenowcast(covid_data_single_strata_wday,
-    max_delay = 40,
-    draws = 100,
+  no_wday <- baselinenowcast_test(
+    covid_data_single_strata_wday,
     scale_factor = 3
   ) |>
     dplyr::mutate(type = "no wday strata")
 
-  final_day_mean_est_no_wday <- no_wday |>
-    dplyr::filter(reference_date == max(reference_date)) |>
-    dplyr::group_by(reference_date) |>
-    dplyr::summarise(mean_est = mean(pred_count)) |>
+  final_day_mean_est_no_wday <- summarise_final_day_mean(
+    no_wday,
+    "reference_date"
+  ) |>
     dplyr::pull(mean_est)
 
   covid_data_summed <- covid_data_single_strata_wday |>
@@ -458,10 +414,9 @@ test_that("baselinenowcast produces different results when stratifying by weekda
     dplyr::pull(cases)
 
   # Check the two final estimates are different
-  expect_failure(expect_equal(
-    final_day_mean_est_wday, final_day_mean_est_no_wday,
-    tol = 0.01
-  ))
+  expect_estimates_differ(
+    final_day_mean_est_wday, final_day_mean_est_no_wday
+  )
 
   # Check that each of them are large than the initial reports
   expect_gt(final_day_mean_est_wday, covid_data_summed_final)
@@ -495,62 +450,50 @@ test_that("baselinenowcast produces different results when stratifying by weekda
   }
 })
 
-test_that("baselinenowcast produces different results when sharing across age groups for both delay and uncertainty and just each one independently", { # nolint
+test_that(paste0(
+  "baselinenowcast produces different results when sharing across ",
+  "age groups for both delay and uncertainty and just each one ",
+  "independently"
+), {
   skip_if_not_installed("dplyr")
 
-  multiple_ags_fp <- baselinenowcast(
+  multiple_ags_fp <- baselinenowcast_test(
     covid_data_age_groups_wday,
-    max_delay = 40,
-    draws = 100,
     strata_cols = "age_group"
   ) |> dplyr::mutate(type = "no share")
 
-  final_day_mean_no_share <- multiple_ags_fp |>
-    dplyr::filter(reference_date == max(reference_date)) |>
-    dplyr::group_by(reference_date, age_group) |>
-    dplyr::summarise(mean_est = mean(pred_count))
+  final_day_mean_no_share <- summarise_final_day_mean(multiple_ags_fp)
 
   set.seed(123)
-  multiple_ags_full_ag <- baselinenowcast(
+  multiple_ags_full_ag <- baselinenowcast_test(
     covid_data_age_groups_wday,
-    max_delay = 40,
-    draws = 100,
     strata_cols = "age_group",
     strata_sharing = c("delay", "uncertainty")
   ) |> dplyr::mutate(type = "share delay & uncertainty")
 
-  final_day_mean_full_share <- multiple_ags_full_ag |>
-    dplyr::filter(reference_date == max(reference_date)) |>
-    dplyr::group_by(reference_date, age_group) |>
-    dplyr::summarise(mean_est = mean(pred_count))
+  final_day_mean_full_share <- summarise_final_day_mean(
+    multiple_ags_full_ag
+  )
 
   set.seed(123)
-  multiple_ags_just_delay <- baselinenowcast(
+  multiple_ags_just_delay <- baselinenowcast_test(
     covid_data_age_groups_wday,
-    max_delay = 40,
-    draws = 100,
     strata_cols = "age_group",
     strata_sharing = "delay"
   ) |> dplyr::mutate(type = "share delay")
 
-  final_day_mean_share_delay <- multiple_ags_just_delay |>
-    dplyr::filter(reference_date == max(reference_date)) |>
-    dplyr::group_by(reference_date, age_group) |>
-    dplyr::summarise(mean_est = mean(pred_count))
+  final_day_mean_share_delay <- summarise_final_day_mean(
+    multiple_ags_just_delay
+  )
 
   set.seed(123)
-  multiple_ags_just_uq <- baselinenowcast(
+  multiple_ags_just_uq <- baselinenowcast_test(
     covid_data_age_groups_wday,
-    max_delay = 40,
-    draws = 100,
     strata_cols = "age_group",
     strata_sharing = "uncertainty"
   ) |> dplyr::mutate(type = "share uncertainty")
 
-  final_day_mean_share_uq <- multiple_ags_just_uq |>
-    dplyr::filter(reference_date == max(reference_date)) |>
-    dplyr::group_by(reference_date, age_group) |>
-    dplyr::summarise(mean_est = mean(pred_count))
+  final_day_mean_share_uq <- summarise_final_day_mean(multiple_ags_just_uq)
 
   covid_data_summed <- covid_data_age_groups_wday |>
     dplyr::group_by(reference_date, age_group) |>
@@ -560,36 +503,30 @@ test_that("baselinenowcast produces different results when sharing across age gr
   covid_data_summed_final <- covid_data_summed |>
     dplyr::filter(reference_date == max(reference_date))
 
-  expect_failure(expect_equal(
+  expect_estimates_differ(
     final_day_mean_no_share$mean_est,
-    final_day_mean_full_share$mean_est,
-    tol = 0.01
-  ))
-  expect_failure(expect_equal(
+    final_day_mean_full_share$mean_est
+  )
+  expect_estimates_differ(
     final_day_mean_no_share$mean_est,
-    final_day_mean_share_delay$mean_est,
-    tol = 0.01
-  ))
-  expect_failure(expect_equal(
+    final_day_mean_share_delay$mean_est
+  )
+  expect_estimates_differ(
     final_day_mean_no_share$mean_est,
-    final_day_mean_share_uq$mean_est,
-    tol = 0.01
-  ))
-  expect_failure(expect_equal(
+    final_day_mean_share_uq$mean_est
+  )
+  expect_estimates_differ(
     final_day_mean_full_share$mean_est,
-    final_day_mean_share_uq$mean_est,
-    tol = 0.01
-  ))
-  expect_failure(expect_equal(
+    final_day_mean_share_uq$mean_est
+  )
+  expect_estimates_differ(
     final_day_mean_full_share$mean_est,
+    final_day_mean_share_delay$mean_est
+  )
+  expect_estimates_differ(
     final_day_mean_share_delay$mean_est,
-    tol = 0.01
-  ))
-  expect_failure(expect_equal(
-    final_day_mean_share_delay$mean_est,
-    final_day_mean_share_uq$mean_est,
-    tol = 0.01
-  ))
+    final_day_mean_share_uq$mean_est
+  )
   expect_true(all(final_day_mean_no_share$mean_est >
     covid_data_summed_final$cases))
   expect_true(all(final_day_mean_full_share$mean_est >
@@ -627,86 +564,76 @@ test_that("baselinenowcast produces different results when sharing across age gr
   }
 })
 
-test_that("baselinenowcast fails with coherent error messages necessarys strata are missing", { # nolint
-  expect_error(
-    baselinenowcast(
-      covid_data,
-      max_delay = 40,
-      draws = 100
-    ),
-    regexp = "Data contains duplicate `reference_date` and `report_date` combinations" # nolint
+test_that(paste0(
+  "baselinenowcast fails with coherent error messages necessary ",
+  "strata are missing"
+), {
+  expect_error_duplicate_dates(
+    baselinenowcast_test(data = covid_data)
   )
   expect_no_error(
-    baselinenowcast(
-      covid_data,
-      max_delay = 40,
-      draws = 100,
+    baselinenowcast_test(
+      data = covid_data,
       strata_cols = "age_group"
     )
   )
 })
-test_that("baselinenowcast fails with coherent error messages when we ask it to stratify by weekday and then share across strata", { # nolint
+test_that(paste0(
+  "baselinenowcast fails with coherent error messages when we ask ",
+  "it to stratify by weekday and then share across strata"
+), {
   skip_if_not_installed("lubridate")
 
-  exp_err <- "There is no overlapping set of reference and report dates across all" # nolint
-
-  expect_error(
-    baselinenowcast(covid_data_single_strata_wday,
-      max_delay = 40,
-      draws = 100,
+  expect_error_no_overlap(
+    baselinenowcast_test(
+      covid_data_single_strata_wday,
       scale_factor = 4,
       strata_cols = "weekday_ref_date",
       strata_sharing = c("delay", "uncertainty")
-    ),
-    regexp = exp_err
+    )
   )
-  expect_error(
-    baselinenowcast(covid_data_age_groups_wday,
-      max_delay = 40,
-      draws = 100,
+  expect_error_no_overlap(
+    baselinenowcast_test(
+      covid_data_age_groups_wday,
       scale_factor = 4,
       strata_cols = c("age_group", "weekday_ref_date"),
       strata_sharing = c("delay", "uncertainty")
-    ),
-    regexp = exp_err
+    )
   )
-  expect_error(
-    baselinenowcast(covid_data_single_strata_wday,
-      max_delay = 40,
-      draws = 100,
+  expect_error_no_overlap(
+    baselinenowcast_test(
+      covid_data_single_strata_wday,
       scale_factor = 4,
       strata_cols = "weekday_ref_date",
       strata_sharing = "delay"
-    ),
-    regexp = exp_err
+    )
   )
-  expect_error(
-    baselinenowcast(covid_data_single_strata_wday,
-      max_delay = 40,
-      draws = 100,
+  expect_error_no_overlap(
+    baselinenowcast_test(
+      covid_data_single_strata_wday,
       scale_factor = 4,
       strata_cols = "weekday_ref_date",
       strata_sharing = "uncertainty"
-    ),
-    regexp = exp_err
+    )
   )
 })
 
-test_that("baselinenowcast errors when trying to do strata sharing with weekday strata, but works if separated", { # nolint
+test_that(paste0(
+  "baselinenowcast errors when trying to do strata sharing with ",
+  "weekday strata, but works if separated"
+), {
   skip_if_not_installed("dplyr")
 
-  expect_error(
-    baselinenowcast(covid_data_age_groups_wday,
-      max_delay = 40,
-      draws = 100,
+  expect_error_no_overlap(
+    baselinenowcast_test(
+      covid_data_age_groups_wday,
       scale_factor = 3 / 7,
       strata_cols = c(
         "weekday_ref_date",
         "age_group"
       ),
       strata_sharing = c("delay", "uncertainty")
-    ),
-    regexp = "There is no overlapping set of reference and report dates across all" # nolint
+    )
   )
 
   # Separately filter by weekday and then combine
@@ -717,9 +644,8 @@ test_that("baselinenowcast errors when trying to do strata sharing with weekday 
       covid_data_age_groups_wday,
       weekday_ref_date == wdays[i]
     )
-    bnc_df_i <- baselinenowcast(covid_data_single_wday,
-      max_delay = 40,
-      draws = 100,
+    bnc_df_i <- baselinenowcast_test(
+      covid_data_single_wday,
       scale_factor = 3 / 7,
       strata_cols = "age_group",
       strata_sharing = c("delay", "uncertainty")
@@ -730,9 +656,8 @@ test_that("baselinenowcast errors when trying to do strata sharing with weekday 
   bnc_df <- dplyr::mutate(bnc_df, type = "age group sharing")
 
   # Compare to no strata sharing
-  no_share_ag <- baselinenowcast(covid_data_age_groups_wday,
-    max_delay = 40,
-    draws = 100,
+  no_share_ag <- baselinenowcast_test(
+    covid_data_age_groups_wday,
     scale_factor = 3 / 7,
     strata_cols = c(
       "weekday_ref_date",
@@ -751,11 +676,10 @@ test_that("baselinenowcast errors when trying to do strata sharing with weekday 
     group_by(reference_date, age_group) |>
     summarise(mean_est = mean(pred_count))
 
-  expect_failure(expect_equal(
+  expect_estimates_differ(
     final_day_mean_no_share$mean_est,
-    final_day_mean_share_by_ag$mean_est,
-    tol = 0.01
-  ))
+    final_day_mean_share_by_ag$mean_est
+  )
 
   if (interactive()) {
     skip_if_not_installed("ggplot2")

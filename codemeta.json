@@ -99,6 +99,18 @@
     },
     {
       "@type": "SoftwareApplication",
+      "identifier": "ChainLadder",
+      "name": "ChainLadder",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=ChainLadder"
+    },
+    {
+      "@type": "SoftwareApplication",
       "identifier": "dplyr",
       "name": "dplyr",
       "provider": {
@@ -322,7 +334,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "2616.84KB",
+  "fileSize": "2636.833KB",
   "citation": [
     {
       "@type": "ScholarlyArticle",
@@ -385,16 +397,16 @@
         }
       ],
       "name": "Baseline nowcasting methods for handling delays in epidemiological data",
-      "identifier": "10.1101/2025.08.14.25333653",
-      "url": "https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2",
-      "@id": "https://doi.org/10.1101/2025.08.14.25333653",
-      "sameAs": "https://doi.org/10.1101/2025.08.14.25333653",
+      "identifier": "10.12688/wellcomeopenres.25027.1",
+      "url": "https://wellcomeopenresearch.org/articles/10-614/v1",
+      "@id": "https://doi.org/10.12688/wellcomeopenres.25027.1",
+      "sameAs": "https://doi.org/10.12688/wellcomeopenres.25027.1",
       "isPartOf": {
         "@type": "PublicationIssue",
         "datePublished": "2025",
         "isPartOf": {
           "@type": ["PublicationVolume", "Periodical"],
-          "name": "medRxiv"
+          "name": "Wellcome Open Research"
         }
       }
     },

@@ -139,10 +139,12 @@ make_test_triangle <- function(nrow = 5, ncol = 4, type = "simple") {
       nrow = nrow,
       ncol = ncol
     )
-    # Add NAs in bottom-right triangle
+    # Add NAs in bottom-right triangle (reporting triangle pattern)
+    # Row 1: no NAs, Row 2: 1 trailing NA, Row 3: 2 trailing NAs, etc.
     for (i in seq_len(nrow)) {
-      na_start <- ncol - (nrow - i)
-      if (na_start <= ncol && na_start > 0) {
+      na_count <- i - 1
+      if (na_count > 0 && na_count <= ncol) {
+        na_start <- ncol - na_count + 1
         mat[i, na_start:ncol] <- NA
       }
     }

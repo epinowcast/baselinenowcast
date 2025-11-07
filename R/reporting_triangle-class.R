@@ -17,14 +17,14 @@
 #'    matrix indicating the dates corresponding to the reference times in the
 #'    rows of the reporting triangle.}
 #'  \item{structure}{Vector indicating the "structure" of the reporting
-#'    triangle, see \code{\link{construct_triangle}} for more details.}
+#'    triangle, see [construct_triangle()] for more details.}
 #'  \item{max_delay}{Integer indicating the maximum delay.}
 #'  \item{delays_unit}{Character string indicating the unit of the delays.
 #'     Valid options are "days", "weeks", "months", "years".}
 #'  \item{strata}{Character string indicating the strata.}
 #' }
-#' See the corresponding \code{\link{as_reporting_triangle.matrix}} and
-#' \code{\link{as_reporting_triangle.data.frame}} functions
+#' See the corresponding [as_reporting_triangle.matrix()] and
+#' [as_reporting_triangle.data.frame()] functions
 #' for more details on the required input formats to generate the object.
 NULL
 
@@ -35,7 +35,7 @@ NULL
 #' @inheritParams construct_triangle
 #' @inheritParams as_reporting_triangle
 #'
-#' @returns An object of class \code{\link{reporting_triangle}}
+#' @returns An object of class [reporting_triangle]
 #' @family reporting_triangle
 #' @export
 new_reporting_triangle <- function(reporting_triangle_matrix,
@@ -68,7 +68,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
 
 #' Assert validity of `reporting_triangle` objects
 #'
-#' @param data A \code{\link{reporting_triangle}} object to check for validity.
+#' @param data A [reporting_triangle] object to check for validity.
 #' @return NULL
 #' @family reporting_triangle
 #' @export

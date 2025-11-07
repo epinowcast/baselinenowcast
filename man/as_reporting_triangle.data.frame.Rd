@@ -63,8 +63,8 @@ A \code{\link{reporting_triangle}} object
 }
 \description{
 This method takes a data.frame containing case counts indexed by reference
-date and report date and creates a A \code{\link{reporting_triangle}} object.
-See \code{\link{as_reporting_triangle.matrix}} for other data
+date and report date and creates a \link{reporting_triangle} object.
+See \code{\link[=as_reporting_triangle.matrix]{as_reporting_triangle.matrix()}} for other data
 input options.
 }
 \examples{

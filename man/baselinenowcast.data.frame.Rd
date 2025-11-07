@@ -95,8 +95,8 @@ estimates should be shared for different nowcasting steps. Options are
 Both \code{"delay"} and \code{"uncertainty"} can be passed at the same time.}
 
 \item{...}{Additional arguments passed to
-\code{\link{estimate_uncertainty}}
-and \code{\link{sample_nowcast}}.}
+\code{\link[=estimate_uncertainty]{estimate_uncertainty()}}
+and \code{\link[=sample_nowcast]{sample_nowcast()}}.}
 }
 \value{
 Data.frame of class \code{\link{baselinenowcast_df}}
@@ -122,7 +122,7 @@ for all strata using estimates from across strata if specified.
 across strata if \code{strata_sharing} contains \code{"uncertainty"}
 \item \code{\link[=as_reporting_triangle]{as_reporting_triangle()}} - Generates a reporting triangle object
 from a data.frame
-\item\code{\link[=baselinenowcast]{baselinenowcast()}} - Generates point or probabilistic nowcasts
+\item \code{\link[=baselinenowcast]{baselinenowcast()}} - Generates point or probabilistic nowcasts
 depending on \code{output_type} for each strata.
 }
 

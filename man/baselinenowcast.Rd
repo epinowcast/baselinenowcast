@@ -52,13 +52,13 @@ negative binomial for each element of the vector.}
 \item{...}{Additional arguments passed to methods.}
 }
 \value{
-Data.frame of class \code{\link{baselinenowcast_df}}
+Data.frame of class \link{baselinenowcast_df}
 }
 \description{
 This function ingests data to be nowcasted and generates a
-a \code{\link{baselinenowcast_df}} which contains a probabilistic or point
+a \link{baselinenowcast_df} which contains a probabilistic or point
 estimate of the final case counts at each reference date in the \code{data}.
-See \code{\link{baselinenowcast.reporting_triangle}} for details on the
+See \code{\link[=baselinenowcast.reporting_triangle]{baselinenowcast.reporting_triangle()}} for details on the
 input requirements.
 }
 \seealso{

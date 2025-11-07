@@ -13,7 +13,7 @@
 #'    the reporting triangle.  Default is `"days"`.
 #' @param ... Additional arguments passed to methods.
 #
-#' @return  A \code{\link{reporting_triangle}} object
+#' @return  A [reporting_triangle] object
 #'
 #' @family reporting_triangle
 #' @export
@@ -28,8 +28,8 @@ as_reporting_triangle <- function(data,
 #' Create a `reporting_triangle` object from a data.frame
 #'
 #' This method takes a data.frame containing case counts indexed by reference
-#' date and report date and creates a A \code{\link{reporting_triangle}} object.
-#' See \code{\link{as_reporting_triangle.matrix}} for other data
+#' date and report date and creates a [reporting_triangle] object.
+#' See [as_reporting_triangle.matrix()] for other data
 #' input options.
 #'
 #' @param data Data.frame in a long tidy format with counts by reference date
@@ -86,7 +86,6 @@ as_reporting_triangle.data.frame <- function(
   assert_character(count)
   assert_character(delays_unit)
   assert_choice(delays_unit, choices = c("days", "weeks", "months", "years"))
-  # Rename columns
   data <- .rename_cols(data, old_names = c(reference_date, report_date, count))
 
   .validate_rep_tri_df(data, delays_unit)
@@ -166,8 +165,8 @@ as_reporting_triangle.data.frame <- function(
 #'
 #' This method takes a matrix in the format of a reporting triangle, with rows
 #' as reference dates and columns as delays and elements as incident case
-#' counts and creates a \code{\link{reporting_triangle}} object. See other
-#' \code{\link{as_reporting_triangle.data.frame}}for other data
+#' counts and creates a [reporting_triangle] object. See other
+#' [as_reporting_triangle.data.frame()] for other data
 #' input options.
 #'
 #' @param data Matrix of a reporting triangle where rows are reference times,

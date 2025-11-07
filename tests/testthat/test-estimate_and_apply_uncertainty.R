@@ -117,4 +117,3 @@ test_that("estimate_and_apply_uncertainty is able to detect the structure of a j
     tol = 0.01
   )
 })
-

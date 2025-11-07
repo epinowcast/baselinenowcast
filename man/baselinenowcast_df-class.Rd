@@ -24,8 +24,8 @@ represents a probabilistic draw from the observation model indicated by
 \code{"samples"} or whether the \code{pred_count} is a point estimate indicated by
 \code{"point"}.}
 }
-See the corresponding \code{\link{reporting_triangle}} and
-\code{\link{baselinenowcast}} function
+See the corresponding \link{reporting_triangle} and
+\code{\link[=baselinenowcast]{baselinenowcast()}} function
 for more details on the required inputs to generate the object.
 }
 

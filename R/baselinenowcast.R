@@ -1,9 +1,9 @@
 #' @title Generate a nowcast
 #'
 #' @description This function ingests data to be nowcasted and generates a
-#'   a \code{\link{baselinenowcast_df}} which contains a probabilistic or point
+#'   a [baselinenowcast_df] which contains a probabilistic or point
 #'   estimate of the final case counts at each reference date in the `data`.
-#'   See \code{\link{baselinenowcast.reporting_triangle}} for details on the
+#'   See [baselinenowcast.reporting_triangle()] for details on the
 #'   input requirements.
 #'
 #' @param data Data to be nowcasted
@@ -17,7 +17,7 @@
 #' @param draws Integer indicating the number of probabilistic draws to include
 #'    if `output_type` is `"samples"`. Default is 1000.
 #' @param ... Additional arguments passed to methods.
-#' @returns Data.frame of class \code{\link{baselinenowcast_df}}
+#' @returns Data.frame of class [baselinenowcast_df]
 #' @family baselinenowcast_df
 #' @export
 baselinenowcast <- function(data,
@@ -34,8 +34,8 @@ baselinenowcast <- function(data,
 #' @title Create a dataframe of nowcast results from a single reporting triangle
 #'
 #' @description This function ingests a single
-#'  \code{\link{reporting_triangle}} object and generates a nowcast in the
-#'  form of a \code{\link{baselinenowcast_df}} object.
+#'  [reporting_triangle] object and generates a nowcast in the
+#'  form of a [baselinenowcast_df] object.
 #'
 #'  This function implements a nowcasting workflow for a single reporting
 #'  triangle:
@@ -46,31 +46,35 @@ baselinenowcast <- function(data,
 #'       nowcast from a point nowcast and reporting triangle
 #' }
 #'
-#'    This function will by default estimate uncertainty using past
-#'    retrospective nowcast errors and generate probabilistic nowcasts, which
+#'    This function will by default estimate the delay from the
+#'    [reporting_triangle] and estimate uncertainty using past
+#'    retrospective nowcast errors on that [reporting_triangle] to
+#'    generate probabilistic nowcasts, which
 #'    are samples from the predictive distribution of the estimated final case
 #'    count at each reference date.
+#'    Alternatives include passing in a separate `delay_pmf` or
+#'    `uncertainty_params`.
 #'    This method specifically computes a nowcast for a single reporting
 #'    triangle. See documentation for the arguments of this function which
 #'    can be used to set the model specifications (things like number of
 #'    reference times for delay and uncertainty estimation, the observation
 #'    model, etc.).
 #'
-#' @param data \code{\link{reporting_triangle}} class object to be nowcasted.
+#' @param data [reporting_triangle] class object to be nowcasted.
 #'   The `data$reporting_triangle_matrix` must contain missing observations
 #'   in the form of NAs in order to generate an output from this function.
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
 #'   first delay column in `data$reporting_triangle_matrix`. Default is NULL,
 #'   which will estimate the delay from the reporting triangle matrix in `data`,
-#'   See \code{\link{estimate_delay}} for more details.
+#'   See [estimate_delay()] for more details.
 #' @param uncertainty_params Vector of uncertainty parameters ordered from
 #'   horizon 1 to the maximum horizon. Default is `NULL`, which will
 #'   result in computing the uncertainty parameters from the reporting
-#'   triangle matrix `data`. See \code{\link{estimate_uncertainty}} for more
+#'   triangle matrix `data`. See [estimate_uncertainty()] for more
 #'   details.
 #' @param ... Additional arguments passed to
-#'    \code{\link{estimate_uncertainty}}
-#'    and \code{\link{sample_nowcast}}.
+#'    [estimate_uncertainty()]
+#'    and [sample_nowcast()].
 #' @inheritParams baselinenowcast
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast
@@ -181,7 +185,7 @@ baselinenowcast.reporting_triangle <- function(
 #'      across strata if `strata_sharing` contains `"uncertainty"`
 #'      \item [as_reporting_triangle()] - Generates a reporting triangle object
 #'      from a data.frame
-#'      \item[baselinenowcast()] - Generates point or probabilistic nowcasts
+#'      \item [baselinenowcast()] - Generates point or probabilistic nowcasts
 #'      depending on `output_type` for each strata.
 #' }
 #'
@@ -220,8 +224,8 @@ baselinenowcast.reporting_triangle <- function(
 #'   `"delay"` for delay sharing and `"uncertainty"` for uncertainty sharing.
 #'   Both `"delay"` and `"uncertainty"` can be passed at the same time.
 #' @param ... Additional arguments passed to
-#'    \code{\link{estimate_uncertainty}}
-#'    and \code{\link{sample_nowcast}}.
+#'    [estimate_uncertainty()]
+#'    and [sample_nowcast()].
 #' @inheritParams baselinenowcast
 #' @inheritParams as_reporting_triangle.data.frame
 #' @inheritParams estimate_uncertainty

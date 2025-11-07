@@ -18,7 +18,7 @@
 )
 }
 \arguments{
-\item{data}{\code{\link{reporting_triangle}} class object to be nowcasted.
+\item{data}{\link{reporting_triangle} class object to be nowcasted.
 The \code{data$reporting_triangle_matrix} must contain missing observations
 in the form of NAs in order to generate an output from this function.}
 
@@ -56,25 +56,25 @@ negative binomial for each element of the vector.}
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
 first delay column in \code{data$reporting_triangle_matrix}. Default is NULL,
 which will estimate the delay from the reporting triangle matrix in \code{data},
-See \code{\link{estimate_delay}} for more details.}
+See \code{\link[=estimate_delay]{estimate_delay()}} for more details.}
 
 \item{uncertainty_params}{Vector of uncertainty parameters ordered from
 horizon 1 to the maximum horizon. Default is \code{NULL}, which will
 result in computing the uncertainty parameters from the reporting
-triangle matrix \code{data}. See \code{\link{estimate_uncertainty}} for more
+triangle matrix \code{data}. See \code{\link[=estimate_uncertainty]{estimate_uncertainty()}} for more
 details.}
 
 \item{...}{Additional arguments passed to
-\code{\link{estimate_uncertainty}}
-and \code{\link{sample_nowcast}}.}
+\code{\link[=estimate_uncertainty]{estimate_uncertainty()}}
+and \code{\link[=sample_nowcast]{sample_nowcast()}}.}
 }
 \value{
 Data.frame of class \code{\link{baselinenowcast_df}}
 }
 \description{
 This function ingests a single
-\code{\link{reporting_triangle}} object and generates a nowcast in the
-form of a \code{\link{baselinenowcast_df}} object.
+\link{reporting_triangle} object and generates a nowcast in the
+form of a \link{baselinenowcast_df} object.
 
 This function implements a nowcasting workflow for a single reporting
 triangle:
@@ -85,10 +85,14 @@ triangle:
 nowcast from a point nowcast and reporting triangle
 }
 
-This function will by default estimate uncertainty using past
-retrospective nowcast errors and generate probabilistic nowcasts, which
+This function will by default estimate the delay from the
+\link{reporting_triangle} and estimate uncertainty using past
+retrospective nowcast errors on that \link{reporting_triangle} to
+generate probabilistic nowcasts, which
 are samples from the predictive distribution of the estimated final case
 count at each reference date.
+Alternatives include passing in a separate \code{delay_pmf} or
+\code{uncertainty_params}.
 This method specifically computes a nowcast for a single reporting
 triangle. See documentation for the arguments of this function which
 can be used to set the model specifications (things like number of

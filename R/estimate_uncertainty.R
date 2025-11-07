@@ -425,8 +425,9 @@ fit_nb <- function(x, mu) {
   # Check that all observations are integers
   assert_integerish(x)
   nllik <- function(size) {
-    nll <-
-      -sum(dnbinom(x = x, mu = mu, size = size, log = TRUE), na.rm = TRUE)
+    nll <- -sum(dnbinom(x = x, mu = mu, size = size, log = TRUE),
+      na.rm = TRUE
+    )
     return(nll)
   }
   opt <- suppressWarnings(optimize(nllik, c(0.1, 1000)))

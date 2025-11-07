@@ -31,7 +31,7 @@ the reporting triangle.  Default is \code{"days"}.}
 \item{...}{Additional arguments passed to methods.}
 }
 \value{
-A \code{\link{reporting_triangle}} object
+A \link{reporting_triangle} object
 }
 \description{
 Create a \code{reporting_triangle} object

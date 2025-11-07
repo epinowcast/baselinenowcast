@@ -174,8 +174,9 @@ test_that("get_quantile_delay works correctly", {
   )
 
   q99_delays <- get_quantile_delay(simple_tri, p = 0.99)
-  # Row 1: cumsum = [10, 15, 17, 18, 19], total = 19, 99% = 18.81, so delay = 3
-  expect_identical(q99_delays[1], 3L)
+  # Row 1: cumsum = [10, 15, 17, 18, 19], total = 19, 99% = 18.81, so delay = 4
+  # (need all 19 cases to reach 99%)
+  expect_identical(q99_delays[1], 4L)
 
   # Test with different quantile
   q50_delays <- get_quantile_delay(simple_tri, p = 0.50)

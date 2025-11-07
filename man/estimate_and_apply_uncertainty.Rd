@@ -11,6 +11,8 @@ estimate_and_apply_uncertainty(
   n_retrospective_nowcasts,
   max_delay = ncol(reporting_triangle) - 1,
   draws = 1000,
+  structure = detect_structure(reporting_triangle),
+  delay_pmf = NULL,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,
   ...
@@ -32,7 +34,7 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 starting from the most recent reporting delay.}
 
 \item{n_retrospective_nowcasts}{Integer indicating the number of
-retrospective nowcast times to use for uncertainty estimation.}
+retrospective nowcasts to use for uncertainty estimation.}
 
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
@@ -40,6 +42,16 @@ of the delay. The default is to use the whole reporting triangle,
 
 \item{draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}
+
+\item{structure}{Integer or vector specifying the reporting structure.
+If integer, divides columns evenly by that integer (with last possibly
+truncated).  If vector, the sum must not be greater than or equal to the
+number of columns. Default is 1 (standard triangular structure).}
+
+\item{delay_pmf}{Vector or list of vectors of delays assumed to be indexed
+starting at the first delay column in each of the matrices in
+\code{retro_reporting_triangles}. If a list, must of the same length as
+\code{retro_reporting_triangles}, with elements aligning. Default is \code{NULL}}
 
 \item{uncertainty_model}{Function that ingests a matrix of observations and a
 matrix of predictions and returns a vector that can be used to
@@ -57,15 +69,29 @@ arguments \code{pred} for the vector of predictions and uncertainty parameters
 for the corresponding vector of uncertainty parameters, and draws from a
 negative binomial for each element of the vector.}
 
-\item{...}{Additional arguments to \code{estimate_uncertainty()} and
-\code{sample_prediction()}.}
+\item{...}{Additional arguments to \code{\link[=estimate_uncertainty_retro]{estimate_uncertainty_retro()}} and
+\code{\link[=sample_nowcasts]{sample_nowcasts()}}.}
 }
 \value{
 \code{nowcast_draws_df} Dataframe containing draws of combined
 observations and probabilistic predictions at each reference time.
 }
 \description{
-Estimate and apply uncertainty to a point nowcast matrix
+Generates probabilistic nowcasts by estimating uncertainty parameters from
+retrospective nowcasts and applying them to a point nowcast matrix.
+
+This function combines:
+\enumerate{
+\item \code{\link[=estimate_uncertainty_retro]{estimate_uncertainty_retro()}} - Estimates uncertainty parameters
+using retrospective nowcasts
+\item \code{\link[=sample_nowcasts]{sample_nowcasts()}} - Applies uncertainty to generate draws
+}
+
+To obtain estimates of uncertainty parameters, use
+\code{\link[=estimate_uncertainty_retro]{estimate_uncertainty_retro()}}. For full control over individual steps
+(e.g., custom matrix preparation, alternative aggregation), use the
+low-level functions (\code{\link[=truncate_triangles]{truncate_triangles()}}, \code{\link[=construct_triangles]{construct_triangles()}},
+\code{\link[=fill_triangles]{fill_triangles()}}, \code{\link[=estimate_uncertainty]{estimate_uncertainty()}}) directly.
 }
 \examples{
 triangle <- matrix(
@@ -98,6 +124,7 @@ nowcast_draws_df
 \seealso{
 High-level workflow wrapper functions
 \code{\link{allocate_reference_times}()},
-\code{\link{estimate_and_apply_delay}()}
+\code{\link{estimate_and_apply_delay}()},
+\code{\link{estimate_uncertainty_retro}()}
 }
 \concept{workflow_wrappers}

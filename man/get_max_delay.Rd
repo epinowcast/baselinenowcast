@@ -4,13 +4,17 @@
 \alias{get_max_delay}
 \title{Get maximum delay from reporting_triangle}
 \usage{
-get_max_delay(x)
+get_max_delay(x, non_zero = FALSE)
 }
 \arguments{
 \item{x}{A reporting_triangle object}
+
+\item{non_zero}{Logical. If TRUE, returns the maximum delay where at least
+one observation is non-zero. Useful for identifying the actual extent of
+the delay distribution. Default FALSE.}
 }
 \value{
-Maximum delay (integer)
+Maximum delay (integer), or -1 if all zero when non_zero = TRUE
 }
 \description{
 Get maximum delay from reporting_triangle

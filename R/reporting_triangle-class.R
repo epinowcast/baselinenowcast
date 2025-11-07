@@ -75,13 +75,26 @@ get_reference_dates <- function(x) {
 #' Get maximum delay from reporting_triangle
 #'
 #' @param x A reporting_triangle object
-#' @return Maximum delay (integer)
+#' @param non_zero Logical. If TRUE, returns the maximum delay where at least
+#'   one observation is non-zero. Useful for identifying the actual extent of
+#'   the delay distribution. Default FALSE.
+#' @return Maximum delay (integer), or -1 if all zero when non_zero = TRUE
 #' @family reporting_triangle
 #' @export
-get_max_delay <- function(x) {
+get_max_delay <- function(x, non_zero = FALSE) {
   if (!is_reporting_triangle(x)) {
     cli_abort(message = "x must have class 'reporting_triangle'")
   }
+
+  if (non_zero) {
+    col_sums <- colSums(x, na.rm = TRUE)
+    non_zero_cols <- which(col_sums > 0)
+    if (length(non_zero_cols) == 0) {
+      return(-1L)
+    }
+    return(max(non_zero_cols) - 1L)
+  }
+
   return(ncol(x) - 1L)
 }
 

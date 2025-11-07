@@ -65,8 +65,8 @@ summarise_final_day_mean <- function(df, group_vars = c(
 #' @param tol Tolerance for comparison
 #' @keywords internal
 expect_estimates_differ <- function(est1, est2, tol = 0.01) {
-  expect_failure(
-    expect_equal(est1, est2, tolerance = tol)
+  testthat::expect_failure(
+    testthat::expect_equal(est1, est2, tolerance = tol)
   )
 }
 
@@ -75,19 +75,19 @@ expect_estimates_differ <- function(est1, est2, tol = 0.01) {
 #' Validate triangle output matches input
 #' @keywords internal
 validate_triangle_output <- function(result, input_triangle) {
-  expect_is(result, "matrix")
-  expect_identical(dim(result), dim(input_triangle))
+  testthat::expect_is(result, "matrix")
+  testthat::expect_identical(dim(result), dim(input_triangle))
   invisible(result)
 }
 
 #' Validate nowcast draws structure
 #' @keywords internal
 validate_nowcast_draws <- function(nowcast_df, n_draws, n_dates) {
-  expect_s3_class(nowcast_df, "data.frame")
-  expect_true("draw" %in% colnames(nowcast_df))
-  expect_length(unique(nowcast_df$draw), n_draws)
+  testthat::expect_s3_class(nowcast_df, "data.frame")
+  testthat::expect_true("draw" %in% colnames(nowcast_df))
+  testthat::expect_length(unique(nowcast_df$draw), n_draws)
   if ("reference_date" %in% colnames(nowcast_df)) {
-    expect_length(unique(nowcast_df$reference_date), n_dates)
+    testthat::expect_length(unique(nowcast_df$reference_date), n_dates)
   }
   invisible(nowcast_df)
 }

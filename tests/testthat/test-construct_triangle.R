@@ -1,11 +1,11 @@
 #' Expect valid triangle (matrix with potential NAs in bottom-right)
 #' @keywords internal
 expect_valid_triangle <- function(object, has_nas = TRUE) {
-  expect_is(object, "matrix")
+  testthat::expect_is(object, "matrix")
   if (has_nas) {
-    expect_true(anyNA(object))
+    testthat::expect_true(anyNA(object))
   } else {
-    expect_false(anyNA(object))
+    testthat::expect_false(anyNA(object))
   }
   invisible(object)
 }
@@ -159,7 +159,7 @@ test_that("construct_triangle does not modify the original matrix", {
   result <- construct_triangle(original)
   expect_valid_triangle(result, has_nas = TRUE)
   expect_identical(original, original_copy)
-  expect_false(identical(result, original))
+  testthat::expect_false(identical(result, original))
 })
 
 test_that("construct_triangle handles ragged structure with integer", {

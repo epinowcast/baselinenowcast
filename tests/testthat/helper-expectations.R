@@ -10,7 +10,7 @@
 #' Expect error: Invalid strata required columns
 #' @keywords internal
 expect_error_invalid_strata_required <- function(object) {
-  expect_error(
+  testthat::expect_error(
     object,
     regexp = "`strata_cols` cannot contain any of the required columns"
   )
@@ -19,7 +19,7 @@ expect_error_invalid_strata_required <- function(object) {
 #' Expect error: Invalid strata missing columns
 #' @keywords internal
 expect_error_invalid_strata_missing <- function(object) {
-  expect_error(
+  testthat::expect_error(
     object,
     regexp = "`strata_cols`, if specified, must be a column in `data`"
   )
@@ -28,7 +28,7 @@ expect_error_invalid_strata_missing <- function(object) {
 #' Expect error: No overlapping dates
 #' @keywords internal
 expect_error_no_overlap <- function(object) {
-  expect_error(
+  testthat::expect_error(
     object,
     regexp = paste0(
       "There is no overlapping set of reference and report dates ",
@@ -40,7 +40,7 @@ expect_error_no_overlap <- function(object) {
 #' Expect error: Duplicate dates
 #' @keywords internal
 expect_error_duplicate_dates <- function(object) {
-  expect_error(
+  testthat::expect_error(
     object,
     regexp = paste0(
       "Data contains duplicate `reference_date` and `report_date`"
@@ -51,7 +51,7 @@ expect_error_duplicate_dates <- function(object) {
 #' Expect error: Strata sharing conflict
 #' @keywords internal
 expect_error_strata_sharing_conflict <- function(object) {
-  expect_error(
+  testthat::expect_error(
     object,
     regexp = paste0(
       "`strata_sharing` cannot be both 'none' and 'delay'/'uncertainty'"
@@ -62,7 +62,7 @@ expect_error_strata_sharing_conflict <- function(object) {
 #' Expect error: Missing names
 #' @keywords internal
 expect_error_missing_names <- function(object) {
-  expect_error(
+  testthat::expect_error(
     object,
     regexp = "Names must include the elements"
   )
@@ -71,7 +71,7 @@ expect_error_missing_names <- function(object) {
 #' Expect error: Wrong date class
 #' @keywords internal
 expect_error_wrong_date_class <- function(object) {
-  expect_error(
+  testthat::expect_error(
     object,
     regexp = "Must be of class 'Date'"
   )
@@ -80,7 +80,7 @@ expect_error_wrong_date_class <- function(object) {
 #' Expect error: Invalid triangle dimensions
 #' @keywords internal
 expect_error_invalid_dims <- function(object) {
-  expect_error(
+  testthat::expect_error(
     object,
     regexp = "The number of rows .* does not match"
   )
@@ -89,7 +89,7 @@ expect_error_invalid_dims <- function(object) {
 #' Expect error: Negative values
 #' @keywords internal
 expect_error_negative_values <- function(object) {
-  expect_error(
+  testthat::expect_error(
     object,
     regexp = "must be positive|negative values"
   )
@@ -100,7 +100,7 @@ expect_error_negative_values <- function(object) {
 #' Expect warning: Partial overlap
 #' @keywords internal
 expect_warning_partial_overlap <- function(object) {
-  expect_warning(
+  testthat::expect_warning(
     object,
     regexp = paste0(
       "Not all reference dates and report dates combinations are ",
@@ -121,11 +121,11 @@ expect_warning_partial_overlap <- function(object) {
 expect_baselinenowcast_structure <- function(object,
                                              expected_cols,
                                              output_type = "samples") {
-  expect_s3_class(object, "data.frame")
-  expect_s3_class(object, "baselinenowcast_df")
-  expect_true(all(expected_cols %in% colnames(object)))
+  testthat::expect_s3_class(object, "data.frame")
+  testthat::expect_s3_class(object, "baselinenowcast_df")
+  testthat::expect_true(all(expected_cols %in% colnames(object)))
   if (!is.null(output_type)) {
-    expect_identical(object$output_type[1], output_type)
+    testthat::expect_identical(object$output_type[1], output_type)
   }
   invisible(object)
 }
@@ -133,7 +133,7 @@ expect_baselinenowcast_structure <- function(object,
 #' Expect columns are present
 #' @keywords internal
 expect_columns_present <- function(object, cols) {
-  expect_true(all(cols %in% colnames(object)))
+  testthat::expect_true(all(cols %in% colnames(object)))
   invisible(object)
 }
 
@@ -141,7 +141,7 @@ expect_columns_present <- function(object, cols) {
 #' @keywords internal
 expect_columns_absent <- function(object, cols) {
   for (col in cols) {
-    expect_false(col %in% colnames(object))
+    testthat::expect_false(col %in% colnames(object))
   }
   invisible(object)
 }
@@ -151,10 +151,10 @@ expect_columns_absent <- function(object, cols) {
 expect_list_structure <- function(object,
                                   expected_length,
                                   expected_names = NULL) {
-  expect_type(object, "list")
-  expect_length(object, expected_length)
+  testthat::expect_type(object, "list")
+  testthat::expect_length(object, expected_length)
   if (!is.null(expected_names)) {
-    expect_named(object, expected_names)
+    testthat::expect_named(object, expected_names)
   }
   invisible(object)
 }

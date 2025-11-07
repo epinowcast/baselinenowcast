@@ -42,11 +42,8 @@
   filtered_data <- data[data$pair_id %in% valid_pairs, ]
   filtered_data$pair_id <- NULL
 
-  formula_str <- "count ~ reference_date + report_date"
-  formula_obj <- as.formula(formula_str)
-
   result <- aggregate(
-    formula_obj,
+    count ~ reference_date + report_date,
     data = filtered_data,
     FUN = sum,
     na.rm = TRUE

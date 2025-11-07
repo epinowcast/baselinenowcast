@@ -227,7 +227,7 @@ baselinenowcast.reporting_triangle <- function(
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast
 #' @inheritParams allocate_reference_times
-#' @importFrom purrr set_names imap_dfr
+#' @importFrom purrr set_names map_dfr
 #' @importFrom checkmate assert_subset assert_character assert_names
 #'   assert_date
 #' @family baselinenowcast_df
@@ -336,79 +336,31 @@ baselinenowcast.data.frame <- function(
     }
   }
 
-  # Nowcast
-  combined_result <- imap_dfr(
+  # Nowcast on each reporting triangle and bind into a long data.frame
+  combined_result <- map_dfr(
     list_of_rep_tris,
-    # nolint start: brace_linter, unnecessary_nesting_linter
-    \(rep_tri, name) {
-      .nowcast_from_rep_tris(
-        rep_tri = rep_tri,
-        name = name,
-        strata_cols = strata_cols,
-        scale_factor = scale_factor,
-        prop_delay = prop_delay,
-        output_type = output_type,
-        draws = draws,
-        uncertainty_model = uncertainty_model,
-        uncertainty_sampler = uncertainty_sampler,
-        delay_pmf = shared_delay_pmf,
-        uncertainty_params = shared_uncertainty_params
-      )
-    } # nolint end
+    \(rep_tri)
+    baselinenowcast(
+      data = rep_tri,
+      scale_factor = scale_factor,
+      prop_delay = prop_delay,
+      output_type = output_type,
+      draws = draws,
+      uncertainty_model = uncertainty_model,
+      uncertainty_sampler = uncertainty_sampler,
+      delay_pmf = shared_delay_pmf,
+      uncertainty_params = shared_uncertainty_params
+    ),
+    .id = "name"
   )
+
+  # Split the `name` column and assign to columns by strata cols
+  combined_result[strata_cols] <- do.call(
+    rbind,
+    strsplit(combined_result$name, "___", fixed = TRUE)
+  )
+  combined_result$name <- NULL
   return(combined_result)
-}
-
-#' Produce a nowcast from a named reporting triangle object
-#'
-#' @param rep_tri Object of reporting triangle class
-#' @param name Name of the reporting triangle class object
-#' @inheritParams baselinenowcast
-#' @inheritParams baselinenowcast.data.frame
-#' @inheritParams baselinenowcast.reporting_triangle
-#' @inheritParams as_reporting_triangle.data.frame
-#' @inheritParams estimate_uncertainty
-#' @inheritParams sample_nowcast
-#' @inheritParams allocate_reference_times
-#' @keywords internal
-#' @returns Data.frame of nowcasts with columns obtained from the name of the
-#'   original list and the nowcast unit.
-.nowcast_from_rep_tris <- function(
-    rep_tri,
-    name,
-    strata_cols,
-    scale_factor,
-    prop_delay,
-    output_type,
-    draws,
-    uncertainty_model,
-    uncertainty_sampler,
-    delay_pmf,
-    uncertainty_params,
-    ref_time_aggregator = identity,
-    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
-  nowcast_df <- baselinenowcast(
-    data = rep_tri,
-    scale_factor = scale_factor,
-    prop_delay = prop_delay,
-    output_type = output_type,
-    draws = draws,
-    uncertainty_model = uncertainty_model,
-    uncertainty_sampler = uncertainty_sampler,
-    delay_pmf = delay_pmf,
-    uncertainty_params = uncertainty_params,
-    ref_time_aggregator = ref_time_aggregator,
-    delay_aggregator = delay_aggregator
-  )
-
-  # Split the name of the element in the last and add as a separate column
-  # based on nowcast unit entry
-  if (length(strata_cols) != 0) {
-    split_name <- strsplit(name, "___", fixed = TRUE)[[1]]
-    nowcast_df[strata_cols] <- as.list(split_name)
-  }
-
-  return(nowcast_df)
 }
 
 #' Split dataframe into a list of dataframes by the entries in the specified

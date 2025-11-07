@@ -1,22 +1,15 @@
 # Script to generate large covid dataset with multiple age groups.
 # Run this script when the data needs to be updated
-if (!requireNamespace("readr", quietly = TRUE)) {
-  stop("Package 'readr' is required to run this script. Please install it with install.packages('readr').") # nolint
-}
-if (!requireNamespace("lubridate", quietly = TRUE)) {
-  stop("Package 'lubridate' is required to run this script. Please install it with install.packages('lubridate').") # nolint
-}
-if (!requireNamespace("dplyr", quietly = TRUE)) {
-  stop("Package 'dplyr' is required to run this script. Please install it with install.packages('dplyr').") # nolint
-}
-if (!requireNamespace("tidyr", quietly = TRUE)) {
-  stop("Package 'tidyr' is required to run this script. Please install it with install.packages('tidyr').") # nolint
-}
 library(readr)
 library(lubridate)
 library(dplyr)
 library(tidyr)
-covid_url <- "https://raw.githubusercontent.com/KITmetricslab/hospitalization-nowcast-hub/11c745322c055cfbd4f0c8f72241642a50aea399/data-truth/COVID-19/COVID-19_hospitalizations_preprocessed.csv" # nolint
+covid_url <- paste0(
+  "https://raw.githubusercontent.com/KITmetricslab/",
+  "hospitalization-nowcast-hub/",
+  "11c745322c055cfbd4f0c8f72241642a50aea399/",
+  "data-truth/COVID-19/COVID-19_hospitalizations_preprocessed.csv"
+)
 raw_data <- read_csv(covid_url) |>
   rename(value_81d = `value_>80d`)
 

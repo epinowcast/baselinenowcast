@@ -64,6 +64,7 @@ Imports:
 Suggests:
     epinowcast,
     bookdown,
+    ChainLadder,
     dplyr,
     tidyr,
     stringr,

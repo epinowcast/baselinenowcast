@@ -46,18 +46,12 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
                                    reference_dates,
                                    output_type) {
   assert_choice(output_type, choices = c("samples", "point"))
-  spine_df <- data.frame(
-    reference_date = reference_dates,
-    time = seq_along(reference_dates)
+
+  baselinenowcast_df_dates <- .align_time_to_dates(
+    baselinenowcast_df,
+    reference_dates
   )
 
-  baselinenowcast_df_dates <- merge(baselinenowcast_df,
-    spine_df,
-    by = "time",
-    all.x = TRUE
-  )
-
-  baselinenowcast_df_dates$time <- NULL
   baselinenowcast_df_dates$output_type <- output_type
   baselinenowcast_df_ordered <- baselinenowcast_df_dates[order(
     baselinenowcast_df_dates$reference_date,
@@ -70,6 +64,35 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
   )
 
   return(result)
+}
+
+#' Align integer time indices with reference dates
+#' @description Internal helper function that merges reference dates into a
+#'   nowcast dataframe, replacing integer time indices with actual dates.
+#'
+#' @param baselinenowcast_df Data.frame containing nowcast information with an
+#'   integer `time` column representing time indices.
+#' @param reference_dates Vector of reference dates corresponding to the time
+#'   indices in `baselinenowcast_df`.
+#'
+#' @returns Data.frame with `reference_date` column added and `time` column
+#'   removed.
+#' @keywords internal
+.align_time_to_dates <- function(baselinenowcast_df, reference_dates) {
+  spine_df <- data.frame(
+    reference_date = reference_dates,
+    time = seq_along(reference_dates)
+  )
+
+  baselinenowcast_df_dates <- merge(baselinenowcast_df,
+    spine_df,
+    by = "time",
+    all.x = TRUE
+  )
+
+  baselinenowcast_df_dates$time <- NULL
+
+  return(baselinenowcast_df_dates)
 }
 
 #' Assert validity of `baselinenowcast_df` objects

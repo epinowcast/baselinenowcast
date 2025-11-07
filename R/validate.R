@@ -275,6 +275,17 @@
     )
   }
 
+  # Check that first PMF entry is not negative
+  if (delay_pmf[1] < 0) {
+    cli_abort(
+      message = c(
+        "x" = "First entry of delay PMF (delay = 0) is negative ({delay_pmf[1]}).", # nolint
+        "i" = "Negative PMF entries are only valid for later delays where they represent systematic downward corrections.", # nolint
+        "i" = "The first delay must have a non-negative probability as it represents the baseline reporting pattern." # nolint
+      )
+    )
+  }
+
   return(NULL)
 }
 
@@ -501,17 +512,18 @@
 #' @keywords internal
 .validate_delay <- function(triangle,
                             delay_pmf) {
-  test <- check_numeric(sum(delay_pmf), lower = 0.99, upper = 1.01, len = 1)
+  pmf_sum <- sum(delay_pmf)
+  test <- check_numeric(pmf_sum, lower = 0.99, upper = 1.01, len = 1)
   if (!isTRUE(test)) {
-    cli_warn(
-      message = "`delay_pmf` does not sum to approximately one."
+    cli_alert_info(
+      "Delay PMF does not sum to approximately 1 (sum = {round(pmf_sum, 4)}). This may be expected when working with corrections or incomplete data, but could also indicate an error in the delay estimation." # nolint: line_length_linter
     )
   }
 
   n_delays <- ncol(triangle)
   if (n_delays != length(delay_pmf)) {
     cli_abort(
-      message = c("`delay_pmf` is not the same length as the number of delays in the reporting triangle.") # nolint
+      message = c("`delay_pmf` is not the same length as the number of delays in the reporting triangle.") # nolint: line_length_linter
     )
   }
   return(NULL)

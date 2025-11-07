@@ -40,6 +40,7 @@ data from the United State's National Syndromic Surveillance System (NSSP).
 }
 \seealso{
 Example datasets
+\code{\link{example_downward_corr_mat}},
 \code{\link{germany_covid19_hosp}},
 \code{\link{syn_nssp_line_list}}
 }

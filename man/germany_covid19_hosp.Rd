@@ -36,6 +36,7 @@ Incident COVID-19 hospitalisations indexed by the date of positive test
 }
 \seealso{
 Example datasets
+\code{\link{example_downward_corr_mat}},
 \code{\link{syn_nssp_df}},
 \code{\link{syn_nssp_line_list}}
 }

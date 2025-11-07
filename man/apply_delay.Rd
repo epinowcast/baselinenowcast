@@ -33,6 +33,7 @@ German Hospitalization Nowcasting Hub.
 Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
 }
 \examples{
+# Example 1: Standard usage with positive delay PMF
 triangle <- matrix(
   c(
     80, 50, 25, 10,
@@ -54,6 +55,19 @@ point_nowcast_matrix <- apply_delay(
   delay_pmf = delay_pmf
 )
 print(point_nowcast_matrix)
+
+# Example 2: Using delay PMF with negative entries from downward
+# corrections. Create a delay PMF with a negative value representing
+# systematic corrections
+delay_pmf_negative <- c(0.7, 0.4, -0.15, 0.05)
+
+nowcast_with_corrections <- apply_delay(
+  reporting_triangle = example_downward_corr_mat,
+  delay_pmf = delay_pmf_negative
+)
+# The nowcast includes negative predictions at delay 2,
+# correctly reflecting expected downward corrections
+print(nowcast_with_corrections)
 }
 \seealso{
 Point nowcast generation functions

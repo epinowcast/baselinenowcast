@@ -21,6 +21,12 @@
 #'   be used in the estimate of the reporting delay, always starting from the
 #'   most recent reporting delay. The default is to use the whole reporting
 #'   triangle, so `nrow(reporting_triangle)`.
+#' @param preprocess Function to apply to the truncated triangle before
+#'   estimation, or NULL to skip preprocessing. Default is
+#'   [preprocess_negative_values()], which handles negative values by
+#'   redistributing them to earlier delays. Set to NULL if you want to preserve
+#'   negative PMF entries (e.g., when working with downward corrections where
+#'   negative probabilities reflect systematic adjustments).
 #' @returns Vector indexed at 0 of length `max_delay + 1` with columns
 #'   indicating the point estimate of the empirical probability
 #'   mass on each delay.
@@ -28,6 +34,7 @@
 #' @family estimate_delay
 #' @export
 #' @examples
+#' # Example 1: Standard usage with default preprocessing
 #' triangle <- matrix(
 #'   c(
 #'     80, 50, 25, 10,
@@ -45,10 +52,23 @@
 #'   n = 4
 #' )
 #' delay_pmf
+#'
+#' # Example 2: Using data with downward corrections without preprocessing
+#' # This preserves negative PMF entries reflecting systematic corrections
+#' delay_pmf_negative <- estimate_delay(
+#'   reporting_triangle = example_downward_corr_mat,
+#'   max_delay = 3,
+#'   n = 5,
+#'   preprocess = NULL
+#' )
+#' delay_pmf_negative
+#' # Note: PMF may contain negative values and not sum to 1
+#' sum(delay_pmf_negative)
 estimate_delay <- function(
     reporting_triangle,
     max_delay = ncol(reporting_triangle) - 1,
-    n = nrow(reporting_triangle)) {
+    n = nrow(reporting_triangle),
+    preprocess = preprocess_negative_values) {
   .validate_max_delay(
     reporting_triangle,
     max_delay
@@ -64,7 +84,12 @@ estimate_delay <- function(
     n = n
   )
   # Filter the reporting_triangle down to relevant rows and columns
-  trunc_triangle <- .prepare_triangle(reporting_triangle, max_delay, n)
+  trunc_triangle <- .prepare_triangle(
+    reporting_triangle,
+    max_delay,
+    n,
+    preprocess = preprocess
+  )
 
   # Fill in missing values in the triangle
   expectation <- .chainladder_fill_triangle(trunc_triangle)
@@ -76,17 +101,28 @@ estimate_delay <- function(
 }
 
 
-#' Prepare the triangle by truncating and handling negative values
+#' Prepare the triangle by truncating and optionally preprocessing
 #'
 #' @param reporting_triangle The original reporting triangle
 #' @param max_delay Maximum delay to consider
 #' @param n Number of reference times to use
+#' @param preprocess Function to apply to the truncated triangle before
+#'   estimation, or NULL to skip preprocessing. Default is
+#'   [preprocess_negative_values()].
 #' @return Prepared reporting triangle
 #' @noRd
-.prepare_triangle <- function(reporting_triangle, max_delay, n) {
+.prepare_triangle <- function(reporting_triangle, max_delay, n,
+                              preprocess = preprocess_negative_values) {
   nr0 <- nrow(reporting_triangle)
   trunc_triangle <- reporting_triangle[(nr0 - n + 1):nr0, 1:(max_delay + 1)]
-  rep_tri <- .handle_neg_vals(trunc_triangle)
+
+  # Apply preprocessing if provided
+  if (!is.null(preprocess)) {
+    rep_tri <- preprocess(trunc_triangle)
+  } else {
+    rep_tri <- trunc_triangle
+  }
+
   return(rep_tri)
 }
 

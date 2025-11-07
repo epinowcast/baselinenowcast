@@ -76,6 +76,7 @@ baselinenowcast <- function(data,
 #'    [estimate_uncertainty()]
 #'    and [sample_nowcast()].
 #' @inheritParams baselinenowcast
+#' @inheritParams estimate_delay
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast
 #' @inheritParams allocate_reference_times
@@ -102,6 +103,7 @@ baselinenowcast.reporting_triangle <- function(
     uncertainty_sampler = sample_nb,
     delay_pmf = NULL,
     uncertainty_params = NULL,
+    preprocess = preprocess_negative_values,
     ...) {
   tri <- data$reporting_triangle_matrix
   output_type <- arg_match(output_type)
@@ -115,7 +117,8 @@ baselinenowcast.reporting_triangle <- function(
   if (is.null(delay_pmf)) {
     delay_pmf <- estimate_delay(
       reporting_triangle = data$reporting_triangle_matrix,
-      n = tv$n_history_delay
+      n = tv$n_history_delay,
+      preprocess = preprocess
     )
   }
   # check for delay pmf being the right length/format
@@ -229,6 +232,7 @@ baselinenowcast.reporting_triangle <- function(
 #' @inheritParams baselinenowcast
 #' @inheritParams as_reporting_triangle.data.frame
 #' @inheritParams estimate_uncertainty
+#' @inheritParams estimate_delay
 #' @inheritParams sample_nowcast
 #' @inheritParams allocate_reference_times
 #' @importFrom purrr set_names map_dfr
@@ -260,6 +264,7 @@ baselinenowcast.data.frame <- function(
     delays_unit = "days",
     strata_cols = NULL,
     strata_sharing = "none",
+    preprocess = preprocess_negative_values,
     ...) {
   output_type <- arg_match(output_type)
   assert_names(colnames(data),
@@ -326,7 +331,8 @@ baselinenowcast.data.frame <- function(
       # Estimate delay once on pooled data
       shared_delay_pmf <- estimate_delay(
         reporting_triangle = pooled_triangle$reporting_triangle_matrix,
-        n = tv$n_history_delay
+        n = tv$n_history_delay,
+        preprocess = preprocess
       )
     }
     if ("uncertainty" %in% strata_sharing) {
@@ -335,7 +341,8 @@ baselinenowcast.data.frame <- function(
         reporting_triangle = pooled_triangle$reporting_triangle_matrix,
         n_history_delay = tv$n_history_delay,
         n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
-        uncertainty_model = uncertainty_model
+        uncertainty_model = uncertainty_model,
+        preprocess = preprocess
       )
     }
   }
@@ -354,7 +361,8 @@ baselinenowcast.data.frame <- function(
         uncertainty_model = uncertainty_model,
         uncertainty_sampler = uncertainty_sampler,
         delay_pmf = shared_delay_pmf,
-        uncertainty_params = shared_uncertainty_params
+        uncertainty_params = shared_uncertainty_params,
+        preprocess = preprocess
       )
     }, # nolint end
     .id = "name"

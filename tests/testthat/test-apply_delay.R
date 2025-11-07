@@ -250,3 +250,126 @@ test_that("apply_delay works with structure=2 ragged reporting triangles", {
   pmf <- cols / sum(cols)
   expect_equal(pmf, delay_pmf, tolerance = 0.01)
 })
+
+test_that("apply_delay works with PMF containing negative entries", {
+  # Create triangle with negative values
+  triangle <- matrix(
+    c(
+      100, 60, -20, 10,
+      120, 70, -25, 15,
+      110, 65, -22, 12,
+      130, 75, -28, 18,
+      115, 68, -24, 14,
+      125, 72, -26, NA,
+      105, 62, NA, NA,
+      95, NA, NA, NA
+    ),
+    nrow = 8,
+    byrow = TRUE
+  )
+
+  # Get PMF with negative entries
+  delay_pmf <- estimate_delay(
+    reporting_triangle = triangle,
+    max_delay = 3,
+    n = 5,
+    preprocess = NULL
+  )
+
+  # Verify PMF has negative entries
+  expect_true(any(delay_pmf < 0))
+
+  # apply_delay should work
+  result <- apply_delay(
+    reporting_triangle = triangle,
+    delay_pmf = delay_pmf
+  )
+
+  # Result should be a matrix with same dimensions
+  expect_is(result, "matrix")
+  expect_identical(dim(result), dim(triangle))
+
+  # No NAs should remain
+  expect_false(anyNA(result))
+})
+
+test_that("apply_delay CDF can be not strictly increasing", {
+  # Create triangle with negative values
+  triangle <- matrix(
+    c(
+      100, 60, -20, 10,
+      120, 70, -25, 15,
+      110, 65, -22, 12,
+      130, 75, -28, 18,
+      115, 68, -24, 14,
+      125, 72, -26, NA,
+      105, 62, NA, NA,
+      95, NA, NA, NA
+    ),
+    nrow = 8,
+    byrow = TRUE
+  )
+
+  # Get PMF with negative entries
+  delay_pmf <- estimate_delay(
+    reporting_triangle = triangle,
+    max_delay = 3,
+    n = 5,
+    preprocess = NULL
+  )
+
+  # Compute CDF
+  delay_cdf <- cumsum(delay_pmf)
+
+  # Verify CDF is not strictly increasing
+  cdf_diffs <- diff(delay_cdf)
+  expect_true(any(cdf_diffs < 0))
+
+  # apply_delay should still work
+  result <- apply_delay(
+    reporting_triangle = triangle,
+    delay_pmf = delay_pmf
+  )
+
+  expect_false(anyNA(result))
+})
+
+test_that("apply_delay completes full workflow with negative PMF", {
+  # Create triangle with negative values
+  triangle <- matrix(
+    c(
+      100, 60, -20, 10,
+      120, 70, -25, 15,
+      110, 65, -22, 12,
+      130, 75, -28, 18,
+      115, 68, -24, 14,
+      125, 72, -26, NA,
+      105, 62, NA, NA,
+      95, NA, NA, NA
+    ),
+    nrow = 8,
+    byrow = TRUE
+  )
+
+  # Full workflow: estimate delay with preprocess = NULL
+  delay_pmf <- estimate_delay(
+    reporting_triangle = triangle,
+    max_delay = 3,
+    n = 5,
+    preprocess = NULL
+  )
+
+  # Apply delay
+  nowcast <- apply_delay(
+    reporting_triangle = triangle,
+    delay_pmf = delay_pmf
+  )
+
+  # Verify result properties
+  expect_is(nowcast, "matrix")
+  expect_identical(dim(nowcast), dim(triangle))
+  expect_false(anyNA(nowcast))
+
+  # Verify observed values are preserved
+  expect_identical(nowcast[1:5, 1:4], triangle[1:5, 1:4])
+})

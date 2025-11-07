@@ -49,7 +49,8 @@ fill_triangles <- function(retro_reporting_triangles,
                            n = min(
                              sapply(retro_reporting_triangles, nrow)
                            ),
-                           delay_pmf = NULL) {
+                           delay_pmf = NULL,
+                           preprocess = preprocess_negative_values) {
   if (is.list(delay_pmf)) { # name as a list and check length of elements
     delay_pmf_list <- delay_pmf
     if (length(delay_pmf_list) != length(retro_reporting_triangles)) {
@@ -72,7 +73,8 @@ fill_triangles <- function(retro_reporting_triangles,
         reporting_triangle = triangle,
         delay_pmf = pmf,
         n = n,
-        max_delay = max_delay
+        max_delay = max_delay,
+        preprocess = preprocess
       )
       if (!is.null(result$error)) {
         # Print the index and the error message
@@ -185,7 +187,8 @@ fill_triangles <- function(retro_reporting_triangles,
 fill_triangle <- function(reporting_triangle,
                           max_delay = ncol(reporting_triangle) - 1,
                           n = nrow(reporting_triangle),
-                          delay_pmf = NULL) {
+                          delay_pmf = NULL,
+                          preprocess = preprocess_negative_values) {
   if (n > nrow(reporting_triangle)) {
     cli_abort(
       message = c(
@@ -213,7 +216,8 @@ fill_triangle <- function(reporting_triangle,
     delay_pmf <- estimate_delay(
       reporting_triangle = reporting_triangle,
       max_delay = max_delay,
-      n = n
+      n = n,
+      preprocess = preprocess
     )
   }
 

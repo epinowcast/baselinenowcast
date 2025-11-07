@@ -74,6 +74,7 @@ estimate_uncertainty_retro <- function(
     max_delay = ncol(reporting_triangle) - 1,
     structure = detect_structure(reporting_triangle),
     delay_pmf = NULL,
+    preprocess = preprocess_negative_values,
     ...) {
   .validate_triangle(reporting_triangle)
 
@@ -100,7 +101,8 @@ estimate_uncertainty_retro <- function(
     retro_reporting_triangles = reporting_triangle_list,
     max_delay = max_delay,
     n = n_history_delay,
-    delay_pmf = delay_pmf
+    delay_pmf = delay_pmf,
+    preprocess = preprocess
   )
 
   if (is.null(pt_nowcast_mat_list) ||

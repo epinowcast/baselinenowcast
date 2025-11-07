@@ -22,6 +22,7 @@
 #' @family generate_point_nowcasts
 #' @export
 #' @examples
+#' # Example 1: Standard usage with positive delay PMF
 #' triangle <- matrix(
 #'   c(
 #'     80, 50, 25, 10,
@@ -43,6 +44,19 @@
 #'   delay_pmf = delay_pmf
 #' )
 #' print(point_nowcast_matrix)
+#'
+#' # Example 2: Using delay PMF with negative entries from downward
+#' # corrections. Create a delay PMF with a negative value representing
+#' # systematic corrections
+#' delay_pmf_negative <- c(0.7, 0.4, -0.15, 0.05)
+#'
+#' nowcast_with_corrections <- apply_delay(
+#'   reporting_triangle = example_downward_corr_mat,
+#'   delay_pmf = delay_pmf_negative
+#' )
+#' # The nowcast includes negative predictions at delay 2,
+#' # correctly reflecting expected downward corrections
+#' print(nowcast_with_corrections)
 apply_delay <- function(reporting_triangle, delay_pmf) {
   # Checks that the delay df and the triangle are compatible
   .validate_delay_and_triangle(

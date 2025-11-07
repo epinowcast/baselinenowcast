@@ -63,6 +63,20 @@ test_that("baselinenowcast.data.frame returns the expected structure with and wi
       tol = 0.01
     )
   )
+
+  # Check that preprocess can be passed as NULL
+  nowcasts_df3 <- baselinenowcast(
+    data = covid_data,
+    max_delay = 40,
+    draws = 100,
+    strata_cols = c("age_group", "location"),
+    preprocess = NULL
+  )
+
+  expect_s3_class(nowcasts_df3, "data.frame")
+  expect_s3_class(nowcasts_df3, "baselinenowcast_df")
+  expect_true(all(expected_cols_nu %in% colnames(nowcasts_df3)))
+  expect_identical(nowcasts_df3$output_type[1], "samples")
 })
 
 test_that("baselinenowcast returns expected structure without errors for all different nowcast units", { # nolint

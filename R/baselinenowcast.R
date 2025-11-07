@@ -343,18 +343,20 @@ baselinenowcast.data.frame <- function(
   # Nowcast on each reporting triangle and bind into a long data.frame
   combined_result <- map_dfr(
     list_of_rep_tris,
-    \(rep_tri)
-    baselinenowcast(
-      data = rep_tri,
-      scale_factor = scale_factor,
-      prop_delay = prop_delay,
-      output_type = output_type,
-      draws = draws,
-      uncertainty_model = uncertainty_model,
-      uncertainty_sampler = uncertainty_sampler,
-      delay_pmf = shared_delay_pmf,
-      uncertainty_params = shared_uncertainty_params
-    ),
+    # nolint start: brace_linter, unnecessary_nesting_linter
+    \(rep_tri){
+      baselinenowcast(
+        data = rep_tri,
+        scale_factor = scale_factor,
+        prop_delay = prop_delay,
+        output_type = output_type,
+        draws = draws,
+        uncertainty_model = uncertainty_model,
+        uncertainty_sampler = uncertainty_sampler,
+        delay_pmf = shared_delay_pmf,
+        uncertainty_params = shared_uncertainty_params
+      )
+    }, # nolint end
     .id = "name"
   )
 

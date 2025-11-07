@@ -463,8 +463,8 @@
     by = {{ delays_unit }}
   ))
   if (all_dates_length != length(unique(data$reference_date))) {
-    cli_warn(
-      message =
+    cli_alert_info(
+      text =
         "Data does not contain case counts for all possible reference dates."
     )
   }
@@ -550,5 +550,38 @@
   assert_choice(delays_unit,
     choices = c("days", "weeks", "months", "years")
   )
+  return(NULL)
+}
+
+#' Validate each of the strata columns passed to baselinenowcast
+#'
+#' @inheritParams baselinenowcast.data.frame
+#' @keywords internal
+#' @returns NULL
+.validate_strata_cols <- function(strata_cols,
+                                  data) {
+  # Ensure nowcast_unit is not reference_date, report_date, count
+  conflicting_cols <- intersect(strata_cols, c(
+    "reference_date",
+    "report_date",
+    "count"
+  ))
+  if (length(conflicting_cols) > 0) {
+    cli_abort(
+      message = c(
+        "`strata_cols` cannot contain any of the required columns of: reference_date, report_date, count .", # nolint
+        "i" = "Found: {conflicting_cols} in `strata_cols`" # nolint
+      )
+    )
+  }
+
+  if (!all(strata_cols %in% colnames(data))) {
+    cli_abort(
+      message =
+        c("`strata_cols`, if specified, must be a column in `data`.",
+          "i" = "{strata_cols[!strata_cols %in% colnames(data)]} is not a column in `data`." # nolint
+        )
+    )
+  }
   return(NULL)
 }

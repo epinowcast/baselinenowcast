@@ -11,7 +11,7 @@ data from the United State's National Syndromic Surveillance System (NSSP).}
 \format{
 A data.frame with 3795 rows and 3 columns.
 \describe{
-\item{reference_date}{Date of the primary event occurred (e.g. date of
+\item{reference_date}{Date the primary event occurred (e.g. date of
 hospital admissions, specimen collection date, symptom onset), formatted
 in ISO8601 standards as YYYY-MM-DD.}
 \item{report_date}{Date the event was reported into the surveillance
@@ -40,6 +40,7 @@ data from the United State's National Syndromic Surveillance System (NSSP).
 }
 \seealso{
 Example datasets
+\code{\link{germany_covid19_hosp}},
 \code{\link{syn_nssp_line_list}}
 }
 \concept{example_data}

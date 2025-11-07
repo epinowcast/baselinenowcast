@@ -20,7 +20,7 @@ test_that(".validate_rep_tri_df() errors if there are duplicate pairs of referen
 test_that(".validate_rep_tri_df() can handle a ragged triangle with a single missing reference date", { # nolint
   test <- data_as_of_df[data_as_of_df$reference_date != "2026-03-26", ]
 
-  rep_tri <- expect_warning(
+  rep_tri <- expect_message(
     .validate_rep_tri_df(test, delays_unit = "days"),
     regexp = "Data does not contain case counts for all possible reference dates" # nolint
   )

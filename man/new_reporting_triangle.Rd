@@ -38,7 +38,7 @@ the reporting triangle.  Default is \code{"days"}.}
 \item{strata}{Character string indicating the strata. Default is NULL.}
 }
 \value{
-An object of class \code{\link{reporting_triangle}}
+An object of class \link{reporting_triangle}
 }
 \description{
 Class constructor for \code{reporting_triangle} objects

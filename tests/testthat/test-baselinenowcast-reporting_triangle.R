@@ -9,18 +9,20 @@ expected_cols <- c("pred_count", "draw", "reference_date", "output_type")
 
 test_that("baselinenowcast.reporting_triangle() works as expected", {
   nowcast_df <- baselinenowcast(rep_tri, draws = 100)
-  expect_s3_class(nowcast_df, "data.frame")
-  expect_s3_class(nowcast_df, "baselinenowcast_df")
-  expect_true(all(expected_cols %in% colnames(nowcast_df)))
-  expect_identical(nowcast_df$output_type[1], "samples")
+  expect_baselinenowcast_structure(
+    nowcast_df,
+    expected_cols,
+    output_type = "samples"
+  )
   pt_nowcast_df <- baselinenowcast(rep_tri,
     output_type = "point"
   )
-  expect_s3_class(pt_nowcast_df, "data.frame")
-  expect_s3_class(pt_nowcast_df, "baselinenowcast_df")
-  expect_identical(pt_nowcast_df$output_type[1], "point")
+  expect_baselinenowcast_structure(
+    pt_nowcast_df,
+    expected_cols,
+    output_type = "point"
+  )
   expect_identical(pt_nowcast_df$draw[1], 1)
-  expect_true(all(expected_cols %in% colnames(pt_nowcast_df)))
 
   # Expect draws are ordered
   expect_identical(
@@ -56,8 +58,7 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
     delay_pmf = rep(1 / 26, 26),
     draws = 100
   ))
-  expect_s3_class(test_df, "data.frame")
-  expect_true(all(expected_cols %in% colnames(test_df)))
+  expect_baselinenowcast_structure(test_df, expected_cols)
 
   expect_no_warning(
     baselinenowcast(rep_tri,
@@ -78,8 +79,7 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
     draws = 100
   )
 
-  expect_s3_class(test_df2, "data.frame")
-  expect_true(all(expected_cols %in% colnames(test_df2)))
+  expect_baselinenowcast_structure(test_df2, expected_cols)
 })
 
 test_that("baselinenowcast specifying not to include draws works as expected", {
@@ -87,8 +87,9 @@ test_that("baselinenowcast specifying not to include draws works as expected", {
   pt_nowcast <- baselinenowcast(rep_tri,
     output_type = "point"
   )
-  expect_s3_class(pt_nowcast, "data.frame")
-  expect_true(all(expected_cols %in% colnames(pt_nowcast)))
+  expect_baselinenowcast_structure(pt_nowcast, expected_cols,
+    output_type = "point"
+  )
   prob_nowcast <- baselinenowcast(rep_tri)
 
   summarised_prob_nowcast <- prob_nowcast |>
@@ -121,11 +122,11 @@ test_that("baselinenowcast passing in a separate delay/uncertainty parameters re
       sd_nc = sd(pred_count)
     )
 
-  expect_failure(expect_equal(
+  expect_estimates_differ(
     mean_dif_delay$mean_nc,
     mean_nowcast$mean_nc,
     tol = 0.1
-  ))
+  )
 
   dif_uq <- baselinenowcast(rep_tri,
     uncertainty_params = rep(1, 25),
@@ -135,11 +136,11 @@ test_that("baselinenowcast passing in a separate delay/uncertainty parameters re
     dplyr::group_by(reference_date) |>
     dplyr::summarise(sd_nc = sd(pred_count))
 
-  expect_failure(expect_equal(
+  expect_estimates_differ(
     sd_uq$sd_nc,
     mean_nowcast$sd_nc,
     tol = 0.1
-  ))
+  )
 })
 
 test_that("assert_baselinenowcast_df errors when appropriate", {
@@ -167,11 +168,8 @@ test_that("assert_baselinenowcast_df errors when appropriate", {
 
   nowcast_df_dates <- nowcast_df
   nowcast_df_dates$reference_date <- "dates"
-  expect_error(
-    assert_baselinenowcast_df(
-      nowcast_df_dates
-    ),
-    regexp = "Must be of class 'Date', not 'character'" # nolint
+  expect_error_wrong_date_class(
+    assert_baselinenowcast_df(nowcast_df_dates)
   )
 
   expect_error(
@@ -232,17 +230,22 @@ test_that(
     )
 
     # Verify output structure
-    expect_s3_class(result, "data.frame")
-    expected_cols <- c("reference_date", "pred_count", "draw", "output_type")
-    expect_true(all(expected_cols %in% colnames(result)))
+    result_expected_cols <- c(
+      "reference_date",
+      "pred_count",
+      "draw",
+      "output_type"
+    )
+    expect_baselinenowcast_structure(
+      result,
+      result_expected_cols,
+      output_type = "point"
+    )
 
     # Verify nowcast values exist
     expect_false(anyNA(result$pred_count))
 
     # Verify output has rows
     expect_gt(nrow(result), 0)
-
-    # Verify output_type is correct
-    expect_identical(unique(result$output_type), "point")
   }
 )

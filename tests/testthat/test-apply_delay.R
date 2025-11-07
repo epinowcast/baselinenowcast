@@ -9,7 +9,7 @@ test_that("apply_delay function works as expected when result is known", {
     nrow = 4,
     byrow = TRUE
   )
-  delay_pmf <- c(0.4, 0.2, 0.2, 0.2)
+  delay_pmf <- c(0.4, 0.2, 0.2, 0.2)  # Non-standard PMF for specific test
 
   result <- apply_delay(
     reporting_triangle = triangle,
@@ -30,7 +30,7 @@ test_that("apply_delay function works as expected when result is known", {
     nrow = 4,
     byrow = TRUE
   )
-  delay_pmf <- c(0.4, 0.2, 0.2, 0.2)
+  delay_pmf <- c(0.4, 0.2, 0.2, 0.2)  # Same PMF for consistency
 
   result <- apply_delay(
     reporting_triangle = triangle,
@@ -85,13 +85,13 @@ test_that("apply_delay function works correctly on simple triangle", {
   # Make a simple triangle of ones
   triangle <- matrix(nrow = 5, ncol = 4, data = 1) |>
     construct_triangle()
-  delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
+  delay_pmf <- make_delay_pmf("simple")
   result <- apply_delay(
     reporting_triangle = triangle,
     delay_pmf = delay_pmf
   )
 
-  expect_is(result, "matrix")
+  expect_valid_matrix(result)
 
   mat <- matrix(nrow = 5, ncol = 4, data = 1)
   expect_error(
@@ -103,7 +103,7 @@ test_that("apply_delay function works correctly on simple triangle", {
   )
 
   # Test that the dimensions of the output match the input
-  expect_identical(dim(result), dim(triangle))
+  expect_dimensions_match(result, triangle)
 
   # Test that the known values remain unchanged
   expect_identical(result[1:3, 1:2], triangle[1:3, 1:2])
@@ -111,7 +111,7 @@ test_that("apply_delay function works correctly on simple triangle", {
 
 test_that("apply_delay function works on a triangle with 0s", {
   set.seed(123)
-  # Make a simple triangle of ones
+  # Triangle with 0s in first column to test edge case
   triangle <- matrix(
     c(
       8, 5, 2, 1,
@@ -123,16 +123,16 @@ test_that("apply_delay function works on a triangle with 0s", {
     nrow = 5,
     byrow = TRUE
   )
-  delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
+  delay_pmf <- make_delay_pmf("simple")
   result <- apply_delay(
     reporting_triangle = triangle,
     delay_pmf = delay_pmf
   )
 
-  expect_is(result, "matrix")
+  expect_valid_matrix(result)
 
   # Test that the dimensions of the output match the input
-  expect_identical(dim(result), dim(triangle))
+  expect_dimensions_match(result, triangle)
 
   # Test that the known values remain unchanged
   expect_identical(result[1:3, 1:2], triangle[1:3, 1:2])
@@ -161,10 +161,10 @@ test_that("apply_delay function works correctly with larger triangle", {
   result <- apply_delay(triangle_to_nowcast, delay_pmf)
 
   # Test that the output is a matrix
-  expect_is(result, "matrix")
+  expect_valid_matrix(result)
 
   # Test that the dimensions of the output match the input
-  expect_identical(dim(result), dim(triangle_to_nowcast))
+  expect_dimensions_match(result, triangle_to_nowcast)
 
   # Test that the known values remain unchanged
   expect_identical(result[1:3, 1:2], triangle_to_nowcast[1:3, 1:2])
@@ -194,7 +194,7 @@ test_that("apply_delay function works correctly with larger triangle", {
 test_that("apply_delay function works the same as the more verbose for loop", {
   triangle <- matrix(nrow = 5, ncol = 4, data = 1)
   triangle <- construct_triangle(triangle)
-  delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
+  delay_pmf <- make_delay_pmf("simple")
   result <- apply_delay(
     reporting_triangle = triangle,
     delay_pmf = delay_pmf
@@ -286,8 +286,8 @@ test_that("apply_delay works with PMF containing negative entries", {
   )
 
   # Result should be a matrix with same dimensions
-  expect_is(result, "matrix")
-  expect_identical(dim(result), dim(triangle))
+  expect_valid_matrix(result)
+  expect_dimensions_match(result, triangle)
 
   # No NAs should remain
   expect_false(anyNA(result))
@@ -366,8 +366,8 @@ test_that("apply_delay completes full workflow with negative PMF", {
   )
 
   # Verify result properties
-  expect_is(nowcast, "matrix")
-  expect_identical(dim(nowcast), dim(triangle))
+  expect_valid_matrix(nowcast)
+  expect_dimensions_match(nowcast, triangle)
   expect_false(anyNA(nowcast))
 
   # Verify observed values are preserved

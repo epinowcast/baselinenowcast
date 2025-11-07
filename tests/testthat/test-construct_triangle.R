@@ -18,6 +18,7 @@ test_that(
       byrow = TRUE
     )
     result <- construct_triangle(square_matrix)
+    expect_valid_triangle(result, has_nas = TRUE)
     expect_identical(result, expected)
   }
 )
@@ -43,6 +44,7 @@ test_that(
       byrow = TRUE
     )
     result <- construct_triangle(rect_matrix)
+    expect_valid_triangle(result, has_nas = TRUE)
     expect_identical(result, expected)
   }
 )
@@ -67,6 +69,7 @@ test_that(
       byrow = TRUE
     )
     result <- construct_triangle(rect_matrix)
+    expect_valid_triangle(result, has_nas = TRUE)
     expect_identical(result, expected)
   }
 )
@@ -74,6 +77,7 @@ test_that(
 test_that("construct_triangle leaves 1x1 matrix unchanged", {
   single_cell <- matrix(1, nrow = 1, ncol = 1)
   result <- construct_triangle(single_cell)
+  expect_valid_triangle(result, has_nas = FALSE)
   expect_identical(result, single_cell)
 })
 
@@ -90,6 +94,7 @@ test_that("construct_triangle handles 2x2 matrix", {
     byrow = TRUE
   )
   result <- construct_triangle(two_by_two)
+  expect_valid_triangle(result, has_nas = TRUE)
   expect_identical(result, expected)
 })
 
@@ -114,6 +119,7 @@ test_that("construct_triangle handles matrix with existing NAs", {
     byrow = TRUE
   )
   result <- construct_triangle(na_matrix)
+  expect_valid_triangle(result, has_nas = TRUE)
   expect_identical(result, expected)
 })
 
@@ -124,12 +130,14 @@ test_that("construct_triangle handles one-row matrix", {
     nrow = 1
   )
   result <- construct_triangle(one_row)
+  expect_valid_triangle(result, has_nas = TRUE)
   expect_identical(result, expected)
 })
 
 test_that("construct_triangle handles one-column matrix", {
   one_col <- matrix(1:5, ncol = 1)
   result <- construct_triangle(one_col)
+  expect_valid_triangle(result, has_nas = FALSE)
   expect_identical(result, one_col)
 })
 
@@ -137,6 +145,7 @@ test_that("construct_triangle does not modify the original matrix", {
   original <- matrix(1:9, nrow = 3)
   original_copy <- original
   result <- construct_triangle(original)
+  expect_valid_triangle(result, has_nas = TRUE)
   expect_identical(original, original_copy)
   expect_false(identical(result, original))
 })

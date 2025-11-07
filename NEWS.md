@@ -1,5 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
+-   Add converters between `reporting_triangle` and ChainLadder triangle formats via `as_ChainLadder_triangle()` and `as_reporting_triangle.triangle()`, enabling use of ChainLadder's mature claims reserving methods alongside baselinenowcast's nowcasting functionality.
 -   Add a `baselinenowcast.reporting_triangle()` method which ingests a `reporting_triangle` object and produces a `baselinenowcast_df` object which is a data.frame with nowcasts and associated metadata.
 -   Include the pre-print as well as the package in the citation.
 -   Add a `as_reporting_triangle()` S3 method which ingests a data.frame or matrix and returns a `reporting_triangle` object, which will be used as an input to the eventual `baselinenowcast()` function.

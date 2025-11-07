@@ -226,6 +226,32 @@ test_that("estimate_delay with preprocess = NULL preserves negative values", {
   expect_true(any(delay_pmf < 0))
 })
 
+test_that("estimate_delay can handle more extreme negative backfill", {
+  triangle <- matrix(
+    c(
+      10, 6, -30, 10,
+      12, 7, -35, 15,
+      11, 6, -32, 12,
+      13, 7, -38, 18,
+      11, 6, -34, 14,
+      12, 7, -36, NA,
+      10, 6, NA, NA,
+      95, NA, NA, NA
+    ),
+    nrow = 8,
+    byrow = TRUE
+  )
+  delay_pmf <- estimate_delay(
+    reporting_triangle = triangle,
+    max_delay = 3,
+    n = 5,
+    preprocess = NULL
+  )
+
+  # This is all backwards bc sum(triangle) is negative, will fail
+  expect_true(all(delay_pmf[1:2] > 0))
+})
+
 test_that("estimate_delay with negative PMF produces non-increasing CDF", {
   # Use example data with negative values
   triangle_neg <- matrix(

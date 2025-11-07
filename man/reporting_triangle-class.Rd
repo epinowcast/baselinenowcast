@@ -21,17 +21,55 @@ A \code{reporting_triangle} is a matrix with class
 
 Attributes:
 \itemize{
-\item \code{reference_dates}: Vector of Date objects
 \item \code{delays_unit}: Character ("days", "weeks", "months", "years")
 \item \code{structure}: Integer vector indicating reporting pattern
+}
+
+Reference dates are stored as row names and can be extracted using
+\code{\link[=get_reference_dates]{get_reference_dates()}}.
 See the corresponding \code{\link[=as_reporting_triangle.matrix]{as_reporting_triangle.matrix()}} and
 \code{\link[=as_reporting_triangle.data.frame]{as_reporting_triangle.data.frame()}} functions
 for more details on the required input formats to generate the object.
 }
+
+\section{Low-level function compatibility}{
+
+The matrix-based structure works seamlessly with low-level functions:
+\itemize{
+\item \code{\link[=fill_triangle]{fill_triangle()}}: Fill missing values with zeros
+\item \code{\link[=estimate_delay]{estimate_delay()}}: Extract delay distribution from triangle
+\item \code{\link[=apply_delay]{apply_delay()}}: Apply delay distribution for nowcasting
+\item \code{\link[=truncate_triangle]{truncate_triangle()}}: Remove most recent rows
+\item Standard matrix operations: \code{rowSums()}, \code{colSums()}, subsetting
+}
 }
 
+\examples{
+# Create a reporting triangle from data
+data <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+data$age_group <- "00+"
+rep_tri <- as_reporting_triangle(
+  data = data,
+  max_delay = 10,
+  strata = "00+"
+)
+
+# Use with low-level functions
+filled <- fill_triangle(rep_tri)
+delay_pmf <- estimate_delay(rep_tri)
+nowcast <- apply_delay(rep_tri, delay_pmf)
+
+# Direct matrix operations
+total_by_date <- rowSums(rep_tri, na.rm = TRUE)
+total_by_delay <- colSums(rep_tri, na.rm = TRUE)
+
+# Subsetting and inspection
+recent <- tail(rep_tri, n = 10)
+summary(rep_tri)
+}
 \seealso{
 Reporting triangle construction and validation
+\code{\link{[.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
@@ -39,8 +77,13 @@ Reporting triangle construction and validation
 \code{\link{as_reporting_triangle.triangle}()},
 \code{\link{assert_reporting_triangle}()},
 \code{\link{detect_structure}()},
+\code{\link{get_reference_dates}()},
+\code{\link{head.reporting_triangle}()},
+\code{\link{is_reporting_triangle}()},
 \code{\link{new_reporting_triangle}()},
 \code{\link{print.reporting_triangle}()},
-\code{\link{summary.reporting_triangle}()}
+\code{\link{summary.reporting_triangle}()},
+\code{\link{tail.reporting_triangle}()},
+\code{\link{validate_reporting_triangle}()}
 }
 \concept{reporting_triangle}

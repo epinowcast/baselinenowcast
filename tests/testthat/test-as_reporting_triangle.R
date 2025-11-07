@@ -59,9 +59,10 @@ test_that("as_reporting_triangle.data.frame() can handle different temporal gran
     max_delay = 3,
     delays_unit = "weeks"
   )
+  ref_dates <- get_reference_dates(rep_tri)
   expected_days_diff <- as.numeric(difftime(
-    attr(rep_tri, "reference_dates")[2],
-    attr(rep_tri, "reference_dates")[1]
+    ref_dates[2],
+    ref_dates[1]
   ))
   expect_identical(expected_days_diff, 7)
   expect_true(is.matrix(rep_tri))
@@ -78,9 +79,10 @@ test_that("as_reporting_triangle.data.frame() can handle different temporal gran
     ),
     regexp = "Data does not contain case counts for all possible reference dates" # nolint
   )
+  ref_dates2 <- get_reference_dates(rep_tri2)
   expected_days_diff <- as.numeric(difftime(
-    attr(rep_tri2, "reference_dates")[2],
-    attr(rep_tri2, "reference_dates")[1]
+    ref_dates2[2],
+    ref_dates2[1]
   ))
   expect_identical(expected_days_diff, 7)
   expect_true(is.matrix(rep_tri2))
@@ -94,9 +96,10 @@ test_that("as_reporting_triangle.data.frame() can handle different temporal gran
     max_delay = 25,
     delays_unit = "days"
   )
+  ref_dates3 <- get_reference_dates(rep_tri3)
   expected_days_diff <- as.numeric(difftime(
-    attr(rep_tri3, "reference_dates")[2],
-    attr(rep_tri3, "reference_dates")[1]
+    ref_dates3[2],
+    ref_dates3[1]
   ))
   expect_identical(expected_days_diff, 1)
   expect_true(is.matrix(rep_tri3))
@@ -252,7 +255,7 @@ test_that("as_reporting_triangle.matrix() can handle specification of each arg",
   mat_compare <- unclass(rep_tri)
   attributes(mat_compare) <- list(dim = dim(mat_compare))
   expect_identical(mat_compare, rep_tri_mat)
-  expect_identical(attr(rep_tri, "reference_dates"), reference_dates)
+  expect_identical(get_reference_dates(rep_tri), reference_dates)
   expect_identical(attr(rep_tri, "structure"), 1)
 })
 
@@ -338,8 +341,9 @@ test_that("assert_reporting_triangle validates attributes correctly", {
   expect_s3_class(rep_tri, "reporting_triangle")
   expect_no_error(assert_reporting_triangle(rep_tri))
 
+  # Test with modified rownames (reference dates stored as rownames)
   rep_tri1 <- rep_tri
-  attr(rep_tri1, "reference_dates") <- c(1, 3, 4)
+  rownames(rep_tri1) <- c("invalid", "dates", "here")
   expect_error(assert_reporting_triangle(rep_tri1))
 
   # Test with modified delays_unit attribute

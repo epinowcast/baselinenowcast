@@ -52,7 +52,7 @@ test_that(
     rep_tri_2 <- as_reporting_triangle(
       data = cl_triangle,
       max_delay = ncol(rep_tri) - 1,
-      reference_dates = attr(rep_tri, "reference_dates"),
+      reference_dates = get_reference_dates(rep_tri),
       delays_unit = attr(rep_tri, "delays_unit")
     )
 
@@ -67,8 +67,8 @@ test_that(
     dimnames(mat_1) <- NULL
     expect_identical(mat_2, mat_1)
     expect_identical(
-      attr(rep_tri_2, "reference_dates"),
-      attr(rep_tri, "reference_dates")
+      get_reference_dates(rep_tri_2),
+      get_reference_dates(rep_tri)
     )
     expect_identical(ncol(rep_tri_2) - 1, ncol(rep_tri) - 1)
     expect_identical(
@@ -96,7 +96,7 @@ test_that("as_ChainLadder_triangle() and as_reporting_triangle.triangle() round-
   rep_tri_final <- as_reporting_triangle(
     data = cl_triangle,
     max_delay = ncol(rep_tri_original) - 1,
-    reference_dates = attr(rep_tri_original, "reference_dates"),
+    reference_dates = get_reference_dates(rep_tri_original),
     delays_unit = attr(rep_tri_original, "delays_unit")
   )
 
@@ -107,8 +107,8 @@ test_that("as_ChainLadder_triangle() and as_reporting_triangle.triangle() round-
   dimnames(mat_orig) <- NULL
   expect_identical(mat_final, mat_orig)
   expect_identical(
-    attr(rep_tri_final, "reference_dates"),
-    attr(rep_tri_original, "reference_dates")
+    get_reference_dates(rep_tri_final),
+    get_reference_dates(rep_tri_original)
   )
   expect_identical(ncol(rep_tri_final) - 1, ncol(rep_tri_original) - 1)
   expect_identical(
@@ -157,7 +157,7 @@ test_that(
     cl_triangle <- as_ChainLadder_triangle(rep_tri)
 
     # Set row names to dates
-    rownames(cl_triangle) <- as.character(attr(rep_tri, "reference_dates"))
+    rownames(cl_triangle) <- as.character(get_reference_dates(rep_tri))
 
     # Should work without explicit reference_dates
     rep_tri_2 <- as_reporting_triangle(
@@ -167,8 +167,8 @@ test_that(
 
     expect_s3_class(rep_tri_2, "reporting_triangle")
     expect_identical(
-      attr(rep_tri_2, "reference_dates"),
-      attr(rep_tri, "reference_dates")
+      get_reference_dates(rep_tri_2),
+      get_reference_dates(rep_tri)
     )
   }
 )
@@ -196,7 +196,7 @@ test_that(
     rep_tri_2 <- as_reporting_triangle(
       data = cl_triangle,
       max_delay = ncol(rep_tri) - 1,
-      reference_dates = attr(rep_tri, "reference_dates"),
+      reference_dates = get_reference_dates(rep_tri),
       delays_unit = "weeks"
     )
 

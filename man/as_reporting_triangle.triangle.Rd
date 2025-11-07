@@ -85,15 +85,21 @@ print(rep_tri_2)
 }
 
 Reporting triangle construction and validation
+\code{\link{[.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.matrix}()},
 \code{\link{assert_reporting_triangle}()},
 \code{\link{detect_structure}()},
+\code{\link{get_reference_dates}()},
+\code{\link{head.reporting_triangle}()},
+\code{\link{is_reporting_triangle}()},
 \code{\link{new_reporting_triangle}()},
 \code{\link{print.reporting_triangle}()},
 \code{\link{reporting_triangle-class}},
-\code{\link{summary.reporting_triangle}()}
+\code{\link{summary.reporting_triangle}()},
+\code{\link{tail.reporting_triangle}()},
+\code{\link{validate_reporting_triangle}()}
 }
 \concept{reporting_triangle}

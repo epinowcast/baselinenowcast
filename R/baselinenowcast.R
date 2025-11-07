@@ -132,7 +132,7 @@ baselinenowcast.reporting_triangle <- function(
     )
     nowcast_df$draw <- 1
     result_df <- new_baselinenowcast_df(nowcast_df,
-      reference_dates = attr(data, "reference_dates"),
+      reference_dates = get_reference_dates(data),
       output_type = output_type
     )
     return(result_df)
@@ -157,7 +157,7 @@ baselinenowcast.reporting_triangle <- function(
   )
 
   result_df <- new_baselinenowcast_df(nowcast_df,
-    reference_dates = attr(data, "reference_dates"),
+    reference_dates = get_reference_dates(data),
     output_type = output_type
   )
 

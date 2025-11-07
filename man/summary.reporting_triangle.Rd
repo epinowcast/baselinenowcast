@@ -19,6 +19,7 @@ Summarize a reporting_triangle object
 }
 \seealso{
 Reporting triangle construction and validation
+\code{\link{[.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
@@ -26,8 +27,13 @@ Reporting triangle construction and validation
 \code{\link{as_reporting_triangle.triangle}()},
 \code{\link{assert_reporting_triangle}()},
 \code{\link{detect_structure}()},
+\code{\link{get_reference_dates}()},
+\code{\link{head.reporting_triangle}()},
+\code{\link{is_reporting_triangle}()},
 \code{\link{new_reporting_triangle}()},
 \code{\link{print.reporting_triangle}()},
-\code{\link{reporting_triangle-class}}
+\code{\link{reporting_triangle-class}},
+\code{\link{tail.reporting_triangle}()},
+\code{\link{validate_reporting_triangle}()}
 }
 \concept{reporting_triangle}

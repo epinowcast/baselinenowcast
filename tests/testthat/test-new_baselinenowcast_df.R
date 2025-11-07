@@ -87,3 +87,38 @@ test_that("new_baselinenowcast_df errors if incorrect `output_type`", {
     regexp = "Assertion on 'output_type' failed" # nolint
   )
 })
+
+test_that(".align_time_to_dates() correctly merges dates with time indices", {
+  nowcast_df <- data.frame(
+    time = c(1, 2, 3),
+    pred_count = c(100, 200, 300),
+    draw = c(1, 1, 1)
+  )
+  reference_dates <- as.Date(c("2024-01-01", "2024-01-02", "2024-01-03"))
+
+  result <- .align_time_to_dates(nowcast_df, reference_dates)
+
+  expect_identical(result$reference_date, reference_dates)
+  expect_identical(result$pred_count, c(100, 200, 300))
+  expect_false("time" %in% names(result))
+})
+
+test_that(".align_time_to_dates() handles non-sequential time values", {
+  nowcast_df <- data.frame(
+    time = c(1, 3, 5),
+    pred_count = c(10, 30, 50),
+    draw = c(1, 1, 1)
+  )
+  reference_dates <- as.Date(c(
+    "2024-01-01", "2024-01-02", "2024-01-03",
+    "2024-01-04", "2024-01-05"
+  ))
+
+  result <- .align_time_to_dates(nowcast_df, reference_dates)
+
+  expect_identical(nrow(result), 3L)
+  expect_identical(
+    result$reference_date,
+    as.Date(c("2024-01-01", "2024-01-03", "2024-01-05"))
+  )
+})

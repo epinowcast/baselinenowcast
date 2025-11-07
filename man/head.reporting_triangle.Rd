@@ -20,6 +20,7 @@ Get first rows of a reporting_triangle
 \seealso{
 Reporting triangle construction and validation
 \code{\link{[.reporting_triangle}()},
+\code{\link{as.data.frame.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},

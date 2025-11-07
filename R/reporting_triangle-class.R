@@ -128,13 +128,12 @@ get_mean_delay <- function(x) {
 #'   NA for rows with no observations.
 #' @family reporting_triangle
 #' @export
+#' @importFrom checkmate assert_numeric
 get_quantile_delay <- function(x, p = 0.99) {
   if (!is_reporting_triangle(x)) {
     cli_abort(message = "x must have class 'reporting_triangle'")
   }
-  if (p < 0 || p > 1) {
-    cli_abort(message = "p must be between 0 and 1")
-  }
+  assert_numeric(p, lower = 0, upper = 1, len = 1)
 
   delays <- 0:get_max_delay(x)
   quantile_delays <- vapply(seq_len(nrow(x)), function(i) {
@@ -270,6 +269,11 @@ is_reporting_triangle <- function(x) {
 
   # Skip validation if object unchanged
   if (identical(x, out) && ...length() == 1) {
+    return(out)
+  }
+
+  # If result is not a matrix (e.g., single row/column), return as-is
+  if (!is.matrix(out)) {
     return(out)
   }
 
@@ -436,9 +440,22 @@ summary.reporting_triangle <- function(object, ...) {
   rows_with_negatives <- sum(row_has_negative) # nolint: object_usage_linter
   cli_text("Rows with negatives: {rows_with_negatives}")
 
-  # Count zeros
-  num_zeros <- sum(object == 0, na.rm = TRUE) # nolint: object_usage_linter
-  cli_text("Number of zeros: {num_zeros}")
+  # Count zeros (percentage and row-wise)
+  num_zeros <- sum(object == 0, na.rm = TRUE)
+  num_non_na <- sum(!is.na(object))
+  pct_zeros <- if (num_non_na > 0) {
+    round(100 * num_zeros / num_non_na, 1)
+  } else {
+    0
+  }
+  # nolint start: object_usage_linter
+  zeros_per_row <- apply(object, 1, function(x) sum(x == 0, na.rm = TRUE))
+  # nolint end
+  cli_text("Zeros: {num_zeros} ({pct_zeros}% of non-NA values)")
+  if (length(zeros_per_row) > 0) {
+    cli_text("Zeros per row summary:")
+    print(summary(zeros_per_row))
+  }
 
   # Show summary of mean delays for complete rows
   if (!is.null(mean_delays) && length(mean_delays) > 0) {
@@ -461,4 +478,62 @@ summary.reporting_triangle <- function(object, ...) {
   }
 
   return(invisible(object))
+}
+
+#' Convert reporting_triangle to data.frame
+#'
+#' @param x A [reporting_triangle] object to convert.
+#' @param row.names NULL or character vector giving row names for the data
+#'   frame. Missing values are not allowed.
+#' @param optional Logical. If TRUE, setting row names and converting column
+#'   names is optional.
+#' @param ... Additional arguments to be passed to or from methods.
+#' @return A data.frame with columns reference_date, report_date, delay, count
+#' @family reporting_triangle
+#' @export
+#' @method as.data.frame reporting_triangle
+as.data.frame.reporting_triangle <- function(
+    x, row.names = NULL, optional = FALSE, ...) {
+  if (!is_reporting_triangle(x)) {
+    cli_abort(message = "x must have class 'reporting_triangle'")
+  }
+
+  reference_dates <- get_reference_dates(x)
+  delays_unit <- attr(x, "delays_unit")
+
+  result_list <- list()
+  idx <- 1
+
+  for (i in seq_len(nrow(x))) {
+    ref_date <- reference_dates[i]
+
+    for (j in seq_len(ncol(x))) {
+      delay <- j - 1
+      count <- x[i, j]
+
+      if (!is.na(count)) {
+        report_date <- ref_date + delay * switch(
+          delays_unit,
+          days = 1,
+          weeks = 7,
+          months = 30,
+          years = 365
+        )
+
+        result_list[[idx]] <- data.frame(
+          reference_date = ref_date,
+          report_date = report_date,
+          delay = delay,
+          count = count,
+          stringsAsFactors = FALSE
+        )
+        idx <- idx + 1
+      }
+    }
+  }
+
+  result <- do.call(rbind, result_list)
+  rownames(result) <- row.names
+
+  return(result)
 }

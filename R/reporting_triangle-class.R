@@ -66,7 +66,7 @@ NULL
 #' @family reporting_triangle
 #' @export
 get_reference_dates <- function(x) {
-  if (!inherits(x, "reporting_triangle")) {
+  if (!is_reporting_triangle(x)) {
     cli_abort(message = "x must have class 'reporting_triangle'")
   }
   return(as.Date(rownames(x)))
@@ -79,7 +79,7 @@ get_reference_dates <- function(x) {
 #' @family reporting_triangle
 #' @export
 get_max_delay <- function(x) {
-  if (!inherits(x, "reporting_triangle")) {
+  if (!is_reporting_triangle(x)) {
     cli_abort(message = "x must have class 'reporting_triangle'")
   }
   return(ncol(x) - 1L)
@@ -92,7 +92,7 @@ get_max_delay <- function(x) {
 #' @family reporting_triangle
 #' @export
 get_mean_delay <- function(x) {
-  if (!inherits(x, "reporting_triangle")) {
+  if (!is_reporting_triangle(x)) {
     cli_abort(message = "x must have class 'reporting_triangle'")
   }
   delays <- 0:get_max_delay(x)

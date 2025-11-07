@@ -17,7 +17,7 @@ test_that("is_reporting_triangle works correctly", {
 test_that("get_reference_dates works correctly", {
   ref_dates <- get_reference_dates(rep_tri)
   expect_s3_class(ref_dates, "Date")
-  expect_identical(length(ref_dates), nrow(rep_tri))
+  expect_length(ref_dates, nrow(rep_tri))
   expect_identical(ref_dates[1], as.Date("2025-10-25"))
   expect_identical(ref_dates[length(ref_dates)], as.Date("2026-04-01"))
 
@@ -72,7 +72,7 @@ test_that("get_max_delay with non_zero option works correctly", {
 test_that("get_mean_delay works correctly", {
   mean_delays <- get_mean_delay(rep_tri)
   expect_type(mean_delays, "double")
-  expect_identical(length(mean_delays), nrow(rep_tri))
+  expect_length(mean_delays, nrow(rep_tri))
 
   # Check that values are in reasonable range
   non_na_delays <- mean_delays[!is.na(mean_delays)]
@@ -153,7 +153,7 @@ test_that("summary.reporting_triangle runs without error", {
 test_that("get_quantile_delay works correctly", {
   quantile_delays <- get_quantile_delay(rep_tri, p = 0.99)
   expect_type(quantile_delays, "integer")
-  expect_identical(length(quantile_delays), nrow(rep_tri))
+  expect_length(quantile_delays, nrow(rep_tri))
 
   # Check that values are in reasonable range
   non_na_delays <- quantile_delays[!is.na(quantile_delays)]
@@ -222,7 +222,7 @@ test_that("as.data.frame.reporting_triangle works correctly", {
   ))
 
   # Check that NAs from triangle are excluded
-  expect_true(all(!is.na(df$count)))
+  expect_false(anyNA(df$count))
 
   # Check that count values match
   for (i in seq_len(nrow(df))) {

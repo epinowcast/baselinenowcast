@@ -18,7 +18,7 @@ test_that("apply_delay function works as expected when result is known", {
   )
 
   expect_equal(result[2, 4], 10, tol = 0.1)
-  expect_equal(result[3, 3:4], c(20, 20), tol = 0.1)
+  expect_equal(unname(result[3, 3:4]), c(20, 20), tol = 0.1)
 
   # now try with 0s
   triangle <- matrix(
@@ -97,7 +97,7 @@ test_that("apply_delay function works correctly on simple triangle", {
     delay_pmf = delay_pmf
   )
 
-  expect_is(result, "matrix")
+  expect_triangle_output(result, triangle)
 
   mat <- matrix(nrow = 5, ncol = 4, data = 1)
   expect_error(
@@ -105,11 +105,8 @@ test_that("apply_delay function works correctly on simple triangle", {
       reporting_triangle = mat,
       delay_pmf = delay_pmf
     ),
-    regexp = "`reporting_triangle` doesn't contain any missing values"
+    regexp = "data must have class 'reporting_triangle'"
   )
-
-  # Test that the dimensions of the output match the input
-  expect_identical(dim(result), dim(triangle))
 
   # Test that the known values remain unchanged
   expect_identical(result[1:3, 1:2], triangle[1:3, 1:2])
@@ -136,13 +133,10 @@ test_that("apply_delay function works on a triangle with 0s", {
     delay_pmf = delay_pmf
   )
 
-  expect_is(result, "matrix")
-
-  # Test that the dimensions of the output match the input
-  expect_identical(dim(result), dim(triangle))
+  expect_triangle_output(result, triangle_obj)
 
   # Test that the known values remain unchanged
-  expect_identical(result[1:3, 1:2], unclass(triangle_obj)[1:3, 1:2])
+  expect_identical(result[1:3, 1:2], triangle_obj[1:3, 1:2])
 
   # Test that there are no 0s being propagated to the rest of the row
   expect_false(any(result[, 2:4] == 0))
@@ -168,14 +162,10 @@ test_that("apply_delay function works correctly with larger triangle", {
   triangle_obj <- make_test_triangle(data = triangle_to_nowcast)
   result <- apply_delay(triangle_obj, delay_pmf)
 
-  # Test that the output is a matrix
-  expect_is(result, "matrix")
-
-  # Test that the dimensions of the output match the input
-  expect_identical(dim(result), dim(triangle_to_nowcast))
+  expect_triangle_output(result, triangle_obj)
 
   # Test that the known values remain unchanged
-  expect_identical(result[1:3, 1:2], unclass(triangle_obj)[1:3, 1:2])
+  expect_identical(result[1:3, 1:2], triangle_obj[1:3, 1:2])
 
   # Test that NA values are replaced
   expect_false(anyNA(result))
@@ -306,9 +296,8 @@ test_that("apply_delay works with PMF containing negative entries", {
     delay_pmf = delay_pmf
   )
 
-  # Result should be a matrix with same dimensions
-  expect_is(result, "matrix")
-  expect_identical(dim(result), dim(triangle))
+  # Result should be a reporting_triangle with same dimensions
+  expect_triangle_output(result, triangle_obj2)
 
   # No NAs should remain
   expect_false(anyNA(result))
@@ -391,10 +380,9 @@ test_that("apply_delay completes full workflow with negative PMF", {
   )
 
   # Verify result properties
-  expect_is(nowcast, "matrix")
-  expect_identical(dim(nowcast), dim(triangle))
+  expect_triangle_output(nowcast, triangle_obj2)
   expect_false(anyNA(nowcast))
 
   # Verify observed values are preserved
-  expect_identical(nowcast[1:5, 1:4], unclass(triangle_obj)[1:5, 1:4])
+  expect_identical(nowcast[1:5, 1:4], triangle_obj[1:5, 1:4])
 })

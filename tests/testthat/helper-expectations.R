@@ -191,7 +191,9 @@ expect_triangle_output <- function(result, input_triangle, validate = FALSE) {
   testthat::expect_true(baselinenowcast::is_reporting_triangle(result))
   testthat::expect_identical(dim(result), dim(input_triangle))
   if (validate) {
-    testthat::expect_no_error(baselinenowcast::validate_reporting_triangle(result))
+    testthat::expect_no_error(
+      baselinenowcast::validate_reporting_triangle(result)
+    )
   }
   return(invisible(result))
 }

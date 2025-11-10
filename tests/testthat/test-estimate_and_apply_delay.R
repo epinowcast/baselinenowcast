@@ -6,7 +6,7 @@ complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
 complete_triangle <- do.call(rbind, complete_triangle)
 
 reporting_triangle <- construct_triangle(
-  to_reporting_triangle(complete_triangle)
+  make_test_triangle(data = complete_triangle)
 )
 
 test_that("estimate_and_apply_delay works as expected with defaults", {
@@ -94,7 +94,7 @@ test_that(
     complete_triangle <- do.call(rbind, complete_triangle)
 
     reporting_triangle <- construct_triangle(
-      to_reporting_triangle(complete_triangle),
+      make_test_triangle(data = complete_triangle),
       structure = 2
     )
 
@@ -119,7 +119,7 @@ test_that(
     complete_triangle <- do.call(rbind, complete_triangle)
 
     reporting_triangle <- construct_triangle(
-      to_reporting_triangle(complete_triangle),
+      make_test_triangle(data = complete_triangle),
       structure = 2
     )
 

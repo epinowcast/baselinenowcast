@@ -1,5 +1,5 @@
 # Example matrix for testing
-rep_tri <- to_reporting_triangle(matrix(
+rep_tri <- make_test_triangle(data = matrix(
   c(
     10, 20, 30,
     40, 50, NA,
@@ -67,7 +67,7 @@ test_that("truncate_triangle handles zero t", {
 test_that("truncate_triangle handles empty matrix input", {
   t <- 1
   expect_error(
-    to_reporting_triangle(matrix(nrow = 0, ncol = 0)),
+    make_test_triangle(data = matrix(nrow = 0, ncol = 0)),
     "Contains only missing values"
   )
 })

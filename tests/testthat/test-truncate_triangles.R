@@ -1,5 +1,5 @@
 # Sample matrix from the example
-test_triangle <- to_reporting_triangle(matrix(
+test_triangle <- make_test_triangle(data = matrix(
   c(
     65, 46, 21, 7,
     70, 40, 20, 5,
@@ -97,7 +97,7 @@ test_that("truncate_triangles: default works well for ragged triangle", {
   # Create a complete triangle based on the known delay PMF
   complete_triangle_mat <- lapply(counts, function(x) round(x * sim_delay_pmf))
   complete_triangle_mat <- do.call(rbind, complete_triangle_mat)
-  complete_triangle <- to_reporting_triangle(complete_triangle_mat)
+  complete_triangle <- make_test_triangle(data = complete_triangle_mat)
 
   ragged_triangle <- construct_triangle(
     complete_triangle,

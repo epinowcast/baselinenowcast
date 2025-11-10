@@ -1,7 +1,7 @@
 test_that(
   "estimate_uncertainty_retro returns positive numeric vector",
   {
-    triangle <- to_reporting_triangle(matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -28,7 +28,7 @@ test_that(
 )
 
 test_that("estimate_uncertainty_retro matches manual workflow", {
-  triangle <- to_reporting_triangle(matrix(
+  triangle <- make_test_triangle(data = matrix(
     c(
       65, 46, 21, 7,
       70, 40, 20, 5,
@@ -80,7 +80,7 @@ test_that("estimate_uncertainty_retro matches manual workflow", {
 test_that(
   "estimate_uncertainty_retro returns numeric with custom n_history_delay",
   {
-    triangle <- to_reporting_triangle(matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -108,7 +108,7 @@ test_that(
 test_that(
   "estimate_uncertainty_retro returns numeric vector with custom n_retro",
   {
-    triangle <- to_reporting_triangle(matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -138,7 +138,7 @@ test_that(
 test_that(
   "estimate_uncertainty_retro returns numeric vector with custom max_delay",
   {
-    triangle <- to_reporting_triangle(matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -167,7 +167,7 @@ test_that(
 test_that(
   "estimate_uncertainty_retro returns numeric vector with custom aggregators",
   {
-    triangle <- to_reporting_triangle(matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -202,7 +202,7 @@ test_that(
 test_that(
   "estimate_uncertainty_retro returns numeric vector with custom structure",
   {
-    triangle <- to_reporting_triangle(matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -285,7 +285,7 @@ test_that(
 test_that(
   "estimate_uncertainty_retro returns numeric with all custom params",
   {
-    triangle <- to_reporting_triangle(matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -338,7 +338,7 @@ test_that("estimate_uncertainty_retro validates insufficient data", {
 })
 
 test_that("estimate_uncertainty_retro works with custom delay_pmf", {
-  triangle <- to_reporting_triangle(matrix(
+  triangle <- make_test_triangle(data = matrix(
     c(
       65, 46, 21, 7,
       70, 40, 20, 5,
@@ -377,7 +377,7 @@ test_that("estimate_uncertainty_retro works with custom delay_pmf", {
 test_that(
   "estimate_uncertainty_retro returns numeric vector despite warnings",
   {
-    triangle <- to_reporting_triangle(matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,

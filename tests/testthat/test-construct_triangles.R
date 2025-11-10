@@ -30,8 +30,8 @@ test_that(
     )
 
     trunc_triangles <- list(
-      to_reporting_triangle(triangle1),
-      to_reporting_triangle(triangle2)
+      make_test_triangle(data = triangle1),
+      make_test_triangle(data = triangle2)
     )
 
     # Test 1: Check if the function returns a list
@@ -50,11 +50,11 @@ test_that(
     # correct
     expect_identical(
       retro_triangles[[1]],
-      construct_triangle(to_reporting_triangle(triangle1))
+      construct_triangle(make_test_triangle(data = triangle1))
     )
 
     # Test 5: Check if the content of the last retrospective triangle is correct
-    expected_last_triangle <- to_reporting_triangle(matrix(
+    expected_last_triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -108,15 +108,15 @@ test_that(
     )
 
     trunc_triangles <- list(
-      to_reporting_triangle(triangle1),
-      to_reporting_triangle(triangle2)
+      make_test_triangle(data = triangle1),
+      make_test_triangle(data = triangle2)
     )
 
     retro_triangles_custom <- construct_triangles(trunc_triangles,
       structure = 2
     )
 
-    expected_triangle1_struct2 <- to_reporting_triangle(matrix(
+    expected_triangle1_struct2 <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,

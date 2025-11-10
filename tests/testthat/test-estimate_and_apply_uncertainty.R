@@ -1,10 +1,11 @@
-triangle <- matrix(
-  data = sample.int(10, 12 * 5, replace = TRUE),
-  nrow = 12,
-  ncol = 5
-) |>
-  to_reporting_triangle() |>
-  construct_triangle()
+triangle <- make_test_triangle(
+  data = matrix(
+    data = sample.int(10, 12 * 5, replace = TRUE),
+    nrow = 12,
+    ncol = 5
+  ),
+  construct = TRUE
+)
 pt_nowcast_matrix <- estimate_and_apply_delay(
   reporting_triangle = triangle,
   n = 6
@@ -64,13 +65,12 @@ test_that("estimate_and_apply_uncertainty errors when things are specified incor
     regexp = "Insufficient `n_retrospective_nowcasts`."
   )
 
-  triangle <- matrix(
+  triangle <- make_test_triangle(data = matrix(
     data = sample.int(10, 6 * 5, replace = TRUE),
     nrow = 6,
     ncol = 5
-  ) |>
-    to_reporting_triangle() |>
-    construct_triangle()
+  ),
+  construct = TRUE)
   pt_nowcast_matrix <- estimate_and_apply_delay(
     reporting_triangle = triangle,
     n = 6
@@ -88,13 +88,15 @@ test_that("estimate_and_apply_uncertainty errors when things are specified incor
 })
 
 test_that("estimate_and_apply_uncertainty is able to detect the structure of a jagged reporting triangle", { # nolint
-  jagged_triangle <- matrix(
-    data = sample.int(10, 12 * 5, replace = TRUE),
-    nrow = 12,
-    ncol = 5
-  ) |>
-    to_reporting_triangle() |>
-    construct_triangle(structure = 2)
+  jagged_triangle <- make_test_triangle(
+    data = matrix(
+      data = sample.int(10, 12 * 5, replace = TRUE),
+      nrow = 12,
+      ncol = 5
+    ),
+    construct = TRUE,
+    structure = 2
+  )
   pt_nowcast_matrix2 <- estimate_and_apply_delay(
     reporting_triangle = jagged_triangle,
     n = 6

@@ -9,7 +9,7 @@ complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
 complete_triangle <- do.call(rbind, complete_triangle)
 
 # Create a reporting triangle with NAs in the lower right
-reporting_triangle <- to_reporting_triangle(complete_triangle) |>
+reporting_triangle <- make_test_triangle(data = complete_triangle) |>
   construct_triangle()
 
 test_that("estimate_delay returns a valid probability mass function", {
@@ -38,14 +38,19 @@ test_that("estimate_delay handles custom max_delay parameter", {
   # Test with max_delay = 3 (full delay)
   result_full <- estimate_delay(reporting_triangle, max_delay = 3)
   expect_identical(as.integer(length(result_full)), 4L)
-  expect_equal(as.numeric(result_full), as.numeric(sim_delay_pmf), tolerance = 1e-6)
+  expect_equal(
+    as.numeric(result_full), as.numeric(sim_delay_pmf), tolerance = 1e-6
+  )
 
   # Test with max_delay = 2 (truncated delay)
   result_truncated <- estimate_delay(reporting_triangle, max_delay = 2)
   expect_identical(as.integer(length(result_truncated)), 3L)
 
   expected_truncated <- sim_delay_pmf[1:3] / sum(sim_delay_pmf[1:3])
-  expect_equal(as.numeric(result_truncated), as.numeric(expected_truncated), tolerance = 1e-6)
+  expect_equal(
+    as.numeric(result_truncated), as.numeric(expected_truncated),
+    tolerance = 1e-6
+  )
 })
 
 test_that("estimate_delay handles custom n_history parameter", {
@@ -54,8 +59,12 @@ test_that("estimate_delay handles custom n_history parameter", {
   result_partial <- estimate_delay(reporting_triangle, n = 4)
 
   # Both should return the correct PMF
-  expect_equal(as.numeric(result_full), as.numeric(sim_delay_pmf), tolerance = 1e-6)
-  expect_equal(as.numeric(result_partial), as.numeric(sim_delay_pmf), tolerance = 1e-6)
+  expect_equal(
+    as.numeric(result_full), as.numeric(sim_delay_pmf), tolerance = 1e-6
+  )
+  expect_equal(
+    as.numeric(result_partial), as.numeric(sim_delay_pmf), tolerance = 1e-6
+  )
 })
 
 test_that("estimate_delay validates input parameters correctly", {
@@ -99,9 +108,10 @@ test_that("estimate_delay calculates correct PMF with complete matrix", {
   complete_counts <- c(80, 100, 90, 80, 70)
 
   # Create a complete triangle based on the known delay PMF
-  full_triangle <- lapply(complete_counts, function(x) round(x * complete_pmf))
-  full_triangle <- do.call(rbind, full_triangle) |>
-    to_reporting_triangle()
+  full_triangle <- lapply(
+    complete_counts, function(x) round(x * complete_pmf)
+  )
+  full_triangle <- make_test_triangle(data = do.call(rbind, full_triangle))
 
   delay_pmf <- estimate_delay(
     reporting_triangle = full_triangle,
@@ -109,7 +119,9 @@ test_that("estimate_delay calculates correct PMF with complete matrix", {
     n = 5
   )
 
-  expect_equal(as.numeric(delay_pmf), as.numeric(complete_pmf), tolerance = 0.001)
+  expect_equal(
+    as.numeric(delay_pmf), as.numeric(complete_pmf), tolerance = 0.001
+  )
 })
 
 test_that(
@@ -122,15 +134,18 @@ test_that(
     complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
     complete_triangle <- do.call(rbind, complete_triangle)
 
-    reporting_triangle <- to_reporting_triangle(complete_triangle) |>
-      construct_triangle(structure = 2)
+    reporting_triangle <- make_test_triangle(
+      data = complete_triangle, construct = TRUE, structure = 2
+    )
 
     # Get delay estimate
     delay_pmf <- estimate_delay(
       reporting_triangle = reporting_triangle
     )
     # Test that the function returns the expected PMF
-    expect_equal(as.numeric(delay_pmf), as.numeric(sim_delay_pmf), tolerance = 1e-6)
+    expect_equal(
+      as.numeric(delay_pmf), as.numeric(sim_delay_pmf), tolerance = 1e-6
+    )
   }
 )
 
@@ -146,8 +161,9 @@ test_that("estimate_delay handles diagonal reporting triangles", {
   partial_complete <- do.call(rbind, partial_complete)
 
   # Create a reporting triangle with NAs in the lower right
-  partial_triangle <- to_reporting_triangle(partial_complete) |>
-    construct_triangle(structure = 1)
+  partial_triangle <- make_test_triangle(
+    data = partial_complete, construct = TRUE, structure = 1
+  )
 
   delay_pmf <- estimate_delay(
     reporting_triangle = partial_triangle,
@@ -157,14 +173,16 @@ test_that("estimate_delay handles diagonal reporting triangles", {
 
   expect_is(delay_pmf, "numeric")
   expect_equal(sum(delay_pmf), 1, tolerance = 1e-6)
-  expect_equal(as.numeric(delay_pmf), as.numeric(partial_pmf), tolerance = 1e-6)
+  expect_equal(
+    as.numeric(delay_pmf), as.numeric(partial_pmf), tolerance = 1e-6
+  )
 })
 
 test_that(
   "estimate_delay with preprocess = preprocess_negative_values handles negatives", # nolint
   {
     # Use example data with negative values
-    triangle_neg <- to_reporting_triangle(matrix(
+    triangle_neg <- make_test_triangle(data = matrix(
       c(
         100, 60, -20, 10,
         120, 70, -25, 15,
@@ -194,7 +212,7 @@ test_that(
 
 test_that("estimate_delay with preprocess = NULL preserves negative values", {
   # Use example data with negative values
-  triangle_neg <- to_reporting_triangle(matrix(
+  triangle_neg <- make_test_triangle(data = matrix(
     c(
       100, 60, -20, 10,
       120, 70, -25, 15,
@@ -226,7 +244,7 @@ test_that("estimate_delay with preprocess = NULL preserves negative values", {
 
 test_that("estimate_delay with negative PMF produces non-increasing CDF", {
   # Use example data with negative values
-  triangle_neg <- to_reporting_triangle(matrix(
+  triangle_neg <- make_test_triangle(data = matrix(
     c(
       100, 60, -20, 10,
       120, 70, -25, 15,
@@ -262,7 +280,7 @@ test_that("estimate_delay custom preprocessing function works", {
     return(triangle * 2)
   }
 
-  triangle <- to_reporting_triangle(matrix(
+  triangle <- make_test_triangle(data = matrix(
     c(
       10, 5, 3, 2,
       8, 4, 2, 1,

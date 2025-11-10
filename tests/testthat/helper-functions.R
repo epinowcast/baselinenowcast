@@ -149,7 +149,9 @@ make_test_triangle <- function(nrow = 5, ncol = 4, data = NULL,
     )
 
     if (construct) {
-      result <- baselinenowcast::construct_triangle(result, structure = structure)
+      result <- baselinenowcast::construct_triangle(
+        result, structure = structure
+      )
     }
 
     return(result)
@@ -262,4 +264,3 @@ create_covid_test_data <- function(
 
   return(covid_data)
 }
-

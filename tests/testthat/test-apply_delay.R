@@ -1,5 +1,5 @@
 test_that("apply_delay function works as expected when result is known", {
-  triangle <- to_reporting_triangle(matrix(
+  triangle <- matrix(
     c(
       10, 5, 5, 5,
       20, 10, 10, NA,
@@ -8,7 +8,7 @@ test_that("apply_delay function works as expected when result is known", {
     ),
     nrow = 4,
     byrow = TRUE
-  ))
+  )
   delay_pmf <- c(0.4, 0.2, 0.2, 0.2)
 
   result <- apply_delay(
@@ -17,10 +17,10 @@ test_that("apply_delay function works as expected when result is known", {
   )
 
   expect_equal(result[2, 4], 10, tol = 0.1)
-  expect_equal(unname(result[3, 3:4]), c(20, 20), tol = 0.1)
+  expect_equal(result[3, 3:4], c(20, 20), tol = 0.1)
 
   # now try with 0s
-  triangle <- to_reporting_triangle(matrix(
+  triangle <- matrix(
     c(
       10, 5, 5, 5,
       20, 10, 10, NA,
@@ -29,7 +29,7 @@ test_that("apply_delay function works as expected when result is known", {
     ),
     nrow = 4,
     byrow = TRUE
-  ))
+  )
   delay_pmf <- c(0.4, 0.2, 0.2, 0.2)
 
   result <- apply_delay(
@@ -40,7 +40,7 @@ test_that("apply_delay function works as expected when result is known", {
   expect_equal(result[4, 4], 0.2, tol = 0.1)
 
   # Now try with a delay pmf with 0s
-  triangle <- to_reporting_triangle(matrix(
+  triangle <- matrix(
     c(
       10, 5, 5, 5,
       20, 10, 10, NA,
@@ -49,7 +49,7 @@ test_that("apply_delay function works as expected when result is known", {
     ),
     nrow = 4,
     byrow = TRUE
-  ))
+  )
   delay_pmf <- c(0, 0.4, 0.4, 0.2)
 
   expect_error(apply_delay(
@@ -59,7 +59,7 @@ test_that("apply_delay function works as expected when result is known", {
 
 
   # Try with 0 in the middle of delay distrib
-  triangle <- to_reporting_triangle(matrix(
+  triangle <- matrix(
     c(
       10, 5, 5, 5,
       20, 10, 10, NA,
@@ -68,7 +68,7 @@ test_that("apply_delay function works as expected when result is known", {
     ),
     nrow = 4,
     byrow = TRUE
-  ))
+  )
   delay_pmf <- c(0.2, 0.4, 0, 0.4)
 
   result <- apply_delay(
@@ -84,9 +84,8 @@ test_that("apply_delay function works correctly on simple triangle", {
   set.seed(123)
   # Make a simple triangle of ones
   triangle <- matrix(nrow = 5, ncol = 4, data = 1) |>
-    to_reporting_triangle() |>
     construct_triangle()
-  delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
+  delay_pmf <- make_simple_delay_pmf()
   result <- apply_delay(
     reporting_triangle = triangle,
     delay_pmf = delay_pmf
@@ -97,7 +96,7 @@ test_that("apply_delay function works correctly on simple triangle", {
   mat <- matrix(nrow = 5, ncol = 4, data = 1)
   expect_error(
     apply_delay(
-      reporting_triangle = to_reporting_triangle(mat),
+      reporting_triangle = mat,
       delay_pmf = delay_pmf
     ),
     regexp = "`reporting_triangle` doesn't contain any missing values"
@@ -112,8 +111,8 @@ test_that("apply_delay function works correctly on simple triangle", {
 
 test_that("apply_delay function works on a triangle with 0s", {
   set.seed(123)
-  # Make a simple triangle of ones
-  triangle <- to_reporting_triangle(matrix(
+  # Triangle with 0s in first column to test edge case
+  triangle <- matrix(
     c(
       8, 5, 2, 1,
       1, 5, 3, 2,
@@ -123,8 +122,8 @@ test_that("apply_delay function works on a triangle with 0s", {
     ),
     nrow = 5,
     byrow = TRUE
-  ))
-  delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
+  )
+  delay_pmf <- make_simple_delay_pmf()
   result <- apply_delay(
     reporting_triangle = triangle,
     delay_pmf = delay_pmf
@@ -144,7 +143,7 @@ test_that("apply_delay function works on a triangle with 0s", {
 
 test_that("apply_delay function works correctly with larger triangle", {
   # Create a sample triangle to nowcast
-  triangle_to_nowcast <- to_reporting_triangle(matrix(
+  triangle_to_nowcast <- matrix(
     c(
       100, 50, 30, 20,
       90, 45, 25, NA,
@@ -153,7 +152,7 @@ test_that("apply_delay function works correctly with larger triangle", {
     ),
     nrow = 4,
     byrow = TRUE
-  ))
+  )
 
   # Create a sample delay PMF
   delay_pmf <- c(0.5, 0.3, 0.15, 0.05)
@@ -193,9 +192,9 @@ test_that("apply_delay function works correctly with larger triangle", {
 })
 
 test_that("apply_delay function works the same as the more verbose for loop", {
-  triangle <- to_reporting_triangle(matrix(nrow = 5, ncol = 4, data = 1))
-  triangle <- triangle |> construct_triangle()
-  delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
+  triangle <- matrix(nrow = 5, ncol = 4, data = 1)
+  triangle <- construct_triangle(triangle)
+  delay_pmf <- make_simple_delay_pmf()
   result <- apply_delay(
     reporting_triangle = triangle,
     delay_pmf = delay_pmf
@@ -223,8 +222,7 @@ test_that("apply_delay works with ragged reporting triangles", {
   # Create a complete triangle based on the known delay PMF
   triangle <- lapply(partial_counts, function(x) x * delay_pmf)
   triangle <- do.call(rbind, triangle)
-  triangle <- to_reporting_triangle(triangle) |>
-    construct_triangle(structure = c(1, 2, 1))
+  triangle <- construct_triangle(triangle, structure = c(1, 2, 1))
 
   result <- apply_delay(
     reporting_triangle = triangle,
@@ -232,7 +230,7 @@ test_that("apply_delay works with ragged reporting triangles", {
   )
   cols <- colSums(result[3:5, ])
   pmf <- cols / sum(cols)
-  expect_equal(unname(pmf), delay_pmf, tolerance = 0.01)
+  expect_equal(pmf, delay_pmf, tolerance = 0.01)
 })
 
 test_that("apply_delay works with structure=2 ragged reporting triangles", {
@@ -242,8 +240,7 @@ test_that("apply_delay works with structure=2 ragged reporting triangles", {
   # Create a complete triangle based on the known delay PMF
   triangles <- lapply(partial_counts, function(x) x * delay_pmf)
   complete_triangle <- do.call(rbind, triangles)
-  ragged_triangle <- to_reporting_triangle(complete_triangle) |>
-    construct_triangle(structure = 2)
+  ragged_triangle <- construct_triangle(complete_triangle, structure = 2)
 
   result <- apply_delay(
     reporting_triangle = ragged_triangle,
@@ -251,12 +248,12 @@ test_that("apply_delay works with structure=2 ragged reporting triangles", {
   )
   cols <- colSums(result[3:5, ])
   pmf <- cols / sum(cols)
-  expect_equal(unname(pmf), delay_pmf, tolerance = 0.01)
+  expect_equal(pmf, delay_pmf, tolerance = 0.01)
 })
 
 test_that("apply_delay works with PMF containing negative entries", {
   # Create triangle with negative values
-  triangle <- to_reporting_triangle(matrix(
+  triangle <- matrix(
     c(
       100, 60, -20, 10,
       120, 70, -25, 15,
@@ -269,7 +266,7 @@ test_that("apply_delay works with PMF containing negative entries", {
     ),
     nrow = 8,
     byrow = TRUE
-  ))
+  )
 
   # Get PMF with negative entries
   delay_pmf <- estimate_delay(
@@ -298,7 +295,7 @@ test_that("apply_delay works with PMF containing negative entries", {
 
 test_that("apply_delay CDF can be not strictly increasing", {
   # Create triangle with negative values
-  triangle <- to_reporting_triangle(matrix(
+  triangle <- matrix(
     c(
       100, 60, -20, 10,
       120, 70, -25, 15,
@@ -311,7 +308,7 @@ test_that("apply_delay CDF can be not strictly increasing", {
     ),
     nrow = 8,
     byrow = TRUE
-  ))
+  )
 
   # Get PMF with negative entries
   delay_pmf <- estimate_delay(
@@ -339,7 +336,7 @@ test_that("apply_delay CDF can be not strictly increasing", {
 
 test_that("apply_delay completes full workflow with negative PMF", {
   # Create triangle with negative values
-  triangle <- to_reporting_triangle(matrix(
+  triangle <- matrix(
     c(
       100, 60, -20, 10,
       120, 70, -25, 15,
@@ -352,7 +349,7 @@ test_that("apply_delay completes full workflow with negative PMF", {
     ),
     nrow = 8,
     byrow = TRUE
-  ))
+  )
 
   # Full workflow: estimate delay with preprocess = NULL
   delay_pmf <- estimate_delay(

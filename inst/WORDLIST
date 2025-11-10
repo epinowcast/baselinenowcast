@@ -47,7 +47,6 @@ df
 epinowcast
 epinowcast’
 eq
-estimand
 etc
 fb
 frac
@@ -77,6 +76,7 @@ nowcast
 nowcasted
 nowcasting
 nowcasts
+org
 pid
 pilessthand
 pmf
@@ -88,6 +88,7 @@ swo
 th
 thetad
 ub
+wellcomeopenresearch
 xlab
 yintercept
 ylab

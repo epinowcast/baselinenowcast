@@ -357,7 +357,7 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
   expect_true(all(is.finite(dispersion)))
 
 
-  expect_failure(expect_equal(dispersion, dispersion2, tol = 0.001))
+  expect_estimates_differ(dispersion, dispersion2, tol = 0.001)
 
   # We'll get a warning if we are trying to use all of them
   expect_warning(

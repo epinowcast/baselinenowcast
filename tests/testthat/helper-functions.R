@@ -4,7 +4,8 @@
 # - Partial functions with good defaults (e.g., baselinenowcast_test)
 # - Data manipulation helpers (e.g., summarise_final_day_mean)
 # - Comparison helpers (e.g., expect_estimates_differ)
-# - Test data creation functions (e.g., make_test_triangle, make_test_data)
+# - Test data creation functions (e.g., make_simple_triangle, make_test_triangle,
+#   make_simple_delay_pmf, make_delay_pmf, make_test_data)
 # - Validation helpers (e.g., expect_triangle_output)
 #
 # By centralizing these patterns, we reduce boilerplate and make test
@@ -60,95 +61,87 @@ summarise_final_day_mean <- function(df, group_vars = c(
 
 # Test Data Creation Functions ---------------------------------------------
 
-#' Create a simple test triangle matrix
+#' Create a fixed simple test triangle matrix
 #'
-#' @param nrow Number of rows
-#' @param ncol Number of columns
-#' @param type Type of triangle ("simple" [fixed 5x4], "with_nas", "no_nas")
-#' @return A matrix suitable for testing
+#' Returns a fixed 5x4 matrix with a specific pattern for simple tests.
+#'
+#' @return A 5x4 matrix suitable for testing
 #' @keywords internal
-make_test_triangle <- function(nrow = 5, ncol = 4, type = "simple") {
-  return(switch(type,
-    simple = {
-      if (nrow != 5 || ncol != 4) {
-        warning(
-          "Simple triangle has fixed dimensions 5x4; nrow and ncol ignored",
-          call. = FALSE
-        )
-      }
-      return(matrix(
-        c(
-          10, 7, 1, NA,
-          15, 12, 2, NA,
-          14, 16, 3, NA,
-          18, 15, NA, NA,
-          20, NA, NA, NA
-        ),
-        nrow = 5,
-        ncol = 4,
-        byrow = TRUE
-      ))
-    },
-    with_nas = {
-      mat <- matrix(
-        seq_len(nrow * ncol),
-        nrow = nrow,
-        ncol = ncol
-      )
-      # Add NAs in bottom-right triangle (reporting triangle pattern)
-      # Row 1: no NAs, Row 2: 1 trailing NA, Row 3: 2 trailing NAs, etc.
-      for (i in seq_len(nrow)) {
-        na_count <- i - 1
-        if (na_count > 0 && na_count <= ncol) {
-          na_start <- ncol - na_count + 1
-          mat[i, na_start:ncol] <- NA
-        }
-      }
-      return(mat)
-    },
-    no_nas = {
-      return(matrix(
-        seq_len(nrow * ncol),
-        nrow = nrow,
-        ncol = ncol
-      ))
-    },
-    stop(
-      "Invalid type: must be 'simple', 'with_nas', or 'no_nas'",
-      call. = FALSE
-    )
+make_simple_triangle <- function() {
+  return(matrix(
+    c(
+      10, 7, 1, NA,
+      15, 12, 2, NA,
+      14, 16, 3, NA,
+      18, 15, NA, NA,
+      20, NA, NA, NA
+    ),
+    nrow = 5,
+    ncol = 4,
+    byrow = TRUE
   ))
 }
 
-#' Create test delay PMF
+#' Create a test triangle matrix with specified dimensions
 #'
-#' @param type Type of distribution ("uniform", "geometric", "simple")
+#' Creates a matrix with sequential values for testing purposes.
+#' Optionally adds NAs in bottom-right triangle pattern.
+#'
+#' @param nrow Number of rows
+#' @param ncol Number of columns
+#' @param with_nas Logical; if TRUE, adds reporting triangle NA pattern
+#' @return A matrix suitable for testing
+#' @keywords internal
+make_test_triangle <- function(nrow = 5, ncol = 4, with_nas = FALSE) {
+  mat <- matrix(
+    seq_len(nrow * ncol),
+    nrow = nrow,
+    ncol = ncol
+  )
+
+  if (with_nas) {
+    # Add NAs in bottom-right triangle (reporting triangle pattern)
+    # Row 1: no NAs, Row 2: 1 trailing NA, Row 3: 2 trailing NAs, etc.
+    for (i in seq_len(nrow)) {
+      na_count <- i - 1
+      if (na_count > 0 && na_count <= ncol) {
+        na_start <- ncol - na_count + 1
+        mat[i, na_start:ncol] <- NA
+      }
+    }
+  }
+
+  return(mat)
+}
+
+#' Create a fixed simple delay PMF
+#'
+#' Returns a fixed delay PMF for simple tests.
+#'
+#' @return A numeric vector of length 4: c(0.4, 0.3, 0.2, 0.1)
+#' @keywords internal
+make_simple_delay_pmf <- function() {
+  return(c(0.4, 0.3, 0.2, 0.1))
+}
+
+#' Create a test delay PMF with specified parameters
+#'
+#' Creates a delay probability mass function for testing purposes.
+#' Supports uniform and geometric distributions.
+#'
 #' @param length Length of PMF
+#' @param geometric Logical; if TRUE, creates geometric distribution,
+#'   otherwise uniform
+#' @param prob Probability parameter for geometric distribution (default 0.3)
 #' @return A numeric vector representing a delay PMF
 #' @keywords internal
-make_delay_pmf <- function(type = "uniform", length = 4) {
-  return(switch(type,
-    uniform = {
-      return(rep(1 / length, length))
-    },
-    geometric = {
-      pmf <- dgeom(0:(length - 1), prob = 0.3)
-      return(pmf / sum(pmf))
-    },
-    simple = {
-      if (length != 4) {
-        warning(
-          "Simple PMF has fixed length 4, ignoring length parameter",
-          call. = FALSE
-        )
-      }
-      return(c(0.4, 0.3, 0.2, 0.1))
-    },
-    stop(
-      "Invalid type: must be 'uniform', 'geometric', or 'simple'",
-      call. = FALSE
-    )
-  ))
+make_delay_pmf <- function(length = 4, geometric = FALSE, prob = 0.3) {
+  if (geometric) {
+    pmf <- dgeom(0:(length - 1), prob = prob)
+    return(pmf / sum(pmf))
+  } else {
+    return(rep(1 / length, length))
+  }
 }
 
 #' Create simple test data frame with reference/report dates

@@ -85,7 +85,7 @@ test_that("apply_delay function works correctly on simple triangle", {
   # Make a simple triangle of ones
   triangle <- matrix(nrow = 5, ncol = 4, data = 1) |>
     construct_triangle()
-  delay_pmf <- make_delay_pmf("simple")
+  delay_pmf <- make_simple_delay_pmf()
   result <- apply_delay(
     reporting_triangle = triangle,
     delay_pmf = delay_pmf
@@ -123,7 +123,7 @@ test_that("apply_delay function works on a triangle with 0s", {
     nrow = 5,
     byrow = TRUE
   )
-  delay_pmf <- make_delay_pmf("simple")
+  delay_pmf <- make_simple_delay_pmf()
   result <- apply_delay(
     reporting_triangle = triangle,
     delay_pmf = delay_pmf
@@ -194,7 +194,7 @@ test_that("apply_delay function works correctly with larger triangle", {
 test_that("apply_delay function works the same as the more verbose for loop", {
   triangle <- matrix(nrow = 5, ncol = 4, data = 1)
   triangle <- construct_triangle(triangle)
-  delay_pmf <- make_delay_pmf("simple")
+  delay_pmf <- make_simple_delay_pmf()
   result <- apply_delay(
     reporting_triangle = triangle,
     delay_pmf = delay_pmf

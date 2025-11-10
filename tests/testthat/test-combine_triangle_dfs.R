@@ -31,8 +31,8 @@ example_data <- data.frame(
 
 expected_cols <- c("reference_date", "report_date", "count")
 strata_cols <- c("location", "age_group")
-covid_data <- create_covid_test_data(age_groups = c("00+", "60-79", "80+"))
-covid_data_single_strata <- dplyr::filter(covid_data, age_group == "00+")
+covid_data_subset <- covid_data[covid_data$age_group %in% c("00+", "60-79", "80+"), ]
+covid_data_single_strata <- covid_data_subset[covid_data_subset$age_group == "00+", ]
 
 test_that(".combine_triangle_dfs combines data across strata correctly", {
   result <- .combine_triangle_dfs(
@@ -217,7 +217,7 @@ test_that(paste0(
 ), {
   skip_if_not_installed("dplyr")
   df2 <- dplyr::arrange(
-    covid_data,
+    covid_data_subset,
     reference_date, report_date
   )
   test2 <- .combine_triangle_dfs(df2,

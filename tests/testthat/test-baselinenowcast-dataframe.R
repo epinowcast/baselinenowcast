@@ -1,6 +1,4 @@
 # Test-specific constants
-covid_data <- create_covid_test_data()
-
 covid_data_single_strata_wday <- covid_data[covid_data$age_group == "00+", ]
 covid_data_age_groups_wday <- covid_data[covid_data$age_group != "00+", ]
 

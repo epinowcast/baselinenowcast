@@ -255,7 +255,7 @@ test_that("as_reporting_triangle.matrix() can handle specification of each arg",
   mat_compare <- unclass(rep_tri)
   attributes(mat_compare) <- list(dim = dim(mat_compare))
   expect_identical(mat_compare, rep_tri_mat)
-  expect_identical(get_reference_dates(rep_tri), reference_dates)
+  expect_equal(get_reference_dates(rep_tri), reference_dates)
   expect_identical(attr(rep_tri, "structure"), 1)
 })
 

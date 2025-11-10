@@ -6,7 +6,7 @@ complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
 complete_triangle <- do.call(rbind, complete_triangle)
 
 reporting_triangle <- construct_triangle(
-  complete_triangle
+  to_reporting_triangle(complete_triangle)
 )
 
 test_that("estimate_and_apply_delay works as expected with defaults", {
@@ -14,7 +14,7 @@ test_that("estimate_and_apply_delay works as expected with defaults", {
     reporting_triangle = reporting_triangle
   )
   # Test that the function returns the expected point nowcast
-  expect_equal(complete_triangle, point_nowcast_matrix, tol = 0.2)
+  expect_equal(complete_triangle, matrix(point_nowcast_matrix, nrow = nrow(point_nowcast_matrix)), tol = 0.2)
 
   # Test that output is the same as when run individually with defaults
   delay_pmf <- estimate_delay(reporting_triangle)
@@ -94,10 +94,9 @@ test_that(
     complete_triangle <- do.call(rbind, complete_triangle)
 
     reporting_triangle <- construct_triangle(
-      complete_triangle,
+      to_reporting_triangle(complete_triangle),
       structure = 2
     )
-    reporting_triangle <- to_reporting_triangle(reporting_triangle)
 
     # Get delay estimate
     point_nowcast_matrix <- estimate_and_apply_delay(
@@ -105,7 +104,7 @@ test_that(
       n = 5
     )
     # Test that the function returns the expected PMF
-    expect_equal(complete_triangle, point_nowcast_matrix, tol = 0.2)
+    expect_equal(complete_triangle, matrix(point_nowcast_matrix, nrow = nrow(point_nowcast_matrix)), tol = 0.2)
   }
 )
 
@@ -120,7 +119,7 @@ test_that(
     complete_triangle <- do.call(rbind, complete_triangle)
 
     reporting_triangle <- construct_triangle(
-      complete_triangle,
+      to_reporting_triangle(complete_triangle),
       structure = 2
     )
 

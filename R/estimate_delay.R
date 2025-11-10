@@ -35,7 +35,7 @@
 #' @export
 #' @examples
 #' # Example 1: Standard usage with default preprocessing
-#' triangle <- matrix(
+#' triangle_mat <- matrix(
 #'   c(
 #'     80, 50, 25, 10,
 #'     100, 50, 30, 20,
@@ -46,6 +46,16 @@
 #'   nrow = 5,
 #'   byrow = TRUE
 #' )
+#' ref_dates <- seq(
+#'   from = as.Date("2025-01-01"),
+#'   by = "day",
+#'   length.out = nrow(triangle_mat)
+#' )
+#' triangle <- as_reporting_triangle(
+#'   data = triangle_mat,
+#'   reference_dates = ref_dates,
+#'   max_delay = 3
+#' )
 #' delay_pmf <- estimate_delay(
 #'   reporting_triangle = triangle,
 #'   max_delay = 3,
@@ -55,8 +65,18 @@
 #'
 #' # Example 2: Using data with downward corrections without preprocessing
 #' # This preserves negative PMF entries reflecting systematic corrections
+#' ref_dates_ex2 <- seq(
+#'   from = as.Date("2025-01-01"),
+#'   by = "day",
+#'   length.out = nrow(example_downward_corr_mat)
+#' )
+#' triangle_ex2 <- as_reporting_triangle(
+#'   data = example_downward_corr_mat,
+#'   reference_dates = ref_dates_ex2,
+#'   max_delay = 3
+#' )
 #' delay_pmf_negative <- estimate_delay(
-#'   reporting_triangle = example_downward_corr_mat,
+#'   reporting_triangle = triangle_ex2,
 #'   max_delay = 3,
 #'   n = 5,
 #'   preprocess = NULL
@@ -151,7 +171,9 @@ estimate_delay <- function(
     for (co in start_col:n_delays) {
       start_row <- which(is.na(rep_tri_mat[, co]))[1]
       # Extract relevant blocks of the triangle
-      block_top_left <- .extract_block_top_left(rep_tri_mat, co, n_dates, start_row)
+      block_top_left <- .extract_block_top_left(
+        rep_tri_mat, co, n_dates, start_row
+      )
       block_top <- .extract_block_top(rep_tri_mat, co, n_dates, start_row)
 
       # Calculate multiplication factor

@@ -40,7 +40,7 @@
 #' @export
 #'
 #' @examples
-#' triangle <- matrix(
+#' triangle_mat <- matrix(
 #'   c(
 #'     78, 40, 24, 9,
 #'     65, 46, 21, 7,
@@ -53,6 +53,16 @@
 #'   ),
 #'   nrow = 8,
 #'   byrow = TRUE
+#' )
+#' ref_dates <- seq(
+#'   from = as.Date("2025-01-01"),
+#'   by = "day",
+#'   length.out = nrow(triangle_mat)
+#' )
+#' triangle <- as_reporting_triangle(
+#'   data = triangle_mat,
+#'   reference_dates = ref_dates,
+#'   max_delay = ncol(triangle_mat) - 1
 #' )
 #'
 #' trunc_rts <- truncate_triangles(triangle, n = 3)

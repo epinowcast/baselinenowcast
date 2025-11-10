@@ -17,7 +17,7 @@ test_that("apply_delay function works as expected when result is known", {
   )
 
   expect_equal(result[2, 4], 10, tol = 0.1)
-  expect_equal(result[3, 3:4], c(20, 20), tol = 0.1)
+  expect_equal(unname(result[3, 3:4]), c(20, 20), tol = 0.1)
 
   # now try with 0s
   triangle <- to_reporting_triangle(matrix(
@@ -97,7 +97,7 @@ test_that("apply_delay function works correctly on simple triangle", {
   mat <- matrix(nrow = 5, ncol = 4, data = 1)
   expect_error(
     apply_delay(
-      reporting_triangle = mat,
+      reporting_triangle = to_reporting_triangle(mat),
       delay_pmf = delay_pmf
     ),
     regexp = "`reporting_triangle` doesn't contain any missing values"
@@ -232,7 +232,7 @@ test_that("apply_delay works with ragged reporting triangles", {
   )
   cols <- colSums(result[3:5, ])
   pmf <- cols / sum(cols)
-  expect_equal(pmf, delay_pmf, tolerance = 0.01)
+  expect_equal(unname(pmf), delay_pmf, tolerance = 0.01)
 })
 
 test_that("apply_delay works with structure=2 ragged reporting triangles", {
@@ -251,7 +251,7 @@ test_that("apply_delay works with structure=2 ragged reporting triangles", {
   )
   cols <- colSums(result[3:5, ])
   pmf <- cols / sum(cols)
-  expect_equal(pmf, delay_pmf, tolerance = 0.01)
+  expect_equal(unname(pmf), delay_pmf, tolerance = 0.01)
 })
 
 test_that("apply_delay works with PMF containing negative entries", {

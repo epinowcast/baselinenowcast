@@ -29,7 +29,10 @@ test_that(
       byrow = TRUE
     )
 
-    trunc_triangles <- list(triangle1, triangle2)
+    trunc_triangles <- list(
+      to_reporting_triangle(triangle1),
+      to_reporting_triangle(triangle2)
+    )
 
     # Test 1: Check if the function returns a list
     expect_type(construct_triangles(trunc_triangles), "list")
@@ -47,11 +50,11 @@ test_that(
     # correct
     expect_identical(
       retro_triangles[[1]],
-      construct_triangle(triangle1)
+      construct_triangle(to_reporting_triangle(triangle1))
     )
 
     # Test 5: Check if the content of the last retrospective triangle is correct
-    expected_last_triangle <- matrix(
+    expected_last_triangle <- to_reporting_triangle(matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -62,7 +65,7 @@ test_that(
       ),
       nrow = 6,
       byrow = TRUE
-    )
+    ))
     expect_identical(retro_triangles[[2]], expected_last_triangle)
 
 
@@ -104,13 +107,16 @@ test_that(
       byrow = TRUE
     )
 
-    trunc_triangles <- list(triangle1, triangle2)
+    trunc_triangles <- list(
+      to_reporting_triangle(triangle1),
+      to_reporting_triangle(triangle2)
+    )
 
     retro_triangles_custom <- construct_triangles(trunc_triangles,
       structure = 2
     )
 
-    expected_triangle1_struct2 <- matrix(
+    expected_triangle1_struct2 <- to_reporting_triangle(matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -122,7 +128,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
     expected_triangle1_struct2[5:7, 4] <- NA
     expected_triangle1_struct2[6:7, 3] <- NA
     expected_triangle1_struct2[7, 2] <- NA

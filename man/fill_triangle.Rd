@@ -53,7 +53,7 @@ used to generate the nowcast, otherwise, a delay distribution will be
 estimated from the \code{reporting_triangle}.
 }
 \examples{
-triangle <- matrix(
+triangle_mat <- matrix(
   c(
     80, 50, 25, 10,
     100, 50, 30, 20,
@@ -63,6 +63,16 @@ triangle <- matrix(
   ),
   nrow = 5,
   byrow = TRUE
+)
+ref_dates <- seq(
+  from = as.Date("2025-01-01"),
+  by = "day",
+  length.out = nrow(triangle_mat)
+)
+triangle <- as_reporting_triangle(
+  data = triangle_mat,
+  reference_dates = ref_dates,
+  max_delay = ncol(triangle_mat) - 1
 )
 point_nowcast_matrix <- fill_triangle(
   reporting_triangle = triangle

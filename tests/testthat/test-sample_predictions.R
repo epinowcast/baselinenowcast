@@ -9,7 +9,7 @@ point_nowcast_matrix <- matrix(
   byrow = TRUE
 )
 dispersion <- c(0.8, 12.4, 9.1)
-reporting_triangle <- construct_triangle(point_nowcast_matrix)
+reporting_triangle <- construct_triangle(to_reporting_triangle(point_nowcast_matrix))
 test_that(
   "sample_predictions: returns a dataframe with correct structure",
   {
@@ -46,7 +46,7 @@ test_that("sample_predictions: draws are distinct and properly indexed", {
     byrow = TRUE
   )
   dispersion <- c(0.8, 12.4)
-  reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
+  reporting_triangle <- construct_triangle(to_reporting_triangle(point_nowcast_matrix), structure = 2)
   n_draws <- 5
 
   # Force seed for reproducibility
@@ -101,7 +101,7 @@ test_that("sample_predictions: time index is correctly assigned", {
     byrow = TRUE
   )
   dispersion <- c(0.8, 12.4)
-  reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
+  reporting_triangle <- construct_triangle(to_reporting_triangle(point_nowcast_matrix), structure = 2)
   n_draws <- 3
 
   result <- sample_predictions(
@@ -128,13 +128,17 @@ test_that("sample_predictions works with different number of draws", {
   point_nowcast_matrix <- matrix(
     c(
       100, 50, 30, 20,
-      90, 45, 25, 16.8
+      90, 45, 25, 16.8,
+      80, 40, 21.2, 19.5
     ),
-    nrow = 2,
+    nrow = 3,
     byrow = TRUE
   )
   dispersion <- c(0.8, 0.2)
-  reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
+  reporting_triangle <- construct_triangle(
+    to_reporting_triangle(point_nowcast_matrix),
+    structure = 2
+  )
   n_draws <- 100
 
   result <- sample_predictions(
@@ -148,7 +152,7 @@ test_that("sample_predictions works with different number of draws", {
   expect_length(unique(result$draw), as.integer(n_draws))
   expect_identical(
     nrow(result),
-    as.integer(n_draws * nrow(point_nowcast_matrix))
+    as.integer(n_draws * 3L)
   )
 })
 

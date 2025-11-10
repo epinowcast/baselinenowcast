@@ -114,7 +114,7 @@ test_that("fill_triangle can take in another delay PMF", {
   )
   last_row <- result[5, ]
   pmf <- last_row / sum(last_row)
-  expect_equal(pmf, external_delay_pmf, tolerance = 0.01)
+  expect_equal(unname(pmf), unname(external_delay_pmf), tolerance = 0.01)
 })
 
 test_that("fill_triangle generates the correct result on a ragged triangle", { # nolint
@@ -132,7 +132,7 @@ test_that("fill_triangle generates the correct result on a ragged triangle", { #
   )
   cols <- colSums(result[3:5, ])
   pmf <- cols / sum(cols)
-  expect_equal(pmf, delay_pmf, tolerance = 0.01)
+  expect_equal(unname(pmf), unname(delay_pmf), tolerance = 0.01)
 })
 
 test_that("fill_triangle generates the correct result on a ragged triangle with fewer rows than columns", { # nolint
@@ -150,7 +150,7 @@ test_that("fill_triangle generates the correct result on a ragged triangle with 
   )
   cols <- colSums(result[2:3, ])
   pmf <- cols / sum(cols)
-  expect_equal(pmf, delay_pmf, tolerance = 0.01)
+  expect_equal(unname(pmf), unname(delay_pmf), tolerance = 0.01)
 })
 
 test_that("fill_triangle errors when there are insufficient observations", { # nolint
@@ -160,10 +160,12 @@ test_that("fill_triangle errors when there are insufficient observations", { # n
   # Create a complete triangle based on the known delay PMF
   triangle_mat <- lapply(partial_counts, function(x) x * delay_pmf)
   triangle_mat <- do.call(rbind, triangle_mat)
-  triangle <- to_reporting_triangle(triangle_mat)
-  triangle <- construct_triangle(triangle, structure = c(1, 2))
 
-  expect_error(fill_triangle(
-    triangle
-  ))
+  # This should error during construct_triangle validation
+  # because the structure creates all-NA columns
+  expect_error(
+    triangle <- to_reporting_triangle(triangle_mat) |>
+      construct_triangle(structure = c(1, 2)),
+    regexp = "Invalid reporting triangle structure"
+  )
 })

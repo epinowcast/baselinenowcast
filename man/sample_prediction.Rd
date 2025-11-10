@@ -64,7 +64,17 @@ point_nowcast_matrix <- matrix(
   nrow = 5,
   byrow = TRUE
 )
-reporting_triangle <- construct_triangle(point_nowcast_matrix)
+ref_dates <- seq(
+  from = as.Date("2025-01-01"),
+  by = "day",
+  length.out = nrow(point_nowcast_matrix)
+)
+point_nowcast_obj <- as_reporting_triangle(
+  data = point_nowcast_matrix,
+  reference_dates = ref_dates,
+  max_delay = ncol(point_nowcast_matrix) - 1
+)
+reporting_triangle <- construct_triangle(point_nowcast_obj)
 disp <- c(0.8, 12.4, 9.1)
 nowcast_pred_draw <- sample_prediction(
   point_nowcast_matrix,

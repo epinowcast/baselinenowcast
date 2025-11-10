@@ -37,7 +37,7 @@
 #'
 #' @examples
 #' # Create example reporting triangle
-#' triangle <- matrix(
+#' triangle_mat <- matrix(
 #'   c(
 #'     65, 46, 21, 7,
 #'     70, 40, 20, 5,
@@ -49,6 +49,16 @@
 #'   ),
 #'   nrow = 7,
 #'   byrow = TRUE
+#' )
+#' ref_dates <- seq(
+#'   from = as.Date("2025-01-01"),
+#'   by = "day",
+#'   length.out = nrow(triangle_mat)
+#' )
+#' triangle <- as_reporting_triangle(
+#'   data = triangle_mat,
+#'   reference_dates = ref_dates,
+#'   max_delay = ncol(triangle_mat) - 1
 #' )
 #'
 #' # Estimate uncertainty parameters

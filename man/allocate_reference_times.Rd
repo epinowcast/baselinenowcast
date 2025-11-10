@@ -65,7 +65,7 @@ in the reporting triangle.
 }
 }
 \examples{
-triangle <- matrix(
+triangle_mat <- matrix(
   c(
     100, 50, 30, 20,
     40, 10, 20, 5,
@@ -80,6 +80,16 @@ triangle <- matrix(
   ),
   nrow = 10,
   byrow = TRUE
+)
+ref_dates <- seq(
+  from = as.Date("2025-01-01"),
+  by = "day",
+  length.out = nrow(triangle_mat)
+)
+triangle <- as_reporting_triangle(
+  data = triangle_mat,
+  reference_dates = ref_dates,
+  max_delay = ncol(triangle_mat) - 1
 )
 # Use the defaults
 ref_time_allocation_default <- allocate_reference_times(triangle)

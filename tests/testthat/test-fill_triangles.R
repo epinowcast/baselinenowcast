@@ -25,7 +25,10 @@ test_triangle_2 <- matrix(
   byrow = TRUE
 )
 
-retro_rts_list <- list(test_triangle_1, test_triangle_2)
+retro_rts_list <- list(
+  to_reporting_triangle(test_triangle_1),
+  to_reporting_triangle(test_triangle_2)
+)
 delay_pmf <- c(0.1, 0.1, 0.5, 0.3)
 
 test_that("fill_triangles returns correctly structured output", {
@@ -97,7 +100,8 @@ test_that("fill_triangles custom n_history_delay is respected", {
   )
   # Compare to estimate using n=5
   first_triangle <- result[[1]]
-  delay_pmf <- estimate_delay(retro_rts_list[[1]],
+  delay_pmf <- estimate_delay(
+    retro_rts_list[[1]],
     n = 5
   )
   exp_first_triangle <- apply_delay(retro_rts_list[[1]], delay_pmf)
@@ -131,7 +135,10 @@ test_that("fill_triangles invalid inputs throw errors", {
 })
 
 test_that("fill_triangles identical-sized matrices work", {
-  same_size_list <- list(test_triangle_1[2:7, ], test_triangle_2)
+  same_size_list <- list(
+    to_reporting_triangle(test_triangle_1[2:7, ]),
+    to_reporting_triangle(test_triangle_2)
+  )
   result <- fill_triangles(same_size_list)
 
   # Number of rows of each matrix should be identical (6 and 6)
@@ -140,7 +147,8 @@ test_that("fill_triangles identical-sized matrices work", {
 
 test_that("fill_triangles handles a single triangle with 0s for first column appropriately", { # nolint
 
-  triangle3 <- matrix(
+  # Triangle 3 can't be used to generate a point nowcast because first column is all zeros
+  triangle3_mat <- matrix(
     c(
       0, 40, 20, 5,
       0, 50, 10, 10,
@@ -151,15 +159,28 @@ test_that("fill_triangles handles a single triangle with 0s for first column app
     nrow = 5,
     byrow = TRUE
   )
+  # Create triangle3 by bypassing validation
+  triangle3 <- structure(
+    triangle3_mat,
+    class = c("reporting_triangle", "matrix", "array"),
+    max_delay = 3L,
+    reference_dates = seq(as.Date("1900-01-01"), by = "days", length.out = 5),
+    delays_unit = "days"
+  )
 
-  retro_rts_list <- list(test_triangle_1, test_triangle_2, triangle3)
+  retro_rts_list <- list(
+    to_reporting_triangle(test_triangle_1),
+    to_reporting_triangle(test_triangle_2),
+    triangle3
+  )
 
   result <- expect_message(fill_triangles(retro_rts_list))
   expect_null(result[[3]])
 })
 
 test_that("fill_triangles errors if only contains triangles with first column 0", { # nolint
-  triangle1 <- matrix(
+  # All triangles have first column as zeros, so they need to bypass validation
+  triangle1_mat <- matrix(
     c(
       0, 46, 21, 7,
       0, 40, 20, 5,
@@ -172,8 +193,15 @@ test_that("fill_triangles errors if only contains triangles with first column 0"
     nrow = 7,
     byrow = TRUE
   )
+  triangle1 <- structure(
+    triangle1_mat,
+    class = c("reporting_triangle", "matrix", "array"),
+    max_delay = 3L,
+    reference_dates = seq(as.Date("1900-01-01"), by = "days", length.out = 7),
+    delays_unit = "days"
+  )
 
-  triangle2 <- matrix(
+  triangle2_mat <- matrix(
     c(
       0, 46, 21, 7,
       0, 40, 20, 5,
@@ -185,7 +213,15 @@ test_that("fill_triangles errors if only contains triangles with first column 0"
     nrow = 6,
     byrow = TRUE
   )
-  triangle3 <- matrix(
+  triangle2 <- structure(
+    triangle2_mat,
+    class = c("reporting_triangle", "matrix", "array"),
+    max_delay = 3L,
+    reference_dates = seq(as.Date("1900-01-01"), by = "days", length.out = 6),
+    delays_unit = "days"
+  )
+
+  triangle3_mat <- matrix(
     c(
       0, 40, 20, 5,
       0, 50, 10, 10,
@@ -195,6 +231,13 @@ test_that("fill_triangles errors if only contains triangles with first column 0"
     ),
     nrow = 5,
     byrow = TRUE
+  )
+  triangle3 <- structure(
+    triangle3_mat,
+    class = c("reporting_triangle", "matrix", "array"),
+    max_delay = 3L,
+    reference_dates = seq(as.Date("1900-01-01"), by = "days", length.out = 5),
+    delays_unit = "days"
   )
 
   retro_rts_list <- list(triangle1, triangle2, triangle3)
@@ -212,16 +255,16 @@ test_that("fill_triangles uses full number of rows in n_history_delay", { # noli
   complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
   complete_triangle <- do.call(rbind, complete_triangle)
 
-  check_pmf <- estimate_delay(complete_triangle, n = 7)
+  check_pmf <- estimate_delay(to_reporting_triangle(complete_triangle), n = 7)
   check_pmf
 
   # Create a reporting triangle with NAs in the lower right
-  triangle <- construct_triangle(complete_triangle)
+  triangle <- construct_triangle(to_reporting_triangle(complete_triangle))
   triangle
 
   slight_dif_triangle <- fill_triangle(triangle, n = 7)
 
-  expect_equal(slight_dif_triangle, complete_triangle, tol = 0.5)
+  expect_equal(c(slight_dif_triangle), c(complete_triangle), tol = 0.5)
   truncated_rts <- truncate_triangles(triangle, n = 2)
   truncated_rts[1:2]
   # These will always have the first row at the top. First one will be with
@@ -239,8 +282,8 @@ test_that("fill_triangles uses full number of rows in n_history_delay", { # noli
 
   pmf_list <- lapply(retro_pt_nowcast_mat_list, estimate_delay)
   # Both are returning the original pmf bc they dont use the modified one
-  expect_equal(pmf_list[[1]], sim_delay_pmf, tol = 0.02)
-  expect_equal(pmf_list[[2]], sim_delay_pmf, tol = 0.02)
+  expect_equal(unname(pmf_list[[1]]), unname(sim_delay_pmf), tol = 0.02)
+  expect_equal(unname(pmf_list[[2]]), unname(sim_delay_pmf), tol = 0.02)
 })
 
 test_that("fill_triangles uses correct rows", {
@@ -254,16 +297,16 @@ test_that("fill_triangles uses correct rows", {
   complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
   complete_triangle <- do.call(rbind, complete_triangle)
 
-  check_pmf <- estimate_delay(complete_triangle, n = 7)
+  check_pmf <- estimate_delay(to_reporting_triangle(complete_triangle), n = 7)
   check_pmf
 
   # Create a reporting triangle with NAs in the lower right
-  triangle <- construct_triangle(complete_triangle)
+  triangle <- construct_triangle(to_reporting_triangle(complete_triangle))
   triangle
 
   slight_dif_triangle <- fill_triangle(triangle)
 
-  expect_equal(slight_dif_triangle, complete_triangle, tol = 0.5)
+  expect_equal(c(slight_dif_triangle), c(complete_triangle), tol = 0.5)
 
   # Change entry in last row so that when used it wont estimate same delay
   triangle[1, 3] <- 3 * triangle[1, 3]
@@ -286,8 +329,8 @@ test_that("fill_triangles uses correct rows", {
   # Get the empirical pmfs in your two pt nowcast matrices with the first row
   # included
   pmf_list <- lapply(retro_pt_nowcast_mat_list, estimate_delay)
-  expect_equal(pmf_list[[1]], sim_delay_pmf, tol = 0.06) # Here we get back
+  expect_equal(unname(pmf_list[[1]]), unname(sim_delay_pmf), tol = 0.06) # Here we get back
   # what we put in bc it doesn't use the first row
-  expect_failure(expect_equal(pmf_list[[2]], sim_delay_pmf, tol = 0.06)) # Here
+  expect_failure(expect_equal(unname(pmf_list[[2]]), unname(sim_delay_pmf), tol = 0.06)) # Here
   # we don't bc we use the first row with the larger value
 })

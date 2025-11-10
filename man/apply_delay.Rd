@@ -34,7 +34,7 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116
 }
 \examples{
 # Example 1: Standard usage with positive delay PMF
-triangle <- matrix(
+triangle_mat <- matrix(
   c(
     80, 50, 25, 10,
     100, 50, 30, 20,
@@ -44,6 +44,16 @@ triangle <- matrix(
   ),
   nrow = 5,
   byrow = TRUE
+)
+ref_dates <- seq(
+  from = as.Date("2025-01-01"),
+  by = "day",
+  length.out = nrow(triangle_mat)
+)
+triangle <- as_reporting_triangle(
+  data = triangle_mat,
+  reference_dates = ref_dates,
+  max_delay = 3
 )
 delay_pmf <- estimate_delay(
   reporting_triangle = triangle,
@@ -60,9 +70,18 @@ print(point_nowcast_matrix)
 # corrections. Create a delay PMF with a negative value representing
 # systematic corrections
 delay_pmf_negative <- c(0.7, 0.4, -0.15, 0.05)
-
+ref_dates_ex2 <- seq(
+  from = as.Date("2025-01-01"),
+  by = "day",
+  length.out = nrow(example_downward_corr_mat)
+)
+triangle_ex2 <- as_reporting_triangle(
+  data = example_downward_corr_mat,
+  reference_dates = ref_dates_ex2,
+  max_delay = 3
+)
 nowcast_with_corrections <- apply_delay(
-  reporting_triangle = example_downward_corr_mat,
+  reporting_triangle = triangle_ex2,
   delay_pmf = delay_pmf_negative
 )
 # The nowcast includes negative predictions at delay 2,

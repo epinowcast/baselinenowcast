@@ -3,8 +3,8 @@ triangle <- matrix(
   nrow = 12,
   ncol = 5
 ) |>
-  construct_triangle() |>
-  to_reporting_triangle()
+  to_reporting_triangle() |>
+  construct_triangle()
 pt_nowcast_matrix <- estimate_and_apply_delay(
   reporting_triangle = triangle,
   n = 6
@@ -68,7 +68,9 @@ test_that("estimate_and_apply_uncertainty errors when things are specified incor
     data = sample.int(10, 6 * 5, replace = TRUE),
     nrow = 6,
     ncol = 5
-  ) |> construct_triangle()
+  ) |>
+    to_reporting_triangle() |>
+    construct_triangle()
   pt_nowcast_matrix <- estimate_and_apply_delay(
     reporting_triangle = triangle,
     n = 6
@@ -90,7 +92,9 @@ test_that("estimate_and_apply_uncertainty is able to detect the structure of a j
     data = sample.int(10, 12 * 5, replace = TRUE),
     nrow = 12,
     ncol = 5
-  ) |> construct_triangle(structure = 2)
+  ) |>
+    to_reporting_triangle() |>
+    construct_triangle(structure = 2)
   pt_nowcast_matrix2 <- estimate_and_apply_delay(
     reporting_triangle = jagged_triangle,
     n = 6

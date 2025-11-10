@@ -27,7 +27,7 @@ integer or vector specifying the reporting structure, which will tell
 the same reporting pattern.
 }
 \examples{
-ragged_triangle <- matrix(
+ragged_triangle_mat <- matrix(
   c(
     1, 3, 5, 7, 9, 7,
     4, 5, 9, 4, NA, NA,
@@ -36,6 +36,16 @@ ragged_triangle <- matrix(
   ),
   nrow = 4,
   byrow = TRUE
+)
+ref_dates <- seq(
+  from = as.Date("2025-01-01"),
+  by = "day",
+  length.out = nrow(ragged_triangle_mat)
+)
+ragged_triangle <- as_reporting_triangle(
+  data = ragged_triangle_mat,
+  reference_dates = ref_dates,
+  max_delay = ncol(ragged_triangle_mat) - 1
 )
 detected_structure <- detect_structure(ragged_triangle)
 detected_structure

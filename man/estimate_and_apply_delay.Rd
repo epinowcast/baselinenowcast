@@ -31,7 +31,7 @@ with the same structure as the input
 Estimate and apply delay from a reporting triangle
 }
 \examples{
-triangle <- matrix(
+triangle_mat <- matrix(
   c(
     80, 50, 25, 10,
     100, 50, 30, 20,
@@ -41,6 +41,16 @@ triangle <- matrix(
   ),
   nrow = 5,
   byrow = TRUE
+)
+ref_dates <- seq(
+  from = as.Date("2025-01-01"),
+  by = "day",
+  length.out = nrow(triangle_mat)
+)
+triangle <- as_reporting_triangle(
+  data = triangle_mat,
+  reference_dates = ref_dates,
+  max_delay = ncol(triangle_mat) - 1
 )
 pt_nowcast_matrix <- estimate_and_apply_delay(
   reporting_triangle = triangle,

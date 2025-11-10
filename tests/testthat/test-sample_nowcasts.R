@@ -9,7 +9,7 @@ point_nowcast_matrix <- matrix(
   byrow = TRUE
 )
 dispersion <- c(0.8, 12.4, 9.1)
-reporting_triangle <- construct_triangle(point_nowcast_matrix)
+reporting_triangle <- construct_triangle(to_reporting_triangle(point_nowcast_matrix))
 
 
 test_that(
@@ -36,7 +36,7 @@ test_that(
 test_that("sample_nowcasts: draws are distinct and properly indexed", {
   # Setup test data
   dispersion <- c(0.8, 12.4)
-  reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
+  reporting_triangle <- construct_triangle(to_reporting_triangle(point_nowcast_matrix), structure = 2)
   n_draws <- 5
 
   # Force seed for reproducibility
@@ -82,7 +82,7 @@ test_that("sample_nowcasts: draws are distinct and properly indexed", {
 test_that("sample_nowcasts: time index is correctly assigned", {
   # Setup test data
   dispersion <- c(0.8, 12.4)
-  reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
+  reporting_triangle <- construct_triangle(to_reporting_triangle(point_nowcast_matrix), structure = 2)
   n_draws <- 3
 
   result <- sample_nowcasts(
@@ -109,13 +109,17 @@ test_that("sample_nowcasts: function works with different number of draws", {
   point_nowcast_matrix <- matrix(
     c(
       100, 50, 30, 20,
-      90, 45, 25, 16.8
+      90, 45, 25, 16.8,
+      80, 40, 21.2, 19.5
     ),
-    nrow = 2,
+    nrow = 3,
     byrow = TRUE
   )
   dispersion <- c(0.8, 0.2)
-  reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
+  reporting_triangle <- construct_triangle(
+    to_reporting_triangle(point_nowcast_matrix),
+    structure = 2
+  )
   n_draws <- 100
 
   result <- sample_nowcasts(
@@ -129,7 +133,7 @@ test_that("sample_nowcasts: function works with different number of draws", {
   expect_length(unique(result$draw), as.integer(n_draws))
   expect_identical(
     nrow(result),
-    as.integer(n_draws * nrow(point_nowcast_matrix))
+    as.integer(n_draws * 3L)
   )
 })
 
@@ -148,7 +152,7 @@ test_that(
       byrow = TRUE
     )
     dispersion <- c(0.8, 12.4, 9.1)
-    reporting_triangle <- construct_triangle(point_nowcast_matrix)
+    reporting_triangle <- construct_triangle(to_reporting_triangle(point_nowcast_matrix))
 
     result_with_rolling_sum <- sample_nowcasts(
       point_nowcast_matrix,
@@ -197,7 +201,7 @@ test_that("sample_nowcasts: longer k aggregates correctly", {
   rep_mat <- matrix(sample.int(1, 20, size = 4 * 10, replace = TRUE),
     nrow = 10, ncol = 4
   )
-  triangle <- construct_triangle(rep_mat)
+  triangle <- construct_triangle(to_reporting_triangle(rep_mat))
 
   pt_nowcast_mat <- fill_triangle(triangle)
   dispersion <- c(10, 10, 10)

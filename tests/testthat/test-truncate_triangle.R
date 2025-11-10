@@ -14,7 +14,7 @@ rep_tri <- to_reporting_triangle(matrix(
 test_that("truncate_triangle works with positive t", {
   t <- 1
   result <- truncate_triangle(t, rep_tri)
-  expected <- matrix(
+  expected_mat <- matrix(
     c(
       10, 20, 30,
       40, 50, NA
@@ -23,7 +23,14 @@ test_that("truncate_triangle works with positive t", {
     ncol = 3,
     byrow = TRUE
   )
-  expect_identical(result, expected)
+  # Compare matrix values (strip attributes)
+  result_mat <- unclass(result)
+  attributes(result_mat) <- list(dim = dim(result_mat))
+  expect_identical(result_mat, expected_mat)
+  # Check it's a reporting_triangle
+  expect_true(is_reporting_triangle(result))
+  # Check structure is preserved from original
+  expect_identical(attr(result, "structure"), attr(rep_tri, "structure"))
 })
 
 # Test 2: Edge case with t equal to nrow(rep_tri) fails
@@ -58,11 +65,10 @@ test_that("truncate_triangle handles zero t", {
 
 # Test 6: Empty matrix input throws an error
 test_that("truncate_triangle handles empty matrix input", {
-  matr_empty <- to_reporting_triangle(matrix(nrow = 0, ncol = 0))
   t <- 1
   expect_error(
-    truncate_triangle(t, matr_empty),
-    "The as of time point is greater than or equal to the number of"
+    to_reporting_triangle(matrix(nrow = 0, ncol = 0)),
+    "Contains only missing values"
   )
 })
 

@@ -16,7 +16,7 @@
 #' @family generate_retrospective_data
 #' @export
 #' @examples
-#' triangle <- matrix(
+#' triangle_mat <- matrix(
 #'   c(
 #'     65, 46, 21, 7,
 #'     70, 40, 20, 5,
@@ -28,6 +28,16 @@
 #'   ),
 #'   nrow = 7,
 #'   byrow = TRUE
+#' )
+#' ref_dates <- seq(
+#'   from = as.Date("2025-01-01"),
+#'   by = "day",
+#'   length.out = nrow(triangle_mat)
+#' )
+#' triangle <- as_reporting_triangle(
+#'   data = triangle_mat,
+#'   reference_dates = ref_dates,
+#'   max_delay = ncol(triangle_mat) - 1
 #' )
 #'
 #' trunc_rts <- truncate_triangles(triangle, n = 2)
@@ -73,7 +83,7 @@ construct_triangles <- function(truncated_reporting_triangles, structure = 1) {
 #' @family generate_retrospective_data
 #' @export
 #' @examples
-#' triangle <- matrix(
+#' triangle_mat <- matrix(
 #'   c(
 #'     65, 46, 21, 7,
 #'     70, 40, 20, 5,
@@ -85,6 +95,16 @@ construct_triangles <- function(truncated_reporting_triangles, structure = 1) {
 #'   ),
 #'   nrow = 7,
 #'   byrow = TRUE
+#' )
+#' ref_dates <- seq(
+#'   from = as.Date("2025-01-01"),
+#'   by = "day",
+#'   length.out = nrow(triangle_mat)
+#' )
+#' triangle <- as_reporting_triangle(
+#'   data = triangle_mat,
+#'   reference_dates = ref_dates,
+#'   max_delay = ncol(triangle_mat) - 1
 #' )
 #'
 #' # Standard triangular structure (default)

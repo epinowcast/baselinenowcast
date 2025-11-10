@@ -1,7 +1,7 @@
 test_that(
   "estimate_uncertainty_retro returns positive numeric vector",
   {
-    triangle <- matrix(
+    triangle <- to_reporting_triangle(matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -13,7 +13,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     result <- estimate_uncertainty_retro(
       triangle,
@@ -28,7 +28,7 @@ test_that(
 )
 
 test_that("estimate_uncertainty_retro matches manual workflow", {
-  triangle <- matrix(
+  triangle <- to_reporting_triangle(matrix(
     c(
       65, 46, 21, 7,
       70, 40, 20, 5,
@@ -40,7 +40,7 @@ test_that("estimate_uncertainty_retro matches manual workflow", {
     ),
     nrow = 7,
     byrow = TRUE
-  )
+  ))
 
   # Manual workflow
   n_retrospective_nowcasts <- 2
@@ -80,7 +80,7 @@ test_that("estimate_uncertainty_retro matches manual workflow", {
 test_that(
   "estimate_uncertainty_retro returns numeric with custom n_history_delay",
   {
-    triangle <- matrix(
+    triangle <- to_reporting_triangle(matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -92,7 +92,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     result <- estimate_uncertainty_retro(
       triangle,
@@ -108,7 +108,7 @@ test_that(
 test_that(
   "estimate_uncertainty_retro returns numeric vector with custom n_retro",
   {
-    triangle <- matrix(
+    triangle <- to_reporting_triangle(matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -120,7 +120,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     suppressWarnings({
       result <- estimate_uncertainty_retro(
@@ -138,7 +138,7 @@ test_that(
 test_that(
   "estimate_uncertainty_retro returns numeric vector with custom max_delay",
   {
-    triangle <- matrix(
+    triangle <- to_reporting_triangle(matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -150,7 +150,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     result <- estimate_uncertainty_retro(
       triangle,
@@ -167,7 +167,7 @@ test_that(
 test_that(
   "estimate_uncertainty_retro returns numeric vector with custom aggregators",
   {
-    triangle <- matrix(
+    triangle <- to_reporting_triangle(matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -179,7 +179,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     if (requireNamespace("zoo", quietly = TRUE)) {
       result <- estimate_uncertainty_retro(
@@ -202,7 +202,7 @@ test_that(
 test_that(
   "estimate_uncertainty_retro returns numeric vector with custom structure",
   {
-    triangle <- matrix(
+    triangle <- to_reporting_triangle(matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -214,7 +214,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     result <- estimate_uncertainty_retro(
       triangle,
@@ -285,7 +285,7 @@ test_that(
 test_that(
   "estimate_uncertainty_retro returns numeric with all custom params",
   {
-    triangle <- matrix(
+    triangle <- to_reporting_triangle(matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -297,7 +297,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     result <- estimate_uncertainty_retro(
       reporting_triangle = triangle,
@@ -338,7 +338,7 @@ test_that("estimate_uncertainty_retro validates insufficient data", {
 })
 
 test_that("estimate_uncertainty_retro works with custom delay_pmf", {
-  triangle <- matrix(
+  triangle <- to_reporting_triangle(matrix(
     c(
       65, 46, 21, 7,
       70, 40, 20, 5,
@@ -350,7 +350,7 @@ test_that("estimate_uncertainty_retro works with custom delay_pmf", {
     ),
     nrow = 7,
     byrow = TRUE
-  )
+  ))
 
   custom_delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
 
@@ -377,7 +377,7 @@ test_that("estimate_uncertainty_retro works with custom delay_pmf", {
 test_that(
   "estimate_uncertainty_retro returns numeric vector despite warnings",
   {
-    triangle <- matrix(
+    triangle <- to_reporting_triangle(matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -389,7 +389,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     suppressWarnings({
       result <- estimate_uncertainty_retro(

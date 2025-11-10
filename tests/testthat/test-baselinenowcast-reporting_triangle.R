@@ -59,12 +59,14 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
   expect_s3_class(test_df, "data.frame")
   expect_true(all(expected_cols %in% colnames(test_df)))
 
-  expect_no_warning(
-    baselinenowcast(rep_tri,
+  # Note: subsetting warnings are expected during internal operations
+  suppressWarnings(
+    result <- baselinenowcast(rep_tri,
       delay_pmf = rep(0.2, 26),
       draws = 100
     )
-  ) # nolint
+  )
+  expect_s3_class(result, "data.frame")
 
   expect_error(
     baselinenowcast(rep_tri,

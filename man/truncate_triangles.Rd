@@ -24,9 +24,9 @@ from, where the minimum requirement is one more than the  number of
 horizon rows (rows containing NAs).}
 }
 \value{
-\code{trunc_rep_tri_list} List of \code{n} truncated reporting triangle
-matrices with as many rows as available given the truncation, and the same
-number of columns as \code{reporting_triangle}.
+\code{trunc_rep_tri_list} List of \code{n} truncated \code{reporting_triangle}
+objects with as many rows as available given the truncation, and the same
+number of columns as the input \code{reporting_triangle}.
 }
 \description{
 This function ingests a reporting triangle/matrix and the number of
@@ -36,7 +36,7 @@ truncates the reporting triangle, working from the latest reference time
 snapshots.
 }
 \examples{
-triangle <- matrix(
+triangle_mat <- matrix(
   c(
     65, 46, 21, 7,
     70, 40, 20, 5,
@@ -48,6 +48,12 @@ triangle <- matrix(
   ),
   nrow = 7,
   byrow = TRUE
+)
+ref_dates <- seq(as.Date("2025-01-01"), by = "day", length.out = 7)
+triangle <- as_reporting_triangle(
+  data = triangle_mat,
+  reference_dates = ref_dates,
+  max_delay = 3
 )
 
 truncated_rts <- truncate_triangles(triangle, n = 2)

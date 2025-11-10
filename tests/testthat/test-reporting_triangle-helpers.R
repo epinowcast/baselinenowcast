@@ -241,3 +241,91 @@ test_that("as.data.frame.reporting_triangle works correctly", {
     "must have class 'reporting_triangle'"
   )
 })
+
+test_that("truncate_to_quantile works correctly", {
+  # Create test triangle with known reporting pattern
+  test_mat <- matrix(c(
+    100, 50, 25, 10, 5, 2, 1, 0, 0, 0,
+    80, 40, 20, 10, 5, 2, 1, 0, 0, NA,
+    90, 45, 22, 11, 5, 2, 1, 0, NA, NA,
+    70, 35, 17, 8, 4, 2, NA, NA, NA, NA
+  ), nrow = 4, byrow = TRUE)
+
+  ref_dates <- seq(as.Date("2025-01-01"), by = "day", length.out = 4)
+  test_tri <- as_reporting_triangle(
+    data = test_mat,
+    reference_dates = ref_dates,
+    max_delay = 9
+  )
+
+  # Test default (p = 0.99)
+  result_99 <- truncate_to_quantile(test_tri)
+  expect_true(is_reporting_triangle(result_99))
+  expect_lte(get_max_delay(result_99), get_max_delay(test_tri))
+
+  # Test with p = 0.90
+  result_90 <- truncate_to_quantile(test_tri, p = 0.90)
+  expect_true(is_reporting_triangle(result_90))
+  expect_lte(get_max_delay(result_90), get_max_delay(result_99))
+
+  # Test with p = 0.50
+  result_50 <- truncate_to_quantile(test_tri, p = 0.50)
+  expect_true(is_reporting_triangle(result_50))
+  expect_lte(get_max_delay(result_50), get_max_delay(result_90))
+
+  # Check that reference dates are preserved
+  expect_equal(get_reference_dates(result_99), get_reference_dates(test_tri))
+  expect_equal(get_reference_dates(result_50), get_reference_dates(test_tri))
+
+  # Check that other attributes are preserved
+  expect_identical(attr(result_99, "delays_unit"), attr(test_tri, "delays_unit"))
+  expect_identical(attr(result_99, "structure"), attr(test_tri, "structure"))
+
+  # Test error with invalid p
+  expect_error(
+    truncate_to_quantile(test_tri, p = 1.5),
+    "Assertion on 'p' failed"
+  )
+  expect_error(
+    truncate_to_quantile(test_tri, p = -0.1),
+    "Assertion on 'p' failed"
+  )
+
+  # Test error with non-reporting_triangle
+  expect_error(
+    truncate_to_quantile(matrix(1:10)),
+    "must have class 'reporting_triangle'"
+  )
+})
+
+test_that("truncate_to_quantile handles edge cases", {
+  # Test with triangle where no truncation is needed
+  small_tri_mat <- matrix(c(
+    100, 50, 25,
+    80, 40, NA,
+    90, NA, NA
+  ), nrow = 3, byrow = TRUE)
+
+  ref_dates <- seq(as.Date("2025-01-01"), by = "day", length.out = 3)
+  small_tri <- as_reporting_triangle(
+    data = small_tri_mat,
+    reference_dates = ref_dates,
+    max_delay = 2
+  )
+
+  result <- suppressMessages(truncate_to_quantile(small_tri, p = 0.99))
+  expect_identical(get_max_delay(result), get_max_delay(small_tri))
+  expect_identical(ncol(result), ncol(small_tri))
+
+  # Test with all zeros
+  zero_mat <- matrix(0, nrow = 3, ncol = 5)
+  ref_dates_zero <- seq(as.Date("2025-01-01"), by = "day", length.out = 3)
+  zero_tri <- as_reporting_triangle(
+    data = zero_mat,
+    reference_dates = ref_dates_zero,
+    max_delay = 4
+  )
+
+  result_zero <- suppressMessages(truncate_to_quantile(zero_tri, p = 0.99))
+  expect_true(is_reporting_triangle(result_zero))
+})

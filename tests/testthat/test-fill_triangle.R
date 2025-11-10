@@ -1,5 +1,5 @@
 # Valid test matrix from examples
-test_triangle <- matrix(
+test_triangle <- to_reporting_triangle(matrix(
   c(
     80, 50, 25, 10,
     100, 50, 30, 20,
@@ -9,7 +9,7 @@ test_triangle <- matrix(
   ),
   nrow = 5,
   byrow = TRUE
-)
+))
 
 test_that("fill_triangle basic functionality with default parameters", { # nolint
   result <- fill_triangle(test_triangle)
@@ -66,7 +66,7 @@ test_that("fill_triangle default parameters work as expected", {
 
 test_that("fill_triangle NA patterns are handled correctly", {
   # Matrix with strategic NAs
-  strategic_na_tri <- matrix(
+  strategic_na_tri <- to_reporting_triangle(matrix(
     c(
       30, 12, 8,
       10, 20, 12,
@@ -75,7 +75,7 @@ test_that("fill_triangle NA patterns are handled correctly", {
     ),
     nrow = 4,
     byrow = TRUE
-  )
+  ))
 
   result <- fill_triangle(strategic_na_tri)
   # Verify all NAs are replaced
@@ -83,7 +83,7 @@ test_that("fill_triangle NA patterns are handled correctly", {
 })
 
 test_that("fill_triangle: Output dimensions match input", {
-  odd_dim_tri <- matrix(1:6, nrow = 3, ncol = 2) |>
+  odd_dim_tri <- to_reporting_triangle(matrix(1:6, nrow = 3, ncol = 2)) |>
     construct_triangle()
   result <- fill_triangle(odd_dim_tri)
   expect_identical(dim(result), c(3L, 2L))
@@ -122,8 +122,9 @@ test_that("fill_triangle generates the correct result on a ragged triangle", { #
   partial_counts <- c(80, 100, 180, 80, 140)
 
   # Create a complete triangle based on the known delay PMF
-  triangle <- lapply(partial_counts, function(x) x * delay_pmf)
-  triangle <- do.call(rbind, triangle)
+  triangle_mat <- lapply(partial_counts, function(x) x * delay_pmf)
+  triangle_mat <- do.call(rbind, triangle_mat)
+  triangle <- to_reporting_triangle(triangle_mat)
   triangle <- construct_triangle(triangle, structure = c(1, 2))
 
   result <- fill_triangle(
@@ -139,8 +140,9 @@ test_that("fill_triangle generates the correct result on a ragged triangle with 
   partial_counts <- c(80, 100, 180)
 
   # Create a complete triangle based on the known delay PMF
-  triangle <- lapply(partial_counts, function(x) x * delay_pmf)
-  triangle <- do.call(rbind, triangle)
+  triangle_mat <- lapply(partial_counts, function(x) x * delay_pmf)
+  triangle_mat <- do.call(rbind, triangle_mat)
+  triangle <- to_reporting_triangle(triangle_mat)
   triangle <- construct_triangle(triangle, structure = c(1, 2))
 
   result <- fill_triangle(
@@ -156,8 +158,9 @@ test_that("fill_triangle errors when there are insufficient observations", { # n
   partial_counts <- c(80, 100)
 
   # Create a complete triangle based on the known delay PMF
-  triangle <- lapply(partial_counts, function(x) x * delay_pmf)
-  triangle <- do.call(rbind, triangle)
+  triangle_mat <- lapply(partial_counts, function(x) x * delay_pmf)
+  triangle_mat <- do.call(rbind, triangle_mat)
+  triangle <- to_reporting_triangle(triangle_mat)
   triangle <- construct_triangle(triangle, structure = c(1, 2))
 
   expect_error(fill_triangle(

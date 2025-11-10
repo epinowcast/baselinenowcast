@@ -58,6 +58,8 @@
 #' # correctly reflecting expected downward corrections
 #' print(nowcast_with_corrections)
 apply_delay <- function(reporting_triangle, delay_pmf) {
+  assert_reporting_triangle(reporting_triangle)
+
   # Checks that the delay df and the triangle are compatible
   .validate_delay_and_triangle(
     reporting_triangle,
@@ -66,7 +68,16 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
   n_delays <- length(delay_pmf)
   n_rows <- nrow(reporting_triangle)
 
-  n_row_nas <- sum(is.na(rowSums(reporting_triangle)))
+  # Store original attributes to restore after computation
+  original_class <- class(reporting_triangle)
+  original_delays_unit <- attr(reporting_triangle, "delays_unit")
+  original_structure <- attr(reporting_triangle, "structure")
+  original_dimnames <- dimnames(reporting_triangle)
+
+  # Unclass once to avoid subsetting validation warnings during iteration
+  tri_mat <- unclass(reporting_triangle)
+
+  n_row_nas <- sum(is.na(rowSums(tri_mat)))
   if (n_row_nas == 0) {
     cli_abort(
       message = c("`reporting_triangle` doesn't contain any missing values, there is nothing to nowcast.", # nolint
@@ -93,8 +104,15 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
       ))
     },
     2:n_delays,
-    init = reporting_triangle
+    init = tri_mat
   )
+
+  # Restore reporting_triangle class and attributes
+  class(point_nowcast_matrix) <- original_class
+  attr(point_nowcast_matrix, "delays_unit") <- original_delays_unit
+  attr(point_nowcast_matrix, "structure") <- original_structure
+  dimnames(point_nowcast_matrix) <- original_dimnames
+
   return(point_nowcast_matrix)
 }
 

@@ -403,11 +403,19 @@ head(rep_tri_df)
 
 We now have a data.frame where each row is a reference date, each column is a delay, and each entry represents the number of cases reported corresponding to each reference date and on each delay.
 The bottom right of the reporting triangle contains NAs to indicate that those observations have yet to be observed.
-As a final pre-processing step, we'll format the reporting triangle as just a matrix, for compatibility with the low-level functions in `baselinenowcast`.
+As a final pre-processing step, we'll convert to a reporting_triangle object.
 ```{r}
-rep_tri <- rep_tri_df |>
+reference_dates <- rep_tri_df$reference_date
+
+rep_tri_mat <- rep_tri_df |>
   select(-reference_date) |>
   as.matrix()
+
+rep_tri <- as_reporting_triangle(
+  data = rep_tri_mat,
+  reference_dates = reference_dates,
+  max_delay = max_delay
+)
 ```
 
 ## Specify the `baselinenowcast` model

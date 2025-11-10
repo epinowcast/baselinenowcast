@@ -40,6 +40,7 @@ Reporting triangle construction and validation
 \code{\link{reporting_triangle-class}},
 \code{\link{summary.reporting_triangle}()},
 \code{\link{tail.reporting_triangle}()},
+\code{\link{truncate_to_quantile}()},
 \code{\link{validate_reporting_triangle}()}
 }
 \concept{reporting_triangle}

@@ -17,16 +17,17 @@ Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row. (e.g. weekly reporting of daily data).}
 }
 \value{
-\code{trunc_rep_tri} Matrix with \code{t} fewer rows than
-\code{reporting_triangle}.
+\code{trunc_rep_tri} A \code{reporting_triangle} object with \code{t} fewer rows
+than the input. The class and metadata are preserved with updated reference
+dates.
 }
 \description{
 This function takes in a integer \code{t} and a reporting triangle and generates
-a truncated reporting triangle, remove the last \code{t} observations.
+a truncated reporting triangle, removing the last \code{t} observations.
 }
 \examples{
 # example code
-triangle <- matrix(
+triangle_mat <- matrix(
   c(
     65, 46, 21, 7,
     70, 40, 20, 5,
@@ -38,6 +39,12 @@ triangle <- matrix(
   ),
   nrow = 7,
   byrow = TRUE
+)
+ref_dates <- seq(as.Date("2025-01-01"), by = "day", length.out = 7)
+triangle <- as_reporting_triangle(
+  data = triangle_mat,
+  reference_dates = ref_dates,
+  max_delay = 3
 )
 
 trunc_rep_tri <- truncate_triangle(t = 1, reporting_triangle = triangle)

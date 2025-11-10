@@ -172,8 +172,10 @@ as_reporting_triangle.data.frame <- function(
 #' @param data Matrix of a reporting triangle where rows are reference times,
 #'    columns are delays, and entries are the incident counts.
 #' @inheritParams as_reporting_triangle
-#' @param reference_dates Vector of character strings indicating the reference
-#'   dates corresponding to each row of the reporting triangle matrix (`data`).
+#' @param reference_dates Vector of Date objects or character strings indicating
+#'   the reference dates corresponding to each row of the reporting triangle
+#'   matrix (`data`). If NULL (default), dummy dates starting from 1900-01-01
+#'   are generated with spacing determined by `delays_unit`.
 #' @param ... Additional arguments not used.
 #' @export
 #' @return A \code{\link{reporting_triangle}} object
@@ -208,13 +210,26 @@ as_reporting_triangle.matrix <- function(data,
                                          max_delay,
                                          strata = NULL,
                                          delays_unit = "days",
-                                         reference_dates,
+                                         reference_dates = NULL,
                                          ...) {
   .validate_triangle(
     triangle = data,
     max_delay = max_delay,
     n = nrow(data)
   )
+
+  # Use dummy dates starting from 1900 if no reference_dates provided
+  if (is.null(reference_dates)) {
+    cli_alert_info(
+      "No reference dates provided. Using dummy dates starting from 1900-01-01."
+    )
+    reference_dates <- seq(
+      from = as.Date("1900-01-01"),
+      by = delays_unit,
+      length.out = nrow(data)
+    )
+  }
+
   if (length(reference_dates) != nrow(data)) {
     cli_abort(
       message =

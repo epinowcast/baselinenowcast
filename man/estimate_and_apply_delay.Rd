@@ -24,7 +24,8 @@ of the delay. The default is to use the whole reporting triangle,
 \item{...}{Additional arguments passed to the \code{estimate_delay} function}
 }
 \value{
-\code{pt_nowcast_matrix} Matrix of point nowcasts
+\code{pt_nowcast_matrix} A \code{reporting_triangle} object of point nowcasts
+with the same structure as the input
 }
 \description{
 Estimate and apply delay from a reporting triangle

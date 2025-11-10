@@ -16,8 +16,10 @@ new_reporting_triangle(
 \arguments{
 \item{reporting_triangle_matrix}{Matrix of reporting triangle}
 
-\item{reference_dates}{Vector of character strings indicating the reference
-dates corresponding to each row of the reporting triangle matrix (\code{data}).}
+\item{reference_dates}{Vector of Date objects or character strings indicating
+the reference dates corresponding to each row of the reporting triangle
+matrix (\code{data}). If NULL (default), dummy dates starting from 1900-01-01
+are generated with spacing determined by \code{delays_unit}.}
 
 \item{structure}{Integer or vector specifying the reporting structure.
 If integer, divides columns evenly by that integer (with last possibly
@@ -64,6 +66,7 @@ Reporting triangle construction and validation
 \code{\link{reporting_triangle-class}},
 \code{\link{summary.reporting_triangle}()},
 \code{\link{tail.reporting_triangle}()},
+\code{\link{truncate_to_quantile}()},
 \code{\link{validate_reporting_triangle}()}
 }
 \concept{reporting_triangle}

@@ -100,6 +100,13 @@ construct_triangles <- function(truncated_reporting_triangles, structure = 1) {
 #' rep_custom
 construct_triangle <- function(truncated_reporting_triangle,
                                structure = 1) {
+  # Validate input is a reporting_triangle
+  assert_reporting_triangle(truncated_reporting_triangle)
+
+  # Save attributes from input
+  ref_dates <- get_reference_dates(truncated_reporting_triangle)
+  delays_unit <- attr(truncated_reporting_triangle, "delays_unit")
+
   # Get matrix dimensions
   rows <- nrow(truncated_reporting_triangle)
   cols <- ncol(truncated_reporting_triangle)
@@ -134,6 +141,14 @@ construct_triangle <- function(truncated_reporting_triangle,
     start_col <- cutoff_cols[i]
     result[index_row, start_col:cols] <- NA_real_
   }
+
+  # Convert back to reporting_triangle with preserved attributes
+  result <- as_reporting_triangle(
+    data = result,
+    reference_dates = ref_dates,
+    max_delay = cols - 1,
+    delays_unit = delays_unit
+  )
 
   return(result)
 }

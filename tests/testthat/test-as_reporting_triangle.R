@@ -343,8 +343,13 @@ test_that("assert_reporting_triangle validates attributes correctly", {
 
   # Test with modified rownames (reference dates stored as rownames)
   rep_tri1 <- rep_tri
-  rownames(rep_tri1) <- c("invalid", "dates", "here")
-  expect_error(assert_reporting_triangle(rep_tri1))
+  # Unclass, modify rownames, then restore class
+  mat1 <- unclass(rep_tri1)
+  rownames(mat1) <- rep("invalid", nrow(mat1))
+  class(mat1) <- class(rep_tri1)
+  attributes(mat1)$delays_unit <- attr(rep_tri1, "delays_unit")
+  attributes(mat1)$structure <- attr(rep_tri1, "structure")
+  expect_error(assert_reporting_triangle(mat1))
 
   # Test with modified delays_unit attribute
   rep_tri2 <- rep_tri

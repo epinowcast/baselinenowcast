@@ -219,12 +219,21 @@
 #' @keywords internal
 .check_to_filter_to_max_delay <- function(triangle,
                                           max_delay) {
-  if (max_delay < ncol(triangle) - 1) {
-    # filter the reporting triangle to be less than the maximum delay
-    triangle <- triangle[, 1:(max_delay + 1)]
+  assert_reporting_triangle(triangle)
 
+  if (max_delay < ncol(triangle) - 1) {
     cli_alert_info(
       text = "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay. The reporting triangle will be filtered to include only the first {max_delay+1} delays." # nolint
+    )
+
+    # Filter the reporting triangle while preserving class and metadata
+    trunc_mat <- unclass(triangle)[, 1:(max_delay + 1), drop = FALSE]
+    triangle <- new_reporting_triangle(
+      reporting_triangle_matrix = trunc_mat,
+      reference_dates = get_reference_dates(triangle),
+      structure = attr(triangle, "structure"),
+      max_delay = max_delay,
+      delays_unit = attr(triangle, "delays_unit")
     )
   }
   return(triangle)

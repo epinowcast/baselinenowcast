@@ -3,7 +3,7 @@ test_that("allocate_reference_times works as expected when user specifies traini
     data = 1,
     nrow = 12,
     ncol = 5
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv <- allocate_reference_times(
     reporting_triangle = rep_tri,
     max_delay = 4,
@@ -18,7 +18,7 @@ test_that("allocate_reference_times works as expected when user specifies traini
     data = 1,
     nrow = 14,
     ncol = 5
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv2 <- allocate_reference_times(
     reporting_triangle = rep_tri2,
     max_delay = 4,
@@ -34,7 +34,7 @@ test_that("allocate_reference_times works as expected when user specifies traini
     data = 1,
     nrow = 10,
     ncol = 5
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv3 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri3,
@@ -53,7 +53,7 @@ test_that("allocate_reference_times properly scales delay and total training amo
     data = 1,
     nrow = 20,
     ncol = 5
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
 
   tv <- expect_message(allocate_reference_times(
     rep_tri,
@@ -103,7 +103,7 @@ test_that("allocate_reference_times handles rounding with a warning", {
     data = 1,
     nrow = 20,
     ncol = 6
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
 
   tv <- expect_message(allocate_reference_times(
     rep_tri,
@@ -117,7 +117,7 @@ test_that("allocate_reference_times handles rounding with a warning", {
     data = 1,
     nrow = 100,
     ncol = 31
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
 
   # Don't warn when prop delay is basically equivalent
   tv2 <- expect_no_warning(allocate_reference_times(
@@ -136,7 +136,7 @@ test_that("allocate_reference_times warns when user or defaults don't meet minim
     data = 1,
     nrow = 10,
     ncol = 5
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv5 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri5
@@ -151,7 +151,7 @@ test_that("allocate_reference_times warns when user or defaults don't meet minim
     data = 1,
     nrow = 8,
     ncol = 5
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv6 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri6
@@ -166,7 +166,7 @@ test_that("allocate_reference_times warns when user or defaults don't meet minim
     data = 1,
     nrow = 7,
     ncol = 5
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv7 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri7,
@@ -182,7 +182,7 @@ test_that("allocate_reference_times warns when user or defaults don't meet minim
     data = 1,
     nrow = 7,
     ncol = 5
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv8 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri8,
@@ -201,7 +201,7 @@ test_that("allocate_reference_times errors when data is insufficient. ", { # nol
     data = 1,
     nrow = 10,
     ncol = 5
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   expect_error(
     allocate_reference_times(
       reporting_triangle = rep_tri1,
@@ -217,7 +217,7 @@ test_that("allocate_reference_times errors when data is insufficient. ", { # nol
     data = 1,
     nrow = 6,
     ncol = 5
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   expect_error(
     allocate_reference_times(
       reporting_triangle = rep_tri2,
@@ -234,7 +234,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     data = 1,
     nrow = 12,
     ncol = 5
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv <- allocate_reference_times(
     reporting_triangle = rep_tri3
   )
@@ -246,7 +246,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     data = 1,
     nrow = 13,
     ncol = 5
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv2 <- allocate_reference_times(
     reporting_triangle = rep_tri2
   )
@@ -258,7 +258,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     data = 1,
     nrow = 10,
     ncol = 5
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv3 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri3
@@ -274,7 +274,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     data = 1,
     nrow = 8,
     ncol = 5
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv4 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri4
@@ -289,7 +289,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     data = 1,
     nrow = 9,
     ncol = 6
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv5 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri5
@@ -304,7 +304,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     data = 1,
     nrow = 60,
     ncol = 40
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv6 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri6
@@ -320,7 +320,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     data = 1,
     nrow = 55,
     ncol = 39
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv7 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri7
@@ -335,7 +335,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     data = 1,
     nrow = 120,
     ncol = 41
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv8 <- allocate_reference_times(
     reporting_triangle = rep_tri8
   )
@@ -347,7 +347,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
     data = 1,
     nrow = 140,
     ncol = 41
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv9 <- allocate_reference_times(
     reporting_triangle = rep_tri9
   )
@@ -361,7 +361,7 @@ test_that("allocate_reference_times warns and reallocates appropriately when suf
     data = 1,
     nrow = 14,
     ncol = 4
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
   tv <- expect_message(
     allocate_reference_times(
       reporting_triangle = rep_tri,
@@ -376,7 +376,7 @@ test_that("allocate_reference_times errors when inputs are invalid", {
     data = 1,
     nrow = 14,
     ncol = 4
-  ) |> construct_triangle()
+  ) |> to_reporting_triangle() |> construct_triangle()
 
   expect_error(
     allocate_reference_times(

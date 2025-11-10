@@ -240,18 +240,26 @@ reporting_triangle_df <- select(
 )
 ```
 
-We now pivot to wide format, dropping the `reference_date` column, and convert to a matrix this is the format that the low-level functions in `baselinenowcast` expect.
+We now pivot to wide format to create a matrix, then convert to a reporting_triangle object.
 
 ```{r}
-reporting_triangle <- reporting_triangle_df |>
+reporting_triangle_mat <- reporting_triangle_df |>
   pivot_wider(names_from = delay, values_from = new_confirm) |>
   select(-reference_date) |>
   as.matrix()
+
+reference_dates <- unique(reporting_triangle_df$reference_date)
+
+reporting_triangle <- as_reporting_triangle(
+  data = reporting_triangle_mat,
+  reference_dates = reference_dates,
+  max_delay = max_delay
+)
 ```
 
 <details><summary>Click to expand code to create the plot of the reporting triangle</summary>
 ```{r}
-triangle_df <- as.data.frame(reporting_triangle) |>
+triangle_df <- as.data.frame(unclass(reporting_triangle)) |>
   mutate(time = row_number()) |>
   pivot_longer(!time,
     values_to = "count",

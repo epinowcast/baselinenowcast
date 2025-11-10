@@ -2,7 +2,9 @@ triangle <- matrix(
   data = sample.int(10, 12 * 5, replace = TRUE),
   nrow = 12,
   ncol = 5
-) |> construct_triangle()
+) |>
+  construct_triangle() |>
+  to_reporting_triangle()
 pt_nowcast_matrix <- estimate_and_apply_delay(
   reporting_triangle = triangle,
   n = 6

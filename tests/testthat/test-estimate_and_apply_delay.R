@@ -97,6 +97,7 @@ test_that(
       complete_triangle,
       structure = 2
     )
+    reporting_triangle <- to_reporting_triangle(reporting_triangle)
 
     # Get delay estimate
     point_nowcast_matrix <- estimate_and_apply_delay(

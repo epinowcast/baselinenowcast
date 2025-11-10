@@ -9,7 +9,7 @@
   max_delay,
   strata = NULL,
   delays_unit = "days",
-  reference_dates,
+  reference_dates = NULL,
   ...
 )
 }
@@ -30,8 +30,10 @@ in terms of the specified unit, and to expand the combinations of
 reference dates and delays to the complete set of combinations in
 the reporting triangle.  Default is \code{"days"}.}
 
-\item{reference_dates}{Vector of character strings indicating the reference
-dates corresponding to each row of the reporting triangle matrix (\code{data}).}
+\item{reference_dates}{Vector of Date objects or character strings indicating
+the reference dates corresponding to each row of the reporting triangle
+matrix (\code{data}). If NULL (default), dummy dates starting from 1900-01-01
+are generated with spacing determined by \code{delays_unit}.}
 
 \item{...}{Additional arguments not used.}
 }
@@ -92,6 +94,7 @@ Reporting triangle construction and validation
 \code{\link{reporting_triangle-class}},
 \code{\link{summary.reporting_triangle}()},
 \code{\link{tail.reporting_triangle}()},
+\code{\link{truncate_to_quantile}()},
 \code{\link{validate_reporting_triangle}()}
 }
 \concept{reporting_triangle}

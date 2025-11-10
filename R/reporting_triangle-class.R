@@ -69,7 +69,7 @@ get_reference_dates <- function(x) {
   if (!is_reporting_triangle(x)) {
     cli_abort(message = "x must have class 'reporting_triangle'")
   }
-  return(as.Date(rownames(x)))
+  as.Date(rownames(x))
 }
 
 #' Get maximum delay from reporting_triangle
@@ -153,6 +153,95 @@ get_quantile_delay <- function(x, p = 0.99) {
     return(delays[quantile_idx])
   }, integer(1))
   return(quantile_delays)
+}
+
+#' Truncate reporting_triangle to quantile-based maximum delay
+#'
+#' Automatically determines an appropriate maximum delay based on when a
+#' specified proportion of cases have been reported (CDF cutoff). This is useful
+#' for reducing computational burden when most cases are reported within a
+#' shorter delay window.
+#'
+#' @param x A reporting_triangle object
+#' @param p Numeric value between 0 and 1 indicating the quantile cutoff.
+#'   For example, p = 0.99 truncates to the delay at which 99% of cases have
+#'   been reported. Default is 0.99.
+#' @return A reporting_triangle object truncated to the maximum quantile delay,
+#'   or the original object if no truncation is needed
+#' @family reporting_triangle
+#' @export
+#' @importFrom checkmate assert_numeric
+#' @importFrom cli cli_alert_info
+#' @examples
+#' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' data_as_of_df$age_group <- "00+"
+#' rep_tri <- as_reporting_triangle(
+#'   data = data_as_of_df,
+#'   max_delay = 25,
+#'   strata = "00+"
+#' )
+#'
+#' # Original has 26 columns (delays 0-25)
+#' ncol(rep_tri)
+#'
+#' # Truncate to 99th percentile of reporting
+#' rep_tri_trunc <- truncate_to_quantile(rep_tri, p = 0.99)
+#' ncol(rep_tri_trunc)
+#'
+#' # More aggressive truncation
+#' rep_tri_trunc90 <- truncate_to_quantile(rep_tri, p = 0.90)
+#' ncol(rep_tri_trunc90)
+truncate_to_quantile <- function(x, p = 0.99) {
+  if (!is_reporting_triangle(x)) {
+    cli_abort(message = "x must have class 'reporting_triangle'")
+  }
+  assert_numeric(p, lower = 0, upper = 1, len = 1)
+
+  # Get quantile delays for each reference date
+  quantile_delays <- get_quantile_delay(x, p = p)
+
+  # Find maximum delay needed across all reference dates
+  max_delay_needed <- suppressWarnings(max(quantile_delays, na.rm = TRUE))
+
+  # If max_delay_needed is invalid (NA, -Inf, or -1), return original
+  if (is.na(max_delay_needed) || is.infinite(max_delay_needed) ||
+    max_delay_needed < 0) {
+    cli_alert_info(
+      text = "Could not determine quantile delay, returning original triangle."
+    )
+    return(x)
+  }
+
+  # Ensure max_delay is at least 1 (for validation requirement)
+  max_delay_needed <- max(1L, as.integer(max_delay_needed))
+
+  current_max_delay <- get_max_delay(x)
+
+  # Only truncate if we can reduce the max_delay
+  if (max_delay_needed < current_max_delay) {
+    cli_alert_info(
+      text = "Truncating from max_delay = {current_max_delay} to {max_delay_needed} based on {p * 100}% quantile." # nolint
+    )
+
+    # Subset columns
+    trunc_mat <- unclass(x)[, 1:(max_delay_needed + 1), drop = FALSE]
+
+    # Create new reporting_triangle with updated max_delay
+    result <- new_reporting_triangle(
+      reporting_triangle_matrix = trunc_mat,
+      reference_dates = get_reference_dates(x),
+      structure = attr(x, "structure"),
+      max_delay = max_delay_needed,
+      delays_unit = attr(x, "delays_unit")
+    )
+
+    return(result)
+  } else {
+    cli_alert_info(
+      text = "No truncation needed: {p * 100}% of cases reported within existing max_delay = {current_max_delay}." # nolint
+    )
+    return(x)
+  }
 }
 
 #' Class constructor for `reporting_triangle` objects
@@ -284,19 +373,6 @@ is_reporting_triangle <- function(x) {
   attr(out, "delays_unit") <- old_delays_unit
   attr(out, "structure") <- old_structure
 
-  # Try to validate the subsetted object
-  validation <- try(
-    validate_reporting_triangle(out),
-    silent = TRUE
-  )
-
-  if (inherits(validation, "try-error")) {
-    cli_warn(c(
-      "!" = "Subsetting produced an invalid reporting_triangle object.",
-      i = "The object structure may be corrupted."
-    ))
-  }
-
   return(out)
 }
 
@@ -409,8 +485,11 @@ summary.reporting_triangle <- function(object, ...) {
   cli_text("Max delay: {max_delay} {attr(object, 'delays_unit')}")
   cli_text("Structure: {toString(attr(object, 'structure'))}")
 
+  # Use unclassed version for internal matrix operations to avoid warnings
+  mat <- unclass(object)
+
   # Find most recent complete date and calculate mean delays
-  row_has_na <- apply(object, 1, anyNA)
+  row_has_na <- apply(mat, 1, anyNA)
   complete_rows <- which(!row_has_na)
   mean_delays <- NULL
   if (length(complete_rows) > 0) {
@@ -418,7 +497,7 @@ summary.reporting_triangle <- function(object, ...) {
     # nolint start: object_usage_linter
     most_recent_complete_date <- ref_dates[most_recent_complete_idx]
     most_recent_complete_count <- sum(
-      object[most_recent_complete_idx, ],
+      mat[most_recent_complete_idx, ],
       na.rm = TRUE
     )
     # nolint end
@@ -438,20 +517,20 @@ summary.reporting_triangle <- function(object, ...) {
   cli_text("Dates requiring nowcast: {dates_need_nowcast}")
 
   # Count rows with negatives
-  row_has_negative <- apply(object, 1, function(x) any(x < 0, na.rm = TRUE))
+  row_has_negative <- apply(mat, 1, function(x) any(x < 0, na.rm = TRUE))
   rows_with_negatives <- sum(row_has_negative) # nolint: object_usage_linter
   cli_text("Rows with negatives: {rows_with_negatives}")
 
   # Count zeros (percentage and row-wise)
-  num_zeros <- sum(object == 0, na.rm = TRUE)
-  num_non_na <- sum(!is.na(object))
+  num_zeros <- sum(mat == 0, na.rm = TRUE)
+  num_non_na <- sum(!is.na(mat))
   # nolint start: object_usage_linter
   pct_zeros <- if (num_non_na > 0) {
     round(100 * num_zeros / num_non_na, 1)
   } else {
     0
   }
-  zeros_per_row <- apply(object, 1, function(x) sum(x == 0, na.rm = TRUE))
+  zeros_per_row <- apply(mat, 1, function(x) sum(x == 0, na.rm = TRUE))
   # nolint end
   cli_text("Zeros: {num_zeros} ({pct_zeros}% of non-NA values)")
   if (length(zeros_per_row) > 0) {

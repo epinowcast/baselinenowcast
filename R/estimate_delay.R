@@ -69,6 +69,7 @@ estimate_delay <- function(
     max_delay = ncol(reporting_triangle) - 1,
     n = nrow(reporting_triangle),
     preprocess = preprocess_negative_values) {
+  assert_reporting_triangle(reporting_triangle)
   .validate_max_delay(
     reporting_triangle,
     max_delay
@@ -115,7 +116,9 @@ estimate_delay <- function(
                               preprocess = preprocess_negative_values) {
   nr0 <- nrow(reporting_triangle)
   # Use unclass to avoid subsetting validation warnings
-  trunc_triangle <- unclass(reporting_triangle)[(nr0 - n + 1):nr0, 1:(max_delay + 1)]
+  trunc_triangle <- unclass(reporting_triangle)[
+    (nr0 - n + 1):nr0, 1:(max_delay + 1)
+  ]
 
   # Apply preprocessing if provided
   if (!is.null(preprocess)) {
@@ -134,20 +137,22 @@ estimate_delay <- function(
 #' @return Matrix with imputed values for missing entries
 #' @noRd
 .chainladder_fill_triangle <- function(rep_tri) {
-  n_delays <- ncol(rep_tri)
-  n_dates <- nrow(rep_tri)
-  expectation <- rep_tri
+  # Unclass once to avoid subsetting validation warnings
+  rep_tri_mat <- unclass(rep_tri)
+  n_delays <- ncol(rep_tri_mat)
+  n_dates <- nrow(rep_tri_mat)
+  expectation <- rep_tri_mat
 
   # Find the column to start filling in
-  start_col <- which(colSums(is.na(rep_tri)) > 0)[1]
+  start_col <- which(colSums(is.na(rep_tri_mat)) > 0)[1]
 
   # Only fill in reporting triangle if it is incomplete
   if (!is.na(start_col)) {
     for (co in start_col:n_delays) {
-      start_row <- which(is.na(rep_tri[, co]))[1]
+      start_row <- which(is.na(rep_tri_mat[, co]))[1]
       # Extract relevant blocks of the triangle
-      block_top_left <- .extract_block_top_left(rep_tri, co, n_dates, start_row)
-      block_top <- .extract_block_top(rep_tri, co, n_dates, start_row)
+      block_top_left <- .extract_block_top_left(rep_tri_mat, co, n_dates, start_row)
+      block_top <- .extract_block_top(rep_tri_mat, co, n_dates, start_row)
 
       # Calculate multiplication factor
       mult_factor <- .calculate_mult_factor(block_top, block_top_left)

@@ -4,8 +4,9 @@
 # - Partial functions with good defaults (e.g., baselinenowcast_test)
 # - Data manipulation helpers (e.g., summarise_final_day_mean)
 # - Comparison helpers (e.g., expect_estimates_differ)
-# - Test data creation functions (e.g., make_simple_triangle, make_test_triangle,
-#   make_simple_delay_pmf, make_delay_pmf, make_test_data)
+# - Test data creation functions (e.g., make_simple_triangle,
+#   make_test_triangle, make_simple_delay_pmf, make_delay_pmf,
+#   make_test_data)
 # - Validation helpers (e.g., expect_triangle_output)
 #
 # By centralizing these patterns, we reduce boilerplate and make test

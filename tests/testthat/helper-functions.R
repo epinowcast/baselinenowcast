@@ -67,9 +67,11 @@ summarise_final_day_mean <- function(df, group_vars = c(
 #' Returns a fixed 5x4 reporting_triangle object with a specific pattern for
 #' simple tests.
 #'
+#' @param reference_dates Optional vector of reference dates. If NULL, uses
+#'   as_reporting_triangle() default (dummy dates).
 #' @return A reporting_triangle object (5x4) suitable for testing
 #' @keywords internal
-make_simple_triangle <- function() {
+make_simple_triangle <- function(reference_dates = NULL) {
   mat <- matrix(
     c(
       10, 7, 1, NA,
@@ -83,12 +85,6 @@ make_simple_triangle <- function() {
     byrow = TRUE
   )
 
-  reference_dates <- seq.Date(
-    from = as.Date("2024-01-01"),
-    by = "day",
-    length.out = nrow(mat)
-  )
-
   return(as_reporting_triangle(
     data = mat,
     reference_dates = reference_dates,
@@ -98,12 +94,13 @@ make_simple_triangle <- function() {
 
 #' Create a test reporting triangle with specified dimensions
 #'
-#' Creates a reporting_triangle object with sequential values for testing.
+#' Creates a reporting_triangle object with sequential or custom values.
 #' Optionally adds NAs in bottom-right triangle pattern and/or calls
 #' construct_triangle().
 #'
-#' @param nrow Number of rows
-#' @param ncol Number of columns
+#' @param nrow Number of rows (ignored if data provided)
+#' @param ncol Number of columns (ignored if data provided)
+#' @param data Optional matrix data. If NULL, creates sequential values.
 #' @param with_nas Logical; if TRUE, adds reporting triangle NA pattern
 #' @param as_reporting_triangle Logical; if TRUE, returns reporting_triangle
 #'   object (default), otherwise returns plain matrix
@@ -111,17 +108,26 @@ make_simple_triangle <- function() {
 #'   (default FALSE)
 #' @param structure Structure parameter to pass to construct_triangle() if
 #'   construct = TRUE
+#' @param reference_dates Optional vector of reference dates. If NULL, uses
+#'   as_reporting_triangle() default (dummy dates).
 #' @return A reporting_triangle object (or matrix if as_reporting_triangle =
 #'   FALSE) suitable for testing
 #' @keywords internal
-make_test_triangle <- function(nrow = 5, ncol = 4, with_nas = FALSE,
+make_test_triangle <- function(nrow = 5, ncol = 4, data = NULL,
+                               with_nas = FALSE,
                                as_reporting_triangle = TRUE, construct = FALSE,
-                               structure = 1) {
-  mat <- matrix(
-    seq_len(nrow * ncol),
-    nrow = nrow,
-    ncol = ncol
-  )
+                               structure = 1, reference_dates = NULL) {
+  if (is.null(data)) {
+    mat <- matrix(
+      seq_len(nrow * ncol),
+      nrow = nrow,
+      ncol = ncol
+    )
+  } else {
+    mat <- data
+    nrow <- nrow(mat)
+    ncol <- ncol(mat)
+  }
 
   if (with_nas) {
     # Add NAs in bottom-right triangle (reporting triangle pattern)
@@ -136,12 +142,6 @@ make_test_triangle <- function(nrow = 5, ncol = 4, with_nas = FALSE,
   }
 
   if (as_reporting_triangle) {
-    reference_dates <- seq.Date(
-      from = as.Date("2024-01-01"),
-      by = "day",
-      length.out = nrow
-    )
-
     result <- baselinenowcast::as_reporting_triangle(
       data = mat,
       reference_dates = reference_dates,
@@ -263,35 +263,3 @@ create_covid_test_data <- function(
   return(covid_data)
 }
 
-#' Convert matrix to reporting_triangle object
-#'
-#' Centralized helper function to convert test matrices to reporting_triangle
-#' objects. This ensures consistent handling of the new interface throughout
-#' tests.
-#'
-#' @param matrix A matrix to convert
-#' @param reference_dates Optional vector of reference dates. If NULL, creates
-#'   dummy dates starting from 2024-01-01.
-#' @param max_delay Maximum delay. If NULL, infers from ncol(matrix) - 1.
-#' @return A reporting_triangle object
-#' @keywords internal
-make_reporting_triangle <- function(matrix, reference_dates = NULL,
-                                    max_delay = NULL) {
-  if (is.null(max_delay)) {
-    max_delay <- ncol(matrix) - 1
-  }
-
-  if (is.null(reference_dates)) {
-    reference_dates <- seq.Date(
-      from = as.Date("2024-01-01"),
-      by = "day",
-      length.out = nrow(matrix)
-    )
-  }
-
-  return(as_reporting_triangle(
-    data = matrix,
-    reference_dates = reference_dates,
-    max_delay = max_delay
-  ))
-}

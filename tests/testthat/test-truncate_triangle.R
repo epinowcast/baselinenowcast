@@ -65,7 +65,6 @@ test_that("truncate_triangle handles zero t", {
 
 # Test 6: Empty matrix input throws an error
 test_that("truncate_triangle handles empty matrix input", {
-  t <- 1
   expect_error(
     make_test_triangle(data = matrix(nrow = 0, ncol = 0)),
     "Contains only missing values"

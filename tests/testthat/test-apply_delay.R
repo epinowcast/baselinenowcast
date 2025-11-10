@@ -9,7 +9,7 @@ test_that("apply_delay function works as expected when result is known", {
     nrow = 4,
     byrow = TRUE
   )
-  delay_pmf <- c(0.4, 0.2, 0.2, 0.2)  # Non-standard PMF for specific test
+  delay_pmf <- c(0.4, 0.2, 0.2, 0.2)
 
   result <- apply_delay(
     reporting_triangle = triangle,
@@ -30,7 +30,7 @@ test_that("apply_delay function works as expected when result is known", {
     nrow = 4,
     byrow = TRUE
   )
-  delay_pmf <- c(0.4, 0.2, 0.2, 0.2)  # Same PMF for consistency
+  delay_pmf <- c(0.4, 0.2, 0.2, 0.2)
 
   result <- apply_delay(
     reporting_triangle = triangle,

@@ -102,6 +102,7 @@ alternative aggregation), use the low-level functions directly.</p>
 <span>  <span class="va">n_history_delay</span>,</span>
 <span>  <span class="va">n_retrospective_nowcasts</span>,</span>
 <span>  max_delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
+<span>  structure <span class="op">=</span> <span class="fu"><a href="detect_structure.html">detect_structure</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span>,</span>
 <span>  delay_pmf <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  preprocess <span class="op">=</span> <span class="va">preprocess_negative_values</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -135,6 +136,13 @@ retrospective nowcast times to use for uncertainty estimation.</p></dd>
 <dd><p>Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
 <code>ncol(reporting_triangle) -1</code>.</p></dd>
+
+
+<dt id="arg-structure">structure<a class="anchor" aria-label="anchor" href="#arg-structure"></a></dt>
+<dd><p>Integer or vector specifying the reporting structure.
+If integer, divides columns evenly by that integer (with last possibly
+truncated).  If vector, the sum must not be greater than or equal to the
+number of columns. Default is 1 (standard triangular structure).</p></dd>
 
 
 <dt id="arg-delay-pmf">delay_pmf<a class="anchor" aria-label="anchor" href="#arg-delay-pmf"></a></dt>

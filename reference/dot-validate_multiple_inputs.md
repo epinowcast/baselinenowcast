@@ -1,14 +1,14 @@
-# Validate the inputs to `estimate_and_apply_uncertainty()` to ensure that the reporting triangle and point nowcast matrix are compatible.
+# Validate the inputs to `estimate_and_apply_uncertainty()` to ensure that the reporting triangle, point nowcast matrix, and specified maximum delay are correct.
 
 Validate the inputs to
 [`estimate_and_apply_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_uncertainty.md)
-to ensure that the reporting triangle and point nowcast matrix are
-compatible.
+to ensure that the reporting triangle, point nowcast matrix, and
+specified maximum delay are correct.
 
 ## Usage
 
 ``` r
-.validate_multiple_inputs(point_nowcast_matrix, reporting_triangle)
+.validate_multiple_inputs(point_nowcast_matrix, reporting_triangle, max_delay)
 ```
 
 ## Arguments
@@ -26,6 +26,12 @@ compatible.
   reporting triangle, where multiple columns are reported for the same
   row. (e.g. weekly reporting of daily data).
 
+- max_delay:
+
+  Integer indicating the maximum delay to estimate, in units of the
+  delay. The default is to use the whole reporting triangle,
+  `ncol(reporting_triangle) -1`.
+
 ## Value
 
-NULL invisibly
+NULL, invisibly

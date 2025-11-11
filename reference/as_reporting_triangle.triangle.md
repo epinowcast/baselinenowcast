@@ -24,6 +24,14 @@ as_reporting_triangle(
 
   A ChainLadder triangle object (class "triangle").
 
+- max_delay:
+
+  Integer indicating the maximum delay.
+
+- strata:
+
+  Character string indicating the strata. Default is NULL.
+
 - delays_unit:
 
   Character string specifying the temporal granularity of the delays.
@@ -86,10 +94,7 @@ Reporting triangle construction and validation
 [`as_reporting_triangle.data.frame()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.data.frame.md),
 [`as_reporting_triangle.matrix()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.matrix.md),
 [`assert_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/assert_reporting_triangle.md),
-[`get_delay_unit()`](https://baselinenowcast.epinowcast.org/reference/get_delay_unit.md),
-[`get_max_delay()`](https://baselinenowcast.epinowcast.org/reference/get_max_delay.md),
-[`get_reporting_structure()`](https://baselinenowcast.epinowcast.org/reference/get_reporting_structure.md),
-[`get_structure()`](https://baselinenowcast.epinowcast.org/reference/get_structure.md),
+[`detect_structure()`](https://baselinenowcast.epinowcast.org/reference/detect_structure.md),
 [`new_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/new_reporting_triangle.md),
 [`reporting_triangle-class`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
 
@@ -275,1454 +280,166 @@ print(rep_tri_2)
 #>   2026-03-31 210 108  NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
 #>   2026-04-01 236  NA  NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
 #>             dev
-#> origin       19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37
-#>   2025-10-25  0  0  0  0 12  0 10  0  6  1  0  0  0 13  0  0  0  0  0
-#>   2025-10-26  0  0  0  0  0 10  0  6  0  0  2  0  0  5  0  0  0  0  0
-#>   2025-10-27  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-28  0  0  0  0  9  0  0  0  0  0  0  3  0  0  0  0  0  0  0
-#>   2025-10-29  5  5  0  0  0  0  0  0  0  0  0  0  0  0  0  0 12  0  0
-#>   2025-10-30  0  0  0  0  0  0  0  0  0  0  5  0  0  0  0  0  0  0  0
-#>   2025-10-31  2  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-01  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-02  0  0  0 10 13  0  0  0  0  0  0 10  0  0  0  0  0  0  0
-#>   2025-11-03  0  0 11 15  0  0  0  0  0  0  1  0  0  0  0  0  5  0  0
-#>   2025-11-04  0  0  0 17  5  0  6 13  0  1  1  0  0  0  0  0  7  0  0
-#>   2025-11-05  4 19  9  0  9  0  0  8  8  0  0  2  0  0  0  0  0  0  0
-#>   2025-11-06  4  0  2  0  0  0  0  4  0  3  0  0  0  0  0  0  0  0  0
-#>   2025-11-07  0 13  0  0  0  0  7  0  6  0  0  0  6  0  0  0  0  0  0
-#>   2025-11-08  7 10  0  0  6  0 14  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-09  0  0  3 14  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-10  3  5  8  0  0  0  0  1  0  0  0  0  0  0  0 13  0 10  0
-#>   2025-11-11  0  4  0  0  0  3  0  9  0 16  6  0  0  0  0  5  0  0  0
-#>   2025-11-12 17  8  9  0  0  0  1  0  2  0  5  6  0  0  0  0  5  0  0
-#>   2025-11-13  0  0  0  0  0  0  0  0  0 13  0  0  0  0  0  0  0  0  0
-#>   2025-11-14  0  0  3  0  0  0  0  0  0  0  0  0  0  0  0  0 16  0  0
-#>   2025-11-15  0  0  0  0  6  0  0  0  5  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-16  0  0  0  0  9 12  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-17  0  0  0  7 10  0  0  0  0  0  5  6  0  0  0  0  0  0  0
-#>   2025-11-18  0  0  0  0 12  0  0  0  0  0  0 11  0  0  0  0  0  0  0
-#>   2025-11-19  0 10  0  0  0  0  0  0  0  0  0  0  0  1  0  0  0  0  0
-#>   2025-11-20 12  1 11  0  0  0  0  8  0  0  0  0  0  5  8  0  0  3  0
-#>   2025-11-21  1  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-22  0  4  0  0  0  1  0  2  2  0  0  4  0 12  0  0  0  0  0
-#>   2025-11-23  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-24  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  2  0  0  0
-#>   2025-11-25  7  5  0  9  5  0  0  0  3  0  1  0  0  6  0  0  0  0  0
-#>   2025-11-26  8  6  0  4  0 10  0  7  0  0  0  0  0  0  0  4  0  0  0
-#>   2025-11-27  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  3  0
-#>   2025-11-28 13  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-29  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-30 13  0  0  7  2  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-01  0  4  0  0  0  0 17  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-02  0  0  7  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-03 10  4 15  0  7 15  0  0  3  6  0  0  0  0  0  0  0  0  0
-#>   2025-12-04  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-05  0  7  8  0  0  0  0  0  0  0  0  0 18  0  0  2  0  0  0
-#>   2025-12-06  0  0  0  0  0  0  0  2  0  0  0  0  3  0  0  0  0  0  0
-#>   2025-12-07  0  0  0  0  0  1 16 11  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-08  0  8  0  0  0  0  3  0  0  0  0  0  0  0  0  0 11  0  0
-#>   2025-12-09  0 11  8  0  0  0 23  0 11  0  0  0  0  0  1  0  0  0  7
-#>   2025-12-10  0  8  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-11 15  0  8  6  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-12  0  0  0  0  0  0 14  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-13  0  6  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-14  0  0  0  0 15  0  0  0  0  0  0  1  0  0  0  0  0  0  0
-#>   2025-12-15  0  7  7  0  0  0  0  0  0  0  0  3  4  0  0  0  0  0  0
-#>   2025-12-16  0  0  0  0  0  0  0  0  0  9  0  0  0  0  0  0  0  0  0
-#>   2025-12-17  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-18  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-19  1  0 10  5  0  0 18  0  0  0  0  0  0  4  6  7  0  0  7
-#>   2025-12-20  0  0  4  9  0 16  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-21  0  0  0 11  0  4  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-22 13  0  0  0  0  0 14  0  7  0  6  0  0  5  0  0  0  0 10
-#>   2025-12-23  0  0  0  0  0  0  0  0 11  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-24  8  1  9  8  0  0  0  7  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-25  8  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-26  0  6  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-27  4  0  0  0  0  4  0  0  6  0  5  0  0  0  0  0  0  0  0
-#>   2025-12-28  0  0  0  0  0  0  0  5  0  0  0  0  0  0  0  0  0  0 14
-#>   2025-12-29  0  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-30  0  0  0  3  0  0  0  0  7  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-31  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-01  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-02  5  0  0  0  0  0  2  0  0  0  0  0  3  0  0  0  0  0  0
-#>   2026-01-03  0  0  0  0  0  0  0  0  0  0  0  5  0  0  0  0  0  0  0
-#>   2026-01-04  0  0  0  1  0  5  0  0  0  0  0  0  0  0  2  0  0  0  3
-#>   2026-01-05  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-06  0  8  0  5  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-07  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-08  0  0  0  0  0  0  0  1  8  8  0  0  0  0  0  0  0  0  0
-#>   2026-01-09 17  0  0  0  0  0  4  6  7  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-10  0  7  0  0  0  0  0  9  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-11  0  0  0  0  0  0  1  0  0  0 10  0  0  0  0  0  0  0  0
-#>   2026-01-12 11  0  0  0  0  8  0  0  0  0  0  0  0  0  0  0  0  9  6
-#>   2026-01-13  0  0  7  5  8 10  0  0  0  0  0  0  0  0  0  2  0  4  2
-#>   2026-01-14  5 11  0  0  4  0  0  8  0  0  0  9  0  0  1  5  0  0  0
-#>   2026-01-15  0  0  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-16  0  0  0  0  0  0  0  0  0  3  0  0  6 10  0  0  0  0  0
-#>   2026-01-17  6  0  0  2  0  6  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-18  0  0  0  0  0  0  0 16  0  1  0  0  0  0  0  0  0  0  0
-#>   2026-01-19  5  9  0  6  0  0  0  0  0  2  8  6  7  6  0  0  0  0  0
-#>   2026-01-20  0  0  0  0  0  0  0  0  0  5  0  0  0  0  0  0  0  0  0
-#>   2026-01-21  0  0 14  6  0  0  0  0  9  0  0  3  0  0  0  0  0  0  0
-#>   2026-01-22  0  8  0  0  0  0  0  4  0  0  0  0  0  0  0  7  0  0  0
-#>   2026-01-23  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-24  0  6 14  4  0  5  0  0  0  0  0  0  0  0  0  0  5  0  0
-#>   2026-01-25  0  0  0  0  0  7  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-26  0  0  0  0  0  0  9  0  0  0  0  0 10  4  0  0  7  0  0
-#>   2026-01-27  1 14  0  0  0  0  0  0  0  9  5  0  0  0  0  0  0  0  0
-#>   2026-01-28  0  1 14  0  6  0  0  0  0  0  0  6  0  0  0  0  0  5  0
-#>   2026-01-29  0  5  9  0  0  0  0  0  0  0  0  0  0  0  6  0  0  3  0
-#>   2026-01-30  0 11  0 10  8  0  0  7  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-31 10 10  0  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-02-01  4  0  0  0  0  0  0  0  0  0  0  0  6  0  0  0  0  0  0
-#>   2026-02-02  0  0  0 12 13  0  0  4  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-02-03  0  0  8  0  0  0  0  0  0  0  1  0  0  0  0  0  0  0  0
-#>   2026-02-04  1  8  1 13  7  0  0  0  0  1  0  4  0  7  1  0  1  0  0
-#>   2026-02-05  1  8  0 13  0  0  0  0  6  0  0  0  0  0  0  7  0  0  0
-#>   2026-02-06  1  0  0  0  0  0  0  0  7  0  0  0  0  4  1  0  0  0  0
-#>   2026-02-07  5  0  0  5  0  0  0  0  4  0  0  0  0  0  0  0  0  0  0
-#>   2026-02-08 11  0  0  6  6  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-02-09  0  0  0  0  0  0  0  0  0  0  7  0  0  7  0  0  0  0  0
-#>   2026-02-10  0  0  3  7  1  0  0  1  0  5  0  0  0  0  0  0  0  0  3
-#>   2026-02-11  0  0 21  0  1  0  0  0  4  0  0  0  0 10  0  0  0  0  0
-#>   2026-02-12 11 20 17 17 14  0  7  0 11  0  4  0  0  0  0  0  0  8  0
-#>   2026-02-13  7  0  8  0  0  0  9  0  0  5  0  0  0  0  0  0  0  0  0
-#>   2026-02-14  9  1  0  0  0 13  0  0  0  0  0  0  0  0  8  0  0  0  0
-#>   2026-02-15  0 12  0  5  0 20  0  0  5  0  0  0  0  0  2  0  0  0  0
-#>   2026-02-16 14  0  7  8  9  0  0 13  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-02-17  6 32  5  5 12  3  0  0  0  6  2 11  0  0  0  1  2  0  0
-#>   2026-02-18 13 21  0  0  0  0  4  9  0  6  0 12  0  0  0  0  0  0  0
-#>   2026-02-19  0 14  3  6  0  3  0 19 18 11  9  0  0  5  1 11  6  0  0
-#>   2026-02-20  9  0  5  0  0  0  0 10  0  6  0  0  8  0  0  0  0  0  0
-#>   2026-02-21  2 13  0  0  0  0  0 20  4  0  0  7  0  0  0  9  0  0  0
-#>   2026-02-22 29  0  0 10  0 13  9 42  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-02-23  0  2 10  5 23  3 11 14 11  0  0 13  8  0  0  0  0  0  9
-#>   2026-02-24  0  0 16  4  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0
-#>   2026-02-25  0 22 10  6 10  2  1 11 14  0  0  0  0  0 36  0  0  0 NA
-#>   2026-02-26  0 33 18  7  0  1  6  9  0  0  0  0  1 13  0  0 12 NA NA
-#>   2026-02-27  3 11 15  0  9  3  0  0 13  4  0  0  7  1  0  0 NA NA NA
-#>   2026-02-28  8  0  0  0  0  9 13  0  0  0  2  0  0  0  0 NA NA NA NA
-#>   2026-03-01 18  0 19  0  7  0  0 12  4  0  8  1  8  0 NA NA NA NA NA
-#>   2026-03-02 24 17  8  6  5  4 14  6 15 16  9 29  7 NA NA NA NA NA NA
-#>   2026-03-03 13  0  7  0 13  3  0  0  0 16 10  0 NA NA NA NA NA NA NA
-#>   2026-03-04  4  5  0  0 15  9  0  9  6  8 25 NA NA NA NA NA NA NA NA
-#>   2026-03-05 10  0 13  6  8  0  0  0 13 24 NA NA NA NA NA NA NA NA NA
-#>   2026-03-06 31  5  0  0  0  0 16 10 13 NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-07  1 14  0  0  7  0  0  5 NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-08  0 15  0  0 10  0  4 NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-09  0  0 20  6  3 12 NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-10  0 12  7  6 15 NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-11  9 15  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-12  9  0  9 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-13 14 11 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-14  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-15 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-16 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-17 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-18 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-19 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-20 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-21 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-22 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-23 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-24 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-25 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-26 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-27 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-28 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-29 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-30 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-31 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-04-01 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>             dev
-#> origin       38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56
-#>   2025-10-25  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-26  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-27  0  0  0  0  0  0  0  0  0  0  3  0  9  0  0  0  0  0  0
-#>   2025-10-28  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-29  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-30  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-31  0  0  0 12  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-01  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-02  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-03  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-04  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-05  0  0  0  0  0  0  0  0  0  0  0  0  0  3  0  0  0  0  8
-#>   2025-11-06  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-07  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-08  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-09  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-10  2  0  0  0  0  0  0  0  0  0  0  0  0  0  4  0  0  0  0
-#>   2025-11-11  0  0  0  0  0  0  0  0  1  0  0  0  0  0  7  0  0  0  0
-#>   2025-11-12  0  0  7  0  0  5 10  0  0  0  9  0  0  2  0  0  0  0  1
-#>   2025-11-13  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  8  0
-#>   2025-11-14  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-15  0  0  0  0  0  0  0  0  0  7  0  0  0  0  0  0  0  0  0
-#>   2025-11-16  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  4  0  0  0
-#>   2025-11-17  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-18  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-19  0  0  0  0  0  0  0  1  0  0  0  0 17  0  0  0  0  0  0
-#>   2025-11-20  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-21  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-22  0  0  5  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-23  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-24  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-25  0  0  6 20  9  0  1  3 11 22  8  4  0  0  7  0  0  8  4
-#>   2025-11-26  0  0  0  0  0  0  0  6  0  0  0  0  0  0  0  0  1  0  0
-#>   2025-11-27  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-28  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-29  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-30  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-01  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-02  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-03  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-04  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-05  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-06  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-07  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-08  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-09  0  0 11  8  0  0  1 16  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  3  0
-#>   2025-12-11  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-12  0  6  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-13  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-14  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-15  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-16  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-17  0  0  0  0  8  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-18  0  0 11  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-19  1 12  0  9  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-20  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-21  0  0  0  0  0  0  0  0  0  8  0  0  0  0  0  0  0  0  0
-#>   2025-12-22  0  9  0  0  8  5  0  0  0  6  1  0  0  0  0  0  0  0  0
-#>   2025-12-23  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-24  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-25  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-26  0  6  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-27  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-28  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-29  0  0  0  0  0  0  0  0  0  0  0  0  8  0  0  0  0  0  0
-#>   2025-12-30  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-31  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-01  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-02  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-03  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-04  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-05  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-06  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-07  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-08  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-09  6  9  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-11  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-12  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-13  0  0  0  0  0  0  0  3  0  0  0  4  2  0  0  0  0  0  0
-#>   2026-01-14  5  0  0 10  0  0  0  0  0  0  0  6  0  0  0  0  0  0 11
-#>   2026-01-15  0  0  0  6  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-16  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-17  0  0  0  3  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-18  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-19  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-20  0  0  0  0  0  2  0  0  0  0  0  0  9  0  0  0  0  0  0
-#>   2026-01-21  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-22  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-23  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-24  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  7  0
-#>   2026-01-25  0 11  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0
-#>   2026-01-26  1  0  0  0  0  0  3  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-27  4  0  0 14  0  0  0  0  0  0  0  0  0  7  0  0  0  0  0
-#>   2026-01-28  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-29  0  0 11  0  0  0  6  0  0  0  0  1  0  0  0  0  0  0  0
-#>   2026-01-30  0  0  0  0  0  0  0  2  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-31  8  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-02-01  0  7  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-02-02  0  0  0  0  0  0  0  0  0  0  3  0  0  0  0  0  0  0  0
-#>   2026-02-03  0  0  0  0  0  0  5  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-02-04  5 10  0  0  0  1  9  0  0  0  4  0  0  0  0  0  0  0  0
-#>   2026-02-05  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-02-06  0  0  0  0  5  0  0  0  0  0  0  0  0  0  0  0  0  0 NA
-#>   2026-02-07  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 NA NA
-#>   2026-02-08  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 NA NA NA
-#>   2026-02-09  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 NA NA NA NA
-#>   2026-02-10  0  0  0  0  0  7  0  0  0  0  5  0  0  0 NA NA NA NA NA
-#>   2026-02-11  0  0  0 11  6  0  0  0  0  0  9  0  0 NA NA NA NA NA NA
-#>   2026-02-12  0  0  0  0  0  0  0  0  0  0  0  1 NA NA NA NA NA NA NA
-#>   2026-02-13  0  0  0  0  0  0  0  0  3  0  0 NA NA NA NA NA NA NA NA
-#>   2026-02-14  0  0  0  0  0  0  0  0  0 10 NA NA NA NA NA NA NA NA NA
-#>   2026-02-15  0  0  0  5  0  0  0  0  0 NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-16  0  0  0  0  0  0  9  0 NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-17  0  0 12  0  0  0  0 NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-18  0 11  0  0  4  0 NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-19  0 14  0  0  9 NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-20  0  0  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-21  0  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-22  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-23  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-24 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-25 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-26 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-27 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-28 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-01 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-02 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-03 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-04 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-05 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-06 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-07 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-08 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-09 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-10 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-11 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-12 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-13 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-14 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-15 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-16 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-17 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-18 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-19 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-20 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-21 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-22 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-23 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-24 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-25 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-26 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-27 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-28 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-29 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-30 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-31 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-04-01 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>             dev
-#> origin       57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
-#>   2025-10-25  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-26  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-27  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-28  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-29  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-30  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-31  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-01  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-02  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-03  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-04  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-05  0  6  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-06  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-07  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-08  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-09  0  0  0  0  0  0  0  0  0  0  2  0  0  0  0  0  0  0  0
-#>   2025-11-10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-11  0  0  0 11  0  0 10  0  0  0  6  0  0  0  0  0  0  9  0
-#>   2025-11-12  0  0  0  0  0  0  0  0  0  0  0  0 14  0  0  0  0  0  0
-#>   2025-11-13  0  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-14  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-15  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-16  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-17  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-18  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-19  0  0  0  0  0  0  0  0  0  0  0  0  0  6  0  0  0  0  0
-#>   2025-11-20  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-21  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-22  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-23  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-24  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-25  0  0  0  0  0  0  0  7  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-26  0  0  0  0  0  0  0  0  6  0  0  0  0  0  0  0  0  0 13
-#>   2025-11-27  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-28  0  0  0 11  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-29  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-30  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-01  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-02  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-03  3  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-04  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-05  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-06  0  0  0  0  0  8  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-07  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-08  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-09  0  0  0 18  0  0  5  0  0  0  0  0  0  0  6  0  0  0  0
-#>   2025-12-10  0  0  0  0  6  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-11  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-12  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-13  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-14  0  0  0  0  0  0  0  0  0  0  0  9  0  0  0  0  0  0  0
-#>   2025-12-15  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-16  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-17  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-18  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-19  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-20  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-21  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-22  5  0  0  0  0  0  0  0  0  0  0  0  0 15  0  0  0  0  0
-#>   2025-12-23  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-24  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-25  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-26  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-27  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-28  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-29  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-30  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-31  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-01  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-02  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-03  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-04  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-05  0  0  0  0  0  0  0  0  0  8  0  0  0  0  0  0  0  0  0
-#>   2026-01-06  0  0  0  0  0  0  0  0  6  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-07  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0
-#>   2026-01-08  6  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-09  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-11  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-12  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-13  0 18  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-14  0  0  0  0  9  0  0  0  7  7  0  9  1  6  0  0  0  0  0
-#>   2026-01-15  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-16  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-17  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2026-01-18  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 NA
-#>   2026-01-19  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 NA NA
-#>   2026-01-20  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 NA NA NA
-#>   2026-01-21  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 NA NA NA NA
-#>   2026-01-22 12  0  0  0  0  0  0  0  0  0  0  0  0  0 NA NA NA NA NA
-#>   2026-01-23  0  0  0  0  0  0  0  0  0  0  0  0  0 NA NA NA NA NA NA
-#>   2026-01-24  0  0  0  0  0  0  0  0  0  0  0  0 NA NA NA NA NA NA NA
-#>   2026-01-25  0  0  0  0  0  0  0  0  0  0  0 NA NA NA NA NA NA NA NA
-#>   2026-01-26  0  0  0  0  0  0  0  0  0  0 NA NA NA NA NA NA NA NA NA
-#>   2026-01-27  0  0  0  0  0  0  0  0  0 NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-28  0  0  0  0  0  0  0  0 NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-29  0  0  0  0  0  0  0 NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-30  0  0  0  0  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-31  0  0  0  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-01  0  0  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-02  0  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-03  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-04  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-05 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-06 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-07 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-08 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-09 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-10 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-11 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-12 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-13 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-14 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-15 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-16 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-17 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-18 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-19 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-20 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-21 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-22 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-23 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-24 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-25 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-26 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-27 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-28 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-01 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-02 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-03 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-04 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-05 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-06 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-07 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-08 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-09 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-10 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-11 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-12 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-13 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-14 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-15 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-16 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-17 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-18 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-19 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-20 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-21 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-22 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-23 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-24 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-25 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-26 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-27 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-28 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-29 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-30 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-31 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-04-01 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>             dev
-#> origin       76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94
-#>   2025-10-25  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-26  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-27  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-28  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-29  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-30  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-10-31  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-01  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-02  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-03  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-04  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-05  0  0  0  0  0  0  0  0  0 11  0  0  0  0  0  0  0  0  0
-#>   2025-11-06  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-07  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-08  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-09  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-11  0  0  0  0  0  0  2  0  8  0  0  0  7  0  0  1  0  0  0
-#>   2025-11-12  0  0  0  3  0  0  0  0  0  9  0  0  0  0  4  0  0  0  0
-#>   2025-11-13  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-14  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-15  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-16  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-17  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-18  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-19  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-20  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-21  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-22  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-23  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-24  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-25  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-26  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-27  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-28  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-29  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-11-30  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-01  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-02  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-03  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-04  0  0  0  0  0  0  0  0  0  0  0  0  0  0  5  0  0  0  0
-#>   2025-12-05  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-06  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-07  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-08  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-09  0  9  0  0  0  0  0  0  0  0  0  0  0  0  3  0  8  0  0
-#>   2025-12-10  0  0  0  3  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-11  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0
-#>   2025-12-12  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-13  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-14  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-15  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-16  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  8
-#>   2025-12-17  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-18  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-19  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-20  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-21  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-22  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  5  0
-#>   2025-12-23  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-24  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-25  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-26  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-27  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-28  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-29  0  0  0  0  4  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-#>   2025-12-30  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 NA
-#>   2025-12-31  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 NA NA
-#>   2026-01-01  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 NA NA NA
-#>   2026-01-02  0  0  0  0  0  0  0  0  0  0  0  0 11  0  0 NA NA NA NA
-#>   2026-01-03  0  0  0  0  0  0  0  0  0  0  0  0  0  0 NA NA NA NA NA
-#>   2026-01-04  0  0  0  0  0  0  0  0  0  0  0  0  0 NA NA NA NA NA NA
-#>   2026-01-05  0  0  0  0  0  0  0  0  0  0  0  0 NA NA NA NA NA NA NA
-#>   2026-01-06  0  0  0  0  0  0  0  0  0  0  0 NA NA NA NA NA NA NA NA
-#>   2026-01-07  0  0  7  0  0  0  0  0  0  0 NA NA NA NA NA NA NA NA NA
-#>   2026-01-08  0  0  0  0  0  0  0  0  0 NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-09  0  0  0  0  0  0  0  0 NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-10  0  0  0  0  0  0  0 NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-11  0  0  0  9  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-12  0  0  0  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-13  0  0  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-14  0  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-15  0  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-16  0 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-17 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-18 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-19 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-20 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-21 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-22 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-23 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-24 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-25 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-26 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-27 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-28 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-29 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-30 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-01-31 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-01 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-02 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-03 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-04 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-05 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-06 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-07 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-08 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-09 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-10 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-11 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-12 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-13 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-14 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-15 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-16 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-17 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-18 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-19 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-20 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-21 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-22 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-23 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-24 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-25 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-26 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-27 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-02-28 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-01 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-02 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-03 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-04 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-05 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-06 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-07 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-08 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-09 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-10 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-11 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-12 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-13 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-14 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-15 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-16 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-17 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-18 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-19 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-20 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-21 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-22 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-23 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-24 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-25 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-26 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-27 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-28 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-29 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-30 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-03-31 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>   2026-04-01 NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
-#>             dev
-#> origin       95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110
-#>   2025-10-25  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-26  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-27  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-28  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-29  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-30  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-31  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-01  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-02  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-03  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-04  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-05  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-06  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-07  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-08  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-09  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-10  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-11  0  0  0  0  0   0   0   3   0   3   0   0   0   6   4   0
-#>   2025-11-12  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-13  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-14  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-15  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-16  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-17  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-18  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-19  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-20  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-21  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-22  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-23  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-24  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-25  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-26  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-27  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-28  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-29  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-30  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-12-01  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-12-02  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-12-03  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-12-04  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-12-05  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-12-06  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-12-07  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-12-08  0  0  0  0  0   0   0   0   0   0  15   0   0   0   0   0
-#>   2025-12-09  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-12-10  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-12-11  0  0  0  0 11   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-12-12  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-12-13  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-12-14  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0  NA
-#>   2025-12-15  0  0  0  0  0   0   0   0   0   0   0   0   0   0  NA  NA
-#>   2025-12-16  0  0  0  0  0   0   0   0   0   0   0   0   0  NA  NA  NA
-#>   2025-12-17  0  0  0  0  0   0   0   0   0   0   0   0  NA  NA  NA  NA
-#>   2025-12-18  0  0  0  0  0   0   0   0   0   0   0  NA  NA  NA  NA  NA
-#>   2025-12-19  0  0  0  0  0   0   0   0   0   0  NA  NA  NA  NA  NA  NA
-#>   2025-12-20  0  0  0  0  0   0   0   0   0  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-21  0  0  0  0  0   0   0   0  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-22  7  1  1  0  0   0   1  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-23  0  0  0  0  0   0  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-24  0  0  0  0  0  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-25  0  0  0  0 NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-26  0  0  0 NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-27  0  0 NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-28  0 NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-29 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-30 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-31 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-01 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-02 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-03 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-04 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-05 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-06 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-07 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-08 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-09 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-10 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-11 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-12 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-13 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-14 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-15 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-16 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-17 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-18 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-19 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-20 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-21 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-22 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-23 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-24 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-25 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-26 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-27 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-28 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-29 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-30 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-31 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-01 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-02 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-03 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-04 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-05 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-06 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-07 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-08 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-09 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-10 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-11 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-12 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-13 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-14 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-15 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-16 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-17 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-18 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-19 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-20 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-21 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-22 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-23 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-24 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-25 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-26 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-27 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-28 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-01 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-02 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-03 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-04 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-05 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-06 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-07 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-08 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-09 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-10 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-11 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-12 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-13 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-14 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-15 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-16 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-17 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-18 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-19 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-20 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-21 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-22 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-23 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-24 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-25 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-26 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-27 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-28 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-29 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-30 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-31 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-04-01 NA NA NA NA NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>             dev
-#> origin       111 112 113 114 115 116 117 118 119 120 121 122 123 124
-#>   2025-10-25   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-26   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-27   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-28   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-29   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-30   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-31   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-01   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-02   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-03   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-04   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-05   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-06   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-07   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-08   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-09   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-10   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-11   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-12   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-13   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-14   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-15   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-16   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-17   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-18   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-19   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-20   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-21   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-22   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-23   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-24   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-25   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-26   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-27   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-28   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-29   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-30   0   0   0   0   0   0   0   0   0   0   0   0   0  NA
-#>   2025-12-01   0   0   0   0   0   0   0   0   0   0   0   0  NA  NA
-#>   2025-12-02   0   0   0   0   0   0   0   0   0   0   0  NA  NA  NA
-#>   2025-12-03   0   0   0   0   0   0   0   0   0   0  NA  NA  NA  NA
-#>   2025-12-04   0   0   0   0   0   0   0   0   0  NA  NA  NA  NA  NA
-#>   2025-12-05   0   0   0   0   0   0   0   0  NA  NA  NA  NA  NA  NA
-#>   2025-12-06   0   0   0   0   0   0   0  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-07   0   0   0   0   0   0  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-08   0   0   0   0   0  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-09   0   0   0   0  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-10   0   0   0  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-11   0   0  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-12   0  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-13  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-14  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-15  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-16  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-17  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-18  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-19  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-20  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-21  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-22  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-23  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-24  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-25  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-26  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-27  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-28  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-29  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-30  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-31  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-01  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-02  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-03  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-04  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-05  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-06  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-07  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-08  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-09  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-10  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-11  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-12  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-13  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-14  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-15  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-16  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-17  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-18  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-19  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-20  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-21  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-22  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-23  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-24  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-25  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-26  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-27  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-28  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-29  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-30  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-31  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-01  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-02  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-03  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-04  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-05  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-06  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-07  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-08  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-09  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-10  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-11  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-12  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-13  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-14  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-15  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-16  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-17  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-18  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-19  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-20  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-21  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-22  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-23  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-24  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-25  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-26  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-27  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-28  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-01  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-02  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-03  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-04  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-05  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-06  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-07  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-08  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-09  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-10  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-11  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-12  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-13  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-14  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-15  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-16  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-17  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-18  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-19  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-20  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-21  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-22  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-23  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-24  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-25  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-26  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-27  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-28  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-29  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-30  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-31  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-04-01  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>             dev
-#> origin       125 126 127 128 129 130 131 132 133 134 135 136 137 138
-#>   2025-10-25   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-26   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-27   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-28   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-29   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-30   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-31   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-01   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-02   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-03   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-04   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-05   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-06   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-07   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-08   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-09   0   0   0   0   0   0   0   0   0   0   3   0  14   0
-#>   2025-11-10   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-11   1   0   0   0   0   0   0   0   0   0   0   8  10   0
-#>   2025-11-12   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-13   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-14   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-15   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-16   0   0   0   0   0   0   0   0   0   0   0   0   0  NA
-#>   2025-11-17   0   0   0   0   0   0   0   0   0   0   0   0  NA  NA
-#>   2025-11-18   0   0   0   0   0   0   0   0   0   0   0  NA  NA  NA
-#>   2025-11-19   0   0   0   0   0   0   0   0   0   0  NA  NA  NA  NA
-#>   2025-11-20   0   0   0   0   0   0   0   0   0  NA  NA  NA  NA  NA
-#>   2025-11-21   0   0   0   0   0   0   0   0  NA  NA  NA  NA  NA  NA
-#>   2025-11-22   0   0   0   0   0   0   0  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-23   0   0   0   0   0   0  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-24   0   0   0   0   0  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-25   0   0   0   0  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-26   0   0   0  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-27   0   0  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-28   0  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-29  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-30  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-01  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-02  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-03  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-04  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-05  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-06  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-07  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-08  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-09  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-10  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-11  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-12  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-13  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-14  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-15  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-16  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-17  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-18  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-19  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-20  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-21  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-22  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-23  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-24  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-25  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-26  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-27  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-28  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-29  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-30  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-31  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-01  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-02  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-03  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-04  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-05  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-06  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-07  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-08  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-09  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-10  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-11  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-12  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-13  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-14  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-15  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-16  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-17  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-18  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-19  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-20  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-21  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-22  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-23  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-24  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-25  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-26  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-27  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-28  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-29  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-30  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-31  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-01  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-02  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-03  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-04  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-05  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-06  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-07  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-08  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-09  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-10  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-11  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-12  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-13  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-14  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-15  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-16  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-17  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-18  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-19  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-20  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-21  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-22  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-23  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-24  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-25  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-26  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-27  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-28  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-01  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-02  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-03  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-04  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-05  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-06  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-07  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-08  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-09  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-10  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-11  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-12  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-13  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-14  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-15  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-16  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-17  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-18  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-19  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-20  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-21  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-22  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-23  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-24  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-25  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-26  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-27  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-28  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-29  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-30  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-31  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-04-01  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>             dev
-#> origin       139 140 141 142 143 144 145 146 147 148 149 150 151 152
-#>   2025-10-25   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-26   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-27   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-28   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-29   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-30   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-10-31   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-01   0   0   0   0   0   0   0   0   0   0   0   0   0   0
-#>   2025-11-02   0   0   0   0   0   0   0   0   0   0   0   0   0  NA
-#>   2025-11-03   0   0   0   0   0   0   0   0   0   0   0   0  NA  NA
-#>   2025-11-04   0   0   0   0   0   0   0   0   0   0   0  NA  NA  NA
-#>   2025-11-05   0   0   0   0   0   0   0   0   0   0  NA  NA  NA  NA
-#>   2025-11-06   0   0   0   0   0   0   0   0   0  NA  NA  NA  NA  NA
-#>   2025-11-07   0   0   0   0   0   0   0   0  NA  NA  NA  NA  NA  NA
-#>   2025-11-08   0   0   0   0   0   0   0  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-09   0   0   0   0   0   0  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-10   0   0   0   0   0  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-11   0   0   0   0  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-12   0   0   0  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-13   0   0  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-14   0  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-15  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-16  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-17  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-18  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-19  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-20  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-21  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-22  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-23  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-24  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-25  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-26  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-27  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-28  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-29  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-11-30  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-01  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-02  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-03  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-04  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-05  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-06  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-07  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-08  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-09  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-10  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-11  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-12  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-13  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-14  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-15  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-16  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-17  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-18  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-19  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-20  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-21  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-22  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-23  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-24  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-25  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-26  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-27  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-28  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-29  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-30  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2025-12-31  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-01  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-02  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-03  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-04  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-05  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-06  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-07  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-08  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-09  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-10  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-11  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-12  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-13  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-14  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-15  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-16  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-17  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-18  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-19  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-20  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-21  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-22  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-23  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-24  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-25  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-26  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-27  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-28  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-29  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-30  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-01-31  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-01  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-02  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-03  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-04  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-05  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-06  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-07  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-08  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-09  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-10  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-11  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-12  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-13  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-14  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-15  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-16  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-17  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-18  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-19  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-20  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-21  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-22  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-23  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-24  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-25  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-26  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-27  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-02-28  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-01  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-02  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-03  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-04  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-05  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-06  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-07  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-08  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-09  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-10  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-11  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-12  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-13  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-14  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-15  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-16  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-17  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-18  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-19  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-20  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-21  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-22  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-23  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-24  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-25  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-26  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-27  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-28  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-29  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-30  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-03-31  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>   2026-04-01  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
-#>             dev
-#> origin       153 154 155
-#>   2025-10-25   0   0   0
-#>   2025-10-26   0   0   0
-#>   2025-10-27   0   0   0
-#>   2025-10-28   0   0   0
-#>   2025-10-29   0   0   4
-#>   2025-10-30   0   0  NA
-#>   2025-10-31   0  NA  NA
-#>   2025-11-01  NA  NA  NA
-#>   2025-11-02  NA  NA  NA
-#>   2025-11-03  NA  NA  NA
-#>   2025-11-04  NA  NA  NA
-#>   2025-11-05  NA  NA  NA
-#>   2025-11-06  NA  NA  NA
-#>   2025-11-07  NA  NA  NA
-#>   2025-11-08  NA  NA  NA
-#>   2025-11-09  NA  NA  NA
-#>   2025-11-10  NA  NA  NA
-#>   2025-11-11  NA  NA  NA
-#>   2025-11-12  NA  NA  NA
-#>   2025-11-13  NA  NA  NA
-#>   2025-11-14  NA  NA  NA
-#>   2025-11-15  NA  NA  NA
-#>   2025-11-16  NA  NA  NA
-#>   2025-11-17  NA  NA  NA
-#>   2025-11-18  NA  NA  NA
-#>   2025-11-19  NA  NA  NA
-#>   2025-11-20  NA  NA  NA
-#>   2025-11-21  NA  NA  NA
-#>   2025-11-22  NA  NA  NA
-#>   2025-11-23  NA  NA  NA
-#>   2025-11-24  NA  NA  NA
-#>   2025-11-25  NA  NA  NA
-#>   2025-11-26  NA  NA  NA
-#>   2025-11-27  NA  NA  NA
-#>   2025-11-28  NA  NA  NA
-#>   2025-11-29  NA  NA  NA
-#>   2025-11-30  NA  NA  NA
-#>   2025-12-01  NA  NA  NA
-#>   2025-12-02  NA  NA  NA
-#>   2025-12-03  NA  NA  NA
-#>   2025-12-04  NA  NA  NA
-#>   2025-12-05  NA  NA  NA
-#>   2025-12-06  NA  NA  NA
-#>   2025-12-07  NA  NA  NA
-#>   2025-12-08  NA  NA  NA
-#>   2025-12-09  NA  NA  NA
-#>   2025-12-10  NA  NA  NA
-#>   2025-12-11  NA  NA  NA
-#>   2025-12-12  NA  NA  NA
-#>   2025-12-13  NA  NA  NA
-#>   2025-12-14  NA  NA  NA
-#>   2025-12-15  NA  NA  NA
-#>   2025-12-16  NA  NA  NA
-#>   2025-12-17  NA  NA  NA
-#>   2025-12-18  NA  NA  NA
-#>   2025-12-19  NA  NA  NA
-#>   2025-12-20  NA  NA  NA
-#>   2025-12-21  NA  NA  NA
-#>   2025-12-22  NA  NA  NA
-#>   2025-12-23  NA  NA  NA
-#>   2025-12-24  NA  NA  NA
-#>   2025-12-25  NA  NA  NA
-#>   2025-12-26  NA  NA  NA
-#>   2025-12-27  NA  NA  NA
-#>   2025-12-28  NA  NA  NA
-#>   2025-12-29  NA  NA  NA
-#>   2025-12-30  NA  NA  NA
-#>   2025-12-31  NA  NA  NA
-#>   2026-01-01  NA  NA  NA
-#>   2026-01-02  NA  NA  NA
-#>   2026-01-03  NA  NA  NA
-#>   2026-01-04  NA  NA  NA
-#>   2026-01-05  NA  NA  NA
-#>   2026-01-06  NA  NA  NA
-#>   2026-01-07  NA  NA  NA
-#>   2026-01-08  NA  NA  NA
-#>   2026-01-09  NA  NA  NA
-#>   2026-01-10  NA  NA  NA
-#>   2026-01-11  NA  NA  NA
-#>   2026-01-12  NA  NA  NA
-#>   2026-01-13  NA  NA  NA
-#>   2026-01-14  NA  NA  NA
-#>   2026-01-15  NA  NA  NA
-#>   2026-01-16  NA  NA  NA
-#>   2026-01-17  NA  NA  NA
-#>   2026-01-18  NA  NA  NA
-#>   2026-01-19  NA  NA  NA
-#>   2026-01-20  NA  NA  NA
-#>   2026-01-21  NA  NA  NA
-#>   2026-01-22  NA  NA  NA
-#>   2026-01-23  NA  NA  NA
-#>   2026-01-24  NA  NA  NA
-#>   2026-01-25  NA  NA  NA
-#>   2026-01-26  NA  NA  NA
-#>   2026-01-27  NA  NA  NA
-#>   2026-01-28  NA  NA  NA
-#>   2026-01-29  NA  NA  NA
-#>   2026-01-30  NA  NA  NA
-#>   2026-01-31  NA  NA  NA
-#>   2026-02-01  NA  NA  NA
-#>   2026-02-02  NA  NA  NA
-#>   2026-02-03  NA  NA  NA
-#>   2026-02-04  NA  NA  NA
-#>   2026-02-05  NA  NA  NA
-#>   2026-02-06  NA  NA  NA
-#>   2026-02-07  NA  NA  NA
-#>   2026-02-08  NA  NA  NA
-#>   2026-02-09  NA  NA  NA
-#>   2026-02-10  NA  NA  NA
-#>   2026-02-11  NA  NA  NA
-#>   2026-02-12  NA  NA  NA
-#>   2026-02-13  NA  NA  NA
-#>   2026-02-14  NA  NA  NA
-#>   2026-02-15  NA  NA  NA
-#>   2026-02-16  NA  NA  NA
-#>   2026-02-17  NA  NA  NA
-#>   2026-02-18  NA  NA  NA
-#>   2026-02-19  NA  NA  NA
-#>   2026-02-20  NA  NA  NA
-#>   2026-02-21  NA  NA  NA
-#>   2026-02-22  NA  NA  NA
-#>   2026-02-23  NA  NA  NA
-#>   2026-02-24  NA  NA  NA
-#>   2026-02-25  NA  NA  NA
-#>   2026-02-26  NA  NA  NA
-#>   2026-02-27  NA  NA  NA
-#>   2026-02-28  NA  NA  NA
-#>   2026-03-01  NA  NA  NA
-#>   2026-03-02  NA  NA  NA
-#>   2026-03-03  NA  NA  NA
-#>   2026-03-04  NA  NA  NA
-#>   2026-03-05  NA  NA  NA
-#>   2026-03-06  NA  NA  NA
-#>   2026-03-07  NA  NA  NA
-#>   2026-03-08  NA  NA  NA
-#>   2026-03-09  NA  NA  NA
-#>   2026-03-10  NA  NA  NA
-#>   2026-03-11  NA  NA  NA
-#>   2026-03-12  NA  NA  NA
-#>   2026-03-13  NA  NA  NA
-#>   2026-03-14  NA  NA  NA
-#>   2026-03-15  NA  NA  NA
-#>   2026-03-16  NA  NA  NA
-#>   2026-03-17  NA  NA  NA
-#>   2026-03-18  NA  NA  NA
-#>   2026-03-19  NA  NA  NA
-#>   2026-03-20  NA  NA  NA
-#>   2026-03-21  NA  NA  NA
-#>   2026-03-22  NA  NA  NA
-#>   2026-03-23  NA  NA  NA
-#>   2026-03-24  NA  NA  NA
-#>   2026-03-25  NA  NA  NA
-#>   2026-03-26  NA  NA  NA
-#>   2026-03-27  NA  NA  NA
-#>   2026-03-28  NA  NA  NA
-#>   2026-03-29  NA  NA  NA
-#>   2026-03-30  NA  NA  NA
-#>   2026-03-31  NA  NA  NA
-#>   2026-04-01  NA  NA  NA
+#> origin       19 20 21 22 23 24 25 26
+#>   2025-10-25  0  0  0  0 12  0 10  0
+#>   2025-10-26  0  0  0  0  0 10  0  6
+#>   2025-10-27  0  0  0  0  0  0  0  0
+#>   2025-10-28  0  0  0  0  9  0  0  0
+#>   2025-10-29  5  5  0  0  0  0  0  0
+#>   2025-10-30  0  0  0  0  0  0  0  0
+#>   2025-10-31  2  0  0  0  0  0  0  0
+#>   2025-11-01  0  0  0  0  0  0  0  0
+#>   2025-11-02  0  0  0 10 13  0  0  0
+#>   2025-11-03  0  0 11 15  0  0  0  0
+#>   2025-11-04  0  0  0 17  5  0  6 13
+#>   2025-11-05  4 19  9  0  9  0  0  8
+#>   2025-11-06  4  0  2  0  0  0  0  4
+#>   2025-11-07  0 13  0  0  0  0  7  0
+#>   2025-11-08  7 10  0  0  6  0 14  0
+#>   2025-11-09  0  0  3 14  0  0  0  0
+#>   2025-11-10  3  5  8  0  0  0  0  1
+#>   2025-11-11  0  4  0  0  0  3  0  9
+#>   2025-11-12 17  8  9  0  0  0  1  0
+#>   2025-11-13  0  0  0  0  0  0  0  0
+#>   2025-11-14  0  0  3  0  0  0  0  0
+#>   2025-11-15  0  0  0  0  6  0  0  0
+#>   2025-11-16  0  0  0  0  9 12  0  0
+#>   2025-11-17  0  0  0  7 10  0  0  0
+#>   2025-11-18  0  0  0  0 12  0  0  0
+#>   2025-11-19  0 10  0  0  0  0  0  0
+#>   2025-11-20 12  1 11  0  0  0  0  8
+#>   2025-11-21  1  0  0  0  0  1  0  0
+#>   2025-11-22  0  4  0  0  0  1  0  2
+#>   2025-11-23  0  0  0  0  0  0  0  0
+#>   2025-11-24  0  0  0  0  0  0  0  0
+#>   2025-11-25  7  5  0  9  5  0  0  0
+#>   2025-11-26  8  6  0  4  0 10  0  7
+#>   2025-11-27  0  0  0  0  0  0  0  0
+#>   2025-11-28 13  0  0  0  0  0  0  0
+#>   2025-11-29  0  0  0  0  0  0  0  0
+#>   2025-11-30 13  0  0  7  2  0  0  0
+#>   2025-12-01  0  4  0  0  0  0 17  0
+#>   2025-12-02  0  0  7  0  0  0  0  0
+#>   2025-12-03 10  4 15  0  7 15  0  0
+#>   2025-12-04  0  0  0  0  0  0  0  0
+#>   2025-12-05  0  7  8  0  0  0  0  0
+#>   2025-12-06  0  0  0  0  0  0  0  2
+#>   2025-12-07  0  0  0  0  0  1 16 11
+#>   2025-12-08  0  8  0  0  0  0  3  0
+#>   2025-12-09  0 11  8  0  0  0 23  0
+#>   2025-12-10  0  8  0 10  0  0  0  0
+#>   2025-12-11 15  0  8  6  0 10  0  0
+#>   2025-12-12  0  0  0  0  0  0 14  0
+#>   2025-12-13  0  6  0  0  0  0  0  0
+#>   2025-12-14  0  0  0  0 15  0  0  0
+#>   2025-12-15  0  7  7  0  0  0  0  0
+#>   2025-12-16  0  0  0  0  0  0  0  0
+#>   2025-12-17  0  0  0  0  0  0  0  0
+#>   2025-12-18  0  0  1  0  0  0  0  0
+#>   2025-12-19  1  0 10  5  0  0 18  0
+#>   2025-12-20  0  0  4  9  0 16  0  0
+#>   2025-12-21  0  0  0 11  0  4  0  0
+#>   2025-12-22 13  0  0  0  0  0 14  0
+#>   2025-12-23  0  0  0  0  0  0  0  0
+#>   2025-12-24  8  1  9  8  0  0  0  7
+#>   2025-12-25  8  0  0  0  0  0  0  0
+#>   2025-12-26  0  6  0  0  0  0  1  0
+#>   2025-12-27  4  0  0  0  0  4  0  0
+#>   2025-12-28  0  0  0  0  0  0  0  5
+#>   2025-12-29  0  0  0  0  0  1  0  0
+#>   2025-12-30  0  0  0  3  0  0  0  0
+#>   2025-12-31  0  0  0  0  0  0  0  0
+#>   2026-01-01  0 10  0  0  0  0  0  0
+#>   2026-01-02  5  0  0  0  0  0  2  0
+#>   2026-01-03  0  0  0  0  0  0  0  0
+#>   2026-01-04  0  0  0  1  0  5  0  0
+#>   2026-01-05  0  0  0  0  0  0  0  0
+#>   2026-01-06  0  8  0  5  0  0  0  0
+#>   2026-01-07  0  0  0  0  0  0  0  0
+#>   2026-01-08  0  0  0  0  0  0  0  1
+#>   2026-01-09 17  0  0  0  0  0  4  6
+#>   2026-01-10  0  7  0  0  0  0  0  9
+#>   2026-01-11  0  0  0  0  0  0  1  0
+#>   2026-01-12 11  0  0  0  0  8  0  0
+#>   2026-01-13  0  0  7  5  8 10  0  0
+#>   2026-01-14  5 11  0  0  4  0  0  8
+#>   2026-01-15  0  0  0  0  0  0  1  0
+#>   2026-01-16  0  0  0  0  0  0  0  0
+#>   2026-01-17  6  0  0  2  0  6  0  0
+#>   2026-01-18  0  0  0  0  0  0  0 16
+#>   2026-01-19  5  9  0  6  0  0  0  0
+#>   2026-01-20  0  0  0  0  0  0  0  0
+#>   2026-01-21  0  0 14  6  0  0  0  0
+#>   2026-01-22  0  8  0  0  0  0  0  4
+#>   2026-01-23  0  0  0  0  0  0  0  0
+#>   2026-01-24  0  6 14  4  0  5  0  0
+#>   2026-01-25  0  0  0  0  0  7  0  0
+#>   2026-01-26  0  0  0  0  0  0  9  0
+#>   2026-01-27  1 14  0  0  0  0  0  0
+#>   2026-01-28  0  1 14  0  6  0  0  0
+#>   2026-01-29  0  5  9  0  0  0  0  0
+#>   2026-01-30  0 11  0 10  8  0  0  7
+#>   2026-01-31 10 10  0  0  0  0  0  1
+#>   2026-02-01  4  0  0  0  0  0  0  0
+#>   2026-02-02  0  0  0 12 13  0  0  4
+#>   2026-02-03  0  0  8  0  0  0  0  0
+#>   2026-02-04  1  8  1 13  7  0  0  0
+#>   2026-02-05  1  8  0 13  0  0  0  0
+#>   2026-02-06  1  0  0  0  0  0  0  0
+#>   2026-02-07  5  0  0  5  0  0  0  0
+#>   2026-02-08 11  0  0  6  6  0  0  0
+#>   2026-02-09  0  0  0  0  0  0  0  0
+#>   2026-02-10  0  0  3  7  1  0  0  1
+#>   2026-02-11  0  0 21  0  1  0  0  0
+#>   2026-02-12 11 20 17 17 14  0  7  0
+#>   2026-02-13  7  0  8  0  0  0  9  0
+#>   2026-02-14  9  1  0  0  0 13  0  0
+#>   2026-02-15  0 12  0  5  0 20  0  0
+#>   2026-02-16 14  0  7  8  9  0  0 13
+#>   2026-02-17  6 32  5  5 12  3  0  0
+#>   2026-02-18 13 21  0  0  0  0  4  9
+#>   2026-02-19  0 14  3  6  0  3  0 19
+#>   2026-02-20  9  0  5  0  0  0  0 10
+#>   2026-02-21  2 13  0  0  0  0  0 20
+#>   2026-02-22 29  0  0 10  0 13  9 42
+#>   2026-02-23  0  2 10  5 23  3 11 14
+#>   2026-02-24  0  0 16  4  0  0  0  0
+#>   2026-02-25  0 22 10  6 10  2  1 11
+#>   2026-02-26  0 33 18  7  0  1  6  9
+#>   2026-02-27  3 11 15  0  9  3  0  0
+#>   2026-02-28  8  0  0  0  0  9 13  0
+#>   2026-03-01 18  0 19  0  7  0  0 12
+#>   2026-03-02 24 17  8  6  5  4 14  6
+#>   2026-03-03 13  0  7  0 13  3  0  0
+#>   2026-03-04  4  5  0  0 15  9  0  9
+#>   2026-03-05 10  0 13  6  8  0  0  0
+#>   2026-03-06 31  5  0  0  0  0 16 10
+#>   2026-03-07  1 14  0  0  7  0  0  5
+#>   2026-03-08  0 15  0  0 10  0  4 NA
+#>   2026-03-09  0  0 20  6  3 12 NA NA
+#>   2026-03-10  0 12  7  6 15 NA NA NA
+#>   2026-03-11  9 15  0  0 NA NA NA NA
+#>   2026-03-12  9  0  9 NA NA NA NA NA
+#>   2026-03-13 14 11 NA NA NA NA NA NA
+#>   2026-03-14  0 NA NA NA NA NA NA NA
+#>   2026-03-15 NA NA NA NA NA NA NA NA
+#>   2026-03-16 NA NA NA NA NA NA NA NA
+#>   2026-03-17 NA NA NA NA NA NA NA NA
+#>   2026-03-18 NA NA NA NA NA NA NA NA
+#>   2026-03-19 NA NA NA NA NA NA NA NA
+#>   2026-03-20 NA NA NA NA NA NA NA NA
+#>   2026-03-21 NA NA NA NA NA NA NA NA
+#>   2026-03-22 NA NA NA NA NA NA NA NA
+#>   2026-03-23 NA NA NA NA NA NA NA NA
+#>   2026-03-24 NA NA NA NA NA NA NA NA
+#>   2026-03-25 NA NA NA NA NA NA NA NA
+#>   2026-03-26 NA NA NA NA NA NA NA NA
+#>   2026-03-27 NA NA NA NA NA NA NA NA
+#>   2026-03-28 NA NA NA NA NA NA NA NA
+#>   2026-03-29 NA NA NA NA NA NA NA NA
+#>   2026-03-30 NA NA NA NA NA NA NA NA
+#>   2026-03-31 NA NA NA NA NA NA NA NA
+#>   2026-04-01 NA NA NA NA NA NA NA NA
 #> 
 #> $reference_dates
 #>   [1] "2025-10-25" "2025-10-26" "2025-10-27" "2025-10-28" "2025-10-29"
@@ -1762,7 +479,7 @@ print(rep_tri_2)
 #> [1] 1
 #> 
 #> $max_delay
-#> [1] 154
+#> [1] 25
 #> 
 #> $delays_unit
 #> [1] "days"

@@ -1,11 +1,18 @@
-# Validate constructor inputs for reporting triangle
+# Validate each item in the reporting triangle
 
-Validate constructor inputs for reporting triangle
+Validate each item in the reporting triangle
 
 ## Usage
 
 ``` r
-.validate_rep_tri_args(reporting_triangle_matrix, reference_dates, delays_unit)
+.validate_rep_tri_args(
+  reporting_triangle_matrix,
+  reference_dates,
+  structure,
+  max_delay,
+  delays_unit,
+  strata = NULL
+)
 ```
 
 ## Arguments
@@ -19,6 +26,17 @@ Validate constructor inputs for reporting triangle
   Vector of character strings indicating the reference dates
   corresponding to each row of the reporting triangle matrix (`data`).
 
+- structure:
+
+  Integer or vector specifying the reporting structure. If integer,
+  divides columns evenly by that integer (with last possibly truncated).
+  If vector, the sum must not be greater than or equal to the number of
+  columns. Default is 1 (standard triangular structure).
+
+- max_delay:
+
+  Integer indicating the maximum delay.
+
 - delays_unit:
 
   Character string specifying the temporal granularity of the delays.
@@ -30,6 +48,6 @@ Validate constructor inputs for reporting triangle
   and delays to the complete set of combinations in the reporting
   triangle. Default is `"days"`.
 
-## Value
+- strata:
 
-NULL invisibly
+  Character string indicating the strata. Default is NULL.

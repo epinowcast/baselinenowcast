@@ -62,7 +62,6 @@ Imports:
   rlang,
   purrr
 Suggests:
-    epinowcast,
     bookdown,
     ChainLadder,
     dplyr,
@@ -86,5 +85,4 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 Config/Needs/hexsticker: hexSticker, sysfonts, ggplot2
-Additional_repositories: https://epinowcast.r-universe.dev
 Config/Needs/website: r-lib/pkgdown, epinowcast/enwtheme

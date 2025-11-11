@@ -67,12 +67,12 @@ We'll start by preparing the data for nowcasting and evaluation by removing all 
 nowcast_date <- "2021-08-01"
 eval_date <- "2021-10-01"
 
-target_data <- germany_covid19_hosp |>
-  filter(
-    location == "DE", age_group == "00+",
-    report_date <= eval_date,
-    reference_date <= nowcast_date
-  )
+target_data <- filter(
+  germany_covid19_hosp,
+  location == "DE", age_group == "00+",
+  report_date <= eval_date,
+  reference_date <= nowcast_date
+)
 ```
 
 Next we can plot both the "initial reports" by taking the sum of the cases at each reference date excluding all reports after the nowcast date, and compare that to what we will eventually observe as of the latest date in the complete dataset (data available through October 1, 2021).
@@ -86,8 +86,10 @@ latest_data <- target_data |>
 Next, let's get a dataset of what we would have had available as of the nowcast date, which we obtain by excluding all report dates after the nowcast date.
 
 ```{r}
-observed_data <- target_data |>
-  filter(report_date <= nowcast_date)
+observed_data <- filter(
+  targt_data,
+  report_date <= nowcast_date
+)
 
 head(observed_data)
 ```

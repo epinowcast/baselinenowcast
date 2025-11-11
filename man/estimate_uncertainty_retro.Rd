@@ -12,6 +12,7 @@ estimate_uncertainty_retro(
   structure = detect_structure(reporting_triangle),
   delay_pmf = NULL,
   preprocess = preprocess_negative_values,
+  uncertainty = uncertainty_opts(),
   ...
 )
 }
@@ -49,6 +50,10 @@ estimation, or NULL to skip preprocessing. Default is
 redistributing them to earlier delays. Set to NULL if you want to preserve
 negative PMF entries (e.g., when working with downward corrections where
 negative probabilities reflect systematic adjustments).}
+
+\item{uncertainty}{An object of class \code{uncertainty_opts} created by
+\code{\link[=uncertainty_opts]{uncertainty_opts()}}. Specifies the uncertainty model and aggregation
+functions. Default uses negative binomial with by-horizon fitting.}
 
 \item{...}{Additional arguments passed to \code{\link[=estimate_uncertainty]{estimate_uncertainty()}}.}
 }

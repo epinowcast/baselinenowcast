@@ -10,8 +10,8 @@
   prop_delay = 0.5,
   output_type = c("samples", "point"),
   draws = 1000,
-  uncertainty_model = fit_by_horizon,
-  uncertainty_sampler = sample_nb,
+  uncertainty_model = NULL,
+  uncertainty_sampler = NULL,
   delay_pmf = NULL,
   uncertainty_params = NULL,
   preprocess = preprocess_negative_values,
@@ -38,21 +38,15 @@ return the point estimate (\code{"point"}). Default is \code{"samples"}.}
 \item{draws}{Integer indicating the number of probabilistic draws to include
 if \code{output_type} is \code{"samples"}. Default is 1000.}
 
-\item{uncertainty_model}{Function that ingests a matrix of observations and a
-matrix of predictions and returns a vector that can be used to
-apply uncertainty using the same error model. Default is
-\code{fit_by_horizon} with arguments of \code{obs} matrix of observations and
-\code{pred} the matrix of predictions that fits each column (horizon)
-to a negative binomial observation model by default. The user can
-specify a different fitting model by replacing the
-\code{fit_model} argument in \code{fit_by_horizon}.}
+\item{uncertainty_model}{(Deprecated) Function that ingests a matrix of
+observations and a matrix of predictions and returns a vector that can
+be used to apply uncertainty using the same error model. Use
+\code{uncertainty} parameter instead.}
 
-\item{uncertainty_sampler}{Function that ingests a vector or matrix of
-predictions and a vector of uncertainty parameters and generates draws
-from the observation model. Default is \code{sample_nb} which expects
-arguments \code{pred} for the vector of predictions and uncertainty parameters
-for the corresponding vector of uncertainty parameters, and draws from a
-negative binomial for each element of the vector.}
+\item{uncertainty_sampler}{(Deprecated) Function that ingests a vector or
+matrix of predictions and a vector of uncertainty parameters and
+generates draws from the observation model. Use \code{uncertainty} parameter
+instead.}
 
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
 first delay column in \code{data$reporting_triangle_matrix}. Default is NULL,

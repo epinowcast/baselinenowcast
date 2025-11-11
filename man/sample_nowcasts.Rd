@@ -9,6 +9,7 @@ sample_nowcasts(
   reporting_triangle,
   uncertainty_params,
   draws = 1000,
+  uncertainty = uncertainty_opts(),
   ...
 )
 }
@@ -30,6 +31,10 @@ a horizon of 1 is the last entry).}
 
 \item{draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}
+
+\item{uncertainty}{An object of class \code{uncertainty_opts} created by
+\code{\link[=uncertainty_opts]{uncertainty_opts()}}. Specifies the uncertainty model and aggregation
+functions. Default uses negative binomial with by-horizon fitting.}
 
 \item{...}{Additional arguments passed to \code{sample_nowcast}.}
 }

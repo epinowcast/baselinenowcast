@@ -19,6 +19,7 @@ Nowcasting
 Nowcasts
 Obs
 PMF
+Poisson
 RESPINOW
 TimTaylor
 WIS
@@ -46,6 +47,7 @@ df
 epinowcast
 epinowcast’
 eq
+equidispersion
 etc
 fb
 frac
@@ -56,7 +58,6 @@ github
 gray
 hline
 infty
-init
 inits
 jamesmbaazam
 jbracher
@@ -68,6 +69,7 @@ leq
 linetype
 mathbb
 mathbf
+nb
 negbin
 nolint
 norovirus
@@ -75,10 +77,11 @@ nowcast
 nowcasted
 nowcasting
 nowcasts
-org
+params
 pid
 pilessthand
 pmf
+poisson
 prob
 sbfnk
 seabbs
@@ -87,7 +90,6 @@ swo
 th
 thetad
 ub
-wellcomeopenresearch
 xlab
 yintercept
 ylab

@@ -8,9 +8,10 @@ sample_nowcast(
   point_nowcast_matrix,
   reporting_triangle,
   uncertainty_params,
-  uncertainty_sampler = sample_nb,
-  ref_time_aggregator = identity,
-  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+  uncertainty = uncertainty_opts(),
+  uncertainty_sampler = NULL,
+  ref_time_aggregator = NULL,
+  delay_aggregator = NULL
 )
 }
 \arguments{
@@ -29,21 +30,20 @@ horizon 1 to the maximum horizon. Note that these will be reversed
 internally to match the ordering of the \code{point_nowcast_matrix} (where
 a horizon of 1 is the last entry).}
 
-\item{uncertainty_sampler}{Function that ingests a vector or matrix of
-predictions and a vector of uncertainty parameters and generates draws
-from the observation model. Default is \code{sample_nb} which expects
-arguments \code{pred} for the vector of predictions and uncertainty parameters
-for the corresponding vector of uncertainty parameters, and draws from a
-negative binomial for each element of the vector.}
+\item{uncertainty}{An object of class \code{uncertainty_opts} created by
+\code{\link[=uncertainty_opts]{uncertainty_opts()}}. Specifies the uncertainty model and aggregation
+functions. Default uses negative binomial with by-horizon fitting.}
 
-\item{ref_time_aggregator}{Function that operates along the rows (reference
-times) of the retrospective point nowcast matrix before it has been
-aggregated across columns (delays). Default is \code{identity}
-which does not aggregate across reference times.}
+\item{uncertainty_sampler}{(Deprecated) Function that ingests a vector or
+matrix of predictions and a vector of uncertainty parameters and
+generates draws from the observation model. Use \code{uncertainty} parameter
+instead.}
 
-\item{delay_aggregator}{Function that operates along the columns (delays)
-of the retrospective point nowcast matrix after it has been aggregated
-across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
+\item{ref_time_aggregator}{(Deprecated) Function that operates along the
+rows (reference times). Use \code{uncertainty} parameter instead.}
+
+\item{delay_aggregator}{(Deprecated) Function that operates along the
+columns (delays). Use \code{uncertainty} parameter instead.}
 }
 \value{
 Vector of predicted counts at each reference time based on combining

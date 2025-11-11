@@ -13,8 +13,9 @@ estimate_and_apply_uncertainty(
   structure = detect_structure(reporting_triangle),
   draws = 1000,
   delay_pmf = NULL,
-  uncertainty_model = fit_by_horizon,
-  uncertainty_sampler = sample_nb,
+  uncertainty = uncertainty_opts(),
+  uncertainty_model = NULL,
+  uncertainty_sampler = NULL,
   ...
 )
 }
@@ -53,21 +54,13 @@ starting at the first delay column in each of the matrices in
 \code{retro_reporting_triangles}. If a list, must of the same length as
 \code{retro_reporting_triangles}, with elements aligning. Default is \code{NULL}}
 
-\item{uncertainty_model}{Function that ingests a matrix of observations and a
-matrix of predictions and returns a vector that can be used to
-apply uncertainty using the same error model. Default is
-\code{fit_by_horizon} with arguments of \code{obs} matrix of observations and
-\code{pred} the matrix of predictions that fits each column (horizon)
-to a negative binomial observation model by default. The user can
-specify a different fitting model by replacing the
-\code{fit_model} argument in \code{fit_by_horizon}.}
+\item{uncertainty}{An object of class \code{uncertainty_opts} created by
+\code{\link[=uncertainty_opts]{uncertainty_opts()}}. Specifies the uncertainty model and aggregation
+functions. Default uses negative binomial with by-horizon fitting.}
 
-\item{uncertainty_sampler}{Function that ingests a vector or matrix of
-predictions and a vector of uncertainty parameters and generates draws
-from the observation model. Default is \code{sample_nb} which expects
-arguments \code{pred} for the vector of predictions and uncertainty parameters
-for the corresponding vector of uncertainty parameters, and draws from a
-negative binomial for each element of the vector.}
+\item{uncertainty_model}{(Deprecated) Use \code{uncertainty} parameter instead.}
+
+\item{uncertainty_sampler}{(Deprecated) Use \code{uncertainty} parameter instead.}
 
 \item{...}{Additional arguments to \code{estimate_uncertainty()} and
 \code{sample_prediction()}.}

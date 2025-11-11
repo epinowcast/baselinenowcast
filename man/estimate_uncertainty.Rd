@@ -9,9 +9,10 @@ estimate_uncertainty(
   truncated_reporting_triangles,
   retro_reporting_triangles,
   n = length(point_nowcast_matrices),
-  uncertainty_model = fit_by_horizon,
-  ref_time_aggregator = identity,
-  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+  uncertainty = uncertainty_opts(),
+  uncertainty_model = NULL,
+  ref_time_aggregator = NULL,
+  delay_aggregator = NULL
 )
 }
 \arguments{
@@ -28,23 +29,24 @@ matrices with as many rows as available given the truncation.}
 \item{n}{Integer indicating the number of reporting matrices to use to
 estimate the uncertainty parameters.}
 
-\item{uncertainty_model}{Function that ingests a matrix of observations and a
-matrix of predictions and returns a vector that can be used to
-apply uncertainty using the same error model. Default is
-\code{fit_by_horizon} with arguments of \code{obs} matrix of observations and
-\code{pred} the matrix of predictions that fits each column (horizon)
-to a negative binomial observation model by default. The user can
-specify a different fitting model by replacing the
-\code{fit_model} argument in \code{fit_by_horizon}.}
+\item{uncertainty}{An object of class \code{uncertainty_opts} created by
+\code{\link[=uncertainty_opts]{uncertainty_opts()}}. Specifies the uncertainty model and aggregation
+functions. Default uses negative binomial with by-horizon fitting.}
 
-\item{ref_time_aggregator}{Function that operates along the rows (reference
-times) of the retrospective point nowcast matrix before it has been
-aggregated across columns (delays). Default is \code{identity}
-which does not aggregate across reference times.}
+\item{uncertainty_model}{(Deprecated) Function that ingests a matrix of
+observations and a matrix of predictions and returns a vector that can
+be used to apply uncertainty using the same error model. Use
+\code{uncertainty} parameter instead.}
 
-\item{delay_aggregator}{Function that operates along the columns (delays)
-of the retrospective point nowcast matrix after it has been aggregated
-across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
+\item{ref_time_aggregator}{(Deprecated) Function that operates along the
+rows (reference times) of the retrospective point nowcast matrix before
+it has been aggregated across columns (delays). Use \code{uncertainty}
+parameter instead.}
+
+\item{delay_aggregator}{(Deprecated) Function that operates along the
+columns (delays) of the retrospective point nowcast matrix after it has
+been aggregated across reference times. Use \code{uncertainty} parameter
+instead.}
 }
 \value{
 \code{uncertainty_params} Vector of length of the number of horizons,
@@ -94,7 +96,11 @@ if (requireNamespace("zoo", quietly = TRUE)) {
     point_nowcast_matrices = retro_nowcasts,
     truncated_reporting_triangles = trunc_rts,
     retro_reporting_triangles = retro_rts,
-    ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+    uncertainty = uncertainty_opts(
+      aggregation = aggregation_opts(
+        ref_time = function(x) zoo::rollsum(x, k = 2, align = "right")
+      )
+    )
   )
   disp_params_agg
 }

@@ -17,10 +17,10 @@ aggregating}
 \item{n_possible_horizons}{Integer indicating the number of horizons in the
 retrospective reporting triangle.}
 
-\item{ref_time_aggregator}{Function that operates along the rows (reference
-times) of the retrospective point nowcast matrix before it has been
-aggregated across columns (delays). Default is \code{identity}
-which does not aggregate across reference times.}
+\item{ref_time_aggregator}{(Deprecated) Function that operates along the
+rows (reference times) of the retrospective point nowcast matrix before
+it has been aggregated across columns (delays). Use \code{uncertainty}
+parameter instead.}
 }
 \value{
 \code{n_iters} Integer indicating the number of iterations, or

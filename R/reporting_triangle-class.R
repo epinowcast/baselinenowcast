@@ -550,14 +550,14 @@ tail.reporting_triangle <- function(x, ...) {
 
       # Check if any values below this NA are non-NA (same column, later rows)
       has_data_below <- if (i < nr) {
-        any(!is.na(mat[(i + 1):nr, j]))
+        !all(is.na(mat[(i + 1):nr, j]))
       } else {
         FALSE
       }
 
       # Check if any values to the right are non-NA (same row, later delays)
       has_data_right <- if (j < nc) {
-        any(!is.na(mat[i, (j + 1):nc]))
+        !all(is.na(mat[i, (j + 1):nc]))
       } else {
         FALSE
       }
@@ -685,7 +685,7 @@ summary.reporting_triangle <- function(object, ...) {
 
   # Count dates requiring nowcast (incomplete due to reporting delay)
   dates_need_nowcast <- sum(row_has_na) # nolint: object_usage_linter
-  dates_complete <- nrow(mat) - dates_need_nowcast
+  dates_complete <- nrow(mat) - dates_need_nowcast # nolint: object_usage_linter
   cli_text(
     "Dates requiring nowcast: {dates_need_nowcast} ",
     "(complete: {dates_complete})"

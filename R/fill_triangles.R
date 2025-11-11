@@ -221,9 +221,8 @@ fill_triangle <- function(reporting_triangle,
   }
   n_rows <- nrow(reporting_triangle)
   # Convert to plain matrix for subsetting
-  has_complete_row <- any(
-    rowSums(is.na(as.matrix(reporting_triangle)[(n_rows - n + 1):n_rows, ])) == 0
-  )
+  tri_mat <- as.matrix(reporting_triangle)[(n_rows - n + 1):n_rows, ]
+  has_complete_row <- any(rowSums(is.na(tri_mat)) == 0)
   if (isFALSE(has_complete_row)) {
     cli_abort(
       message = c(

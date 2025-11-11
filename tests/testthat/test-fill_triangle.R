@@ -32,29 +32,14 @@ test_that("fill_triangle invalid inputs throw errors", {
   # Non-matrix input
   expect_error(fill_triangle(as.data.frame(test_triangle)))
 
-  # Invalid max_delay
-  expect_error(fill_triangle(test_triangle, max_delay = -1))
-
-  # Error about maximum delay
-  expect_error(
-    fill_triangle(test_triangle,
-      max_delay = ncol(test_triangle) + 1
-    ),
-    regexp = "The maximum delay must be less than the number of columns" # nolint
-  )
-
   # Invalid n values
   expect_error(fill_triangle(test_triangle, n = -1))
   expect_error(fill_triangle(test_triangle, n = 1.5))
 })
 
 test_that("fill_triangle default parameters work as expected", {
-  # Test max_delay default
+  # Test that fill_triangle works with defaults
   result_default <- fill_triangle(test_triangle)
-  result_explicit <- fill_triangle(test_triangle,
-    max_delay = ncol(test_triangle) - 1
-  )
-  expect_identical(result_default, result_explicit)
 
   # Test n default
   result_n_default <- fill_triangle(test_triangle)

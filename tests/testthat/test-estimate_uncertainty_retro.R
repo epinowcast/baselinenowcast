@@ -58,7 +58,6 @@ test_that("estimate_uncertainty_retro matches manual workflow", {
   n_history_delay <- min(sapply(reporting_triangle_list, nrow))
   pt_nowcast_mat_list <- fill_triangles(
     reporting_triangle_list,
-    max_delay = max_delay,
     n = n_history_delay
   )
   manual_result <- estimate_uncertainty(
@@ -155,8 +154,7 @@ test_that(
     result <- estimate_uncertainty_retro(
       triangle,
       n_history_delay = 5,
-      n_retrospective_nowcasts = 2,
-      max_delay = 3
+      n_retrospective_nowcasts = 2
     )
 
     expect_type(result, "double")

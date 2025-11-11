@@ -1,11 +1,6 @@
 #' Create a `reporting_triangle` object
 #'
 #' @param data Data to be nowcasted.
-#' @param max_delay Integer indicating the maximum delay. For the data.frame
-#'    method, if not provided (NULL), it is automatically computed as the
-#'    maximum delay observed in the data. For the matrix method, max_delay is
-#'    inferred from the number of columns in the matrix and this parameter is
-#'    not used. Default is NULL.
 #' @param delays_unit Character string specifying the temporal granularity of
 #'    the delays. Options are `"days"`, `"weeks"`, `"months"`, `"years"`.
 #'    For the matrix method, this is simply passed as an item in the
@@ -21,7 +16,6 @@
 #' @family reporting_triangle
 #' @export
 as_reporting_triangle <- function(data,
-                                  max_delay = NULL,
                                   delays_unit = "days",
                                   ...) {
   UseMethod("as_reporting_triangle")
@@ -67,12 +61,8 @@ as_reporting_triangle <- function(data,
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 #' # max_delay is automatically computed from the data
 #' as_reporting_triangle(data = data_as_of_df)
-#'
-#' # Or specify max_delay explicitly to truncate to a specific delay
-#' as_reporting_triangle(data = data_as_of_df, max_delay = 25)
 as_reporting_triangle.data.frame <- function(
     data,
-    max_delay = NULL,
     delays_unit = "days",
     reference_date = "reference_date",
     report_date = "report_date",
@@ -106,20 +96,9 @@ as_reporting_triangle.data.frame <- function(
     )
   }
 
-  # Compute max_delay from data if not provided
-  if (is.null(max_delay)) {
-    max_delay <- max(data$delay)
-    cli_alert_info("Using max_delay = {max_delay} from data")
-  }
-
-  if (max_delay > max(data$delay)) {
-    cli_abort(
-      message =
-        "`max_delay` specified is larger than the maximum delay in the data."
-    )
-  }
-
-  data <- data[data$delay <= max_delay, ]
+  # Compute max_delay from data
+  max_delay <- max(data$delay)
+  cli_alert_info("Using max_delay = {max_delay} from data")
   reference_dates <- sort(unique(data$reference_date))
   select_data <- data[, c("reference_date", "count", "delay")]
   all_combos <- expand.grid(
@@ -181,8 +160,7 @@ as_reporting_triangle.data.frame <- function(
 #'   the reference dates corresponding to each row of the reporting triangle
 #'   matrix (`data`). If NULL (default), dummy dates starting from 1900-01-01
 #'   are generated with spacing determined by `delays_unit`.
-#' @param ... Additional arguments not used. For backward compatibility,
-#'   `max_delay` may be provided but will be ignored with a message.
+#' @param ... Additional arguments not used.
 #' @export
 #' @return A \code{\link{reporting_triangle}} object
 #' @method as_reporting_triangle matrix
@@ -213,7 +191,6 @@ as_reporting_triangle.data.frame <- function(
 #' )
 #' rep_tri
 as_reporting_triangle.matrix <- function(data,
-                                         max_delay = NULL,
                                          delays_unit = "days",
                                          reference_dates = NULL,
                                          ...) {
@@ -239,16 +216,6 @@ as_reporting_triangle.matrix <- function(data,
       message =
         "Length of `reference_dates` must equal number of rows in `reporting_triangle`" # nolint
     )
-  }
-
-  # max_delay parameter is ignored (computed from ncol)
-  if (!is.null(max_delay)) {
-    computed_max_delay <- ncol(data) - 1L
-    if (max_delay != computed_max_delay) {
-      cli_alert_info(
-        "Ignoring max_delay parameter. Using {computed_max_delay} from matrix dimensions." # nolint
-      )
-    }
   }
 
   reporting_triangle_obj <- new_reporting_triangle(

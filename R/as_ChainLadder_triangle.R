@@ -43,7 +43,7 @@
 #' @examplesIf requireNamespace("ChainLadder", quietly = TRUE)
 #' # Create a reporting triangle from synthetic NSSP data
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-#' rep_tri <- as_reporting_triangle(data = data_as_of_df, max_delay = 25)
+#' rep_tri <- as_reporting_triangle(data = data_as_of_df)
 #'
 #' # Convert to ChainLadder triangle format
 #' cl_triangle <- as_ChainLadder_triangle(rep_tri)
@@ -110,7 +110,7 @@ as_ChainLadder_triangle <- function(x, ...) {
 #' @examplesIf requireNamespace("ChainLadder", quietly = TRUE)
 #' # Create a reporting triangle
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-#' rep_tri <- as_reporting_triangle(data = data_as_of_df, max_delay = 25)
+#' rep_tri <- as_reporting_triangle(data = data_as_of_df)
 #'
 #' # Convert to ChainLadder triangle
 #' cl_triangle <- as_ChainLadder_triangle(rep_tri)
@@ -120,7 +120,6 @@ as_ChainLadder_triangle <- function(x, ...) {
 #' rep_tri_2 <- as_reporting_triangle(data = cl_triangle)
 #' print(rep_tri_2)
 as_reporting_triangle.triangle <- function(data,
-                                           max_delay = NULL,
                                            delays_unit = "days",
                                            reference_dates = NULL,
                                            ...) {
@@ -160,7 +159,6 @@ as_reporting_triangle.triangle <- function(data,
 
   rep_tri <- as_reporting_triangle.matrix(
     data = triangle_matrix,
-    max_delay = max_delay,
     reference_dates = reference_dates,
     delays_unit = delays_unit,
     ...

@@ -47,14 +47,12 @@ delay_processed
 }
 \seealso{
 \itemize{
-\item \link{example_downward_corr_mat} for the raw matrix version
 \item \link{example_reporting_triangle} for a clean example without corrections
 \item \code{\link[=estimate_delay]{estimate_delay()}} with \code{preprocess} parameter
 \item \code{\link[=preprocess_negative_values]{preprocess_negative_values()}} to handle negative values
 }
 
 Example datasets
-\code{\link{example_downward_corr_mat}},
 \code{\link{example_reporting_triangle}},
 \code{\link{germany_covid19_hosp}},
 \code{\link{syn_nssp_df}},

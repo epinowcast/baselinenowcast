@@ -55,6 +55,30 @@
 #' summary(rep_tri)
 NULL
 
+#' Validate reporting_triangle constructor arguments
+#'
+#' Internal helper to validate the arguments passed to new_reporting_triangle.
+#'
+#' @param reporting_triangle_matrix Matrix of reporting triangle data.
+#' @param reference_dates Date vector of reference dates.
+#' @param delays_unit Character string specifying temporal granularity.
+#' @return NULL
+#' @keywords internal
+.validate_rep_tri_args <- function(reporting_triangle_matrix,
+                                   reference_dates,
+                                   delays_unit) {
+  assert_matrix(reporting_triangle_matrix)
+  assert_date(reference_dates,
+    unique = TRUE,
+    null.ok = FALSE,
+    min.len = 1,
+    len = nrow(reporting_triangle_matrix)
+  )
+
+  assert_delays_unit(delays_unit)
+  return(NULL)
+}
+
 #' Class constructor for `reporting_triangle` objects
 #'
 #' Creates a new reporting_triangle object from a matrix.

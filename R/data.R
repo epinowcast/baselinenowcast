@@ -93,43 +93,6 @@
 #' estimate_delay(example_reporting_triangle, n = 3)
 "example_reporting_triangle"
 
-#' Example reporting triangle with downward corrections (matrix form)
-#'
-#' @description A synthetic matrix demonstrating downward corrections at a
-#'   specific delay.
-#'   This represents a realistic case where data quality reviews at delay 2
-#'   consistently identify false positives or reclassify cases, resulting in
-#'   net downward adjustments that produce negative values.
-#'
-#'   When estimated with `preprocess = NULL`, this produces a PMF with
-#'   negative entries and a CDF that is not strictly increasing, reflecting
-#'   the downward correction process.
-#'
-#' @format A matrix with 8 rows and 4 columns.
-#' \describe{
-#'   Rows represent reference dates (time points when events occurred).
-#'   Columns represent reporting delays (0 to 3 days).
-#'   Values represent counts, with negative values at delay 2 representing
-#'     downward corrections.
-#'   Lower-right triangle contains NA values (unobserved future reports).
-#' }
-#'
-#' @details
-#' This example demonstrates relaxed assumptions for PMF and CDF when working
-#' with downward corrections:
-#' - With `preprocess = NULL`, the PMF can have negative entries
-#' - The CDF may not be strictly increasing
-#' - This reflects real reporting processes with systematic downward corrections
-#'
-#' @seealso
-#' - [example_downward_corr_rt] for the [reporting_triangle] version
-#' - [estimate_delay()] with `preprocess = NULL` to preserve negative entries
-#' - [preprocess_negative_values()] to handle negatives by redistribution
-#'
-#' @family example_data
-#' @keywords internal
-"example_downward_corr_mat"
-
 #' Example reporting triangle with downward corrections
 #'
 #' @description A [reporting_triangle] object demonstrating how to handle
@@ -153,7 +116,6 @@
 #' - How PMFs and CDFs behave with systematic downward corrections
 #'
 #' @seealso
-#' - [example_downward_corr_mat] for the raw matrix version
 #' - [example_reporting_triangle] for a clean example without corrections
 #' - [estimate_delay()] with `preprocess` parameter
 #' - [preprocess_negative_values()] to handle negative values

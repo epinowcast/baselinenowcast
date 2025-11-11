@@ -466,21 +466,6 @@ assert_delays_unit <- function(delays_unit) {
   return(invisible(NULL))
 }
 
-.validate_rep_tri_args <- function(reporting_triangle_matrix,
-                                   reference_dates,
-                                   delays_unit) {
-  assert_matrix(reporting_triangle_matrix)
-  assert_date(reference_dates,
-    unique = TRUE,
-    null.ok = FALSE,
-    min.len = 1,
-    len = nrow(reporting_triangle_matrix)
-  )
-
-  assert_delays_unit(delays_unit)
-  return(NULL)
-}
-
 #' Validate each of the strata columns passed to baselinenowcast
 #'
 #' @inheritParams baselinenowcast.data.frame

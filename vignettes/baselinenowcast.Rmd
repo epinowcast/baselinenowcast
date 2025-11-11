@@ -87,7 +87,7 @@ Next, let's get a dataset of what we would have had available as of the nowcast 
 
 ```{r}
 observed_data <- filter(
-  targt_data,
+  target_data,
   report_date <= nowcast_date
 )
 

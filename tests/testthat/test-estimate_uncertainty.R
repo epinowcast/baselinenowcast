@@ -667,10 +667,10 @@ test_that("estimate_uncertainty works with custom aggregation via opts", {
 test_that("estimate_uncertainty works with Poisson model", {
   # Need integer observations for Poisson
   int_nowcasts <- lapply(valid_nowcasts, function(x) {
-    matrix(as.integer(round(x)), nrow = nrow(x), ncol = ncol(x))
+    return(matrix(as.integer(round(x)), nrow = nrow(x), ncol = ncol(x)))
   })
   int_trunc_rts <- lapply(valid_trunc_rts, function(x) {
-    matrix(as.integer(round(x)), nrow = nrow(x), ncol = ncol(x))
+    return(matrix(as.integer(round(x)), nrow = nrow(x), ncol = ncol(x)))
   })
 
   result <- estimate_uncertainty(

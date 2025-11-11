@@ -12,7 +12,7 @@ test_that("uncertainty_model creates valid object with all components", {
   expect_s3_class(model, "uncertainty_model")
   expect_s3_class(model, "uncertainty_gaussian")
   expect_type(model, "list")
-  expect_identical(names(model), c("fit", "sample", "family", "strategy"))
+  expect_named(model, c("fit", "sample", "family", "strategy"))
 })
 
 test_that("uncertainty_model stores functions correctly", {
@@ -152,8 +152,8 @@ test_that("uncertainty_model creates correct class hierarchy", {
     strategy = strategy
   )
 
-  expect_true(inherits(model, "uncertainty_custom"))
-  expect_true(inherits(model, "uncertainty_model"))
+  expect_s3_class(model, "uncertainty_custom")
+  expect_s3_class(model, "uncertainty_model")
   expect_identical(class(model), c("uncertainty_custom", "uncertainty_model"))
 })
 
@@ -167,9 +167,9 @@ test_that("print.uncertainty_model displays correctly", {
   )
 
   output <- capture.output(print(model))
-  expect_true(any(grepl("Uncertainty Model", output)))
-  expect_true(any(grepl("test_family", output)))
-  expect_true(any(grepl("by_horizon", output)))
+  expect_true(any(grepl("Uncertainty Model", output, fixed = TRUE)))
+  expect_true(any(grepl("test_family", output, fixed = TRUE)))
+  expect_true(any(grepl("by_horizon", output, fixed = TRUE)))
 })
 
 test_that("print.uncertainty_model returns object invisibly", {

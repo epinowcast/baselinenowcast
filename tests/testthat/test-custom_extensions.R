@@ -7,10 +7,10 @@ test_that("users can create custom Gaussian distribution", {
 
   gaussian_model <- uncertainty_model(
     fit = function(obs, pred) {
-      sqrt(mean((obs - pred)^2))
+      return(sqrt(mean((obs - pred)^2)))
     },
     sample = function(pred, params) {
-      rnorm(length(pred), mean = pred, sd = params)
+      return(rnorm(length(pred), mean = pred, sd = params))
     },
     family = "gaussian",
     strategy = strategy
@@ -27,10 +27,10 @@ test_that("custom Gaussian distribution works end-to-end", {
 
   gaussian_model <- uncertainty_model(
     fit = function(obs, pred) {
-      sqrt(mean((obs - pred)^2, na.rm = TRUE))
+      return(sqrt(mean((obs - pred)^2, na.rm = TRUE)))
     },
     sample = function(pred, params) {
-      rnorm(length(pred), mean = pred, sd = params)
+      return(rnorm(length(pred), mean = pred, sd = params))
     },
     family = "gaussian",
     strategy = strategy
@@ -71,9 +71,9 @@ test_that("custom distribution can be used in uncertainty_opts", {
 test_that("users can create custom pooled strategy", {
   pooled_strategy <- uncertainty_strategy(
     apply_fit = function(base_fit) {
-      function(obs, pred) {
-        base_fit(as.vector(obs), as.vector(pred))
-      }
+      return(function(obs, pred) {
+        return(base_fit(as.vector(obs), as.vector(pred)))
+      })
     },
     name = "pooled"
   )
@@ -86,9 +86,9 @@ test_that("users can create custom pooled strategy", {
 test_that("custom pooled strategy works with uncertainty_nb", {
   pooled_strategy <- uncertainty_strategy(
     apply_fit = function(base_fit) {
-      function(obs, pred) {
-        base_fit(as.vector(obs), as.vector(pred))
-      }
+      return(function(obs, pred) {
+        return(base_fit(as.vector(obs), as.vector(pred)))
+      })
     },
     name = "pooled"
   )
@@ -102,9 +102,9 @@ test_that("custom pooled strategy works with uncertainty_nb", {
 test_that("custom strategy applies fit function correctly", {
   pooled_strategy <- uncertainty_strategy(
     apply_fit = function(base_fit) {
-      function(obs, pred) {
-        base_fit(as.vector(obs), as.vector(pred))
-      }
+      return(function(obs, pred) {
+        return(base_fit(as.vector(obs), as.vector(pred)))
+      })
     },
     name = "pooled"
   )
@@ -127,13 +127,13 @@ test_that("custom smoothed strategy can be created", {
 
   smoothed_strategy <- uncertainty_strategy(
     apply_fit = function(base_fit) {
-      function(obs, pred) {
+      return(function(obs, pred) {
         raw_params <- sapply(seq_len(ncol(obs)), function(i) {
-          base_fit(obs[, i], pred[, i])
+          return(base_fit(obs[, i], pred[, i]))
         })
         # Apply smoothing to parameters
-        zoo::rollmean(raw_params, k = 2, fill = NA, align = "right")
-      }
+        return(zoo::rollmean(raw_params, k = 2, fill = NA, align = "right"))
+      })
     },
     name = "smoothed"
   )
@@ -149,7 +149,7 @@ test_that("users can create rolling sum aggregation", {
 
   rolling_agg <- aggregation_opts(
     ref_time = function(x) {
-      zoo::rollsum(x, k = 3, align = "right", fill = NA)
+      return(zoo::rollsum(x, k = 3, align = "right", fill = NA))
     },
     delay = function(x) rowSums(x, na.rm = TRUE)
   )
@@ -211,7 +211,7 @@ test_that("custom model, strategy, and aggregation work together", {
   # Custom strategy
   pooled_strategy <- uncertainty_strategy(
     apply_fit = function(base_fit) {
-      function(obs, pred) base_fit(as.vector(obs), as.vector(pred))
+      return(function(obs, pred) base_fit(as.vector(obs), as.vector(pred)))
     },
     name = "pooled"
   )
@@ -250,7 +250,7 @@ test_that("custom configuration can fit and sample", {
   custom_model <- uncertainty_model(
     fit = function(obs, pred) {
       sd_vals <- apply(obs - pred, 2, sd, na.rm = TRUE)
-      pmax(sd_vals, 0.1)
+      return(pmax(sd_vals, 0.1))
     },
     sample = function(pred, params) {
       if (is.matrix(pred)) {
@@ -258,9 +258,9 @@ test_that("custom configuration can fit and sample", {
         for (i in seq_len(ncol(pred))) {
           result[, i] <- rnorm(nrow(pred), mean = pred[, i], sd = params[i])
         }
-        result
+        return(result)
       } else {
-        rnorm(length(pred), mean = pred, sd = params[1])
+        return(rnorm(length(pred), mean = pred, sd = params[1]))
       }
     },
     family = "normal",
@@ -328,15 +328,15 @@ test_that("Gamma distribution extension example works", {
   gamma_model <- uncertainty_model(
     fit = function(obs, pred) {
       # Fit gamma using method of moments
-      residuals <- obs - pred
-      residual_var <- max(var(residuals), 1e-6)
-      shape <- mean(residuals)^2 / residual_var
-      list(shape = shape, rate = shape / mean(residuals))
+      resid_vals <- obs - pred
+      residual_var <- max(var(resid_vals), 1e-6)
+      shape <- mean(resid_vals)^2 / residual_var
+      return(list(shape = shape, rate = shape / mean(resid_vals)))
     },
     sample = function(pred, params) {
       # Sample from gamma and add to predictions
       # Note: simplified for testing
-      pred + 1
+      return(pred + 1)
     },
     family = "gamma",
     strategy = strategy
@@ -353,7 +353,7 @@ test_that("Zero-inflated distribution concept works", {
     fit = function(obs, pred) {
       # Estimate zero-inflation proportion
       prop_zero <- mean(obs == 0)
-      list(prop_zero = prop_zero, size = 1)
+      return(list(prop_zero = prop_zero, size = 1))
     },
     sample = function(pred, params) {
       # Simplified zero-inflated sampler
@@ -375,10 +375,10 @@ test_that("Hierarchical strategy concept works", {
       function(obs, pred) {
         # First fit per horizon
         horizon_params <- sapply(seq_len(ncol(obs)), function(i) {
-          base_fit(obs[, i], pred[, i])
+          return(base_fit(obs[, i], pred[, i]))
         })
         # Then take mean as hierarchical shrinkage
-        mean(horizon_params)
+        return(mean(horizon_params))
       }
     },
     name = "hierarchical"
@@ -394,10 +394,10 @@ test_that("README example for custom distribution works", {
   # Example from documentation
   my_dist <- uncertainty_model(
     fit = function(obs, pred) {
-      mean((obs - pred)^2)
+      return(mean((obs - pred)^2))
     },
     sample = function(pred, params) {
-      rnorm(length(pred), pred, sqrt(params))
+      return(rnorm(length(pred), pred, sqrt(params)))
     },
     family = "gaussian",
     strategy = uncertainty_by_horizon()
@@ -417,7 +417,7 @@ test_that("README example for custom aggregation works", {
     model = uncertainty_nb(),
     aggregation = aggregation_opts(
       ref_time = function(x) {
-        zoo::rollsum(x, k = 3, align = "right", fill = NA)
+        return(zoo::rollsum(x, k = 3, align = "right", fill = NA))
       },
       delay = function(x) rowSums(x, na.rm = TRUE)
     )

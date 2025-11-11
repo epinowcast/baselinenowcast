@@ -8,7 +8,7 @@ test_that("aggregation_opts creates valid object with defaults", {
   expect_s3_class(agg, "aggregation_opts")
   expect_s3_class(agg, "aggregation_custom")
   expect_type(agg, "list")
-  expect_identical(names(agg), c("ref_time", "delay"))
+  expect_named(agg, c("ref_time", "delay"))
 })
 
 test_that("aggregation_opts stores functions correctly", {
@@ -135,8 +135,8 @@ test_that("aggregation_observed equals default aggregation_opts", {
 test_that("aggregation_observed has correct class hierarchy", {
   agg <- aggregation_observed()
 
-  expect_true(inherits(agg, "aggregation_observed"))
-  expect_true(inherits(agg, "aggregation_opts"))
+  expect_s3_class(agg, "aggregation_observed")
+  expect_s3_class(agg, "aggregation_opts")
   expect_identical(
     class(agg),
     c("aggregation_observed", "aggregation_opts")
@@ -149,9 +149,9 @@ test_that("print.aggregation_opts displays observed aggregation correctly", {
   agg <- aggregation_observed()
   output <- capture.output(print(agg))
 
-  expect_true(any(grepl("Aggregation Options", output)))
-  expect_true(any(grepl("identity", output)))
-  expect_true(any(grepl("rowSums", output)))
+  expect_true(any(grepl("Aggregation Options", output, fixed = TRUE)))
+  expect_true(any(grepl("identity", output, fixed = TRUE)))
+  expect_true(any(grepl("rowSums", output, fixed = TRUE)))
 })
 
 test_that("print.aggregation_opts displays custom aggregation", {
@@ -162,8 +162,8 @@ test_that("print.aggregation_opts displays custom aggregation", {
 
   output <- capture.output(print(agg))
 
-  expect_true(any(grepl("Aggregation Options", output)))
-  expect_true(any(grepl("custom function", output)))
+  expect_true(any(grepl("Aggregation Options", output, fixed = TRUE)))
+  expect_true(any(grepl("custom function", output, fixed = TRUE)))
 })
 
 test_that("print.aggregation_opts returns object invisibly", {
@@ -178,14 +178,14 @@ test_that("print.aggregation_opts detects identity correctly", {
   agg <- aggregation_opts(ref_time = identity)
   output <- capture.output(print(agg))
 
-  expect_true(any(grepl("identity", output)))
+  expect_true(any(grepl("identity", output, fixed = TRUE)))
 })
 
 test_that("print.aggregation_opts detects default delay correctly", {
   agg <- aggregation_opts(delay = function(x) rowSums(x, na.rm = TRUE))
   output <- capture.output(print(agg))
 
-  expect_true(any(grepl("rowSums", output)))
+  expect_true(any(grepl("rowSums", output, fixed = TRUE)))
 })
 
 # assert_aggregation_opts() Tests ----------------------------------------------
@@ -270,7 +270,7 @@ test_that("assert_aggregation_opts validates with test_data", {
 
 test_that("assert_aggregation_opts errors when ref_time fails on test_data", {
   bad_agg <- aggregation_opts(
-    ref_time = function(x) stop("deliberate error"),
+    ref_time = function(x) stop("deliberate error", call. = FALSE),
     delay = function(x) rowSums(x)
   )
 
@@ -285,7 +285,7 @@ test_that("assert_aggregation_opts errors when ref_time fails on test_data", {
 test_that("assert_aggregation_opts errors when delay fails on test_data", {
   bad_agg <- aggregation_opts(
     ref_time = identity,
-    delay = function(x) stop("deliberate error")
+    delay = function(x) stop("deliberate error", call. = FALSE)
   )
 
   test_matrix <- matrix(1:12, nrow = 3, ncol = 4)

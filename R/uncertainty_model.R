@@ -59,7 +59,7 @@ uncertainty_model <- function(fit,
   # Validate the constructed model
   assert_uncertainty_model(model)
 
-  return(model)
+  model
 }
 
 #' Print Method for Uncertainty Models

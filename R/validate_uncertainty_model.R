@@ -41,7 +41,7 @@ assert_uncertainty_model.default <- function(model, ...) {
     "Invalid uncertainty model",
     x = "Object must be of class 'uncertainty_model'",
     i = "Got class: {class(model)[1]}",
-    i = paste(
+    paste(
       "Use uncertainty_nb(), uncertainty_poisson(), or",
       "uncertainty_model() to create valid models"
     )
@@ -84,7 +84,7 @@ assert_uncertainty_model.uncertainty_model <- function(model, ...) {
   # Validate strategy
   assert_uncertainty_strategy(model$strategy)
 
-  return(invisible(NULL))
+  invisible(NULL)
 }
 
 #' Validate Negative Binomial Uncertainty Model
@@ -112,7 +112,7 @@ assert_uncertainty_model.uncertainty_nb <- function(model, ...) {
     ))
   }
 
-  return(invisible(NULL))
+  invisible(NULL)
 }
 
 #' Validate Poisson Uncertainty Model
@@ -140,5 +140,5 @@ assert_uncertainty_model.uncertainty_poisson <- function(model, ...) {
     ))
   }
 
-  return(invisible(NULL))
+  invisible(NULL)
 }

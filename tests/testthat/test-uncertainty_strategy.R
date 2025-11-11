@@ -5,7 +5,7 @@
 test_that("uncertainty_strategy creates valid strategy object", {
   strategy <- uncertainty_strategy(
     apply_fit = function(base_fit) {
-      function(obs, pred) base_fit(obs, pred)
+      return(function(obs, pred) base_fit(obs, pred))
     },
     name = "test_strategy"
   )
@@ -17,7 +17,7 @@ test_that("uncertainty_strategy creates valid strategy object", {
 
 test_that("uncertainty_strategy stores apply_fit function", {
   apply_fn <- function(base_fit) {
-    function(obs, pred) base_fit(obs, pred)
+    return(function(obs, pred) base_fit(obs, pred))
   }
 
   strategy <- uncertainty_strategy(
@@ -43,8 +43,8 @@ test_that("uncertainty_strategy creates correct class hierarchy", {
     name = "pooled"
   )
 
-  expect_true(inherits(strategy, "uncertainty_pooled"))
-  expect_true(inherits(strategy, "uncertainty_strategy"))
+  expect_s3_class(strategy, "uncertainty_pooled")
+  expect_s3_class(strategy, "uncertainty_strategy")
   expect_identical(class(strategy), c("uncertainty_pooled",
                                        "uncertainty_strategy"))
 })
@@ -85,9 +85,9 @@ test_that("uncertainty_strategy apply_fit can wrap a function", {
 
   strategy <- uncertainty_strategy(
     apply_fit = function(base_fit) {
-      function(obs, pred) {
-        base_fit(obs, pred) * 2
-      }
+      return(function(obs, pred) {
+        return(base_fit(obs, pred) * 2)
+      })
     },
     name = "doubler"
   )
@@ -184,8 +184,8 @@ test_that("print.uncertainty_strategy displays correctly", {
   strategy <- uncertainty_by_horizon()
   output <- capture.output(print(strategy))
 
-  expect_true(any(grepl("Uncertainty Strategy", output)))
-  expect_true(any(grepl("by_horizon", output)))
+  expect_true(any(grepl("Uncertainty Strategy", output, fixed = TRUE)))
+  expect_true(any(grepl("by_horizon", output, fixed = TRUE)))
 })
 
 test_that("print.uncertainty_strategy works with custom strategy", {
@@ -196,8 +196,8 @@ test_that("print.uncertainty_strategy works with custom strategy", {
 
   output <- capture.output(print(strategy))
 
-  expect_true(any(grepl("Uncertainty Strategy", output)))
-  expect_true(any(grepl("custom_test", output)))
+  expect_true(any(grepl("Uncertainty Strategy", output, fixed = TRUE)))
+  expect_true(any(grepl("custom_test", output, fixed = TRUE)))
 })
 
 test_that("print.uncertainty_strategy returns object invisibly", {
@@ -276,9 +276,9 @@ test_that("assert_uncertainty_strategy errors with missing name attribute", {
 test_that("assert_uncertainty_strategy accepts custom strategies", {
   custom_strategy <- uncertainty_strategy(
     apply_fit = function(base_fit) {
-      function(obs, pred) {
-        base_fit(as.vector(obs), as.vector(pred))
-      }
+      return(function(obs, pred) {
+        return(base_fit(as.vector(obs), as.vector(pred)))
+      })
     },
     name = "pooled"
   )
@@ -305,7 +305,7 @@ test_that("strategy can be used with uncertainty_model", {
 test_that("custom strategy can be used with uncertainty_model", {
   custom_strategy <- uncertainty_strategy(
     apply_fit = function(base_fit) {
-      function(obs, pred) base_fit(obs, pred)
+      return(function(obs, pred) base_fit(obs, pred))
     },
     name = "custom"
   )

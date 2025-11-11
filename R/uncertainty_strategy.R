@@ -46,7 +46,7 @@ uncertainty_strategy <- function(apply_fit, name) {
     class = c(paste0("uncertainty_", name), "uncertainty_strategy")
   )
 
-  return(strategy)
+  strategy
 }
 
 #' Fit Uncertainty Parameters Independently by Horizon
@@ -83,7 +83,7 @@ uncertainty_by_horizon <- function() {
     name = "by_horizon"
   )
 
-  return(strategy)
+  strategy
 }
 
 #' Print Method for Uncertainty Strategies
@@ -144,5 +144,5 @@ assert_uncertainty_strategy <- function(strategy) {
     ))
   }
 
-  return(invisible(NULL))
+  invisible(NULL)
 }

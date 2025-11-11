@@ -55,7 +55,7 @@ assert_aggregation_opts.default <- function(aggregation,
     "Invalid aggregation options",
     x = "Object must be of class 'aggregation_opts'",
     i = "Got class: {class(aggregation)[1]}",
-    i = paste(
+    paste(
       "Use aggregation_observed() or aggregation_opts()",
       "to create valid aggregation options"
     )

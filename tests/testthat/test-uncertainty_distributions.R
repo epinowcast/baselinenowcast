@@ -68,9 +68,9 @@ test_that("uncertainty_nb print method works", {
   model <- uncertainty_nb()
   output <- capture.output(print(model))
 
-  expect_true(any(grepl("Uncertainty Model", output)))
-  expect_true(any(grepl("nb", output)))
-  expect_true(any(grepl("by_horizon", output)))
+  expect_true(any(grepl("Uncertainty Model", output, fixed = TRUE)))
+  expect_true(any(grepl("nb", output, fixed = TRUE)))
+  expect_true(any(grepl("by_horizon", output, fixed = TRUE)))
 })
 
 # Poisson Distribution Tests ---------------------------------------------------
@@ -150,9 +150,9 @@ test_that("uncertainty_poisson print method works", {
   model <- uncertainty_poisson()
   output <- capture.output(print(model))
 
-  expect_true(any(grepl("Uncertainty Model", output)))
-  expect_true(any(grepl("poisson", output)))
-  expect_true(any(grepl("by_horizon", output)))
+  expect_true(any(grepl("Uncertainty Model", output, fixed = TRUE)))
+  expect_true(any(grepl("poisson", output, fixed = TRUE)))
+  expect_true(any(grepl("by_horizon", output, fixed = TRUE)))
 })
 
 # Internal Function Tests (.fit_poisson, .sample_poisson) ---------------------
@@ -269,8 +269,8 @@ test_that("NB and Poisson models have same structure", {
   nb_model <- uncertainty_nb()
   pois_model <- uncertainty_poisson()
 
-  expect_identical(names(nb_model), names(pois_model))
-  expect_identical(names(nb_model), c("fit", "sample", "family", "strategy"))
+  expect_named(nb_model, names(pois_model))
+  expect_named(nb_model, c("fit", "sample", "family", "strategy"))
 })
 
 test_that("NB and Poisson have different families", {

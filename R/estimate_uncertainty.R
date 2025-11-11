@@ -92,48 +92,12 @@ estimate_uncertainty <- function(
     ref_time_aggregator = NULL,
     delay_aggregator = NULL) {
   # Handle deprecated parameters
-  if (!is.null(uncertainty_model) || !is.null(ref_time_aggregator) ||
-    !is.null(delay_aggregator)) {
-    cli_warn(
-      c(
-        "!" = "Direct parameter specification is deprecated.",
-        "i" = "Use {.arg uncertainty = uncertainty_opts()} instead.",
-        "i" = "See {.help uncertainty_opts} for details."
-      ),
-      .frequency = "once",
-      .frequency_id = "estimate_uncertainty_deprecated_params"
-    )
-
-    # Build uncertainty object from deprecated params
-    # Use defaults for missing params
-    if (is.null(ref_time_aggregator)) {
-      ref_time_aggregator <- identity
-    }
-    if (is.null(delay_aggregator)) {
-      delay_aggregator <- function(x) rowSums(x, na.rm = TRUE)
-    }
-
-    # Only handle fit_by_horizon for uncertainty_model
-    if (!is.null(uncertainty_model) &&
-      identical(uncertainty_model, fit_by_horizon)) {
-      model <- uncertainty_nb(strategy = uncertainty_by_horizon())
-    } else if (!is.null(uncertainty_model)) {
-      cli_abort(c(
-        "Cannot automatically convert custom {.arg uncertainty_model}",
-        "i" = "Please use {.fn uncertainty_opts} directly"
-      ))
-    } else {
-      model <- uncertainty_nb(strategy = uncertainty_by_horizon())
-    }
-
-    uncertainty <- uncertainty_opts(
-      model = model,
-      aggregation = aggregation_opts(
-        ref_time = ref_time_aggregator,
-        delay = delay_aggregator
-      )
-    )
-  }
+  uncertainty <- .handle_deprecated_uncertainty_params(
+    uncertainty_model,
+    ref_time_aggregator,
+    delay_aggregator,
+    uncertainty
+  )
 
   # Extract components from uncertainty object
   uncertainty_model_fit <- uncertainty$model$fit
@@ -175,29 +139,8 @@ estimate_uncertainty <- function(
 
 
 
-  # Check that nowcasts has no NAs, trunc_rts has some NAs
-  if (any(sapply(list_of_ncs, anyNA))) {
-    cli_abort(
-      message =
-        "`point_nowcast_matrices` contains NAs"
-    )
-  }
-  if (!any(sapply(list_of_obs, anyNA))) {
-    cli_warn(
-      message =
-        "`truncated_reporting_triangles` does not contain any NAs"
-    )
-  }
-  # Check that the sets of matrices are the same dimensions
-  dims_ncs <- lapply(list_of_ncs, dim)
-  dims_obs <- lapply(list_of_obs, dim)
-  all_identical <- all(mapply(identical, dims_ncs, dims_obs))
-  if (!all_identical) {
-    cli_abort(message = c(
-      "Dimensions of the first `n` matrices in `point_nowcast_matrices` and ",
-      "`truncated_reporting_triangles` are not the same."
-    ))
-  }
+  # Validate matrix dimensions and contents
+  .validate_uncertainty_matrices(list_of_ncs, list_of_obs)
 
   n_possible_horizons <- sum(is.na(rowSums(list_of_rts[[1]])))
   n_iters <- .calc_n_retro_nowcast_times(
@@ -306,6 +249,91 @@ estimate_uncertainty <- function(
   )
 
   return(uncertainty_params)
+}
+
+#' Validate lists of matrices for uncertainty estimation
+#'
+#' @param list_of_ncs List of nowcast matrices
+#' @param list_of_obs List of observation matrices
+#'
+#' @returns NULL (invisibly) if valid, otherwise throws an error
+#' @keywords internal
+.validate_uncertainty_matrices <- function(list_of_ncs, list_of_obs) {
+  # Check that nowcasts has no NAs, trunc_rts has some NAs
+  if (any(sapply(list_of_ncs, anyNA))) {
+    cli_abort(
+      message =
+        "`point_nowcast_matrices` contains NAs"
+    )
+  }
+  if (!any(sapply(list_of_obs, anyNA))) {
+    cli_warn(
+      message =
+        "`truncated_reporting_triangles` does not contain any NAs"
+    )
+  }
+  # Check that the sets of matrices are the same dimensions
+  dims_ncs <- lapply(list_of_ncs, dim)
+  dims_obs <- lapply(list_of_obs, dim)
+  all_identical <- all(mapply(identical, dims_ncs, dims_obs))
+  if (!all_identical) {
+    cli_abort(message = c(
+      "Dimensions of the first `n` matrices in `point_nowcast_matrices` and ",
+      "`truncated_reporting_triangles` are not the same."
+    ))
+  }
+  invisible(NULL)
+}
+
+#' @keywords internal
+.handle_deprecated_uncertainty_params <- function(
+    uncertainty_model,
+    ref_time_aggregator,
+    delay_aggregator,
+    uncertainty) {
+  if (!is.null(uncertainty_model) || !is.null(ref_time_aggregator) ||
+      !is.null(delay_aggregator)) {
+    cli_warn(
+      c(
+        "!" = "Direct parameter specification is deprecated.",
+        i = "Use {.arg uncertainty = uncertainty_opts()} instead.",
+        "See {.help uncertainty_opts} for details."
+      ),
+      .frequency = "once",
+      .frequency_id = "estimate_uncertainty_deprecated_params"
+    )
+
+    # Build uncertainty object from deprecated params
+    # Use defaults for missing params
+    if (is.null(ref_time_aggregator)) {
+      ref_time_aggregator <- identity
+    }
+    if (is.null(delay_aggregator)) {
+      delay_aggregator <- function(x) rowSums(x, na.rm = TRUE)
+    }
+
+    # Only handle fit_by_horizon for uncertainty_model
+    if (!is.null(uncertainty_model) &&
+        identical(uncertainty_model, fit_by_horizon)) {
+      model <- uncertainty_nb(strategy = uncertainty_by_horizon())
+    } else if (!is.null(uncertainty_model)) {
+      cli_abort(c(
+        "Cannot automatically convert custom {.arg uncertainty_model}",
+        i = "Please use {.fn uncertainty_opts} directly"
+      ))
+    } else {
+      model <- uncertainty_nb(strategy = uncertainty_by_horizon())
+    }
+
+    uncertainty <- uncertainty_opts(
+      model = model,
+      aggregation = aggregation_opts(
+        ref_time = ref_time_aggregator,
+        delay = delay_aggregator
+      )
+    )
+  }
+  return(uncertainty)
 }
 
 #' Helper function that fits its each column of the matrix (horizon) to an

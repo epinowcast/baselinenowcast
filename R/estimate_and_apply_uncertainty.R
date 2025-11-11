@@ -84,8 +84,8 @@ estimate_and_apply_uncertainty <- function(
     cli_warn(
       c(
         "!" = "Direct parameter specification is deprecated.",
-        "i" = "Use {.arg uncertainty = uncertainty_opts()} instead.",
-        "i" = "See {.help uncertainty_opts} for details."
+        i = "Use {.arg uncertainty = uncertainty_opts()} instead.",
+        "See {.help uncertainty_opts} for details."
       ),
       .frequency = "once",
       .frequency_id = "estimate_and_apply_uncertainty_deprecated_params"
@@ -93,17 +93,17 @@ estimate_and_apply_uncertainty <- function(
 
     # Only handle fit_by_horizon and sample_nb
     if (!is.null(uncertainty_model) &&
-      !identical(uncertainty_model, fit_by_horizon)) {
+        !identical(uncertainty_model, fit_by_horizon)) {
       cli_abort(c(
         "Cannot automatically convert custom {.arg uncertainty_model}",
-        "i" = "Please use {.fn uncertainty_opts} directly"
+        i = "Please use {.fn uncertainty_opts} directly"
       ))
     }
     if (!is.null(uncertainty_sampler) &&
-      !identical(uncertainty_sampler, sample_nb)) {
+        !identical(uncertainty_sampler, sample_nb)) {
       cli_abort(c(
         "Cannot automatically convert custom {.arg uncertainty_sampler}",
-        "i" = "Please use {.fn uncertainty_opts} directly"
+        i = "Please use {.fn uncertainty_opts} directly"
       ))
     }
 

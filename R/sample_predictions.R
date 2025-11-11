@@ -74,8 +74,8 @@ sample_prediction <- function(
     cli_warn(
       c(
         "!" = "Direct parameter specification is deprecated.",
-        "i" = "Use {.arg uncertainty = uncertainty_opts()} instead.",
-        "i" = "See {.help uncertainty_opts} for details."
+        i = "Use {.arg uncertainty = uncertainty_opts()} instead.",
+        "See {.help uncertainty_opts} for details."
       ),
       .frequency = "once",
       .frequency_id = "sample_prediction_deprecated_params"
@@ -97,7 +97,7 @@ sample_prediction <- function(
     } else if (!is.null(uncertainty_sampler)) {
       cli_abort(c(
         "Cannot automatically convert custom {.arg uncertainty_sampler}",
-        "i" = "Please use {.fn uncertainty_opts} directly"
+        i = "Please use {.fn uncertainty_opts} directly"
       ))
     } else {
       model <- uncertainty_nb(strategy = uncertainty_by_horizon())
@@ -269,8 +269,8 @@ combine_obs_with_pred <- function(
     cli_warn(
       c(
         "!" = "Direct parameter specification is deprecated.",
-        "i" = "Use {.arg uncertainty = uncertainty_opts()} instead.",
-        "i" = "See {.help uncertainty_opts} for details."
+        i = "Use {.arg uncertainty = uncertainty_opts()} instead.",
+        "See {.help uncertainty_opts} for details."
       ),
       .frequency = "once",
       .frequency_id = "combine_obs_with_pred_deprecated_params"
@@ -426,8 +426,8 @@ sample_nowcast <- function(
     cli_warn(
       c(
         "!" = "Direct parameter specification is deprecated.",
-        "i" = "Use {.arg uncertainty = uncertainty_opts()} instead.",
-        "i" = "See {.help uncertainty_opts} for details."
+        i = "Use {.arg uncertainty = uncertainty_opts()} instead.",
+        "See {.help uncertainty_opts} for details."
       ),
       .frequency = "once",
       .frequency_id = "sample_nowcast_deprecated_params"
@@ -449,7 +449,7 @@ sample_nowcast <- function(
     } else if (!is.null(uncertainty_sampler)) {
       cli_abort(c(
         "Cannot automatically convert custom {.arg uncertainty_sampler}",
-        "i" = "Please use {.fn uncertainty_opts} directly"
+        i = "Please use {.fn uncertainty_opts} directly"
       ))
     } else {
       model <- uncertainty_nb(strategy = uncertainty_by_horizon())

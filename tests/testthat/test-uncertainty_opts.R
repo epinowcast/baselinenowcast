@@ -7,7 +7,7 @@ test_that("uncertainty_opts creates valid object with all defaults", {
 
   expect_s3_class(opts, "uncertainty_opts")
   expect_type(opts, "list")
-  expect_identical(names(opts), c("model", "aggregation"))
+  expect_named(opts, c("model", "aggregation"))
 })
 
 test_that("uncertainty_opts uses NB model by default", {
@@ -172,38 +172,38 @@ test_that("print.uncertainty_opts displays complete configuration", {
   opts <- uncertainty_opts()
   output <- capture.output(print(opts))
 
-  expect_true(any(grepl("Uncertainty Configuration", output)))
-  expect_true(any(grepl("Model", output)))
-  expect_true(any(grepl("Aggregation", output)))
+  expect_true(any(grepl("Uncertainty Configuration", output, fixed = TRUE)))
+  expect_true(any(grepl("Model", output, fixed = TRUE)))
+  expect_true(any(grepl("Aggregation", output, fixed = TRUE)))
 })
 
 test_that("print.uncertainty_opts shows model family", {
   opts <- uncertainty_opts()
   output <- capture.output(print(opts))
 
-  expect_true(any(grepl("nb", output)))
+  expect_true(any(grepl("nb", output, fixed = TRUE)))
 })
 
 test_that("print.uncertainty_opts shows model strategy", {
   opts <- uncertainty_opts()
   output <- capture.output(print(opts))
 
-  expect_true(any(grepl("by_horizon", output)))
+  expect_true(any(grepl("by_horizon", output, fixed = TRUE)))
 })
 
 test_that("print.uncertainty_opts shows aggregation details", {
   opts <- uncertainty_opts()
   output <- capture.output(print(opts))
 
-  expect_true(any(grepl("identity", output)))
-  expect_true(any(grepl("rowSums", output)))
+  expect_true(any(grepl("identity", output, fixed = TRUE)))
+  expect_true(any(grepl("rowSums", output, fixed = TRUE)))
 })
 
 test_that("print.uncertainty_opts shows Poisson model correctly", {
   opts <- uncertainty_opts(model = uncertainty_poisson())
   output <- capture.output(print(opts))
 
-  expect_true(any(grepl("poisson", output)))
+  expect_true(any(grepl("poisson", output, fixed = TRUE)))
 })
 
 test_that("print.uncertainty_opts shows custom aggregation", {
@@ -215,7 +215,7 @@ test_that("print.uncertainty_opts shows custom aggregation", {
   )
   output <- capture.output(print(opts))
 
-  expect_true(any(grepl("custom function", output)))
+  expect_true(any(grepl("custom function", output, fixed = TRUE)))
 })
 
 test_that("print.uncertainty_opts returns object invisibly", {
@@ -256,7 +256,7 @@ test_that("uncertainty_opts works with custom aggregation pattern", {
     model = uncertainty_nb(),
     aggregation = aggregation_opts(
       ref_time = function(x) {
-        zoo::rollsum(x, k = 3, align = "right", fill = NA)
+        return(zoo::rollsum(x, k = 3, align = "right", fill = NA))
       },
       delay = function(x) rowSums(x, na.rm = TRUE)
     )
@@ -292,7 +292,7 @@ test_that("default uncertainty_opts equals explicit specification", {
 test_that("uncertainty_opts handles custom strategy in model", {
   custom_strategy <- uncertainty_strategy(
     apply_fit = function(base_fit) {
-      function(obs, pred) base_fit(as.vector(obs), as.vector(pred))
+      return(function(obs, pred) base_fit(as.vector(obs), as.vector(pred)))
     },
     name = "pooled"
   )
@@ -345,7 +345,7 @@ test_that("uncertainty_opts can create many different configurations", {
   )
 
   expect_length(configs, 4)
-  expect_true(all(sapply(configs, function(x) inherits(x, "uncertainty_opts"))))
+  expect_true(all(sapply(configs, inherits, "uncertainty_opts")))
 })
 
 # Real-world Configuration Examples --------------------------------------------

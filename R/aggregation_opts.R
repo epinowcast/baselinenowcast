@@ -50,7 +50,7 @@ aggregation_opts <- function(ref_time = identity,
   # Validate the constructed aggregation
   assert_aggregation_opts(aggregation)
 
-  return(aggregation)
+  aggregation
 }
 
 #' Standard Observed Aggregation
@@ -91,7 +91,7 @@ aggregation_observed <- function() {
   # Validate the constructed aggregation
   assert_aggregation_opts(aggregation)
 
-  return(aggregation)
+  aggregation
 }
 
 #' Print Method for Aggregation Options

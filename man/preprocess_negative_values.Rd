@@ -4,15 +4,14 @@
 \alias{preprocess_negative_values}
 \title{Preprocess negative values in the reporting triangle}
 \usage{
-preprocess_negative_values(triangle)
+preprocess_negative_values(reporting_triangle)
 }
 \arguments{
-\item{triangle}{A \link{reporting_triangle} object or matrix with rows
-representing the time points of reference and columns representing delays.}
+\item{reporting_triangle}{A \link{reporting_triangle} object.}
 }
 \value{
-A \link{reporting_triangle} object (if input was reporting_triangle) or
-matrix with negative values handled via redistribution to earlier delays.
+A \link{reporting_triangle} object with negative values handled via
+redistribution to earlier delays.
 }
 \description{
 Takes in a reporting triangle and returns it with negative values of

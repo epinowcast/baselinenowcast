@@ -15,8 +15,9 @@
 A new \link{reporting_triangle} object with the updated matrix data.
 }
 \description{
-Internal helper to create a new reporting_triangle from modified matrix data
-while preserving the original object's metadata (reference dates, delays_unit).
+Internal helper to create a new reporting_triangle from modified matrix
+data while preserving the original object's metadata (reference dates,
+delays_unit).
 This simplifies the pattern of converting to matrix, operating on it, then
 restoring the reporting_triangle class and attributes.
 }

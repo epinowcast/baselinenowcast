@@ -33,15 +33,31 @@ See the corresponding \code{\link[=as_reporting_triangle.matrix]{as_reporting_tr
 for more details on the required input formats to generate the object.
 }
 
-\section{Low-level function compatibility}{
+\section{Working with reporting triangles}{
 
-The matrix-based structure works seamlessly with low-level functions:
+Reporting triangle objects provide:
+
+\strong{Inspection and display:}
+\itemize{
+\item \code{print()}: Informative display with metadata
+\item \code{summary()}: Statistics including completion, delays, and zeros
+\item \code{head()}, \code{tail()}: Extract first or last rows
+\item Standard matrix operations: \code{rowSums()}, \code{colSums()}
+}
+
+\strong{Subsetting and modification:}
+\itemize{
+\item \code{[} and \verb{[<-}: Extract or assign values with automatic validation
+\item Subsetting preserves class and attributes when result is a matrix
+}
+
+\strong{Package functions:}
 \itemize{
 \item \code{\link[=fill_triangle]{fill_triangle()}}: Fill missing values with zeros
 \item \code{\link[=estimate_delay]{estimate_delay()}}: Extract delay distribution from triangle
 \item \code{\link[=apply_delay]{apply_delay()}}: Apply delay distribution for nowcasting
 \item \code{\link[=truncate_triangle]{truncate_triangle()}}: Remove most recent rows
-\item Standard matrix operations: \code{rowSums()}, \code{colSums()}, subsetting
+\item \code{\link[=preprocess_negative_values]{preprocess_negative_values()}}: Handle reporting corrections
 }
 }
 

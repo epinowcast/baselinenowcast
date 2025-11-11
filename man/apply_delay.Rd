@@ -52,12 +52,10 @@ ref_dates <- seq(
 )
 triangle <- as_reporting_triangle(
   data = triangle_mat,
-  reference_dates = ref_dates,
-  max_delay = 3
+  reference_dates = ref_dates
 )
 delay_pmf <- estimate_delay(
   reporting_triangle = triangle,
-  max_delay = 3,
   n = 4
 )
 point_nowcast_matrix <- apply_delay(
@@ -77,8 +75,7 @@ ref_dates_ex2 <- seq(
 )
 triangle_ex2 <- as_reporting_triangle(
   data = example_downward_corr_mat,
-  reference_dates = ref_dates_ex2,
-  max_delay = 3
+  reference_dates = ref_dates_ex2
 )
 nowcast_with_corrections <- apply_delay(
   reporting_triangle = triangle_ex2,

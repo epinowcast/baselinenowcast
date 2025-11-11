@@ -38,6 +38,7 @@ Reporting triangle construction and validation
 \code{\link{reporting_triangle-class}},
 \code{\link{summary.reporting_triangle}()},
 \code{\link{tail.reporting_triangle}()},
+\code{\link{truncate_to_delay}()},
 \code{\link{truncate_to_quantile}()}
 }
 \concept{reporting_triangle}

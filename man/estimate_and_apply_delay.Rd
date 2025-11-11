@@ -4,22 +4,14 @@
 \alias{estimate_and_apply_delay}
 \title{Estimate and apply delay from a reporting triangle}
 \usage{
-estimate_and_apply_delay(
-  reporting_triangle,
-  max_delay = ncol(reporting_triangle) - 1,
-  ...
-)
+estimate_and_apply_delay(reporting_triangle, ...)
 }
 \arguments{
-\item{reporting_triangle}{Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+\item{reporting_triangle}{A \link{reporting_triangle} object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).}
-
-\item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-\code{ncol(reporting_triangle) -1}.}
+reported for the same row (e.g., weekly reporting of daily data).}
 
 \item{...}{Additional arguments passed to the \code{estimate_delay} function}
 }
@@ -49,12 +41,10 @@ ref_dates <- seq(
 )
 triangle <- as_reporting_triangle(
   data = triangle_mat,
-  reference_dates = ref_dates,
-  max_delay = ncol(triangle_mat) - 1
+  reference_dates = ref_dates
 )
 pt_nowcast_matrix <- estimate_and_apply_delay(
   reporting_triangle = triangle,
-  max_delay = 3,
   n = 4
 )
 pt_nowcast_matrix

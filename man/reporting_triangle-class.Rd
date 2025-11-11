@@ -89,6 +89,7 @@ Reporting triangle construction and validation
 \code{\link{print.reporting_triangle}()},
 \code{\link{summary.reporting_triangle}()},
 \code{\link{tail.reporting_triangle}()},
+\code{\link{truncate_to_delay}()},
 \code{\link{truncate_to_quantile}()},
 \code{\link{validate_reporting_triangle}()}
 }

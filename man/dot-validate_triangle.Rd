@@ -6,19 +6,11 @@
 Various checks to make sure that the reporting triangle passed in to
 \code{\link[=estimate_delay]{estimate_delay()}} is formatted properly.}
 \usage{
-.validate_triangle(
-  triangle,
-  max_delay = ncol(triangle) - 1,
-  n = nrow(triangle)
-)
+.validate_triangle(triangle, n = nrow(triangle))
 }
 \arguments{
 \item{triangle}{Matrix of values with rows indicating the time points and
 columns indicating the delays.}
-
-\item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-\code{ncol(reporting_triangle) -1}.}
 
 \item{n}{Integer indicating the number of reference times (observations) to
 be used in the estimate of the reporting delay, always starting from the

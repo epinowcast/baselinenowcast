@@ -23,11 +23,11 @@ estimate_and_apply_uncertainty(
 observations, with rows representing the reference times and columns
 representing the delays.}
 
-\item{reporting_triangle}{Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+\item{reporting_triangle}{A \link{reporting_triangle} object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).}
+reported for the same row (e.g., weekly reporting of daily data).}
 
 \item{n_history_delay}{Integer indicating the number of reference times
 (observations) to be used in the estimate of the reporting delay, always
@@ -35,10 +35,6 @@ starting from the most recent reporting delay.}
 
 \item{n_retrospective_nowcasts}{Integer indicating the number of
 retrospective nowcast times to use for uncertainty estimation.}
-
-\item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-\code{ncol(reporting_triangle) -1}.}
 
 \item{structure}{Integer or vector specifying the reporting structure.
 If integer, divides columns evenly by that integer (with last possibly

@@ -6,22 +6,17 @@
 \usage{
 fill_triangle(
   reporting_triangle,
-  max_delay = ncol(reporting_triangle) - 1,
   n = nrow(reporting_triangle),
   delay_pmf = NULL,
   preprocess = preprocess_negative_values
 )
 }
 \arguments{
-\item{reporting_triangle}{Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+\item{reporting_triangle}{A \link{reporting_triangle} object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).}
-
-\item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-\code{ncol(reporting_triangle) -1}.}
+reported for the same row (e.g., weekly reporting of daily data).}
 
 \item{n}{Integer indicating the number of reference times (observations) to
 be used in the estimate of the reporting delay, always starting from the
@@ -71,8 +66,7 @@ ref_dates <- seq(
 )
 triangle <- as_reporting_triangle(
   data = triangle_mat,
-  reference_dates = ref_dates,
-  max_delay = ncol(triangle_mat) - 1
+  reference_dates = ref_dates
 )
 point_nowcast_matrix <- fill_triangle(
   reporting_triangle = triangle

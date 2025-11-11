@@ -6,7 +6,6 @@
 \usage{
 fill_triangles(
   retro_reporting_triangles,
-  max_delay = min(sapply(retro_reporting_triangles, ncol)) - 1,
   n = min(sapply(retro_reporting_triangles, nrow)),
   delay_pmf = NULL,
   preprocess = preprocess_negative_values
@@ -15,10 +14,6 @@ fill_triangles(
 \arguments{
 \item{retro_reporting_triangles}{List of \code{n} truncated reporting triangle
 matrices with as many rows as available given the truncation.}
-
-\item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-\code{ncol(reporting_triangle) -1}.}
 
 \item{n}{Integer indicating the number of reference times
 (number of rows) to use to estimate the delay distribution for each
@@ -70,8 +65,7 @@ ref_dates <- seq(
 )
 triangle <- as_reporting_triangle(
   data = triangle_mat,
-  reference_dates = ref_dates,
-  max_delay = ncol(triangle_mat) - 1
+  reference_dates = ref_dates
 )
 
 trunc_rts <- truncate_triangles(triangle)

@@ -11,11 +11,11 @@
 observations, with rows representing the reference times and columns
 representing the delays.}
 
-\item{reporting_triangle}{Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+\item{reporting_triangle}{A \link{reporting_triangle} object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).}
+reported for the same row (e.g., weekly reporting of daily data).}
 }
 \value{
 Matrix containing the elements from \code{point_nowcast_matrix} for

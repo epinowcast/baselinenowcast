@@ -57,8 +57,7 @@
 #' )
 #' triangle <- as_reporting_triangle(
 #'   data = triangle_mat,
-#'   reference_dates = ref_dates,
-#'   max_delay = ncol(triangle_mat) - 1
+#'   reference_dates = ref_dates
 #' )
 #'
 #' # Estimate uncertainty parameters
@@ -73,15 +72,13 @@
 #' uncertainty_params_custom <- estimate_uncertainty_retro(
 #'   triangle,
 #'   n_history_delay = 4,
-#'   n_retrospective_nowcasts = 2,
-#'   max_delay = 3
+#'   n_retrospective_nowcasts = 2
 #' )
 #' uncertainty_params_custom
 estimate_uncertainty_retro <- function(
     reporting_triangle,
     n_history_delay,
     n_retrospective_nowcasts,
-    max_delay = ncol(reporting_triangle) - 1,
     structure = detect_structure(reporting_triangle),
     delay_pmf = NULL,
     preprocess = preprocess_negative_values,
@@ -109,7 +106,6 @@ estimate_uncertainty_retro <- function(
 
   pt_nowcast_mat_list <- fill_triangles(
     retro_reporting_triangles = reporting_triangle_list,
-    max_delay = max_delay,
     n = n_history_delay,
     delay_pmf = delay_pmf,
     preprocess = preprocess

@@ -111,7 +111,7 @@ truncate_triangle <- function(t,
   }
 
   # Extract the matrix portion and subset
-  rep_tri_mat <- unclass(reporting_triangle)[1:(n_obs - t), , drop = FALSE]
+  rep_tri_mat <- as.matrix(reporting_triangle)[1:(n_obs - t), , drop = FALSE]
 
   # Extract and update metadata
   ref_dates <- get_reference_dates(reporting_triangle)[1:(n_obs - t)]

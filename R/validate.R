@@ -35,17 +35,6 @@
     )
   }
 
-  # For ragged triangles (e.g. weekly reporting of daily data),
-  # we need to ensure the triangle has proper structure
-  if (!.check_na_bottom_right(triangle)) {
-    cli_abort(
-      message = c(
-        "Invalid reporting triangle structure. NA values should only",
-        "appear in the bottom right portion of the triangle."
-      )
-    )
-  }
-
   if (nrow(triangle) < n) {
     cli_abort(
       message = c(
@@ -70,16 +59,6 @@
       message = c(
         "Insufficient `max_delay` or `n`, must be greater than ",
         "or equal to 1."
-      )
-    )
-  }
-
-  if (!.check_na_bottom_right(triangle)) {
-    cli_abort(
-      message = c(
-        "Reporting triangle contains NA values in elements other than ",
-        "the bottom right of the matrix. Cannot produce nowcasts from this ",
-        "triangle."
       )
     )
   }

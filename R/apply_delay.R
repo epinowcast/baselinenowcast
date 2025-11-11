@@ -93,8 +93,8 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
   original_structure <- attr(reporting_triangle, "structure")
   original_dimnames <- dimnames(reporting_triangle)
 
-  # Unclass once to avoid subsetting validation warnings during iteration
-  tri_mat <- unclass(reporting_triangle)
+  # Convert to plain matrix for internal operations
+  tri_mat <- as.matrix(reporting_triangle)
 
   n_row_nas <- sum(is.na(rowSums(tri_mat)))
   if (n_row_nas == 0) {

@@ -329,3 +329,162 @@ test_that("truncate_to_quantile handles edge cases", {
   result_zero <- suppressMessages(truncate_to_quantile(zero_tri, p = 0.99))
   expect_true(is_reporting_triangle(result_zero))
 })
+
+test_that("check_na_pattern detects expected triangular pattern", {
+  # Create a triangle with normal triangular pattern
+  mat <- matrix(
+    c(
+      10, 20, 30, 40,
+      15, 25, 35, NA,
+      20, 30, NA, NA,
+      25, NA, NA, NA
+    ),
+    nrow = 4, byrow = TRUE
+  )
+  rt <- as_reporting_triangle(data = mat, max_delay = 3)
+
+  result <- baselinenowcast:::.check_na_pattern(rt)
+
+  expect_true(result$valid)
+  expect_identical(result$n_out_of_pattern, 0L)
+  expect_identical(result$n_expected, 6L)
+  expect_identical(length(result$rows_affected), 0L)
+  expect_false(any(result$positions))
+})
+
+test_that("check_na_pattern detects out-of-pattern NAs", {
+  # Create a valid triangle first
+  mat <- matrix(
+    c(
+      10, 20, 30, 40,
+      15, 25, 35, NA,
+      20, 30, NA, NA,
+      25, NA, NA, NA
+    ),
+    nrow = 4, byrow = TRUE
+  )
+  rt <- as_reporting_triangle(data = mat, max_delay = 3)
+
+  # Now modify it to create out-of-pattern NA
+  rt[2, 2] <- NA
+
+  result <- baselinenowcast:::.check_na_pattern(rt)
+
+  # One out-of-pattern NA at [2,2] (has data to the right and below)
+  expect_false(result$valid)
+  expect_identical(result$n_out_of_pattern, 1L)
+  expect_identical(result$n_expected, 6L)
+  expect_identical(length(result$rows_affected), 1L)
+  expect_identical(result$rows_affected, 2L)
+  expect_true(result$positions[2, 2])
+})
+
+test_that("check_na_pattern detects NA with data below", {
+  # Create a valid triangle first
+  mat <- matrix(
+    c(
+      10, 20, 30, 40,
+      15, 25, 35, NA,
+      20, 30, NA, NA,
+      25, NA, NA, NA
+    ),
+    nrow = 4, byrow = TRUE
+  )
+  rt <- as_reporting_triangle(data = mat, max_delay = 3)
+
+  # Modify to create out-of-pattern NA
+  rt[1, 3] <- NA
+
+  result <- baselinenowcast:::.check_na_pattern(rt)
+
+  # Out-of-pattern at [1,3] (has data at [2,3])
+  expect_false(result$valid)
+  expect_identical(result$n_out_of_pattern, 1L)
+  expect_true(result$positions[1, 3])
+  expect_identical(result$rows_affected, 1L)
+})
+
+test_that("check_na_pattern detects NA with data to the right", {
+  # Create a valid triangle first
+  mat <- matrix(
+    c(
+      10, 20, 30, 40,
+      15, 25, 35, 50,
+      20, 30, NA, NA,
+      25, NA, NA, NA
+    ),
+    nrow = 4, byrow = TRUE
+  )
+  rt <- as_reporting_triangle(data = mat, max_delay = 3)
+
+  # Modify to create out-of-pattern NAs
+  rt[2, 2] <- NA
+  rt[2, 3] <- NA
+
+  result <- baselinenowcast:::.check_na_pattern(rt)
+
+  # Out-of-pattern at [2,2] and [2,3] (have data at [2,4])
+  expect_false(result$valid)
+  expect_identical(result$n_out_of_pattern, 2L)
+  expect_true(result$positions[2, 2])
+  expect_true(result$positions[2, 3])
+  expect_identical(result$rows_affected, 2L)
+})
+
+test_that("check_na_pattern handles complete triangle", {
+  # Create a triangle with no NAs
+  mat <- matrix(1:12, nrow = 3, ncol = 4)
+  rt <- as_reporting_triangle(data = mat, max_delay = 3)
+
+  result <- baselinenowcast:::.check_na_pattern(rt)
+
+  expect_true(result$valid)
+  expect_identical(result$n_out_of_pattern, 0L)
+  expect_identical(result$n_expected, 0L)
+  expect_identical(length(result$rows_affected), 0L)
+  expect_false(any(result$positions))
+})
+
+test_that("check_na_pattern handles multiple affected rows", {
+  # Create a valid triangle first
+  mat <- matrix(
+    c(
+      10, 20, 30, 40,
+      15, 25, 35, 50,
+      20, 30, NA, NA,
+      25, NA, NA, NA
+    ),
+    nrow = 4, byrow = TRUE
+  )
+  rt <- as_reporting_triangle(data = mat, max_delay = 3)
+
+  # Modify to create out-of-pattern NAs in multiple rows
+  rt[1, 2] <- NA
+  rt[2, 3] <- NA
+
+  result <- baselinenowcast:::.check_na_pattern(rt)
+
+  # Out-of-pattern at [1,2] (data to right) and [2,3] (data to right)
+  expect_false(result$valid)
+  expect_identical(result$n_out_of_pattern, 2L)
+  expect_identical(length(result$rows_affected), 2L)
+  expect_true(all(c(1, 2) %in% result$rows_affected))
+})
+
+test_that("check_na_pattern works with plain matrix", {
+  # Internal function should work with plain matrices too
+  mat <- matrix(
+    c(
+      10, 20, 30,
+      15, 25, NA,
+      20, NA, NA
+    ),
+    nrow = 3, byrow = TRUE
+  )
+
+  result <- baselinenowcast:::.check_na_pattern(mat)
+
+  expect_true(result$valid)
+  expect_identical(result$n_out_of_pattern, 0L)
+  expect_identical(result$n_expected, 3L)
+})

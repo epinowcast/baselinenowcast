@@ -49,6 +49,7 @@ Class constructor for \code{reporting_triangle} objects
 Reporting triangle construction and validation
 \code{\link{[.reporting_triangle}()},
 \code{\link{as.data.frame.reporting_triangle}()},
+\code{\link{as.matrix.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},

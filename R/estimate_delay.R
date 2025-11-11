@@ -135,8 +135,8 @@ estimate_delay <- function(
 .prepare_triangle <- function(reporting_triangle, max_delay, n,
                               preprocess = preprocess_negative_values) {
   nr0 <- nrow(reporting_triangle)
-  # Use unclass to avoid subsetting validation warnings
-  trunc_triangle <- unclass(reporting_triangle)[
+  # Convert to plain matrix for subsetting
+  trunc_triangle <- as.matrix(reporting_triangle)[
     (nr0 - n + 1):nr0, 1:(max_delay + 1)
   ]
 

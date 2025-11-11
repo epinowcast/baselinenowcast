@@ -220,9 +220,9 @@ fill_triangle <- function(reporting_triangle,
     )
   }
   n_rows <- nrow(reporting_triangle)
-  # Use unclass to avoid subsetting validation warnings
+  # Convert to plain matrix for subsetting
   has_complete_row <- any(
-    rowSums(is.na(unclass(reporting_triangle)[(n_rows - n + 1):n_rows, ])) == 0
+    rowSums(is.na(as.matrix(reporting_triangle)[(n_rows - n + 1):n_rows, ])) == 0
   )
   if (isFALSE(has_complete_row)) {
     cli_abort(

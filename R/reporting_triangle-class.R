@@ -109,7 +109,7 @@ get_mean_delay <- function(x) {
     cli_abort(message = "x must have class 'reporting_triangle'")
   }
   delays <- 0:get_max_delay(x)
-  x_mat <- unclass(x)
+  x_mat <- as.matrix(x)
   mean_delays <- vapply(seq_len(nrow(x_mat)), function(i) {
     row_counts <- x_mat[i, ]
     total_counts <- sum(row_counts, na.rm = TRUE)
@@ -137,7 +137,7 @@ get_quantile_delay <- function(x, p = 0.99) {
   assert_numeric(p, lower = 0, upper = 1, len = 1)
 
   delays <- 0:get_max_delay(x)
-  x_mat <- unclass(x)
+  x_mat <- as.matrix(x)
   quantile_delays <- vapply(seq_len(nrow(x_mat)), function(i) {
     row_counts <- x_mat[i, ]
     total_counts <- sum(row_counts, na.rm = TRUE)
@@ -224,7 +224,7 @@ truncate_to_quantile <- function(x, p = 0.99) {
     )
 
     # Subset columns
-    trunc_mat <- unclass(x)[, 1:(max_delay_needed + 1), drop = FALSE]
+    trunc_mat <- as.matrix(x)[, 1:(max_delay_needed + 1), drop = FALSE]
 
     # Create new reporting_triangle with updated max_delay
     result <- new_reporting_triangle(
@@ -295,6 +295,24 @@ validate_reporting_triangle <- function(data) {
   }
   if (!inherits(data, "reporting_triangle")) {
     cli_abort(message = "data must have class 'reporting_triangle'")
+  }
+
+  # Check matrix is not all NA
+  if (all(is.na(data))) {
+    cli_abort(message = "Matrix cannot be all NA")
+  }
+
+  # Check NA pattern (IF NAs exist, THEN must be in bottom-right pattern)
+  if (anyNA(data)) {
+    na_check <- .check_na_pattern(data)
+    if (!na_check$valid) {
+      cli_abort(
+        message = c(
+          "Invalid reporting triangle structure. NA values should only",
+          "appear in the bottom right portion of the triangle."
+        )
+      )
+    }
   }
 
   reference_dates <- as.Date(rownames(data))
@@ -376,6 +394,68 @@ is_reporting_triangle <- function(x) {
   return(out)
 }
 
+#' @title Subset assignment for reporting_triangle objects
+#' @description
+#' Assignment method that validates the result after modification.
+#' @param x A [reporting_triangle] object.
+#' @param ... Row and column indices.
+#' @param value Values to assign.
+#' @return The modified reporting_triangle object.
+#' @keywords internal
+#' @export
+`[<-.reporting_triangle` <- function(x, ..., value) {
+  # Perform the assignment using NextMethod
+  x_modified <- NextMethod()
+
+  # Preserve class and attributes if still a matrix
+  if (is.matrix(x_modified)) {
+    class(x_modified) <- class(x)
+    attr(x_modified, "delays_unit") <- attr(x, "delays_unit")
+    attr(x_modified, "structure") <- attr(x, "structure")
+
+    # Note: We don't validate here to allow legitimate modifications
+    # Users can call validate_reporting_triangle() manually if needed
+  }
+
+  return(x_modified)
+}
+
+#' Convert reporting_triangle to plain matrix
+#'
+#' Returns a plain matrix representation of a reporting_triangle object,
+#' removing the reporting_triangle class and custom attributes while
+#' preserving row and column names.
+#'
+#' @param x A [reporting_triangle] object.
+#' @param ... Additional arguments (not used).
+#' @return A plain matrix without reporting_triangle class or attributes.
+#' @family reporting_triangle
+#' @export
+#' @method as.matrix reporting_triangle
+#' @examples
+#' mat <- matrix(c(10, 20, 30, 40, 15, 25, 35, NA, 20, 30, NA, NA),
+#'   nrow = 3, byrow = TRUE
+#' )
+#' rt <- suppressMessages(as_reporting_triangle(data = mat, max_delay = 3))
+#' plain_mat <- as.matrix(rt)
+#' class(plain_mat)  # "matrix" "array"
+as.matrix.reporting_triangle <- function(x, ...) {
+  # Store row and column names
+  rn <- rownames(x)
+  cn <- colnames(x)
+
+  # Remove class and attributes to get plain matrix
+  result <- unclass(x)
+  attributes(result) <- NULL
+
+  # Restore dimensions and dimnames
+  dim(result) <- dim(x)
+  rownames(result) <- rn
+  colnames(result) <- cn
+
+  return(result)
+}
+
 #' Get first rows of a reporting_triangle
 #'
 #' @param x A [reporting_triangle] object.
@@ -408,6 +488,97 @@ tail.reporting_triangle <- function(x, ...) {
   n <- if (!is.null(dots[["n"]])) dots[["n"]] else 6L
   n <- min(n, nrow(x))
   return(x[seq.int(to = nrow(x), length.out = n), , drop = FALSE])
+}
+
+#' Check for out-of-pattern NAs in matrix
+#'
+#' Internal function that validates NA positions and provides detailed
+#' diagnostics. Identifies NA values that don't follow the expected triangular
+#' reporting delay pattern. Out-of-pattern NAs occur when a value is NA but
+#' values below it (later reference dates) or to its right (longer delays) are
+#' non-NA, suggesting data quality issues rather than reporting delay.
+#'
+#' @param x A matrix or [reporting_triangle] object.
+#' @return A list with components:
+#'   - `valid`: Logical indicating if all NAs are in valid bottom-right pattern
+#'   - `n_out_of_pattern`: Count of out-of-pattern NA values
+#'   - `n_expected`: Count of expected NA values (triangular pattern)
+#'   - `positions`: Matrix of logical values indicating out-of-pattern NAs
+#'   - `rows_affected`: Indices of rows with out-of-pattern NAs
+#'
+#' @details
+#' An NA is considered "out-of-pattern" if:
+#' - There exists a non-NA value in the same column but a later row
+#'   (indicating data should have been available), OR
+#' - There exists a non-NA value in the same row but a later column
+#'   (indicating earlier delays were reported)
+#'
+#' This replaces `.check_na_bottom_right()` by providing both validation
+#' (via the `valid` field) and detailed diagnostics.
+#'
+#' @keywords internal
+.check_na_pattern <- function(x) {
+  # Convert to matrix if needed
+  mat <- if (inherits(x, "reporting_triangle")) {
+    as.matrix(x)
+  } else {
+    x
+  }
+  nr <- nrow(mat)
+  nc <- ncol(mat)
+
+  # Matrix to track out-of-pattern NAs
+  out_of_pattern <- matrix(FALSE, nrow = nr, ncol = nc)
+
+  # Find all NA positions
+  na_positions <- is.na(mat)
+
+  if (!any(na_positions)) {
+    return(list(
+      valid = TRUE,
+      n_out_of_pattern = 0L,
+      n_expected = 0L,
+      positions = out_of_pattern,
+      rows_affected = integer(0)
+    ))
+  }
+
+  # Check each NA position
+  for (i in seq_len(nr)) {
+    for (j in seq_len(nc)) {
+      if (!na_positions[i, j]) next
+
+      # Check if any values below this NA are non-NA (same column, later rows)
+      has_data_below <- if (i < nr) {
+        any(!is.na(mat[(i + 1):nr, j]))
+      } else {
+        FALSE
+      }
+
+      # Check if any values to the right are non-NA (same row, later delays)
+      has_data_right <- if (j < nc) {
+        any(!is.na(mat[i, (j + 1):nc]))
+      } else {
+        FALSE
+      }
+
+      # Mark as out-of-pattern if either condition is true
+      out_of_pattern[i, j] <- has_data_below || has_data_right
+    }
+  }
+
+  n_out_of_pattern <- sum(out_of_pattern)
+  n_expected <- sum(na_positions) - n_out_of_pattern
+  rows_affected <- which(apply(out_of_pattern, 1, any))
+  valid <- n_out_of_pattern == 0
+
+  return(list(
+    valid = valid,
+    n_out_of_pattern = n_out_of_pattern,
+    n_expected = n_expected,
+    positions = out_of_pattern,
+    rows_affected = rows_affected
+  ))
 }
 
 #' Print a reporting_triangle object
@@ -485,8 +656,8 @@ summary.reporting_triangle <- function(object, ...) {
   cli_text("Max delay: {max_delay} {attr(object, 'delays_unit')}")
   cli_text("Structure: {toString(attr(object, 'structure'))}")
 
-  # Use unclassed version for internal matrix operations to avoid warnings
-  mat <- unclass(object)
+  # Convert to plain matrix for internal operations
+  mat <- as.matrix(object)
 
   # Find most recent complete date and calculate mean delays
   row_has_na <- apply(mat, 1, anyNA)
@@ -512,9 +683,13 @@ summary.reporting_triangle <- function(object, ...) {
     mean_delays <- mean_delays[!is.na(mean_delays)]
   }
 
-  # Count dates requiring nowcast
+  # Count dates requiring nowcast (incomplete due to reporting delay)
   dates_need_nowcast <- sum(row_has_na) # nolint: object_usage_linter
-  cli_text("Dates requiring nowcast: {dates_need_nowcast}")
+  dates_complete <- nrow(mat) - dates_need_nowcast
+  cli_text(
+    "Dates requiring nowcast: {dates_need_nowcast} ",
+    "(complete: {dates_complete})"
+  )
 
   # Count rows with negatives
   row_has_negative <- apply(mat, 1, function(x) any(x < 0, na.rm = TRUE))

@@ -411,7 +411,7 @@ Since our maximum delay is 25 days, this function will allocate 25*3 (75) refere
 
 To produce a nowcast, we can use the `baselinenowcast()` function to generate an estimate of the "final" number of cases of BAR by reference date.
 This function chains together the `baselinenowcast` workflow,
-It handles allocating reference times for training (`allocate_reference_times()`), estimating a delay (`estimate_delay()`), generating a point nowcast (`apply_delay()`), and estimating and applying uncertainty (`estimate_and_apply_uncertainty()`), while also managing required bookeeping to return nowcasts by reference dates.
+It handles allocating reference times for training (`allocate_reference_times()`), estimating a delay (`estimate_delay()`), generating a point nowcast (`apply_delay()`), and estimating and applying uncertainty (`estimate_and_apply_uncertainty()`), while also managing required bookkeeping to return nowcasts by reference dates.
 See `?baselinenowcast.reporting_triangle` for more details on each step in the workflow, and check out the [mathematical_model](model_definition.html) for details on the mathematical model used for each component.
 The `baselinenowcast()` function can ingest either a reporting triangle object as we made above, or a data.frame with cases by reference and report date for one or strata with support for common workflows such as sharing estimates across strata.
 See `?baselinenowcast.data.frame ` for more details.

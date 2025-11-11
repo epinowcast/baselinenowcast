@@ -859,14 +859,8 @@ print.reporting_triangle <- function(x, n_rows = 10, n_cols = 10, ...) {
 summary.reporting_triangle <- function(object, ...) {
   cli_text("{.strong Reporting Triangle Summary}")
   cli_rule()
+  .display_triangle_basics(object, show_dimensions = TRUE)
   ref_dates <- get_reference_dates(object)
-  cli_text("Dimensions: {nrow(object)} x {ncol(object)}")
-  cli_text(
-    "Reference period: {paste(format(range(ref_dates)), collapse = ' to ')}"
-  )
-  max_delay <- get_max_delay(object) # nolint: object_usage_linter
-  cli_text("Max delay: {max_delay} {attr(object, 'delays_unit')}")
-  cli_text("Structure: {toString(detect_structure(object))}")
 
   # Convert to plain matrix for internal operations
   mat <- as.matrix(object)

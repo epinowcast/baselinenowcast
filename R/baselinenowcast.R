@@ -104,11 +104,10 @@ baselinenowcast.reporting_triangle <- function(
     uncertainty_params = NULL,
     preprocess = preprocess_negative_values,
     ...) {
-  tri <- data
   output_type <- arg_match(output_type)
   assert_integerish(draws, null.ok = TRUE)
 
-  tv <- allocate_reference_times(tri,
+  tv <- allocate_reference_times(data,
     scale_factor = scale_factor,
     prop_delay = prop_delay
   )
@@ -121,9 +120,9 @@ baselinenowcast.reporting_triangle <- function(
     )
   }
   # check for delay pmf being the right length/format
-  .validate_delay(tri, delay_pmf)
+  .validate_delay(data, delay_pmf)
 
-  pt_nowcast <- apply_delay(tri, delay_pmf)
+  pt_nowcast <- apply_delay(data, delay_pmf)
 
   if (output_type == "point") {
     nowcast_df <- data.frame(
@@ -146,10 +145,10 @@ baselinenowcast.reporting_triangle <- function(
       uncertainty_model = uncertainty_model
     )
   }
-  .validate_uncertainty(tri, uncertainty_params)
+  .validate_uncertainty(data, uncertainty_params)
   nowcast_df <- sample_nowcasts(
     point_nowcast_matrix = pt_nowcast,
-    reporting_triangle = tri,
+    reporting_triangle = data,
     uncertainty_params = uncertainty_params,
     draws = draws,
     uncertainty_sampler = uncertainty_sampler,

@@ -29,8 +29,6 @@ A \code{\link{reporting_triangle}} object
 This method takes a matrix in the format of a reporting triangle, with rows
 as reference dates and columns as delays and elements as incident case
 counts and creates a \link{reporting_triangle} object.
-The maximum delay is automatically inferred from the number of columns in
-the matrix (ncol - 1).
 See \code{\link[=as_reporting_triangle.data.frame]{as_reporting_triangle.data.frame()}} for creating from data frames.
 }
 \examples{

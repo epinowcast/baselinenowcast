@@ -141,8 +141,6 @@ as_reporting_triangle.data.frame <- function(
 #' This method takes a matrix in the format of a reporting triangle, with rows
 #' as reference dates and columns as delays and elements as incident case
 #' counts and creates a [reporting_triangle] object.
-#' The maximum delay is automatically inferred from the number of columns in
-#' the matrix (ncol - 1).
 #' See [as_reporting_triangle.data.frame()] for creating from data frames.
 #'
 #' @param data Matrix of a reporting triangle where rows are reference times,

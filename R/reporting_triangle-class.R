@@ -199,8 +199,6 @@ truncate_to_delay <- function(x, max_delay) {
 #' Class constructor for `reporting_triangle` objects
 #'
 #' Creates a new reporting_triangle object from a matrix.
-#' The maximum delay is automatically inferred from the number of columns.
-#' The structure attribute is automatically detected from the NA pattern.
 #'
 #' @param reporting_triangle_matrix Matrix of reporting triangle where rows
 #'   are reference times, columns are delays, and entries are incident counts.

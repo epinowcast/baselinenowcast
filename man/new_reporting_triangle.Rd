@@ -21,8 +21,6 @@ An object of class \link{reporting_triangle}
 }
 \description{
 Creates a new reporting_triangle object from a matrix.
-The maximum delay is automatically inferred from the number of columns.
-The structure attribute is automatically detected from the NA pattern.
 }
 \seealso{
 Reporting triangle construction and validation

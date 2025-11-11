@@ -16,31 +16,8 @@
 #' @family generate_retrospective_data
 #' @export
 #' @examples
-#' triangle_mat <- matrix(
-#'   c(
-#'     65, 46, 21, 7,
-#'     70, 40, 20, 5,
-#'     80, 50, 10, 10,
-#'     100, 40, 31, 20,
-#'     95, 45, 21, NA,
-#'     82, 42, NA, NA,
-#'     70, NA, NA, NA
-#'   ),
-#'   nrow = 7,
-#'   byrow = TRUE
-#' )
-#' ref_dates <- seq(
-#'   from = as.Date("2025-01-01"),
-#'   by = "day",
-#'   length.out = nrow(triangle_mat)
-#' )
-#' triangle <- as_reporting_triangle(
-#'   data = triangle_mat,
-#'   reference_dates = ref_dates,
-#'   max_delay = ncol(triangle_mat) - 1
-#' )
-#'
-#' trunc_rts <- truncate_triangles(triangle, n = 2)
+#' # Generate retrospective triangles from truncated triangles
+#' trunc_rts <- truncate_triangles(example_reporting_triangle, n = 2)
 #' retro_rts <- construct_triangles(trunc_rts)
 #'
 #' # With custom structure
@@ -83,40 +60,16 @@ construct_triangles <- function(truncated_reporting_triangles, structure = 1) {
 #' @family generate_retrospective_data
 #' @export
 #' @examples
-#' triangle_mat <- matrix(
-#'   c(
-#'     65, 46, 21, 7,
-#'     70, 40, 20, 5,
-#'     80, 50, 10, 10,
-#'     100, 40, 31, 20,
-#'     95, 45, 21, 10,
-#'     82, 42, 6, NA,
-#'     70, 90, NA, NA
-#'   ),
-#'   nrow = 7,
-#'   byrow = TRUE
-#' )
-#' ref_dates <- seq(
-#'   from = as.Date("2025-01-01"),
-#'   by = "day",
-#'   length.out = nrow(triangle_mat)
-#' )
-#' triangle <- as_reporting_triangle(
-#'   data = triangle_mat,
-#'   reference_dates = ref_dates,
-#'   max_delay = ncol(triangle_mat) - 1
-#' )
-#'
 #' # Standard triangular structure (default)
-#' rep_tri <- construct_triangle(triangle)
+#' rep_tri <- construct_triangle(example_reporting_triangle)
 #' rep_tri
 #'
 #' # Ragged structure with 2 columns per delay period
-#' rep_ragged <- construct_triangle(triangle, 2)
+#' rep_ragged <- construct_triangle(example_reporting_triangle, 2)
 #' rep_ragged
 #'
 #' # Custom structure with explicit column counts
-#' rep_custom <- construct_triangle(triangle, c(1, 2))
+#' rep_custom <- construct_triangle(example_reporting_triangle, c(1, 2))
 #' rep_custom
 construct_triangle <- function(truncated_reporting_triangle,
                                structure = 1) {

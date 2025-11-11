@@ -38,38 +38,14 @@
 #' @family workflow_wrappers
 #' @export
 #' @examples
-#' triangle_mat <- matrix(
-#'   c(
-#'     100, 50, 30, 20,
-#'     40, 10, 20, 5,
-#'     80, 50, 25, 10,
-#'     100, 50, 30, 20,
-#'     40, 10, 20, 5,
-#'     80, 50, 25, 10,
-#'     100, 50, 30, 20,
-#'     90, 45, 25, NA,
-#'     80, 40, NA, NA,
-#'     70, NA, NA, NA
-#'   ),
-#'   nrow = 10,
-#'   byrow = TRUE
-#' )
-#' ref_dates <- seq(
-#'   from = as.Date("2025-01-01"),
-#'   by = "day",
-#'   length.out = nrow(triangle_mat)
-#' )
-#' triangle <- as_reporting_triangle(
-#'   data = triangle_mat,
-#'   reference_dates = ref_dates,
-#'   max_delay = 3
-#' )
 #' # Use the defaults
-#' ref_time_allocation_default <- allocate_reference_times(triangle)
+#' ref_time_allocation_default <- allocate_reference_times(
+#'   example_reporting_triangle
+#' )
 #' ref_time_allocation_default
 #' # Modify to use less volume and redistribute
 #' ref_time_allocation_alt <- allocate_reference_times(
-#'   reporting_triangle = triangle,
+#'   reporting_triangle = example_reporting_triangle,
 #'   scale_factor = 2,
 #'   prop_delay = 0.6
 #' )

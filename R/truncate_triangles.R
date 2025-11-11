@@ -20,27 +20,8 @@
 #' @family generate_retrospective_data
 #' @export
 #' @examples
-#' triangle_mat <- matrix(
-#'   c(
-#'     65, 46, 21, 7,
-#'     70, 40, 20, 5,
-#'     80, 50, 10, 10,
-#'     100, 40, 31, 20,
-#'     95, 45, 21, NA,
-#'     82, 42, NA, NA,
-#'     70, NA, NA, NA
-#'   ),
-#'   nrow = 7,
-#'   byrow = TRUE
-#' )
-#' ref_dates <- seq(as.Date("2025-01-01"), by = "day", length.out = 7)
-#' triangle <- as_reporting_triangle(
-#'   data = triangle_mat,
-#'   reference_dates = ref_dates,
-#'   max_delay = 3
-#' )
-#'
-#' truncated_rts <- truncate_triangles(triangle, n = 2)
+#' # Generate multiple truncated triangles
+#' truncated_rts <- truncate_triangles(example_reporting_triangle, n = 2)
 #' truncated_rts[1:2]
 truncate_triangles <- function(reporting_triangle,
                                n = nrow(reporting_triangle) -
@@ -72,28 +53,8 @@ truncate_triangles <- function(reporting_triangle,
 #' @family generate_retrospective_data
 #' @export
 #' @examples
-#' # example code
-#' triangle_mat <- matrix(
-#'   c(
-#'     65, 46, 21, 7,
-#'     70, 40, 20, 5,
-#'     80, 50, 10, 10,
-#'     100, 40, 31, 20,
-#'     95, 45, 21, NA,
-#'     82, 42, NA, NA,
-#'     70, NA, NA, NA
-#'   ),
-#'   nrow = 7,
-#'   byrow = TRUE
-#' )
-#' ref_dates <- seq(as.Date("2025-01-01"), by = "day", length.out = 7)
-#' triangle <- as_reporting_triangle(
-#'   data = triangle_mat,
-#'   reference_dates = ref_dates,
-#'   max_delay = 3
-#' )
-#'
-#' trunc_rep_tri <- truncate_triangle(t = 1, reporting_triangle = triangle)
+#' # Generate single truncated triangle
+#' trunc_rep_tri <- truncate_triangle(t = 1, reporting_triangle = example_reporting_triangle)
 #' trunc_rep_tri
 truncate_triangle <- function(t,
                               reporting_triangle) {

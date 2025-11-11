@@ -36,27 +36,8 @@ truncates the reporting triangle, working from the latest reference time
 snapshots.
 }
 \examples{
-triangle_mat <- matrix(
-  c(
-    65, 46, 21, 7,
-    70, 40, 20, 5,
-    80, 50, 10, 10,
-    100, 40, 31, 20,
-    95, 45, 21, NA,
-    82, 42, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 7,
-  byrow = TRUE
-)
-ref_dates <- seq(as.Date("2025-01-01"), by = "day", length.out = 7)
-triangle <- as_reporting_triangle(
-  data = triangle_mat,
-  reference_dates = ref_dates,
-  max_delay = 3
-)
-
-truncated_rts <- truncate_triangles(triangle, n = 2)
+# Generate multiple truncated triangles
+truncated_rts <- truncate_triangles(example_reporting_triangle, n = 2)
 truncated_rts[1:2]
 }
 \seealso{

@@ -16,11 +16,10 @@
 #' German Hospitalization Nowcasting Hub.
 #' Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R #nolint
 #'
-#' @param triangle A [reporting_triangle] object or matrix with rows
-#'   representing the time points of reference and columns representing delays.
+#' @param reporting_triangle A [reporting_triangle] object.
 #'
-#' @return A [reporting_triangle] object (if input was reporting_triangle) or
-#'   matrix with negative values handled via redistribution to earlier delays.
+#' @return A [reporting_triangle] object with negative values handled via
+#'   redistribution to earlier delays.
 #'
 #' @details
 #' Use this function when:
@@ -44,13 +43,11 @@
 #' # Preprocess to handle negatives
 #' preprocessed <- preprocess_negative_values(example_downward_corr_rt)
 #' preprocessed
-preprocess_negative_values <- function(triangle) {
-  # Store original class for return type
-  is_rt <- is_reporting_triangle(triangle)
-  original_triangle <- triangle
+preprocess_negative_values <- function(reporting_triangle) {
+  assert_reporting_triangle(reporting_triangle)
 
   # Convert to matrix for processing
-  triangle_mat <- if (is_rt) as.matrix(triangle) else triangle
+  triangle_mat <- as.matrix(reporting_triangle)
 
   # Check if any negative values are present
   has_negatives <- any(triangle_mat < 0, na.rm = TRUE)
@@ -92,10 +89,6 @@ preprocess_negative_values <- function(triangle) {
   # Return values that were NA back to NA
   pos_triangle[is.na(triangle_mat)] <- NA
 
-  # Return appropriate type
-  if (is_rt) {
-    return(.update_triangle_matrix(original_triangle, pos_triangle))
-  } else {
-    return(pos_triangle)
-  }
+  # Return reporting_triangle with preprocessed data
+  return(.update_triangle_matrix(reporting_triangle, pos_triangle))
 }

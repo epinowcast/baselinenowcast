@@ -27,14 +27,25 @@
 #' [as_reporting_triangle.data.frame()] functions
 #' for more details on the required input formats to generate the object.
 #'
-#' @section Low-level function compatibility:
-#' The matrix-based structure works seamlessly with low-level functions:
+#' @section Working with reporting triangles:
+#' Reporting triangle objects provide:
 #'
+#' **Inspection and display:**
+#' - `print()`: Informative display with metadata
+#' - `summary()`: Statistics including completion, delays, and zeros
+#' - `head()`, `tail()`: Extract first or last rows
+#' - Standard matrix operations: `rowSums()`, `colSums()`
+#'
+#' **Subsetting and modification:**
+#' - `[` and `[<-`: Extract or assign values with automatic validation
+#' - Subsetting preserves class and attributes when result is a matrix
+#'
+#' **Package functions:**
 #' - [fill_triangle()]: Fill missing values with zeros
 #' - [estimate_delay()]: Extract delay distribution from triangle
 #' - [apply_delay()]: Apply delay distribution for nowcasting
 #' - [truncate_triangle()]: Remove most recent rows
-#' - Standard matrix operations: `rowSums()`, `colSums()`, subsetting
+#' - [preprocess_negative_values()]: Handle reporting corrections
 #'
 #' @examples
 #' # Create a reporting triangle from data
@@ -161,15 +172,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   # Find all NA positions
   na_positions <- is.na(mat)
 
-  if (!any(na_positions)) {
-    return(list(
-      valid = TRUE,
-      n_out_of_pattern = 0L,
-      n_expected = 0L,
-      positions = out_of_pattern,
-      rows_affected = integer(0)
-    ))
-  }
+  if (any(na_positions)) {
 
   # Check each NA position
   for (i in seq_len(nr)) {
@@ -207,6 +210,15 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
     positions = out_of_pattern,
     rows_affected = rows_affected
   ))
+  }
+
+  return(list(
+    valid = TRUE,
+    n_out_of_pattern = 0L,
+    n_expected = 0L,
+    positions = out_of_pattern,
+    rows_affected = integer(0)
+  ))
 }
 
 #' Validate a reporting_triangle object
@@ -234,21 +246,23 @@ validate_reporting_triangle <- function(data) {
   if (anyNA(data)) {
     na_check <- .check_na_pattern(data)
     if (!na_check$valid) {
+      n_oop <- na_check$n_out_of_pattern
       cli_abort(
         message = c(
           "!" = "Invalid reporting triangle structure",
           "x" = paste0(
-            "Found ", na_check$n_out_of_pattern, " NA value",
-            if (na_check$n_out_of_pattern != 1) "s" else "",
+            "Found ", n_oop, " NA value",
+            if (n_oop != 1) "s" else "",
             " in unexpected position",
-            if (na_check$n_out_of_pattern != 1) "s" else ""
+            if (n_oop != 1) "s" else ""
           ),
           "i" = paste0(
             "NA values should only appear in the bottom right ",
             "portion of the triangle"
           ),
           "i" = paste0(
-            "Affected row", if (length(na_check$rows_affected) != 1) "s" else "",
+            "Affected row",
+            if (length(na_check$rows_affected) != 1) "s" else "",
             ": ", paste(na_check$rows_affected, collapse = ", ")
           )
         )
@@ -291,8 +305,9 @@ is_reporting_triangle <- function(x) {
 
 #' Update reporting_triangle with new matrix data
 #'
-#' Internal helper to create a new reporting_triangle from modified matrix data
-#' while preserving the original object's metadata (reference dates, delays_unit).
+#' Internal helper to create a new reporting_triangle from modified matrix
+#' data while preserving the original object's metadata (reference dates,
+#' delays_unit).
 #' This simplifies the pattern of converting to matrix, operating on it, then
 #' restoring the reporting_triangle class and attributes.
 #'
@@ -301,9 +316,9 @@ is_reporting_triangle <- function(x) {
 #' @return A new [reporting_triangle] object with the updated matrix data.
 #' @keywords internal
 .update_triangle_matrix <- function(reporting_triangle, new_matrix) {
-  new_reporting_triangle(
+  return(new_reporting_triangle(
     reporting_triangle_matrix = new_matrix,
     reference_dates = get_reference_dates(reporting_triangle),
     delays_unit = get_delays_unit(reporting_triangle)
-  )
+  ))
 }

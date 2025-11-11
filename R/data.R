@@ -103,7 +103,8 @@
 #'
 #' @format A [reporting_triangle] object with 8 reference dates and 4 delays:
 #' \describe{
-#'   \item{reporting_triangle_matrix}{8x4 matrix with negative values at delay 2}
+#'   \item{reporting_triangle_matrix}{8x4 matrix with negative values at
+#'     delay 2}
 #'   \item{reference_dates}{8 dates starting from 2024-01-01}
 #'   \item{delays_unit}{"days"}
 #' }

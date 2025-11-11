@@ -109,9 +109,10 @@ as_reporting_triangle.data.frame <- function(
     )
 
   ix <- is.na(all_combos$count)
-  max_report_delay <- compute_delay(
+  max_report_delay <- get_delays_from_dates(
     rep(max(data$report_date), sum(ix)),
-    all_combos$reference_date[ix]
+    all_combos$reference_date[ix],
+    delays_unit
   )
   all_combos$count[ix] <- ifelse(
     max_report_delay >= all_combos$delay[ix],

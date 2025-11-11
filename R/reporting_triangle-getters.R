@@ -47,7 +47,7 @@ get_delays_unit <- function(x) {
   if (inherits(x, "reporting_triangle")) {
     return(attr(x, "delays_unit"))
   }
-  cli_abort("x must be a reporting_triangle object")
+  return(cli_abort("x must be a reporting_triangle object"))
 }
 
 #' Internal: Add days to dates
@@ -77,7 +77,7 @@ get_delays_unit <- function(x) {
   # Use seq.Date for proper month arithmetic
   result <- mapply(function(d, n) {
     if (n == 0) return(d)
-    return(seq(d, by = "month", length.out = n + 1)[n + 1]) # nolint: keyword_quote_linter
+    return(seq(d, by = "month", length.out = n + 1)[n + 1])
   }, dates, delays, SIMPLIFY = FALSE)
   return(as.Date(unlist(result), origin = "1970-01-01"))
 }
@@ -91,7 +91,7 @@ get_delays_unit <- function(x) {
   # Use seq.Date for proper year arithmetic
   result <- mapply(function(d, n) {
     if (n == 0) return(d)
-    return(seq(d, by = "year", length.out = n + 1)[n + 1]) # nolint: keyword_quote_linter
+    return(seq(d, by = "year", length.out = n + 1)[n + 1])
   }, dates, delays, SIMPLIFY = FALSE)
   return(as.Date(unlist(result), origin = "1970-01-01"))
 }
@@ -214,7 +214,8 @@ get_report_dates <- function(reference_dates, delays, delays_unit) {
 #' # Compute delays in weeks
 #' report_date_weeks <- as.Date("2024-01-15")
 #' get_delays_from_dates(report_date_weeks, ref_date, "weeks") # 2
-get_delays_from_dates <- function(report_dates, reference_dates, delays_unit) {
+get_delays_from_dates <- function(report_dates, reference_dates,
+                                  delays_unit) {
   assert_delays_unit(delays_unit)
 
   diff_fn <- switch(delays_unit,
@@ -273,7 +274,10 @@ get_quantile_delay <- function(x, p = 0.99) {
     quantile_idx <- which(cumulative_prop >= p)[1]
 
     # Return max delay if quantile never reached, otherwise return the delay
-    if (is.na(quantile_idx)) delays[length(delays)] else delays[quantile_idx]
+    if (is.na(quantile_idx)) {
+      return(delays[length(delays)])
+    }
+    return(delays[quantile_idx])
   })
   return(as.integer(quantile_delays))
 }

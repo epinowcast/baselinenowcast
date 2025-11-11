@@ -8,7 +8,7 @@
 
   out <- NextMethod()
 
-  # If result is not a matrix (e.g., single row/column extracted as vector),
+  # If result is not a matrix (e.g., single row/column as vector),
   # return as-is
   if (!is.matrix(out)) {
     return(out)
@@ -184,13 +184,13 @@ tail.reporting_triangle <- function(x, n = 6L, ...) {
 #'   structure.
 #' @keywords internal
 .get_triangle_info <- function(x) {
-  list(
+  return(list(
     n_rows = nrow(x),
     n_cols = ncol(x),
     max_delay = get_max_delay(x),
     delays_unit = get_delays_unit(x),
     structure = toString(get_reporting_structure(x))
-  )
+  ))
 }
 
 #' Display basic triangle information
@@ -314,7 +314,8 @@ tail.reporting_triangle <- function(x, n = 6L, ...) {
 #' @param p Quantile probability (default 0.99).
 #' @return Vector of quantile delays for complete rows, or NULL if none.
 #' @keywords internal
-.compute_quantile_delay_stats <- function(object, complete_rows, p = 0.99) {
+.compute_quantile_delay_stats <- function(object, complete_rows,
+                                          p = 0.99) {
   if (length(complete_rows) == 0) {
     return(NULL)
   }

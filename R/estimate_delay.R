@@ -60,15 +60,20 @@ estimate_delay <- function(
     triangle = reporting_triangle,
     n = n
   )
-  # Filter the reporting_triangle down to relevant rows and columns
-  trunc_triangle <- .prepare_triangle(
-    reporting_triangle,
-    n,
-    preprocess = preprocess
-  )
+
+  # Truncate to last n rows
+  trunc_triangle <- tail(reporting_triangle, n = n)
+
+  # Apply preprocessing if provided
+  if (!is.null(preprocess)) {
+    trunc_triangle <- preprocess(trunc_triangle)
+  }
+
+  # Convert to matrix for chainladder fill
+  trunc_matrix <- as.matrix(trunc_triangle)
 
   # Fill in missing values in the triangle
-  expectation <- .chainladder_fill_triangle(trunc_triangle)
+  expectation <- .chainladder_fill_triangle(trunc_matrix)
 
   # Calculate probability mass function from filled triangle
   pmf <- .calculate_pmf(expectation)
@@ -76,33 +81,6 @@ estimate_delay <- function(
   return(pmf)
 }
 
-
-#' Prepare the triangle by truncating and optionally preprocessing
-#'
-#' @param reporting_triangle The original reporting triangle
-#' @param n Number of reference times to use
-#' @param preprocess Function to apply to the truncated triangle before
-#'   estimation, or NULL to skip preprocessing. Default is
-#'   [preprocess_negative_values()].
-#' @return Prepared reporting triangle
-#' @noRd
-.prepare_triangle <- function(reporting_triangle, n,
-                              preprocess = preprocess_negative_values) {
-  nr0 <- nrow(reporting_triangle)
-  # Convert to plain matrix for subsetting
-  trunc_triangle <- as.matrix(reporting_triangle)[
-    (nr0 - n + 1):nr0, , drop = FALSE
-  ]
-
-  # Apply preprocessing if provided
-  if (!is.null(preprocess)) {
-    rep_tri <- preprocess(trunc_triangle)
-  } else {
-    rep_tri <- trunc_triangle
-  }
-
-  return(rep_tri)
-}
 
 #' Fill in missing values in the reporting triangle using the iterative
 #'    "chainladder" method

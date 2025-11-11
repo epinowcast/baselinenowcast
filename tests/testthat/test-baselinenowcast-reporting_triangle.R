@@ -2,9 +2,9 @@ data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 data_as_of_df$age_group <- "00+"
 rep_tri <- as_reporting_triangle(
   data = data_as_of_df,
-  max_delay = 25,
   strata = "00+"
-)
+) |>
+  truncate_to_delay(max_delay = 25)
 expected_cols <- c("pred_count", "draw", "reference_date", "output_type")
 
 test_that("baselinenowcast.reporting_triangle() works as expected", {

@@ -183,14 +183,8 @@ truncate_to_delay <- function(x, max_delay) {
     # Subset columns
     trunc_mat <- as.matrix(x)[, 1:(max_delay + 1), drop = FALSE]
 
-    # Create new reporting_triangle
-    result <- new_reporting_triangle(
-      reporting_triangle_matrix = trunc_mat,
-      reference_dates = get_reference_dates(x),
-      delays_unit = get_delays_unit(x)
-    )
-
-    return(result)
+    # Update with new matrix
+    return(.update_triangle_matrix(x, trunc_mat))
   }
 
   return(x)

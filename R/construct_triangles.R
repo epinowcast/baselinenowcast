@@ -73,16 +73,12 @@ construct_triangle <- function(truncated_reporting_triangle,
                                structure = 1) {
   assert_reporting_triangle(truncated_reporting_triangle)
 
-  # Save attributes from input
-  ref_dates <- get_reference_dates(truncated_reporting_triangle)
-  delays_unit <- get_delays_unit(truncated_reporting_triangle)
-
   # Get matrix dimensions
   rows <- nrow(truncated_reporting_triangle)
   cols <- ncol(truncated_reporting_triangle)
 
-  # Create a copy of the input matrix
-  result <- truncated_reporting_triangle
+  # Convert to matrix for modification
+  result <- as.matrix(truncated_reporting_triangle)
 
   # Process structure parameter
   if (length(structure) == 1) {
@@ -113,13 +109,7 @@ construct_triangle <- function(truncated_reporting_triangle,
   }
 
   # Convert back to reporting_triangle with preserved attributes
-  result <- new_reporting_triangle(
-    reporting_triangle_matrix = result,
-    reference_dates = ref_dates,
-    delays_unit = delays_unit
-  )
-
-  return(result)
+  return(.update_triangle_matrix(truncated_reporting_triangle, result))
 }
 
 .expand_structure_vec <- function(structure, cols) {

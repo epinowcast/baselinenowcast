@@ -3,7 +3,6 @@ test_that("allocate_reference_times works as expected when user specifies traini
     construct_triangle()
   tv <- allocate_reference_times(
     reporting_triangle = rep_tri,
-    max_delay = 4,
     scale_factor = 3,
     prop_delay = 0.5
   )
@@ -15,7 +14,6 @@ test_that("allocate_reference_times works as expected when user specifies traini
     construct_triangle()
   tv2 <- allocate_reference_times(
     reporting_triangle = rep_tri2,
-    max_delay = 4,
     scale_factor = 3,
     prop_delay = 2 / 3
   )
@@ -29,7 +27,6 @@ test_that("allocate_reference_times works as expected when user specifies traini
   tv3 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri3,
-      max_delay = 4,
       scale_factor = 3,
       prop_delay = 0.5
     ),
@@ -172,7 +169,6 @@ test_that("allocate_reference_times errors when data is insufficient. ", { # nol
   expect_error(
     allocate_reference_times(
       reporting_triangle = rep_tri1,
-      max_delay = 4,
       scale_factor = 6 / 4,
       prop_delay = 0.4
     ),
@@ -185,7 +181,6 @@ test_that("allocate_reference_times errors when data is insufficient. ", { # nol
   expect_error(
     allocate_reference_times(
       reporting_triangle = rep_tri2,
-      max_delay = 4,
       scale_factor = 3,
       prop_delay = 0.5
     ),

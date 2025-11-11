@@ -4,17 +4,17 @@
 \alias{truncate_triangle}
 \title{Get a single truncated triangle}
 \usage{
-truncate_triangle(t, reporting_triangle)
+truncate_triangle(reporting_triangle, t)
 }
 \arguments{
-\item{t}{Integer indicating the number of timepoints to truncate off the
-bottom of the original reporting triangle.}
-
 \item{reporting_triangle}{A \link{reporting_triangle} object with rows
 representing reference times and columns representing delays.
 Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row (e.g., weekly reporting of daily data).}
+
+\item{t}{Integer indicating the number of timepoints to truncate off the
+bottom of the original reporting triangle.}
 }
 \value{
 \code{trunc_rep_tri} A \code{reporting_triangle} object with \code{t} fewer rows
@@ -22,12 +22,12 @@ than the input. The class and metadata are preserved with updated reference
 dates.
 }
 \description{
-This function takes in a integer \code{t} and a reporting triangle and generates
+This function takes in a reporting triangle and an integer \code{t} and generates
 a truncated reporting triangle, removing the last \code{t} observations.
 }
 \examples{
 # Generate single truncated triangle
-trunc_rep_tri <- truncate_triangle(t = 1, reporting_triangle = example_reporting_triangle)
+trunc_rep_tri <- truncate_triangle(example_reporting_triangle, t = 1)
 trunc_rep_tri
 }
 \seealso{

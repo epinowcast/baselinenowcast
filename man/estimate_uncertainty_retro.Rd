@@ -95,9 +95,9 @@ ref_dates <- seq(
 )
 triangle <- as_reporting_triangle(
   data = triangle_mat,
-  reference_dates = ref_dates,
-  max_delay = 3
-)
+  reference_dates = ref_dates
+) |>
+  truncate_to_delay(max_delay = 3)
 
 # Estimate uncertainty parameters
 uncertainty_params <- estimate_uncertainty_retro(

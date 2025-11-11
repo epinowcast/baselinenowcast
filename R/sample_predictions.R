@@ -40,8 +40,7 @@
 #' )
 #' point_nowcast_obj <- as_reporting_triangle(
 #'   data = point_nowcast_matrix,
-#'   reference_dates = ref_dates,
-#'   max_delay = ncol(point_nowcast_matrix) - 1
+#'   reference_dates = ref_dates
 #' )
 #' reporting_triangle <- construct_triangle(point_nowcast_obj)
 #' disp <- c(0.8, 12.4, 9.1)
@@ -252,8 +251,7 @@ combine_obs_with_pred <- function(
 #' )
 #' point_nowcast_obj <- as_reporting_triangle(
 #'   data = point_nowcast_matrix,
-#'   reference_dates = ref_dates,
-#'   max_delay = ncol(point_nowcast_matrix) - 1
+#'   reference_dates = ref_dates
 #' )
 #' reporting_triangle <- construct_triangle(point_nowcast_obj)
 #' disp <- c(0.8, 12.4, 9.1)
@@ -337,8 +335,7 @@ sample_predictions <- function(
 #' )
 #' point_nowcast_obj <- as_reporting_triangle(
 #'   data = point_nowcast_matrix,
-#'   reference_dates = ref_dates,
-#'   max_delay = ncol(point_nowcast_matrix) - 1
+#'   reference_dates = ref_dates
 #' )
 #' reporting_triangle <- construct_triangle(point_nowcast_obj)
 #' disp <- c(0.8, 12.4, 9.1)
@@ -404,8 +401,7 @@ sample_nowcast <- function(
 #' )
 #' point_nowcast_obj <- as_reporting_triangle(
 #'   data = point_nowcast_matrix,
-#'   reference_dates = ref_dates,
-#'   max_delay = ncol(point_nowcast_matrix) - 1
+#'   reference_dates = ref_dates
 #' )
 #' reporting_triangle <- construct_triangle(point_nowcast_obj)
 #' disp <- c(0.8, 12.4, 9.1)

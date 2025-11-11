@@ -81,8 +81,7 @@ ref_dates <- seq(
 )
 triangle <- as_reporting_triangle(
   data = triangle_mat,
-  reference_dates = ref_dates,
-  max_delay = ncol(triangle_mat) - 1
+  reference_dates = ref_dates
 )
 
 trunc_rts <- truncate_triangles(triangle, n = 3)

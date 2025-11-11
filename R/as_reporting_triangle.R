@@ -79,8 +79,11 @@ as_reporting_triangle.data.frame <- function(
   assert_date(data$report_date)
 
   # Compute delay using unit-aware function
-  compute_delay <- get_delay_from_dates_function(delays_unit)
-  data$delay <- compute_delay(data$report_date, data$reference_date)
+  data$delay <- get_delays_from_dates(
+    data$report_date,
+    data$reference_date,
+    delays_unit
+  )
 
   if (!isTRUE(check_integerish(data$delay))) {
     cli_abort(

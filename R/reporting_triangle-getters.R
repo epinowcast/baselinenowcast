@@ -96,36 +96,34 @@ get_delays_unit <- function(x) {
   return(as.Date(unlist(result), origin = "1970-01-01"))
 }
 
-#' Get delay unit function for date arithmetic
+#' Compute report dates from reference dates and delays
 #'
-#' Returns a function that performs date arithmetic based on the delays_unit.
-#' This is useful for adding delays to reference dates in a unit-aware way.
+#' Adds delays to reference dates using unit-aware date arithmetic.
 #'
+#' @param reference_dates Date vector of reference dates.
+#' @param delays Numeric vector of delays.
 #' @param delays_unit Character string specifying the temporal granularity.
 #'   Options are `"days"`, `"weeks"`, `"months"`, `"years"`.
-#' @return A function that takes a Date vector and numeric delays vector,
-#'   returns Date vector with delays added.
+#' @return Date vector of report dates.
 #' @family reporting_triangle
 #' @export
 #' @examples
-#' # Get function for days
-#' add_days <- get_delay_unit_function("days")
+#' # Compute report dates with days
 #' ref_date <- as.Date("2024-01-01")
-#' add_days(ref_date, 7) # 2024-01-08
+#' get_report_dates(ref_date, 7, "days") # 2024-01-08
 #'
-#' # Get function for weeks
-#' add_weeks <- get_delay_unit_function("weeks")
-#' add_weeks(ref_date, 2) # 2024-01-15
-get_delay_unit_function <- function(delays_unit) {
+#' # Compute report dates with weeks
+#' get_report_dates(ref_date, 2, "weeks") # 2024-01-15
+get_report_dates <- function(reference_dates, delays, delays_unit) {
   assert_delays_unit(delays_unit)
 
-  result <- switch(delays_unit,
+  add_fn <- switch(delays_unit,
     "days" = .add_days,
     "weeks" = .add_weeks,
     "months" = .add_months,
     "years" = .add_years
   )
-  return(result)
+  return(add_fn(reference_dates, delays))
 }
 
 #' Internal: Compute day difference between dates
@@ -194,28 +192,38 @@ get_delay_unit_function <- function(delays_unit) {
   return(as.numeric(result))
 }
 
-#' Compute delays between two dates based on delay unit
+#' Compute delays between report dates and reference dates
 #'
-#' @description Returns a function that computes delays between report dates
-#'   and reference dates using the specified time unit. This is the inverse
-#'   operation of [get_delay_unit_function()].
+#' @description Computes delays between report dates and reference dates
+#'   using the specified time unit. This is the inverse operation of
+#'   [get_report_dates()].
 #'
+#' @param report_dates Date vector of report dates.
+#' @param reference_dates Date vector of reference dates.
 #' @param delays_unit Character string specifying the time unit for delays.
 #'   Must be one of "days", "weeks", "months", or "years".
-#' @return A function that takes two date vectors (report_date, reference_date)
-#'   and returns integer delays
+#' @return Numeric vector of delays.
 #' @family reporting_triangle
-#' @keywords internal
-get_delay_from_dates_function <- function(delays_unit) {
+#' @export
+#' @examples
+#' # Compute delays in days
+#' ref_date <- as.Date("2024-01-01")
+#' report_date <- as.Date("2024-01-08")
+#' get_delays_from_dates(report_date, ref_date, "days") # 7
+#'
+#' # Compute delays in weeks
+#' report_date_weeks <- as.Date("2024-01-15")
+#' get_delays_from_dates(report_date_weeks, ref_date, "weeks") # 2
+get_delays_from_dates <- function(report_dates, reference_dates, delays_unit) {
   assert_delays_unit(delays_unit)
 
-  result <- switch(delays_unit,
+  diff_fn <- switch(delays_unit,
     "days" = .diff_days,
     "weeks" = .diff_weeks,
     "months" = .diff_months,
     "years" = .diff_years
   )
-  return(result)
+  return(diff_fn(report_dates, reference_dates))
 }
 
 #' Get mean delay for each row of reporting_triangle

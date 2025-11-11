@@ -165,8 +165,7 @@ truncate_triangles <- function(reporting_triangle,
   assert_integerish(n, lower = 0)
   trunc_rep_tri_list <- lapply(
     seq_len(n),
-    truncate_triangle,
-    reporting_triangle
+    function(t) truncate_triangle(reporting_triangle, t)
   )
 
   return(trunc_rep_tri_list)
@@ -174,12 +173,12 @@ truncate_triangles <- function(reporting_triangle,
 
 #' Get a single truncated triangle
 #'
-#' This function takes in a integer `t` and a reporting triangle and generates
+#' This function takes in a reporting triangle and an integer `t` and generates
 #'   a truncated reporting triangle, removing the last `t` observations.
 #'
+#' @inheritParams estimate_delay
 #' @param t Integer indicating the number of timepoints to truncate off the
 #'   bottom of the original reporting triangle.
-#' @inheritParams estimate_delay
 #' @returns `trunc_rep_tri` A `reporting_triangle` object with `t` fewer rows
 #'   than the input. The class and metadata are preserved with updated reference
 #'   dates.
@@ -189,10 +188,10 @@ truncate_triangles <- function(reporting_triangle,
 #' @export
 #' @examples
 #' # Generate single truncated triangle
-#' trunc_rep_tri <- truncate_triangle(t = 1, reporting_triangle = example_reporting_triangle)
+#' trunc_rep_tri <- truncate_triangle(example_reporting_triangle, t = 1)
 #' trunc_rep_tri
-truncate_triangle <- function(t,
-                              reporting_triangle) {
+truncate_triangle <- function(reporting_triangle,
+                              t) {
   assert_reporting_triangle(reporting_triangle)
   assert_integerish(t, lower = 0)
 
@@ -206,23 +205,7 @@ truncate_triangle <- function(t,
     )
   }
 
-  # Extract the matrix portion and subset using head()
+  # Use head method which preserves class and attributes
   n_rows <- n_obs - t
-  rep_tri_mat <- head(
-    as.matrix(reporting_triangle),
-    n = n_rows
-  )
-
-  # Extract and update metadata
-  ref_dates <- head(get_reference_dates(reporting_triangle), n = n_rows)
-  delays_unit <- get_delays_unit(reporting_triangle)
-
-  # Create new reporting_triangle with updated metadata
-  rep_tri_trunc <- new_reporting_triangle(
-    reporting_triangle_matrix = rep_tri_mat,
-    reference_dates = ref_dates,
-    delays_unit = delays_unit
-  )
-
-  return(rep_tri_trunc)
+  return(head(reporting_triangle, n = n_rows))
 }

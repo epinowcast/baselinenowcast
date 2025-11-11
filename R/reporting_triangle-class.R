@@ -94,6 +94,97 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   return(result)
 }
 
+#' Check NA pattern validity in reporting triangle
+#'
+#' Internal function that validates NA positions and provides detailed
+#' diagnostics. Identifies NA values that don't follow the expected triangular
+#' reporting delay pattern. Out-of-pattern NAs occur when a value is NA but
+#' values below it (later reference dates) or to its right (longer delays) are
+#' non-NA, suggesting data quality issues rather than reporting delay.
+#'
+#' @param x A matrix or [reporting_triangle] object.
+#' @return A list with components:
+#'   - `valid`: Logical indicating if all NAs are in valid bottom-right pattern
+#'   - `n_out_of_pattern`: Count of out-of-pattern NA values
+#'   - `n_expected`: Count of expected NA values (triangular pattern)
+#'   - `positions`: Matrix of logical values indicating out-of-pattern NAs
+#'   - `rows_affected`: Indices of rows with out-of-pattern NAs
+#'
+#' @details
+#' An NA is considered "out-of-pattern" if:
+#' - There exists a non-NA value in the same column but a later row
+#'   (indicating data should have been available), OR
+#' - There exists a non-NA value in the same row but a later column
+#'   (indicating earlier delays were reported)
+#'
+#' This replaces `.check_na_bottom_right()` by providing both validation
+#' (via the `valid` field) and detailed diagnostics.
+#'
+#' @keywords internal
+.check_na_pattern <- function(x) {
+  # Convert to matrix if needed
+  mat <- if (inherits(x, "reporting_triangle")) {
+    as.matrix(x)
+  } else {
+    x
+  }
+  nr <- nrow(mat)
+  nc <- ncol(mat)
+
+  # Matrix to track out-of-pattern NAs
+  out_of_pattern <- matrix(FALSE, nrow = nr, ncol = nc)
+
+  # Find all NA positions
+  na_positions <- is.na(mat)
+
+  if (!any(na_positions)) {
+    return(list(
+      valid = TRUE,
+      n_out_of_pattern = 0L,
+      n_expected = 0L,
+      positions = out_of_pattern,
+      rows_affected = integer(0)
+    ))
+  }
+
+  # Check each NA position
+  for (i in seq_len(nr)) {
+    for (j in seq_len(nc)) {
+      if (!na_positions[i, j]) next
+
+      # Check if any values below this NA are non-NA (same column, later rows)
+      has_data_below <- if (i < nr) {
+        !all(is.na(mat[(i + 1):nr, j]))
+      } else {
+        FALSE
+      }
+
+      # Check if any values to the right are non-NA (same row, later delays)
+      has_data_right <- if (j < nc) {
+        !all(is.na(mat[i, (j + 1):nc]))
+      } else {
+        FALSE
+      }
+
+      # Mark as out-of-pattern if either condition is true
+      out_of_pattern[i, j] <- has_data_below || has_data_right
+    }
+  }
+
+  n_out_of_pattern <- sum(out_of_pattern)
+  n_expected <- sum(na_positions) - n_out_of_pattern
+  rows_affected <- which(apply(out_of_pattern, 1, any))
+  valid <- n_out_of_pattern == 0
+
+  return(list(
+    valid = valid,
+    n_out_of_pattern = n_out_of_pattern,
+    n_expected = n_expected,
+    positions = out_of_pattern,
+    rows_affected = rows_affected
+  ))
+}
+
 #' Validate a reporting_triangle object
 #'
 #' @param data A [reporting_triangle] object to validate

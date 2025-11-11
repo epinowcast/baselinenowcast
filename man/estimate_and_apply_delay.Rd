@@ -41,9 +41,9 @@ ref_dates <- seq(
 )
 triangle <- as_reporting_triangle(
   data = triangle_mat,
-  reference_dates = ref_dates,
-  max_delay = 3
-)
+  reference_dates = ref_dates
+) |>
+  truncate_to_delay(max_delay = 3)
 pt_nowcast_matrix <- estimate_and_apply_delay(
   reporting_triangle = triangle,
   n = 4

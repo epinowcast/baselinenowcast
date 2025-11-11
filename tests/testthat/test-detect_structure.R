@@ -1,4 +1,4 @@
-test_that("get_reporting_structure works with small triangle", {
+test_that("detect_structure works with small triangle", {
   ragged_triangle <- matrix(
     c(
       1, 3, 5, 7, 9, 4, 5,
@@ -11,7 +11,7 @@ test_that("get_reporting_structure works with small triangle", {
   )
 
   exp_structure <- c(2, 1, 1)
-  detected_structure <- get_reporting_structure(ragged_triangle)
+  detected_structure <- detect_structure(ragged_triangle)
 
   expect_identical(exp_structure, detected_structure)
 
@@ -28,7 +28,7 @@ test_that("get_reporting_structure works with small triangle", {
   )
   exp_structure2 <- c(1, 1, 2)
 
-  detected_structure2 <- get_reporting_structure(ragged_triangle2)
+  detected_structure2 <- detect_structure(ragged_triangle2)
   expect_identical(exp_structure2, detected_structure2)
 
   ragged3 <- matrix(
@@ -43,12 +43,12 @@ test_that("get_reporting_structure works with small triangle", {
     byrow = TRUE
   )
   exp_structure3 <- c(1, 2, 1)
-  detected_structure3 <- get_reporting_structure(ragged3)
+  detected_structure3 <- detect_structure(ragged3)
 
   expect_identical(exp_structure3, detected_structure3)
 })
 
-test_that("get_reporting_structure detects a symmetric reporting triangle", {
+test_that("detect_structure detects a symmetric reporting triangle", {
   rep_tri <- matrix(
     c(
       1, 2, 3, 4,
@@ -62,11 +62,11 @@ test_that("get_reporting_structure detects a symmetric reporting triangle", {
   )
 
   exp_structure <- 1
-  detected_structure <- get_reporting_structure(rep_tri)
+  detected_structure <- detect_structure(rep_tri)
   expect_identical(exp_structure, detected_structure)
 })
 
-test_that("get_reporting_structure returns 0 if there are no NAs", {
+test_that("detect_structure returns 0 if there are no NAs", {
   rep_mat <- matrix(
     data = 5,
     nrow = 7,
@@ -74,7 +74,7 @@ test_that("get_reporting_structure returns 0 if there are no NAs", {
   )
   exp_structure <- 0
   detected_structure <- expect_message(
-    get_reporting_structure(rep_mat),
+    detect_structure(rep_mat),
     regexp = "The reporting triangle does not contain any missing values"
   )
 

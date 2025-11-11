@@ -97,8 +97,6 @@ test_that("estimate_and_apply_uncertainty is able to detect the structure of a j
   tv <- allocate_reference_times(jagged_triangle)
   n_delay_valid <- tv$n_history_delay
   n_retro_valid <- tv$n_retrospective_nowcasts
-  # Note: structure parameter was removed in refactoring
-  # Structure is now automatically detected from the reporting triangle
   set.seed(123)
   nowcast_draws_df <- estimate_and_apply_uncertainty(
     pt_nowcast_matrix2,
@@ -106,7 +104,16 @@ test_that("estimate_and_apply_uncertainty is able to detect the structure of a j
     n_history_delay = n_delay_valid,
     n_retrospective_nowcasts = n_retro_valid
   )
-  # Test that the function works correctly with jagged triangle
-  expect_true(nrow(nowcast_draws_df) > 0)
-  expect_true(all(c("pred_count", "draw", "time") %in% names(nowcast_draws_df)))
+  set.seed(123)
+  nowcast_draws_df2 <- estimate_and_apply_uncertainty(
+    pt_nowcast_matrix2,
+    jagged_triangle,
+    n_history_delay = n_delay_valid,
+    n_retrospective_nowcasts = n_retro_valid,
+    structure = 2
+  )
+  expect_equal(mean(nowcast_draws_df$pred_count),
+    mean(nowcast_draws_df2$pred_count),
+    tol = 0.01
+  )
 })

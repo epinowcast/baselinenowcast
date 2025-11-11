@@ -2,15 +2,29 @@
 % Please edit documentation in R/validate.R
 \name{.validate_rep_tri_args}
 \alias{.validate_rep_tri_args}
-\title{Validate constructor inputs for reporting triangle}
+\title{Validate each item in the reporting triangle}
 \usage{
-.validate_rep_tri_args(reporting_triangle_matrix, reference_dates, delays_unit)
+.validate_rep_tri_args(
+  reporting_triangle_matrix,
+  reference_dates,
+  structure,
+  max_delay,
+  delays_unit,
+  strata = NULL
+)
 }
 \arguments{
 \item{reporting_triangle_matrix}{Matrix of reporting triangle}
 
 \item{reference_dates}{Vector of character strings indicating the reference
 dates corresponding to each row of the reporting triangle matrix (\code{data}).}
+
+\item{structure}{Integer or vector specifying the reporting structure.
+If integer, divides columns evenly by that integer (with last possibly
+truncated).  If vector, the sum must not be greater than or equal to the
+number of columns. Default is 1 (standard triangular structure).}
+
+\item{max_delay}{Integer indicating the maximum delay.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
@@ -20,11 +34,10 @@ data.frame. For the data.frame method, this is used to compute the delay
 in terms of the specified unit, and to expand the combinations of
 reference dates and delays to the complete set of combinations in
 the reporting triangle.  Default is \code{"days"}.}
-}
-\value{
-NULL invisibly
+
+\item{strata}{Character string indicating the strata. Default is NULL.}
 }
 \description{
-Validate constructor inputs for reporting triangle
+Validate each item in the reporting triangle
 }
 \keyword{internal}

@@ -19,10 +19,8 @@ entries are incident cases at each reference time and delay.}
 matrix indicating the dates corresponding to the reference times in the
 rows of the reporting triangle.}
 \item{structure}{Vector indicating the "structure" of the reporting
-triangle, see \code{\link[=construct_triangle]{construct_triangle()}} for more details.
-Use \code{\link[=get_structure]{get_structure()}} to compute this dynamically from the matrix.}
-\item{max_delay}{Integer indicating the maximum delay.
-Use \code{\link[=get_max_delay]{get_max_delay()}} to compute this dynamically from the matrix.}
+triangle, see \code{\link[=construct_triangle]{construct_triangle()}} for more details.}
+\item{max_delay}{Integer indicating the maximum delay.}
 \item{delays_unit}{Character string indicating the unit of the delays.
 Valid options are "days", "weeks", "months", "years".}
 \item{strata}{Character string indicating the strata.}
@@ -40,10 +38,7 @@ Reporting triangle construction and validation
 \code{\link{as_reporting_triangle.matrix}()},
 \code{\link{as_reporting_triangle.triangle}()},
 \code{\link{assert_reporting_triangle}()},
-\code{\link{get_delay_unit}()},
-\code{\link{get_max_delay}()},
-\code{\link{get_reporting_structure}()},
-\code{\link{get_structure}()},
+\code{\link{detect_structure}()},
 \code{\link{new_reporting_triangle}()}
 }
 \concept{reporting_triangle}

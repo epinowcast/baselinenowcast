@@ -1,4 +1,4 @@
-#' Get the reporting structure from a reporting triangle
+#' Detect the structure of a reporting triangle
 #'
 #' This function takes as input a reporting triangle matrix and returns an
 #'   integer or vector specifying the reporting structure, which will tell
@@ -26,9 +26,9 @@
 #'   nrow = 4,
 #'   byrow = TRUE
 #' )
-#' detected_structure <- get_reporting_structure(ragged_triangle)
+#' detected_structure <- detect_structure(ragged_triangle)
 #' detected_structure
-get_reporting_structure <- function(reporting_triangle) {
+detect_structure <- function(reporting_triangle) {
   n_row_nas <- sum(is.na(rowSums(reporting_triangle)))
   # Structure is 0 if there are no NAs
   if (n_row_nas == 0) {

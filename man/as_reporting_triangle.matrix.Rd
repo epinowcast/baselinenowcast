@@ -4,15 +4,22 @@
 \alias{as_reporting_triangle.matrix}
 \title{Create a \code{reporting_triangle} from a matrix}
 \usage{
-\method{as_reporting_triangle}{matrix}(data, reference_dates, delays_unit = "days", ...)
+\method{as_reporting_triangle}{matrix}(
+  data,
+  max_delay,
+  strata = NULL,
+  delays_unit = "days",
+  reference_dates,
+  ...
+)
 }
 \arguments{
 \item{data}{Matrix of a reporting triangle where rows are reference times,
-columns are delays, and entries are the incident counts. The number of
-columns determines the maximum delay (ncol - 1).}
+columns are delays, and entries are the incident counts.}
 
-\item{reference_dates}{Vector of character strings indicating the reference
-dates corresponding to each row of the reporting triangle matrix (\code{data}).}
+\item{max_delay}{Integer indicating the maximum delay.}
+
+\item{strata}{Character string indicating the strata. Default is NULL.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
@@ -23,6 +30,9 @@ in terms of the specified unit, and to expand the combinations of
 reference dates and delays to the complete set of combinations in
 the reporting triangle.  Default is \code{"days"}.}
 
+\item{reference_dates}{Vector of character strings indicating the reference
+dates corresponding to each row of the reporting triangle matrix (\code{data}).}
+
 \item{...}{Additional arguments not used.}
 }
 \value{
@@ -31,9 +41,9 @@ A \code{\link{reporting_triangle}} object
 \description{
 This method takes a matrix in the format of a reporting triangle, with rows
 as reference dates and columns as delays and elements as incident case
-counts and creates a \link{reporting_triangle} object. The maximum delay is
-automatically inferred from the number of columns in the matrix. See
-\code{\link[=as_reporting_triangle.data.frame]{as_reporting_triangle.data.frame()}} for other data input options.
+counts and creates a \link{reporting_triangle} object. See other
+\code{\link[=as_reporting_triangle.data.frame]{as_reporting_triangle.data.frame()}} for other data
+input options.
 }
 \examples{
 rep_tri_mat <- matrix(
@@ -53,14 +63,13 @@ reference_dates <- seq(
   to = as.Date("2025-01-05"),
   by = "day"
 )
+max_delay <- 4
 rep_tri <- as_reporting_triangle(
   data = rep_tri_mat,
-  reference_dates = reference_dates
+  reference_dates = reference_dates,
+  max_delay = max_delay
 )
 rep_tri
-
-# Access the computed max_delay
-get_max_delay(rep_tri)
 }
 \seealso{
 Reporting triangle construction and validation
@@ -69,10 +78,7 @@ Reporting triangle construction and validation
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.triangle}()},
 \code{\link{assert_reporting_triangle}()},
-\code{\link{get_delay_unit}()},
-\code{\link{get_max_delay}()},
-\code{\link{get_reporting_structure}()},
-\code{\link{get_structure}()},
+\code{\link{detect_structure}()},
 \code{\link{new_reporting_triangle}()},
 \code{\link{reporting_triangle-class}}
 }

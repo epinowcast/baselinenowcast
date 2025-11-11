@@ -1,8 +1,9 @@
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 data_as_of_df$age_group <- "00+"
-# Note: max_delay and strata parameters removed in refactoring
 rep_tri <- as_reporting_triangle(
-  data = data_as_of_df
+  data = data_as_of_df,
+  max_delay = 25,
+  strata = "00+"
 )
 expected_cols <- c("pred_count", "draw", "reference_date", "output_type")
 
@@ -46,11 +47,6 @@ test_that("baselinenowcast.reporting_triangle() errors sensibly with inappropria
 })
 
 test_that("baselinenowcast.reporting_triangle() handles separate delay and uncertainty estimates appropriately", { # nolint
-  # Note: max_delay is now computed from data, so rep_tri has 155 columns
-  # (delays 0-154), not 26 (delays 0-25)
-  n_delays <- ncol(rep_tri$reporting_triangle_matrix)
-  n_horizons <- get_max_delay(rep_tri)
-
   expect_error(
     baselinenowcast(rep_tri,
       delay_pmf = rep(1 / 24, 24),
@@ -59,16 +55,14 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
     regexp = "`delay_pmf` is not the same length as the number"
   )
   test_df <- expect_no_error(baselinenowcast(rep_tri,
-    delay_pmf = rep(1 / n_delays, n_delays),
+    delay_pmf = rep(1 / 26, 26),
     draws = 100
   ))
   expect_blnc_structure(test_df, expected_cols)
 
-  # Note: baselinenowcast may warn about reference time allocation
-  # when the triangle is large. This is expected behavior.
-  suppressWarnings(
+  expect_no_warning(
     baselinenowcast(rep_tri,
-      delay_pmf = rep(1 / n_delays, n_delays),
+      delay_pmf = rep(0.2, 26),
       draws = 100
     )
   ) # nolint
@@ -81,7 +75,7 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
   )
 
   test_df2 <- baselinenowcast(rep_tri,
-    uncertainty_params = rep(1, n_horizons),
+    uncertainty_params = rep(1, 25),
     draws = 100
   )
 
@@ -111,10 +105,8 @@ test_that("baselinenowcast specifying not to include draws works as expected", {
 
 test_that("baselinenowcast passing in a separate delay/uncertainty parameters returns something different than using the triangle", { # nolint
   skip_if_not_installed("dplyr")
-  # Note: max_delay is now computed from data
-  n_delays <- ncol(rep_tri$reporting_triangle_matrix)
   dif_delay_df <- baselinenowcast(rep_tri,
-    delay_pmf = rep(1 / n_delays, n_delays),
+    delay_pmf = rep(1 / 26, 26),
     draws = 100
   )
   mean_dif_delay <- dif_delay_df |>
@@ -136,10 +128,8 @@ test_that("baselinenowcast passing in a separate delay/uncertainty parameters re
     tol = 0.1
   )
 
-  # Note: max_delay is now computed from data
-  n_horizons <- get_max_delay(rep_tri)
   dif_uq <- baselinenowcast(rep_tri,
-    uncertainty_params = rep(1, n_horizons),
+    uncertainty_params = rep(1, 25),
     draws = 100
   )
   sd_uq <- dif_uq |>
@@ -201,17 +191,13 @@ test_that("baselinenowcast.reporting_triangle errors if nothing to nowcast", {
   ) |>
     dplyr::mutate(count = 5)
 
-  # Note: When data has report dates beyond final reference date,
-  # that message appears first
   rep_tri <- expect_message(
-    as_reporting_triangle(data),
-    regexp = "The dataframe contains report dates beyond the final reference date."
+    as_reporting_triangle(data, max_delay = 10),
+    regexp = "The reporting triangle does not contain any missing values."
   ) # nolint
 
-  # The error now comes from allocate_reference_times about insufficient
-  # reference times for estimation
   expect_error(baselinenowcast(rep_tri),
-    regexp = "reference times available and.*are needed"
+    regexp = "doesn't contain any missing values"
   ) # nolint
 })
 

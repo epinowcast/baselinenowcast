@@ -16,6 +16,10 @@
 \arguments{
 \item{data}{A ChainLadder triangle object (class "triangle").}
 
+\item{max_delay}{Integer indicating the maximum delay.}
+
+\item{strata}{Character string indicating the strata. Default is NULL.}
+
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
 For the matrix method, this is simply passed as an item in the
@@ -86,10 +90,7 @@ Reporting triangle construction and validation
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.matrix}()},
 \code{\link{assert_reporting_triangle}()},
-\code{\link{get_delay_unit}()},
-\code{\link{get_max_delay}()},
-\code{\link{get_reporting_structure}()},
-\code{\link{get_structure}()},
+\code{\link{detect_structure}()},
 \code{\link{new_reporting_triangle}()},
 \code{\link{reporting_triangle-class}}
 }

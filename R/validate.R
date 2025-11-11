@@ -290,19 +290,33 @@
 }
 
 #' Validate the inputs to `estimate_and_apply_uncertainty()` to ensure that
-#'    the reporting triangle and point nowcast matrix are compatible.
+#'    the reporting triangle, point nowcast matrix, and specified maximum delay
+#'    are correct.
 #'
 #' @inheritParams estimate_and_apply_uncertainty
 #'
-#' @returns NULL invisibly
+#' @returns NULL, invisibly
 #' @keywords internal
 .validate_multiple_inputs <- function(
     point_nowcast_matrix,
-    reporting_triangle) {
+    reporting_triangle,
+    max_delay) {
+  # Basic input validation
+  if (!is.matrix(point_nowcast_matrix)) {
+    cli_abort("`point_nowcast_matrix` must be a matrix.")
+  }
+
   if (ncol(point_nowcast_matrix) != ncol(reporting_triangle)) {
     cli_abort(c(
       "x" = "`point_nowcast_matrix` and `reporting_triangle` must have the same number of columns.", # nolint
       "i" = "Got {ncol(point_nowcast_matrix)} and {ncol(reporting_triangle)} respectively." # nolint
+    ))
+  }
+
+  if (ncol(reporting_triangle) != (max_delay + 1)) {
+    cli_abort(c(
+      "x" = "Inconsistent `max_delay`.", # nolint
+      "i" = "`ncol(reporting_triangle)` = {ncol(reporting_triangle)} but `max_delay + 1` = {max_delay + 1}." # nolint
     ))
   }
 
@@ -515,32 +529,21 @@
   return(NULL)
 }
 
-#' Validate delays unit parameter
-#'
-#' @param delays_unit Character string indicating the unit of delays.
-#'
-#' @returns NULL invisibly
-#' @importFrom checkmate assert_character assert_choice
-#' @keywords internal
-.validate_delays_unit <- function(delays_unit) {
-  assert_character(delays_unit, len = 1)
-  assert_choice(delays_unit,
-    choices = c("days", "weeks", "months", "years")
-  )
-  return(NULL)
-}
-
-#' Validate constructor inputs for reporting triangle
+#' Validate each item in the reporting triangle
 #'
 #' @inheritParams new_reporting_triangle
 #' @inheritParams as_reporting_triangle.matrix
+#' @inheritParams construct_triangle
 #' @inheritParams as_reporting_triangle
 #'
-#' @returns NULL invisibly
+#' @returns NULL
 #' @keywords internal
 .validate_rep_tri_args <- function(reporting_triangle_matrix,
                                    reference_dates,
-                                   delays_unit) {
+                                   structure,
+                                   max_delay,
+                                   delays_unit,
+                                   strata = NULL) {
   assert_matrix(reporting_triangle_matrix)
   assert_date(reference_dates,
     unique = TRUE,
@@ -549,8 +552,16 @@
     len = nrow(reporting_triangle_matrix)
   )
 
-  .validate_delays_unit(delays_unit)
+  assert_numeric(structure, lower = 0)
+  assert_integerish(structure, min.len = 1)
+  assert_integerish(max_delay, min.len = 1, lower = 1)
+  assert_character(delays_unit, len = 1)
+  assert_character(strata, null.ok = TRUE)
 
+  assert_character(delays_unit, len = 1)
+  assert_choice(delays_unit,
+    choices = c("days", "weeks", "months", "years")
+  )
   return(NULL)
 }
 

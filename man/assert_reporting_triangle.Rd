@@ -9,6 +9,9 @@ assert_reporting_triangle(data)
 \arguments{
 \item{data}{A \link{reporting_triangle} object to check for validity.}
 }
+\value{
+NULL invisibly
+}
 \description{
 Assert validity of \code{reporting_triangle} objects
 }

@@ -49,10 +49,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   .validate_rep_tri_args(
     reporting_triangle_matrix,
     reference_dates,
-    structure,
-    max_delay,
-    delays_unit,
-    strata
+    delays_unit
   )
   result <- structure(
     list(
@@ -112,29 +109,11 @@ get_delay_unit <- function(x) {
 #' Assert validity of `reporting_triangle` objects
 #'
 #' @param data A [reporting_triangle] object to check for validity.
-#' @return NULL
+#' @return NULL invisibly
 #' @family reporting_triangle
 #' @export
-#' @importFrom checkmate assert_matrix assert_date assert_numeric
-#'    assert_character assert_choice assert_list
+#' @importFrom checkmate assert_class
 assert_reporting_triangle <- function(data) {
-  .validate_rep_tri_args(
-    reporting_triangle_matrix = data$reporting_triangle_matrix,
-    reference_dates = data$reference_dates,
-    structure = data$structure,
-    max_delay = data$max_delay,
-    delays_unit = data$delays_unit,
-    strata = data$strata
-  )
-
-  if (sum(data$structure) > ncol(data$reporting_triangle_matrix)) {
-    cli_abort(message = c(
-      message = c(
-        "Sum of `structure` must not be greater than or equal",
-        "to the number of columns in matrix"
-      )
-    ))
-  }
-
+  assert_class(data, "reporting_triangle")
   return(NULL)
 }

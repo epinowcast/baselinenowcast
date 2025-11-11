@@ -3,10 +3,9 @@
 \name{.validate_multiple_inputs}
 \alias{.validate_multiple_inputs}
 \title{Validate the inputs to \code{estimate_and_apply_uncertainty()} to ensure that
-the reporting triangle, point nowcast matrix, and specified maximum delay
-are correct.}
+the reporting triangle and point nowcast matrix are compatible.}
 \usage{
-.validate_multiple_inputs(point_nowcast_matrix, reporting_triangle, max_delay)
+.validate_multiple_inputs(point_nowcast_matrix, reporting_triangle)
 }
 \arguments{
 \item{point_nowcast_matrix}{Matrix of point nowcast predictions and
@@ -18,17 +17,12 @@ representing the time points of reference and columns representing the
 delays. Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row. (e.g. weekly reporting of daily data).}
-
-\item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-\code{ncol(reporting_triangle) -1}.}
 }
 \value{
-NULL, invisibly
+NULL invisibly
 }
 \description{
 Validate the inputs to \code{estimate_and_apply_uncertainty()} to ensure that
-the reporting triangle, point nowcast matrix, and specified maximum delay
-are correct.
+the reporting triangle and point nowcast matrix are compatible.
 }
 \keyword{internal}

@@ -315,39 +315,10 @@ test_that("assert on reporting triangle works as expected", {
   expect_s3_class(rep_tri, "reporting_triangle")
   expect_no_error(assert_reporting_triangle(rep_tri))
 
-  rep_tri1 <- rep_tri
-  rep_tri1$reference_dates <- c(1, 3, 4)
-  expect_error(assert_reporting_triangle(rep_tri1))
-
-  rep_tri2 <- rep_tri
-  rep_tri2$max_delay <- 0
-  expect_error(assert_reporting_triangle(rep_tri2))
-
-  rep_tri3 <- rep_tri
-  rep_tri3$strata <- NULL
-  expect_no_error(assert_reporting_triangle(rep_tri3))
-  rep_tri3$strata <- "south"
-  expect_no_error(assert_reporting_triangle(rep_tri3))
-  rep_tri3$strata <- 6
-  expect_error(assert_reporting_triangle(rep_tri3))
-
-  rep_tri4 <- rep_tri
-  rep_tri4$delays_unit <- "months"
-  expect_no_error(assert_reporting_triangle(rep_tri4))
-  rep_tri4$delays_unit <- "month"
-  expect_error(assert_reporting_triangle(rep_tri4))
-  rep_tri4$delays_unit <- months
-  expect_error(assert_reporting_triangle(rep_tri4))
-  rep_tri4$delays_unit <- 8
-  expect_error(assert_reporting_triangle(rep_tri4))
-
-  rep_tri5 <- rep_tri
-  rep_tri5$structure <- 1
-  expect_no_error(assert_reporting_triangle(rep_tri5))
-  rep_tri5$structure <- c(3, 4)
-  expect_no_error(assert_reporting_triangle(rep_tri5))
-  rep_tri5$structure <- rep(6, ncol(rep_tri$reporting_triangle_matrix))
-  expect_error(assert_reporting_triangle(rep_tri5))
+  # assert_reporting_triangle() only checks class, not internal structure
+  # Internal structure is validated at construction time
+  non_rep_tri <- list(some_field = 1)
+  expect_error(assert_reporting_triangle(non_rep_tri))
 })
 
 test_that("`as_reporting_triangle()` appropriately messages if there is nothing to be nowcasted (no unobserved cases in reporting triangle)", { # nolint

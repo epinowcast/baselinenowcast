@@ -50,7 +50,7 @@ test_that("as_reporting_triangle.data.frame() can handle different temporal gran
     ),
     regexp = "Data does not contain case counts for all possible reference dates" # nolint
   ) |>
-    truncate_to_delay(max_delay = 30)
+    truncate_to_delay(max_delay = 28)
   ref_dates2 <- get_reference_dates(rep_tri2)
   expected_days_diff <- as.numeric(difftime(
     ref_dates2[2],
@@ -67,7 +67,7 @@ test_that("as_reporting_triangle.data.frame() can handle different temporal gran
   rep_tri3 <- as_reporting_triangle(daily_weekly,
     delays_unit = "days"
   ) |>
-    truncate_to_delay(max_delay = 30)
+    truncate_to_delay(max_delay = 28)
   ref_dates3 <- get_reference_dates(rep_tri3)
   expected_days_diff <- as.numeric(difftime(
     ref_dates3[2],
@@ -103,7 +103,7 @@ test_that("as_reporting_triangle.data.frame() can handle different temporal gran
     ),
     regexp = "Data does not contain case counts for all possible reference dates." # nolint
   ) |>
-    truncate_to_delay(max_delay = 30)
+    truncate_to_delay(max_delay = 28)
   # Both rep_tri2 and rep_tri4 should have the same max delay after truncation
   expect_identical(
     ncol(rep_tri4),

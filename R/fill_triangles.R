@@ -44,7 +44,8 @@
 #' )
 #' triangle <- as_reporting_triangle(
 #'   data = triangle_mat,
-#'   reference_dates = ref_dates
+#'   reference_dates = ref_dates,
+#'   max_delay = 3
 #' )
 #'
 #' trunc_rts <- truncate_triangles(triangle)
@@ -192,7 +193,8 @@ fill_triangles <- function(retro_reporting_triangles,
 #' )
 #' triangle <- as_reporting_triangle(
 #'   data = triangle_mat,
-#'   reference_dates = ref_dates
+#'   reference_dates = ref_dates,
+#'   max_delay = 3
 #' )
 #' point_nowcast_matrix <- fill_triangle(
 #'   reporting_triangle = triangle

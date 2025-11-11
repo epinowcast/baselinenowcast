@@ -110,12 +110,16 @@ truncate_triangle <- function(t,
     )
   }
 
-  # Extract the matrix portion and subset
-  rep_tri_mat <- as.matrix(reporting_triangle)[1:(n_obs - t), , drop = FALSE]
+  # Extract the matrix portion and subset using head()
+  n_rows <- n_obs - t
+  rep_tri_mat <- head(
+    as.matrix(reporting_triangle),
+    n = n_rows
+  )
 
   # Extract and update metadata
-  ref_dates <- get_reference_dates(reporting_triangle)[1:(n_obs - t)]
-  delays_unit <- attr(reporting_triangle, "delays_unit")
+  ref_dates <- head(get_reference_dates(reporting_triangle), n = n_rows)
+  delays_unit <- get_delays_unit(reporting_triangle)
 
   # Create new reporting_triangle with updated metadata
   rep_tri_trunc <- new_reporting_triangle(

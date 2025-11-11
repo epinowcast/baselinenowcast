@@ -88,7 +88,7 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
 
   # Store original attributes to restore after computation
   original_class <- class(reporting_triangle)
-  original_delays_unit <- attr(reporting_triangle, "delays_unit")
+  original_delays_unit <- get_delays_unit(reporting_triangle)
   original_dimnames <- dimnames(reporting_triangle)
 
   # Convert to plain matrix for internal operations

@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{A \link{reporting_triangle} object.}
 
-\item{...}{Row and column indices.}
+\item{...}{Row and column indices for assignment.}
 
 \item{value}{Values to assign.}
 }
@@ -17,6 +17,34 @@
 The modified reporting_triangle object.
 }
 \description{
-Assignment method that validates the result after modification.
+Assignment method that allows modification of reporting_triangle values
+while validating the result remains a valid reporting_triangle.
 }
-\keyword{internal}
+\seealso{
+Reporting triangle construction and validation
+\code{\link{[.reporting_triangle}()},
+\code{\link{as.data.frame.reporting_triangle}()},
+\code{\link{as.matrix.reporting_triangle}()},
+\code{\link{as_ChainLadder_triangle}()},
+\code{\link{as_reporting_triangle}()},
+\code{\link{as_reporting_triangle.data.frame}()},
+\code{\link{as_reporting_triangle.matrix}()},
+\code{\link{as_reporting_triangle.triangle}()},
+\code{\link{assert_reporting_triangle}()},
+\code{\link{detect_structure}()},
+\code{\link{get_max_delay}()},
+\code{\link{get_mean_delay}()},
+\code{\link{get_quantile_delay}()},
+\code{\link{get_reference_dates}()},
+\code{\link{head.reporting_triangle}()},
+\code{\link{is_reporting_triangle}()},
+\code{\link{new_reporting_triangle}()},
+\code{\link{print.reporting_triangle}()},
+\code{\link{reporting_triangle-class}},
+\code{\link{summary.reporting_triangle}()},
+\code{\link{tail.reporting_triangle}()},
+\code{\link{truncate_to_delay}()},
+\code{\link{truncate_to_quantile}()},
+\code{\link{validate_reporting_triangle}()}
+}
+\concept{reporting_triangle}

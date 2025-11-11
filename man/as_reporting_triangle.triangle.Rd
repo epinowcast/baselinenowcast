@@ -4,22 +4,10 @@
 \alias{as_reporting_triangle.triangle}
 \title{Convert ChainLadder triangle to reporting_triangle format}
 \usage{
-\method{as_reporting_triangle}{triangle}(
-  data,
-  max_delay = NULL,
-  delays_unit = "days",
-  reference_dates = NULL,
-  ...
-)
+\method{as_reporting_triangle}{triangle}(data, delays_unit = "days", reference_dates = NULL, ...)
 }
 \arguments{
 \item{data}{A ChainLadder triangle object (class "triangle").}
-
-\item{max_delay}{Integer indicating the maximum delay. For the data.frame
-method, if not provided (NULL), it is automatically computed as the
-maximum delay observed in the data. For the matrix method, max_delay is
-inferred from the number of columns in the matrix and this parameter is
-not used. Default is NULL.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
@@ -62,7 +50,7 @@ extracting the matrix from the ChainLadder triangle object.
 \dontshow{if (requireNamespace("ChainLadder", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 # Create a reporting triangle
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-rep_tri <- as_reporting_triangle(data = data_as_of_df, max_delay = 25)
+rep_tri <- as_reporting_triangle(data = data_as_of_df)
 
 # Convert to ChainLadder triangle
 cl_triangle <- as_ChainLadder_triangle(rep_tri)
@@ -82,6 +70,7 @@ print(rep_tri_2)
 
 Reporting triangle construction and validation
 \code{\link{[.reporting_triangle}()},
+\code{\link{[<-.reporting_triangle}()},
 \code{\link{as.data.frame.reporting_triangle}()},
 \code{\link{as.matrix.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},

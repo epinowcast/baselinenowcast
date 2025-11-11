@@ -49,7 +49,7 @@ To convert back to a \link{reporting_triangle} object, use
 \dontshow{if (requireNamespace("ChainLadder", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 # Create a reporting triangle from synthetic NSSP data
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-rep_tri <- as_reporting_triangle(data = data_as_of_df, max_delay = 25)
+rep_tri <- as_reporting_triangle(data = data_as_of_df)
 
 # Convert to ChainLadder triangle format
 cl_triangle <- as_ChainLadder_triangle(rep_tri)
@@ -67,6 +67,7 @@ plot(cl_triangle)
 
 Reporting triangle construction and validation
 \code{\link{[.reporting_triangle}()},
+\code{\link{[<-.reporting_triangle}()},
 \code{\link{as.data.frame.reporting_triangle}()},
 \code{\link{as.matrix.reporting_triangle}()},
 \code{\link{as_reporting_triangle}()},

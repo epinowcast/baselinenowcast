@@ -9,16 +9,21 @@
 \arguments{
 \item{x}{A \link{reporting_triangle} object.}
 
-\item{...}{Indices for subsetting.}
+\item{...}{Indices for subsetting (row and column indices).}
 }
 \value{
-A subsetted reporting_triangle object.
+A subsetted reporting_triangle object if the result is a valid
+matrix, otherwise the raw subsetted result.
 }
 \description{
-Subset a reporting_triangle object
+Allows subsetting rows and columns like a matrix.
+The result is validated to ensure it remains a valid reporting_triangle.
+If subsetting produces a non-matrix result (e.g., a single value), it is
+returned as-is without validation.
 }
 \seealso{
 Reporting triangle construction and validation
+\code{\link{[<-.reporting_triangle}()},
 \code{\link{as.data.frame.reporting_triangle}()},
 \code{\link{as.matrix.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},

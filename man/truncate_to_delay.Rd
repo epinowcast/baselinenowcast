@@ -21,12 +21,11 @@ delays from 0 to the specified maximum delay. This is useful when you want
 to limit the delay distribution used for estimation.
 }
 \examples{
-mat <- matrix(c(10, 20, 30, 40,
-                15, 25, 35, NA,
-                20, 30, NA, NA,
-                25, NA, NA, NA), nrow = 4, byrow = TRUE)
-# max_delay inferred from matrix (3 in this case)
-rt <- as_reporting_triangle(data = mat)
+# Using example dataset
+data("example_downward_corr_mat")
+rt <- suppressMessages(as_reporting_triangle(
+  data = example_downward_corr_mat
+))
 
 # Truncate to delays 0-2
 rt_short <- truncate_to_delay(rt, max_delay = 2)
@@ -35,6 +34,7 @@ get_max_delay(rt_short)  # Returns 2
 \seealso{
 Reporting triangle construction and validation
 \code{\link{[.reporting_triangle}()},
+\code{\link{[<-.reporting_triangle}()},
 \code{\link{as.data.frame.reporting_triangle}()},
 \code{\link{as.matrix.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},

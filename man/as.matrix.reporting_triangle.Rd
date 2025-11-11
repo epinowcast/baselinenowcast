@@ -20,16 +20,18 @@ removing the reporting_triangle class and custom attributes while
 preserving row and column names.
 }
 \examples{
-mat <- matrix(c(10, 20, 30, 40, 15, 25, 35, NA, 20, 30, NA, NA),
-  nrow = 3, byrow = TRUE
-)
-rt <- suppressMessages(as_reporting_triangle(data = mat, max_delay = 3))
+# Using example dataset
+data("example_downward_corr_mat")
+rt <- suppressMessages(as_reporting_triangle(
+  data = example_downward_corr_mat
+))
 plain_mat <- as.matrix(rt)
 class(plain_mat)  # "matrix" "array"
 }
 \seealso{
 Reporting triangle construction and validation
 \code{\link{[.reporting_triangle}()},
+\code{\link{[<-.reporting_triangle}()},
 \code{\link{as.data.frame.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},
 \code{\link{as_reporting_triangle}()},

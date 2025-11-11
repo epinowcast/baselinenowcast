@@ -4,13 +4,7 @@
 \alias{as_reporting_triangle.matrix}
 \title{Create a \code{reporting_triangle} from a matrix}
 \usage{
-\method{as_reporting_triangle}{matrix}(
-  data,
-  max_delay = NULL,
-  delays_unit = "days",
-  reference_dates = NULL,
-  ...
-)
+\method{as_reporting_triangle}{matrix}(data, delays_unit = "days", reference_dates = NULL, ...)
 }
 \arguments{
 \item{data}{Matrix of a reporting triangle where rows are reference times,
@@ -26,8 +20,7 @@ the reference dates corresponding to each row of the reporting triangle
 matrix (\code{data}). If NULL (default), dummy dates starting from 1900-01-01
 are generated with spacing determined by \code{delays_unit}.}
 
-\item{...}{Additional arguments not used. For backward compatibility,
-\code{max_delay} may be provided but will be ignored with a message.}
+\item{...}{Additional arguments not used.}
 }
 \value{
 A \code{\link{reporting_triangle}} object
@@ -69,6 +62,7 @@ rep_tri
 \seealso{
 Reporting triangle construction and validation
 \code{\link{[.reporting_triangle}()},
+\code{\link{[<-.reporting_triangle}()},
 \code{\link{as.data.frame.reporting_triangle}()},
 \code{\link{as.matrix.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},

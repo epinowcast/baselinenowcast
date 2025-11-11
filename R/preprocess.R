@@ -41,15 +41,11 @@
 #' @export
 #'
 #' @examples
-#' # Triangle with negative values from corrections
-#' triangle_with_neg <- matrix(c(
-#'   10, 5, -2, 3,
-#'   8, -3, 4, 2,
-#'   1, 6, 3, -1
-#' ), nrow = 3, byrow = TRUE)
+#' # Using example dataset with negative values from corrections
+#' data("example_downward_corr_mat")
 #'
 #' # Preprocess to handle negatives
-#' preprocessed <- preprocess_negative_values(triangle_with_neg)
+#' preprocessed <- preprocess_negative_values(example_downward_corr_mat)
 #' preprocessed
 preprocess_negative_values <- function(triangle) {
   # Check if any negative values are present

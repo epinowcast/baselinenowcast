@@ -69,12 +69,6 @@ arguments \code{pred} for the vector of predictions and uncertainty parameters
 for the corresponding vector of uncertainty parameters, and draws from a
 negative binomial for each element of the vector.}
 
-\item{max_delay}{Integer indicating the maximum delay. For the data.frame
-method, if not provided (NULL), it is automatically computed as the
-maximum delay observed in the data. For the matrix method, max_delay is
-inferred from the number of columns in the matrix and this parameter is
-not used. Default is NULL.}
-
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
 For the matrix method, this is simply passed as an item in the

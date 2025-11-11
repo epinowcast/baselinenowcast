@@ -139,14 +139,12 @@ get_quantile_delay <- function(x, p = 0.99) {
     total_counts <- sum(row_counts, na.rm = TRUE)
     if (total_counts == 0) return(NA_integer_)
 
-    cumulative_counts <- cumsum(row_counts)
-    cumulative_prop <- cumulative_counts / total_counts
+    # Calculate cumulative proportion and find first delay >= quantile
+    cumulative_prop <- cumsum(row_counts) / total_counts
     quantile_idx <- which(cumulative_prop >= p)[1]
 
-    if (is.na(quantile_idx)) {
-      return(delays[length(delays)])
-    }
-    return(delays[quantile_idx])
+    # Return max delay if quantile never reached, otherwise return the delay
+    if (is.na(quantile_idx)) delays[length(delays)] else delays[quantile_idx]
   }, integer(1))
   return(quantile_delays)
 }
@@ -236,12 +234,11 @@ truncate_to_quantile <- function(x, p = 0.99) {
 #' @family reporting_triangle
 #' @export
 #' @examples
-#' mat <- matrix(c(10, 20, 30, 40,
-#'                 15, 25, 35, NA,
-#'                 20, 30, NA, NA,
-#'                 25, NA, NA, NA), nrow = 4, byrow = TRUE)
-#' # max_delay inferred from matrix (3 in this case)
-#' rt <- as_reporting_triangle(data = mat)
+#' # Using example dataset
+#' data("example_downward_corr_mat")
+#' rt <- suppressMessages(as_reporting_triangle(
+#'   data = example_downward_corr_mat
+#' ))
 #'
 #' # Truncate to delays 0-2
 #' rt_short <- truncate_to_delay(rt, max_delay = 2)
@@ -289,7 +286,7 @@ truncate_to_delay <- function(x, max_delay) {
     result <- new_reporting_triangle(
       reporting_triangle_matrix = trunc_mat,
       reference_dates = get_reference_dates(x),
-      delays_unit = attr(x, "delays_unit")
+      delays_unit = get_delays_unit(x)
     )
 
     return(result)
@@ -384,7 +381,7 @@ validate_reporting_triangle <- function(data) {
   }
 
   reference_dates <- as.Date(rownames(data))
-  delays_unit <- attr(data, "delays_unit")
+  delays_unit <- get_delays_unit(data)
 
   .validate_rep_tri_args(
     reporting_triangle_matrix = data,
@@ -418,25 +415,28 @@ is_reporting_triangle <- function(x) {
 
 #' Subset a reporting_triangle object
 #'
+#' @description
+#' Allows subsetting rows and columns like a matrix.
+#' The result is validated to ensure it remains a valid reporting_triangle.
+#' If subsetting produces a non-matrix result (e.g., a single value), it is
+#' returned as-is without validation.
+#'
 #' @param x A [reporting_triangle] object.
-#' @param ... Indices for subsetting.
-#' @return A subsetted reporting_triangle object.
+#' @param ... Indices for subsetting (row and column indices).
+#' @return A subsetted reporting_triangle object if the result is a valid
+#'   matrix, otherwise the raw subsetted result.
 #' @family reporting_triangle
 #' @export
 #' @method [ reporting_triangle
 `[.reporting_triangle` <- function(x, ...) {
   # Store attributes before subsetting
   old_class <- class(x)
-  old_delays_unit <- attr(x, "delays_unit")
+  old_delays_unit <- get_delays_unit(x)
 
   out <- NextMethod()
 
-  # Skip validation if object unchanged
-  if (identical(x, out) && ...length() == 1) {
-    return(out)
-  }
-
-  # If result is not a matrix (e.g., single row/column), return as-is
+  # If result is not a matrix (e.g., single row/column extracted as vector),
+  # return as-is
   if (!is.matrix(out)) {
     return(out)
   }
@@ -445,18 +445,25 @@ is_reporting_triangle <- function(x) {
   class(out) <- old_class
   attr(out, "delays_unit") <- old_delays_unit
 
+  # Validate the subsetted result
+  assert_reporting_triangle(out)
+
   return(out)
 }
 
-#' @title Subset assignment for reporting_triangle objects
+#' Subset assignment for reporting_triangle objects
+#'
 #' @description
-#' Assignment method that validates the result after modification.
+#' Assignment method that allows modification of reporting_triangle values
+#' while validating the result remains a valid reporting_triangle.
+#'
 #' @param x A [reporting_triangle] object.
-#' @param ... Row and column indices.
+#' @param ... Row and column indices for assignment.
 #' @param value Values to assign.
 #' @return The modified reporting_triangle object.
-#' @keywords internal
+#' @family reporting_triangle
 #' @export
+#' @method [<- reporting_triangle
 `[<-.reporting_triangle` <- function(x, ..., value) {
   # Perform the assignment using NextMethod
   x_modified <- NextMethod()
@@ -464,10 +471,10 @@ is_reporting_triangle <- function(x) {
   # Preserve class and attributes if still a matrix
   if (is.matrix(x_modified)) {
     class(x_modified) <- class(x)
-    attr(x_modified, "delays_unit") <- attr(x, "delays_unit")
+    attr(x_modified, "delays_unit") <- get_delays_unit(x)
 
-    # Note: We don't validate here to allow legitimate modifications
-    # Users can call validate_reporting_triangle() manually if needed
+    # Validate the modified result
+    assert_reporting_triangle(x_modified)
   }
 
   return(x_modified)
@@ -486,10 +493,11 @@ is_reporting_triangle <- function(x) {
 #' @export
 #' @method as.matrix reporting_triangle
 #' @examples
-#' mat <- matrix(c(10, 20, 30, 40, 15, 25, 35, NA, 20, 30, NA, NA),
-#'   nrow = 3, byrow = TRUE
-#' )
-#' rt <- suppressMessages(as_reporting_triangle(data = mat))
+#' # Using example dataset
+#' data("example_downward_corr_mat")
+#' rt <- suppressMessages(as_reporting_triangle(
+#'   data = example_downward_corr_mat
+#' ))
 #' plain_mat <- as.matrix(rt)
 #' class(plain_mat)  # "matrix" "array"
 as.matrix.reporting_triangle <- function(x, ...) {
@@ -567,7 +575,7 @@ tail.reporting_triangle <- function(x, ...) {
     n_rows = nrow(x),
     n_cols = ncol(x),
     max_delay = get_max_delay(x),
-    delays_unit = attr(x, "delays_unit"),
+    delays_unit = get_delays_unit(x),
     structure = toString(detect_structure(x))
   )
 }
@@ -947,7 +955,7 @@ as.data.frame.reporting_triangle <- function(
   }
 
   reference_dates <- get_reference_dates(x)
-  delays_unit <- attr(x, "delays_unit")
+  delays_unit <- get_delays_unit(x)
 
   # TODO: Add support for weeks, months, years with proper date arithmetic
   if (delays_unit != "days") {

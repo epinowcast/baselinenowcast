@@ -125,7 +125,7 @@ construct_triangle <- function(truncated_reporting_triangle,
 
   # Save attributes from input
   ref_dates <- get_reference_dates(truncated_reporting_triangle)
-  delays_unit <- attr(truncated_reporting_triangle, "delays_unit")
+  delays_unit <- get_delays_unit(truncated_reporting_triangle)
 
   # Get matrix dimensions
   rows <- nrow(truncated_reporting_triangle)

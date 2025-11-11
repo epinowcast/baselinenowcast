@@ -25,10 +25,10 @@ shorter delay window.
 }
 \examples{
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-# Create triangle with specific max_delay
-rep_tri <- as_reporting_triangle(data = data_as_of_df, max_delay = 25)
+# Create triangle, max_delay is automatically computed
+rep_tri <- suppressMessages(as_reporting_triangle(data = data_as_of_df))
 
-# Original has 26 columns (delays 0-25)
+# Check the maximum delay in the triangle
 ncol(rep_tri)
 
 # Truncate to 99th percentile of reporting
@@ -42,6 +42,7 @@ ncol(rep_tri_trunc90)
 \seealso{
 Reporting triangle construction and validation
 \code{\link{[.reporting_triangle}()},
+\code{\link{[<-.reporting_triangle}()},
 \code{\link{as.data.frame.reporting_triangle}()},
 \code{\link{as.matrix.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},

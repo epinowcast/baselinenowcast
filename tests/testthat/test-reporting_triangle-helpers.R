@@ -134,6 +134,203 @@ test_that("[.reporting_triangle preserves class and validates", {
   expect_true(is_reporting_triangle(sub_cols))
 })
 
+test_that("[.reporting_triangle row subsetting works correctly", {
+  # Basic row subsetting
+  sub <- rep_tri[1:5, ]
+  expect_true(is_reporting_triangle(sub))
+  expect_identical(nrow(sub), 5L)
+  expect_identical(ncol(sub), ncol(rep_tri))
+  expect_identical(attr(sub, "delays_unit"), attr(rep_tri, "delays_unit"))
+
+  # Single row subsetting (should preserve as matrix with drop=FALSE)
+  single_row <- rep_tri[1, , drop = FALSE]
+  expect_true(is_reporting_triangle(single_row))
+  expect_identical(nrow(single_row), 1L)
+
+  # Extract single row as vector (drop=TRUE, default)
+  single_row_vec <- rep_tri[1, ]
+  expect_false(is_reporting_triangle(single_row_vec))
+  expect_true(is.numeric(single_row_vec))
+})
+
+test_that("[.reporting_triangle column subsetting works correctly", {
+  # Basic column subsetting
+  sub <- rep_tri[, 1:3]
+  expect_true(is_reporting_triangle(sub))
+  expect_identical(ncol(sub), 3L)
+  expect_identical(nrow(sub), nrow(rep_tri))
+  expect_identical(attr(sub, "delays_unit"), attr(rep_tri, "delays_unit"))
+
+  # Single column subsetting (should preserve as matrix with drop=FALSE)
+  single_col <- rep_tri[, 1, drop = FALSE]
+  expect_true(is_reporting_triangle(single_col))
+  expect_identical(ncol(single_col), 1L)
+
+  # Extract single column as vector (drop=TRUE, default)
+  single_col_vec <- rep_tri[, 1]
+  expect_false(is_reporting_triangle(single_col_vec))
+  expect_true(is.numeric(single_col_vec))
+})
+
+test_that("[.reporting_triangle combined subsetting works correctly", {
+  # Row and column subsetting
+  sub <- rep_tri[1:10, 1:3]
+  expect_true(is_reporting_triangle(sub))
+  expect_identical(nrow(sub), 10L)
+  expect_identical(ncol(sub), 3L)
+  expect_identical(attr(sub, "delays_unit"), attr(rep_tri, "delays_unit"))
+
+  # Extract single element
+  element <- rep_tri[1, 1]
+  expect_false(is_reporting_triangle(element))
+  expect_true(is.numeric(element))
+  expect_length(element, 1L)
+})
+
+test_that("[.reporting_triangle validates result structure", {
+  # Create a triangle with valid structure
+  mat <- matrix(c(
+    10, 20, 30, 40,
+    15, 25, 35, NA,
+    20, 30, NA, NA,
+    25, NA, NA, NA
+  ), nrow = 4, byrow = TRUE)
+  rt <- as_reporting_triangle(data = mat)
+
+  # Subsetting that maintains valid structure should work
+  expect_no_error(rt[1:3, ])
+  expect_no_error(rt[, 1:3])
+  expect_no_error(rt[1:2, 1:2])
+
+  # Modify to create invalid structure and test that subsetting validates
+  rt_invalid <- rt
+  rt_invalid[2, 2] <- NA
+
+  # This should fail validation when we try to subset it
+  expect_error(rt_invalid[1:3, ], "Invalid reporting triangle structure")
+})
+
+test_that("[.reporting_triangle preserves reference dates", {
+  # Row subsetting should preserve correct reference dates
+  sub <- rep_tri[1:5, ]
+  ref_dates_original <- get_reference_dates(rep_tri)
+  ref_dates_sub <- get_reference_dates(sub)
+
+  expect_identical(ref_dates_sub, ref_dates_original[1:5])
+
+  # Non-contiguous subsetting
+  indices <- c(1, 3, 5, 7, 9)
+  sub_noncontig <- rep_tri[indices, ]
+  ref_dates_noncontig <- get_reference_dates(sub_noncontig)
+
+  expect_identical(ref_dates_noncontig, ref_dates_original[indices])
+})
+
+test_that("[<-.reporting_triangle assignment works correctly", {
+  # Create test triangle
+  mat <- matrix(c(
+    10, 20, 30, 40,
+    15, 25, 35, NA,
+    20, 30, NA, NA,
+    25, NA, NA, NA
+  ), nrow = 4, byrow = TRUE)
+  rt <- as_reporting_triangle(data = mat)
+
+  # Single element assignment
+  rt_modified <- rt
+  rt_modified[1, 1] <- 100
+  expect_true(is_reporting_triangle(rt_modified))
+  expect_identical(rt_modified[1, 1], 100)
+
+  # Row assignment
+  rt_modified <- rt
+  rt_modified[1, ] <- c(100, 200, 300, 400)
+  expect_true(is_reporting_triangle(rt_modified))
+  expect_identical(rt_modified[1, 1], 100)
+  expect_identical(rt_modified[1, 2], 200)
+
+  # Column assignment
+  rt_modified <- rt
+  rt_modified[, 1] <- c(100, 200, 300, 400)
+  expect_true(is_reporting_triangle(rt_modified))
+  expect_identical(rt_modified[1, 1], 100)
+  expect_identical(rt_modified[2, 1], 200)
+
+  # Subset assignment
+  rt_modified <- rt
+  rt_modified[1:2, 1:2] <- matrix(c(100, 200, 300, 400), nrow = 2)
+  expect_true(is_reporting_triangle(rt_modified))
+  expect_identical(rt_modified[1, 1], 100)
+  expect_identical(rt_modified[2, 2], 400)
+})
+
+test_that("[<-.reporting_triangle preserves attributes", {
+  # Create test triangle
+  mat <- matrix(c(
+    10, 20, 30, 40,
+    15, 25, 35, NA,
+    20, 30, NA, NA,
+    25, NA, NA, NA
+  ), nrow = 4, byrow = TRUE)
+  rt <- as_reporting_triangle(data = mat)
+
+  original_delays_unit <- attr(rt, "delays_unit")
+  original_ref_dates <- get_reference_dates(rt)
+
+  # Modify values
+  rt[1, 1] <- 100
+
+  # Check attributes preserved
+  expect_identical(attr(rt, "delays_unit"), original_delays_unit)
+  expect_identical(get_reference_dates(rt), original_ref_dates)
+})
+
+test_that("[<-.reporting_triangle validates result structure", {
+  # Create test triangle
+  mat <- matrix(c(
+    10, 20, 30, 40,
+    15, 25, 35, NA,
+    20, 30, NA, NA,
+    25, NA, NA, NA
+  ), nrow = 4, byrow = TRUE)
+  rt <- as_reporting_triangle(data = mat)
+
+  # Valid modifications should work
+  rt_valid <- rt
+  rt_valid[1, 1] <- 100
+  expect_no_error(validate_reporting_triangle(rt_valid))
+
+  # Invalid modification: creating out-of-pattern NA should fail
+  expect_error({
+    rt_invalid <- rt
+    rt_invalid[2, 2] <- NA
+  }, "Invalid reporting triangle structure")
+})
+
+test_that("[<-.reporting_triangle allows NA in valid positions", {
+  # Create test triangle
+  mat <- matrix(c(
+    10, 20, 30, 40,
+    15, 25, 35, 50,
+    20, 30, 60, 70,
+    25, 80, 90, 100
+  ), nrow = 4, byrow = TRUE)
+  rt <- as_reporting_triangle(data = mat)
+
+  # Adding NA in bottom-right pattern should work
+  rt[4, 4] <- NA
+  expect_true(is_reporting_triangle(rt))
+  expect_true(is.na(rt[4, 4]))
+
+  rt[3, 4] <- NA
+  expect_true(is_reporting_triangle(rt))
+  expect_true(is.na(rt[3, 4]))
+
+  rt[4, 3] <- NA
+  expect_true(is_reporting_triangle(rt))
+  expect_true(is.na(rt[4, 3]))
+})
+
 test_that("print.reporting_triangle runs without error", {
   # Just check it doesn't error
   expect_no_error(print(rep_tri))

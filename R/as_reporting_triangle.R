@@ -214,7 +214,6 @@ as_reporting_triangle.matrix <- function(data,
                                          ...) {
   .validate_triangle(
     triangle = data,
-    max_delay = max_delay,
     n = nrow(data)
   )
 

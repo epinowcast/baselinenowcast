@@ -75,6 +75,8 @@ Reporting triangle construction and validation
 \code{\link{as_reporting_triangle.triangle}()},
 \code{\link{assert_reporting_triangle}()},
 \code{\link{detect_structure}()},
+\code{\link{get_max_delay}()},
+\code{\link{get_structure}()},
 \code{\link{new_reporting_triangle}()},
 \code{\link{reporting_triangle-class}}
 }

@@ -17,8 +17,10 @@
 #'    matrix indicating the dates corresponding to the reference times in the
 #'    rows of the reporting triangle.}
 #'  \item{structure}{Vector indicating the "structure" of the reporting
-#'    triangle, see [construct_triangle()] for more details.}
-#'  \item{max_delay}{Integer indicating the maximum delay.}
+#'    triangle, see [construct_triangle()] for more details.
+#'    Use [get_structure()] to compute this dynamically from the matrix.}
+#'  \item{max_delay}{Integer indicating the maximum delay.
+#'    Use [get_max_delay()] to compute this dynamically from the matrix.}
 #'  \item{delays_unit}{Character string indicating the unit of the delays.
 #'     Valid options are "days", "weeks", "months", "years".}
 #'  \item{strata}{Character string indicating the strata.}
@@ -64,6 +66,34 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
     class = "reporting_triangle"
   )
   return(result)
+}
+
+#' Get maximum delay from a reporting triangle
+#'
+#' @param x A [reporting_triangle] object.
+#' @return Integer indicating the maximum delay.
+#' @family reporting_triangle
+#' @export
+get_max_delay <- function(x) {
+  if (inherits(x, "reporting_triangle")) {
+    return(ncol(x$reporting_triangle_matrix) - 1)
+  } else {
+    return(ncol(x) - 1)
+  }
+}
+
+#' Get structure from a reporting triangle
+#'
+#' @param x A [reporting_triangle] object.
+#' @return Integer or vector specifying the reporting structure.
+#' @family reporting_triangle
+#' @export
+get_structure <- function(x) {
+  if (inherits(x, "reporting_triangle")) {
+    return(detect_structure(x$reporting_triangle_matrix))
+  } else {
+    return(detect_structure(x))
+  }
 }
 
 #' Assert validity of `reporting_triangle` objects

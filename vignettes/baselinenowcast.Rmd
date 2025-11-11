@@ -19,27 +19,6 @@ vignette: >
   %\VignetteDepends{epinowcast, ggplot2, dplyr, tidyr}
 ---
 
-
-```{r setup, echo=FALSE}
-if (!requireNamespace("epinowcast", quietly = TRUE)) {
-  cli::cli_warn(
-    c(
-      "These vignettes require epinowcast but it is not installed.",
-      paste(
-        "Currently epinowcast is not on CRAN but can be installed",
-        "from r-universe with:"
-      ),
-      paste(
-        "install.packages('epinowcast',",
-        "repos = c('epinowcast.r-universe.dev',",
-        "'https://cloud.r-project.org'))"
-      )
-    )
-  )
-  knitr::knit_exit()
-}
-```
-
 # Introduction
 
 Incomplete reporting of epidemiological data at recent times can result in case count data that is right-truncated.
@@ -52,8 +31,9 @@ A number of methods have been developed to nowcast epidemiological case count da
 
 The purpose of `baselinenowcast` is to provide a nowcast computed directly from the most recent observations to estimate a delay distribution empirically, and apply that to the partially observed data to generate a nowcast.
 
-In the below section, we will describe an example of a nowcasting problem, and demonstrate how to use `baselinenowcast` to estimate a delay distribution from the data and apply that estimate to generate a probabilistic nowcast.
-This example will walk through the low-level functionality of the "default" model permutation.
+In the below section, we will describe an example of a nowcasting problem, and demonstrate how to use the `baselinenowcast()` function to estimate a delay distribution from the data and apply that estimate to generate a probabilistic nowcast.
+This function chains together a series of nowcasting steps.
+For an example that walks through the low-level functionality applied to this same epidemiolical question, see the [modular workflow](modular_workflow.html) vignette.
 In future vignettes, we will demonstrate examples of how to create more complex model permutations.
 More details on the mathematical methods are provided in the [mathematical model](model_definition.html) vignette.
 
@@ -61,25 +41,12 @@ More details on the mathematical methods are provided in the [mathematical model
 
 As well as the `baselinenowcast` package this vignette also uses `epinowcast`, `ggplot2`, `tidyr`, and `dplyr`.
 For `baselinenowcast`, see the [installation instructions](https://github.com/epinowcast/baselinenowcast#installation).
-The installation of `epinowcast` is not required for using the package.
-However, its pre and post-processing functions provide a lot of the data wrangling needed to set up the nowcasting problem.
-We note that we will just be using components of `epinowcast`, which can be installed using the following:
 
 ```{r setup2, message = FALSE, warning = FALSE, results = 'hide'}
-# nolint start
-# Installing epinowcast
-# install.packages(
-#  "epinowcast", repos = "https://epinowcast.r-universe.dev"
-# ) #nolint
-# nolint end
-# Load packages
 library(baselinenowcast)
-library(epinowcast)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
-# Set seed for reproducibility
-set.seed(123)
 ```
 
 # Data
@@ -92,57 +59,66 @@ These data represent hospital admission counts by date of positive test and date
 
 We will filter the data to just look at the national-level data, for all age groups.
 We will pretend that we are making a nowcast as of August 1, 2021, therefore we will exclude all reference dates and report dates from before that date.
-`germany_covid19_hosp` is provided as package data from `epinowcast`.
-Let's start by plotting the sum of the reports at each reference date, and then compare that to what we will eventually observe as of the latest date in the complete dataset (data available through October 1, 2021).
+`germany_covid19_hosp` is provided as package data, see `?germany_covid19_hosp` for details.
+In this example, we will focus on the cases for all of Germany ("DE") summed across all age groups ("00+").
+We'll start by preparing the data for nowcasting and evaluation by removing all reference dates beyond the nowcast date and report dates beyond the date we will use to evaluate our nowcast performance.
 
 ```{r}
 nowcast_date <- "2021-08-01"
 eval_date <- "2021-10-01"
 
-target_data <- germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
-  enw_filter_report_dates(latest_date = eval_date) |>
-  enw_filter_reference_dates(
-    latest_date = nowcast_date
+target_data <- germany_covid19_hosp |>
+  filter(
+    location == "DE", age_group == "00+",
+    report_date <= eval_date,
+    reference_date <= nowcast_date
   )
 ```
 
-The `epinowcast` function `enw_latest_data()` will be used to filter observations to the latest available reported total counts for each reference date.
-
+Next we can plot both the "initial reports" by taking the sum of the cases at each reference date excluding all reports after the nowcast date, and compare that to what we will eventually observe as of the latest date in the complete dataset (data available through October 1, 2021).
+Let's first take the sum of the cases at each reference date from the complete dataset, which represents the "final" case counts using the data available through October 1, 2021.
 ```{r}
-latest_data <- enw_latest_data(target_data)
+latest_data <- target_data |>
+  group_by(reference_date) |>
+  summarise(count = sum(count))
 ```
 
-The `epinowcast` function `enw_filter_report_dates()` will be used to create a truncated dataset for generating a retrospective nowcast, using the data that would have been available as of the nowcast date.
+Next, let's get a dataset of what we would have had available as of the nowcast date, which we obtain by excluding all report dates after the nowcast date.
 
 ```{r}
-observed_data <- enw_filter_report_dates(
-  target_data,
-  latest_date = nowcast_date
-)
+observed_data <- target_data |>
+  filter(report_date <= nowcast_date)
 
 head(observed_data)
 ```
 
-Using the observed data as of the nowcast date (`observed_data`) and the `enw_latest_data()` function, we will make a plot of the latest total number of confirmed cases at each reference date.
+We refer to the "initial reports" as the sum of the cases at each reference date as they were available as of the nowcast date.
+
+```{r}
+initial_reports <- observed_data |>
+  group_by(reference_date) |>
+  summarise(count = sum(count))
+```
+
+We will make a plot comparing the initial reports to the later observed final number of confirmed cases at each reference date.
 
 <details><summary>Click to expand code to create the plot of the latest data</summary>
 
 ```{r}
-obs_data_by_reference_date <- enw_latest_data(observed_data)
 plot_data <- ggplot() +
   geom_line(
-    data = obs_data_by_reference_date,
-    aes(x = reference_date, y = confirm), color = "darkred"
+    data = initial_reports,
+    aes(x = reference_date, y = count), color = "darkred"
   ) +
   geom_line(
     data = latest_data,
-    aes(x = reference_date, y = confirm), color = "black"
+    aes(x = reference_date, y = count), color = "black"
   ) +
   theme_bw() +
   xlab("Reference date") +
   ylab("Confirmed admissions") +
   scale_y_continuous(trans = "log10") +
-  ggtitle("Comparing real-time and later observed cases")
+  ggtitle("Comparing initially reported and later observed cases")
 ```
 </details>
 ```{r}
@@ -154,7 +130,7 @@ It demonstrates the characteristic behaviour of right-truncation.
 This is because we have not yet observed the data with longer delays at recent time points.
 The black line shows the total number of confirmed admissions on each reference date as of October 1, 2021.
 
-Our task will be to estimate, from the data available up until August 1, 2021, the "final" total number of cases at each reference date.
+Our task will be to estimate, from the data available up until August 1, 2021, the "final" number of cases at each reference date.
 
 # Pre-processing
 
@@ -167,6 +143,8 @@ The reporting triangle will be used to estimate the delay distribution, or the p
 In this example, we will both fit our delay distribution, and apply it to generate a nowcast matrix using the same data, the national level data from Germany for all age groups.
 
 We recommend choosing the maximum delay and number of historical observations based on an exploratory data analysis, as these specifications will change significantly depending on the dataset.
+See the [NSSP nowcast](nssp_nowcast.html) for an example of an exploratory data analysis used to identify the maximum delay.
+Here we will set the maximum delay to 30 days.
 
 Empirical data outside this delay window will not be used for training.
 
@@ -174,84 +152,30 @@ Empirical data outside this delay window will not be used for training.
 max_delay <- 30
 ```
 
-We will use 3 times the maximum delay for the total training volume.
+Next, we will specify the amount of training volume used to fit the model as a function of the maximum delay, and the proportion of the total training volume used for delay estimation (with the remainder being used for uncertainty estimation).
+Internally within `baselinenowcast()` we will call, `allocate_reference_times()` with these arguments.
+We'll us the default settings for this function here, which uses 3 times the maximum delay for the total training volume with 50% used for delay estimation.
 
 ```{r}
-n_training_volume <- 3 * max_delay
+scale_factor <- 3
+prop_delay <- 0.5
 ```
 
-We'll use the most recent 50% of the reference times for delay estimation.
+Next we obtain a `reporting_triangle` using the `as_reporting_triangle()` function, which expects a data.frame with case counts indexed by reference date and report date and the maximum delay.
+This function computes the delay between the reference and report date and pivots the data from long to wide, so that the rows are reference times and the columns indicate the delay between the reference and report date, and the entries indicate the incident case counts.
+This also validates that the data is in the correct format and runs pre-processing to fill in any missing dates, see `?as_reporting_triangle.data.frame` and `?reporting_triangle` for more details on required inputs and the format of the `reporting_triangle` object.
 
 ```{r}
-n_history_delay <- as.integer(0.5 * n_training_volume)
-```
-
-For uncertainty estimation, we will generate retrospective nowcast datasets with the most recent 50% of the reference times.
-
-```{r}
-n_retrospective_nowcasts <- as.integer(0.5 * n_training_volume)
-```
-This means that in order to estimate the delay using the same amount of data, the oldest retrospective nowcast dataset will use the first 50% of the reference times.
-Note this uses the most recent observations.
-
-Next we will use the `epinowcast` function, `enw_filter_reference_dates()` to filter to only include `n_training_volume` days of historical data.
-
-```{r}
-training_data <- enw_filter_reference_dates(
-  observed_data,
-  include_days = n_training_volume
+rep_tri <- as_reporting_triangle(observed_data,
+  max_delay = max_delay
 )
 ```
 
-The `epinowcast` function `enw_latest_data()` will be used to filter for the latest available reported total counts for each reference date.
-
-```{r}
-latest_training_data <- enw_latest_data(training_data)
-```
-
-To obtain the data we want to evaluate the forecasts against, we will use `enw_filter_reference_dates()` applied to the `target_data`, to filter it for only the `n_training_volume` days of historical data.
-
-```{r}
-eval_data <- enw_filter_reference_dates(
-  latest_data,
-  include_days = n_training_volume
-)
-```
-
-Next we obtain the reporting triangle, adding an additional day to the `max_delay` because we want the `max_delay + 1` entries since 0 is a valid delay.
-This also validates that the data is in the correct format and runs preprocessing see `enw_preprocess_data()` for more details.
-
-```{r}
-pobs <- enw_preprocess_data(
-  obs = training_data,
-  max_delay = max_delay + 1
-)
-```
-
-Extract components from `pobs`, which is an `epinowcast` object.
-We only have one group here so we only need `reference_date`, `delay`, and `new_confirm`.
-
-```{r}
-reporting_triangle_df <- select(
-  pobs$new_confirm[[1]],
-  reference_date,
-  delay,
-  new_confirm
-)
-```
-
-We now pivot to wide format, dropping the `reference_date` column, and convert to a matrix this is the format that the low-level functions in `baselinenowcast` expect.
-
-```{r}
-reporting_triangle <- reporting_triangle_df |>
-  pivot_wider(names_from = delay, values_from = new_confirm) |>
-  select(-reference_date) |>
-  as.matrix()
-```
+The `reporting_triangle` object is a matrix with named rows for the reference dates corresponding to each row of the matrix.
 
 <details><summary>Click to expand code to create the plot of the reporting triangle</summary>
 ```{r}
-triangle_df <- as.data.frame(reporting_triangle) |>
+triangle_df <- as.data.frame(rep_tri$reporting_triangle_matrix) |>
   mutate(time = row_number()) |>
   pivot_longer(!time,
     values_to = "count",
@@ -277,46 +201,7 @@ plot_triangle
 ```
 Here, the grey indicates matrix elements that are `NA`, which we would expect to be the case in the bottom right portion of the reporting triangle where the counts have yet to be observed.
 
-# Estimate delay
-
-Now that we have the reporting triangle, we are now ready to pass it in to the `baselinenowcast` package to estimate the delay distribution.
-We will tell the function the maximum delay and the number of observations we want to use for estimation.
-We only want to pass in the reporting triangle (for a single group!) to this function.
-See documentation for `estimate_delay()` for a full description of the function inputs.
-
-```{r}
-delay_pmf <- estimate_delay(
-  reporting_triangle = reporting_triangle,
-  max_delay = max_delay,
-  n = n_history_delay
-)
-```
-<details><summary>Click to expand code to create the plot of the delay distribution</summary>
-```{r}
-delay_df <- data.frame(
-  delay = 0:(length(delay_pmf) - 1),
-  pmf = delay_pmf
-)
-
-delay_cdf_plot <- ggplot(delay_df) +
-  geom_line(aes(x = delay, y = cumsum(pmf))) +
-  xlab("Delay") +
-  ylab("Cumulative proportion reported") +
-  ggtitle("Empirical point estimate of cumulative proportion reported by delay") + # nolint
-  theme_bw()
-
-delay_pmf_plot <- ggplot(delay_df) +
-  geom_line(aes(x = delay, y = pmf)) +
-  xlab("Delay") +
-  ylab("Proportion reported") +
-  ggtitle("Empirical point estimate of proportion reported by delay") +
-  theme_bw()
-```
-</details>
-```{r}
-delay_cdf_plot
-delay_pmf_plot
-```
+# Run the `baselinenowcast` workflow
 
 # Apply the delay to generate a point nowcast
 

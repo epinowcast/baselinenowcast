@@ -1,0 +1,232 @@
+---
+title: "Modular workflow for flexible model development"
+description: "An example walking through the low-level function interface for building a nowcast model"
+output:
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+    fig_width: 8
+    fig_height: 5
+pkgdown:
+  as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{Modular workflow for flexible model development}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteDepends{epinowcast, ggplot2, dplyr, tidyr}
+---
+
+# Introduction
+
+The `baselinenowcast` provides a set of methods, implemented as functions, to produce probabilistic estimates of the final observed cases from partially observed case counts.
+
+Users can build a nowcast model in two ways:
+1. Using the `baselinenowcast()` wrapper function, which implements each step of the nowcasting workflow on one or more strata. See `?baselinenowcast.reporting_triangle` and `?baselinenowcast.data.frame`, as well as the [Getting Started](baselinenowcast.html) and [NSSP nowcasting](nssp_nowcast.html) vignettes for examples of this workflow.
+2. Using the low-level modular functions directly to allocate reference times for training, estimate a delay distribution, generate a point nowcast, estimate uncertainty, and sample from the observation model.
+
+In this vignette, we will walk through the low-level implementation.
+While the `baselinenowcast()` wrapper function implements the most "common" nowcasting workflow with some options for specification, the modular workflow allows for maximum flexibility to compose a model of one's choice via passing outputs from low-level functions in a pipeline-based approach.
+We recommend this workflow for any users who wish to investigate and use intermediate outputs (e.g. the point nowcast matrix) and compose their own nowcasting workflow.
+
+We will use the same dataset and problem from the [Gettign Started](baselinenowcast.html) vignette, and our assumption is that users have read that and are familiar with concepts introduced there such as the reporting triangle.
+Also see the [model definition](model_definition.html) vignette for more details on the mathematical methods, and the [nomenclature](nomenclature.html) vignette for full descriptions of the terminology being used.
+
+# Packages
+
+As well as the `baselinenowcast` package this vignette also uses `ggplot2`, `tidyr`, and `dplyr`.
+For `baselinenowcast`, see the [installation instructions](https://github.com/epinowcast/baselinenowcast#installation).
+
+```{r setup2, message = FALSE, warning = FALSE, results = 'hide'}
+library(baselinenowcast)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+
+# Data
+
+Again, we will use the package data used in the [Getting Started](baselinenowcast.html) vignette which contains COVID-19 cases in Germany by age group, indexed by the date of positive test and the date of report.
+
+So that outputs are comparable, we will use the same specifications here.
+
+```{r}
+nowcast_date <- "2021-08-01"
+eval_date <- "2021-10-01"
+
+target_data <- germany_covid19_hosp |>
+  filter(
+    location == "DE", age_group == "00+",
+    report_date <= eval_date,
+    reference_date <= nowcast_date
+  )
+```
+
+The `latest_data` will be used for evaluation to compare our estimates of the final number of cases to the observed number of cases by reference date available as of October 1, 2021.
+
+```{r}
+latest_data <- target_data |>
+  group_by(reference_date) |>
+  summarise(count = sum(count))
+```
+
+I am going to jump right into creating the dataset we need for nowcasting by filtering the data to exclude all report dates after the nowcast date, August 1, 2021.
+
+```{r}
+observed_data <- target_data |>
+  filter(report_date <= nowcast_date)
+head(observed_data)
+```
+
+Our task is to estimate, using the data available up until August 1, 2021, the "final" number of cases at each reference date.
+
+# Model specification
+
+We will specify the maximum delay.
+We recommend choosing the maximum delay based on an exploratory data analysis of your specific dataset.
+See the [NSSP nowcast](nssp_nowcast.html) for an example
+
+```{r}
+max_delay <- 30
+```
+
+In the modular workflow, we can specify precisely the number of reference times used for delay estimation and uncertainty estimation.
+We will use the same values as are used by default in the `allocate_reference_times()` function, which is called internally within `baselinenowcast()`.
+See `?allocate_reference_times` for more details.
+
+We will use 3 times the maximum delay for the total training volume.
+
+```{r}
+n_training_volume <- 3 * max_delay
+```
+
+We will use the most recent 50% of the reference times for delay estimation.
+
+```{r}
+n_history_delay <- as.integer(0.5 * n_training_volume)
+```
+
+For uncertainty estimation, we will generate retrospective nowcast datasets with the most recent 50% of the reference times.
+
+```{r}
+n_retrospective_nowcasts <- as.integer(0.5 * n_training_volume)
+```
+
+This means that in order to estimate the delay using the same amount of data, the oldest retrospective nowcast dataset will use the first 50% of the reference times.
+Note this uses the most recent observations.
+
+# Pre-processing
+
+We'll start by generating a `reporting_triangle` object from the `observed_data` which contains incident case counts indexed by reference and report date.
+```{r}
+rep_tri <- as_reporting_triangle(observed_data,
+  max_delay = max_delay
+)
+```
+
+We will use the `reporting_triangle` class object, `rep_tri` for the remaining workflow steps.
+
+# Estimate delay
+
+Now that we have the reporting triangle, we are now ready to estimate the delay distribution.
+We will tell the function the maximum delay and the number of observations we want to use for estimation.
+We only want to pass in the reporting triangle (for a single group!) to this function.
+See documentation for `estimate_delay()` for a full description of the function inputs.
+
+```{r}
+delay_pmf <- estimate_delay(
+  reporting_triangle = rep_tri$reporting_triangle_matrix,
+  max_delay = max_delay,
+  n = n_history_delay
+)
+```
+<details><summary>Click to expand code to create the plot of the delay distribution</summary>
+```{r}
+delay_df <- data.frame(
+  delay = 0:(length(delay_pmf) - 1),
+  pmf = delay_pmf
+)
+
+delay_cdf_plot <- ggplot(delay_df) +
+  geom_line(aes(x = delay, y = cumsum(pmf))) +
+  xlab("Delay") +
+  ylab("Cumulative proportion reported") +
+  ggtitle("Empirical point estimate of cumulative proportion reported by delay") + # nolint
+  theme_bw()
+
+delay_pmf_plot <- ggplot(delay_df) +
+  geom_line(aes(x = delay, y = pmf)) +
+  xlab("Delay") +
+  ylab("Proportion reported") +
+  ggtitle("Empirical point estimate of proportion reported by delay") +
+  theme_bw()
+```
+</details>
+```{r}
+delay_cdf_plot
+delay_pmf_plot
+```
+# Apply the delay to generate a point nowcast
+
+The next step in our workflow is to take the estimated delay distribution and apply it to the partially observed reporting triangle, generating an estimate of the number of new cases confirmed at each reference date and delay.
+This will generate a point estimate of complete the reporting matrix.
+In this case, we will be applying the delay to the same reporting triangle we used to generate the estimate, but this doesn't always have to be the case.
+See the documentation for `apply_delay()` for a full description of the input requirements.
+
+It is worth noting that we could also have estimated the delay and applied it in one single step by calling `fill_triangle()`.
+
+```{r}
+point_nowcast_matrix <- apply_delay(
+  reporting_triangle = rep_tri$reporting_triangle_matrix,
+  delay_pmf = delay_pmf
+)
+```
+
+We'll make a quick plot to compare our point estimate of the nowcasted confirmed cases through August 1, 2021, to the "final" observations from October 1, 2021 and to the right-truncated data available up until August 1, 2021.
+
+<details><summary>Click to expand code to create the plot of the point nowcast</summary>
+```{r}
+initial_reports_labeled <- initial_reports |>
+  mutate(type = "Initial reports real-time")
+point_nowcast_df <- latest_data |>
+  mutate(nowcast = rowSums(point_nowcast_matrix)) |>
+  pivot_longer(
+    cols = c(count, nowcast),
+    names_to = "type",
+    values_to = "count"
+  ) |>
+  mutate(type = case_when(
+    type == "count" ~ "Final observed data",
+    type == "nowcast" ~ "Point nowcast",
+    TRUE ~ type
+  )) |>
+  bind_rows(
+    initial_reports_labeled
+  )
+
+# Create plot with data type as a variable
+plot_pt_nowcast <- ggplot(point_nowcast_df, aes(
+  x = reference_date,
+  y = count,
+  color = type
+)) +
+  geom_line() +
+  scale_color_manual(values = c(
+    "Initial reports real-time" = "darkred",
+    "Final observed data" = "black",
+    "Point nowcast" = "darkblue"
+  )) +
+  theme_bw() +
+  xlab("Reference date") +
+  ylab("Confirmed admissions") +
+  scale_y_continuous(trans = "log10") +
+  ggtitle("Comparing real-time initial reports, nowcasted, and later observed cases") +
+  theme(legend.position = "bottom") +
+  labs(color = "Type")
+```
+</details>
+```{r}
+plot_pt_nowcast
+```

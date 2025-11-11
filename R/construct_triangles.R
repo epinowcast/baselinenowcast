@@ -27,11 +27,9 @@
 #' )
 #' retro_rts_custom
 construct_triangles <- function(truncated_reporting_triangles, structure = 1) {
-  # Check that input is a list of matrices
-  if (!is.matrix(truncated_reporting_triangles[[1]])) {
-    cli_abort(
-      message = "The elements of `reporting_triangles` must be matrices"
-    )
+  # Check that input is a list
+  if (!is.list(truncated_reporting_triangles)) {
+    cli_abort(message = "`truncated_reporting_triangles` must be a list")
   }
 
   reporting_triangles <- lapply(
@@ -73,7 +71,6 @@ construct_triangles <- function(truncated_reporting_triangles, structure = 1) {
 #' rep_custom
 construct_triangle <- function(truncated_reporting_triangle,
                                structure = 1) {
-  # Validate input is a reporting_triangle
   assert_reporting_triangle(truncated_reporting_triangle)
 
   # Save attributes from input

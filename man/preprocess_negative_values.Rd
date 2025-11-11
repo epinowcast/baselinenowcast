@@ -7,19 +7,18 @@
 preprocess_negative_values(triangle)
 }
 \arguments{
-\item{triangle}{Matrix of the reporting triangle, with rows representing
-the time points of reference and columns representing the delays.}
+\item{triangle}{A \link{reporting_triangle} object or matrix with rows
+representing the time points of reference and columns representing delays.}
 }
 \value{
-Matrix of positive integers with negative values of reporting
-handled via redistribution to earlier delays.
+A \link{reporting_triangle} object (if input was reporting_triangle) or
+matrix with negative values handled via redistribution to earlier delays.
 }
 \description{
-Takes in a reporting triangle and returns a matrix in the same format
-as the input triangle, but with negative values of reporting handled by
-redistributing them to earlier delays (from longer delay to shorter).
-This is useful when dealing with reporting corrections that can result in
-negative incremental counts.
+Takes in a reporting triangle and returns it with negative values of
+reporting handled by redistributing them to earlier delays (from longer
+delay to shorter). This is useful when dealing with reporting corrections
+that can result in negative incremental counts.
 
 When negative values are detected, they are set to zero and the negative
 amount is subtracted from the count at the next earlier delay (moving from
@@ -51,7 +50,7 @@ probabilities
 \examples{
 # Using example dataset with negative values from corrections
 # Preprocess to handle negatives
-preprocessed <- preprocess_negative_values(example_downward_corr_mat)
+preprocessed <- preprocess_negative_values(example_downward_corr_rt)
 preprocessed
 }
 \seealso{

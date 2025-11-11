@@ -1,11 +1,10 @@
 #' Preprocess negative values in the reporting triangle
 #'
 #' @description
-#' Takes in a reporting triangle and returns a matrix in the same format
-#' as the input triangle, but with negative values of reporting handled by
-#' redistributing them to earlier delays (from longer delay to shorter).
-#' This is useful when dealing with reporting corrections that can result in
-#' negative incremental counts.
+#' Takes in a reporting triangle and returns it with negative values of
+#' reporting handled by redistributing them to earlier delays (from longer
+#' delay to shorter). This is useful when dealing with reporting corrections
+#' that can result in negative incremental counts.
 #'
 #' When negative values are detected, they are set to zero and the negative
 #' amount is subtracted from the count at the next earlier delay (moving from
@@ -17,11 +16,11 @@
 #' German Hospitalization Nowcasting Hub.
 #' Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R #nolint
 #'
-#' @param triangle Matrix of the reporting triangle, with rows representing
-#'   the time points of reference and columns representing the delays.
+#' @param triangle A [reporting_triangle] object or matrix with rows
+#'   representing the time points of reference and columns representing delays.
 #'
-#' @return Matrix of positive integers with negative values of reporting
-#'   handled via redistribution to earlier delays.
+#' @return A [reporting_triangle] object (if input was reporting_triangle) or
+#'   matrix with negative values handled via redistribution to earlier delays.
 #'
 #' @details
 #' Use this function when:
@@ -43,21 +42,28 @@
 #' @examples
 #' # Using example dataset with negative values from corrections
 #' # Preprocess to handle negatives
-#' preprocessed <- preprocess_negative_values(example_downward_corr_mat)
+#' preprocessed <- preprocess_negative_values(example_downward_corr_rt)
 #' preprocessed
 preprocess_negative_values <- function(triangle) {
+  # Store original class for return type
+  is_rt <- is_reporting_triangle(triangle)
+  original_triangle <- triangle
+
+  # Convert to matrix for processing
+  triangle_mat <- if (is_rt) as.matrix(triangle) else triangle
+
   # Check if any negative values are present
-  has_negatives <- any(triangle < 0, na.rm = TRUE)
+  has_negatives <- any(triangle_mat < 0, na.rm = TRUE)
   if (has_negatives) {
     cli_alert_info(
       "Negative values detected in reporting triangle and will be corrected"
     )
   }
 
-  integer_cols <- seq_len(ncol(triangle))
-  pos_triangle <- triangle
+  integer_cols <- seq_len(ncol(triangle_mat))
+  pos_triangle <- triangle_mat
   pos_triangle[is.na(pos_triangle)] <- 0 # Set NAs to 0 temporarily
-  for (i in seq_len(nrow(triangle))) {
+  for (i in seq_len(nrow(triangle_mat))) {
     to_subtract <- 0
     row_i <- pos_triangle[i, ]
     # Loop over the columns starting from the last column back to max delay
@@ -84,6 +90,12 @@ preprocess_negative_values <- function(triangle) {
   }
 
   # Return values that were NA back to NA
-  pos_triangle[is.na(triangle)] <- NA
-  return(pos_triangle)
+  pos_triangle[is.na(triangle_mat)] <- NA
+
+  # Return appropriate type
+  if (is_rt) {
+    return(.update_triangle_matrix(original_triangle, pos_triangle))
+  } else {
+    return(pos_triangle)
+  }
 }

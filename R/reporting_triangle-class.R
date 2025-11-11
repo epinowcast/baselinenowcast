@@ -310,3 +310,22 @@ assert_reporting_triangle <- function(data) {
 is_reporting_triangle <- function(x) {
   return(inherits(x, "reporting_triangle"))
 }
+
+#' Update reporting_triangle with new matrix data
+#'
+#' Internal helper to create a new reporting_triangle from modified matrix data
+#' while preserving the original object's metadata (reference dates, delays_unit).
+#' This simplifies the pattern of converting to matrix, operating on it, then
+#' restoring the reporting_triangle class and attributes.
+#'
+#' @param reporting_triangle The original [reporting_triangle] object.
+#' @param new_matrix The modified matrix data.
+#' @return A new [reporting_triangle] object with the updated matrix data.
+#' @keywords internal
+.update_triangle_matrix <- function(reporting_triangle, new_matrix) {
+  new_reporting_triangle(
+    reporting_triangle_matrix = new_matrix,
+    reference_dates = get_reference_dates(reporting_triangle),
+    delays_unit = get_delays_unit(reporting_triangle)
+  )
+}

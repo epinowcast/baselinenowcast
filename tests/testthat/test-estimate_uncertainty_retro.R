@@ -301,7 +301,6 @@ test_that(
       reporting_triangle = triangle,
       n_retrospective_nowcasts = 2,
       n_history_delay = 5,
-      max_delay = 3,
       ref_time_aggregator = identity,
       delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
       structure = 2,

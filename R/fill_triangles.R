@@ -44,8 +44,7 @@
 #' )
 #' triangle <- as_reporting_triangle(
 #'   data = triangle_mat,
-#'   reference_dates = ref_dates,
-#'   max_delay = ncol(triangle_mat) - 1
+#'   reference_dates = ref_dates
 #' )
 #'
 #' trunc_rts <- truncate_triangles(triangle)
@@ -53,9 +52,6 @@
 #' retro_pt_nowcast_mat_list <- fill_triangles(retro_rts)
 #' retro_pt_nowcast_mat_list[1:3]
 fill_triangles <- function(retro_reporting_triangles,
-                           max_delay = min(
-                             sapply(retro_reporting_triangles, ncol)
-                           ) - 1,
                            n = min(
                              sapply(retro_reporting_triangles, nrow)
                            ),
@@ -83,7 +79,6 @@ fill_triangles <- function(retro_reporting_triangles,
         reporting_triangle = triangle,
         delay_pmf = pmf,
         n = n,
-        max_delay = max_delay,
         preprocess = preprocess
       )
       if (!is.null(result$error)) {
@@ -197,15 +192,13 @@ fill_triangles <- function(retro_reporting_triangles,
 #' )
 #' triangle <- as_reporting_triangle(
 #'   data = triangle_mat,
-#'   reference_dates = ref_dates,
-#'   max_delay = ncol(triangle_mat) - 1
+#'   reference_dates = ref_dates
 #' )
 #' point_nowcast_matrix <- fill_triangle(
 #'   reporting_triangle = triangle
 #' )
 #' point_nowcast_matrix
 fill_triangle <- function(reporting_triangle,
-                          max_delay = ncol(reporting_triangle) - 1,
                           n = nrow(reporting_triangle),
                           delay_pmf = NULL,
                           preprocess = preprocess_negative_values) {
@@ -235,7 +228,6 @@ fill_triangle <- function(reporting_triangle,
   if (is.null(delay_pmf)) {
     delay_pmf <- estimate_delay(
       reporting_triangle = reporting_triangle,
-      max_delay = max_delay,
       n = n,
       preprocess = preprocess
     )

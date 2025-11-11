@@ -14,7 +14,7 @@ aggregation_opts(
 Must accept and return a matrix. Default is \code{identity}.}
 
 \item{delay}{Function to apply to aggregate across delays.
-Must accept a matrix and return a matrix. Default is
+Must accept a matrix and return a numeric vector. Default is
 \code{function(x) rowSums(x, na.rm = TRUE)}.}
 }
 \value{

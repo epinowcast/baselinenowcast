@@ -144,15 +144,11 @@ uncertainty_poisson <- function(strategy = uncertainty_by_horizon()) {
     cli_abort("`pred` must be numeric (vector or matrix).")
   }
 
-  if (!is.null(pred)) {
-    sampled_pred <- rpois(n = length(pred), lambda = as.numeric(pred))
+  sampled_pred <- rpois(n = length(pred), lambda = as.numeric(pred))
 
-    if (is.matrix(pred)) {
-      dim(sampled_pred) <- dim(pred)
-      dimnames(sampled_pred) <- dimnames(pred)
-    }
-  } else {
-    sampled_pred <- NULL
+  if (is.matrix(pred)) {
+    dim(sampled_pred) <- dim(pred)
+    dimnames(sampled_pred) <- dimnames(pred)
   }
 
   return(sampled_pred)

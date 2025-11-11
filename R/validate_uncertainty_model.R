@@ -84,15 +84,6 @@ assert_uncertainty_model.uncertainty_model <- function(model, ...) {
   # Validate strategy
   assert_uncertainty_strategy(model$strategy)
 
-  # Check if there's a more specific method available for this subclass
-  # Only call NextMethod if there's a method that's not the default
-  subclass <- class(model)[1]
-  method_name <- paste0("assert_uncertainty_model.", subclass)
-  if (exists(method_name, mode = "function") &&
-      !identical(subclass, "uncertainty_model")) {
-    NextMethod()
-  }
-
   return(invisible(NULL))
 }
 
@@ -109,6 +100,9 @@ assert_uncertainty_model.uncertainty_model <- function(model, ...) {
 #' @export
 #' @importFrom cli cli_abort
 assert_uncertainty_model.uncertainty_nb <- function(model, ...) {
+  # Call base validation first
+  NextMethod()
+
   # Check that family is "nb"
   if (model$family != "nb") {
     cli_abort(c(
@@ -134,6 +128,9 @@ assert_uncertainty_model.uncertainty_nb <- function(model, ...) {
 #' @export
 #' @importFrom cli cli_abort
 assert_uncertainty_model.uncertainty_poisson <- function(model, ...) {
+  # Call base validation first
+  NextMethod()
+
   # Check that family is "poisson"
   if (model$family != "poisson") {
     cli_abort(c(

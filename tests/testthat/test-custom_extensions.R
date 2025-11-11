@@ -329,7 +329,8 @@ test_that("Gamma distribution extension example works", {
     fit = function(obs, pred) {
       # Fit gamma using method of moments
       residuals <- obs - pred
-      shape <- mean(residuals)^2 / var(residuals)
+      residual_var <- max(var(residuals), 1e-6)
+      shape <- mean(residuals)^2 / residual_var
       list(shape = shape, rate = shape / mean(residuals))
     },
     sample = function(pred, params) {
@@ -357,7 +358,7 @@ test_that("Zero-inflated distribution concept works", {
     sample = function(pred, params) {
       # Simplified zero-inflated sampler
       n <- length(pred)
-      zeros <- rbinom(n, 1, 0.2)
+      zeros <- rbinom(n, 1, params$prop_zero)
       ifelse(zeros == 1, 0, pred)
     },
     family = "zero_inflated",

@@ -19,8 +19,8 @@ retrospective reporting triangle.}
 
 \item{ref_time_aggregator}{(Deprecated) Function that operates along the
 rows (reference times) of the retrospective point nowcast matrix before
-it has been aggregated across columns (delays). Use \code{uncertainty}
-parameter instead.}
+it has been aggregated across columns (delays). Use the \code{uncertainty}
+parameter in the calling public function instead.}
 }
 \value{
 \code{n_iters} Integer indicating the number of iterations, or

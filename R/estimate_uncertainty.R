@@ -365,7 +365,10 @@ fit_by_horizon <- function(obs,
 #' @param list_of_obs List of matrices of truncated reporting triangles
 #' @param n_possible_horizons Integer indicating the number of horizons in the
 #'     retrospective reporting triangle.
-#' @inheritParams estimate_uncertainty
+#' @param ref_time_aggregator (Deprecated) Function that operates along the
+#'   rows (reference times) of the retrospective point nowcast matrix before
+#'   it has been aggregated across columns (delays). Use the `uncertainty`
+#'   parameter in the calling public function instead.
 #'
 #' @returns `n_iters` Integer indicating the number of iterations, or
 #'    number of retrospective nowcast times, that have sufficient data once

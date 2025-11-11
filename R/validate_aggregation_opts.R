@@ -102,17 +102,8 @@ assert_aggregation_opts.aggregation_opts <- function(aggregation,
     checkmate::assert_matrix(test_data)
 
     # Test ref_time function
-    tryCatch(
-      {
-        result_ref <- aggregation$ref_time(test_data)
-        if (!is.matrix(result_ref) && !is.array(result_ref)) {
-          cli_abort(c(
-            "Invalid ref_time aggregation function",
-            x = "Function must return a matrix or array",
-            i = "Got class: {class(result_ref)[1]}"
-          ))
-        }
-      },
+    result_ref <- tryCatch(
+      aggregation$ref_time(test_data),
       error = function(e) {
         cli_abort(c(
           "ref_time aggregation function failed on test data",
@@ -121,18 +112,17 @@ assert_aggregation_opts.aggregation_opts <- function(aggregation,
       }
     )
 
+    if (!is.matrix(result_ref) && !is.array(result_ref)) {
+      cli_abort(c(
+        "Invalid ref_time aggregation function",
+        x = "Function must return a matrix or array",
+        i = "Got class: {class(result_ref)[1]}"
+      ))
+    }
+
     # Test delay function
-    tryCatch(
-      {
-        result_delay <- aggregation$delay(test_data)
-        if (!is.numeric(result_delay)) {
-          cli_abort(c(
-            "Invalid delay aggregation function",
-            x = "Function must return a numeric vector or matrix",
-            i = "Got class: {class(result_delay)[1]}"
-          ))
-        }
-      },
+    result_delay <- tryCatch(
+      aggregation$delay(test_data),
       error = function(e) {
         cli_abort(c(
           "delay aggregation function failed on test data",
@@ -140,6 +130,14 @@ assert_aggregation_opts.aggregation_opts <- function(aggregation,
         ))
       }
     )
+
+    if (!is.numeric(result_delay)) {
+      cli_abort(c(
+        "Invalid delay aggregation function",
+        x = "Function must return a numeric vector or matrix",
+        i = "Got class: {class(result_delay)[1]}"
+      ))
+    }
   }
 
   return(invisible(NULL))

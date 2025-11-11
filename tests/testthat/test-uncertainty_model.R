@@ -186,22 +186,7 @@ test_that("print.uncertainty_model returns object invisibly", {
   expect_identical(result$value, model)
 })
 
-test_that("uncertainty_model validation runs at construction", {
-  strategy <- uncertainty_by_horizon()
-
-  # Create a model that passes initial checks but has issues
-  # This tests that assert_uncertainty_model is called
-  expect_no_error(
-    uncertainty_model(
-      fit = function(obs, pred) 1,
-      sample = function(pred, params) pred,
-      family = "valid",
-      strategy = strategy
-    )
-  )
-})
-
-test_that("uncertainty_model works with different strategy types", {
+test_that("uncertainty_model works with by_horizon strategy", {
   # Test with by_horizon strategy
   strategy_bh <- uncertainty_by_horizon()
   model_bh <- uncertainty_model(

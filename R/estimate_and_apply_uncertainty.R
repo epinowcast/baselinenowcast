@@ -38,7 +38,7 @@
 #'    observations and probabilistic predictions at each reference time.
 #' @family workflow_wrappers
 #' @export
-#' @importFrom cli cli_abort
+#' @importFrom cli cli_abort cli_warn
 #' @examples
 #' triangle <- matrix(
 #'   c(

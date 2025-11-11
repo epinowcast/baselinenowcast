@@ -8,8 +8,9 @@ uncertainty_model(fit, sample, family, strategy)
 }
 \arguments{
 \item{fit}{Function that takes observed and predicted values and returns
-fitted parameters. This function should have already been wrapped by the
-strategy at construction time. Signature: \verb{function(obs, pred)}.}
+fitted parameters. Users should pass an unwrapped function with signature
+\verb{function(obs, pred)}. The constructor will perform the necessary strategy
+wrapping at construction time.}
 
 \item{sample}{Function that takes predictions and fitted parameters and
 returns random samples. Signature: \verb{function(pred, params)}.}

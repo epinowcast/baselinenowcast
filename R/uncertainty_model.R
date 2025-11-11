@@ -7,8 +7,9 @@
 #' uncertainty models.
 #'
 #' @param fit Function that takes observed and predicted values and returns
-#'   fitted parameters. This function should have already been wrapped by the
-#'   strategy at construction time. Signature: `function(obs, pred)`.
+#'   fitted parameters. Users should pass an unwrapped function with signature
+#'   `function(obs, pred)`. The constructor will perform the necessary strategy
+#'   wrapping at construction time.
 #' @param sample Function that takes predictions and fitted parameters and
 #'   returns random samples. Signature: `function(pred, params)`.
 #' @param family Character string indicating the distribution family
@@ -76,6 +77,10 @@ uncertainty_model <- function(fit,
 print.uncertainty_model <- function(x, ...) {
   cat("Uncertainty Model:\n")
   cat("  Family:  ", x$family, "\n", sep = "")
-  cat("  Strategy:", attr(x$strategy, "name"), "\n")
+  strategy_name <- attr(x$strategy, "name")
+  if (is.null(strategy_name) || strategy_name == "") {
+    strategy_name <- "<unknown>"
+  }
+  cat("  Strategy:", strategy_name, "\n")
   invisible(x)
 }

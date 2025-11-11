@@ -8,7 +8,7 @@
 #' @param ref_time Function to apply to aggregate reference times.
 #'   Must accept and return a matrix. Default is `identity`.
 #' @param delay Function to apply to aggregate across delays.
-#'   Must accept a matrix and return a matrix. Default is
+#'   Must accept a matrix and return a numeric vector. Default is
 #'   `function(x) rowSums(x, na.rm = TRUE)`.
 #'
 #' @returns An object of class `c("aggregation_custom", "aggregation_opts")`

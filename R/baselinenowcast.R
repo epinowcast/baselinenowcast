@@ -25,8 +25,8 @@ baselinenowcast <- function(data,
                             prop_delay = 0.5,
                             output_type = c("samples", "point"),
                             draws = 1000,
-                            uncertainty_model = fit_by_horizon,
-                            uncertainty_sampler = sample_nb,
+                            uncertainty_model = NULL,
+                            uncertainty_sampler = NULL,
                             ...) {
   UseMethod("baselinenowcast")
 }
@@ -99,8 +99,8 @@ baselinenowcast.reporting_triangle <- function(
     prop_delay = 0.5,
     output_type = c("samples", "point"),
     draws = 1000,
-    uncertainty_model = fit_by_horizon,
-    uncertainty_sampler = sample_nb,
+    uncertainty_model = NULL,
+    uncertainty_sampler = NULL,
     delay_pmf = NULL,
     uncertainty_params = NULL,
     preprocess = preprocess_negative_values,
@@ -140,11 +140,14 @@ baselinenowcast.reporting_triangle <- function(
   }
 
   if (is.null(uncertainty_params)) {
+    # Use new API internally to avoid deprecation warnings
     uncertainty_params <- estimate_uncertainty_retro(
       reporting_triangle = data$reporting_triangle_matrix,
       n_history_delay = tv$n_history_delay,
       n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
-      uncertainty_model = uncertainty_model
+      uncertainty = uncertainty_opts(
+        model = uncertainty_nb(strategy = uncertainty_by_horizon())
+      )
     )
   }
   .validate_uncertainty(tri, uncertainty_params)
@@ -153,7 +156,9 @@ baselinenowcast.reporting_triangle <- function(
     reporting_triangle = tri,
     uncertainty_params = uncertainty_params,
     draws = draws,
-    uncertainty_sampler = uncertainty_sampler,
+    uncertainty = uncertainty_opts(
+      model = uncertainty_nb(strategy = uncertainty_by_horizon())
+    ),
     ...
   )
 
@@ -258,8 +263,8 @@ baselinenowcast.data.frame <- function(
     prop_delay = 0.5,
     output_type = c("samples", "point"),
     draws = 1000,
-    uncertainty_model = fit_by_horizon,
-    uncertainty_sampler = sample_nb,
+    uncertainty_model = NULL,
+    uncertainty_sampler = NULL,
     max_delay,
     delays_unit = "days",
     strata_cols = NULL,
@@ -337,11 +342,14 @@ baselinenowcast.data.frame <- function(
     }
     if ("uncertainty" %in% strata_sharing) {
       # Estimate uncertainty once on pooled data
+      # Use new API internally to avoid deprecation warnings
       shared_uncertainty_params <- estimate_uncertainty_retro(
         reporting_triangle = pooled_triangle$reporting_triangle_matrix,
         n_history_delay = tv$n_history_delay,
         n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
-        uncertainty_model = uncertainty_model,
+        uncertainty = uncertainty_opts(
+          model = uncertainty_nb(strategy = uncertainty_by_horizon())
+        ),
         preprocess = preprocess
       )
     }
@@ -352,14 +360,13 @@ baselinenowcast.data.frame <- function(
     list_of_rep_tris,
     # nolint start: brace_linter, unnecessary_nesting_linter
     \(rep_tri){
+      # Use new API internally to avoid deprecation warnings
       baselinenowcast(
         data = rep_tri,
         scale_factor = scale_factor,
         prop_delay = prop_delay,
         output_type = output_type,
         draws = draws,
-        uncertainty_model = uncertainty_model,
-        uncertainty_sampler = uncertainty_sampler,
         delay_pmf = shared_delay_pmf,
         uncertainty_params = shared_uncertainty_params,
         preprocess = preprocess

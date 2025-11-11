@@ -7,14 +7,18 @@
 #'   horizon 1 to the maximum horizon. Note that these will be reversed
 #'   internally to match the ordering of the `point_nowcast_matrix` (where
 #'   a horizon of 1 is the last entry).
-#' @param uncertainty_sampler Function that ingests a vector or matrix of
-#'    predictions and a vector of uncertainty parameters and generates draws
-#'    from the observation model. Default is `sample_nb` which expects
-#'    arguments `pred` for the vector of predictions and uncertainty parameters
-#'    for the corresponding vector of uncertainty parameters, and draws from a
-#'    negative binomial for each element of the vector.
+#' @param uncertainty An object of class `uncertainty_opts` created by
+#'   [uncertainty_opts()]. Specifies the uncertainty model and aggregation
+#'   functions. Default uses negative binomial with by-horizon fitting.
+#' @param uncertainty_sampler (Deprecated) Function that ingests a vector or
+#'   matrix of predictions and a vector of uncertainty parameters and
+#'   generates draws from the observation model. Use `uncertainty` parameter
+#'   instead.
+#' @param ref_time_aggregator (Deprecated) Function that operates along the
+#'   rows (reference times). Use `uncertainty` parameter instead.
+#' @param delay_aggregator (Deprecated) Function that operates along the
+#'   columns (delays). Use `uncertainty` parameter instead.
 #' @inheritParams estimate_delay
-#' @inheritParams estimate_uncertainty
 #' @returns Vector of predicted draws at each reference time, for all reference
 #'    times in the input `point_nowcast_matrix`.
 #' @family generate_probabilistic_nowcasts
@@ -48,7 +52,11 @@
 #'     point_nowcast_matrix,
 #'     reporting_triangle,
 #'     disp,
-#'     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+#'     uncertainty = uncertainty_opts(
+#'       aggregation = aggregation_opts(
+#'         ref_time = function(x) zoo::rollsum(x, k = 2, align = "right")
+#'       )
+#'     )
 #'   )
 #'   nowcast_pred_draw_agg
 #' }
@@ -56,9 +64,59 @@ sample_prediction <- function(
     point_nowcast_matrix,
     reporting_triangle,
     uncertainty_params,
-    uncertainty_sampler = sample_nb,
-    ref_time_aggregator = identity,
-    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
+    uncertainty = uncertainty_opts(),
+    uncertainty_sampler = NULL,
+    ref_time_aggregator = NULL,
+    delay_aggregator = NULL) {
+  # Handle deprecated parameters
+  if (!is.null(uncertainty_sampler) || !is.null(ref_time_aggregator) ||
+    !is.null(delay_aggregator)) {
+    cli_warn(
+      c(
+        "!" = "Direct parameter specification is deprecated.",
+        "i" = "Use {.arg uncertainty = uncertainty_opts()} instead.",
+        "i" = "See {.help uncertainty_opts} for details."
+      ),
+      .frequency = "once",
+      .frequency_id = "sample_prediction_deprecated_params"
+    )
+
+    # Build uncertainty object from deprecated params
+    # Use defaults for missing params
+    if (is.null(ref_time_aggregator)) {
+      ref_time_aggregator <- identity
+    }
+    if (is.null(delay_aggregator)) {
+      delay_aggregator <- function(x) rowSums(x, na.rm = TRUE)
+    }
+
+    # Only handle sample_nb for uncertainty_sampler
+    if (!is.null(uncertainty_sampler) &&
+      identical(uncertainty_sampler, sample_nb)) {
+      model <- uncertainty_nb(strategy = uncertainty_by_horizon())
+    } else if (!is.null(uncertainty_sampler)) {
+      cli_abort(c(
+        "Cannot automatically convert custom {.arg uncertainty_sampler}",
+        "i" = "Please use {.fn uncertainty_opts} directly"
+      ))
+    } else {
+      model <- uncertainty_nb(strategy = uncertainty_by_horizon())
+    }
+
+    uncertainty <- uncertainty_opts(
+      model = model,
+      aggregation = aggregation_opts(
+        ref_time = ref_time_aggregator,
+        delay = delay_aggregator
+      )
+    )
+  }
+
+  # Extract components from uncertainty object
+  uncertainty_sampler_func <- uncertainty$model$sample
+  ref_time_aggregator <- uncertainty$aggregation$ref_time
+  delay_aggregator <- uncertainty$aggregation$delay
+
   if (length(uncertainty_params) > nrow(point_nowcast_matrix)) {
     cli_abort(
       message = c(
@@ -109,7 +167,7 @@ sample_prediction <- function(
   # so horizon = 0 is last.
   mean_pred <- mean_pred_agg[(max_t - n_horizons + 1):max_t, , drop = FALSE]
   uncertainty_params_use <- tail(uncertainty_params, n = n_horizons)
-  draw_pred <- as.matrix(uncertainty_sampler(
+  draw_pred <- as.matrix(uncertainty_sampler_func(
     pred = mean_pred,
     uncertainty_params = rev(uncertainty_params_use)
   ))
@@ -163,7 +221,14 @@ sample_prediction <- function(
 #' @param predicted_counts Vector of predicted counts at each reference time.
 #'    Note that if using a reference time or delay aggregator function, this
 #'    is assumed to have already been aggregated.
-#' @inheritParams sample_prediction
+#' @param reporting_triangle Reporting triangle matrix.
+#' @param uncertainty An object of class `uncertainty_opts` created by
+#'   [uncertainty_opts()]. Specifies the aggregation functions. Default uses
+#'   standard observed aggregation.
+#' @param ref_time_aggregator (Deprecated) Function that operates along the
+#'   rows (reference times). Use `uncertainty` parameter instead.
+#' @param delay_aggregator (Deprecated) Function that operates along the
+#'   columns (delays). Use `uncertainty` parameter instead.
 #'
 #' @returns A vector of predicted counts at each reference time
 #' @family generate_probabilistic_nowcasts
@@ -186,14 +251,52 @@ sample_prediction <- function(
 #' if (requireNamespace("zoo", quietly = TRUE)) {
 #'   combine_obs_with_pred(pred_counts,
 #'     reporting_triangle,
-#'     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+#'     uncertainty = uncertainty_opts(
+#'       aggregation = aggregation_opts(
+#'         ref_time = function(x) zoo::rollsum(x, k = 2, align = "right")
+#'       )
+#'     )
 #'   )
 #' }
 combine_obs_with_pred <- function(
     predicted_counts,
     reporting_triangle,
-    ref_time_aggregator = identity,
-    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
+    uncertainty = uncertainty_opts(),
+    ref_time_aggregator = NULL,
+    delay_aggregator = NULL) {
+  # Handle deprecated parameters
+  if (!is.null(ref_time_aggregator) || !is.null(delay_aggregator)) {
+    cli_warn(
+      c(
+        "!" = "Direct parameter specification is deprecated.",
+        "i" = "Use {.arg uncertainty = uncertainty_opts()} instead.",
+        "i" = "See {.help uncertainty_opts} for details."
+      ),
+      .frequency = "once",
+      .frequency_id = "combine_obs_with_pred_deprecated_params"
+    )
+
+    # Build uncertainty object from deprecated params
+    # Use defaults for missing params
+    if (is.null(ref_time_aggregator)) {
+      ref_time_aggregator <- identity
+    }
+    if (is.null(delay_aggregator)) {
+      delay_aggregator <- function(x) rowSums(x, na.rm = TRUE)
+    }
+
+    uncertainty <- uncertainty_opts(
+      aggregation = aggregation_opts(
+        ref_time = ref_time_aggregator,
+        delay = delay_aggregator
+      )
+    )
+  }
+
+  # Extract components from uncertainty object
+  ref_time_aggregator <- uncertainty$aggregation$ref_time
+  delay_aggregator <- uncertainty$aggregation$delay
+
   aggr_reporting_triangle <- ref_time_aggregator(reporting_triangle)
   obs_counts_agg <- delay_aggregator(aggr_reporting_triangle)
   return(obs_counts_agg + predicted_counts)
@@ -249,6 +352,7 @@ sample_predictions <- function(
     reporting_triangle,
     uncertainty_params,
     draws = 1000,
+    uncertainty = uncertainty_opts(),
     ...) {
   assert_integerish(draws, lower = 1)
   reference_times <- seq_len(nrow(point_nowcast_matrix))
@@ -258,6 +362,7 @@ sample_predictions <- function(
       point_nowcast_matrix,
       reporting_triangle,
       uncertainty_params,
+      uncertainty = uncertainty,
       ...
     )
     # If aggregating, we need to pad with NAs
@@ -311,25 +416,67 @@ sample_nowcast <- function(
     point_nowcast_matrix,
     reporting_triangle,
     uncertainty_params,
-    uncertainty_sampler = sample_nb,
-    ref_time_aggregator = identity,
-    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
+    uncertainty = uncertainty_opts(),
+    uncertainty_sampler = NULL,
+    ref_time_aggregator = NULL,
+    delay_aggregator = NULL) {
+  # Handle deprecated parameters
+  if (!is.null(uncertainty_sampler) || !is.null(ref_time_aggregator) ||
+    !is.null(delay_aggregator)) {
+    cli_warn(
+      c(
+        "!" = "Direct parameter specification is deprecated.",
+        "i" = "Use {.arg uncertainty = uncertainty_opts()} instead.",
+        "i" = "See {.help uncertainty_opts} for details."
+      ),
+      .frequency = "once",
+      .frequency_id = "sample_nowcast_deprecated_params"
+    )
+
+    # Build uncertainty object from deprecated params
+    # Use defaults for missing params
+    if (is.null(ref_time_aggregator)) {
+      ref_time_aggregator <- identity
+    }
+    if (is.null(delay_aggregator)) {
+      delay_aggregator <- function(x) rowSums(x, na.rm = TRUE)
+    }
+
+    # Only handle sample_nb for uncertainty_sampler
+    if (!is.null(uncertainty_sampler) &&
+      identical(uncertainty_sampler, sample_nb)) {
+      model <- uncertainty_nb(strategy = uncertainty_by_horizon())
+    } else if (!is.null(uncertainty_sampler)) {
+      cli_abort(c(
+        "Cannot automatically convert custom {.arg uncertainty_sampler}",
+        "i" = "Please use {.fn uncertainty_opts} directly"
+      ))
+    } else {
+      model <- uncertainty_nb(strategy = uncertainty_by_horizon())
+    }
+
+    uncertainty <- uncertainty_opts(
+      model = model,
+      aggregation = aggregation_opts(
+        ref_time = ref_time_aggregator,
+        delay = delay_aggregator
+      )
+    )
+  }
+
   # Generate a single draw of the predictions
   pred_counts <- sample_prediction(
     point_nowcast_matrix,
     reporting_triangle,
     uncertainty_params,
-    uncertainty_sampler,
-    ref_time_aggregator,
-    delay_aggregator
+    uncertainty = uncertainty
   )
 
   # Combine with observations
   draw <- combine_obs_with_pred(
     pred_counts,
     reporting_triangle,
-    ref_time_aggregator,
-    delay_aggregator
+    uncertainty = uncertainty
   )
 
   return(draw)
@@ -370,6 +517,7 @@ sample_nowcasts <- function(
     reporting_triangle,
     uncertainty_params,
     draws = 1000,
+    uncertainty = uncertainty_opts(),
     ...) {
   reference_times <- seq_len(nrow(point_nowcast_matrix))
 
@@ -378,6 +526,7 @@ sample_nowcasts <- function(
       point_nowcast_matrix,
       reporting_triangle,
       uncertainty_params,
+      uncertainty = uncertainty,
       ...
     )
     # If aggregating, we need to pad with NAs

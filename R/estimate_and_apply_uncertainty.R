@@ -19,7 +19,6 @@
 #'
 #' @inheritParams estimate_delay
 #' @inheritParams construct_triangle
-#' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcasts
 #' @inheritParams sample_prediction
 #' @inheritParams fill_triangles
@@ -28,6 +27,11 @@
 #'    starting from the most recent reporting delay.
 #' @param n_retrospective_nowcasts Integer indicating the number of
 #'   retrospective nowcast times to use for uncertainty estimation.
+#' @param uncertainty An object of class `uncertainty_opts` created by
+#'   [uncertainty_opts()]. Specifies the uncertainty model and aggregation
+#'   functions. Default uses negative binomial with by-horizon fitting.
+#' @param uncertainty_model (Deprecated) Use `uncertainty` parameter instead.
+#' @param uncertainty_sampler (Deprecated) Use `uncertainty` parameter instead.
 #' @param ... Additional arguments to `estimate_uncertainty()` and
 #'    `sample_prediction()`.
 #' @returns `nowcast_draws_df` Dataframe containing draws of combined
@@ -71,9 +75,42 @@ estimate_and_apply_uncertainty <- function(
     structure = detect_structure(reporting_triangle),
     draws = 1000,
     delay_pmf = NULL,
-    uncertainty_model = fit_by_horizon,
-    uncertainty_sampler = sample_nb,
+    uncertainty = uncertainty_opts(),
+    uncertainty_model = NULL,
+    uncertainty_sampler = NULL,
     ...) {
+  # Handle deprecated parameters
+  if (!is.null(uncertainty_model) || !is.null(uncertainty_sampler)) {
+    cli_warn(
+      c(
+        "!" = "Direct parameter specification is deprecated.",
+        "i" = "Use {.arg uncertainty = uncertainty_opts()} instead.",
+        "i" = "See {.help uncertainty_opts} for details."
+      ),
+      .frequency = "once",
+      .frequency_id = "estimate_and_apply_uncertainty_deprecated_params"
+    )
+
+    # Only handle fit_by_horizon and sample_nb
+    if (!is.null(uncertainty_model) &&
+      !identical(uncertainty_model, fit_by_horizon)) {
+      cli_abort(c(
+        "Cannot automatically convert custom {.arg uncertainty_model}",
+        "i" = "Please use {.fn uncertainty_opts} directly"
+      ))
+    }
+    if (!is.null(uncertainty_sampler) &&
+      !identical(uncertainty_sampler, sample_nb)) {
+      cli_abort(c(
+        "Cannot automatically convert custom {.arg uncertainty_sampler}",
+        "i" = "Please use {.fn uncertainty_opts} directly"
+      ))
+    }
+
+    # Use default model if parameters specified but match defaults
+    uncertainty <- uncertainty_opts()
+  }
+
   .validate_multiple_inputs(
     point_nowcast_matrix = point_nowcast_matrix,
     reporting_triangle = reporting_triangle,
@@ -87,7 +124,7 @@ estimate_and_apply_uncertainty <- function(
     max_delay = max_delay,
     structure = structure,
     delay_pmf = delay_pmf,
-    uncertainty_model = uncertainty_model,
+    uncertainty = uncertainty,
     ...
   )
   nowcast_draws <- sample_nowcasts(
@@ -95,7 +132,7 @@ estimate_and_apply_uncertainty <- function(
     reporting_triangle,
     uncertainty_params = uncertainty_params,
     draws = draws,
-    uncertainty_sampler = uncertainty_sampler,
+    uncertainty = uncertainty,
     ...
   )
   return(nowcast_draws)

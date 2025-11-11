@@ -122,9 +122,9 @@ test_that("as_reporting_triangle.data.frame() can handle a ragged triangle with 
   )
 
   # The structure is computed dynamically and not stored as an attribute
-  # Verify that detect_structure correctly identifies the pattern
+  # Verify that get_reporting_structure correctly identifies the pattern
   expected_structure <- c(1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1) # nolint
-  expect_identical(detect_structure(rep_tri), expected_structure)
+  expect_identical(get_reporting_structure(rep_tri), expected_structure)
 })
 
 test_that("as_reporting_triangle.data.frame() errors if there are duplicate pairs of reference and report dates", { # nolint

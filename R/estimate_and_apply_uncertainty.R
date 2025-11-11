@@ -77,7 +77,7 @@ estimate_and_apply_uncertainty <- function(
     reporting_triangle,
     n_history_delay,
     n_retrospective_nowcasts,
-    structure = detect_structure(reporting_triangle),
+    structure = get_reporting_structure(reporting_triangle),
     draws = 1000,
     delay_pmf = NULL,
     uncertainty_model = fit_by_horizon,

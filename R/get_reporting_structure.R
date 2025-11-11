@@ -1,9 +1,9 @@
-#' Detect the structure of a reporting triangle
+#' Get reporting structure from a reporting triangle
 #'
-#' This function takes as input a reporting triangle matrix and returns an
-#'   integer or vector specifying the reporting structure, which will tell
-#'   \code{\link{construct_triangle}} how to create new reporting triangles of
-#'   the same reporting pattern.
+#' Returns an integer or vector specifying the reporting structure, which
+#' indicates how the reporting triangle is organized. This structure tells
+#' [construct_triangle()] how to create new reporting triangles with the same
+#' reporting pattern.
 #'
 #' @inheritParams estimate_delay
 #'
@@ -16,29 +16,10 @@
 #' @export
 #'
 #' @examples
-#' ragged_triangle_mat <- matrix(
-#'   c(
-#'     1, 3, 5, 7, 9, 7,
-#'     4, 5, 9, 4, NA, NA,
-#'     1, 6, NA, NA, NA, NA,
-#'     3, NA, NA, NA, NA, NA
-#'   ),
-#'   nrow = 4,
-#'   byrow = TRUE
-#' )
-#' ref_dates <- seq(
-#'   from = as.Date("2025-01-01"),
-#'   by = "day",
-#'   length.out = nrow(ragged_triangle_mat)
-#' )
-#' ragged_triangle <- as_reporting_triangle(
-#'   data = ragged_triangle_mat,
-#'   reference_dates = ref_dates,
-#'   max_delay = ncol(ragged_triangle_mat) - 1
-#' )
-#' detected_structure <- detect_structure(ragged_triangle)
-#' detected_structure
-detect_structure <- function(reporting_triangle) {
+#' # Get structure from example triangle
+#' structure <- get_reporting_structure(example_reporting_triangle)
+#' structure
+get_reporting_structure <- function(reporting_triangle) {
   n_row_nas <- sum(is.na(rowSums(reporting_triangle)))
   # Structure is 0 if there are no NAs
   if (n_row_nas == 0) {

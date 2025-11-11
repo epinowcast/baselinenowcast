@@ -77,8 +77,8 @@ test_that(
     )
     # structure is no longer stored as an attribute, it's computed on demand
     expect_identical(
-      detect_structure(rep_tri_2),
-      detect_structure(rep_tri)
+      get_reporting_structure(rep_tri_2),
+      get_reporting_structure(rep_tri)
     )
   }
 )
@@ -118,8 +118,8 @@ test_that("as_ChainLadder_triangle() and as_reporting_triangle.triangle() round-
   )
   # structure is no longer stored as an attribute, it's computed on demand
   expect_identical(
-    detect_structure(rep_tri_final),
-    detect_structure(rep_tri_original)
+    get_reporting_structure(rep_tri_final),
+    get_reporting_structure(rep_tri_original)
   )
 })
 

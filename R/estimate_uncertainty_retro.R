@@ -80,7 +80,7 @@ estimate_uncertainty_retro <- function(
     reporting_triangle,
     n_history_delay,
     n_retrospective_nowcasts,
-    structure = detect_structure(reporting_triangle),
+    structure = get_reporting_structure(reporting_triangle),
     delay_pmf = NULL,
     preprocess = preprocess_negative_values,
     ...) {

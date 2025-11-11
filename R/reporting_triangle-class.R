@@ -22,7 +22,7 @@
 #' Reference dates are stored as row names and can be extracted using
 #' [get_reference_dates()].
 #' The maximum delay can be obtained using [get_max_delay()].
-#' The structure can be computed using [detect_structure()].
+#' The structure can be computed using [get_reporting_structure()].
 #' See the corresponding [as_reporting_triangle.matrix()] and
 #' [as_reporting_triangle.data.frame()] functions
 #' for more details on the required input formats to generate the object.
@@ -684,7 +684,7 @@ tail.reporting_triangle <- function(x, n = 6L, ...) {
     n_cols = ncol(x),
     max_delay = get_max_delay(x),
     delays_unit = get_delays_unit(x),
-    structure = toString(detect_structure(x))
+    structure = toString(get_reporting_structure(x))
   )
 }
 

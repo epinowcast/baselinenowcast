@@ -31,7 +31,7 @@ test_that("truncate_triangle works with positive t", {
   expect_true(is_reporting_triangle(result))
   # Structure may change after truncation (2 vs 1 in this case)
   # Just verify we can compute it
-  expect_no_error(detect_structure(result))
+  expect_no_error(get_reporting_structure(result))
 })
 
 # Test 2: Edge case with t equal to nrow(rep_tri) fails

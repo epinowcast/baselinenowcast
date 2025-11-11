@@ -27,7 +27,7 @@ Attributes:
 Reference dates are stored as row names and can be extracted using
 \code{\link[=get_reference_dates]{get_reference_dates()}}.
 The maximum delay can be obtained using \code{\link[=get_max_delay]{get_max_delay()}}.
-The structure can be computed using \code{\link[=detect_structure]{detect_structure()}}.
+The structure can be computed using \code{\link[=get_reporting_structure]{get_reporting_structure()}}.
 See the corresponding \code{\link[=as_reporting_triangle.matrix]{as_reporting_triangle.matrix()}} and
 \code{\link[=as_reporting_triangle.data.frame]{as_reporting_triangle.data.frame()}} functions
 for more details on the required input formats to generate the object.
@@ -75,7 +75,6 @@ Reporting triangle construction and validation
 \code{\link{as_reporting_triangle.matrix}()},
 \code{\link{as_reporting_triangle.triangle}()},
 \code{\link{assert_reporting_triangle}()},
-\code{\link{detect_structure}()},
 \code{\link{get_delay_from_dates_function}()},
 \code{\link{get_delay_unit_function}()},
 \code{\link{get_delays_unit}()},
@@ -83,6 +82,7 @@ Reporting triangle construction and validation
 \code{\link{get_mean_delay}()},
 \code{\link{get_quantile_delay}()},
 \code{\link{get_reference_dates}()},
+\code{\link{get_reporting_structure}()},
 \code{\link{head.reporting_triangle}()},
 \code{\link{is_reporting_triangle}()},
 \code{\link{new_reporting_triangle}()},

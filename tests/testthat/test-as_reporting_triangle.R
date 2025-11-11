@@ -49,7 +49,8 @@ test_that("as_reporting_triangle.data.frame() can handle different temporal gran
       delays_unit = "days"
     ),
     regexp = "Data does not contain case counts for all possible reference dates" # nolint
-  )
+  ) |>
+    truncate_to_delay(max_delay = 30)
   ref_dates2 <- get_reference_dates(rep_tri2)
   expected_days_diff <- as.numeric(difftime(
     ref_dates2[2],
@@ -65,7 +66,8 @@ test_that("as_reporting_triangle.data.frame() can handle different temporal gran
     dplyr::filter(lubridate::wday(report_date) == 1)
   rep_tri3 <- as_reporting_triangle(daily_weekly,
     delays_unit = "days"
-  )
+  ) |>
+    truncate_to_delay(max_delay = 30)
   ref_dates3 <- get_reference_dates(rep_tri3)
   expected_days_diff <- as.numeric(difftime(
     ref_dates3[2],
@@ -100,8 +102,9 @@ test_that("as_reporting_triangle.data.frame() can handle different temporal gran
       delays_unit = "days"
     ),
     regexp = "Data does not contain case counts for all possible reference dates." # nolint
-  ) # nolint
-  # Both rep_tri2 and rep_tri4 should have the same max delay from data
+  ) |>
+    truncate_to_delay(max_delay = 30)
+  # Both rep_tri2 and rep_tri4 should have the same max delay after truncation
   expect_identical(
     ncol(rep_tri4),
     ncol(rep_tri2)
@@ -114,7 +117,8 @@ test_that("as_reporting_triangle.data.frame() can handle a ragged triangle with 
   rep_tri <- expect_message(
     as_reporting_triangle(test),
     regexp = "Data does not contain case counts for all possible reference dates" # nolint
-  )
+  ) |>
+    truncate_to_delay(max_delay = 23)
   # Check that the same number of reference dates is in the reporting triangle
   expect_identical(
     nrow(rep_tri),
@@ -123,7 +127,9 @@ test_that("as_reporting_triangle.data.frame() can handle a ragged triangle with 
 
   # The structure is computed dynamically and not stored as an attribute
   # Verify that get_reporting_structure correctly identifies the pattern
-  expected_structure <- c(1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1) # nolint
+  # Structure shows counts per delay, with "2" indicating the gap where
+  # reference date "2026-03-26" is missing (ragged)
+  expected_structure <- c(1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1) # nolint
   expect_identical(get_reporting_structure(rep_tri), expected_structure)
 })
 
@@ -304,7 +310,8 @@ test_that("`as_reporting_triangle()` appropriately messages if there is nothing 
   ) |>
     dplyr::mutate(count = 5)
 
-  # Check that no NAs are present in the resulting triangle
-  rep_tri <- suppressMessages(as_reporting_triangle(data))
+  # Check that no NAs are present in the resulting triangle after truncation
+  rep_tri <- suppressMessages(as_reporting_triangle(data)) |>
+    truncate_to_delay(max_delay = 10)
   expect_false(anyNA(rep_tri))
 })

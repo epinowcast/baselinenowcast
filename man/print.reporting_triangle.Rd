@@ -10,7 +10,7 @@
 \item{x}{A \link{reporting_triangle} object to print.}
 
 \item{n_rows}{Maximum number of rows to display. If the triangle has more
-rows, only the first and last \code{n_rows/2} rows are shown. Default is 10.
+rows, only the last \code{n_rows} rows are shown. Default is 10.
 Set to NULL to display all rows.}
 
 \item{n_cols}{Maximum number of columns to display. If the triangle has more

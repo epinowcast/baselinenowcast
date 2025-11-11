@@ -542,6 +542,64 @@ tail.reporting_triangle <- function(x, ...) {
   n <- min(n, nrow(x))
   return(x[seq.int(to = nrow(x), length.out = n), , drop = FALSE])
 }
+#' Get formatted reference date range string
+#'
+#' Internal helper to format the reference date range for display.
+#'
+#' @param x A [reporting_triangle] object.
+#' @return Character string with formatted date range.
+#' @keywords internal
+.format_reference_date_range <- function(x) {
+  ref_dates <- get_reference_dates(x)
+  return(paste(format(range(ref_dates)), collapse = " to "))
+}
+
+#' Get triangle dimension information
+#'
+#' Internal helper to extract key dimension information from a triangle.
+#'
+#' @param x A [reporting_triangle] object.
+#' @return List with components: n_rows, n_cols, max_delay, delays_unit,
+#'   structure.
+#' @keywords internal
+.get_triangle_info <- function(x) {
+  list(
+    n_rows = nrow(x),
+    n_cols = ncol(x),
+    max_delay = get_max_delay(x),
+    delays_unit = attr(x, "delays_unit"),
+    structure = toString(detect_structure(x))
+  )
+}
+
+#' Display basic triangle information
+#'
+#' Internal helper to print common triangle metadata used by both print and
+#' summary methods.
+#'
+#' @param x A [reporting_triangle] object.
+#' @param show_dimensions Logical. If TRUE, displays dimensions (rows x cols).
+#'   Default FALSE.
+#' @return NULL (displays information via cli).
+#' @keywords internal
+#' @importFrom cli cli_text
+.display_triangle_basics <- function(x, show_dimensions = FALSE) {
+  info <- .get_triangle_info(x)
+  date_range <- .format_reference_date_range(x)
+
+  if (show_dimensions) {
+    cli_text("Dimensions: {info$n_rows} x {info$n_cols}")
+    cli_text("Reference period: {date_range}")
+    cli_text("Max delay: {info$max_delay} {info$delays_unit}")
+  } else {
+    cli_text("Delays unit: {info$delays_unit}")
+    cli_text("Reference dates: {date_range}")
+    cli_text("Max delay: {info$max_delay}")
+  }
+  cli_text("Structure: {info$structure}")
+
+  return(invisible(NULL))
+}
 
 #' Check for out-of-pattern NAs in matrix
 #'
@@ -760,13 +818,7 @@ tail.reporting_triangle <- function(x, ...) {
 print.reporting_triangle <- function(x, n_rows = 10, n_cols = 10, ...) {
   cli_text("{.strong Reporting Triangle}")
   cli_rule()
-  ref_dates <- get_reference_dates(x) # nolint: object_usage_linter
-  cli_text("Delays unit: {attr(x, 'delays_unit')}")
-  cli_text(
-    "Reference dates: {paste(format(range(ref_dates)), collapse = ' to ')}"
-  )
-  cli_text("Max delay: {get_max_delay(x)}")
-  cli_text("Structure: {toString(detect_structure(x))}")
+  .display_triangle_basics(x, show_dimensions = FALSE)
   cli_text("")
 
   to_print <- x

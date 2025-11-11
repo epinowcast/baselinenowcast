@@ -16,7 +16,7 @@ vignette: >
   %\VignetteIndexEntry{Modular workflow for flexible model development}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{epinowcast, ggplot2, dplyr, tidyr}
+  %\VignetteDepends{ggplot2, dplyr, tidyr}
 ---
 
 # Introduction

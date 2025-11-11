@@ -220,28 +220,91 @@ truncate_to_quantile <- function(x, p = 0.99) {
   # Only truncate if we can reduce the max_delay
   if (max_delay_needed < current_max_delay) {
     cli_alert_info(
-      text = "Truncating from max_delay = {current_max_delay} to {max_delay_needed} based on {p * 100}% quantile." # nolint
+      text = "Truncating to {max_delay_needed} based on {p * 100}% quantile."
     )
-
-    # Subset columns
-    trunc_mat <- as.matrix(x)[, 1:(max_delay_needed + 1), drop = FALSE]
-
-    # Create new reporting_triangle with updated max_delay
-    result <- new_reporting_triangle(
-      reporting_triangle_matrix = trunc_mat,
-      reference_dates = get_reference_dates(x),
-      structure = attr(x, "structure"),
-      max_delay = max_delay_needed,
-      delays_unit = attr(x, "delays_unit")
-    )
-
-    return(result)
+    return(truncate_to_delay(x, max_delay = max_delay_needed))
   } else {
     cli_alert_info(
       text = "No truncation needed: {p * 100}% of cases reported within existing max_delay = {current_max_delay}." # nolint
     )
     return(x)
   }
+}
+
+#' Truncate reporting triangle to a specific maximum delay
+#'
+#' Creates a new reporting_triangle with columns filtered to include only
+#' delays from 0 to the specified maximum delay. This is useful when you want
+#' to limit the delay distribution used for estimation.
+#'
+#' @param x A [reporting_triangle] object.
+#' @param max_delay Integer specifying the maximum delay to retain. Must be
+#'   between 0 and the current maximum delay of the triangle.
+#' @return A new [reporting_triangle] object with delays 0 through max_delay.
+#' @family reporting_triangle
+#' @export
+#' @examples
+#' mat <- matrix(c(10, 20, 30, 40,
+#'                 15, 25, 35, NA,
+#'                 20, 30, NA, NA,
+#'                 25, NA, NA, NA), nrow = 4, byrow = TRUE)
+#' rt <- as_reporting_triangle(data = mat, max_delay = 3)
+#'
+#' # Truncate to delays 0-2
+#' rt_short <- truncate_to_delay(rt, max_delay = 2)
+#' get_max_delay(rt_short)  # Returns 2
+truncate_to_delay <- function(x, max_delay) {
+  if (!is_reporting_triangle(x)) {
+    cli_abort(message = "x must have class 'reporting_triangle'")
+  }
+
+  current_max_delay <- get_max_delay(x)
+
+  # Validate max_delay
+  if (!is.numeric(max_delay) || length(max_delay) != 1) {
+    cli_abort(message = "`max_delay` must be a single numeric value")
+  }
+
+  if (max_delay < 0) {
+    cli_abort(message = "`max_delay` must be non-negative")
+  }
+
+  if (max_delay > current_max_delay) {
+    cli_abort(
+      message = c(
+        "`max_delay` cannot be greater than current maximum delay",
+        "i" = "Current max_delay is {current_max_delay}, requested {max_delay}"
+      )
+    )
+  }
+
+  # If max_delay unchanged, return original
+  if (max_delay == current_max_delay) {
+    return(x)
+  }
+
+  # Truncate if we can reduce the max_delay
+  if (max_delay < current_max_delay) {
+    cli_alert_info(
+      text = "Truncating from max_delay = {current_max_delay} to {max_delay}."
+    )
+
+    # Subset columns
+    trunc_mat <- as.matrix(x)[, 1:(max_delay + 1), drop = FALSE]
+
+    # Create new reporting_triangle with updated max_delay
+    result <- new_reporting_triangle(
+      reporting_triangle_matrix = trunc_mat,
+      reference_dates = get_reference_dates(x),
+      structure = attr(x, "structure"),
+      max_delay = max_delay,
+      delays_unit = attr(x, "delays_unit")
+    )
+
+    return(result)
+  }
+
+  return(x)
 }
 
 #' Class constructor for `reporting_triangle` objects

@@ -48,45 +48,15 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116
 }
 \examples{
 # Example 1: Standard usage with default preprocessing
-triangle_mat <- matrix(
-  c(
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    90, 45, 25, NA,
-    80, 40, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 5,
-  byrow = TRUE
-)
-ref_dates <- seq(
-  from = as.Date("2025-01-01"),
-  by = "day",
-  length.out = nrow(triangle_mat)
-)
-triangle <- as_reporting_triangle(
-  data = triangle_mat,
-  reference_dates = ref_dates,
-  max_delay = 3
-)
 delay_pmf <- estimate_delay(
-  reporting_triangle = triangle,
-  n = 4
+  reporting_triangle = example_reporting_triangle,
+  n = 3
 )
 delay_pmf
 
 # Example 2: Using data with downward corrections without preprocessing
 # This preserves negative PMF entries reflecting systematic corrections
-ref_dates_ex2 <- seq(
-  from = as.Date("2025-01-01"),
-  by = "day",
-  length.out = nrow(example_downward_corr_mat)
-)
-triangle_ex2 <- as_reporting_triangle(
-  data = example_downward_corr_mat,
-  reference_dates = ref_dates_ex2,
-  max_delay = 3
-)
+triangle_ex2 <- example_downward_corr_rt
 delay_pmf_negative <- estimate_delay(
   reporting_triangle = triangle_ex2,
   n = 5,

@@ -222,6 +222,10 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
     class = c("reporting_triangle", "matrix"),
     delays_unit = delays_unit
   )
+
+  # Validate the constructed object
+  assert_reporting_triangle(result)
+
   return(result)
 }
 

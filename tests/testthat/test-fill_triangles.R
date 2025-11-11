@@ -288,6 +288,6 @@ test_that("fill_triangles uses correct rows", {
   pmf_list <- lapply(retro_pt_nowcast_mat_list, estimate_delay)
   expect_equal(pmf_list[[1]], sim_delay_pmf, tol = 0.06) # Here we get back
   # what we put in bc it doesn't use the first row
-  expect_failure(expect_equal(pmf_list[[2]], sim_delay_pmf, tol = 0.06)) # Here
+  expect_estimates_differ(pmf_list[[2]], sim_delay_pmf, tol = 0.06) # Here
   # we don't bc we use the first row with the larger value
 })

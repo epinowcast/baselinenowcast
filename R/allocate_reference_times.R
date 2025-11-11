@@ -79,7 +79,7 @@ allocate_reference_times <- function(reporting_triangle,
                                      prop_delay = 0.5,
                                      n_min_retro_nowcasts = 2) {
   # Checks of inputs
-  .validate_triangle(reporting_triangle)
+  assert_reporting_triangle(reporting_triangle)
   max_delay <- get_max_delay(reporting_triangle)
   .validate_inputs_allocation(
     scale_factor, prop_delay,

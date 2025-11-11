@@ -226,7 +226,7 @@ fill_triangle <- function(reporting_triangle,
       )
     )
   }
-  .validate_triangle(reporting_triangle)
+  assert_reporting_triangle(reporting_triangle)
   if (is.null(delay_pmf)) {
     delay_pmf <- estimate_delay(
       reporting_triangle = reporting_triangle,

@@ -45,7 +45,7 @@
 truncate_triangles <- function(reporting_triangle,
                                n = nrow(reporting_triangle) -
                                  sum(is.na(rowSums(reporting_triangle))) - 1) {
-  .validate_triangle(reporting_triangle)
+  assert_reporting_triangle(reporting_triangle)
   assert_integerish(n, lower = 0)
   trunc_rep_tri_list <- lapply(
     seq_len(n),

@@ -94,6 +94,19 @@ get_max_delay <- function(x, non_zero = FALSE) {
   return(ncol(x) - 1L)
 }
 
+#' Get delays unit from a reporting triangle
+#'
+#' @param x A [reporting_triangle] object.
+#' @return Character string indicating the delays unit.
+#' @family reporting_triangle
+#' @export
+get_delays_unit <- function(x) {
+  if (inherits(x, "reporting_triangle")) {
+    return(attr(x, "delays_unit"))
+  }
+  cli_abort("x must be a reporting_triangle object")
+}
+
 #' Get mean delay for each row of reporting_triangle
 #'
 #' @param x A reporting_triangle object
@@ -314,14 +327,13 @@ truncate_to_delay <- function(x, max_delay) {
 new_reporting_triangle <- function(reporting_triangle_matrix,
                                    reference_dates,
                                    delays_unit) {
-  max_delay <- ncol(reporting_triangle_matrix) - 1L
-
   .validate_rep_tri_args(
     reporting_triangle_matrix,
     reference_dates,
     delays_unit
   )
 
+  max_delay <- ncol(reporting_triangle_matrix) - 1L
   rownames(reporting_triangle_matrix) <- as.character(reference_dates)
   colnames(reporting_triangle_matrix) <- as.character(0:max_delay)
 

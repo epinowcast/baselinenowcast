@@ -142,8 +142,8 @@ estimate_delay <- function(
 #' @return Matrix with imputed values for missing entries
 #' @noRd
 .chainladder_fill_triangle <- function(rep_tri) {
-  # Unclass once to avoid subsetting validation warnings
-  rep_tri_mat <- unclass(rep_tri)
+  # Convert to plain matrix for internal operations
+  rep_tri_mat <- as.matrix(rep_tri)
   n_delays <- ncol(rep_tri_mat)
   n_dates <- nrow(rep_tri_mat)
   expectation <- rep_tri_mat

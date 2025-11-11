@@ -84,7 +84,7 @@ estimate_uncertainty_retro <- function(
     delay_pmf = NULL,
     preprocess = preprocess_negative_values,
     ...) {
-  .validate_triangle(reporting_triangle)
+  assert_reporting_triangle(reporting_triangle)
 
   n_ref_times <- nrow(reporting_triangle)
   min_ref_times_delay <- sum(is.na(rowSums(reporting_triangle))) + 1

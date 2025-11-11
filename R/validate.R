@@ -225,15 +225,11 @@
 .validate_multiple_inputs <- function(
     point_nowcast_matrix,
     reporting_triangle) {
-  # Basic input validation
-  if (!is.matrix(point_nowcast_matrix)) {
-    cli_abort("`point_nowcast_matrix` must be a matrix.")
-  }
-
+  # Check that both inputs have the same max_delay (same number of columns)
   if (ncol(point_nowcast_matrix) != ncol(reporting_triangle)) {
     cli_abort(c(
-      "x" = "`point_nowcast_matrix` and `reporting_triangle` must have the same number of columns.", # nolint
-      "i" = "Got {ncol(point_nowcast_matrix)} and {ncol(reporting_triangle)} respectively." # nolint
+      "x" = "`point_nowcast_matrix` and `reporting_triangle` must have the same max_delay.", # nolint
+      "i" = "Got max_delay of {ncol(point_nowcast_matrix) - 1} and {ncol(reporting_triangle) - 1} respectively." # nolint
     ))
   }
 
@@ -454,6 +450,19 @@
 #'
 #' @returns NULL
 #' @keywords internal
+#' Assert delays_unit is valid
+#'
+#' @param delays_unit Character string specifying the temporal granularity
+#' @returns NULL, invisibly. Stops execution with error if validation fails.
+#' @keywords internal
+assert_delays_unit <- function(delays_unit) {
+  assert_character(delays_unit, len = 1)
+  assert_choice(delays_unit,
+    choices = c("days", "weeks", "months", "years")
+  )
+  return(invisible(NULL))
+}
+
 .validate_rep_tri_args <- function(reporting_triangle_matrix,
                                    reference_dates,
                                    delays_unit) {
@@ -465,10 +474,7 @@
     len = nrow(reporting_triangle_matrix)
   )
 
-  assert_character(delays_unit, len = 1)
-  assert_choice(delays_unit,
-    choices = c("days", "weeks", "months", "years")
-  )
+  assert_delays_unit(delays_unit)
   return(NULL)
 }
 

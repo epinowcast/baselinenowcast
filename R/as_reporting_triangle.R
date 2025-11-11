@@ -71,8 +71,7 @@ as_reporting_triangle.data.frame <- function(
   assert_character(reference_date)
   assert_character(report_date)
   assert_character(count)
-  assert_character(delays_unit)
-  assert_choice(delays_unit, choices = c("days", "weeks", "months", "years"))
+  assert_delays_unit(delays_unit)
   data <- .rename_cols(data, old_names = c(reference_date, report_date, count))
 
   .validate_rep_tri_df(data, delays_unit)

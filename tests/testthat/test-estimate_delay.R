@@ -108,7 +108,6 @@ test_that("estimate_delay calculates correct PMF with complete matrix", {
 
   delay_pmf <- estimate_delay(
     reporting_triangle = full_triangle,
-    max_delay = 3,
     n = 5
   )
 
@@ -160,7 +159,6 @@ test_that("estimate_delay handles diagonal reporting triangles", {
 
   delay_pmf <- estimate_delay(
     reporting_triangle = partial_triangle,
-    max_delay = 3,
     n = 4
   )
 
@@ -193,7 +191,6 @@ test_that(
     # Default behaviour should handle negatives
     delay_pmf <- estimate_delay(
       reporting_triangle = triangle_neg,
-      max_delay = 3,
       n = 5
     )
 
@@ -223,7 +220,6 @@ test_that("estimate_delay with preprocess = NULL preserves negative values", {
   # With preprocess = NULL, negatives should be preserved
   delay_pmf <- estimate_delay(
     reporting_triangle = triangle_neg,
-    max_delay = 3,
     n = 5,
     preprocess = NULL
   )
@@ -254,7 +250,6 @@ test_that("estimate_delay with negative PMF produces non-increasing CDF", {
 
   delay_pmf <- estimate_delay(
     reporting_triangle = triangle_neg,
-    max_delay = 3,
     n = 5,
     preprocess = NULL
   )
@@ -287,7 +282,6 @@ test_that("estimate_delay custom preprocessing function works", {
   # Apply custom preprocessing
   delay_pmf <- estimate_delay(
     reporting_triangle = triangle,
-    max_delay = 3,
     n = 3,
     preprocess = custom_preprocess
   )

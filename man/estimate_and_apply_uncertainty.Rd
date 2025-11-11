@@ -9,7 +9,6 @@ estimate_and_apply_uncertainty(
   reporting_triangle,
   n_history_delay,
   n_retrospective_nowcasts,
-  max_delay = ncol(reporting_triangle) - 1,
   structure = detect_structure(reporting_triangle),
   draws = 1000,
   delay_pmf = NULL,

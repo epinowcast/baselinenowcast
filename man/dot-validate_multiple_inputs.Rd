@@ -6,7 +6,7 @@
 the reporting triangle, point nowcast matrix, and specified maximum delay
 are correct.}
 \usage{
-.validate_multiple_inputs(point_nowcast_matrix, reporting_triangle, max_delay)
+.validate_multiple_inputs(point_nowcast_matrix, reporting_triangle)
 }
 \arguments{
 \item{point_nowcast_matrix}{Matrix of point nowcast predictions and

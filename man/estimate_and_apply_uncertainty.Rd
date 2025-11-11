@@ -10,7 +10,6 @@ estimate_and_apply_uncertainty(
   n_history_delay,
   n_retrospective_nowcasts,
   max_delay = ncol(reporting_triangle) - 1,
-  structure = detect_structure(reporting_triangle),
   draws = 1000,
   delay_pmf = NULL,
   uncertainty_model = fit_by_horizon,
@@ -39,11 +38,6 @@ retrospective nowcast times to use for uncertainty estimation.}
 \item{max_delay}{Integer indicating the maximum delay to estimate, in units
 of the delay. The default is to use the whole reporting triangle,
 \code{ncol(reporting_triangle) -1}.}
-
-\item{structure}{Integer or vector specifying the reporting structure.
-If integer, divides columns evenly by that integer (with last possibly
-truncated).  If vector, the sum must not be greater than or equal to the
-number of columns. Default is 1 (standard triangular structure).}
 
 \item{draws}{Integer indicating the number of draws of the predicted
 nowcast vector to generate. Default is \code{1000}.}

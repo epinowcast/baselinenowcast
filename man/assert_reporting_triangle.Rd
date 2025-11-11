@@ -19,8 +19,9 @@ Reporting triangle construction and validation
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.matrix}()},
 \code{\link{as_reporting_triangle.triangle}()},
-\code{\link{detect_structure}()},
+\code{\link{get_delay_unit}()},
 \code{\link{get_max_delay}()},
+\code{\link{get_reporting_structure}()},
 \code{\link{get_structure}()},
 \code{\link{new_reporting_triangle}()},
 \code{\link{reporting_triangle-class}}

@@ -216,11 +216,12 @@ test_that(
       byrow = TRUE
     )
 
+    # Note: structure parameter was removed in refactoring
+    # Structure is now automatically detected from the reporting triangle
     result <- estimate_uncertainty_retro(
       triangle,
       n_history_delay = 5,
-      n_retrospective_nowcasts = 2,
-      structure = 2
+      n_retrospective_nowcasts = 2
     )
 
     expect_type(result, "double")
@@ -299,6 +300,8 @@ test_that(
       byrow = TRUE
     )
 
+    # Note: structure parameter was removed in refactoring
+    # Structure is now automatically detected from the reporting triangle
     result <- estimate_uncertainty_retro(
       reporting_triangle = triangle,
       n_retrospective_nowcasts = 2,
@@ -306,7 +309,6 @@ test_that(
       max_delay = 3,
       ref_time_aggregator = identity,
       delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
-      structure = 2,
       uncertainty_model = fit_by_horizon
     )
 

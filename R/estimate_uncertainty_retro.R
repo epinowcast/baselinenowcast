@@ -72,7 +72,6 @@ estimate_uncertainty_retro <- function(
     n_history_delay,
     n_retrospective_nowcasts,
     max_delay = ncol(reporting_triangle) - 1,
-    structure = detect_structure(reporting_triangle),
     delay_pmf = NULL,
     preprocess = preprocess_negative_values,
     ...) {
@@ -92,9 +91,10 @@ estimate_uncertainty_retro <- function(
     n = n_retrospective_nowcasts
   )
 
+  rep_structure <- get_reporting_structure(reporting_triangle)
   reporting_triangle_list <- construct_triangles(
     truncated_reporting_triangles = trunc_rep_tri_list,
-    structure = structure
+    structure = rep_structure
   )
 
   pt_nowcast_mat_list <- fill_triangles(

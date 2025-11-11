@@ -90,10 +90,23 @@ get_max_delay <- function(x) {
 #' @export
 get_structure <- function(x) {
   if (inherits(x, "reporting_triangle")) {
-    return(detect_structure(x$reporting_triangle_matrix))
+    return(get_reporting_structure(x$reporting_triangle_matrix))
   } else {
-    return(detect_structure(x))
+    return(get_reporting_structure(x))
   }
+}
+
+#' Get delays unit from a reporting triangle
+#'
+#' @param x A [reporting_triangle] object.
+#' @return Character string indicating the delays unit.
+#' @family reporting_triangle
+#' @export
+get_delay_unit <- function(x) {
+  if (inherits(x, "reporting_triangle")) {
+    return(x$delays_unit)
+  }
+  cli_abort("x must be a reporting_triangle object")
 }
 
 #' Assert validity of `reporting_triangle` objects

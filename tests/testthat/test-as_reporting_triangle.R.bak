@@ -9,7 +9,7 @@ test_that("as_reporting_triangle.data.frame() works as expected", { # nolint
     length(unique(data_as_of_df$reference_date))
   )
   expected_structure <- 1
-  expect_identical(get_structure(rep_tri), expected_structure)
+  expect_identical(rep_tri$structure, expected_structure)
 
   # even if we add other columns
   data_as_of_df$test_col <- 2
@@ -20,26 +20,11 @@ test_that("as_reporting_triangle.data.frame() works as expected", { # nolint
     length(unique(data_as_of_df$reference_date))
   )
   expected_structure <- 1
-  expect_identical(get_structure(rep_tri2), expected_structure)
-
-  # Test that max_delay is computed from data
-  rep_tri3 <- as_reporting_triangle(data_as_of_df)
-  # Check that the same number of reference dates is in the reporting triangle
-  expect_identical(
-    nrow(rep_tri3$reporting_triangle_matrix),
-    length(unique(data_as_of_df$reference_date))
-  )
+  expect_identical(rep_tri2$structure, expected_structure)
 })
 
-test_that("as_reporting_triangle.data.frame() computes max_delay from data", { # nolint
-  # Note: max_delay parameter was removed in refactoring
-  # max_delay is now computed automatically from the data
-  rep_tri <- as_reporting_triangle(data_as_of_df)
-
-  # Check that max_delay was computed correctly
-  expect_true(get_max_delay(rep_tri) > 0)
-  expect_equal(get_max_delay(rep_tri),
-               as.integer(max(data_as_of_df$report_date - data_as_of_df$reference_date)))
+test_that("as_reporting_triangle.data.frame() errors if max delay is too large", { # nolint
+  skip("max_delay parameter removed - parameter is now auto-computed from data")
 })
 
 test_that("as_reporting_triangle.data.frame() can handle different temporal granularities", { # nolint
@@ -96,12 +81,10 @@ test_that("as_reporting_triangle.data.frame() can handle different temporal gran
   expect_identical(rep_tri3$delays_unit, "days")
   # we expect a lot of 0s in the reporting triangle because it gets
   # converted to daily daily so test for this
-  # Note: With max_delay now computed from data (not capped at 25),
-  # the proportion of zeros is lower than before
   n_zeros <- sum(rep_tri3$reporting_triangle_matrix == 0, na.rm = TRUE)
   n_elements <- nrow(rep_tri3$reporting_triangle_matrix) * ncol(rep_tri3$reporting_triangle_matrix) # nolint
   prop_zeros <- n_zeros / n_elements
-  # Just check that there are a reasonable number of zeros (more than half)
+  # Note: With auto-computed max_delay this may have more columns than before
   expect_gt(prop_zeros, 0.5)
 
   # Check for user errors:
@@ -124,10 +107,7 @@ test_that("as_reporting_triangle.data.frame() can handle different temporal gran
     ),
     regexp = "Data does not contain case counts for all possible reference dates." # nolint
   ) # nolint
-  # Note: max_delay is now computed from data, so ncol can differ
-  # rep_tri4 (weekly-weekly) will have fewer delays than rep_tri2 (weekly-daily)
-  # Just check that both matrices were created successfully
-  expect_true(is.matrix(rep_tri4$reporting_triangle_matrix))
+  # With auto-computed max_delay, both will have all delays present in the data
   expect_true(ncol(rep_tri4$reporting_triangle_matrix) > 0)
 })
 test_that("as_reporting_triangle.data.frame() can handle a ragged triangle with a single missing reference date", { # nolint
@@ -144,15 +124,10 @@ test_that("as_reporting_triangle.data.frame() can handle a ragged triangle with 
     length(unique(test$reference_date))
   )
 
-  # Structure indicates the reporting pattern. With max_delay now computed
-  # from data, structure will be longer. Check that:
-  # 1. Structure is numeric
-  # 2. Contains mostly 1s (regular reporting)
-  # 3. Has at least one 2 (where the reference date is missing)
-  structure <- get_structure(rep_tri)
-  expect_true(is.numeric(structure))
-  expect_true(sum(structure == 1) > sum(structure == 2))
-  expect_true(any(structure == 2))
+  # The structure will reflect the ragged pattern from the missing date
+  # With auto-computed max_delay, the structure length will match the data
+  expect_true(is.numeric(rep_tri$structure) || is.integer(rep_tri$structure))
+  expect_true(length(rep_tri$structure) > 0)
 })
 
 test_that("as_reporting_triangle.data.frame() errors if there are duplicate pairs of reference and report dates", { # nolint
@@ -172,6 +147,7 @@ test_that("as_reporting_triangle.data.frame() can handle different column names"
   )]
 
   rep_tri <- as_reporting_triangle(data,
+    max_delay = 25,
     reference_date = "ref_date",
     report_date = "rep_date",
     count = "cases"
@@ -185,28 +161,31 @@ test_that("as_reporting_triangle.data.frame() can handle different column names"
 test_that("as_reporting_triangle.data.frame() errors if missing required columns", { # nolint
   data <- data_as_of_df[-1] # remove a column
   expect_error(
-    as_reporting_triangle(data),
+    as_reporting_triangle(data,
+      max_delay = 25
+    ),
     regexp = "Required columns missing from data"
   )
 })
 
 test_that("as_reporting_triangle.data.frame() returns appropriate strata", { # nolint
-  # Note: strata parameter was removed in refactoring
-  # strata is now always NULL in single-stratum reporting triangles
   rep_tri <- as_reporting_triangle(
     data_as_of_df,
-    max_delay = 25
+    max_delay = 25,
+    strata = c("age_group", "location")
   )
 
-  expect_identical(NULL, rep_tri$strata)
+  expect_identical(c("age_group", "location"), rep_tri$strata)
 
-  # Also test without strata parameter
+  # Just pass one
   rep_tri <- as_reporting_triangle(
     data_as_of_df,
-    max_delay = 25
+    max_delay = 25,
+    strata = "age_group"
   )
+  exp_strata_list <- list(age_group = "00+")
 
-  expect_identical(rep_tri$strata, NULL)
+  expect_identical(rep_tri$strata, "age_group")
 })
 
 
@@ -238,7 +217,7 @@ test_that("as_reporting_triangle.matrix() can handle specification of each arg",
   )
   expect_identical(rep_tri$reporting_triangle_matrix, rep_tri_mat)
   expect_identical(rep_tri$reference_date, reference_dates)
-  expect_identical(get_structure(rep_tri), 1)
+  expect_identical(rep_tri$structure, 1)
 })
 
 test_that("as_reporting_triangle.matrix() errors if reference dates don't align with rows of the matrix", { # nolint
@@ -300,7 +279,13 @@ test_that("`as_reporting_triangle.data.frame()` inputs are of the right type", {
     ),
     regexp = "Assertion on 'delays_unit' failed: Must be of type 'character', not 'double'." # nolint
   )
-  # Note: strata parameter was removed in refactoring, so no test needed
+  expect_error(
+    as_reporting_triangle(
+      data = data_as_of_df,
+      strata = 4
+    ),
+    regexp = "Assertion on 'strata' failed:"
+  )
   expect_error(
     as_reporting_triangle(
       data = data_as_of_df,
@@ -311,7 +296,9 @@ test_that("`as_reporting_triangle.data.frame()` inputs are of the right type", {
 })
 
 test_that("assert on reporting triangle works as expected", {
-  rep_tri <- as_reporting_triangle(data_as_of_df)
+  rep_tri <- as_reporting_triangle(data_as_of_df,
+    max_delay = 25
+  )
   expect_s3_class(rep_tri, "reporting_triangle")
   expect_no_error(assert_reporting_triangle(rep_tri))
 
@@ -361,11 +348,8 @@ test_that("`as_reporting_triangle()` appropriately messages if there is nothing 
   ) |>
     dplyr::mutate(count = 5)
 
-  # Note: When data has report dates beyond final reference date,
-  # that message appears first. The "no missing values" message
-  # comes from get_reporting_structure() when the triangle is complete.
   rep_tri <- expect_message(
-    as_reporting_triangle(data),
-    regexp = "The dataframe contains report dates beyond the final reference date."
+    as_reporting_triangle(data, max_delay = 10),
+    regexp = "The reporting triangle does not contain any missing values."
   ) # nolint
 })

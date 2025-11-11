@@ -205,7 +205,7 @@ as_reporting_triangle.matrix <- function(data,
     )
   }
 
-  struct <- detect_structure(data)
+  struct <- get_reporting_structure(data)
 
   reporting_triangle_obj <- new_reporting_triangle(
     reporting_triangle_matrix = data,

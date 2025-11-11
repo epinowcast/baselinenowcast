@@ -79,9 +79,22 @@ test_that("estimate_delay validates input parameters correctly", {
 test_that(
   "estimate_delay errors when NAs are in upper part of reporting triangle",
   {
-    # Add NA in the upper part where it shouldn't be
-    triangle_with_na <- reporting_triangle
-    triangle_with_na[1, 2] <- NA
+    # Create a matrix with NA in the upper part where it shouldn't be
+    # Do this directly as a matrix to bypass reporting_triangle validation
+    mat_data <- unclass(reporting_triangle)
+    mat_data[1, 2] <- NA
+
+    # Create reporting_triangle with invalid structure by temporarily
+    # using internal structure
+    triangle_with_na <- structure(
+      mat_data,
+      class = c("reporting_triangle", "matrix"),
+      reference_dates = get_reference_dates(reporting_triangle),
+      max_delay = get_max_delay(reporting_triangle),
+      delays_unit = attr(reporting_triangle, "delays_unit"),
+      structure = get_reporting_structure(reporting_triangle),
+      mean_delay = get_mean_delay(reporting_triangle)
+    )
 
     expect_error(estimate_delay(triangle_with_na))
   }

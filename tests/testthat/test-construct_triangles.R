@@ -71,7 +71,7 @@ test_that(
 
     expect_error(
       construct_triangles(data.frame(trunc_triangles[1])),
-      "The elements of"
+      "data must be a matrix"
     )
   }
 )

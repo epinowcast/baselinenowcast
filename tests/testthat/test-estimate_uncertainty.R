@@ -403,17 +403,26 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
     retro_rep_tri <- construct_triangle(trunc_rep_tri_orig)
     # For the last 4 horizons, replace each row with negative binomial draws
     # with a mean of the point nowcast matrix
-    trunc_rep_tri <- trunc_rep_tri_orig
+    # Work with the underlying matrix to avoid validation issues
+    trunc_rep_tri_mat <- unclass(trunc_rep_tri_orig)
     # Add uncertainty to each horizon 1:4
     for (j in 1:4) {
       max_t_loop <- nrow(trunc_rep_tri_orig)
-      trunc_rep_tri[max_t_loop - j + 1, ] <- rnbinom(
+      trunc_rep_tri_mat[max_t_loop - j + 1, ] <- rnbinom(
         n = ncol(trunc_rep_tri_orig),
         mu = trunc_pt_nowcast_mat[max_t_loop - j + 1, ],
         size = disp_param
       )
     }
-    trunc_rep_tri[is.na(trunc_rep_tri_orig)] <- NA
+    trunc_rep_tri_mat[is.na(unclass(trunc_rep_tri_orig))] <- NA
+
+    # Reconstruct as reporting_triangle
+    # Need to convert matrix to reporting_triangle first
+    trunc_rep_tri <- as_reporting_triangle(
+      data = trunc_rep_tri_mat,
+      reference_dates = get_reference_dates(trunc_rep_tri_orig)
+    )
+    trunc_rep_tri <- construct_triangle(trunc_rep_tri)
 
     truncated_reporting_triangles <- append(
       truncated_reporting_triangles,

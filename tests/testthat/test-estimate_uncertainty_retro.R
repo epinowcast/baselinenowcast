@@ -245,7 +245,7 @@ test_that("estimate_uncertainty_retro validates triangle input", {
 test_that(
   "estimate_uncertainty_retro validates n_history_delay and n_retro",
   {
-    triangle <- matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -257,7 +257,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     expect_error(
       estimate_uncertainty_retro(
@@ -313,7 +313,7 @@ test_that(
 )
 
 test_that("estimate_uncertainty_retro validates insufficient data", {
-  triangle <- matrix(
+  triangle <- make_test_triangle(data = matrix(
     c(
       10, 5, 2, 1,
       8, 6, 3, NA,
@@ -322,7 +322,7 @@ test_that("estimate_uncertainty_retro validates insufficient data", {
     ),
     nrow = 4,
     byrow = TRUE
-  )
+  ))
 
   expect_error(
     estimate_uncertainty_retro(

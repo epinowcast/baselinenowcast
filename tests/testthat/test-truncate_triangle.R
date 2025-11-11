@@ -13,7 +13,7 @@ rep_tri <- make_test_triangle(data = matrix(
 # Test 1: Basic functionality
 test_that("truncate_triangle works with positive t", {
   t <- 1
-  result <- truncate_triangle(t, rep_tri)
+  result <- truncate_triangle(rep_tri, t)
   expected_mat <- matrix(
     c(
       10, 20, 30,
@@ -38,7 +38,7 @@ test_that("truncate_triangle works with positive t", {
 test_that("truncate_triangle throws an error when t is too large", {
   t <- nrow(rep_tri)
   expect_error(
-    truncate_triangle(t, rep_tri),
+    truncate_triangle(rep_tri, t),
     "The as of time point is greater than or equal to the number of"
   )
 })
@@ -47,20 +47,20 @@ test_that("truncate_triangle throws an error when t is too large", {
 test_that("truncate_triangle throws an error for a negative t", {
   t <- -1
   expect_error(
-    truncate_triangle(t, rep_tri)
+    truncate_triangle(rep_tri, t)
   )
 })
 
 # Test 4: Non-integer t
 test_that("truncate_triangle throws an error for a non-integer t", {
   t <- 1.5
-  expect_error(truncate_triangle(t, rep_tri))
+  expect_error(truncate_triangle(rep_tri, t))
 })
 
 # Test 5: Zero t
 test_that("truncate_triangle handles zero t", {
   t <- 0L
-  result <- truncate_triangle(t, rep_tri)
+  result <- truncate_triangle(rep_tri, t)
   expect_identical(result, rep_tri)
 })
 

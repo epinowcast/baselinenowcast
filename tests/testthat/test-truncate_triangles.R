@@ -44,7 +44,7 @@ test_that("truncate_triangles edge cases are handled properly", {
   # Input validation
   expect_error(
     truncate_triangles(as.data.frame(test_triangle)),
-    "Assertion on 'triangle' failed: Must inherit from class 'matrix'"
+    "data must be a matrix"
   ) # nolint
   expect_error(
     truncate_triangles(test_triangle, n = -1),

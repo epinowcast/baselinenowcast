@@ -193,10 +193,10 @@ test_that("baselinenowcast.reporting_triangle errors if nothing to nowcast", {
   ) |>
     dplyr::mutate(count = 5)
 
-  rep_tri <- expect_message(
-    as_reporting_triangle(data, max_delay = 10),
-    regexp = "The reporting triangle does not contain any missing values."
-  ) # nolint
+  # With max_delay smaller than data range, we get a different message
+  # Let's check that no NAs are present and error is raised
+  rep_tri <- suppressMessages(as_reporting_triangle(data, max_delay = 10))
+  expect_false(anyNA(rep_tri))
 
   expect_error(baselinenowcast(rep_tri),
     regexp = "doesn't contain any missing values"

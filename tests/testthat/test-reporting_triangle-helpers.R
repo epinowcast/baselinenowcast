@@ -3,8 +3,7 @@ data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 data_as_of_df$age_group <- "00+"
 rep_tri <- as_reporting_triangle(
   data = data_as_of_df,
-  max_delay = 10,
-  strata = "00+"
+  max_delay = 10
 )
 
 test_that("is_reporting_triangle works correctly", {
@@ -51,8 +50,7 @@ test_that("get_max_delay with non_zero option works correctly", {
   ref_dates <- seq(as.Date("2025-01-01"), by = "day", length.out = 4)
   test_tri <- as_reporting_triangle(
     data = test_mat,
-    reference_dates = ref_dates,
-    max_delay = 4
+    reference_dates = ref_dates
   )
 
   expect_identical(get_max_delay(test_tri), 4L)
@@ -63,8 +61,7 @@ test_that("get_max_delay with non_zero option works correctly", {
   ref_dates_zero <- seq(as.Date("2025-01-01"), by = "day", length.out = 3)
   zero_tri <- as_reporting_triangle(
     data = zero_mat,
-    reference_dates = ref_dates_zero,
-    max_delay = 4
+    reference_dates = ref_dates_zero
   )
   expect_identical(get_max_delay(zero_tri, non_zero = TRUE), -1L)
 })
@@ -94,8 +91,7 @@ test_that("get_mean_delay works correctly", {
   ref_dates_simple <- seq(as.Date("2025-01-01"), by = "day", length.out = 2)
   simple_tri <- as_reporting_triangle(
     data = simple_mat,
-    reference_dates = ref_dates_simple,
-    max_delay = 2
+    reference_dates = ref_dates_simple
   )
 
   mean_delays_simple <- get_mean_delay(simple_tri)
@@ -169,8 +165,7 @@ test_that("get_quantile_delay works correctly", {
   ref_dates_simple <- seq(as.Date("2025-01-01"), by = "day", length.out = 2)
   simple_tri <- as_reporting_triangle(
     data = simple_mat,
-    reference_dates = ref_dates_simple,
-    max_delay = 4
+    reference_dates = ref_dates_simple
   )
 
   q99_delays <- get_quantile_delay(simple_tri, p = 0.99)
@@ -254,8 +249,7 @@ test_that("truncate_to_quantile works correctly", {
   ref_dates <- seq(as.Date("2025-01-01"), by = "day", length.out = 4)
   test_tri <- as_reporting_triangle(
     data = test_mat,
-    reference_dates = ref_dates,
-    max_delay = 9
+    reference_dates = ref_dates
   )
 
   # Test default (p = 0.99)
@@ -277,9 +271,8 @@ test_that("truncate_to_quantile works correctly", {
   expect_equal(get_reference_dates(result_99), get_reference_dates(test_tri))
   expect_equal(get_reference_dates(result_50), get_reference_dates(test_tri))
 
-  # Check that other attributes are preserved
+  # Check that delays_unit attribute is preserved
   expect_identical(attr(result_99, "delays_unit"), attr(test_tri, "delays_unit"))
-  expect_identical(attr(result_99, "structure"), attr(test_tri, "structure"))
 
   # Test error with invalid p
   expect_error(
@@ -309,8 +302,7 @@ test_that("truncate_to_quantile handles edge cases", {
   ref_dates <- seq(as.Date("2025-01-01"), by = "day", length.out = 3)
   small_tri <- as_reporting_triangle(
     data = small_tri_mat,
-    reference_dates = ref_dates,
-    max_delay = 2
+    reference_dates = ref_dates
   )
 
   result <- suppressMessages(truncate_to_quantile(small_tri, p = 0.99))
@@ -322,8 +314,7 @@ test_that("truncate_to_quantile handles edge cases", {
   ref_dates_zero <- seq(as.Date("2025-01-01"), by = "day", length.out = 3)
   zero_tri <- as_reporting_triangle(
     data = zero_mat,
-    reference_dates = ref_dates_zero,
-    max_delay = 4
+    reference_dates = ref_dates_zero
   )
 
   result_zero <- suppressMessages(truncate_to_quantile(zero_tri, p = 0.99))
@@ -341,7 +332,7 @@ test_that("check_na_pattern detects expected triangular pattern", {
     ),
     nrow = 4, byrow = TRUE
   )
-  rt <- as_reporting_triangle(data = mat, max_delay = 3)
+  rt <- as_reporting_triangle(data = mat)
 
   result <- baselinenowcast:::.check_na_pattern(rt)
 
@@ -363,7 +354,7 @@ test_that("check_na_pattern detects out-of-pattern NAs", {
     ),
     nrow = 4, byrow = TRUE
   )
-  rt <- as_reporting_triangle(data = mat, max_delay = 3)
+  rt <- as_reporting_triangle(data = mat)
 
   # Now modify it to create out-of-pattern NA
   rt[2, 2] <- NA
@@ -390,7 +381,7 @@ test_that("check_na_pattern detects NA with data below", {
     ),
     nrow = 4, byrow = TRUE
   )
-  rt <- as_reporting_triangle(data = mat, max_delay = 3)
+  rt <- as_reporting_triangle(data = mat)
 
   # Modify to create out-of-pattern NA
   rt[1, 3] <- NA
@@ -415,7 +406,7 @@ test_that("check_na_pattern detects NA with data to the right", {
     ),
     nrow = 4, byrow = TRUE
   )
-  rt <- as_reporting_triangle(data = mat, max_delay = 3)
+  rt <- as_reporting_triangle(data = mat)
 
   # Modify to create out-of-pattern NAs
   rt[2, 2] <- NA
@@ -434,7 +425,7 @@ test_that("check_na_pattern detects NA with data to the right", {
 test_that("check_na_pattern handles complete triangle", {
   # Create a triangle with no NAs
   mat <- matrix(1:12, nrow = 3, ncol = 4)
-  rt <- as_reporting_triangle(data = mat, max_delay = 3)
+  rt <- as_reporting_triangle(data = mat)
 
   result <- baselinenowcast:::.check_na_pattern(rt)
 
@@ -456,7 +447,7 @@ test_that("check_na_pattern handles multiple affected rows", {
     ),
     nrow = 4, byrow = TRUE
   )
-  rt <- as_reporting_triangle(data = mat, max_delay = 3)
+  rt <- as_reporting_triangle(data = mat)
 
   # Modify to create out-of-pattern NAs in multiple rows
   rt[1, 2] <- NA

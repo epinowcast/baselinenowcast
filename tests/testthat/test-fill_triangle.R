@@ -146,11 +146,14 @@ test_that("fill_triangle errors when there are insufficient observations", { # n
   triangle_mat <- lapply(partial_counts, function(x) x * delay_pmf)
   triangle_mat <- do.call(rbind, triangle_mat)
 
-  # This should error during construct_triangle validation
-  # because the structure creates all-NA columns
+  # construct_triangle creates all-NA columns which should fail validation
+  # when passed to fill_triangle
+  triangle <- make_test_triangle(data = triangle_mat) |>
+    construct_triangle(structure = c(1, 2))
+
+  # fill_triangle should error because no rows have complete observations
   expect_error(
-    triangle <- make_test_triangle(data = triangle_mat) |>
-      construct_triangle(structure = c(1, 2)),
-    regexp = "Invalid reporting triangle structure"
+    fill_triangle(triangle),
+    regexp = "at least one row with no missing observations"
   )
 })

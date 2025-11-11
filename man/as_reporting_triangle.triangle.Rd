@@ -62,19 +62,14 @@ extracting the matrix from the ChainLadder triangle object.
 \dontshow{if (requireNamespace("ChainLadder", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 # Create a reporting triangle
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-rep_tri <- as_reporting_triangle(
-  data = data_as_of_df,
-  max_delay = 25
-)
+rep_tri <- as_reporting_triangle(data = data_as_of_df, max_delay = 25)
 
 # Convert to ChainLadder triangle
 cl_triangle <- as_ChainLadder_triangle(rep_tri)
 
 # Convert back to reporting_triangle (seamless round-trip)
-rep_tri_2 <- as_reporting_triangle(
-  data = cl_triangle,
-  max_delay = 25
-)
+# max_delay is inferred from the ChainLadder triangle dimensions
+rep_tri_2 <- as_reporting_triangle(data = cl_triangle)
 print(rep_tri_2)
 \dontshow{\}) # examplesIf}
 }

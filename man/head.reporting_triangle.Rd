@@ -4,12 +4,14 @@
 \alias{head.reporting_triangle}
 \title{Get first rows of a reporting_triangle}
 \usage{
-\method{head}{reporting_triangle}(x, ...)
+\method{head}{reporting_triangle}(x, n = 6L, ...)
 }
 \arguments{
 \item{x}{A \link{reporting_triangle} object.}
 
-\item{...}{Additional arguments passed to \code{\link[utils:head]{utils::head()}}.}
+\item{n}{Integer indicating the number of rows to return. Default is 6.}
+
+\item{...}{Additional arguments (not currently used).}
 }
 \value{
 First rows as a reporting_triangle.

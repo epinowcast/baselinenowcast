@@ -226,10 +226,13 @@
     point_nowcast_matrix,
     reporting_triangle) {
   # Check that both inputs have the same max_delay (same number of columns)
-  if (ncol(point_nowcast_matrix) != ncol(reporting_triangle)) {
+  max_delay_point <- ncol(point_nowcast_matrix) - 1
+  max_delay_rt <- get_max_delay(reporting_triangle)
+
+  if (max_delay_point != max_delay_rt) {
     cli_abort(c(
       "x" = "`point_nowcast_matrix` and `reporting_triangle` must have the same max_delay.", # nolint
-      "i" = "Got max_delay of {ncol(point_nowcast_matrix) - 1} and {ncol(reporting_triangle) - 1} respectively." # nolint
+      "i" = "Got max_delay of {max_delay_point} and {max_delay_rt} respectively." # nolint
     ))
   }
 

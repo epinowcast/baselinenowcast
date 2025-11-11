@@ -24,31 +24,8 @@
 #' @export
 #' @importFrom cli cli_abort cli_alert_danger cli_alert_info
 #' @examples
-#' triangle_mat <- matrix(
-#'   c(
-#'     65, 46, 21, 7,
-#'     70, 40, 20, 5,
-#'     80, 50, 10, 10,
-#'     100, 40, 31, 20,
-#'     95, 45, 21, NA,
-#'     82, 42, NA, NA,
-#'     70, NA, NA, NA
-#'   ),
-#'   nrow = 7,
-#'   byrow = TRUE
-#' )
-#' ref_dates <- seq(
-#'   from = as.Date("2025-01-01"),
-#'   by = "day",
-#'   length.out = nrow(triangle_mat)
-#' )
-#' triangle <- as_reporting_triangle(
-#'   data = triangle_mat,
-#'   reference_dates = ref_dates,
-#'   max_delay = 3
-#' )
-#'
-#' trunc_rts <- truncate_triangles(triangle)
+#' # Generate retrospective nowcasts from example triangle
+#' trunc_rts <- truncate_triangles(example_reporting_triangle)
 #' retro_rts <- construct_triangles(trunc_rts)
 #' retro_pt_nowcast_mat_list <- fill_triangles(retro_rts)
 #' retro_pt_nowcast_mat_list[1:3]
@@ -175,29 +152,9 @@ fill_triangles <- function(retro_reporting_triangles,
 #' @export
 #'
 #' @examples
-#' triangle_mat <- matrix(
-#'   c(
-#'     80, 50, 25, 10,
-#'     100, 50, 30, 20,
-#'     90, 45, 25, NA,
-#'     80, 40, NA, NA,
-#'     70, NA, NA, NA
-#'   ),
-#'   nrow = 5,
-#'   byrow = TRUE
-#' )
-#' ref_dates <- seq(
-#'   from = as.Date("2025-01-01"),
-#'   by = "day",
-#'   length.out = nrow(triangle_mat)
-#' )
-#' triangle <- as_reporting_triangle(
-#'   data = triangle_mat,
-#'   reference_dates = ref_dates,
-#'   max_delay = 3
-#' )
+#' # Fill triangle using default delay estimation
 #' point_nowcast_matrix <- fill_triangle(
-#'   reporting_triangle = triangle
+#'   reporting_triangle = example_reporting_triangle
 #' )
 #' point_nowcast_matrix
 fill_triangle <- function(reporting_triangle,

@@ -383,3 +383,29 @@ test_that("apply_delay completes full workflow with negative PMF", {
   # Verify observed values are preserved
   expect_identical(nowcast[1:5, 1:4], triangle_obj[1:5, 1:4])
 })
+
+test_that("apply_delay works with complete matrices without NAs", {
+  # Create a complete triangle (no NAs) - useful for testing
+  triangle <- matrix(
+    c(
+      100, 50, 30, 20,
+      120, 60, 35, 25,
+      110, 55, 32, 22,
+      130, 65, 38, 28
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+
+  delay_pmf <- c(0.5, 0.25, 0.15, 0.10)
+
+  triangle_obj <- make_test_triangle(data = triangle)
+  result <- apply_delay(
+    reporting_triangle = triangle_obj,
+    delay_pmf = delay_pmf
+  )
+
+  # Result should match input since there are no NAs to fill
+  expect_equal(as.matrix(result), as.matrix(triangle_obj))
+  expect_false(anyNA(result))
+})

@@ -159,8 +159,9 @@ sample_prediction <- function(
     )
   }
 
-  pred_mat <- point_nowcast_matrix
-  pred_mat[!is.na(reporting_triangle)] <- NA
+  # Convert to plain matrix to avoid validation when setting observed to NA
+  pred_mat <- as.matrix(point_nowcast_matrix)
+  pred_mat[!is.na(as.matrix(reporting_triangle))] <- NA
   return(pred_mat)
 }
 

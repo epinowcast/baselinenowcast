@@ -45,31 +45,8 @@ each triangle or the corresponding delay passed in. It uses the specified
 reporting triangle.
 }
 \examples{
-triangle_mat <- matrix(
-  c(
-    65, 46, 21, 7,
-    70, 40, 20, 5,
-    80, 50, 10, 10,
-    100, 40, 31, 20,
-    95, 45, 21, NA,
-    82, 42, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 7,
-  byrow = TRUE
-)
-ref_dates <- seq(
-  from = as.Date("2025-01-01"),
-  by = "day",
-  length.out = nrow(triangle_mat)
-)
-triangle <- as_reporting_triangle(
-  data = triangle_mat,
-  reference_dates = ref_dates,
-  max_delay = 3
-)
-
-trunc_rts <- truncate_triangles(triangle)
+# Generate retrospective nowcasts from example triangle
+trunc_rts <- truncate_triangles(example_reporting_triangle)
 retro_rts <- construct_triangles(trunc_rts)
 retro_pt_nowcast_mat_list <- fill_triangles(retro_rts)
 retro_pt_nowcast_mat_list[1:3]

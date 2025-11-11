@@ -4,12 +4,14 @@
 \alias{tail.reporting_triangle}
 \title{Get last rows of a reporting_triangle}
 \usage{
-\method{tail}{reporting_triangle}(x, ...)
+\method{tail}{reporting_triangle}(x, n = 6L, ...)
 }
 \arguments{
 \item{x}{A \link{reporting_triangle} object.}
 
-\item{...}{Additional arguments passed to \code{\link[utils:head]{utils::tail()}}.}
+\item{n}{Integer indicating the number of rows to return. Default is 6.}
+
+\item{...}{Additional arguments (not currently used).}
 }
 \value{
 Last rows as a reporting_triangle.

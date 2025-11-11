@@ -231,12 +231,10 @@ get_mean_delay <- function(x) {
   }
   delays <- 0:get_max_delay(x)
   x_mat <- as.matrix(x)
-  mean_delays <- vapply(seq_len(nrow(x_mat)), function(i) {
-    row_counts <- x_mat[i, ]
-    total_counts <- sum(row_counts, na.rm = TRUE)
-    if (total_counts == 0) return(NA_real_)
-    return(sum(row_counts * delays, na.rm = TRUE) / total_counts)
-  }, numeric(1))
+  mean_delays <- apply(x_mat, 1, function(row_counts) {
+    if (sum(row_counts, na.rm = TRUE) == 0) return(NA_real_)
+    return(weighted.mean(delays, row_counts, na.rm = TRUE))
+  })
   return(mean_delays)
 }
 
@@ -259,8 +257,7 @@ get_quantile_delay <- function(x, p = 0.99) {
 
   delays <- 0:get_max_delay(x)
   x_mat <- as.matrix(x)
-  quantile_delays <- vapply(seq_len(nrow(x_mat)), function(i) {
-    row_counts <- x_mat[i, ]
+  quantile_delays <- apply(x_mat, 1, function(row_counts) {
     total_counts <- sum(row_counts, na.rm = TRUE)
     if (total_counts == 0) return(NA_integer_)
 
@@ -270,8 +267,8 @@ get_quantile_delay <- function(x, p = 0.99) {
 
     # Return max delay if quantile never reached, otherwise return the delay
     if (is.na(quantile_idx)) delays[length(delays)] else delays[quantile_idx]
-  }, integer(1))
-  return(quantile_delays)
+  })
+  return(as.integer(quantile_delays))
 }
 
 #' Truncate reporting_triangle to quantile-based maximum delay
@@ -316,6 +313,7 @@ truncate_to_quantile <- function(x, p = 0.99) {
   quantile_delays <- get_quantile_delay(x, p = p)
 
   # Find maximum delay needed across all reference dates
+  # Suppress warning when all values are NA (handled below)
   max_delay_needed <- suppressWarnings(max(quantile_delays, na.rm = TRUE))
 
   # If max_delay_needed is invalid (NA, -Inf, or -1), return original
@@ -644,16 +642,14 @@ as.matrix.reporting_triangle <- function(x, ...) {
 #' Get first rows of a reporting_triangle
 #'
 #' @param x A [reporting_triangle] object.
-#' @param ... Additional arguments passed to [utils::head()].
+#' @param n Integer indicating the number of rows to return. Default is 6.
+#' @param ... Additional arguments (not currently used).
 #' @return First rows as a reporting_triangle.
 #' @family reporting_triangle
 #' @export
 #' @importFrom utils head
 #' @method head reporting_triangle
-head.reporting_triangle <- function(x, ...) {
-  # Get default n if not specified
-  dots <- list(...)
-  n <- if (!is.null(dots[["n"]])) dots[["n"]] else 6L
+head.reporting_triangle <- function(x, n = 6L, ...) {
   n <- min(n, nrow(x))
   return(x[seq_len(n), , drop = FALSE])
 }
@@ -661,16 +657,14 @@ head.reporting_triangle <- function(x, ...) {
 #' Get last rows of a reporting_triangle
 #'
 #' @param x A [reporting_triangle] object.
-#' @param ... Additional arguments passed to [utils::tail()].
+#' @param n Integer indicating the number of rows to return. Default is 6.
+#' @param ... Additional arguments (not currently used).
 #' @return Last rows as a reporting_triangle.
 #' @family reporting_triangle
 #' @export
 #' @importFrom utils tail
 #' @method tail reporting_triangle
-tail.reporting_triangle <- function(x, ...) {
-  # Get default n if not specified
-  dots <- list(...)
-  n <- if (!is.null(dots[["n"]])) dots[["n"]] else 6L
+tail.reporting_triangle <- function(x, n = 6L, ...) {
   n <- min(n, nrow(x))
   return(x[seq.int(to = nrow(x), length.out = n), , drop = FALSE])
 }
@@ -975,7 +969,7 @@ print.reporting_triangle <- function(x, n_rows = 10, n_cols = 10, ...) {
     cli_text("")
   }
 
-  print(unclass(to_print), ...)
+  print(as.matrix(to_print), ...)
   return(invisible(x))
 }
 
@@ -1081,7 +1075,7 @@ as.data.frame.reporting_triangle <- function(
   reference_dates <- get_reference_dates(x)
   delays_unit <- get_delays_unit(x)
 
-  # Create grid of all non-NA positions using vectorized operations
+  # Create grid of all non-NA positions
   mat <- as.matrix(x)
   non_na <- !is.na(mat)
   row_indices <- row(mat)[non_na]

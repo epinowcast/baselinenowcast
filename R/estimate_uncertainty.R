@@ -459,6 +459,7 @@ fit_nb <- function(x, mu) {
     )
     return(nll)
   }
+  # Suppress numerical warnings from optimization (convergence handled by result)
   opt <- suppressWarnings(optimize(nllik, c(0.1, 1000)))
   return(opt$minimum)
 }

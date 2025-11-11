@@ -106,35 +106,35 @@ test_that("get_mean_delay works correctly", {
 })
 
 test_that("head.reporting_triangle preserves class", {
-  h <- suppressWarnings(head(rep_tri, n = 5))
+  expect_no_warning(h <- head(rep_tri, n = 5))
   expect_true(is_reporting_triangle(h))
   expect_identical(nrow(h), 5L)
   expect_identical(ncol(h), ncol(rep_tri))
 
   # Default n = 6
-  h_default <- suppressWarnings(head(rep_tri))
+  expect_no_warning(h_default <- head(rep_tri))
   expect_identical(nrow(h_default), 6L)
 })
 
 test_that("tail.reporting_triangle preserves class", {
-  t <- suppressWarnings(tail(rep_tri, n = 5))
+  expect_no_warning(t <- tail(rep_tri, n = 5))
   expect_true(is_reporting_triangle(t))
   expect_identical(nrow(t), 5L)
   expect_identical(ncol(t), ncol(rep_tri))
 
   # Default n = 6
-  t_default <- suppressWarnings(tail(rep_tri))
+  expect_no_warning(t_default <- tail(rep_tri))
   expect_identical(nrow(t_default), 6L)
 })
 
 test_that("[.reporting_triangle preserves class and validates", {
-  # Row subsetting
-  sub_rows <- suppressWarnings(rep_tri[1:10, ])
+  # Row subsetting passes validation without warnings
+  expect_no_warning(sub_rows <- rep_tri[1:10, ])
   expect_true(is_reporting_triangle(sub_rows))
   expect_identical(nrow(sub_rows), 10L)
 
   # Column subsetting changes structure, should still preserve class
-  sub_cols <- suppressWarnings(rep_tri[, 1:5])
+  expect_no_warning(sub_cols <- rep_tri[, 1:5])
   expect_true(is_reporting_triangle(sub_cols))
 })
 

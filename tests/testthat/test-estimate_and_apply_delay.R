@@ -57,33 +57,6 @@ test_that(
 )
 
 test_that(
-  "estimate_and_apply_delay behaves appropriately when max_delay is misspecified", # nolint
-  {
-    expect_message(
-      estimate_and_apply_delay(
-        reporting_triangle = reporting_triangle,
-        max_delay = 2
-      ),
-      regexp = "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay." # nolint
-    )
-
-    pt_nowcast1 <- estimate_and_apply_delay(
-      reporting_triangle = reporting_triangle,
-      max_delay = 2
-    )
-    expect_identical(ncol(pt_nowcast1), 3L)
-
-    expect_error(
-      estimate_and_apply_delay(
-        reporting_triangle = reporting_triangle,
-        max_delay = 8
-      ),
-      regexp = "The maximum delay must be less than the number of columns" # nolint
-    )
-  }
-)
-
-test_that(
   "estimate_and_apply_delay works with every other day reporting of daily data (ragged triangle test) ", # nolint
   {
     sim_delay_pmf <- c(0.1, 0.2, 0.3, 0.1, 0.1, 0.1, 0.1)
@@ -123,13 +96,13 @@ test_that(
       structure = 2
     )
 
-    point_nowcast_matrix <- expect_error(
-      estimate_and_apply_delay(
-        reporting_triangle = reporting_triangle,
-        max_delay = 8,
-        n = 5
-      ),
-      regexp = "The maximum delay must be less than the number of columns"
+    # Test with full reporting triangle
+    point_nowcast_matrix <- estimate_and_apply_delay(
+      reporting_triangle = reporting_triangle,
+      n = 5
     )
+
+    # Verify result has expected structure
+    expect_s3_class(point_nowcast_matrix, "reporting_triangle")
   }
 )

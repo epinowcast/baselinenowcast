@@ -83,10 +83,13 @@ estimate_and_apply_uncertainty <- function(
     uncertainty_model = fit_by_horizon,
     uncertainty_sampler = sample_nb,
     ...) {
-  .validate_multiple_inputs(
-    point_nowcast_matrix = point_nowcast_matrix,
-    reporting_triangle = reporting_triangle
-  )
+  # Check that both inputs have the same max_delay
+  if (ncol(point_nowcast_matrix) != ncol(reporting_triangle)) {
+    cli_abort(c(
+      "x" = "`point_nowcast_matrix` and `reporting_triangle` must have the same max_delay.", # nolint
+      "i" = "Got max_delay of {ncol(point_nowcast_matrix) - 1} and {ncol(reporting_triangle) - 1} respectively." # nolint
+    ))
+  }
 
   uncertainty_params <- estimate_uncertainty_retro(
     reporting_triangle = reporting_triangle,

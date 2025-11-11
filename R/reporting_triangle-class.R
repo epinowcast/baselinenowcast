@@ -107,6 +107,55 @@ get_delays_unit <- function(x) {
   cli_abort("x must be a reporting_triangle object")
 }
 
+#' Get delay unit function for date arithmetic
+#'
+#' Returns a function that performs date arithmetic based on the delays_unit.
+#' This is useful for adding delays to reference dates in a unit-aware way.
+#'
+#' @param delays_unit Character string specifying the temporal granularity.
+#'   Options are `"days"`, `"weeks"`, `"months"`, `"years"`.
+#' @return A function that takes a Date vector and numeric delays vector,
+#'   returns Date vector with delays added.
+#' @family reporting_triangle
+#' @export
+#' @examples
+#' # Get function for days
+#' add_days <- get_delay_unit_function("days")
+#' ref_date <- as.Date("2024-01-01")
+#' add_days(ref_date, 7) # 2024-01-08
+#'
+#' # Get function for weeks
+#' add_weeks <- get_delay_unit_function("weeks")
+#' add_weeks(ref_date, 2) # 2024-01-15
+get_delay_unit_function <- function(delays_unit) {
+  assert_delays_unit(delays_unit)
+
+  switch(delays_unit,
+    "days" = function(dates, delays) {
+      dates + delays
+    },
+    "weeks" = function(dates, delays) {
+      dates + (delays * 7)
+    },
+    "months" = function(dates, delays) {
+      # Use seq.Date for proper month arithmetic
+      result <- mapply(function(d, n) {
+        if (n == 0) return(d)
+        seq(d, by = "month", length.out = n + 1)[n + 1]
+      }, dates, delays, SIMPLIFY = FALSE)
+      as.Date(unlist(result), origin = "1970-01-01")
+    },
+    "years" = function(dates, delays) {
+      # Use seq.Date for proper year arithmetic
+      result <- mapply(function(d, n) {
+        if (n == 0) return(d)
+        seq(d, by = "year", length.out = n + 1)[n + 1]
+      }, dates, delays, SIMPLIFY = FALSE)
+      as.Date(unlist(result), origin = "1970-01-01")
+    }
+  )
+}
+
 #' Get mean delay for each row of reporting_triangle
 #'
 #' @param x A reporting_triangle object
@@ -969,16 +1018,6 @@ as.data.frame.reporting_triangle <- function(
   reference_dates <- get_reference_dates(x)
   delays_unit <- get_delays_unit(x)
 
-  # TODO: Add support for weeks, months, years with proper date arithmetic
-  if (delays_unit != "days") {
-    cli_abort(
-      message = c(
-        "Only delays_unit = 'days' is currently supported",
-        i = "Got delays_unit = '{delays_unit}'"
-      )
-    )
-  }
-
   # Create grid of all non-NA positions using vectorized operations
   mat <- as.matrix(x)
   non_na <- !is.na(mat)
@@ -988,8 +1027,9 @@ as.data.frame.reporting_triangle <- function(
   delays <- col_indices - 1
   ref_dates <- reference_dates[row_indices]
 
-  # Compute report dates (works for delays_unit = "days")
-  report_dates <- ref_dates + delays
+  # Compute report dates using unit-aware date arithmetic
+  add_delays <- get_delay_unit_function(delays_unit)
+  report_dates <- add_delays(ref_dates, delays)
 
   # Build data.frame efficiently
   result <- data.frame(

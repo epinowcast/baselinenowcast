@@ -18,10 +18,11 @@
 #'
 #' Attributes:
 #' - `delays_unit`: Character ("days", "weeks", "months", "years")
-#' - `structure`: Integer vector indicating reporting pattern
 #'
 #' Reference dates are stored as row names and can be extracted using
 #' [get_reference_dates()].
+#' The maximum delay can be obtained using [get_max_delay()].
+#' The structure can be computed using [detect_structure()].
 #' See the corresponding [as_reporting_triangle.matrix()] and
 #' [as_reporting_triangle.data.frame()] functions
 #' for more details on the required input formats to generate the object.
@@ -38,12 +39,7 @@
 #' @examples
 #' # Create a reporting triangle from data
 #' data <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-#' data$age_group <- "00+"
-#' rep_tri <- as_reporting_triangle(
-#'   data = data,
-#'   max_delay = 10,
-#'   strata = "00+"
-#' )
+#' rep_tri <- as_reporting_triangle(data = data)
 #'
 #' # Use with low-level functions
 #' filled <- fill_triangle(rep_tri)
@@ -174,12 +170,8 @@ get_quantile_delay <- function(x, p = 0.99) {
 #' @importFrom cli cli_alert_info
 #' @examples
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-#' data_as_of_df$age_group <- "00+"
-#' rep_tri <- as_reporting_triangle(
-#'   data = data_as_of_df,
-#'   max_delay = 25,
-#'   strata = "00+"
-#' )
+#' # Create triangle with specific max_delay
+#' rep_tri <- as_reporting_triangle(data = data_as_of_df, max_delay = 25)
 #'
 #' # Original has 26 columns (delays 0-25)
 #' ncol(rep_tri)
@@ -248,7 +240,8 @@ truncate_to_quantile <- function(x, p = 0.99) {
 #'                 15, 25, 35, NA,
 #'                 20, 30, NA, NA,
 #'                 25, NA, NA, NA), nrow = 4, byrow = TRUE)
-#' rt <- as_reporting_triangle(data = mat, max_delay = 3)
+#' # max_delay inferred from matrix (3 in this case)
+#' rt <- as_reporting_triangle(data = mat)
 #'
 #' # Truncate to delays 0-2
 #' rt_short <- truncate_to_delay(rt, max_delay = 2)
@@ -292,12 +285,10 @@ truncate_to_delay <- function(x, max_delay) {
     # Subset columns
     trunc_mat <- as.matrix(x)[, 1:(max_delay + 1), drop = FALSE]
 
-    # Create new reporting_triangle with updated max_delay
+    # Create new reporting_triangle
     result <- new_reporting_triangle(
       reporting_triangle_matrix = trunc_mat,
       reference_dates = get_reference_dates(x),
-      structure = attr(x, "structure"),
-      max_delay = max_delay,
       delays_unit = attr(x, "delays_unit")
     )
 
@@ -309,27 +300,29 @@ truncate_to_delay <- function(x, max_delay) {
 
 #' Class constructor for `reporting_triangle` objects
 #'
-#' @param reporting_triangle_matrix Matrix of reporting triangle
-#' @inheritParams as_reporting_triangle.matrix
-#' @inheritParams construct_triangle
-#' @inheritParams as_reporting_triangle
+#' Creates a new reporting_triangle object from a matrix.
+#' The maximum delay is automatically inferred from the number of columns.
+#' The structure attribute is automatically detected from the NA pattern.
+#'
+#' @param reporting_triangle_matrix Matrix of reporting triangle where rows
+#'   are reference times, columns are delays, and entries are incident counts.
+#' @param reference_dates Vector of Date objects indicating the reference dates
+#'   corresponding to each row of the matrix.
+#' @param delays_unit Character string specifying the temporal granularity.
+#'   Options are `"days"`, `"weeks"`, `"months"`, `"years"`.
 #'
 #' @returns An object of class [reporting_triangle]
 #' @family reporting_triangle
 #' @export
 new_reporting_triangle <- function(reporting_triangle_matrix,
                                    reference_dates,
-                                   structure,
-                                   max_delay,
-                                   delays_unit,
-                                   strata = NULL) {
+                                   delays_unit) {
+  max_delay <- ncol(reporting_triangle_matrix) - 1L
+
   .validate_rep_tri_args(
     reporting_triangle_matrix,
     reference_dates,
-    structure,
-    max_delay,
-    delays_unit,
-    strata
+    delays_unit
   )
 
   rownames(reporting_triangle_matrix) <- as.character(reference_dates)
@@ -338,8 +331,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   result <- structure(
     reporting_triangle_matrix,
     class = c("reporting_triangle", "matrix"),
-    delays_unit = delays_unit,
-    structure = structure
+    delays_unit = delays_unit
   )
   return(result)
 }
@@ -379,25 +371,13 @@ validate_reporting_triangle <- function(data) {
   }
 
   reference_dates <- as.Date(rownames(data))
-  tri_structure <- attr(data, "structure")
   delays_unit <- attr(data, "delays_unit")
-  max_delay <- ncol(data) - 1
 
   .validate_rep_tri_args(
     reporting_triangle_matrix = data,
     reference_dates = reference_dates,
-    structure = tri_structure,
-    max_delay = max_delay,
-    delays_unit = delays_unit,
-    strata = NULL
+    delays_unit = delays_unit
   )
-
-  if (sum(tri_structure) > ncol(data)) {
-    cli_abort(message = c(
-      "Sum of `structure` must not be greater than or equal",
-      "to the number of columns in matrix"
-    ))
-  }
 
   return(invisible(data))
 }
@@ -435,7 +415,6 @@ is_reporting_triangle <- function(x) {
   # Store attributes before subsetting
   old_class <- class(x)
   old_delays_unit <- attr(x, "delays_unit")
-  old_structure <- attr(x, "structure")
 
   out <- NextMethod()
 
@@ -452,7 +431,6 @@ is_reporting_triangle <- function(x) {
   # Restore class and attributes
   class(out) <- old_class
   attr(out, "delays_unit") <- old_delays_unit
-  attr(out, "structure") <- old_structure
 
   return(out)
 }
@@ -474,7 +452,6 @@ is_reporting_triangle <- function(x) {
   if (is.matrix(x_modified)) {
     class(x_modified) <- class(x)
     attr(x_modified, "delays_unit") <- attr(x, "delays_unit")
-    attr(x_modified, "structure") <- attr(x, "structure")
 
     # Note: We don't validate here to allow legitimate modifications
     # Users can call validate_reporting_triangle() manually if needed
@@ -668,7 +645,7 @@ print.reporting_triangle <- function(x, n_rows = 10, n_cols = 10, ...) {
     "Reference dates: {paste(format(range(ref_dates)), collapse = ' to ')}"
   )
   cli_text("Max delay: {get_max_delay(x)}")
-  cli_text("Structure: {toString(attr(x, 'structure'))}")
+  cli_text("Structure: {toString(detect_structure(x))}")
   cli_text("")
 
   to_print <- x
@@ -717,7 +694,7 @@ summary.reporting_triangle <- function(object, ...) {
   )
   max_delay <- get_max_delay(object) # nolint: object_usage_linter
   cli_text("Max delay: {max_delay} {attr(object, 'delays_unit')}")
-  cli_text("Structure: {toString(attr(object, 'structure'))}")
+  cli_text("Structure: {toString(detect_structure(object))}")
 
   # Convert to plain matrix for internal operations
   mat <- as.matrix(object)

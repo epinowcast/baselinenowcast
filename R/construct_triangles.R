@@ -163,10 +163,9 @@ construct_triangle <- function(truncated_reporting_triangle,
   }
 
   # Convert back to reporting_triangle with preserved attributes
-  result <- as_reporting_triangle(
-    data = result,
+  result <- new_reporting_triangle(
+    reporting_triangle_matrix = result,
     reference_dates = ref_dates,
-    max_delay = cols - 1,
     delays_unit = delays_unit
   )
 

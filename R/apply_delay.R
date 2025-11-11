@@ -89,7 +89,6 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
   # Store original attributes to restore after computation
   original_class <- class(reporting_triangle)
   original_delays_unit <- attr(reporting_triangle, "delays_unit")
-  original_structure <- attr(reporting_triangle, "structure")
   original_dimnames <- dimnames(reporting_triangle)
 
   # Convert to plain matrix for internal operations
@@ -128,7 +127,6 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
   # Restore reporting_triangle class and attributes
   class(point_nowcast_matrix) <- original_class
   attr(point_nowcast_matrix, "delays_unit") <- original_delays_unit
-  attr(point_nowcast_matrix, "structure") <- original_structure
   dimnames(point_nowcast_matrix) <- original_dimnames
 
   return(point_nowcast_matrix)

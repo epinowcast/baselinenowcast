@@ -4,20 +4,16 @@
 \alias{as_reporting_triangle}
 \title{Create a \code{reporting_triangle} object}
 \usage{
-as_reporting_triangle(
-  data,
-  max_delay,
-  strata = NULL,
-  delays_unit = "days",
-  ...
-)
+as_reporting_triangle(data, max_delay = NULL, delays_unit = "days", ...)
 }
 \arguments{
 \item{data}{Data to be nowcasted.}
 
-\item{max_delay}{Integer indicating the maximum delay.}
-
-\item{strata}{Character string indicating the strata. Default is NULL.}
+\item{max_delay}{Integer indicating the maximum delay. For the data.frame
+method, if not provided (NULL), it is automatically computed as the
+maximum delay observed in the data. For the matrix method, max_delay is
+inferred from the number of columns in the matrix and this parameter is
+not used. Default is NULL.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.

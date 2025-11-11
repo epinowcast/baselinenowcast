@@ -25,7 +25,8 @@ mat <- matrix(c(10, 20, 30, 40,
                 15, 25, 35, NA,
                 20, 30, NA, NA,
                 25, NA, NA, NA), nrow = 4, byrow = TRUE)
-rt <- as_reporting_triangle(data = mat, max_delay = 3)
+# max_delay inferred from matrix (3 in this case)
+rt <- as_reporting_triangle(data = mat)
 
 # Truncate to delays 0-2
 rt_short <- truncate_to_delay(rt, max_delay = 2)

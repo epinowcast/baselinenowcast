@@ -25,12 +25,8 @@ shorter delay window.
 }
 \examples{
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-data_as_of_df$age_group <- "00+"
-rep_tri <- as_reporting_triangle(
-  data = data_as_of_df,
-  max_delay = 25,
-  strata = "00+"
-)
+# Create triangle with specific max_delay
+rep_tri <- as_reporting_triangle(data = data_as_of_df, max_delay = 25)
 
 # Original has 26 columns (delays 0-25)
 ncol(rep_tri)

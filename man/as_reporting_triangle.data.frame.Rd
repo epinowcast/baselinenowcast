@@ -6,8 +6,7 @@
 \usage{
 \method{as_reporting_triangle}{data.frame}(
   data,
-  max_delay,
-  strata = NULL,
+  max_delay = NULL,
   delays_unit = "days",
   reference_date = "reference_date",
   report_date = "report_date",
@@ -30,12 +29,11 @@ dataframe for this function must contain only a single strata, there can
 be no repeated reference dates and report dates.
 }}
 
-\item{max_delay}{Integer indicating the maximum delay.}
-
-\item{strata}{Vector or single character string indicating the name of the
-column(s) of \code{data} which indicate the strata associated with the data.
-Entries of that column must all be the same. Default is \code{NULL}, which
-does not assign metadata to this data.}
+\item{max_delay}{Integer indicating the maximum delay. For the data.frame
+method, if not provided (NULL), it is automatically computed as the
+maximum delay observed in the data. For the matrix method, max_delay is
+inferred from the number of columns in the matrix and this parameter is
+not used. Default is NULL.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
@@ -69,10 +67,11 @@ input options.
 }
 \examples{
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-as_reporting_triangle(
-  data = data_as_of_df,
-  max_delay = 25
-)
+# max_delay is automatically computed from the data
+as_reporting_triangle(data = data_as_of_df)
+
+# Or specify max_delay explicitly to truncate to a specific delay
+as_reporting_triangle(data = data_as_of_df, max_delay = 25)
 }
 \seealso{
 Reporting triangle construction and validation

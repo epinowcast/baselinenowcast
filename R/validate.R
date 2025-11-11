@@ -450,17 +450,13 @@
 #'
 #' @inheritParams new_reporting_triangle
 #' @inheritParams as_reporting_triangle.matrix
-#' @inheritParams construct_triangle
 #' @inheritParams as_reporting_triangle
 #'
 #' @returns NULL
 #' @keywords internal
 .validate_rep_tri_args <- function(reporting_triangle_matrix,
                                    reference_dates,
-                                   structure,
-                                   max_delay,
-                                   delays_unit,
-                                   strata = NULL) {
+                                   delays_unit) {
   assert_matrix(reporting_triangle_matrix)
   assert_date(reference_dates,
     unique = TRUE,
@@ -468,12 +464,6 @@
     min.len = 1,
     len = nrow(reporting_triangle_matrix)
   )
-
-  assert_numeric(structure, lower = 0)
-  assert_integerish(structure, min.len = 1)
-  assert_integerish(max_delay, min.len = 1, lower = 1)
-  assert_character(delays_unit, len = 1)
-  assert_character(strata, null.ok = TRUE)
 
   assert_character(delays_unit, len = 1)
   assert_choice(delays_unit,

@@ -4,40 +4,17 @@
 \alias{.validate_rep_tri_args}
 \title{Validate each item in the reporting triangle}
 \usage{
-.validate_rep_tri_args(
-  reporting_triangle_matrix,
-  reference_dates,
-  structure,
-  max_delay,
-  delays_unit,
-  strata = NULL
-)
+.validate_rep_tri_args(reporting_triangle_matrix, reference_dates, delays_unit)
 }
 \arguments{
-\item{reporting_triangle_matrix}{Matrix of reporting triangle}
+\item{reporting_triangle_matrix}{Matrix of reporting triangle where rows
+are reference times, columns are delays, and entries are incident counts.}
 
-\item{reference_dates}{Vector of Date objects or character strings indicating
-the reference dates corresponding to each row of the reporting triangle
-matrix (\code{data}). If NULL (default), dummy dates starting from 1900-01-01
-are generated with spacing determined by \code{delays_unit}.}
+\item{reference_dates}{Vector of Date objects indicating the reference dates
+corresponding to each row of the matrix.}
 
-\item{structure}{Integer or vector specifying the reporting structure.
-If integer, divides columns evenly by that integer (with last possibly
-truncated).  If vector, the sum must not be greater than or equal to the
-number of columns. Default is 1 (standard triangular structure).}
-
-\item{max_delay}{Integer indicating the maximum delay.}
-
-\item{delays_unit}{Character string specifying the temporal granularity of
-the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
-For the matrix method, this is simply passed as an item in the
-\code{reporting_triangle} object which will later be used to create a nowcast
-data.frame. For the data.frame method, this is used to compute the delay
-in terms of the specified unit, and to expand the combinations of
-reference dates and delays to the complete set of combinations in
-the reporting triangle.  Default is \code{"days"}.}
-
-\item{strata}{Character string indicating the strata. Default is NULL.}
+\item{delays_unit}{Character string specifying the temporal granularity.
+Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.}
 }
 \description{
 Validate each item in the reporting triangle

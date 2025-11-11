@@ -115,16 +115,12 @@ truncate_triangle <- function(t,
 
   # Extract and update metadata
   ref_dates <- get_reference_dates(reporting_triangle)[1:(n_obs - t)]
-  max_delay <- get_max_delay(reporting_triangle)
   delays_unit <- attr(reporting_triangle, "delays_unit")
-  struct <- attr(reporting_triangle, "structure")
 
   # Create new reporting_triangle with updated metadata
   rep_tri_trunc <- new_reporting_triangle(
     reporting_triangle_matrix = rep_tri_mat,
     reference_dates = ref_dates,
-    structure = struct,
-    max_delay = max_delay,
     delays_unit = delays_unit
   )
 

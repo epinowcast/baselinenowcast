@@ -11,16 +11,13 @@
 #' @keywords internal
 .validate_triangle <- function(
     triangle,
-    max_delay = ncol(triangle) - 1,
     n = nrow(triangle)) {
-  # Make sure the input triangle is of the correct class, and n and max_delay
-  # are integers
+  # Make sure the input triangle is of the correct class and n is an integer
   if (is.null(triangle)) {
     triangle_name <- deparse(substitute(triangle)) # nolint
     cli_abort(message = "`{triangle_name}` argument is missing.") # nolint
   }
   assert_class(triangle, "matrix")
-  assert_integerish(max_delay)
   assert_integerish(n)
   assert_matrix(triangle, all.missing = FALSE)
 
@@ -45,20 +42,10 @@
     )
   }
 
-  if (ncol(triangle) < (max_delay + 1)) {
+  if (n < 1) {
     cli_abort(
       message = c(
-        "Number of delays in input data not sufficient for",
-        "user specified maximum delay"
-      )
-    )
-  }
-
-  if ((max_delay < 1 || n < 1)) {
-    cli_abort(
-      message = c(
-        "Insufficient `max_delay` or `n`, must be greater than ",
-        "or equal to 1."
+        "Insufficient `n`, must be greater than or equal to 1."
       )
     )
   }
@@ -168,54 +155,6 @@
     has_non_zeros <- !all(mat_LHS == 0)
   }
   return(has_non_zeros)
-}
-
-#' Check that the maximum delay is not too large, error if it is
-#'
-#' @inheritParams .validate_delay_and_triangle
-#' @inheritParams estimate_delay
-#'
-#' @returns NULL invisibly
-#' @keywords internal
-.validate_max_delay <- function(triangle,
-                                max_delay) {
-  if (max_delay > ncol(triangle) - 1) {
-    cli_abort(
-      message = "The maximum delay must be less than the number of columns in the reporting triangle." # nolint
-    )
-  }
-
-  return(NULL)
-}
-#' Check that the reporting triangle contains the correct number of columns for
-#'   the specified maximum delay
-#'
-#' @inheritParams .validate_delay_and_triangle
-#' @inheritParams estimate_delay
-#' @importFrom cli cli_alert_info
-#'
-#' @returns reporting_triangle
-#' @keywords internal
-.check_to_filter_to_max_delay <- function(triangle,
-                                          max_delay) {
-  assert_reporting_triangle(triangle)
-
-  if (max_delay < ncol(triangle) - 1) {
-    cli_alert_info(
-      text = "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay. The reporting triangle will be filtered to include only the first {max_delay+1} delays." # nolint
-    )
-
-    # Filter the reporting triangle while preserving class and metadata
-    trunc_mat <- unclass(triangle)[, 1:(max_delay + 1), drop = FALSE]
-    triangle <- new_reporting_triangle(
-      reporting_triangle_matrix = trunc_mat,
-      reference_dates = get_reference_dates(triangle),
-      structure = attr(triangle, "structure"),
-      max_delay = max_delay,
-      delays_unit = attr(triangle, "delays_unit")
-    )
-  }
-  return(triangle)
 }
 
 #' Validate triangle to nowcast and delay PMF together

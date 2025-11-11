@@ -27,28 +27,19 @@
 #' )
 #' triangle <- as_reporting_triangle(
 #'   data = triangle_mat,
-#'   reference_dates = ref_dates,
-#'   max_delay = ncol(triangle_mat) - 1
+#'   reference_dates = ref_dates
 #' )
 #' pt_nowcast_matrix <- estimate_and_apply_delay(
 #'   reporting_triangle = triangle,
-#'   max_delay = 3,
 #'   n = 4
 #' )
 #' pt_nowcast_matrix
 estimate_and_apply_delay <- function(reporting_triangle,
-                                     max_delay = ncol(reporting_triangle) - 1,
                                      ...) {
   assert_reporting_triangle(reporting_triangle)
 
-  reporting_triangle <- .check_to_filter_to_max_delay(
-    reporting_triangle,
-    max_delay
-  )
-
   delay_pmf <- estimate_delay(
     reporting_triangle,
-    max_delay = max_delay,
     ...
   )
 

@@ -78,14 +78,10 @@ as_reporting_triangle.data.frame <- function(
   assert_date(data$reference_date)
   assert_date(data$report_date)
 
-  # Compute delay
-  data$delay <- as.numeric(
-    difftime(
-      as.Date(data$report_date),
-      as.Date(data$reference_date),
-      units = delays_unit
-    )
-  )
+  # Compute delay using unit-aware function
+  compute_delay <- get_delay_from_dates_function(delays_unit)
+  data$delay <- compute_delay(data$report_date, data$reference_date)
+
   if (!isTRUE(check_integerish(data$delay))) {
     cli_abort(
       message = c(
@@ -110,12 +106,12 @@ as_reporting_triangle.data.frame <- function(
     )
 
   ix <- is.na(all_combos$count)
+  max_report_delay <- compute_delay(
+    rep(max(data$report_date), sum(ix)),
+    all_combos$reference_date[ix]
+  )
   all_combos$count[ix] <- ifelse(
-    as.numeric(difftime(
-      as.Date(max(data$report_date)),
-      as.Date(all_combos$reference_date[ix]),
-      units = delays_unit
-    )) >= all_combos$delay[ix],
+    max_report_delay >= all_combos$delay[ix],
     0, all_combos$count[ix]
   )
 

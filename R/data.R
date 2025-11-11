@@ -58,15 +58,50 @@
 #' @family example_data
 "syn_nssp_line_list"
 
-#' Example reporting triangle with downward corrections
+#' Simple example reporting triangle for demonstrations
 #'
-#' @description A synthetic reporting triangle demonstrating downward
-#'   corrections at a specific delay.
+#' @description A basic [reporting_triangle] object demonstrating standard
+#'   structure with complete early reference times and progressively incomplete
+#'   recent times. Useful for simple examples and tests.
+#'
+#' @format A [reporting_triangle] object with 5 reference dates and 4 delays:
+#' \describe{
+#'   \item{reporting_triangle_matrix}{5x4 matrix with counts}
+#'   \item{reference_dates}{5 dates starting from 2024-01-01}
+#'   \item{delays_unit}{"days"}
+#' }
+#'
+#' @details
+#' This is a simple, clean example without complications like negative values
+#' or unusual structures. Ideal for:
+#' - Package examples demonstrating basic functionality
+#' - Unit tests for standard cases
+#' - Vignettes introducing nowcasting concepts
+#'
+#' Use [example_downward_corr_rt] for examples with data quality corrections.
+#'
+#' @seealso
+#' - [example_downward_corr_rt] for downward corrections example
+#' - [as_reporting_triangle()] to create reporting triangles
+#'
+#' @family example_data
+#' @examples
+#' # View the example triangle
+#' example_reporting_triangle
+#'
+#' # Use in nowcasting
+#' estimate_delay(example_reporting_triangle, n = 3)
+"example_reporting_triangle"
+
+#' Example reporting triangle with downward corrections (matrix form)
+#'
+#' @description A synthetic matrix demonstrating downward corrections at a
+#'   specific delay.
 #'   This represents a realistic case where data quality reviews at delay 2
 #'   consistently identify false positives or reclassify cases, resulting in
 #'   net downward adjustments that produce negative values.
 #'
-#'   When estimated with `preprocess = NULL`, this triangle produces a PMF with
+#'   When estimated with `preprocess = NULL`, this produces a PMF with
 #'   negative entries and a CDF that is not strictly increasing, reflecting
 #'   the downward correction process.
 #'
@@ -87,12 +122,57 @@
 #' - This reflects real reporting processes with systematic downward corrections
 #'
 #' @seealso
+#' - [example_downward_corr_rt] for the [reporting_triangle] version
 #' - [estimate_delay()] with `preprocess = NULL` to preserve negative entries
 #' - [preprocess_negative_values()] to handle negatives by redistribution
 #'
 #' @family example_data
 #' @keywords internal
 "example_downward_corr_mat"
+
+#' Example reporting triangle with downward corrections
+#'
+#' @description A [reporting_triangle] object demonstrating how to handle
+#'   systematic downward corrections in reporting data.
+#'   This represents a realistic case where data quality reviews at delay 2
+#'   consistently identify false positives or reclassify cases, producing
+#'   negative values at that specific delay.
+#'
+#' @format A [reporting_triangle] object with 8 reference dates and 4 delays:
+#' \describe{
+#'   \item{reporting_triangle_matrix}{8x4 matrix with negative values at delay 2}
+#'   \item{reference_dates}{8 dates starting from 2024-01-01}
+#'   \item{delays_unit}{"days"}
+#' }
+#'
+#' @details
+#' Use this example to understand:
+#' - How to work with negative corrections in delay distributions
+#' - The difference between `preprocess = NULL` (preserves negatives) and
+#'   `preprocess = preprocess_negative_values` (redistributes)
+#' - How PMFs and CDFs behave with systematic downward corrections
+#'
+#' @seealso
+#' - [example_downward_corr_mat] for the raw matrix version
+#' - [example_reporting_triangle] for a clean example without corrections
+#' - [estimate_delay()] with `preprocess` parameter
+#' - [preprocess_negative_values()] to handle negative values
+#'
+#' @family example_data
+#' @examples
+#' # View the example triangle with downward corrections
+#' example_downward_corr_rt
+#'
+#' # Estimate delay with and without preprocessing
+#' delay_raw <- estimate_delay(example_downward_corr_rt, n = 5,
+#'   preprocess = NULL)
+#' delay_processed <- estimate_delay(example_downward_corr_rt, n = 5,
+#'   preprocess = preprocess_negative_values)
+#'
+#' # Compare the resulting PMFs
+#' delay_raw
+#' delay_processed
+"example_downward_corr_rt"
 
 #' Incident COVID-19 hospitalisations indexed by the date of positive test
 #'   (reference date) and report date from Germany in 2021 and 2022.

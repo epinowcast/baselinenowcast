@@ -214,9 +214,8 @@ fill_triangle <- function(reporting_triangle,
       )
     )
   }
-  n_rows <- nrow(reporting_triangle)
-  # Convert to plain matrix for subsetting
-  tri_mat <- as.matrix(reporting_triangle)[(n_rows - n + 1):n_rows, ]
+  # Use tail to get last n rows
+  tri_mat <- tail(as.matrix(reporting_triangle), n = n)
   has_complete_row <- any(rowSums(is.na(tri_mat)) == 0)
   if (isFALSE(has_complete_row)) {
     cli_abort(

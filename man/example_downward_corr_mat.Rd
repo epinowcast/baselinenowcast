@@ -3,7 +3,7 @@
 \docType{data}
 \name{example_downward_corr_mat}
 \alias{example_downward_corr_mat}
-\title{Example reporting triangle with downward corrections}
+\title{Example reporting triangle with downward corrections (matrix form)}
 \format{
 A matrix with 8 rows and 4 columns.
 \describe{
@@ -18,13 +18,13 @@ Lower-right triangle contains NA values (unobserved future reports).
 example_downward_corr_mat
 }
 \description{
-A synthetic reporting triangle demonstrating downward
-corrections at a specific delay.
+A synthetic matrix demonstrating downward corrections at a
+specific delay.
 This represents a realistic case where data quality reviews at delay 2
 consistently identify false positives or reclassify cases, resulting in
 net downward adjustments that produce negative values.
 
-When estimated with \code{preprocess = NULL}, this triangle produces a PMF with
+When estimated with \code{preprocess = NULL}, this produces a PMF with
 negative entries and a CDF that is not strictly increasing, reflecting
 the downward correction process.
 }
@@ -39,11 +39,14 @@ with downward corrections:
 }
 \seealso{
 \itemize{
+\item \link{example_downward_corr_rt} for the \link{reporting_triangle} version
 \item \code{\link[=estimate_delay]{estimate_delay()}} with \code{preprocess = NULL} to preserve negative entries
 \item \code{\link[=preprocess_negative_values]{preprocess_negative_values()}} to handle negatives by redistribution
 }
 
 Example datasets
+\code{\link{example_downward_corr_rt}},
+\code{\link{example_reporting_triangle}},
 \code{\link{germany_covid19_hosp}},
 \code{\link{syn_nssp_df}},
 \code{\link{syn_nssp_line_list}}

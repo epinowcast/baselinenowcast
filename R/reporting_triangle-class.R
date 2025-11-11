@@ -156,6 +156,67 @@ get_delay_unit_function <- function(delays_unit) {
   )
 }
 
+#' Compute delays between two dates based on delay unit
+#'
+#' @description Returns a function that computes delays between report dates
+#'   and reference dates using the specified time unit. This is the inverse
+#'   operation of [get_delay_unit_function()].
+#'
+#' @param delays_unit Character string specifying the time unit for delays.
+#'   Must be one of "days", "weeks", "months", or "years".
+#' @return A function that takes two date vectors (report_date, reference_date)
+#'   and returns integer delays
+#' @family reporting_triangle
+#' @keywords internal
+get_delay_from_dates_function <- function(delays_unit) {
+  assert_delays_unit(delays_unit)
+
+  switch(delays_unit,
+    "days" = function(report_date, reference_date) {
+      as.numeric(difftime(
+        as.Date(report_date),
+        as.Date(reference_date),
+        units = "days"
+      ))
+    },
+    "weeks" = function(report_date, reference_date) {
+      as.numeric(difftime(
+        as.Date(report_date),
+        as.Date(reference_date),
+        units = "weeks"
+      ))
+    },
+    "months" = function(report_date, reference_date) {
+      # Compute month difference
+      report <- as.Date(report_date)
+      reference <- as.Date(reference_date)
+
+      result <- mapply(function(r, ref) {
+        if (r == ref) return(0)
+
+        years_diff <- as.numeric(format(r, "%Y")) -
+          as.numeric(format(ref, "%Y"))
+        months_diff <- as.numeric(format(r, "%m")) -
+          as.numeric(format(ref, "%m"))
+
+        years_diff * 12 + months_diff
+      }, report, reference)
+
+      return(as.numeric(result))
+    },
+    "years" = function(report_date, reference_date) {
+      # Compute year difference
+      report <- as.Date(report_date)
+      reference <- as.Date(reference_date)
+
+      result <- as.numeric(format(report, "%Y")) -
+        as.numeric(format(reference, "%Y"))
+
+      return(as.numeric(result))
+    }
+  )
+}
+
 #' Get mean delay for each row of reporting_triangle
 #'
 #' @param x A reporting_triangle object

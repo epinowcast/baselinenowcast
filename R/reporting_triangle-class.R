@@ -170,10 +170,10 @@ get_quantile_delay <- function(x, p = 0.99) {
 #' @importFrom cli cli_alert_info
 #' @examples
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-#' # Create triangle with specific max_delay
-#' rep_tri <- as_reporting_triangle(data = data_as_of_df, max_delay = 25)
+#' # Create triangle, max_delay is automatically computed
+#' rep_tri <- suppressMessages(as_reporting_triangle(data = data_as_of_df))
 #'
-#' # Original has 26 columns (delays 0-25)
+#' # Check the maximum delay in the triangle
 #' ncol(rep_tri)
 #'
 #' # Truncate to 99th percentile of reporting
@@ -489,7 +489,7 @@ is_reporting_triangle <- function(x) {
 #' mat <- matrix(c(10, 20, 30, 40, 15, 25, 35, NA, 20, 30, NA, NA),
 #'   nrow = 3, byrow = TRUE
 #' )
-#' rt <- suppressMessages(as_reporting_triangle(data = mat, max_delay = 3))
+#' rt <- suppressMessages(as_reporting_triangle(data = mat))
 #' plain_mat <- as.matrix(rt)
 #' class(plain_mat)  # "matrix" "array"
 as.matrix.reporting_triangle <- function(x, ...) {
@@ -949,38 +949,37 @@ as.data.frame.reporting_triangle <- function(
   reference_dates <- get_reference_dates(x)
   delays_unit <- attr(x, "delays_unit")
 
-  result_list <- list()
-  idx <- 1
-
-  for (i in seq_len(nrow(x))) {
-    ref_date <- reference_dates[i]
-
-    for (j in seq_len(ncol(x))) {
-      delay <- j - 1
-      count <- x[i, j]
-
-      if (!is.na(count)) {
-        report_date <- ref_date + delay * switch(
-          delays_unit,
-          days = 1,
-          weeks = 7,
-          months = 30,
-          years = 365
-        )
-
-        result_list[[idx]] <- data.frame(
-          reference_date = ref_date,
-          report_date = report_date,
-          delay = delay,
-          count = count,
-          stringsAsFactors = FALSE
-        )
-        idx <- idx + 1
-      }
-    }
+  # TODO: Add support for weeks, months, years with proper date arithmetic
+  if (delays_unit != "days") {
+    cli_abort(
+      message = c(
+        "Only delays_unit = 'days' is currently supported",
+        i = "Got delays_unit = '{delays_unit}'"
+      )
+    )
   }
 
-  result <- do.call(rbind, result_list)
+  # Create grid of all non-NA positions using vectorized operations
+  mat <- as.matrix(x)
+  non_na <- !is.na(mat)
+  row_indices <- row(mat)[non_na]
+  col_indices <- col(mat)[non_na]
+  counts <- mat[non_na]
+  delays <- col_indices - 1
+  ref_dates <- reference_dates[row_indices]
+
+  # Compute report dates (works for delays_unit = "days")
+  report_dates <- ref_dates + delays
+
+  # Build data.frame efficiently
+  result <- data.frame(
+    reference_date = ref_dates,
+    report_date = report_dates,
+    delay = delays,
+    count = counts,
+    stringsAsFactors = FALSE
+  )
+
   rownames(result) <- row.names
 
   return(result)

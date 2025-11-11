@@ -141,7 +141,7 @@ get_delay_unit_function <- function(delays_unit) {
       # Use seq.Date for proper month arithmetic
       result <- mapply(function(d, n) {
         if (n == 0) return(d)
-        return(seq(d, by = "month", length.out = n + 1)[n + 1])
+        return(seq(d, by = "month", length.out = n + 1)[n + 1]) # nolint: keyword_quote_linter
       }, dates, delays, SIMPLIFY = FALSE)
       return(as.Date(unlist(result), origin = "1970-01-01"))
     },
@@ -149,7 +149,7 @@ get_delay_unit_function <- function(delays_unit) {
       # Use seq.Date for proper year arithmetic
       result <- mapply(function(d, n) {
         if (n == 0) return(d)
-        return(seq(d, by = "year", length.out = n + 1)[n + 1])
+        return(seq(d, by = "year", length.out = n + 1)[n + 1]) # nolint: keyword_quote_linter
       }, dates, delays, SIMPLIFY = FALSE)
       return(as.Date(unlist(result), origin = "1970-01-01"))
     }

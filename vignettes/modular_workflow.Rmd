@@ -31,7 +31,7 @@ In this vignette, we will walk through the low-level implementation.
 While the `baselinenowcast()` wrapper function implements the most "common" nowcasting workflow with some options for specification, the modular workflow allows for maximum flexibility to compose a model of one's choice via passing outputs from low-level functions in a pipeline-based approach.
 We recommend this workflow for any users who wish to investigate and use intermediate outputs (e.g. the point nowcast matrix) and compose their own nowcasting workflow.
 
-We will use the same dataset and problem from the [Gettign Started](baselinenowcast.html) vignette, and our assumption is that users have read that and are familiar with concepts introduced there such as the reporting triangle.
+We will use the same dataset and problem from the [Getting Started](baselinenowcast.html) vignette, and our assumption is that users have read that and are familiar with concepts introduced there such as the reporting triangle.
 Also see the [model definition](model_definition.html) vignette for more details on the mathematical methods, and the [nomenclature](nomenclature.html) vignette for full descriptions of the terminology being used.
 
 # Packages
@@ -283,7 +283,7 @@ disp_params <- estimate_uncertainty(
 )
 ```
 
-Note that the estimation of uncertainty from a reporting triangle can be done in a single step using the `estimate_uncertainty_retro()` function, which chains togeter the truncation of triangles, construction of retrospectie reporting triangles, the generation of point nowcasts via filling the triangles, and the estimation of the uncertainty from the estimates compared to the observations.
+Note that the estimation of uncertainty from a reporting triangle can be done in a single step using the `estimate_uncertainty_retro()` function, which chains together the truncation of triangles, construction of retrospective reporting triangles, the generation of point nowcasts via filling the triangles, and the estimation of the uncertainty from the estimates compared to the observations.
 
 # Generate probabilistic nowcast
 
@@ -415,12 +415,12 @@ In this vignette we used the `baselinenowcast` low-level modular functions to co
 4. `construct_triangles()` - Constructing retrospective reporting triangles based on what would have been available as of the nowcast date.
 5. `fill_triangles()` - Generating point nowcasts from the retrospective reporting triangles
 6. `estimate_uncertainty()` - Estimating uncertainty from retrospective point nowcast matrices and eventual observations.
-7. `sample_nowcasts()` - Sampling from the observation model to generate probabilistc nowcasts
+7. `sample_nowcasts()` - Sampling from the observation model to generate probabilistic nowcasts
 
 This modular workflow allows for maximum flexibility and the ability to interrogate intermediate steps.
-The idea is that from these component functions, a wide range of `baselinenowcast` models can be developed via a pipeline-based approach where the outputs of one function are pased to the inputs of another function, or the inputs of one function can for example be swapped with an external estimate.
+The idea is that from these component functions, a wide range of `baselinenowcast` models can be developed via a pipeline-based approach where the outputs of one function are passed to the inputs of another function, or the inputs of one function can for example be swapped with an external estimate.
 
-This vignette walks through and produces the exact same results as in the [Getting Started](baselinenowcast.html) vignette, which uses the package default settings to specidy the model.
+This vignette walks through and produces the exact same results as in the [Getting Started](baselinenowcast.html) vignette, which uses the package default settings to specify the model.
 However, the optimal settings will depend on the context and its important to tune the model to your dataset and needs.
 In our [publication](https://wellcomeopenresearch.org/articles/10-614/v1) we show examples using the various model specifications to produce and evaluate the performance of age-group specific nowcasts of COVID-19 in Germany and norovirus cases in England.
 Here's a [link](https://github.com/epinowcast/baselinenowcast-paper) to the code used to generate those nowcasts if interested in doing something similar for your own settings.

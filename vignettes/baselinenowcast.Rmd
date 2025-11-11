@@ -33,7 +33,7 @@ The purpose of `baselinenowcast` is to provide a nowcast computed directly from 
 
 In the below section, we will describe an example of a nowcasting problem, and demonstrate how to use the `baselinenowcast()` function to estimate a delay distribution from the data and apply that estimate to generate a probabilistic nowcast.
 This function chains together a series of nowcasting steps.
-For an example that walks through the low-level functionality applied to this same epidemiolical question, see the [modular workflow](modular_workflow.html) vignette.
+For an example that walks through the low-level functionality applied to this same epidemiological question, see the [modular workflow](modular_workflow.html) vignette.
 In future vignettes, we will demonstrate examples of how to create more complex model permutations.
 More details on the mathematical methods are provided in the [mathematical model](model_definition.html) vignette.
 
@@ -232,7 +232,7 @@ It contains probabilistic draws of estimate of the final number of cases on each
 # Visualizing the nowcast
 
 We'll want to compare the nowcasts to both the initial reports and the eventually observed case counts.
-We can join both datasets to the probabilistc nowcasts by the reference date.
+We can join both datasets to the probabilistic nowcasts by the reference date.
 Join the nowcasts, data as of the nowcast date, and the final data.
 
 ```{r}
@@ -242,8 +242,7 @@ obs_with_nowcast_draws_df <- nowcast_draws_df |>
 head(obs_with_nowcast_draws_df)
 ```
 
-Create a separate dataframe for only the observed and final data, to make plotting easier.
-
+<details><summary>Click to expand code to create the plot of the probabilistic nowcast</summary>
 ```{r}
 combined_data <- obs_with_nowcast_draws_df |>
   select(reference_date, initial_count, final_count) |>
@@ -257,9 +256,7 @@ combined_data <- obs_with_nowcast_draws_df |>
     type == "initial_count" ~ "Initial reports",
     type == "final_count" ~ "Final observed data"
   ))
-```
-<details><summary>Click to expand code to create the plot of the probabilistic nowcast</summary>
-```{r}
+
 # Plot with draws for nowcast only
 plot_prob_nowcast <- ggplot() +
   # Add nowcast draws as thin gray lines
@@ -322,11 +319,11 @@ See the documentation for `?baselinenowcast.data.frame` for more details.
 Alternatively, you might be interested in building a more customisable nowcasting workflow.
 This is supported by our modular workflow which enables a pipeline-based approach using low-level functions.
 For an example of walking through this same nowcasting problem with the modular workflow, see the [modular workflow](modular_workflow.html) vignette.
-<!-- Note, the below is from the summary in nssp_nowcast, so we could make this a code chunk like installation to avoid duplication -->
+<!-- Note, the below relies heavily on the summary in nssp_nowcast, so we could make this a code chunk like installation to avoid duplication -->
 
-In this vignette we use the package's default settings to specify the model, but the optima settings will depend on the context and its important to tune the model for your dataset and needs.
+In this vignette we use the package's default settings to specify the model, but the optimal settings will depend on the context and its important to tune the model for your dataset and needs.
 The user has a number of choices in how to specify the model, such as the amount of training data to use for delay or uncertainty estimation, the choice of observation model, whether to separately estimate delays by weekday, or whether to borrow estimates from across different strata such as age groups or locations.
-See the [Getting Started](baselinenowcast.html) vignette and [model definition](model_definition.html) for more details on the different model specifications.
+See the [model definition](model_definition.html) for more details on the mathematical methods.
 In our [publication](https://wellcomeopenresearch.org/articles/10-614/v1) we show examples using the various model specifications to produce and evaluate the performance of age-group specific nowcasts of COVID-19 in Germany and norovirus cases in England.
 Here's a [link](https://github.com/epinowcast/baselinenowcast-paper) to the code used to generate those nowcasts if interested in doing something similar for your own settings.
 

@@ -273,7 +273,7 @@ truncate_to_delay <- function(x, max_delay) {
     cli_abort(
       message = c(
         "`max_delay` cannot be greater than current maximum delay",
-        "i" = "Current max_delay is {current_max_delay}, requested {max_delay}"
+        i = "Current max_delay is {current_max_delay}, requested {max_delay}"
       )
     )
   }

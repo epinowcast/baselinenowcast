@@ -44,9 +44,7 @@
 
   if (n < 1) {
     cli_abort(
-      message = c(
-        "Insufficient `n`, must be greater than or equal to 1."
-      )
+      message = "Insufficient `n`, must be greater than or equal to 1."
     )
   }
 

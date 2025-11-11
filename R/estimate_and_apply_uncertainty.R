@@ -77,7 +77,6 @@ estimate_and_apply_uncertainty <- function(
     reporting_triangle,
     n_history_delay,
     n_retrospective_nowcasts,
-    max_delay = ncol(reporting_triangle) - 1,
     structure = detect_structure(reporting_triangle),
     draws = 1000,
     delay_pmf = NULL,
@@ -86,15 +85,13 @@ estimate_and_apply_uncertainty <- function(
     ...) {
   .validate_multiple_inputs(
     point_nowcast_matrix = point_nowcast_matrix,
-    reporting_triangle = reporting_triangle,
-    max_delay = max_delay
+    reporting_triangle = reporting_triangle
   )
 
   uncertainty_params <- estimate_uncertainty_retro(
     reporting_triangle = reporting_triangle,
     n_history_delay = n_history_delay,
     n_retrospective_nowcasts = n_retrospective_nowcasts,
-    max_delay = max_delay,
     structure = structure,
     delay_pmf = delay_pmf,
     uncertainty_model = uncertainty_model,

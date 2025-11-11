@@ -226,8 +226,7 @@
 #' @keywords internal
 .validate_multiple_inputs <- function(
     point_nowcast_matrix,
-    reporting_triangle,
-    max_delay) {
+    reporting_triangle) {
   # Basic input validation
   if (!is.matrix(point_nowcast_matrix)) {
     cli_abort("`point_nowcast_matrix` must be a matrix.")
@@ -237,13 +236,6 @@
     cli_abort(c(
       "x" = "`point_nowcast_matrix` and `reporting_triangle` must have the same number of columns.", # nolint
       "i" = "Got {ncol(point_nowcast_matrix)} and {ncol(reporting_triangle)} respectively." # nolint
-    ))
-  }
-
-  if (ncol(reporting_triangle) != (max_delay + 1)) {
-    cli_abort(c(
-      "x" = "Inconsistent `max_delay`.", # nolint
-      "i" = "`ncol(reporting_triangle)` = {ncol(reporting_triangle)} but `max_delay + 1` = {max_delay + 1}." # nolint
     ))
   }
 

@@ -24,8 +24,6 @@ If integer, divides columns evenly by that integer (with last possibly
 truncated).  If vector, the sum must not be greater than or equal to the
 number of columns. Default is 1 (standard triangular structure).}
 
-\item{max_delay}{Integer indicating the maximum delay.}
-
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
 For the matrix method, this is simply passed as an item in the
@@ -34,8 +32,6 @@ data.frame. For the data.frame method, this is used to compute the delay
 in terms of the specified unit, and to expand the combinations of
 reference dates and delays to the complete set of combinations in
 the reporting triangle.  Default is \code{"days"}.}
-
-\item{strata}{Character string indicating the strata. Default is NULL.}
 }
 \description{
 Validate each item in the reporting triangle

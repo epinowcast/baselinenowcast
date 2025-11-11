@@ -6,8 +6,6 @@
 \usage{
 \method{as_reporting_triangle}{data.frame}(
   data,
-  max_delay,
-  strata = NULL,
   delays_unit = "days",
   reference_date = "reference_date",
   report_date = "report_date",
@@ -29,13 +27,6 @@ Additional columns can be included but will not be used. The input
 dataframe for this function must contain only a single strata, there can
 be no repeated reference dates and report dates.
 }}
-
-\item{max_delay}{Integer indicating the maximum delay.}
-
-\item{strata}{Vector or single character string indicating the name of the
-column(s) of \code{data} which indicate the strata associated with the data.
-Entries of that column must all be the same. Default is \code{NULL}, which
-does not assign metadata to this data.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
@@ -64,14 +55,14 @@ A \code{\link{reporting_triangle}} object
 \description{
 This method takes a data.frame containing case counts indexed by reference
 date and report date and creates a \link{reporting_triangle} object.
+The maximum delay is automatically computed from the data.
 See \code{\link[=as_reporting_triangle.matrix]{as_reporting_triangle.matrix()}} for other data
 input options.
 }
 \examples{
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 as_reporting_triangle(
-  data = data_as_of_df,
-  max_delay = 25
+  data = data_as_of_df
 )
 }
 \seealso{

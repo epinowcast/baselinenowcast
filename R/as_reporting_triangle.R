@@ -1,8 +1,6 @@
 #' Create a `reporting_triangle` object
 #'
 #' @param data Data to be nowcasted.
-#' @param max_delay Integer indicating the maximum delay.
-#' @param strata Character string indicating the strata. Default is NULL.
 #' @param delays_unit Character string specifying the temporal granularity of
 #'    the delays. Options are `"days"`, `"weeks"`, `"months"`, `"years"`.
 #'    For the matrix method, this is simply passed as an item in the
@@ -18,8 +16,6 @@
 #' @family reporting_triangle
 #' @export
 as_reporting_triangle <- function(data,
-                                  max_delay,
-                                  strata = NULL,
                                   delays_unit = "days",
                                   ...) {
   UseMethod("as_reporting_triangle")
@@ -29,6 +25,7 @@ as_reporting_triangle <- function(data,
 #'
 #' This method takes a data.frame containing case counts indexed by reference
 #' date and report date and creates a [reporting_triangle] object.
+#' The maximum delay is automatically computed from the data.
 #' See [as_reporting_triangle.matrix()] for other data
 #' input options.
 #'
@@ -43,10 +40,6 @@ as_reporting_triangle <- function(data,
 #'  Additional columns can be included but will not be used. The input
 #'  dataframe for this function must contain only a single strata, there can
 #'  be no repeated reference dates and report dates.
-#' @param strata Vector or single character string indicating the name of the
-#'    column(s) of `data` which indicate the strata associated with the data.
-#'    Entries of that column must all be the same. Default is `NULL`, which
-#'    does not assign metadata to this data.
 #' @inheritParams as_reporting_triangle
 #' @param reference_date Character string indicating the name of the
 #'    column which represents the reference date, or the date of the primary
@@ -68,19 +61,15 @@ as_reporting_triangle <- function(data,
 #' @examples
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 #' as_reporting_triangle(
-#'   data = data_as_of_df,
-#'   max_delay = 25
+#'   data = data_as_of_df
 #' )
 as_reporting_triangle.data.frame <- function(
     data,
-    max_delay,
-    strata = NULL,
     delays_unit = "days",
     reference_date = "reference_date",
     report_date = "report_date",
     count = "count",
     ...) {
-  assert_character(strata, null.ok = TRUE)
   assert_character(reference_date)
   assert_character(report_date)
   assert_character(count)
@@ -109,14 +98,8 @@ as_reporting_triangle.data.frame <- function(
     )
   }
 
-  if (max_delay > max(data$delay)) {
-    cli_abort(
-      message =
-        "`max_delay` specified is larger than the maximum delay in the data."
-    )
-  }
+  max_delay <- max(data$delay)
 
-  data <- data[data$delay <= max_delay, ]
   reference_dates <- sort(unique(data$reference_date))
   select_data <- data[, c("reference_date", "count", "delay")]
   all_combos <- expand.grid(
@@ -153,8 +136,6 @@ as_reporting_triangle.data.frame <- function(
   rep_tri <- as_reporting_triangle.matrix(
     data = rep_tri_mat,
     reference_dates = reference_dates,
-    max_delay = max_delay,
-    strata = strata,
     delays_unit = delays_unit
   )
   return(rep_tri)
@@ -165,12 +146,13 @@ as_reporting_triangle.data.frame <- function(
 #'
 #' This method takes a matrix in the format of a reporting triangle, with rows
 #' as reference dates and columns as delays and elements as incident case
-#' counts and creates a [reporting_triangle] object. See other
-#' [as_reporting_triangle.data.frame()] for other data
-#' input options.
+#' counts and creates a [reporting_triangle] object. The maximum delay is
+#' automatically inferred from the number of columns in the matrix. See
+#' [as_reporting_triangle.data.frame()] for other data input options.
 #'
 #' @param data Matrix of a reporting triangle where rows are reference times,
-#'    columns are delays, and entries are the incident counts.
+#'    columns are delays, and entries are the incident counts. The number of
+#'    columns determines the maximum delay (ncol - 1).
 #' @inheritParams as_reporting_triangle
 #' @param reference_dates Vector of character strings indicating the reference
 #'   dates corresponding to each row of the reporting triangle matrix (`data`).
@@ -197,19 +179,20 @@ as_reporting_triangle.data.frame <- function(
 #'   to = as.Date("2025-01-05"),
 #'   by = "day"
 #' )
-#' max_delay <- 4
 #' rep_tri <- as_reporting_triangle(
 #'   data = rep_tri_mat,
-#'   reference_dates = reference_dates,
-#'   max_delay = max_delay
+#'   reference_dates = reference_dates
 #' )
 #' rep_tri
+#'
+#' # Access the computed max_delay
+#' get_max_delay(rep_tri)
 as_reporting_triangle.matrix <- function(data,
-                                         max_delay,
-                                         strata = NULL,
-                                         delays_unit = "days",
                                          reference_dates,
+                                         delays_unit = "days",
                                          ...) {
+  max_delay <- ncol(data) - 1
+
   .validate_triangle(
     triangle = data,
     max_delay = max_delay,
@@ -228,7 +211,7 @@ as_reporting_triangle.matrix <- function(data,
     reporting_triangle_matrix = data,
     reference_dates = reference_dates,
     max_delay = max_delay,
-    strata = strata,
+    strata = NULL,
     structure = struct,
     delays_unit = delays_unit
   )

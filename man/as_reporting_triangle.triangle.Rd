@@ -16,10 +16,6 @@
 \arguments{
 \item{data}{A ChainLadder triangle object (class "triangle").}
 
-\item{max_delay}{Integer indicating the maximum delay.}
-
-\item{strata}{Character string indicating the strata. Default is NULL.}
-
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
 For the matrix method, this is simply passed as an item in the

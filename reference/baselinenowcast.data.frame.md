@@ -122,7 +122,9 @@ baselinenowcast(
 
 - max_delay:
 
-  Integer indicating the maximum delay.
+  Integer indicating the maximum delay to estimate, in units of the
+  delay. The default is to use the whole reporting triangle,
+  `ncol(reporting_triangle) -1`.
 
 - delays_unit:
 

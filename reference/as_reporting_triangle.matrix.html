@@ -7,13 +7,13 @@
   };
 </script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Create a reporting_triangle from a matrix — as_reporting_triangle.matrix"><meta name="description" content="This method takes a matrix in the format of a reporting triangle, with rows
 as reference dates and columns as delays and elements as incident case
-counts and creates a reporting_triangle object. See other
-as_reporting_triangle.data.frame() for other data
-input options."><meta property="og:description" content="This method takes a matrix in the format of a reporting triangle, with rows
+counts and creates a reporting_triangle object. The maximum delay is
+automatically inferred from the number of columns in the matrix. See
+as_reporting_triangle.data.frame() for other data input options."><meta property="og:description" content="This method takes a matrix in the format of a reporting triangle, with rows
 as reference dates and columns as delays and elements as incident case
-counts and creates a reporting_triangle object. See other
-as_reporting_triangle.data.frame() for other data
-input options."><meta property="og:image" content="https://baselinenowcast.epinowcast.org/logo.png"></head><body>
+counts and creates a reporting_triangle object. The maximum delay is
+automatically inferred from the number of columns in the matrix. See
+as_reporting_triangle.data.frame() for other data input options."><meta property="og:image" content="https://baselinenowcast.epinowcast.org/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -63,22 +63,15 @@ input options."><meta property="og:image" content="https://baselinenowcast.epino
     <div class="ref-description section level2">
     <p>This method takes a matrix in the format of a reporting triangle, with rows
 as reference dates and columns as delays and elements as incident case
-counts and creates a <a href="reporting_triangle-class.html">reporting_triangle</a> object. See other
-<code><a href="as_reporting_triangle.data.frame.html">as_reporting_triangle.data.frame()</a></code> for other data
-input options.</p>
+counts and creates a <a href="reporting_triangle-class.html">reporting_triangle</a> object. The maximum delay is
+automatically inferred from the number of columns in the matrix. See
+<code><a href="as_reporting_triangle.data.frame.html">as_reporting_triangle.data.frame()</a></code> for other data input options.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for class 'matrix'</span></span>
-<span><span class="fu"><a href="as_reporting_triangle.html">as_reporting_triangle</a></span><span class="op">(</span></span>
-<span>  <span class="va">data</span>,</span>
-<span>  <span class="va">max_delay</span>,</span>
-<span>  strata <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  delays_unit <span class="op">=</span> <span class="st">"days"</span>,</span>
-<span>  <span class="va">reference_dates</span>,</span>
-<span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="as_reporting_triangle.html">as_reporting_triangle</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">reference_dates</span>, delays_unit <span class="op">=</span> <span class="st">"days"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -87,15 +80,13 @@ input options.</p>
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
 <dd><p>Matrix of a reporting triangle where rows are reference times,
-columns are delays, and entries are the incident counts.</p></dd>
+columns are delays, and entries are the incident counts. The number of
+columns determines the maximum delay (ncol - 1).</p></dd>
 
 
-<dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
-<dd><p>Integer indicating the maximum delay.</p></dd>
-
-
-<dt id="arg-strata">strata<a class="anchor" aria-label="anchor" href="#arg-strata"></a></dt>
-<dd><p>Character string indicating the strata. Default is NULL.</p></dd>
+<dt id="arg-reference-dates">reference_dates<a class="anchor" aria-label="anchor" href="#arg-reference-dates"></a></dt>
+<dd><p>Vector of character strings indicating the reference
+dates corresponding to each row of the reporting triangle matrix (<code>data</code>).</p></dd>
 
 
 <dt id="arg-delays-unit">delays_unit<a class="anchor" aria-label="anchor" href="#arg-delays-unit"></a></dt>
@@ -107,11 +98,6 @@ data.frame. For the data.frame method, this is used to compute the delay
 in terms of the specified unit, and to expand the combinations of
 reference dates and delays to the complete set of combinations in
 the reporting triangle.  Default is <code>"days"</code>.</p></dd>
-
-
-<dt id="arg-reference-dates">reference_dates<a class="anchor" aria-label="anchor" href="#arg-reference-dates"></a></dt>
-<dd><p>Vector of character strings indicating the reference
-dates corresponding to each row of the reporting triangle matrix (<code>data</code>).</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -130,7 +116,10 @@ dates corresponding to each row of the reporting triangle matrix (<code>data</co
 <code><a href="as_reporting_triangle.data.frame.html">as_reporting_triangle.data.frame()</a></code>,
 <code><a href="as_reporting_triangle.triangle.html">as_reporting_triangle.triangle()</a></code>,
 <code><a href="assert_reporting_triangle.html">assert_reporting_triangle()</a></code>,
-<code><a href="detect_structure.html">detect_structure()</a></code>,
+<code><a href="get_delay_unit.html">get_delay_unit()</a></code>,
+<code><a href="get_max_delay.html">get_max_delay()</a></code>,
+<code><a href="get_reporting_structure.html">get_reporting_structure()</a></code>,
+<code><a href="get_structure.html">get_structure()</a></code>,
 <code><a href="new_reporting_triangle.html">new_reporting_triangle()</a></code>,
 <code><a href="reporting_triangle-class.html">reporting_triangle-class</a></code></p></div>
     </div>
@@ -154,11 +143,9 @@ dates corresponding to each row of the reporting triangle matrix (<code>data</co
 <span class="r-in"><span>  to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2025-01-05"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  by <span class="op">=</span> <span class="st">"day"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">max_delay</span> <span class="op">&lt;-</span> <span class="fl">4</span></span></span>
 <span class="r-in"><span><span class="va">rep_tri</span> <span class="op">&lt;-</span> <span class="fu"><a href="as_reporting_triangle.html">as_reporting_triangle</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">rep_tri_mat</span>,</span></span>
-<span class="r-in"><span>  reference_dates <span class="op">=</span> <span class="va">reference_dates</span>,</span></span>
-<span class="r-in"><span>  max_delay <span class="op">=</span> <span class="va">max_delay</span></span></span>
+<span class="r-in"><span>  reference_dates <span class="op">=</span> <span class="va">reference_dates</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">rep_tri</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $reporting_triangle_matrix</span>
@@ -186,6 +173,10 @@ dates corresponding to each row of the reporting triangle matrix (<code>data</co
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "reporting_triangle"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Access the computed max_delay</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="get_max_delay.html">get_max_delay</a></span><span class="op">(</span><span class="va">rep_tri</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

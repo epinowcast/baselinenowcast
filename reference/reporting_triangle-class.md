@@ -22,11 +22,15 @@ A `reporting_triangle` is a list with the following components:
 
   Vector indicating the "structure" of the reporting triangle, see
   [`construct_triangle()`](https://baselinenowcast.epinowcast.org/reference/construct_triangle.md)
-  for more details.
+  for more details. Use
+  [`get_structure()`](https://baselinenowcast.epinowcast.org/reference/get_structure.md)
+  to compute this dynamically from the matrix.
 
 - max_delay:
 
-  Integer indicating the maximum delay.
+  Integer indicating the maximum delay. Use
+  [`get_max_delay()`](https://baselinenowcast.epinowcast.org/reference/get_max_delay.md)
+  to compute this dynamically from the matrix.
 
 - delays_unit:
 
@@ -53,5 +57,8 @@ Reporting triangle construction and validation
 [`as_reporting_triangle.matrix()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.matrix.md),
 [`as_reporting_triangle.triangle()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.triangle.md),
 [`assert_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/assert_reporting_triangle.md),
-[`detect_structure()`](https://baselinenowcast.epinowcast.org/reference/detect_structure.md),
+[`get_delay_unit()`](https://baselinenowcast.epinowcast.org/reference/get_delay_unit.md),
+[`get_max_delay()`](https://baselinenowcast.epinowcast.org/reference/get_max_delay.md),
+[`get_reporting_structure()`](https://baselinenowcast.epinowcast.org/reference/get_reporting_structure.md),
+[`get_structure()`](https://baselinenowcast.epinowcast.org/reference/get_structure.md),
 [`new_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/new_reporting_triangle.md)

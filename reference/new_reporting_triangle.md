@@ -33,10 +33,6 @@ new_reporting_triangle(
   If vector, the sum must not be greater than or equal to the number of
   columns. Default is 1 (standard triangular structure).
 
-- max_delay:
-
-  Integer indicating the maximum delay.
-
 - delays_unit:
 
   Character string specifying the temporal granularity of the delays.
@@ -47,10 +43,6 @@ new_reporting_triangle(
   the specified unit, and to expand the combinations of reference dates
   and delays to the complete set of combinations in the reporting
   triangle. Default is `"days"`.
-
-- strata:
-
-  Character string indicating the strata. Default is NULL.
 
 ## Value
 
@@ -66,5 +58,8 @@ Reporting triangle construction and validation
 [`as_reporting_triangle.matrix()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.matrix.md),
 [`as_reporting_triangle.triangle()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.triangle.md),
 [`assert_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/assert_reporting_triangle.md),
-[`detect_structure()`](https://baselinenowcast.epinowcast.org/reference/detect_structure.md),
+[`get_delay_unit()`](https://baselinenowcast.epinowcast.org/reference/get_delay_unit.md),
+[`get_max_delay()`](https://baselinenowcast.epinowcast.org/reference/get_max_delay.md),
+[`get_reporting_structure()`](https://baselinenowcast.epinowcast.org/reference/get_reporting_structure.md),
+[`get_structure()`](https://baselinenowcast.epinowcast.org/reference/get_structure.md),
 [`reporting_triangle-class`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)

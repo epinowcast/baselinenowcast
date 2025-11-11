@@ -221,7 +221,9 @@ negative binomial for each element of the vector.</p></dd>
 
 
 <dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
-<dd><p>Integer indicating the maximum delay.</p></dd>
+<dd><p>Integer indicating the maximum delay to estimate, in units
+of the delay. The default is to use the whole reporting triangle,
+<code>ncol(reporting_triangle) -1</code>.</p></dd>
 
 
 <dt id="arg-delays-unit">delays_unit<a class="anchor" aria-label="anchor" href="#arg-delays-unit"></a></dt>

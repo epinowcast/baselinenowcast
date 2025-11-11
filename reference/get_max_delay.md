@@ -1,24 +1,24 @@
-# Assert validity of `reporting_triangle` objects
+# Get maximum delay from a reporting triangle
 
-Assert validity of `reporting_triangle` objects
+Get maximum delay from a reporting triangle
 
 ## Usage
 
 ``` r
-assert_reporting_triangle(data)
+get_max_delay(x)
 ```
 
 ## Arguments
 
-- data:
+- x:
 
   A
   [reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
-  object to check for validity.
+  object.
 
 ## Value
 
-NULL invisibly
+Integer indicating the maximum delay.
 
 ## See also
 
@@ -28,8 +28,8 @@ Reporting triangle construction and validation
 [`as_reporting_triangle.data.frame()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.data.frame.md),
 [`as_reporting_triangle.matrix()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.matrix.md),
 [`as_reporting_triangle.triangle()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.triangle.md),
+[`assert_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/assert_reporting_triangle.md),
 [`get_delay_unit()`](https://baselinenowcast.epinowcast.org/reference/get_delay_unit.md),
-[`get_max_delay()`](https://baselinenowcast.epinowcast.org/reference/get_max_delay.md),
 [`get_reporting_structure()`](https://baselinenowcast.epinowcast.org/reference/get_reporting_structure.md),
 [`get_structure()`](https://baselinenowcast.epinowcast.org/reference/get_structure.md),
 [`new_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/new_reporting_triangle.md),

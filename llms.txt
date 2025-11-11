@@ -196,8 +196,17 @@ objects from matrices or data frames.
 
   Assert validity of `reporting_triangle` objects
 
-- [`detect_structure()`](https://baselinenowcast.epinowcast.org/reference/detect_structure.md)
-  : Detect the structure of a reporting triangle
+- [`get_delay_unit()`](https://baselinenowcast.epinowcast.org/reference/get_delay_unit.md)
+  : Get delays unit from a reporting triangle
+
+- [`get_max_delay()`](https://baselinenowcast.epinowcast.org/reference/get_max_delay.md)
+  : Get maximum delay from a reporting triangle
+
+- [`get_reporting_structure()`](https://baselinenowcast.epinowcast.org/reference/get_reporting_structure.md)
+  : Get the reporting structure from a reporting triangle
+
+- [`get_structure()`](https://baselinenowcast.epinowcast.org/reference/get_structure.md)
+  : Get structure from a reporting triangle
 
 - [`new_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/new_reporting_triangle.md)
   :

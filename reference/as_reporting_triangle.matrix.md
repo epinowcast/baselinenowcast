@@ -4,7 +4,8 @@ This method takes a matrix in the format of a reporting triangle, with
 rows as reference dates and columns as delays and elements as incident
 case counts and creates a
 [reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
-object. See other
+object. The maximum delay is automatically inferred from the number of
+columns in the matrix. See
 [`as_reporting_triangle.data.frame()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.data.frame.md)
 for other data input options.
 
@@ -12,14 +13,7 @@ for other data input options.
 
 ``` r
 # S3 method for class 'matrix'
-as_reporting_triangle(
-  data,
-  max_delay,
-  strata = NULL,
-  delays_unit = "days",
-  reference_dates,
-  ...
-)
+as_reporting_triangle(data, reference_dates, delays_unit = "days", ...)
 ```
 
 ## Arguments
@@ -27,15 +21,13 @@ as_reporting_triangle(
 - data:
 
   Matrix of a reporting triangle where rows are reference times, columns
-  are delays, and entries are the incident counts.
+  are delays, and entries are the incident counts. The number of columns
+  determines the maximum delay (ncol - 1).
 
-- max_delay:
+- reference_dates:
 
-  Integer indicating the maximum delay.
-
-- strata:
-
-  Character string indicating the strata. Default is NULL.
+  Vector of character strings indicating the reference dates
+  corresponding to each row of the reporting triangle matrix (`data`).
 
 - delays_unit:
 
@@ -47,11 +39,6 @@ as_reporting_triangle(
   the specified unit, and to expand the combinations of reference dates
   and delays to the complete set of combinations in the reporting
   triangle. Default is `"days"`.
-
-- reference_dates:
-
-  Vector of character strings indicating the reference dates
-  corresponding to each row of the reporting triangle matrix (`data`).
 
 - ...:
 
@@ -71,7 +58,10 @@ Reporting triangle construction and validation
 [`as_reporting_triangle.data.frame()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.data.frame.md),
 [`as_reporting_triangle.triangle()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.triangle.md),
 [`assert_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/assert_reporting_triangle.md),
-[`detect_structure()`](https://baselinenowcast.epinowcast.org/reference/detect_structure.md),
+[`get_delay_unit()`](https://baselinenowcast.epinowcast.org/reference/get_delay_unit.md),
+[`get_max_delay()`](https://baselinenowcast.epinowcast.org/reference/get_max_delay.md),
+[`get_reporting_structure()`](https://baselinenowcast.epinowcast.org/reference/get_reporting_structure.md),
+[`get_structure()`](https://baselinenowcast.epinowcast.org/reference/get_structure.md),
 [`new_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/new_reporting_triangle.md),
 [`reporting_triangle-class`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
 
@@ -95,11 +85,9 @@ reference_dates <- seq(
   to = as.Date("2025-01-05"),
   by = "day"
 )
-max_delay <- 4
 rep_tri <- as_reporting_triangle(
   data = rep_tri_mat,
-  reference_dates = reference_dates,
-  max_delay = max_delay
+  reference_dates = reference_dates
 )
 rep_tri
 #> $reporting_triangle_matrix
@@ -127,4 +115,8 @@ rep_tri
 #> 
 #> attr(,"class")
 #> [1] "reporting_triangle"
+
+# Access the computed max_delay
+get_max_delay(rep_tri)
+#> [1] 4
 ```

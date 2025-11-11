@@ -26,7 +26,6 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/combine_obs_with_pred.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/construct_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/construct_triangles.html</loc></url>
-<url><loc>https://baselinenowcast.epinowcast.org/reference/detect_structure.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-align_time_to_dates.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-apply_mask.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-assign_allocation_from_ns.html</loc></url>
@@ -48,6 +47,7 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-split_df_by_cols.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_delay.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_delay_and_triangle.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_delays_unit.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_inputs_allocation.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_inputs_uncertainty.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_max_delay.html</loc></url>
@@ -68,6 +68,10 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/fit_by_horizon.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/fit_nb.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/germany_covid19_hosp.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/get_delay_unit.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/get_max_delay.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/get_reporting_structure.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/get_structure.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/index.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/new_baselinenowcast_df.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/new_reporting_triangle.html</loc></url>

@@ -363,8 +363,21 @@ validate_reporting_triangle <- function(data) {
     if (!na_check$valid) {
       cli_abort(
         message = c(
-          "Invalid reporting triangle structure. NA values should only",
-          "appear in the bottom right portion of the triangle."
+          "!" = "Invalid reporting triangle structure",
+          "x" = paste0(
+            "Found ", na_check$n_out_of_pattern, " NA value",
+            if (na_check$n_out_of_pattern != 1) "s" else "",
+            " in unexpected position",
+            if (na_check$n_out_of_pattern != 1) "s" else ""
+          ),
+          "i" = paste0(
+            "NA values should only appear in the bottom right ",
+            "portion of the triangle"
+          ),
+          "i" = paste0(
+            "Affected row", if (length(na_check$rows_affected) != 1) "s" else "",
+            ": ", paste(na_check$rows_affected, collapse = ", ")
+          )
         )
       )
     }
@@ -621,11 +634,119 @@ tail.reporting_triangle <- function(x, ...) {
   ))
 }
 
+#' Compute complete row statistics
+#'
+#' @param object A [reporting_triangle] object.
+#' @param mat Matrix representation of the triangle.
+#' @param ref_dates Vector of reference dates.
+#' @return List with most_recent_complete_idx, most_recent_complete_date,
+#'   most_recent_complete_count, mean_delays, and complete_rows (or NULL if
+#'   no complete rows).
+#' @keywords internal
+.compute_complete_row_stats <- function(object, mat, ref_dates) {
+  row_has_na <- apply(mat, 1, anyNA)
+  complete_rows <- which(!row_has_na)
+
+  if (length(complete_rows) == 0) {
+    return(NULL)
+  }
+
+  most_recent_complete_idx <- max(complete_rows)
+  most_recent_complete_date <- ref_dates[most_recent_complete_idx]
+  most_recent_complete_count <- sum(
+    mat[most_recent_complete_idx, ],
+    na.rm = TRUE
+  )
+
+  all_mean_delays <- get_mean_delay(object)
+  mean_delays <- all_mean_delays[complete_rows]
+  mean_delays <- mean_delays[!is.na(mean_delays)]
+
+  return(list(
+    most_recent_complete_idx = most_recent_complete_idx,
+    most_recent_complete_date = most_recent_complete_date,
+    most_recent_complete_count = most_recent_complete_count,
+    mean_delays = mean_delays,
+    complete_rows = complete_rows
+  ))
+}
+
+#' Compute zero value statistics
+#'
+#' @param mat Matrix representation of the triangle.
+#' @return List with num_zeros, pct_zeros, and zeros_per_row.
+#' @keywords internal
+.compute_zero_stats <- function(mat) {
+  num_zeros <- sum(mat == 0, na.rm = TRUE)
+  num_non_na <- sum(!is.na(mat))
+  pct_zeros <- if (num_non_na > 0) {
+    round(100 * num_zeros / num_non_na, 1)
+  } else {
+    0
+  }
+  zeros_per_row <- apply(mat, 1, function(x) sum(x == 0, na.rm = TRUE))
+
+  return(list(
+    num_zeros = num_zeros,
+    pct_zeros = pct_zeros,
+    zeros_per_row = zeros_per_row
+  ))
+}
+
+#' Compute nowcast requirement statistics
+#'
+#' @param mat Matrix representation of the triangle.
+#' @return List with dates_need_nowcast and dates_complete.
+#' @keywords internal
+.compute_nowcast_stats <- function(mat) {
+  row_has_na <- apply(mat, 1, anyNA)
+  dates_need_nowcast <- sum(row_has_na)
+  dates_complete <- nrow(mat) - dates_need_nowcast
+
+  return(list(
+    dates_need_nowcast = dates_need_nowcast,
+    dates_complete = dates_complete
+  ))
+}
+
+#' Count rows with negative values
+#'
+#' @param mat Matrix representation of the triangle.
+#' @return Integer count of rows with at least one negative value.
+#' @keywords internal
+.count_negative_rows <- function(mat) {
+  row_has_negative <- apply(mat, 1, function(x) any(x < 0, na.rm = TRUE))
+  return(sum(row_has_negative))
+}
+
+#' Compute quantile delay statistics for complete rows
+#'
+#' @param object A [reporting_triangle] object.
+#' @param complete_rows Indices of complete rows.
+#' @param p Quantile probability (default 0.99).
+#' @return Vector of quantile delays for complete rows, or NULL if none.
+#' @keywords internal
+.compute_quantile_delay_stats <- function(object, complete_rows, p = 0.99) {
+  if (length(complete_rows) == 0) {
+    return(NULL)
+  }
+
+  quantile_delays <- get_quantile_delay(object, p = p)
+  quantile_complete <- quantile_delays[complete_rows]
+  quantile_complete <- quantile_complete[!is.na(quantile_complete)]
+
+  if (length(quantile_complete) == 0) {
+    return(NULL)
+  }
+
+  return(quantile_complete)
+}
+
 #' Print a reporting_triangle object
 #'
 #' @param x A [reporting_triangle] object to print.
 #' @param n_rows Maximum number of rows to display. If the triangle has more
-#'   rows, only the first and last `n_rows/2` rows are shown. Default is 10.
+#'   rows, only the last `n_rows` rows are shown. Default is 10.
 #'   Set to NULL to display all rows.
 #' @param n_cols Maximum number of columns to display. If the triangle has more
 #'   columns, only the first `n_cols` columns are shown. Default is 10.
@@ -655,10 +776,9 @@ print.reporting_triangle <- function(x, n_rows = 10, n_cols = 10, ...) {
   col_subset <- NULL
 
   if (!is.null(n_rows) && total_rows > n_rows) {
-    n_show <- floor(n_rows / 2)
-    row_subset <- c(seq_len(n_show), seq(total_rows - n_show + 1, total_rows))
+    row_subset <- seq(total_rows - n_rows + 1, total_rows)
     to_print <- to_print[row_subset, , drop = FALSE]
-    cli_text("Showing first and last {n_show} of {total_rows} rows")
+    cli_text("Showing last {n_rows} of {total_rows} rows")
   }
 
   if (!is.null(n_cols) && total_cols > n_cols) {
@@ -699,54 +819,39 @@ summary.reporting_triangle <- function(object, ...) {
   # Convert to plain matrix for internal operations
   mat <- as.matrix(object)
 
-  # Find most recent complete date and calculate mean delays
-  row_has_na <- apply(mat, 1, anyNA)
-  complete_rows <- which(!row_has_na)
-  mean_delays <- NULL
-  if (length(complete_rows) > 0) {
-    most_recent_complete_idx <- max(complete_rows)
+  # Compute complete row statistics
+  complete_stats <- .compute_complete_row_stats(object, mat, ref_dates)
+  if (!is.null(complete_stats)) {
     # nolint start: object_usage_linter
-    most_recent_complete_date <- ref_dates[most_recent_complete_idx]
-    most_recent_complete_count <- sum(
-      mat[most_recent_complete_idx, ],
-      na.rm = TRUE
-    )
+    most_recent_complete_date <- complete_stats$most_recent_complete_date
+    most_recent_complete_count <- complete_stats$most_recent_complete_count
     # nolint end
     cli_text(
       "Most recent complete date: {format(most_recent_complete_date)} ",
       "({most_recent_complete_count} cases)"
     )
-
-    # Calculate mean delay for complete rows
-    all_mean_delays <- get_mean_delay(object)
-    mean_delays <- all_mean_delays[complete_rows]
-    mean_delays <- mean_delays[!is.na(mean_delays)]
   }
 
-  # Count dates requiring nowcast (incomplete due to reporting delay)
-  dates_need_nowcast <- sum(row_has_na) # nolint: object_usage_linter
-  dates_complete <- nrow(mat) - dates_need_nowcast # nolint: object_usage_linter
+  # Compute and display nowcast requirement statistics
+  nowcast_stats <- .compute_nowcast_stats(mat)
+  # nolint start: object_usage_linter
+  dates_need_nowcast <- nowcast_stats$dates_need_nowcast
+  dates_complete <- nowcast_stats$dates_complete
+  # nolint end
   cli_text(
     "Dates requiring nowcast: {dates_need_nowcast} ",
     "(complete: {dates_complete})"
   )
 
-  # Count rows with negatives
-  row_has_negative <- apply(mat, 1, function(x) any(x < 0, na.rm = TRUE))
-  rows_with_negatives <- sum(row_has_negative) # nolint: object_usage_linter
+  # Count and display rows with negatives
+  rows_with_negatives <- .count_negative_rows(mat) # nolint: object_usage_linter
   cli_text("Rows with negatives: {rows_with_negatives}")
 
-  # Count zeros (percentage and row-wise)
-  num_zeros <- sum(mat == 0, na.rm = TRUE)
-  num_non_na <- sum(!is.na(mat))
-  # nolint start: object_usage_linter
-  pct_zeros <- if (num_non_na > 0) {
-    round(100 * num_zeros / num_non_na, 1)
-  } else {
-    0
-  }
-  zeros_per_row <- apply(mat, 1, function(x) sum(x == 0, na.rm = TRUE))
-  # nolint end
+  # Compute and display zero statistics
+  zero_stats <- .compute_zero_stats(mat)
+  num_zeros <- zero_stats$num_zeros # nolint: object_usage_linter
+  pct_zeros <- zero_stats$pct_zeros # nolint: object_usage_linter
+  zeros_per_row <- zero_stats$zeros_per_row
   cli_text("Zeros: {num_zeros} ({pct_zeros}% of non-NA values)")
   if (length(zeros_per_row) > 0) {
     cli_text("Zeros per row summary:")
@@ -754,19 +859,20 @@ summary.reporting_triangle <- function(object, ...) {
   }
 
   # Show summary of mean delays for complete rows
-  if (!is.null(mean_delays) && length(mean_delays) > 0) {
+  if (!is.null(complete_stats) && length(complete_stats$mean_delays) > 0) {
     cli_text("")
     cli_text("{.strong Mean delay summary (complete rows):}")
-    print(summary(mean_delays))
+    print(summary(complete_stats$mean_delays))
   }
 
-  # Show 99% quantile delay (when 99% of reporting has occurred)
-  if (length(complete_rows) > 0) {
-    quantile_99_delays <- get_quantile_delay(object, p = 0.99)
-    quantile_99_complete <- quantile_99_delays[complete_rows]
-    quantile_99_complete <- quantile_99_complete[!is.na(quantile_99_complete)]
-
-    if (length(quantile_99_complete) > 0) {
+  # Show 99% quantile delay statistics
+  if (!is.null(complete_stats)) {
+    quantile_99_complete <- .compute_quantile_delay_stats(
+      object,
+      complete_stats$complete_rows,
+      p = 0.99
+    )
+    if (!is.null(quantile_99_complete)) {
       cli_text("")
       cli_text("{.strong 99% quantile delay (complete rows):}")
       print(summary(quantile_99_complete))

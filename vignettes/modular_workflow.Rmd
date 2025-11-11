@@ -69,7 +69,7 @@ The `latest_data` will be used for evaluation to compare our estimates of the fi
 ```{r}
 latest_data <- target_data |>
   group_by(reference_date) |>
-  summarise(count = sum(count))
+  summarise(final_count = sum(count))
 ```
 
 I am going to jump right into creating the dataset we need for nowcasting by filtering the data to exclude all report dates after the nowcast date, August 1, 2021.
@@ -78,6 +78,14 @@ I am going to jump right into creating the dataset we need for nowcasting by fil
 observed_data <- target_data |>
   filter(report_date <= nowcast_date)
 head(observed_data)
+```
+
+We refer to the "initial reports" as the sum of the cases at each reference date as they were available as of the nowcast date.
+
+```{r}
+initial_reports <- observed_data |>
+  group_by(reference_date) |>
+  summarise(initial_count = sum(count))
 ```
 
 Our task is to estimate, using the data available up until August 1, 2021, the "final" number of cases at each reference date.
@@ -189,8 +197,10 @@ We'll make a quick plot to compare our point estimate of the nowcasted confirmed
 <details><summary>Click to expand code to create the plot of the point nowcast</summary>
 ```{r}
 initial_reports_labeled <- initial_reports |>
-  mutate(type = "Initial reports real-time")
+  mutate(type = "Initial real-time") |>
+  rename(count = initial_count)
 point_nowcast_df <- latest_data |>
+  rename(count = final_count) |>
   mutate(nowcast = rowSums(point_nowcast_matrix)) |>
   pivot_longer(
     cols = c(count, nowcast),
@@ -214,7 +224,7 @@ plot_pt_nowcast <- ggplot(point_nowcast_df, aes(
 )) +
   geom_line() +
   scale_color_manual(values = c(
-    "Initial reports real-time" = "darkred",
+    "Initial reports" = "darkred",
     "Final observed data" = "black",
     "Point nowcast" = "darkblue"
   )) +
@@ -222,7 +232,7 @@ plot_pt_nowcast <- ggplot(point_nowcast_df, aes(
   xlab("Reference date") +
   ylab("Confirmed admissions") +
   scale_y_continuous(trans = "log10") +
-  ggtitle("Comparing real-time initial reports, nowcasted, and later observed cases") +
+  ggtitle("Comparing initial reports, nowcasted, and later observed cases") +
   theme(legend.position = "bottom") +
   labs(color = "Type")
 ```
@@ -230,3 +240,191 @@ plot_pt_nowcast <- ggplot(point_nowcast_df, aes(
 ```{r}
 plot_pt_nowcast
 ```
+Here we can see that our point nowcast (blue) slightly underestimates what was eventually reported (black), but does a decent overall job of correcting for the right-truncation observed in the the data as of the nowcast date (red).
+
+# Estimate uncertainty
+
+So far, we've demonstrated how to generate a point estimate of a nowcast.
+We would like to generate probabilistic nowcasts.
+
+The method used to estimate the uncertainty works by generating retrospective reporting triangles using what would have been available as of each retrospective nowcast time to estimate a delay distribution, generate a point nowcast matrix, and compare the estimated counts at each reference time to those that have been observed at each nowcast horizon.
+It assumes that the observations follow a negative binomial observation model, and independently estimates the dispersion in the negative binomial at each forecast horizon.
+
+We repeat this process for `n_retrospective_nowcasts` reference times in the current reporting triangle, starting from the latest reference time and working backwards, ultimately using all `n_retrospective_nowcasts` and `n_history_delay` reference times.
+
+
+```{r}
+trunc_rep_tri_list <- truncate_triangles(
+  rep_tri$reporting_triangle_matrix,
+  n = n_retrospective_nowcasts
+)
+retro_rep_tri_list <- construct_triangles(trunc_rep_tri_list)
+```
+This results in a list of retrospective reporting triangles.
+See the documentation for `truncate_triangles()` and `construct_triangles()` for more information on the inputs and outputs of these functions.
+
+Next we will pass this list of reporting triangles to the `fill_triangles()` and specify `n`, the number of reference times to be used to estimate the delay for each nowcast, which we will set as the `n_history_delay` previous specified.
+
+```{r}
+retro_pt_nowcast_mat_list <- fill_triangles(
+  retro_reporting_triangles = retro_rep_tri_list,
+  n = n_history_delay
+)
+```
+
+Next, we will use the retrospective reporting triangles, the point nowcast matrices, and the truncated reporting triangles to estimate the uncertainty at each horizon, starting at horizon 0 using the `estimate_uncertainty()` function.
+
+```{r}
+disp_params <- estimate_uncertainty(
+  point_nowcast_matrices = retro_pt_nowcast_mat_list,
+  truncated_reporting_triangles = trunc_rep_tri_list,
+  retro_reporting_triangles = retro_rep_tri_list,
+  n = n_retrospective_nowcasts
+)
+```
+
+Note that the estimation of uncertainty from a reporting triangle can be done in a single step using the `estimate_uncertainty_retro()` function, which chains togeter the truncation of triangles, construction of retrospectie reporting triangles, the generation of point nowcasts via filling the triangles, and the estimation of the uncertainty from the estimates compared to the observations.
+
+# Generate probabilistic nowcast
+
+Now that we have estimated the dispersion, we can generate a probabilistic nowcast using the `sample_nowcasts()` function which:
+
+- generates draws from the nowcast distribution
+- combines the draws with the observed data to form a single draw of the nowcast
+- repeats this process for `draws` draws
+
+Note that from a point nowcast and a reporting triangle, one could also estimate and apply uncertainty using the `estimate_and_apply_uncertainty()` function.
+
+```{r}
+nowcast_draws_df <- sample_nowcasts(
+  point_nowcast_matrix,
+  rep_tri$reporting_triangle_matrix,
+  uncertainty_params = disp_params,
+  draws = 100
+)
+
+head(nowcast_draws_df)
+```
+
+See documentation for `sample_nowcasts()`for further details.
+
+# Visualizing the nowcast
+
+Let's visualize the nowcast compared to the final observed data.
+We first need to join our nowcast with the original data so we can see our nowcast by reference date.
+We'll do this by adding a `time` column to `latest_data`.
+
+```{r}
+latest_data_w_time <- latest_data |>
+  mutate(time = row_number())
+
+obs_with_nowcast_draws_df <- nowcast_draws_df |>
+  left_join(latest_data_w_time, by = "time") |>
+  left_join(initial_reports, by = "reference_date")
+head(obs_with_nowcast_draws_df)
+```
+
+Create a separate dataframe for only the observed and final data, to make plotting easier.
+
+```{r}
+combined_data <- obs_with_nowcast_draws_df |>
+  select(reference_date, initial_count, final_count) |>
+  distinct() |>
+  pivot_longer(
+    cols = c(initial_count, final_count),
+    names_to = "type",
+    values_to = "count"
+  ) |>
+  mutate(type = case_when(
+    type == "initial_count" ~ "Initial reports",
+    type == "final_count" ~ "Final observed data"
+  ))
+```
+
+<details><summary>Click to expand code to create the plot of the probabilistic nowcast</summary>
+```{r}
+combined_data <- obs_with_nowcast_draws_df |>
+  select(reference_date, initial_count, final_count) |>
+  distinct() |>
+  pivot_longer(
+    cols = c(initial_count, final_count),
+    names_to = "type",
+    values_to = "count"
+  ) |>
+  mutate(type = case_when(
+    type == "initial_count" ~ "Initial reports",
+    type == "final_count" ~ "Final observed data"
+  ))
+
+# Plot with draws for nowcast only
+plot_prob_nowcast <- ggplot() +
+  # Add nowcast draws as thin gray lines
+  geom_line(
+    data = obs_with_nowcast_draws_df,
+    aes(
+      x = reference_date, y = pred_count, group = draw,
+      color = "Nowcast draw", linewidth = "Nowcast draw"
+    )
+  ) +
+  # Add observed data and final data once
+  geom_line(
+    data = combined_data,
+    aes(
+      x = reference_date,
+      y = count,
+      color = type,
+      linewidth = type
+    )
+  ) +
+  theme_bw() +
+  scale_color_manual(
+    values = c(
+      "Nowcast draw" = "gray",
+      "Initial reports" = "darkred",
+      "Final observed data" = "black"
+    ),
+    name = ""
+  ) +
+  scale_linewidth_manual(
+    values = c(
+      "Nowcast draw" = 0.2,
+      "Initial reports" = 1,
+      "Final observed data" = 1
+    ),
+    name = ""
+  ) +
+  scale_y_continuous(trans = "log10") +
+  xlab("Reference date") +
+  ylab("Hospital admissions") +
+  theme(legend.position = "bottom") +
+  ggtitle("Comparison of admissions as of the nowcast date, later observed counts, \n and probabilistic nowcasted counts") # nolint
+```
+</details>
+```{r}
+plot_prob_nowcast
+```
+Gray lines indicate the probabilistic nowcast draws, which are a combination of the already observed data at each reference date and the predicted nowcast draws at each reference date.
+Black lines show the "final" data from October 1, 2021.
+
+# Summary
+
+In this vignette we used the `baselinenowcast` low-level modular functions to convert a dataframe with incident cases indexed by reference date and report date to a `reporting_triangle` object using the `as_reporting_triangle` function, and then walked through the `baselinenowcast` workflow step by step. This involved:
+1. `estimate_delay()` - Estimating a delay
+2. `apply_delay()` - Generating a point nowcast matrix
+3. `truncate_triangles()` - Truncating triangles at iteratively earlier retrospective nowcast times
+4. `construct_triangles()` - Constructing retrospective reporting triangles based on what would have been available as of the nowcast date.
+5. `fill_triangles()` - Generating point nowcasts from the retrospective reporting triangles
+6. `estimate_uncertainty()` - Estimating uncertainty from retrospective point nowcast matrices and eventual observations.
+7. `sample_nowcasts()` - Sampling from the observation model to generate probabilistc nowcasts
+
+This modular workflow allows for maximum flexibility and the ability to interrogate intermediate steps.
+The idea is that from these component functions, a wide range of `baselinenowcast` models can be developed via a pipeline-based approach where the outputs of one function are pased to the inputs of another function, or the inputs of one function can for example be swapped with an external estimate.
+
+This vignette walks through and produces the exact same results as in the [Getting Started](baselinenowcast.html) vignette, which uses the package default settings to specidy the model.
+However, the optimal settings will depend on the context and its important to tune the model to your dataset and needs.
+In our [publication](https://wellcomeopenresearch.org/articles/10-614/v1) we show examples using the various model specifications to produce and evaluate the performance of age-group specific nowcasts of COVID-19 in Germany and norovirus cases in England.
+Here's a [link](https://github.com/epinowcast/baselinenowcast-paper) to the code used to generate those nowcasts if interested in doing something similar for your own settings.
+
+<!-- Noting redundancy here and above with nssp nowcast and getting started -->
+Visual inspection of the nowcasts produced, as well as visual inspection of the data such as the mean reporting delay over time and across weekdays, can help identify which specifications are most likely to improve performance.
+We encourage users to test the performance of different specifications of their model, ideally by producing nowcasts from different model specifications for a range of past nowcast dates, using the data that would have been available as of the past nowcast date, and comparing those nowcasts to later observed data.

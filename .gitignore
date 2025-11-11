@@ -24,3 +24,4 @@ cache
 CRAN-SUBMISSION
 claude.md
 .claude/
+worktree-*/

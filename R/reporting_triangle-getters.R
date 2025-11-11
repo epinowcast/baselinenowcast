@@ -50,6 +50,52 @@ get_delays_unit <- function(x) {
   cli_abort("x must be a reporting_triangle object")
 }
 
+#' Internal: Add days to dates
+#' @param dates Date vector
+#' @param delays Numeric vector of delays
+#' @return Date vector
+#' @keywords internal
+.add_days <- function(dates, delays) {
+  return(dates + delays)
+}
+
+#' Internal: Add weeks to dates
+#' @param dates Date vector
+#' @param delays Numeric vector of delays
+#' @return Date vector
+#' @keywords internal
+.add_weeks <- function(dates, delays) {
+  return(dates + (delays * 7))
+}
+
+#' Internal: Add months to dates
+#' @param dates Date vector
+#' @param delays Numeric vector of delays
+#' @return Date vector
+#' @keywords internal
+.add_months <- function(dates, delays) {
+  # Use seq.Date for proper month arithmetic
+  result <- mapply(function(d, n) {
+    if (n == 0) return(d)
+    return(seq(d, by = "month", length.out = n + 1)[n + 1]) # nolint: keyword_quote_linter
+  }, dates, delays, SIMPLIFY = FALSE)
+  return(as.Date(unlist(result), origin = "1970-01-01"))
+}
+
+#' Internal: Add years to dates
+#' @param dates Date vector
+#' @param delays Numeric vector of delays
+#' @return Date vector
+#' @keywords internal
+.add_years <- function(dates, delays) {
+  # Use seq.Date for proper year arithmetic
+  result <- mapply(function(d, n) {
+    if (n == 0) return(d)
+    return(seq(d, by = "year", length.out = n + 1)[n + 1]) # nolint: keyword_quote_linter
+  }, dates, delays, SIMPLIFY = FALSE)
+  return(as.Date(unlist(result), origin = "1970-01-01"))
+}
+
 #' Get delay unit function for date arithmetic
 #'
 #' Returns a function that performs date arithmetic based on the delays_unit.
@@ -74,30 +120,78 @@ get_delay_unit_function <- function(delays_unit) {
   assert_delays_unit(delays_unit)
 
   result <- switch(delays_unit,
-    "days" = function(dates, delays) {
-      return(dates + delays)
-    },
-    "weeks" = function(dates, delays) {
-      return(dates + (delays * 7))
-    },
-    "months" = function(dates, delays) {
-      # Use seq.Date for proper month arithmetic
-      result <- mapply(function(d, n) {
-        if (n == 0) return(d)
-        return(seq(d, by = "month", length.out = n + 1)[n + 1]) # nolint: keyword_quote_linter
-      }, dates, delays, SIMPLIFY = FALSE)
-      return(as.Date(unlist(result), origin = "1970-01-01"))
-    },
-    "years" = function(dates, delays) {
-      # Use seq.Date for proper year arithmetic
-      result <- mapply(function(d, n) {
-        if (n == 0) return(d)
-        return(seq(d, by = "year", length.out = n + 1)[n + 1]) # nolint: keyword_quote_linter
-      }, dates, delays, SIMPLIFY = FALSE)
-      return(as.Date(unlist(result), origin = "1970-01-01"))
-    }
+    "days" = .add_days,
+    "weeks" = .add_weeks,
+    "months" = .add_months,
+    "years" = .add_years
   )
   return(result)
+}
+
+#' Internal: Compute day difference between dates
+#' @param report_date Date vector of report dates
+#' @param reference_date Date vector of reference dates
+#' @return Numeric vector of delays
+#' @keywords internal
+.diff_days <- function(report_date, reference_date) {
+  return(as.numeric(difftime(
+    as.Date(report_date),
+    as.Date(reference_date),
+    units = "days"
+  )))
+}
+
+#' Internal: Compute week difference between dates
+#' @param report_date Date vector of report dates
+#' @param reference_date Date vector of reference dates
+#' @return Numeric vector of delays
+#' @keywords internal
+.diff_weeks <- function(report_date, reference_date) {
+  return(as.numeric(difftime(
+    as.Date(report_date),
+    as.Date(reference_date),
+    units = "weeks"
+  )))
+}
+
+#' Internal: Compute month difference between dates
+#' @param report_date Date vector of report dates
+#' @param reference_date Date vector of reference dates
+#' @return Numeric vector of delays
+#' @keywords internal
+.diff_months <- function(report_date, reference_date) {
+  # Compute month difference
+  report <- as.Date(report_date)
+  reference <- as.Date(reference_date)
+
+  result <- mapply(function(r, ref) {
+    if (r == ref) return(0)
+
+    years_diff <- as.numeric(format(r, "%Y")) -
+      as.numeric(format(ref, "%Y"))
+    months_diff <- as.numeric(format(r, "%m")) -
+      as.numeric(format(ref, "%m"))
+
+    return(years_diff * 12 + months_diff)
+  }, report, reference)
+
+  return(as.numeric(result))
+}
+
+#' Internal: Compute year difference between dates
+#' @param report_date Date vector of report dates
+#' @param reference_date Date vector of reference dates
+#' @return Numeric vector of delays
+#' @keywords internal
+.diff_years <- function(report_date, reference_date) {
+  # Compute year difference
+  report <- as.Date(report_date)
+  reference <- as.Date(reference_date)
+
+  result <- as.numeric(format(report, "%Y")) -
+    as.numeric(format(reference, "%Y"))
+
+  return(as.numeric(result))
 }
 
 #' Compute delays between two dates based on delay unit
@@ -116,48 +210,10 @@ get_delay_from_dates_function <- function(delays_unit) {
   assert_delays_unit(delays_unit)
 
   result <- switch(delays_unit,
-    "days" = function(report_date, reference_date) {
-      return(as.numeric(difftime(
-        as.Date(report_date),
-        as.Date(reference_date),
-        units = "days"
-      )))
-    },
-    "weeks" = function(report_date, reference_date) {
-      return(as.numeric(difftime(
-        as.Date(report_date),
-        as.Date(reference_date),
-        units = "weeks"
-      )))
-    },
-    "months" = function(report_date, reference_date) {
-      # Compute month difference
-      report <- as.Date(report_date)
-      reference <- as.Date(reference_date)
-
-      result <- mapply(function(r, ref) {
-        if (r == ref) return(0)
-
-        years_diff <- as.numeric(format(r, "%Y")) -
-          as.numeric(format(ref, "%Y"))
-        months_diff <- as.numeric(format(r, "%m")) -
-          as.numeric(format(ref, "%m"))
-
-        return(years_diff * 12 + months_diff)
-      }, report, reference)
-
-      return(as.numeric(result))
-    },
-    "years" = function(report_date, reference_date) {
-      # Compute year difference
-      report <- as.Date(report_date)
-      reference <- as.Date(reference_date)
-
-      result <- as.numeric(format(report, "%Y")) -
-        as.numeric(format(reference, "%Y"))
-
-      return(as.numeric(result))
-    }
+    "days" = .diff_days,
+    "weeks" = .diff_weeks,
+    "months" = .diff_months,
+    "years" = .diff_years
   )
   return(result)
 }

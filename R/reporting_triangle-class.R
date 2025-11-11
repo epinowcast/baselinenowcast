@@ -130,30 +130,31 @@ get_delays_unit <- function(x) {
 get_delay_unit_function <- function(delays_unit) {
   assert_delays_unit(delays_unit)
 
-  switch(delays_unit,
+  result <- switch(delays_unit,
     "days" = function(dates, delays) {
-      dates + delays
+      return(dates + delays)
     },
     "weeks" = function(dates, delays) {
-      dates + (delays * 7)
+      return(dates + (delays * 7))
     },
     "months" = function(dates, delays) {
       # Use seq.Date for proper month arithmetic
       result <- mapply(function(d, n) {
         if (n == 0) return(d)
-        seq(d, by = "month", length.out = n + 1)[n + 1]
+        return(seq(d, by = "month", length.out = n + 1)[n + 1])
       }, dates, delays, SIMPLIFY = FALSE)
-      as.Date(unlist(result), origin = "1970-01-01")
+      return(as.Date(unlist(result), origin = "1970-01-01"))
     },
     "years" = function(dates, delays) {
       # Use seq.Date for proper year arithmetic
       result <- mapply(function(d, n) {
         if (n == 0) return(d)
-        seq(d, by = "year", length.out = n + 1)[n + 1]
+        return(seq(d, by = "year", length.out = n + 1)[n + 1])
       }, dates, delays, SIMPLIFY = FALSE)
-      as.Date(unlist(result), origin = "1970-01-01")
+      return(as.Date(unlist(result), origin = "1970-01-01"))
     }
   )
+  return(result)
 }
 
 #' Compute delays between two dates based on delay unit
@@ -171,20 +172,20 @@ get_delay_unit_function <- function(delays_unit) {
 get_delay_from_dates_function <- function(delays_unit) {
   assert_delays_unit(delays_unit)
 
-  switch(delays_unit,
+  result <- switch(delays_unit,
     "days" = function(report_date, reference_date) {
-      as.numeric(difftime(
+      return(as.numeric(difftime(
         as.Date(report_date),
         as.Date(reference_date),
         units = "days"
-      ))
+      )))
     },
     "weeks" = function(report_date, reference_date) {
-      as.numeric(difftime(
+      return(as.numeric(difftime(
         as.Date(report_date),
         as.Date(reference_date),
         units = "weeks"
-      ))
+      )))
     },
     "months" = function(report_date, reference_date) {
       # Compute month difference
@@ -199,7 +200,7 @@ get_delay_from_dates_function <- function(delays_unit) {
         months_diff <- as.numeric(format(r, "%m")) -
           as.numeric(format(ref, "%m"))
 
-        years_diff * 12 + months_diff
+        return(years_diff * 12 + months_diff)
       }, report, reference)
 
       return(as.numeric(result))
@@ -215,6 +216,7 @@ get_delay_from_dates_function <- function(delays_unit) {
       return(as.numeric(result))
     }
   )
+  return(result)
 }
 
 #' Get mean delay for each row of reporting_triangle

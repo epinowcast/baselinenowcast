@@ -1,9 +1,13 @@
 # Setup test data
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 data_as_of_df$age_group <- "00+"
+# Filter to max_delay of 10 by computing delay
+data_as_of_df$delay <- as.numeric(
+  data_as_of_df$report_date - data_as_of_df$reference_date
+)
+data_as_of_df <- data_as_of_df[data_as_of_df$delay <= 10, ]
 rep_tri <- as_reporting_triangle(
-  data = data_as_of_df,
-  max_delay = 10
+  data = data_as_of_df
 )
 
 test_that("is_reporting_triangle works correctly", {
@@ -202,12 +206,14 @@ test_that("[.reporting_triangle validates result structure", {
   expect_no_error(rt[, 1:3])
   expect_no_error(rt[1:2, 1:2])
 
-  # Modify to create invalid structure and test that subsetting validates
-  rt_invalid <- rt
-  rt_invalid[2, 2] <- NA
+  # Create invalid structure by directly modifying underlying matrix
+  mat_invalid <- unclass(rt)
+  mat_invalid[2, 2] <- NA
+  class(mat_invalid) <- c("reporting_triangle", "matrix")
+  attr(mat_invalid, "delays_unit") <- "days"
 
   # This should fail validation when we try to subset it
-  expect_error(rt_invalid[1:3, ], "Invalid reporting triangle structure")
+  expect_error(mat_invalid[1:3, ], "Invalid reporting triangle structure")
 })
 
 test_that("[.reporting_triangle preserves reference dates", {
@@ -541,7 +547,7 @@ test_that("check_na_pattern detects expected triangular pattern", {
 })
 
 test_that("check_na_pattern detects out-of-pattern NAs", {
-  # Create a valid triangle first
+  # Create a valid triangle first, then modify underlying matrix
   mat <- matrix(
     c(
       10, 20, 30, 40,
@@ -551,12 +557,10 @@ test_that("check_na_pattern detects out-of-pattern NAs", {
     ),
     nrow = 4, byrow = TRUE
   )
-  rt <- as_reporting_triangle(data = mat)
+  # Modify matrix before converting to reporting_triangle to create invalid pattern
+  mat[2, 2] <- NA
 
-  # Now modify it to create out-of-pattern NA
-  rt[2, 2] <- NA
-
-  result <- baselinenowcast:::.check_na_pattern(rt)
+  result <- baselinenowcast:::.check_na_pattern(mat)
 
   # One out-of-pattern NA at [2,2] (has data to the right and below)
   expect_false(result$valid)
@@ -568,7 +572,7 @@ test_that("check_na_pattern detects out-of-pattern NAs", {
 })
 
 test_that("check_na_pattern detects NA with data below", {
-  # Create a valid triangle first
+  # Create matrix with out-of-pattern NA
   mat <- matrix(
     c(
       10, 20, 30, 40,
@@ -578,12 +582,10 @@ test_that("check_na_pattern detects NA with data below", {
     ),
     nrow = 4, byrow = TRUE
   )
-  rt <- as_reporting_triangle(data = mat)
-
   # Modify to create out-of-pattern NA
-  rt[1, 3] <- NA
+  mat[1, 3] <- NA
 
-  result <- baselinenowcast:::.check_na_pattern(rt)
+  result <- baselinenowcast:::.check_na_pattern(mat)
 
   # Out-of-pattern at [1,3] (has data at [2,3])
   expect_false(result$valid)
@@ -593,7 +595,7 @@ test_that("check_na_pattern detects NA with data below", {
 })
 
 test_that("check_na_pattern detects NA with data to the right", {
-  # Create a valid triangle first
+  # Create matrix with out-of-pattern NAs
   mat <- matrix(
     c(
       10, 20, 30, 40,
@@ -603,13 +605,11 @@ test_that("check_na_pattern detects NA with data to the right", {
     ),
     nrow = 4, byrow = TRUE
   )
-  rt <- as_reporting_triangle(data = mat)
-
   # Modify to create out-of-pattern NAs
-  rt[2, 2] <- NA
-  rt[2, 3] <- NA
+  mat[2, 2] <- NA
+  mat[2, 3] <- NA
 
-  result <- baselinenowcast:::.check_na_pattern(rt)
+  result <- baselinenowcast:::.check_na_pattern(mat)
 
   # Out-of-pattern at [2,2] and [2,3] (have data at [2,4])
   expect_false(result$valid)
@@ -634,7 +634,7 @@ test_that("check_na_pattern handles complete triangle", {
 })
 
 test_that("check_na_pattern handles multiple affected rows", {
-  # Create a valid triangle first
+  # Create matrix with out-of-pattern NAs in multiple rows
   mat <- matrix(
     c(
       10, 20, 30, 40,
@@ -644,13 +644,11 @@ test_that("check_na_pattern handles multiple affected rows", {
     ),
     nrow = 4, byrow = TRUE
   )
-  rt <- as_reporting_triangle(data = mat)
-
   # Modify to create out-of-pattern NAs in multiple rows
-  rt[1, 2] <- NA
-  rt[2, 3] <- NA
+  mat[1, 2] <- NA
+  mat[2, 3] <- NA
 
-  result <- baselinenowcast:::.check_na_pattern(rt)
+  result <- baselinenowcast:::.check_na_pattern(mat)
 
   # Out-of-pattern at [1,2] (data to right) and [2,3] (data to right)
   expect_false(result$valid)

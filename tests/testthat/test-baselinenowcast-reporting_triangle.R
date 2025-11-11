@@ -60,12 +60,15 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
   ))
   expect_blnc_structure(test_df, expected_cols)
 
-  expect_no_warning(
+  # This uses deprecated API but should still work
+  # Deprecation warning shown once per session, suppress for test
+  test_df2 <- suppressWarnings(
     baselinenowcast(rep_tri,
       delay_pmf = rep(0.2, 26),
       draws = 100
     )
   ) # nolint
+  expect_blnc_structure(test_df2, expected_cols)
 
   expect_error(
     baselinenowcast(rep_tri,

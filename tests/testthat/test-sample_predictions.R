@@ -183,9 +183,201 @@ test_that("sample_predictions errors if delay agrgegator returns a matrix", {
       point_nowcast_matrix,
       reporting_triangle,
       dispersion,
-      delay_aggregator = identity,
+      uncertainty = uncertainty_opts(
+        aggregation = aggregation_opts(delay = identity)
+      ),
       draws = 100
     ),
     regexp = "Got 4 columns from `delay_aggregator`"
   )
+})
+
+# New API Tests (uncertainty_opts) ---------------------------------------------
+
+test_that("sample_prediction works with uncertainty_opts", {
+  set.seed(123)
+  result <- sample_prediction(
+    point_nowcast_matrix,
+    reporting_triangle,
+    dispersion,
+    uncertainty = uncertainty_opts()
+  )
+
+  expect_type(result, "double")
+  expect_length(result, nrow(point_nowcast_matrix))
+})
+
+test_that("sample_prediction works with Poisson model", {
+  set.seed(456)
+  result <- sample_prediction(
+    point_nowcast_matrix,
+    reporting_triangle,
+    c(1, 1, 1),
+    uncertainty = uncertainty_opts(model = uncertainty_poisson())
+  )
+
+  # Poisson samples should be integer values
+  expect_type(result, "double")
+  expect_length(result, nrow(point_nowcast_matrix))
+  expect_true(all(result == floor(result)))
+})
+
+test_that("sample_prediction works with custom aggregation", {
+  skip_if_not_installed("zoo")
+  set.seed(789)
+
+  result <- sample_prediction(
+    point_nowcast_matrix,
+    reporting_triangle,
+    dispersion,
+    uncertainty = uncertainty_opts(
+      aggregation = aggregation_opts(
+        ref_time = function(x) zoo::rollsum(x, k = 2, align = "right")
+      )
+    )
+  )
+
+  expect_type(result, "double")
+})
+
+test_that("sample_prediction new API produces same results as old API", {
+  set.seed(100)
+  result_old <- suppressWarnings(
+    sample_prediction(
+      point_nowcast_matrix,
+      reporting_triangle,
+      dispersion,
+      uncertainty_sampler = sample_nb,
+      ref_time_aggregator = identity,
+      delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+    )
+  )
+
+  set.seed(100)
+  result_new <- sample_prediction(
+    point_nowcast_matrix,
+    reporting_triangle,
+    dispersion,
+    uncertainty = uncertainty_opts()
+  )
+
+  expect_identical(result_old, result_new)
+})
+
+test_that("sample_prediction works with deprecated API", {
+  # Deprecation warning shown once per session, suppress for test
+  result <- suppressWarnings(
+    sample_prediction(
+      point_nowcast_matrix,
+      reporting_triangle,
+      dispersion,
+      uncertainty_sampler = sample_nb
+    )
+  )
+
+  # Verify deprecated API still produces valid output
+  expect_type(result, "double")
+})
+
+test_that("sample_predictions works with uncertainty_opts", {
+  set.seed(123)
+  result <- sample_predictions(
+    point_nowcast_matrix,
+    reporting_triangle,
+    dispersion,
+    draws = 10,
+    uncertainty = uncertainty_opts()
+  )
+
+  expect_is(result, "data.frame")
+  expect_identical(nrow(result), as.integer(10 * nrow(point_nowcast_matrix)))
+})
+
+test_that("sample_predictions works with Poisson model", {
+  set.seed(456)
+  result <- sample_predictions(
+    point_nowcast_matrix,
+    reporting_triangle,
+    c(1, 1, 1),
+    draws = 5,
+    uncertainty = uncertainty_opts(model = uncertainty_poisson())
+  )
+
+  expect_is(result, "data.frame")
+  expect_true(all(result$pred_count == floor(result$pred_count)))
+})
+
+test_that("sample_nowcast works with uncertainty_opts", {
+  set.seed(123)
+  nowcast_matrix <- matrix(
+    c(100, 50, 30, 20, 90, 45, 25, 16.8),
+    nrow = 2,
+    byrow = TRUE
+  )
+  rt <- construct_triangle(nowcast_matrix, structure = 2)
+  disp <- c(0.8, 12.4)
+
+  result <- sample_nowcast(
+    nowcast_matrix,
+    rt,
+    disp,
+    uncertainty = uncertainty_opts()
+  )
+
+  # sample_nowcast returns a vector, not a dataframe
+  expect_type(result, "double")
+  expect_length(result, nrow(nowcast_matrix))
+})
+
+test_that("sample_nowcasts works with uncertainty_opts", {
+  set.seed(123)
+  # sample_nowcasts expects a single matrix, not a list
+  nowcast_matrix <- matrix(
+    c(100, 50, 30, 20, 90, 45, 25, 16.8),
+    nrow = 2,
+    byrow = TRUE
+  )
+  rt <- construct_triangle(nowcast_matrix, structure = 2)
+  disp <- c(0.8, 12.4)
+
+  result <- sample_nowcasts(
+    nowcast_matrix,
+    rt,
+    disp,
+    draws = 5,
+    uncertainty = uncertainty_opts()
+  )
+
+  expect_is(result, "data.frame")
+})
+
+test_that("combine_obs_with_pred works with uncertainty_opts", {
+  set.seed(123)
+  # First generate predicted counts
+  nowcast_matrix <- matrix(
+    c(100, 50, 30, 20, 90, 45, 25, 16.8),
+    nrow = 2,
+    byrow = TRUE
+  )
+  rt <- construct_triangle(nowcast_matrix, structure = 2)
+  disp <- c(0.8, 12.4)
+
+  # Generate predicted counts
+  pred_counts <- sample_prediction(
+    nowcast_matrix,
+    rt,
+    disp,
+    uncertainty = uncertainty_opts()
+  )
+
+  # Combine with observed
+  result <- combine_obs_with_pred(
+    pred_counts,
+    rt,
+    uncertainty = uncertainty_opts()
+  )
+
+  # combine_obs_with_pred returns a vector
+  expect_type(result, "double")
+  expect_length(result, nrow(nowcast_matrix))
 })

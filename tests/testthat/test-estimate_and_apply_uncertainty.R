@@ -117,3 +117,95 @@ test_that("estimate_and_apply_uncertainty is able to detect the structure of a j
     tol = 0.01
   )
 })
+
+# New API Tests (uncertainty_opts) ---------------------------------------------
+
+test_that("estimate_and_apply_uncertainty works with uncertainty_opts", {
+  set.seed(123)
+  nowcast_draws <- estimate_and_apply_uncertainty(
+    pt_nowcast_matrix,
+    triangle,
+    n_history_delay = n_delay_valid,
+    n_retrospective_nowcasts = n_retro_valid,
+    uncertainty = uncertainty_opts()
+  )
+
+  expect_is(nowcast_draws, "data.frame")
+  expect_true(all(c("pred_count", "time", "draw") %in% names(nowcast_draws)))
+})
+
+test_that("estimate_and_apply_uncertainty works with Poisson model", {
+  set.seed(456)
+  nowcast_draws <- estimate_and_apply_uncertainty(
+    pt_nowcast_matrix,
+    triangle,
+    n_history_delay = n_delay_valid,
+    n_retrospective_nowcasts = n_retro_valid,
+    uncertainty = uncertainty_opts(model = uncertainty_poisson())
+  )
+
+  expect_is(nowcast_draws, "data.frame")
+  expect_true(all(nowcast_draws$pred_count == floor(nowcast_draws$pred_count)))
+})
+
+test_that("estimate_and_apply_uncertainty works with custom aggregation", {
+  skip_if_not_installed("zoo")
+  set.seed(789)
+
+  nowcast_draws <- estimate_and_apply_uncertainty(
+    pt_nowcast_matrix,
+    triangle,
+    n_history_delay = n_delay_valid,
+    n_retrospective_nowcasts = n_retro_valid - 1,
+    uncertainty = uncertainty_opts(
+      aggregation = aggregation_opts(
+        ref_time = function(x) zoo::rollsum(x, k = 2, align = "right")
+      )
+    )
+  )
+
+  expect_is(nowcast_draws, "data.frame")
+})
+
+test_that("estimate_and_apply_uncertainty new API produces same results", {
+  set.seed(100)
+  result_old <- suppressWarnings(
+    estimate_and_apply_uncertainty(
+      pt_nowcast_matrix,
+      triangle,
+      n_history_delay = n_delay_valid,
+      n_retrospective_nowcasts = n_retro_valid,
+      uncertainty_model = fit_by_horizon,
+      uncertainty_sampler = sample_nb,
+      ref_time_aggregator = identity,
+      delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+    )
+  )
+
+  set.seed(100)
+  result_new <- estimate_and_apply_uncertainty(
+    pt_nowcast_matrix,
+    triangle,
+    n_history_delay = n_delay_valid,
+    n_retrospective_nowcasts = n_retro_valid,
+    uncertainty = uncertainty_opts()
+  )
+
+  expect_equal(result_old, result_new, tolerance = 0.001)
+})
+
+test_that("estimate_and_apply_uncertainty works with deprecated API", {
+  # Deprecation warning shown once per session, suppress for test
+  result <- suppressWarnings(
+    estimate_and_apply_uncertainty(
+      pt_nowcast_matrix,
+      triangle,
+      n_history_delay = n_delay_valid,
+      n_retrospective_nowcasts = n_retro_valid,
+      uncertainty_model = fit_by_horizon
+    )
+  )
+
+  # Verify deprecated API still produces valid output
+  expect_s3_class(result, "data.frame")
+})

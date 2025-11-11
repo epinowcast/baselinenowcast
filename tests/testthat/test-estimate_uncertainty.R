@@ -630,3 +630,115 @@ test_that("fit_nb handles zero values correctly", {
   expect_type(result, "double")
   expect_gt(result, 0)
 })
+
+# New API Tests (uncertainty_opts) ---------------------------------------------
+
+test_that("estimate_uncertainty works with uncertainty_opts", {
+  result <- estimate_uncertainty(
+    point_nowcast_matrices = valid_nowcasts,
+    truncated_reporting_triangles = valid_trunc_rts,
+    retro_reporting_triangles = valid_rts,
+    n = 2,
+    uncertainty = uncertainty_opts()
+  )
+
+  expect_type(result, "double")
+  expect_length(result, ncol(valid_nowcasts[[1]]) - 1)
+  expect_true(all(is.finite(result)))
+})
+
+test_that("estimate_uncertainty works with custom aggregation via opts", {
+  skip_if_not_installed("zoo")
+
+  result <- estimate_uncertainty(
+    point_nowcast_matrices = valid_nowcasts,
+    truncated_reporting_triangles = valid_trunc_rts,
+    retro_reporting_triangles = valid_rts,
+    uncertainty = uncertainty_opts(
+      aggregation = aggregation_opts(
+        ref_time = function(x) zoo::rollsum(x, k = 3, align = "right")
+      )
+    )
+  )
+
+  expect_true(all(is.finite(result)))
+})
+
+test_that("estimate_uncertainty works with Poisson model", {
+  # Need integer observations for Poisson
+  int_nowcasts <- lapply(valid_nowcasts, function(x) {
+    matrix(as.integer(round(x)), nrow = nrow(x), ncol = ncol(x))
+  })
+  int_trunc_rts <- lapply(valid_trunc_rts, function(x) {
+    matrix(as.integer(round(x)), nrow = nrow(x), ncol = ncol(x))
+  })
+
+  result <- estimate_uncertainty(
+    point_nowcast_matrices = int_nowcasts,
+    truncated_reporting_triangles = int_trunc_rts,
+    retro_reporting_triangles = valid_rts,
+    uncertainty = uncertainty_opts(model = uncertainty_poisson())
+  )
+
+  expect_type(result, "double")
+  expect_true(all(result == 1))
+})
+
+test_that("estimate_uncertainty new API produces same results as old API", {
+  # Old API (with deprecation warning)
+  result_old <- suppressWarnings(
+    estimate_uncertainty(
+      point_nowcast_matrices = valid_nowcasts,
+      truncated_reporting_triangles = valid_trunc_rts,
+      retro_reporting_triangles = valid_rts,
+      n = 2,
+      uncertainty_model = fit_by_horizon,
+      ref_time_aggregator = identity,
+      delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+    )
+  )
+
+  # New API
+  result_new <- estimate_uncertainty(
+    point_nowcast_matrices = valid_nowcasts,
+    truncated_reporting_triangles = valid_trunc_rts,
+    retro_reporting_triangles = valid_rts,
+    n = 2,
+    uncertainty = uncertainty_opts()
+  )
+
+  expect_identical(result_old, result_new)
+})
+
+test_that("estimate_uncertainty works with deprecated API", {
+  # Deprecation warning shown once per session, suppress for test
+  result <- suppressWarnings(
+    estimate_uncertainty(
+      point_nowcast_matrices = valid_nowcasts,
+      truncated_reporting_triangles = valid_trunc_rts,
+      retro_reporting_triangles = valid_rts,
+      uncertainty_model = fit_by_horizon
+    )
+  )
+
+  # Verify deprecated API still produces valid output
+  expect_type(result, "double")
+  expect_length(result, 2)
+})
+
+test_that("estimate_uncertainty accepts uncertainty_opts with all components", {
+  opts <- uncertainty_opts(
+    model = uncertainty_nb(strategy = uncertainty_by_horizon()),
+    aggregation = aggregation_observed()
+  )
+
+  result <- estimate_uncertainty(
+    point_nowcast_matrices = valid_nowcasts,
+    truncated_reporting_triangles = valid_trunc_rts,
+    retro_reporting_triangles = valid_rts,
+    uncertainty = opts
+  )
+
+  expect_type(result, "double")
+  expect_true(all(is.finite(result)))
+})

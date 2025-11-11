@@ -54,9 +54,14 @@ test_that("combine_obs_with_pred: handles aggregation function properly", {
   expected <- obs_counts + pred_counts
 
   # Use function
-  result <- combine_obs_with_pred(pred_counts,
+  result <- combine_obs_with_pred(
+    pred_counts,
     reporting_triangle,
-    ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+    uncertainty = uncertainty_opts(
+      aggregation = aggregation_opts(
+        ref_time = function(x) zoo::rollsum(x, k = 2, align = "right")
+      )
+    )
   )
 
 

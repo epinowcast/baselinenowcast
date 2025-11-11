@@ -1,5 +1,24 @@
 # baselinenowcast 0.0.0.1000
 
+## Breaking changes
+
+-   Add `uncertainty_opts()` configuration system to replace scattered
+    uncertainty parameters. This replaces the `uncertainty_model`,
+    `uncertainty_sampler`, `ref_time_aggregator`, and `delay_aggregator`
+    parameters in functions like `estimate_uncertainty()` and
+    `sample_prediction()` with a single `uncertainty` parameter.
+    The old parameters still work but are deprecated with warnings.
+    See `?uncertainty_opts` for details (#229).
+    - Use `uncertainty_nb()` or `uncertainty_poisson()` to specify
+      distributions.
+    - Use `uncertainty_by_horizon()` to specify fitting strategies.
+    - Use `aggregation_opts()` or `aggregation_observed()` to specify
+      data aggregation.
+    - Ensures consistency between parameter estimation and sampling by
+      bundling configuration in a single validated object.
+
+## New features
+
 -   Add `preprocess` parameter to `estimate_delay()` to control handling of negative values in reporting triangles. Set to `preprocess_negative_values` by default to redistribute negative values to earlier delays, or set to `NULL` to preserve negative PMF entries. This allows the method to work with reporting corrections that result in net downward adjustments at specific delays (#278).
 -   Export `preprocess_negative_values()` function to allow users to manually handle negative values in reporting triangles by redistributing them to earlier delays (#278).
 -   Improve PMF validation message to be more informative when the delay PMF does not sum to approximately 1. The message now shows the actual sum and clarifies that this may be expected when working with downward corrections or incomplete data (#148, #278).

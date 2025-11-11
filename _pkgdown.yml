@@ -89,6 +89,33 @@ reference:
     models.
   contents:
   - has_concept("generate_probabilistic_nowcasts")
+- subtitle: Uncertainty configuration
+  desc: >
+    Functions for configuring uncertainty estimation, including
+    probability distributions, fitting strategies, and data aggregation
+    options. These provide a composable interface for uncertainty
+    quantification.
+  contents:
+  - uncertainty_opts
+  - uncertainty_model
+  - uncertainty_nb
+  - uncertainty_poisson
+  - uncertainty_strategy
+  - uncertainty_by_horizon
+  - aggregation_opts
+  - aggregation_observed
+  - assert_uncertainty_model
+  - assert_uncertainty_model.default
+  - assert_uncertainty_model.uncertainty_model
+  - assert_uncertainty_model.uncertainty_nb
+  - assert_uncertainty_model.uncertainty_poisson
+  - assert_aggregation_opts
+  - assert_aggregation_opts.default
+  - assert_aggregation_opts.aggregation_opts
+  - print.uncertainty_opts
+  - print.uncertainty_model
+  - print.uncertainty_strategy
+  - print.aggregation_opts
 - title: Data
   desc: Example datasets included with the package.
   contents:

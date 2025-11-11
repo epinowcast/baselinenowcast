@@ -449,7 +449,66 @@ head(nowcast_draws_df)
 
 See documentation for `sample_nowcasts()`for further details.
 
-# Visualizing the nowcast
+## Configuring uncertainty estimation
+
+The above example uses the default uncertainty configuration, which
+estimates uncertainty using a negative binomial distribution fitted
+independently by horizon.
+You can customise this behaviour using the `uncertainty_opts()` function
+to control the distribution, fitting strategy, and data aggregation.
+
+### Using a Poisson distribution
+
+To use a Poisson distribution instead of negative binomial:
+
+```{r}
+# Estimate dispersion with Poisson model
+disp_params_pois <- estimate_uncertainty(
+  point_nowcast_matrices = retro_pt_nowcast_mat_list,
+  truncated_reporting_triangles = trunc_rep_tri_list,
+  retro_reporting_triangles = retro_rep_tri_list,
+  n = n_retrospective_nowcasts,
+  uncertainty = uncertainty_opts(model = uncertainty_poisson())
+)
+
+# Generate nowcasts with Poisson uncertainty
+nowcast_draws_pois <- sample_nowcasts(
+  point_nowcast_matrix, reporting_triangle,
+  uncertainty_params = disp_params_pois,
+  draws = 100,
+  uncertainty = uncertainty_opts(model = uncertainty_poisson())
+)
+```
+
+### Custom aggregation
+
+You can also specify custom aggregation functions to operate on
+reference times or delays before fitting the uncertainty model.
+For example, to use a 3-day rolling sum:
+
+```{r, eval = requireNamespace("zoo", quietly = TRUE)}
+# Estimate with rolling sum aggregation
+if (requireNamespace("zoo", quietly = TRUE)) {
+  disp_params_agg <- estimate_uncertainty(
+    point_nowcast_matrices = retro_pt_nowcast_mat_list,
+    truncated_reporting_triangles = trunc_rep_tri_list,
+    retro_reporting_triangles = retro_rep_tri_list,
+    n = n_retrospective_nowcasts,
+    uncertainty = uncertainty_opts(
+      aggregation = aggregation_opts(
+        ref_time = function(x) zoo::rollsum(x, k = 3, align = "right")
+      )
+    )
+  )
+}
+```
+
+The uncertainty configuration system ensures that the same
+aggregation functions are consistently applied during both
+parameter estimation and nowcast generation.
+See `?uncertainty_opts` for more details on available options.
+
+# Visualising the nowcast
 
 Let's visualize the nowcast compared to the final observed data.
 We first need to join our nowcast with the original data so we can see our nowcast by reference date.

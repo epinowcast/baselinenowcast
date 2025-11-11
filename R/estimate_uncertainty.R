@@ -15,21 +15,21 @@
 #'   matrices with as many rows as available given the truncation.
 #' @param n Integer indicating the number of reporting matrices to use to
 #'    estimate the uncertainty parameters.
-#' @param uncertainty_model Function that ingests a matrix of observations and a
-#'     matrix of predictions and returns a vector that can be used to
-#'     apply uncertainty using the same error model. Default is
-#'     `fit_by_horizon` with arguments of `obs` matrix of observations and
-#'     `pred` the matrix of predictions that fits each column (horizon)
-#'     to a negative binomial observation model by default. The user can
-#'     specify a different fitting model by replacing the
-#'     `fit_model` argument in `fit_by_horizon`.
-#' @param ref_time_aggregator Function that operates along the rows (reference
-#'    times) of the retrospective point nowcast matrix before it has been
-#'    aggregated across columns (delays). Default is `identity`
-#'    which does not aggregate across reference times.
-#' @param delay_aggregator Function that operates along the columns (delays)
-#'    of the retrospective point nowcast matrix after it has been aggregated
-#'    across reference times. Default is `function(x) rowSums(x, na.rm = TRUE)`.
+#' @param uncertainty An object of class `uncertainty_opts` created by
+#'   [uncertainty_opts()]. Specifies the uncertainty model and aggregation
+#'   functions. Default uses negative binomial with by-horizon fitting.
+#' @param uncertainty_model (Deprecated) Function that ingests a matrix of
+#'   observations and a matrix of predictions and returns a vector that can
+#'   be used to apply uncertainty using the same error model. Use
+#'   `uncertainty` parameter instead.
+#' @param ref_time_aggregator (Deprecated) Function that operates along the
+#'   rows (reference times) of the retrospective point nowcast matrix before
+#'   it has been aggregated across columns (delays). Use `uncertainty`
+#'   parameter instead.
+#' @param delay_aggregator (Deprecated) Function that operates along the
+#'   columns (delays) of the retrospective point nowcast matrix after it has
+#'   been aggregated across reference times. Use `uncertainty` parameter
+#'   instead.
 #' @importFrom checkmate assert_integerish
 #' @importFrom cli cli_abort cli_warn
 #' @returns `uncertainty_params` Vector of length of the number of horizons,
@@ -74,7 +74,11 @@
 #'     point_nowcast_matrices = retro_nowcasts,
 #'     truncated_reporting_triangles = trunc_rts,
 #'     retro_reporting_triangles = retro_rts,
-#'     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+#'     uncertainty = uncertainty_opts(
+#'       aggregation = aggregation_opts(
+#'         ref_time = function(x) zoo::rollsum(x, k = 2, align = "right")
+#'       )
+#'     )
 #'   )
 #'   disp_params_agg
 #' }
@@ -83,9 +87,23 @@ estimate_uncertainty <- function(
     truncated_reporting_triangles,
     retro_reporting_triangles,
     n = length(point_nowcast_matrices),
-    uncertainty_model = fit_by_horizon,
-    ref_time_aggregator = identity,
-    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
+    uncertainty = uncertainty_opts(),
+    uncertainty_model = NULL,
+    ref_time_aggregator = NULL,
+    delay_aggregator = NULL) {
+  # Handle deprecated parameters
+  uncertainty <- .handle_deprecated_uncertainty_params(
+    uncertainty_model,
+    ref_time_aggregator,
+    delay_aggregator,
+    uncertainty
+  )
+
+  # Extract components from uncertainty object
+  uncertainty_model_fit <- uncertainty$model$fit
+  ref_time_aggregator <- uncertainty$aggregation$ref_time
+  delay_aggregator <- uncertainty$aggregation$delay
+
   assert_integerish(n, lower = 0)
   .check_list_length(
     point_nowcast_matrices,
@@ -121,29 +139,8 @@ estimate_uncertainty <- function(
 
 
 
-  # Check that nowcasts has no NAs, trunc_rts has some NAs
-  if (any(sapply(list_of_ncs, anyNA))) {
-    cli_abort(
-      message =
-        "`point_nowcast_matrices` contains NAs"
-    )
-  }
-  if (!any(sapply(list_of_obs, anyNA))) {
-    cli_warn(
-      message =
-        "`truncated_reporting_triangles` does not contain any NAs"
-    )
-  }
-  # Check that the sets of matrices are the same dimensions
-  dims_ncs <- lapply(list_of_ncs, dim)
-  dims_obs <- lapply(list_of_obs, dim)
-  all_identical <- all(mapply(identical, dims_ncs, dims_obs))
-  if (!all_identical) {
-    cli_abort(message = c(
-      "Dimensions of the first `n` matrices in `point_nowcast_matrices` and ",
-      "`truncated_reporting_triangles` are not the same."
-    ))
-  }
+  # Validate matrix dimensions and contents
+  .validate_uncertainty_matrices(list_of_ncs, list_of_obs)
 
   n_possible_horizons <- sum(is.na(rowSums(list_of_rts[[1]])))
   n_iters <- .calc_n_retro_nowcast_times(
@@ -246,12 +243,97 @@ estimate_uncertainty <- function(
   )
   # Take matrix of observations and predictions and get uncertainty parameters
   # for each column (horizon)
-  uncertainty_params <- uncertainty_model(
+  uncertainty_params <- uncertainty_model_fit(
     obs = to_add_already_observed,
     pred = exp_to_add
   )
 
   return(uncertainty_params)
+}
+
+#' Validate lists of matrices for uncertainty estimation
+#'
+#' @param list_of_ncs List of nowcast matrices
+#' @param list_of_obs List of observation matrices
+#'
+#' @returns NULL (invisibly) if valid, otherwise throws an error
+#' @keywords internal
+.validate_uncertainty_matrices <- function(list_of_ncs, list_of_obs) {
+  # Check that nowcasts has no NAs, trunc_rts has some NAs
+  if (any(sapply(list_of_ncs, anyNA))) {
+    cli_abort(
+      message =
+        "`point_nowcast_matrices` contains NAs"
+    )
+  }
+  if (!any(sapply(list_of_obs, anyNA))) {
+    cli_warn(
+      message =
+        "`truncated_reporting_triangles` does not contain any NAs"
+    )
+  }
+  # Check that the sets of matrices are the same dimensions
+  dims_ncs <- lapply(list_of_ncs, dim)
+  dims_obs <- lapply(list_of_obs, dim)
+  all_identical <- all(mapply(identical, dims_ncs, dims_obs))
+  if (!all_identical) {
+    cli_abort(message = c(
+      "Dimensions of the first `n` matrices in `point_nowcast_matrices` and ",
+      "`truncated_reporting_triangles` are not the same."
+    ))
+  }
+  invisible(NULL)
+}
+
+#' @keywords internal
+.handle_deprecated_uncertainty_params <- function(
+    uncertainty_model,
+    ref_time_aggregator,
+    delay_aggregator,
+    uncertainty) {
+  if (!is.null(uncertainty_model) || !is.null(ref_time_aggregator) ||
+      !is.null(delay_aggregator)) {
+    cli_warn(
+      c(
+        "!" = "Direct parameter specification is deprecated.",
+        i = "Use {.arg uncertainty = uncertainty_opts()} instead.",
+        "See {.help uncertainty_opts} for details."
+      ),
+      .frequency = "once",
+      .frequency_id = "estimate_uncertainty_deprecated_params"
+    )
+
+    # Build uncertainty object from deprecated params
+    # Use defaults for missing params
+    if (is.null(ref_time_aggregator)) {
+      ref_time_aggregator <- identity
+    }
+    if (is.null(delay_aggregator)) {
+      delay_aggregator <- function(x) rowSums(x, na.rm = TRUE)
+    }
+
+    # Only handle fit_by_horizon for uncertainty_model
+    if (!is.null(uncertainty_model) &&
+        identical(uncertainty_model, fit_by_horizon)) {
+      model <- uncertainty_nb(strategy = uncertainty_by_horizon())
+    } else if (!is.null(uncertainty_model)) {
+      cli_abort(c(
+        "Cannot automatically convert custom {.arg uncertainty_model}",
+        i = "Please use {.fn uncertainty_opts} directly"
+      ))
+    } else {
+      model <- uncertainty_nb(strategy = uncertainty_by_horizon())
+    }
+
+    uncertainty <- uncertainty_opts(
+      model = model,
+      aggregation = aggregation_opts(
+        ref_time = ref_time_aggregator,
+        delay = delay_aggregator
+      )
+    )
+  }
+  return(uncertainty)
 }
 
 #' Helper function that fits its each column of the matrix (horizon) to an
@@ -311,7 +393,10 @@ fit_by_horizon <- function(obs,
 #' @param list_of_obs List of matrices of truncated reporting triangles
 #' @param n_possible_horizons Integer indicating the number of horizons in the
 #'     retrospective reporting triangle.
-#' @inheritParams estimate_uncertainty
+#' @param ref_time_aggregator (Deprecated) Function that operates along the
+#'   rows (reference times) of the retrospective point nowcast matrix before
+#'   it has been aggregated across columns (delays). Use the `uncertainty`
+#'   parameter in the calling public function instead.
 #'
 #' @returns `n_iters` Integer indicating the number of iterations, or
 #'    number of retrospective nowcast times, that have sufficient data once

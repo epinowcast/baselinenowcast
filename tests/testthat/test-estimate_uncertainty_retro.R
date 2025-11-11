@@ -403,3 +403,155 @@ test_that(
     expect_gt(length(result), 0)
   }
 )
+
+# New API Tests (uncertainty_opts) ---------------------------------------------
+
+test_that("estimate_uncertainty_retro works with uncertainty_opts", {
+  triangle <- matrix(
+    c(
+      65, 46, 21, 7,
+      70, 40, 20, 5,
+      80, 50, 10, 10,
+      100, 40, 31, 20,
+      95, 45, 21, NA,
+      82, 42, NA, NA,
+      70, NA, NA, NA
+    ),
+    nrow = 7,
+    byrow = TRUE
+  )
+
+  result <- estimate_uncertainty_retro(
+    triangle,
+    n_history_delay = 5,
+    n_retrospective_nowcasts = 2,
+    uncertainty = uncertainty_opts()
+  )
+
+  expect_type(result, "double")
+  expect_gt(length(result), 0)
+  expect_true(all(result > 0))
+})
+
+test_that("estimate_uncertainty_retro works with Poisson model", {
+  triangle <- matrix(
+    c(
+      65, 46, 21, 7,
+      70, 40, 20, 5,
+      80, 50, 10, 10,
+      100, 40, 31, 20,
+      95, 45, 21, NA,
+      82, 42, NA, NA,
+      70, NA, NA, NA
+    ),
+    nrow = 7,
+    byrow = TRUE
+  )
+
+  result <- estimate_uncertainty_retro(
+    triangle,
+    n_history_delay = 5,
+    n_retrospective_nowcasts = 2,
+    uncertainty = uncertainty_opts(model = uncertainty_poisson())
+  )
+
+  expect_type(result, "double")
+  expect_true(all(result == 1))
+})
+
+test_that("estimate_uncertainty_retro works with custom aggregation", {
+  skip_if_not_installed("zoo")
+
+  triangle <- matrix(
+    c(
+      65, 46, 21, 7,
+      70, 40, 20, 5,
+      80, 50, 10, 10,
+      100, 40, 31, 20,
+      95, 45, 21, NA,
+      82, 42, NA, NA,
+      70, NA, NA, NA
+    ),
+    nrow = 7,
+    byrow = TRUE
+  )
+
+  result <- estimate_uncertainty_retro(
+    triangle,
+    n_history_delay = 5,
+    n_retrospective_nowcasts = 2,
+    uncertainty = uncertainty_opts(
+      aggregation = aggregation_opts(
+        ref_time = function(x) zoo::rollsum(x, k = 2, align = "right")
+      )
+    )
+  )
+
+  expect_type(result, "double")
+  expect_gt(length(result), 0)
+})
+
+test_that("estimate_uncertainty_retro new API produces same results", {
+  triangle <- matrix(
+    c(
+      65, 46, 21, 7,
+      70, 40, 20, 5,
+      80, 50, 10, 10,
+      100, 40, 31, 20,
+      95, 45, 21, NA,
+      82, 42, NA, NA,
+      70, NA, NA, NA
+    ),
+    nrow = 7,
+    byrow = TRUE
+  )
+
+  result_old <- suppressWarnings(
+    estimate_uncertainty_retro(
+      triangle,
+      n_history_delay = 5,
+      n_retrospective_nowcasts = 2,
+      uncertainty_model = fit_by_horizon,
+      ref_time_aggregator = identity,
+      delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+    )
+  )
+
+  result_new <- estimate_uncertainty_retro(
+    triangle,
+    n_history_delay = 5,
+    n_retrospective_nowcasts = 2,
+    uncertainty = uncertainty_opts()
+  )
+
+  expect_identical(result_old, result_new)
+})
+
+test_that("estimate_uncertainty_retro works with deprecated API", {
+  triangle <- matrix(
+    c(
+      65, 46, 21, 7,
+      70, 40, 20, 5,
+      80, 50, 10, 10,
+      100, 40, 31, 20,
+      95, 45, 21, NA,
+      82, 42, NA, NA,
+      70, NA, NA, NA
+    ),
+    nrow = 7,
+    byrow = TRUE
+  )
+
+  # Deprecation warning shown once per session, suppress for test
+  result <- suppressWarnings(
+    estimate_uncertainty_retro(
+      triangle,
+      n_history_delay = 5,
+      n_retrospective_nowcasts = 2,
+      uncertainty_model = fit_by_horizon
+    )
+  )
+
+  # Verify deprecated API still produces valid output
+  expect_type(result, "double")
+})

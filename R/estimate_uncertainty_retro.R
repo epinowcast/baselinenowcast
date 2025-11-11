@@ -24,6 +24,9 @@
 #' @inheritParams construct_triangles
 #' @inheritParams estimate_and_apply_uncertainty
 #' @inheritParams fill_triangles
+#' @param uncertainty An object of class `uncertainty_opts` created by
+#'   [uncertainty_opts()]. Specifies the uncertainty model and aggregation
+#'   functions. Default uses negative binomial with by-horizon fitting.
 #' @param ... Additional arguments passed to [estimate_uncertainty()].
 #'
 #' @returns A numeric vector of uncertainty parameters with length equal to
@@ -75,6 +78,7 @@ estimate_uncertainty_retro <- function(
     structure = detect_structure(reporting_triangle),
     delay_pmf = NULL,
     preprocess = preprocess_negative_values,
+    uncertainty = uncertainty_opts(),
     ...) {
   .validate_triangle(reporting_triangle)
 
@@ -121,6 +125,7 @@ estimate_uncertainty_retro <- function(
     truncated_reporting_triangles = trunc_rep_tri_list,
     retro_reporting_triangles = reporting_triangle_list,
     n = n_retrospective_nowcasts,
+    uncertainty = uncertainty,
     ...
   )
 

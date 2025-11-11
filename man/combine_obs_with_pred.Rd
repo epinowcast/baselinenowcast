@@ -7,8 +7,9 @@
 combine_obs_with_pred(
   predicted_counts,
   reporting_triangle,
-  ref_time_aggregator = identity,
-  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+  uncertainty = uncertainty_opts(),
+  ref_time_aggregator = NULL,
+  delay_aggregator = NULL
 )
 }
 \arguments{
@@ -16,20 +17,17 @@ combine_obs_with_pred(
 Note that if using a reference time or delay aggregator function, this
 is assumed to have already been aggregated.}
 
-\item{reporting_triangle}{Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
-Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).}
+\item{reporting_triangle}{Reporting triangle matrix.}
 
-\item{ref_time_aggregator}{Function that operates along the rows (reference
-times) of the retrospective point nowcast matrix before it has been
-aggregated across columns (delays). Default is \code{identity}
-which does not aggregate across reference times.}
+\item{uncertainty}{An object of class \code{uncertainty_opts} created by
+\code{\link[=uncertainty_opts]{uncertainty_opts()}}. Specifies the aggregation functions. Default uses
+standard observed aggregation.}
 
-\item{delay_aggregator}{Function that operates along the columns (delays)
-of the retrospective point nowcast matrix after it has been aggregated
-across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
+\item{ref_time_aggregator}{(Deprecated) Function that operates along the
+rows (reference times). Use \code{uncertainty} parameter instead.}
+
+\item{delay_aggregator}{(Deprecated) Function that operates along the
+columns (delays). Use \code{uncertainty} parameter instead.}
 }
 \value{
 A vector of predicted counts at each reference time
@@ -57,7 +55,11 @@ combine_obs_with_pred(pred_counts, reporting_triangle)
 if (requireNamespace("zoo", quietly = TRUE)) {
   combine_obs_with_pred(pred_counts,
     reporting_triangle,
-    ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+    uncertainty = uncertainty_opts(
+      aggregation = aggregation_opts(
+        ref_time = function(x) zoo::rollsum(x, k = 2, align = "right")
+      )
+    )
   )
 }
 }

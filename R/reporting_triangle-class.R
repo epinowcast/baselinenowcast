@@ -69,7 +69,7 @@ get_reference_dates <- function(x) {
   if (!is_reporting_triangle(x)) {
     cli_abort(message = "x must have class 'reporting_triangle'")
   }
-  as.Date(rownames(x))
+  return(as.Date(rownames(x)))
 }
 
 #' Get maximum delay from reporting_triangle

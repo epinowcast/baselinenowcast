@@ -34,16 +34,17 @@ test_that("estimate_delay returns a valid probability mass function", {
   expect_equal(as.numeric(result), as.numeric(sim_delay_pmf), tolerance = 1e-6)
 })
 
-test_that("estimate_delay handles custom max_delay parameter", {
-  # Test with max_delay = 3 (full delay)
-  result_full <- estimate_delay(reporting_triangle, max_delay = 3)
+test_that("estimate_delay works with truncated triangles", {
+  # Test with full triangle (max_delay = 3)
+  result_full <- estimate_delay(reporting_triangle)
   expect_identical(as.integer(length(result_full)), 4L)
   expect_equal(
     as.numeric(result_full), as.numeric(sim_delay_pmf), tolerance = 1e-6
   )
 
-  # Test with max_delay = 2 (truncated delay)
-  result_truncated <- estimate_delay(reporting_triangle, max_delay = 2)
+  # Test with truncated triangle (max_delay = 2)
+  truncated_triangle <- truncate_to_delay(reporting_triangle, max_delay = 2)
+  result_truncated <- estimate_delay(truncated_triangle)
   expect_identical(as.integer(length(result_truncated)), 3L)
 
   expected_truncated <- sim_delay_pmf[1:3] / sum(sim_delay_pmf[1:3])
@@ -68,19 +69,11 @@ test_that("estimate_delay handles custom n_history parameter", {
 })
 
 test_that("estimate_delay validates input parameters correctly", {
-  # Test invalid max_delay
-  expect_error(estimate_delay(reporting_triangle, max_delay = 0))
-
   # Test invalid n
   expect_error(estimate_delay(reporting_triangle, n = 0))
 
   # Test n > nrow(reporting_triangle)
   expect_error(estimate_delay(reporting_triangle, n = 10))
-
-  # Test max_delay >= ncol(reporting_triangle) -- should error
-  expect_error(estimate_delay(reporting_triangle, max_delay = 5),
-    regexp = "The maximum delay must be less than the number of columns"
-  ) # nolint
 })
 
 test_that(

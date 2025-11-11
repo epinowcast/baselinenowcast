@@ -50,8 +50,6 @@ probabilities
 }
 \examples{
 # Using example dataset with negative values from corrections
-data("example_downward_corr_mat")
-
 # Preprocess to handle negatives
 preprocessed <- preprocess_negative_values(example_downward_corr_mat)
 preprocessed

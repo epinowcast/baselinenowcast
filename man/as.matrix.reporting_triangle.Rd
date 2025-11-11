@@ -20,12 +20,8 @@ removing the reporting_triangle class and custom attributes while
 preserving row and column names.
 }
 \examples{
-# Using example dataset
-data("example_downward_corr_mat")
-rt <- suppressMessages(as_reporting_triangle(
-  data = example_downward_corr_mat
-))
-plain_mat <- as.matrix(rt)
+# Convert reporting_triangle to plain matrix
+plain_mat <- as.matrix(example_downward_corr_rt)
 class(plain_mat)  # "matrix" "array"
 }
 \seealso{

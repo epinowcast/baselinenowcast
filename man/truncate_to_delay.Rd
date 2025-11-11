@@ -21,14 +21,8 @@ delays from 0 to the specified maximum delay. This is useful when you want
 to limit the delay distribution used for estimation.
 }
 \examples{
-# Using example dataset
-data("example_downward_corr_mat")
-rt <- suppressMessages(as_reporting_triangle(
-  data = example_downward_corr_mat
-))
-
 # Truncate to delays 0-2
-rt_short <- truncate_to_delay(rt, max_delay = 2)
+rt_short <- truncate_to_delay(example_downward_corr_rt, max_delay = 2)
 get_max_delay(rt_short)  # Returns 2
 }
 \seealso{

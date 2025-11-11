@@ -357,14 +357,8 @@ truncate_to_quantile <- function(x, p = 0.99) {
 #' @family reporting_triangle
 #' @export
 #' @examples
-#' # Using example dataset
-#' data("example_downward_corr_mat")
-#' rt <- suppressMessages(as_reporting_triangle(
-#'   data = example_downward_corr_mat
-#' ))
-#'
 #' # Truncate to delays 0-2
-#' rt_short <- truncate_to_delay(rt, max_delay = 2)
+#' rt_short <- truncate_to_delay(example_downward_corr_rt, max_delay = 2)
 #' get_max_delay(rt_short)  # Returns 2
 truncate_to_delay <- function(x, max_delay) {
   if (!is_reporting_triangle(x)) {
@@ -615,12 +609,8 @@ is_reporting_triangle <- function(x) {
 #' @export
 #' @method as.matrix reporting_triangle
 #' @examples
-#' # Using example dataset
-#' data("example_downward_corr_mat")
-#' rt <- suppressMessages(as_reporting_triangle(
-#'   data = example_downward_corr_mat
-#' ))
-#' plain_mat <- as.matrix(rt)
+#' # Convert reporting_triangle to plain matrix
+#' plain_mat <- as.matrix(example_downward_corr_rt)
 #' class(plain_mat)  # "matrix" "array"
 as.matrix.reporting_triangle <- function(x, ...) {
   # Store row and column names

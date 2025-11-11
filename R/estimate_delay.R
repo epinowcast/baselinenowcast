@@ -34,8 +34,7 @@
 #' @examples
 #' # Example 1: Standard usage with default preprocessing
 #' delay_pmf <- estimate_delay(
-#'   reporting_triangle = example_reporting_triangle,
-#'   n = 3
+#'   reporting_triangle = example_reporting_triangle
 #' )
 #' delay_pmf
 #'

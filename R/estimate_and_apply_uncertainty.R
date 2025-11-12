@@ -36,41 +36,24 @@
 #' @export
 #' @importFrom cli cli_abort
 #' @examples
-#' triangle_mat <- matrix(
-#'   c(
-#'     40, 10, 20, 5,
-#'     80, 50, 25, 10,
-#'     100, 50, 30, 20,
-#'     90, 45, 25, NA,
-#'     80, 40, NA, NA,
-#'     70, NA, NA, NA
-#'   ),
-#'   nrow = 6,
-#'   byrow = TRUE
-#' )
-#' ref_dates <- seq(
-#'   from = as.Date("2025-01-01"),
-#'   by = "day",
-#'   length.out = nrow(triangle_mat)
-#' )
-#' triangle <- as_reporting_triangle(
-#'   data = triangle_mat,
-#'   reference_dates = ref_dates
-#' )
+#' # Use package data truncated to appropriate size
+#' data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' triangle <- as_reporting_triangle(data_as_of) |>
+#'   truncate_to_delay(max_delay = 25)
+#'
 #' pt_nowcast_matrix <- estimate_and_apply_delay(
 #'   reporting_triangle = triangle,
-#'   n = 4
+#'   n = 75
 #' )
-#' # Need to tell uncertainty estimator to also use 4 reference times for
-#' # delay estimation, the remaining 2 will then be used for
-#' # uncertainty estimation.
+#' # Use 75 reference times for delay estimation and 40 for uncertainty
 #' nowcast_draws_df <- estimate_and_apply_uncertainty(
 #'   pt_nowcast_matrix,
 #'   triangle,
-#'   n_history_delay = 4,
-#'   n_retrospective_nowcasts = 2
+#'   n_history_delay = 75,
+#'   n_retrospective_nowcasts = 40,
+#'   draws = 100
 #' )
-#' nowcast_draws_df
+#' head(nowcast_draws_df)
 estimate_and_apply_uncertainty <- function(
     point_nowcast_matrix,
     reporting_triangle,

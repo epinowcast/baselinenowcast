@@ -145,14 +145,14 @@ all strata, the shared estimates will be made using the shared set of
 reference and report dates across strata.
 }
 \examples{
-# Filter data to exclude most recent report dates
+# Filter data to exclude most recent report dates and limit max_delay
 covid_data_to_nowcast <- germany_covid19_hosp[
   germany_covid19_hosp$report_date <
-    max(germany_covid19_hosp$reference_date),
+    max(germany_covid19_hosp$reference_date) &
+  (germany_covid19_hosp$report_date -
+    germany_covid19_hosp$reference_date) <= 40,
 ]
-# Use max_delay parameter to limit delays included
 nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
-  max_delay = 40,
   strata_cols = c("age_group", "location")
 )
 nowcasts_df

@@ -85,11 +85,12 @@ baselinenowcast <- function(data,
 #' @method baselinenowcast reporting_triangle
 #' @returns Data.frame of class \code{\link{baselinenowcast_df}}
 #' @examples
-#' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-#' rep_tri <- as_reporting_triangle(
-#'   data = data_as_of_df
-#' ) |>
-#'   truncate_to_delay(max_delay = 25)
+#' # Filter to reasonable max_delay for faster example
+#' data_as_of_df <- syn_nssp_df[
+#'   syn_nssp_df$report_date <= "2026-04-01" &
+#'   (syn_nssp_df$report_date - syn_nssp_df$reference_date) <= 25,
+#' ]
+#' rep_tri <- as_reporting_triangle(data = data_as_of_df)
 #' nowcast_df <- baselinenowcast(rep_tri)
 #' nowcast_df
 baselinenowcast.reporting_triangle <- function(
@@ -245,14 +246,14 @@ baselinenowcast.reporting_triangle <- function(
 #' @method baselinenowcast data.frame
 #' @returns Data.frame of class \code{\link{baselinenowcast_df}}
 #' @examples
-#' # Filter data to exclude most recent report dates
+#' # Filter data to exclude most recent report dates and limit max_delay
 #' covid_data_to_nowcast <- germany_covid19_hosp[
 #'   germany_covid19_hosp$report_date <
-#'     max(germany_covid19_hosp$reference_date),
+#'     max(germany_covid19_hosp$reference_date) &
+#'   (germany_covid19_hosp$report_date -
+#'     germany_covid19_hosp$reference_date) <= 40,
 #' ]
-#' # Use max_delay parameter to limit delays included
 #' nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
-#'   max_delay = 40,
 #'   strata_cols = c("age_group", "location")
 #' )
 #' nowcasts_df

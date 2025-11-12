@@ -149,6 +149,54 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
 #' Uses a vectorised cummax-based approach for efficient validation.
 #'
 #' @keywords internal
+#' Check rows for out-of-pattern NAs
+#' @noRd
+.check_na_rows <- function(na_positions, out_of_pattern) {
+  nr <- nrow(na_positions)
+  nc <- ncol(na_positions)
+
+  for (i in seq_len(nr)) {
+    row_na <- na_positions[i, ]
+    na_indices <- which(row_na)
+
+    if (length(na_indices) > 0) {
+      min_na_idx <- min(na_indices)
+      if (!all(row_na[min_na_idx:nc])) {
+        for (j in min_na_idx:nc) {
+          if (j < nc && na_positions[i, j] && !all(row_na[(j + 1):nc])) {
+            out_of_pattern[i, j] <- TRUE
+          }
+        }
+      }
+    }
+  }
+  return(out_of_pattern)
+}
+
+#' Check columns for out-of-pattern NAs
+#' @noRd
+.check_na_cols <- function(na_positions, out_of_pattern) {
+  nr <- nrow(na_positions)
+  nc <- ncol(na_positions)
+
+  for (j in seq_len(nc)) {
+    col_na <- na_positions[, j]
+    na_indices <- which(col_na)
+
+    if (length(na_indices) > 0) {
+      min_na_idx <- min(na_indices)
+      if (!all(col_na[min_na_idx:nr])) {
+        for (i in min_na_idx:nr) {
+          if (i < nr && na_positions[i, j] && !all(col_na[(i + 1):nr])) {
+            out_of_pattern[i, j] <- TRUE
+          }
+        }
+      }
+    }
+  }
+  return(out_of_pattern)
+}
+
 .check_na_pattern <- function(x) {
   # Convert to matrix if needed
   mat <- if (inherits(x, "reporting_triangle")) {
@@ -156,8 +204,6 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   } else {
     x
   }
-  nr <- nrow(mat)
-  nc <- ncol(mat)
 
   # Early return if no NAs
   if (!anyNA(mat)) {
@@ -168,46 +214,12 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   }
 
   # Track which NA positions are out of pattern
-  out_of_pattern <- matrix(FALSE, nrow = nr, ncol = nc)
+  out_of_pattern <- matrix(FALSE, nrow = nrow(mat), ncol = ncol(mat))
   na_positions <- is.na(mat)
 
-  # Check rows: if NA found, all values to the right must be NA
-  for (i in seq_len(nr)) {
-    row_na <- na_positions[i, ]
-    na_indices <- which(row_na)
-
-    if (length(na_indices) > 0) {
-      min_na_idx <- min(na_indices)
-      # Check that all entries from first NA onwards are also NA
-      if (!all(row_na[min_na_idx:nc])) {
-        # Mark NAs that have non-NA to the right as out of pattern
-        for (j in min_na_idx:nc) {
-          if (j < nc && na_positions[i, j] && !all(row_na[(j + 1):nc])) {
-            out_of_pattern[i, j] <- TRUE
-          }
-        }
-      }
-    }
-  }
-
-  # Check columns: if NA found, all values below must be NA
-  for (j in seq_len(nc)) {
-    col_na <- na_positions[, j]
-    na_indices <- which(col_na)
-
-    if (length(na_indices) > 0) {
-      min_na_idx <- min(na_indices)
-      # Check that all entries from first NA downwards are also NA
-      if (!all(col_na[min_na_idx:nr])) {
-        # Mark NAs that have non-NA below as out of pattern
-        for (i in min_na_idx:nr) {
-          if (i < nr && na_positions[i, j] && !all(col_na[(i + 1):nr])) {
-            out_of_pattern[i, j] <- TRUE
-          }
-        }
-      }
-    }
-  }
+  # Check rows and columns
+  out_of_pattern <- .check_na_rows(na_positions, out_of_pattern)
+  out_of_pattern <- .check_na_cols(na_positions, out_of_pattern)
 
   n_out_of_pattern <- sum(out_of_pattern)
 

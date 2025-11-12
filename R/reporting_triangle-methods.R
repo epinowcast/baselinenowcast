@@ -212,6 +212,33 @@ tail.reporting_triangle <- function(x, n = 6L, ...) {
   ))
 }
 
+#' Display basic triangle information
+#'
+#' Internal helper to print common triangle metadata used by both print and
+#' summary methods.
+#'
+#' @param x A [reporting_triangle] object.
+#' @param show_dimensions Logical. If TRUE, displays dimensions (rows x cols).
+#'   Default FALSE.
+#' @return NULL (displays information via cli).
+#' @keywords internal
+#' @importFrom cli cli_text
+.display_triangle_basics <- function(x, show_dimensions = FALSE) {
+  info <- .get_triangle_info(x)
+
+  if (show_dimensions) {
+    cli_text("Dimensions: {info$n_rows} x {info$n_cols}")
+    cli_text("Reference period: {(.format_reference_date_range(x))}")
+    cli_text("Max delay: {info$max_delay} {info$delays_unit}")
+  } else {
+    cli_text("Delays unit: {info$delays_unit}")
+    cli_text("Reference dates: {(.format_reference_date_range(x))}")
+    cli_text("Max delay: {info$max_delay}")
+  }
+  cli_text("Structure: {info$structure}")
+
+  return(invisible(NULL))
+}
 
 #' Compute complete row statistics
 #'
@@ -335,15 +362,12 @@ tail.reporting_triangle <- function(x, n = 6L, ...) {
 #' @return Invisibly returns the object.
 #' @family reporting_triangle
 #' @export
-#' @importFrom cli cli_text
+#' @importFrom cli cli_text cli_rule
 #' @method print reporting_triangle
 print.reporting_triangle <- function(x, n_rows = 10, n_cols = 10, ...) {
   cli_text("{.strong Reporting Triangle}")
-  info <- .get_triangle_info(x)
-  cli_text("Delays unit: {info$delays_unit}")
-  cli_text("Reference dates: {(.format_reference_date_range(x))}")
-  cli_text("Max delay: {info$max_delay}")
-  cli_text("Structure: {info$structure}")
+  cli_rule()
+  .display_triangle_basics(x, show_dimensions = FALSE)
   cli_text("")
 
   to_print <- x
@@ -369,14 +393,6 @@ print.reporting_triangle <- function(x, n_rows = 10, n_cols = 10, ...) {
   }
 
   print(as.matrix(to_print), ...)
-
-  if (!is.null(row_subset) || !is.null(col_subset)) {
-    cli_text("")
-    cli_text(
-      "Use print(x, n_rows = NULL, n_cols = NULL) to see all data"
-    )
-  }
-
   return(invisible(x))
 }
 
@@ -387,18 +403,15 @@ print.reporting_triangle <- function(x, n_rows = 10, n_cols = 10, ...) {
 #' @return Invisibly returns the object.
 #' @family reporting_triangle
 #' @export
-#' @importFrom cli cli_text
+#' @importFrom cli cli_text cli_rule
 #' @method summary reporting_triangle
 #' @examples
 #' # Display summary statistics
 #' summary(example_reporting_triangle)
 summary.reporting_triangle <- function(object, ...) {
   cli_text("{.strong Reporting Triangle Summary}")
-  info <- .get_triangle_info(object)
-  cli_text("Dimensions: {info$n_rows} x {info$n_cols}")
-  cli_text("Reference period: {(.format_reference_date_range(object))}")
-  cli_text("Max delay: {info$max_delay} {info$delays_unit}")
-  cli_text("Structure: {info$structure}")
+  cli_rule()
+  .display_triangle_basics(object, show_dimensions = TRUE)
   ref_dates <- get_reference_dates(object)
 
   # Convert to plain matrix for internal operations

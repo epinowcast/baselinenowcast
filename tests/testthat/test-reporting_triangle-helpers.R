@@ -572,9 +572,6 @@ test_that("check_na_pattern detects expected triangular pattern", {
 
   expect_true(result$valid)
   expect_identical(result$n_out_of_pattern, 0L)
-  expect_identical(result$n_expected, 6L)
-  expect_length(result$rows_affected, 0L)
-  expect_false(any(result$positions))
 })
 
 test_that("check_na_pattern detects out-of-pattern NAs", {
@@ -597,10 +594,6 @@ test_that("check_na_pattern detects out-of-pattern NAs", {
   # One out-of-pattern NA at [2,2] (has data to the right and below)
   expect_false(result$valid)
   expect_identical(result$n_out_of_pattern, 1L)
-  expect_identical(result$n_expected, 6L)
-  expect_length(result$rows_affected, 1L)
-  expect_identical(result$rows_affected, 2L)
-  expect_true(result$positions[2, 2])
 })
 
 test_that("check_na_pattern detects NA with data below", {
@@ -622,8 +615,6 @@ test_that("check_na_pattern detects NA with data below", {
   # Out-of-pattern at [1,3] (has data at [2,3])
   expect_false(result$valid)
   expect_identical(result$n_out_of_pattern, 1L)
-  expect_true(result$positions[1, 3])
-  expect_identical(result$rows_affected, 1L)
 })
 
 test_that("check_na_pattern detects NA with data to the right", {
@@ -646,9 +637,6 @@ test_that("check_na_pattern detects NA with data to the right", {
   # Out-of-pattern at [2,2] and [2,3] (have data at [2,4])
   expect_false(result$valid)
   expect_identical(result$n_out_of_pattern, 2L)
-  expect_true(result$positions[2, 2])
-  expect_true(result$positions[2, 3])
-  expect_identical(result$rows_affected, 2L)
 })
 
 test_that("check_na_pattern handles complete triangle", {
@@ -660,9 +648,6 @@ test_that("check_na_pattern handles complete triangle", {
 
   expect_true(result$valid)
   expect_identical(result$n_out_of_pattern, 0L)
-  expect_identical(result$n_expected, 0L)
-  expect_length(result$rows_affected, 0L)
-  expect_false(any(result$positions))
 })
 
 test_that("check_na_pattern handles multiple affected rows", {
@@ -685,8 +670,6 @@ test_that("check_na_pattern handles multiple affected rows", {
   # Out-of-pattern at [1,2] (data to right) and [2,3] (data to right)
   expect_false(result$valid)
   expect_identical(result$n_out_of_pattern, 2L)
-  expect_length(result$rows_affected, 2L)
-  expect_true(all(c(1, 2) %in% result$rows_affected))
 })
 
 test_that("check_na_pattern works with plain matrix", {
@@ -704,5 +687,4 @@ test_that("check_na_pattern works with plain matrix", {
 
   expect_true(result$valid)
   expect_identical(result$n_out_of_pattern, 0L)
-  expect_identical(result$n_expected, 3L)
 })

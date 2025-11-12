@@ -16,8 +16,6 @@
 #' pt_nowcast_matrix
 estimate_and_apply_delay <- function(reporting_triangle,
                                      ...) {
-  assert_reporting_triangle(reporting_triangle)
-
   delay_pmf <- estimate_delay(
     reporting_triangle,
     ...

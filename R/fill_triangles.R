@@ -174,7 +174,7 @@ fill_triangle <- function(reporting_triangle,
     )
   }
   # Use tail to get last n rows
-  tri_mat <- tail(as.matrix(reporting_triangle), n = n)
+  tri_mat <- tail(reporting_triangle, n = n)
   has_complete_row <- any(rowSums(is.na(tri_mat)) == 0)
   if (isFALSE(has_complete_row)) {
     cli_abort(
@@ -184,7 +184,7 @@ fill_triangle <- function(reporting_triangle,
       )
     )
   }
-  assert_reporting_triangle(reporting_triangle)
+
   if (is.null(delay_pmf)) {
     delay_pmf <- estimate_delay(
       reporting_triangle = reporting_triangle,

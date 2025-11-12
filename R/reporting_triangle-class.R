@@ -13,6 +13,7 @@
 #'
 #' - Rows: Reference dates
 #' - Columns: Delays (0, 1, 2, ...)
+#' - Entries: Incident cases at each reference date and delay
 #' - Row names: Reference dates as character
 #' - Column names: Delays as character
 #'

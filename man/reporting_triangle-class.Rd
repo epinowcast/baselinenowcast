@@ -15,6 +15,7 @@ A \code{reporting_triangle} is a matrix with class
 \itemize{
 \item Rows: Reference dates
 \item Columns: Delays (0, 1, 2, ...)
+\item Entries: Incident cases at each reference date and delay
 \item Row names: Reference dates as character
 \item Column names: Delays as character
 }

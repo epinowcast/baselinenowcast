@@ -285,12 +285,10 @@ baselinenowcast.data.frame <- function(
     )
   }
   # Compute delays for later use
-  data$delay <- as.numeric(
-    difftime(
-      as.Date(data$report_date),
-      as.Date(data$reference_date),
-      units = delays_unit
-    )
+  data$delay <- get_delays_from_dates(
+    data$report_date,
+    data$reference_date,
+    delays_unit
   )
 
   # Filter by max_delay if specified

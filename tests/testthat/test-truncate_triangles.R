@@ -29,7 +29,7 @@ test_that("truncate_triangles returns correct number of truncated matrices with 
   expect_identical(nrow(result[[2]]), nrow(test_triangle) - 2L)
 })
 
-test_that("truncate_triangles default n calculation works correctly", {
+test_that("truncate_triangles calculates default n from triangle structure", {
   expected_default <- nrow(test_triangle) -
     sum(is.na(rowSums(test_triangle))) - 1
   result <- truncate_triangles(test_triangle)
@@ -66,7 +66,7 @@ test_that("truncate_triangles can handle a range of ns", {
   expect_error(truncate_triangles(test_triangle, n = -1))
 })
 
-test_that("truncate_triangles NA replacement works as expected", {
+test_that("truncate_triangles replaces values with NA for retrospective snapshots", {
   result <- truncate_triangles(test_triangle, n = 1)[[1]]
   # Expect bottom 3 elemets of lower left triangle to be NAs
   expect_true(all(

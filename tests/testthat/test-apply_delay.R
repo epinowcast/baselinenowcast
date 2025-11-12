@@ -1,4 +1,4 @@
-test_that("apply_delay function works as expected when result is known", {
+test_that("apply_delay fills triangle matching known delay distribution", {
   triangle <- matrix(
     c(
       10, 5, 5, 5,
@@ -84,7 +84,7 @@ test_that("apply_delay function works as expected when result is known", {
 })
 
 
-test_that("apply_delay function works correctly on simple triangle", {
+test_that("apply_delay preserves reporting_triangle structure and attributes", {
   set.seed(123)
   # Make a simple triangle of ones
   triangle <- make_test_triangle(
@@ -142,7 +142,7 @@ test_that("apply_delay function works on a triangle with 0s", {
   expect_false(any(result[, 2:4] == 0))
 })
 
-test_that("apply_delay function works correctly with larger triangle", {
+test_that("apply_delay handles larger triangles with multiple missing rows", {
   # Create a sample triangle to nowcast
   triangle_to_nowcast <- matrix(
     c(

@@ -10,14 +10,14 @@ rep_tri <- as_reporting_triangle(
   data = data_as_of_df
 )
 
-test_that("is_reporting_triangle works correctly", {
+test_that("is_reporting_triangle returns TRUE for valid objects and FALSE otherwise", {
   expect_true(is_reporting_triangle(rep_tri))
   expect_false(is_reporting_triangle(matrix(1:10, 2, 5)))
   expect_false(is_reporting_triangle(data.frame(a = 1:5)))
   expect_false(is_reporting_triangle(list(a = 1:5)))
 })
 
-test_that("get_reference_dates works correctly", {
+test_that("get_reference_dates returns Date vector from rownames", {
   ref_dates <- get_reference_dates(rep_tri)
   expect_s3_class(ref_dates, "Date")
   expect_length(ref_dates, nrow(rep_tri))
@@ -31,7 +31,7 @@ test_that("get_reference_dates works correctly", {
   )
 })
 
-test_that("get_max_delay works correctly", {
+test_that("get_max_delay returns ncol-1 as integer", {
   expect_identical(get_max_delay(rep_tri), 10L)
   expect_identical(get_max_delay(rep_tri, non_zero = FALSE), 10L)
 
@@ -42,7 +42,7 @@ test_that("get_max_delay works correctly", {
   )
 })
 
-test_that("get_max_delay with non_zero option works correctly", {
+test_that("get_max_delay with non_zero=TRUE returns maximum delay with non-zero observations", {
   # Create test triangle with trailing zeros
   test_mat <- matrix(c(
     100, 50, 20, 0, 0,
@@ -70,7 +70,7 @@ test_that("get_max_delay with non_zero option works correctly", {
   expect_identical(get_max_delay(zero_tri, non_zero = TRUE), -1L)
 })
 
-test_that("get_mean_delay works correctly", {
+test_that("get_mean_delay returns numeric vector of length nrow with values in [0, max_delay]", {
   mean_delays <- get_mean_delay(rep_tri)
   expect_type(mean_delays, "double")
   expect_length(mean_delays, nrow(rep_tri))
@@ -144,7 +144,7 @@ test_that("[.reporting_triangle preserves class and validates", {
   expect_true(is_reporting_triangle(sub_cols))
 })
 
-test_that("[.reporting_triangle row subsetting works correctly", {
+test_that("[ operator preserves reporting_triangle class and attributes for row subsetting", {
   # Basic row subsetting
   sub <- rep_tri[1:5, ]
   expect_true(is_reporting_triangle(sub))
@@ -163,7 +163,7 @@ test_that("[.reporting_triangle row subsetting works correctly", {
   expect_type(single_row_vec, "double")
 })
 
-test_that("[.reporting_triangle column subsetting works correctly", {
+test_that("[ operator preserves reporting_triangle class and attributes for column subsetting", {
   # Basic column subsetting
   sub <- rep_tri[, 1:3]
   expect_true(is_reporting_triangle(sub))
@@ -182,7 +182,7 @@ test_that("[.reporting_triangle column subsetting works correctly", {
   expect_type(single_col_vec, "double")
 })
 
-test_that("[.reporting_triangle combined subsetting works correctly", {
+test_that("[ operator preserves reporting_triangle class and attributes for combined subsetting", {
   # Row and column subsetting
   sub <- rep_tri[1:10, 1:3]
   expect_true(is_reporting_triangle(sub))
@@ -238,7 +238,7 @@ test_that("[.reporting_triangle preserves reference dates", {
   expect_identical(ref_dates_noncontig, ref_dates_original[indices])
 })
 
-test_that("[<-.reporting_triangle assignment works correctly", {
+test_that("[<- operator validates and updates values while preserving class", {
   # Create test triangle
   mat <- matrix(c(
     10, 20, 30, 40,
@@ -355,7 +355,7 @@ test_that("summary.reporting_triangle runs without error", {
   expect_invisible(summary(rep_tri))
 })
 
-test_that("get_quantile_delay works correctly", {
+test_that("get_quantile_delay returns integer vector with quantile delays for each row", {
   quantile_delays <- get_quantile_delay(rep_tri, p = 0.99)
   expect_type(quantile_delays, "integer")
   expect_length(quantile_delays, nrow(rep_tri))
@@ -403,7 +403,7 @@ test_that("get_quantile_delay works correctly", {
   )
 })
 
-test_that("as.data.frame.reporting_triangle works correctly", {
+test_that("as.data.frame returns long format with reference_date, delay, count columns", {
   df <- as.data.frame(rep_tri)
 
   # Check structure
@@ -446,7 +446,7 @@ test_that("as.data.frame.reporting_triangle works correctly", {
   )
 })
 
-test_that("truncate_to_quantile works correctly", {
+test_that("truncate_to_quantile truncates columns beyond specified quantile", {
   # Create test triangle with known reporting pattern
   test_mat <- matrix(c(
     100, 50, 25, 10, 5, 2, 1, 0, 0, 0,

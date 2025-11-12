@@ -1,4 +1,4 @@
-test_that("allocate_reference_times works as expected when user specifies training volume precisely and correctly. ", { # nolint
+test_that("allocate_reference_times returns correct n_history_delay and n_retrospective_nowcasts", { # nolint
   rep_tri <- make_test_triangle(nrow = 12, ncol = 5) |>
     construct_triangle()
   tv <- allocate_reference_times(

@@ -1,4 +1,4 @@
-test_that("safelydoesit works correctly", {
+test_that("safelydoesit returns result for successful function and NULL for errors", {
   # Test with a function that works correctly
   add <- function(x, y) {
     return(x + y)

@@ -72,7 +72,7 @@ test_that("estimate_uncertainty can handle rolling sum with k=3", {
 })
 
 
-test_that("estimate_uncertainty works correctly with default and n parameters", { # nolint
+test_that("estimate_uncertainty returns numeric vector of length n_horizons", { # nolint
   result_default <- estimate_uncertainty(
     valid_nowcasts,
     valid_trunc_rts,
@@ -264,7 +264,7 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
   expect_true(all(disp_params > 0))
 })
 
-test_that("estimate_uncertainty: works as expected with perfect data", {
+test_that("estimate_uncertainty returns near-zero dispersion for perfect predictions", {
   set.seed(123)
   delay_pmf <- c(0.4, 0.3, 0.2, 0.05, 0.05)
   partial_counts <- c(80, 100, 180, 80, 140)
@@ -294,7 +294,7 @@ test_that("estimate_uncertainty: works as expected with perfect data", {
   expect_equal(dispersion[3], 999, tol = 1)
 })
 
-test_that("estimate_uncertainty: works as expected with some dispersion for both ks", { # nolint
+test_that("estimate_uncertainty estimates positive dispersion for noisy predictions", { # nolint
   skip_if_not_installed("zoo")
   set.seed(123)
   delay_pmf <- c(0.4, 0.3, 0.2, 0.05, 0.05)

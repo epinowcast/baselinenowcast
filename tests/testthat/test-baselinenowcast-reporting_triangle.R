@@ -7,7 +7,7 @@ rep_tri <- as_reporting_triangle(
   truncate_to_delay(max_delay = 25)
 expected_cols <- c("pred_count", "draw", "reference_date", "output_type")
 
-test_that("baselinenowcast.reporting_triangle() works as expected", {
+test_that("baselinenowcast.reporting_triangle returns baselinenowcast_df with draws", {
   nowcast_df <- baselinenowcast(rep_tri, draws = 100)
   expect_blnc_structure(
     nowcast_df,
@@ -84,7 +84,7 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
   expect_blnc_structure(test_df2, expected_cols)
 })
 
-test_that("baselinenowcast specifying not to include draws works as expected", {
+test_that("baselinenowcast with output_type='point' returns single draw without uncertainty", {
   skip_if_not_installed("dplyr")
   pt_nowcast <- baselinenowcast(rep_tri,
     output_type = "point"

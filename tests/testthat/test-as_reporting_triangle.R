@@ -2,7 +2,8 @@
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 
 test_that("as_reporting_triangle.data.frame() creates matrix with correct dimensions and structure", { # nolint
-  rep_tri <- as_reporting_triangle(data_as_of_df)
+  rep_tri <- as_reporting_triangle(data_as_of_df) |>
+    truncate_to_delay(max_delay = 25)
   # Check that the same number of reference dates is in the reporting triangle
   expect_identical(
     nrow(rep_tri),
@@ -12,7 +13,8 @@ test_that("as_reporting_triangle.data.frame() creates matrix with correct dimens
   # even if we add other columns
   data_as_of_df$test_col <- 2
 
-  rep_tri2 <- as_reporting_triangle(data_as_of_df)
+  rep_tri2 <- as_reporting_triangle(data_as_of_df) |>
+    truncate_to_delay(max_delay = 25)
   expect_identical(
     nrow(rep_tri2),
     length(unique(data_as_of_df$reference_date))
@@ -169,7 +171,8 @@ test_that("as_reporting_triangle.data.frame() errors if missing required columns
 })
 
 test_that("as_reporting_triangle.data.frame() successfully creates reporting triangle", { # nolint
-  rep_tri <- as_reporting_triangle(data_as_of_df)
+  rep_tri <- as_reporting_triangle(data_as_of_df) |>
+    truncate_to_delay(max_delay = 25)
 
   # Verify object is created successfully
   expect_s3_class(rep_tri, "reporting_triangle")
@@ -276,7 +279,8 @@ test_that("`as_reporting_triangle.data.frame()` inputs are of the right type", {
 })
 
 test_that("assert_reporting_triangle validates attributes correctly", {
-  rep_tri <- as_reporting_triangle(data_as_of_df)
+  rep_tri <- as_reporting_triangle(data_as_of_df) |>
+    truncate_to_delay(max_delay = 25)
   expect_s3_class(rep_tri, "reporting_triangle")
   expect_no_error(assert_reporting_triangle(rep_tri))
 

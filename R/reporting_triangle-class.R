@@ -179,39 +179,39 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
     ))
   }
 
-  # For each NA: check if there's any non-NA data below it (same column)
-  # or to the right of it (same row)
-  out_of_pattern <- matrix(FALSE, nrow = nr, ncol = nc)
+  # Use cumulative max to detect "has data at or below/right"
+  not_na <- !na_positions
 
-  for (j in seq_len(nc)) {
-    # For this column, find positions where there's a non-NA below an NA
-    not_na <- !na_positions[, j]
-    # If there's any non-NA value below, mark all NAs above it
-    if (any(not_na)) {
-      last_data_row <- max(which(not_na))
-      na_above <- which(na_positions[seq_len(last_data_row), j])
-      if (length(na_above) > 0) {
-        out_of_pattern[na_above, j] <- TRUE
-      }
-    }
-  }
+  # For columns: detect if there's data at or below each position
+  # Use cummax from bottom (reverse, cummax, reverse)
+  has_data_at_or_below <- apply(not_na, 2, function(col) {
+    rev(cummax(rev(col)))
+  })
 
-  for (i in seq_len(nr)) {
-    # For this row, find positions where there's a non-NA to the right of an NA
-    not_na <- !na_positions[i, ]
-    # If there's any non-NA value to the right, mark all NAs to its left
-    if (any(not_na)) {
-      last_data_col <- max(which(not_na))
-      na_left <- which(na_positions[i, seq_len(last_data_col)])
-      if (length(na_left) > 0) {
-        out_of_pattern[i, na_left] <- TRUE
-      }
-    }
-  }
+  # Shift down by 1 to get "has data below" (not including current position)
+  has_data_below <- rbind(
+    has_data_at_or_below[-1, , drop = FALSE],
+    matrix(FALSE, nrow = 1, ncol = nc)
+  )
+
+  # For rows: detect if there's data at or to the right of each position
+  # Use cummax from right (reverse, cummax, reverse)
+  has_data_at_or_right <- t(apply(not_na, 1, function(row) {
+    rev(cummax(rev(row)))
+  }))
+
+  # Shift right by 1 to get "has data to right"
+  has_data_right <- cbind(
+    has_data_at_or_right[, -1, drop = FALSE],
+    matrix(FALSE, nrow = nr, ncol = 1)
+  )
+
+  # Out of pattern: NA with data below OR data to right
+  out_of_pattern <- na_positions & (has_data_below | has_data_right)
 
   n_out_of_pattern <- sum(out_of_pattern)
   n_expected <- sum(na_positions) - n_out_of_pattern
-  rows_affected <- which(apply(out_of_pattern, 1, any))
+  rows_affected <- which(rowSums(out_of_pattern) > 0)
   valid <- n_out_of_pattern == 0
 
   return(list(

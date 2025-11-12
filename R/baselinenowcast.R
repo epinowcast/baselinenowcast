@@ -121,8 +121,6 @@ baselinenowcast.reporting_triangle <- function(
       preprocess = preprocess
     )
   }
-  # check for delay pmf being the right length/format
-  .validate_delay(data, delay_pmf)
 
   pt_nowcast <- apply_delay(data, delay_pmf)
 
@@ -147,7 +145,7 @@ baselinenowcast.reporting_triangle <- function(
       uncertainty_model = uncertainty_model
     )
   }
-  .validate_uncertainty(data, uncertainty_params)
+
   nowcast_df <- sample_nowcasts(
     point_nowcast_matrix = pt_nowcast,
     reporting_triangle = data,

@@ -124,7 +124,9 @@ sample_prediction <- function(
   )
 
   # Convert to vector and add reference dates as names
-  reference_dates <- get_reference_dates(reporting_triangle)
+  # After aggregation, aggr_rt may not be a reporting_triangle anymore,
+  # so extract reference dates from rownames
+  reference_dates <- as.Date(rownames(aggr_rt))
   if (ncol(draw_pred_agg) == 1) {
     result <- as.vector(draw_pred_agg)
     names(result) <- as.character(reference_dates)

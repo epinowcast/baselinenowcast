@@ -555,7 +555,7 @@ plot_prob_nowcast
 In this vignette we used `baselinenowcast ` to nowcast cases of BAR starting from synthetic syndromic surveillance system data designed to mirror the U.S. NSSP dataset.
 We walked through the process of defining a syndromic surveillance definition using a list of diagnoses codes, and using the time stamps of updates in an electronic health record in the NSSP dataset to create a count of the number of cases of a specific definition indexed by the date of their visit and the date at which the patient's diagnoses was recorded into the surveillance system.
 From there we converted the data to a `reporting_triangle` object and then ran the `baselinenowcast` workflow using the `baselinenowcast()` function to generate probabilistic nowcasts.
-This function chains together multiple steps, and we describe the modular workflow option in the current [Getting Started](baselinenowcst.html) vignette.
+This function chains together multiple steps, and we describe the modular workflow option in the [Getting Started](baselinenowcst.html) vignette.
 As a final step, we compared our nowcasts of the eventual final observed case counts to what we later observed and the right-truncated initial reports.
 
 Next steps include scoring the nowcasts we generated using proper scoring rules such as the weighted interval score (WIS) or the continuous ranked probability score (CRPS) and computing metrics such as the interval coverage to assess how well the observed data falls within our uncertainty bands.

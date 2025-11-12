@@ -133,6 +133,14 @@ sample_prediction <- function(
     top_matrix,
     draw_pred
   )
+
+  # Convert to vector and add reference dates as names
+  reference_dates <- get_reference_dates(reporting_triangle)
+  if (ncol(draw_pred_agg) == 1) {
+    result <- as.vector(draw_pred_agg)
+    names(result) <- as.character(reference_dates)
+    return(result)
+  }
   return(draw_pred_agg)
 }
 
@@ -228,8 +236,8 @@ combine_obs_with_pred <- function(
 #' @param ... Additional arguments passed to `sample_prediction`.
 #' @inheritParams sample_prediction
 #' @returns Dataframe containing the predicted point nowcast vectors indexed by
-#'    reference time (`pred_count`), reference time (`time`), and the draw index
-#'    (`draw`).
+#'    predicted count (`pred_count`), reference date (`reference_date`), and
+#'    the draw index (`draw`).
 #' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
@@ -280,7 +288,7 @@ sample_predictions <- function(
     draws = 1000,
     ...) {
   assert_integerish(draws, lower = 1)
-  reference_times <- seq_len(nrow(point_nowcast_matrix))
+  reference_dates <- get_reference_dates(reporting_triangle)
 
   draws_df_list <- lapply(seq_len(draws), function(i) {
     pred_counts <- sample_prediction(
@@ -293,13 +301,13 @@ sample_predictions <- function(
     pred_counts_padded <- c(
       rep(
         NA,
-        length(reference_times) - length(pred_counts)
+        length(reference_dates) - length(pred_counts)
       ),
       pred_counts
     )
     return(data.frame(
       pred_count = pred_counts_padded,
-      time = reference_times,
+      reference_date = reference_dates,
       draw = i
     ))
   })
@@ -378,8 +386,8 @@ sample_nowcast <- function(
 #' @inheritParams sample_predictions
 #' @param ... Additional arguments passed to `sample_nowcast`.
 #' @returns Dataframe containing information for multiple draws with columns
-#'  for the reference time (`time`), the predicted counts (`pred_count`), and
-#'  the draw number (`draw`).
+#'  for the reference date (`reference_date`), the predicted counts
+#'  (`pred_count`), and the draw number (`draw`).
 #' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
@@ -418,7 +426,7 @@ sample_nowcasts <- function(
     uncertainty_params,
     draws = 1000,
     ...) {
-  reference_times <- seq_len(nrow(point_nowcast_matrix))
+  reference_dates <- get_reference_dates(reporting_triangle)
 
   draws_df_list <- lapply(seq_len(draws), function(i) {
     pred_counts <- sample_nowcast(
@@ -431,14 +439,14 @@ sample_nowcasts <- function(
     pred_counts_padded <- c(
       rep(
         NA,
-        length(reference_times) - length(pred_counts)
+        length(reference_dates) - length(pred_counts)
       ),
       pred_counts
     )
 
     return(data.frame(
       pred_count = pred_counts_padded,
-      time = reference_times,
+      reference_date = reference_dates,
       draw = i
     ))
   })

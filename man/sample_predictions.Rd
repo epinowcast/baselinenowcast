@@ -36,8 +36,8 @@ nowcast vector to generate. Default is \code{1000}.}
 }
 \value{
 Dataframe containing the predicted point nowcast vectors indexed by
-reference time (\code{pred_count}), reference time (\code{time}), and the draw index
-(\code{draw}).
+predicted count (\code{pred_count}), reference date (\code{reference_date}), and
+the draw index (\code{draw}).
 }
 \description{
 Get a dataframe of multiple draws of only the predicted elements of the

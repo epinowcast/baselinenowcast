@@ -60,11 +60,15 @@ and estimates at each horizon, starting at 0 up until the max delay
 number of horizons.
 }
 \examples{
-# Use example data for retrospective nowcasting
-trunc_rts <- truncate_triangles(example_reporting_triangle, n = 2)
-retro_rts <- construct_triangles(trunc_rts)
+# Use example data to create reporting triangle
+data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+rep_tri <- as_reporting_triangle(data = data_as_of_df)
 
+# Create retrospective nowcasts
+trunc_rts <- truncate_triangles(rep_tri, n = 2)
+retro_rts <- construct_triangles(trunc_rts)
 retro_nowcasts <- fill_triangles(retro_rts)
+
 # Estimate dispersion parameters using default negative binomial model
 disp_params <- estimate_uncertainty(
   point_nowcast_matrices = retro_nowcasts,

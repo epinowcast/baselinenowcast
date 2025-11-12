@@ -336,7 +336,8 @@ sample_nowcast <- function(
     delay_aggregator
   )
 
-  return(draw)
+  # Ensure result is a matrix
+  return(as.matrix(draw))
 }
 
 #' Generate multiple draws of a nowcast combining observed and predicted values

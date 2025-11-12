@@ -182,26 +182,28 @@ test_that(
     # Test that result_with_rolling_sum is roughly double,
     # which should be true for both the observations and the
     # predictions
-    sum_result <- sum(result$pred_count[result$time != 1])
+    first_date <- min(result$reference_date)
+    sum_result <- sum(result$pred_count[result$reference_date != first_date], na.rm = TRUE)
     sum_result_rolling_sum <- sum(
-      result_with_rolling_sum$pred_count[result_with_rolling_sum$time != 1],
+      result_with_rolling_sum$pred_count[result_with_rolling_sum$reference_date != first_date],
       na.rm = TRUE
     )
     expect_equal(sum_result_rolling_sum / sum_result, 2, tol = 0.2)
 
     # The sum of the first two time points should be the same as the value
     # at t=2 for the rolling sum
+    dates <- sort(unique(result$reference_date))
     expect_identical(
-      sum(result$pred_count[result$time <= 2]),
-      sum(result_with_rolling_sum$pred_count[result_with_rolling_sum$time == 2])
+      sum(result$pred_count[result$reference_date %in% dates[1:2]]),
+      sum(result_with_rolling_sum$pred_count[result_with_rolling_sum$reference_date == dates[2]])
     )
     # All draws should be the same
     expect_identical(
       result_with_rolling_sum$pred_count[
-        result_with_rolling_sum$time == 2 & result_with_rolling_sum$draw == 2
+        result_with_rolling_sum$reference_date == dates[2] & result_with_rolling_sum$draw == 2
       ],
       result_with_rolling_sum$pred_count[
-        result_with_rolling_sum$time == 2 & result_with_rolling_sum$draw == 1
+        result_with_rolling_sum$reference_date == dates[2] & result_with_rolling_sum$draw == 1
       ]
     )
   }

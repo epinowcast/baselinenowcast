@@ -107,6 +107,8 @@ baselinenowcast.reporting_triangle <- function(
   output_type <- arg_match(output_type)
   assert_integerish(draws, null.ok = TRUE)
 
+  reference_dates <- get_reference_dates(data)
+
   tv <- allocate_reference_times(data,
     scale_factor = scale_factor,
     prop_delay = prop_delay
@@ -131,7 +133,7 @@ baselinenowcast.reporting_triangle <- function(
     )
     nowcast_df$draw <- 1
     result_df <- new_baselinenowcast_df(nowcast_df,
-      reference_dates = get_reference_dates(data),
+      reference_dates = reference_dates,
       output_type = output_type
     )
     return(result_df)
@@ -156,7 +158,7 @@ baselinenowcast.reporting_triangle <- function(
   )
 
   result_df <- new_baselinenowcast_df(nowcast_df,
-    reference_dates = get_reference_dates(data),
+    reference_dates = reference_dates,
     output_type = output_type
   )
 
@@ -211,6 +213,9 @@ baselinenowcast.reporting_triangle <- function(
 #'  can be included. The user can specify these columns with the
 #'  `strata_cols` argument, otherwise it will be assumed that the `data`
 #'  contains only data for a single strata.
+#' @param max_delay Maximum delay (in units of `delays_unit`) to include in the
+#'   nowcast. If NULL (default), all delays in the data are used. If specified,
+#'   only observations with delay <= max_delay are included.
 #' @param strata_cols Vector of character strings indicating the names of the
 #'   columns in `data` that determine how to stratify the data for nowcasting.
 #'   The unique combinations of the entries in the `strata_cols` denote the
@@ -241,18 +246,20 @@ baselinenowcast.reporting_triangle <- function(
 #' @method baselinenowcast data.frame
 #' @returns Data.frame of class \code{\link{baselinenowcast_df}}
 #' @examples
-#' # Filter data to exclude most recent report dates and limit max delay
+#' # Filter data to exclude most recent report dates
 #' covid_data_to_nowcast <- germany_covid19_hosp[
 #'   germany_covid19_hosp$report_date <
-#'     max(germany_covid19_hosp$reference_date) &
-#'     germany_covid19_hosp$delay <= 40,
-#' ] # nolint
+#'     max(germany_covid19_hosp$reference_date),
+#' ]
+#' # Use max_delay parameter to limit delays included
 #' nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
+#'   max_delay = 40,
 #'   strata_cols = c("age_group", "location")
 #' )
 #' nowcasts_df
 baselinenowcast.data.frame <- function(
     data,
+    max_delay = NULL,
     scale_factor = 3,
     prop_delay = 0.5,
     output_type = c("samples", "point"),
@@ -287,7 +294,13 @@ baselinenowcast.data.frame <- function(
       units = delays_unit
     )
   )
-  data_clean <- data
+
+  # Filter by max_delay if specified
+  if (!is.null(max_delay)) {
+    data_clean <- data[data$delay <= max_delay, ]
+  } else {
+    data_clean <- data
+  }
 
   .validate_strata_cols(
     strata_cols,

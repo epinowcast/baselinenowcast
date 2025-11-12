@@ -7,6 +7,7 @@ indexed by reference date and report date}
 \usage{
 \method{baselinenowcast}{data.frame}(
   data,
+  max_delay = NULL,
   scale_factor = 3,
   prop_delay = 0.5,
   output_type = c("samples", "point"),
@@ -36,6 +37,10 @@ can be included. The user can specify these columns with the
 \code{strata_cols} argument, otherwise it will be assumed that the \code{data}
 contains only data for a single strata.
 }}
+
+\item{max_delay}{Maximum delay (in units of \code{delays_unit}) to include in the
+nowcast. If NULL (default), all delays in the data are used. If specified,
+only observations with delay <= max_delay are included.}
 
 \item{scale_factor}{Numeric value indicating the multiplicative factor on
 the maximum delay to be used for estimation of delay and uncertainty.
@@ -140,13 +145,14 @@ all strata, the shared estimates will be made using the shared set of
 reference and report dates across strata.
 }
 \examples{
-# Filter data to exclude most recent report dates and limit max delay
+# Filter data to exclude most recent report dates
 covid_data_to_nowcast <- germany_covid19_hosp[
   germany_covid19_hosp$report_date <
-    max(germany_covid19_hosp$reference_date) &
-    germany_covid19_hosp$delay <= 40,
-] # nolint
+    max(germany_covid19_hosp$reference_date),
+]
+# Use max_delay parameter to limit delays included
 nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
+  max_delay = 40,
   strata_cols = c("age_group", "location")
 )
 nowcasts_df

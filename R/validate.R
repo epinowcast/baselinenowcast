@@ -226,7 +226,7 @@
     point_nowcast_matrix,
     reporting_triangle) {
   # Check that both inputs have the same max_delay (same number of columns)
-  max_delay_point <- ncol(point_nowcast_matrix) - 1
+  max_delay_point <- get_max_delay(point_nowcast_matrix)
   max_delay_rt <- get_max_delay(reporting_triangle)
 
   if (max_delay_point != max_delay_rt) {

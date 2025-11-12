@@ -58,8 +58,7 @@ ref_dates <- seq(
 )
 reporting_triangle_obj <- as_reporting_triangle(
   data = reporting_matrix,
-  reference_dates = ref_dates,
-  max_delay = ncol(reporting_matrix) - 1
+  reference_dates = ref_dates
 )
 reporting_triangle <- construct_triangle(reporting_triangle_obj)
 combine_obs_with_pred(pred_counts, reporting_triangle)

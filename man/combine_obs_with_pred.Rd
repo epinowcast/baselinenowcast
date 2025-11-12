@@ -32,7 +32,9 @@ of the retrospective point nowcast matrix after it has been aggregated
 across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
 }
 \value{
-A vector of predicted counts at each reference time
+A vector of predicted counts at each reference time, for all
+reference times in the input \code{reporting_triangle} (or fewer if using
+\code{ref_time_aggregator})
 }
 \description{
 Internally it sums observed counts from the reporting triangle by reference

@@ -48,6 +48,8 @@ across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
 \value{
 Vector of predicted counts at each reference time based on combining
 the observed counts and the predicted counts for the unobserved elements.
+Returns values for all reference times in the input \code{reporting_triangle}
+(or fewer if using \code{ref_time_aggregator}).
 }
 \description{
 Generate a single draw of a nowcast combining observed and predicted values

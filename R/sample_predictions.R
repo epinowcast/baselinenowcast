@@ -172,7 +172,9 @@ sample_prediction <- function(
 #'    is assumed to have already been aggregated.
 #' @inheritParams sample_prediction
 #'
-#' @returns A vector of predicted counts at each reference time
+#' @returns A vector of predicted counts at each reference time, for all
+#'    reference times in the input `reporting_triangle` (or fewer if using
+#'    `ref_time_aggregator`)
 #' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
@@ -208,7 +210,8 @@ combine_obs_with_pred <- function(
 #' @inheritParams sample_prediction
 #' @returns Dataframe containing the predicted point nowcast vectors indexed by
 #'    predicted count (`pred_count`), reference date (`reference_date`), and
-#'    the draw index (`draw`).
+#'    the draw index (`draw`). Returns predictions for all reference times in the
+#'    input `reporting_triangle` (or fewer if using `ref_time_aggregator`).
 #' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
@@ -283,6 +286,8 @@ sample_predictions <- function(
 #' @inheritParams sample_prediction
 #' @returns Vector of predicted counts at each reference time based on combining
 #'    the observed counts and the predicted counts for the unobserved elements.
+#'    Returns values for all reference times in the input `reporting_triangle`
+#'    (or fewer if using `ref_time_aggregator`).
 #' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
@@ -337,7 +342,9 @@ sample_nowcast <- function(
 #' @param ... Additional arguments passed to `sample_nowcast`.
 #' @returns Dataframe containing information for multiple draws with columns
 #'  for the reference date (`reference_date`), the predicted counts
-#'  (`pred_count`), and the draw number (`draw`).
+#'  (`pred_count`), and the draw number (`draw`). Returns predictions for all
+#'  reference times in the input `reporting_triangle` (or fewer if using
+#'  `ref_time_aggregator`).
 #' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples

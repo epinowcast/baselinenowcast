@@ -191,6 +191,11 @@ as_reporting_triangle.matrix <- function(data,
                                          delays_unit = "days",
                                          reference_dates = NULL,
                                          ...) {
+  # Validate input is a matrix
+  if (!inherits(data, "matrix")) {
+    cli_abort(message = "`data` must be a matrix")
+  }
+
   # Use dummy dates starting from 1900 if no reference_dates provided
   if (is.null(reference_dates)) {
     cli_alert_info(

@@ -145,7 +145,8 @@ all strata, the shared estimates will be made using the shared set of
 reference and report dates across strata.
 }
 \examples{
-# Filter data to exclude most recent report dates and limit to 75 reference dates
+# Filter data to exclude most recent report dates and limit to 75
+# reference dates
 max_ref_date <- max(germany_covid19_hosp$reference_date)
 min_ref_date <- max_ref_date - 74
 covid_data_to_nowcast <- germany_covid19_hosp[

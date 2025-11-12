@@ -126,10 +126,10 @@ baselinenowcast.reporting_triangle <- function(
 
   if (output_type == "point") {
     nowcast_df <- data.frame(
-      time = seq_len(nrow(pt_nowcast)),
-      pred_count = rowSums(pt_nowcast)
+      reference_date = reference_dates,
+      pred_count = rowSums(pt_nowcast),
+      draw = 1
     )
-    nowcast_df$draw <- 1
     result_df <- new_baselinenowcast_df(nowcast_df,
       reference_dates = reference_dates,
       output_type = output_type

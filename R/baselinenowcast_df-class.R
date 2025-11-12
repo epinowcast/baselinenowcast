@@ -66,39 +66,21 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
   return(result)
 }
 
-#' Align integer time indices with reference dates
-#' @description Internal helper function that merges reference dates into a
-#'   nowcast dataframe, replacing integer time indices with actual dates.
+#' Validate reference dates in nowcast dataframe
+#' @description Internal helper function that validates the nowcast dataframe
+#'   has a reference_date column. This is a placeholder for backward
+#'   compatibility and may be removed in a future version.
 #'
-#' @param baselinenowcast_df Data.frame containing nowcast information with an
-#'   integer `time` column representing time indices.
-#' @param reference_dates Vector of reference dates corresponding to the time
-#'   indices in `baselinenowcast_df`.
+#' @param baselinenowcast_df Data.frame containing nowcast information with a
+#'   `reference_date` column.
+#' @param reference_dates Vector of reference dates (unused, kept for
+#'   compatibility).
 #'
-#' @returns Data.frame with `reference_date` column added and `time` column
-#'   removed.
+#' @returns The input dataframe unchanged.
 #' @keywords internal
 .align_time_to_dates <- function(baselinenowcast_df, reference_dates) {
-  # If reference_date column already exists, return as-is
-  if ("reference_date" %in% names(baselinenowcast_df)) {
-    return(baselinenowcast_df)
-  }
-
-  # Otherwise, convert time indices to reference dates
-  spine_df <- data.frame(
-    reference_date = reference_dates,
-    time = seq_along(reference_dates)
-  )
-
-  baselinenowcast_df_dates <- merge(baselinenowcast_df,
-    spine_df,
-    by = "time",
-    all.x = TRUE
-  )
-
-  baselinenowcast_df_dates$time <- NULL
-
-  return(baselinenowcast_df_dates)
+  # All code paths now create dataframes with reference_date directly
+  return(baselinenowcast_df)
 }
 
 #' Assert validity of `baselinenowcast_df` objects

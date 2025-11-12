@@ -85,12 +85,10 @@ estimate_delay <- function(
 #' Fill in missing values in the reporting triangle using the iterative
 #'    "chainladder" method
 #'
-#' @param rep_tri Prepared reporting triangle
+#' @param rep_tri_mat Matrix representation of reporting triangle
 #' @return Matrix with imputed values for missing entries
 #' @noRd
-.chainladder_fill_triangle <- function(rep_tri) {
-  # Convert to plain matrix for internal operations
-  rep_tri_mat <- as.matrix(rep_tri)
+.chainladder_fill_triangle <- function(rep_tri_mat) {
   n_delays <- ncol(rep_tri_mat)
   n_dates <- nrow(rep_tri_mat)
   expectation <- rep_tri_mat

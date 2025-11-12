@@ -210,8 +210,9 @@ combine_obs_with_pred <- function(
 #' @inheritParams sample_prediction
 #' @returns Dataframe containing the predicted point nowcast vectors indexed by
 #'    predicted count (`pred_count`), reference date (`reference_date`), and
-#'    the draw index (`draw`). Returns predictions for all reference dates in
-#'    the input `reporting_triangle` (or fewer if using `ref_time_aggregator`).
+#'    the draw index (`draw`). Returns predictions for all reference dates
+#'    in the input `reporting_triangle` (or fewer if using
+#'    `ref_time_aggregator`).
 #' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples

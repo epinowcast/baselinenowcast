@@ -44,7 +44,7 @@
 #' trunc_rts <- truncate_triangles(example_reporting_triangle, n = 2)
 #' retro_rts <- construct_triangles(trunc_rts)
 #'
-#' retro_nowcasts <- fill_triangles(retro_rts, n = 3)
+#' retro_nowcasts <- fill_triangles(retro_rts)
 #' # Estimate dispersion parameters using default negative binomial model
 #' disp_params <- estimate_uncertainty(
 #'   point_nowcast_matrices = retro_nowcasts,

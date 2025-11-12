@@ -7,13 +7,13 @@ indexed by reference date and report date}
 \usage{
 \method{baselinenowcast}{data.frame}(
   data,
-  max_delay = NULL,
   scale_factor = 3,
   prop_delay = 0.5,
   output_type = c("samples", "point"),
   draws = 1000,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,
+  max_delay = NULL,
   delays_unit = "days",
   strata_cols = NULL,
   strata_sharing = "none",
@@ -37,10 +37,6 @@ can be included. The user can specify these columns with the
 \code{strata_cols} argument, otherwise it will be assumed that the \code{data}
 contains only data for a single strata.
 }}
-
-\item{max_delay}{Maximum delay (in units of \code{delays_unit}) to include in the
-nowcast. If NULL (default), all delays in the data are used. If specified,
-only observations with delay <= max_delay are included.}
 
 \item{scale_factor}{Numeric value indicating the multiplicative factor on
 the maximum delay to be used for estimation of delay and uncertainty.
@@ -72,6 +68,10 @@ from the observation model. Default is \code{sample_nb} which expects
 arguments \code{pred} for the vector of predictions and uncertainty parameters
 for the corresponding vector of uncertainty parameters, and draws from a
 negative binomial for each element of the vector.}
+
+\item{max_delay}{Maximum delay (in units of \code{delays_unit}) to include in the
+nowcast. If NULL (default), all delays in the data are used. If specified,
+only observations with delay <= max_delay are included.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.

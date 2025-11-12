@@ -239,6 +239,7 @@ baselinenowcast.reporting_triangle <- function(
 #' @importFrom purrr set_names map_dfr
 #' @importFrom checkmate assert_subset assert_character assert_names
 #'   assert_date
+#' @importFrom cli cli_inform
 #' @family baselinenowcast_df
 #' @export
 #' @method baselinenowcast data.frame
@@ -257,13 +258,13 @@ baselinenowcast.reporting_triangle <- function(
 #' nowcasts_df
 baselinenowcast.data.frame <- function(
     data,
-    max_delay = NULL,
     scale_factor = 3,
     prop_delay = 0.5,
     output_type = c("samples", "point"),
     draws = 1000,
     uncertainty_model = fit_by_horizon,
     uncertainty_sampler = sample_nb,
+    max_delay = NULL,
     delays_unit = "days",
     strata_cols = NULL,
     strata_sharing = "none",
@@ -293,6 +294,13 @@ baselinenowcast.data.frame <- function(
 
   # Filter by max_delay if specified
   if (!is.null(max_delay)) {
+    max_delay_in_data <- max(data$delay, na.rm = TRUE)
+    cli_inform(
+      c(
+        "i" = "Filtering data using max_delay = {max_delay}",
+        "i" = "Maximum delay in data before filtering: {max_delay_in_data}"
+      )
+    )
     data_clean <- data[data$delay <= max_delay, ]
   } else {
     data_clean <- data

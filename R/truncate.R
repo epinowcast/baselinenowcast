@@ -133,6 +133,29 @@ truncate_to_delay <- function(x, max_delay) {
   return(x)
 }
 
+#' Internal truncate implementation without validation
+#'
+#' @param reporting_triangle A [reporting_triangle] object (already validated).
+#' @param t Integer indicating truncation amount.
+#' @return Truncated [reporting_triangle] object.
+#' @keywords internal
+#' @noRd
+.truncate_triangle_impl <- function(reporting_triangle, t) {
+  n_obs <- nrow(reporting_triangle)
+  if (t >= n_obs) {
+    cli_abort(
+      message = c(
+        "The as of time point is greater than or equal to the number of ",
+        "rows in the original triangle."
+      )
+    )
+  }
+
+  # Use head which preserves class and attributes
+  n_rows <- n_obs - t
+  return(head(reporting_triangle, n = n_rows))
+}
+
 #' Generate truncated reporting triangles
 #'
 #' This function ingests a reporting triangle/matrix and the number of
@@ -158,30 +181,6 @@ truncate_to_delay <- function(x, max_delay) {
 #' # Generate multiple truncated triangles
 #' truncated_rts <- truncate_triangles(example_reporting_triangle, n = 2)
 #' truncated_rts[1:2]
-
-#' Internal truncate implementation without validation
-#'
-#' @param reporting_triangle A [reporting_triangle] object (already validated).
-#' @param t Integer indicating truncation amount.
-#' @return Truncated [reporting_triangle] object.
-#' @keywords internal
-#' @noRd
-.truncate_triangle_impl <- function(reporting_triangle, t) {
-  n_obs <- nrow(reporting_triangle)
-  if (t >= n_obs) {
-    cli_abort(
-      message = c(
-        "The as of time point is greater than or equal to the number of ",
-        "rows in the original triangle."
-      )
-    )
-  }
-
-  # Use head which preserves class and attributes
-  n_rows <- n_obs - t
-  return(head(reporting_triangle, n = n_rows))
-}
-
 truncate_triangles <- function(reporting_triangle,
                                n = nrow(reporting_triangle) -
                                  sum(is.na(rowSums(reporting_triangle))) - 1) {

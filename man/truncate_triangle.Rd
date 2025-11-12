@@ -33,6 +33,7 @@ trunc_rep_tri
 \seealso{
 Retrospective data generation functions
 \code{\link{construct_triangle}()},
-\code{\link{construct_triangles}()}
+\code{\link{construct_triangles}()},
+\code{\link{truncate_triangles}()}
 }
 \concept{generate_retrospective_data}

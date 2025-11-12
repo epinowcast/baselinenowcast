@@ -25,3 +25,5 @@ CRAN-SUBMISSION
 claude.md
 .claude/
 worktree-*/
+benchmark_baselinenowcast.R
+baselinenowcast_profile.html

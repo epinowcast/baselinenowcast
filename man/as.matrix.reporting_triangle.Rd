@@ -26,6 +26,7 @@ class(plain_mat)  # "matrix" "array"
 }
 \seealso{
 Reporting triangle construction and validation
+\code{\link{[.reporting_triangle}()},
 \code{\link{[<-.reporting_triangle}()},
 \code{\link{as.data.frame.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},

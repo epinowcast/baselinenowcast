@@ -37,8 +37,9 @@ nowcast vector to generate. Default is \code{1000}.}
 \value{
 Dataframe containing the predicted point nowcast vectors indexed by
 predicted count (\code{pred_count}), reference date (\code{reference_date}), and
-the draw index (\code{draw}). Returns predictions for all reference dates in
-the input \code{reporting_triangle} (or fewer if using \code{ref_time_aggregator}).
+the draw index (\code{draw}). Returns predictions for all reference dates
+in the input \code{reporting_triangle} (or fewer if using
+\code{ref_time_aggregator}).
 }
 \description{
 Get a dataframe of multiple draws of only the predicted elements of the

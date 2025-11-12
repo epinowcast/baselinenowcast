@@ -27,6 +27,7 @@ get_max_delay(rt_short)  # Returns 2
 }
 \seealso{
 Reporting triangle construction and validation
+\code{\link{[.reporting_triangle}()},
 \code{\link{[<-.reporting_triangle}()},
 \code{\link{as.data.frame.reporting_triangle}()},
 \code{\link{as.matrix.reporting_triangle}()},

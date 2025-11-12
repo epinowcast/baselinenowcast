@@ -17,6 +17,7 @@ Get reference dates from reporting_triangle
 }
 \seealso{
 Reporting triangle construction and validation
+\code{\link{[.reporting_triangle}()},
 \code{\link{[<-.reporting_triangle}()},
 \code{\link{as.data.frame.reporting_triangle}()},
 \code{\link{as.matrix.reporting_triangle}()},

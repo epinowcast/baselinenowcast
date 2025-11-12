@@ -1,4 +1,4 @@
-#' Subset reporting_triangle objects
+#' @title Subset reporting_triangle objects
 #'
 #' @description
 #' Extract or replace parts of a reporting_triangle object while preserving its
@@ -7,6 +7,7 @@
 #' @param x A [reporting_triangle] object
 #' @param ... Indices for subsetting
 #' @return A [reporting_triangle] object with the subset data
+#' @family reporting_triangle
 #' @method [ reporting_triangle
 #' @export
 `[.reporting_triangle` <- function(x, ...) {
@@ -32,7 +33,7 @@
   return(out)
 }
 
-#' Subset assignment for reporting_triangle objects
+#' @title Subset assignment for reporting_triangle objects
 #'
 #' @description
 #' Assignment method that allows modification of reporting_triangle values

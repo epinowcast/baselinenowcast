@@ -40,6 +40,7 @@ get_delays_from_dates(report_date_weeks, ref_date, "weeks") # 2
 }
 \seealso{
 Reporting triangle construction and validation
+\code{\link{[.reporting_triangle}()},
 \code{\link{[<-.reporting_triangle}()},
 \code{\link{as.data.frame.reporting_triangle}()},
 \code{\link{as.matrix.reporting_triangle}()},

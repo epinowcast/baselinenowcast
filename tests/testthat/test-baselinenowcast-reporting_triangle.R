@@ -54,7 +54,7 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
       delay_pmf = rep(1 / 24, 24),
       draws = 100
     ),
-    regexp = "`delay_pmf` is not the same length as the number"
+    regexp = "Length of the delay PMF is not the same as the number of delays"
   )
   test_df <- expect_no_error(baselinenowcast(rep_tri,
     delay_pmf = rep(1 / 26, 26),
@@ -75,7 +75,7 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
     baselinenowcast(rep_tri,
       uncertainty_params = rep(1, 10)
     ),
-    regexp = "`uncertainty_params` are not the same length"
+    regexp = "Vector of uncertainty parameters is less than the number of"
   )
 
   test_df2 <- baselinenowcast(rep_tri,

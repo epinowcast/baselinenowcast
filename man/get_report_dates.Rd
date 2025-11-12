@@ -36,6 +36,7 @@ get_report_dates(ref_date, 2, "weeks") # 2024-01-15
 }
 \seealso{
 Reporting triangle construction and validation
+\code{\link{[.reporting_triangle}()},
 \code{\link{[<-.reporting_triangle}()},
 \code{\link{as.data.frame.reporting_triangle}()},
 \code{\link{as.matrix.reporting_triangle}()},

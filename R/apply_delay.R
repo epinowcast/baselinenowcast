@@ -64,6 +64,10 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
   # Precompute CDFs for the delay PMF
   delay_cdf <- cumsum(delay_pmf)
 
+  # Convert to plain matrix for efficiency in Reduce iterations
+  # (avoids repeated validation/attribute checks)
+  init_matrix <- as.matrix(reporting_triangle)
+
   # Iterates through each column (delay) and adds entries to the reporting
   # matrix to nowcast
   point_nowcast_matrix <- Reduce(
@@ -77,7 +81,7 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
       ))
     },
     2:n_delays,
-    init = reporting_triangle
+    init = init_matrix
   )
 
   # Preserve reporting_triangle class and attributes

@@ -74,7 +74,6 @@ For more control over individual steps (e.g., custom matrix preparation,
 alternative aggregation), use the low-level functions directly.
 }
 \examples{
-# Use package example data
 uncertainty_params <- estimate_uncertainty_retro(
   example_reporting_triangle,
   n_history_delay = 5,

@@ -36,7 +36,6 @@
 #' @importFrom cli cli_warn
 #'
 #' @examples
-#' # Use package example data
 #' uncertainty_params <- estimate_uncertainty_retro(
 #'   example_reporting_triangle,
 #'   n_history_delay = 5,

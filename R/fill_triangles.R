@@ -24,10 +24,14 @@
 #' @export
 #' @importFrom cli cli_abort cli_alert_danger cli_alert_info
 #' @examples
-#' # Generate retrospective nowcasts from example triangle
-#' trunc_rts <- truncate_triangles(example_reporting_triangle, n = 2)
+#' # Generate retrospective nowcasts using larger triangle
+#' data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' rep_tri <- as_reporting_triangle(data_as_of) |>
+#'   truncate_to_delay(max_delay = 25) |>
+#'   tail(n = 50)
+#' trunc_rts <- truncate_triangles(rep_tri, n = 2)
 #' retro_rts <- construct_triangles(trunc_rts)
-#' retro_pt_nowcast_mat_list <- fill_triangles(retro_rts)
+#' retro_pt_nowcast_mat_list <- fill_triangles(retro_rts, n = 30)
 #' retro_pt_nowcast_mat_list[1:2]
 fill_triangles <- function(retro_reporting_triangles,
                            n = min(

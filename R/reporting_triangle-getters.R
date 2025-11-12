@@ -232,6 +232,7 @@ get_delays_from_dates <- function(report_dates, reference_dates,
 #' @param x A reporting_triangle object
 #' @return Vector of mean delays for each reference date (numeric)
 #' @family reporting_triangle
+#' @importFrom stats weighted.mean
 #' @export
 get_mean_delay <- function(x) {
   if (!is_reporting_triangle(x)) {

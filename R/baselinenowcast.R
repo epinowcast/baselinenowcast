@@ -87,9 +87,9 @@ baselinenowcast <- function(data,
 #' @examples
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 #' rep_tri <- as_reporting_triangle(
-#'   data = data_as_of_df,
-#'   max_delay = 25
-#' )
+#'   data = data_as_of_df
+#' ) |>
+#'   truncate_to_delay(max_delay = 25)
 #' nowcast_df <- baselinenowcast(rep_tri)
 #' nowcast_df
 baselinenowcast.reporting_triangle <- function(
@@ -241,12 +241,13 @@ baselinenowcast.reporting_triangle <- function(
 #' @method baselinenowcast data.frame
 #' @returns Data.frame of class \code{\link{baselinenowcast_df}}
 #' @examples
+#' # Filter data to exclude most recent report dates and limit max delay
 #' covid_data_to_nowcast <- germany_covid19_hosp[
 #'   germany_covid19_hosp$report_date <
-#'     max(germany_covid19_hosp$reference_date),
+#'     max(germany_covid19_hosp$reference_date) &
+#'     germany_covid19_hosp$delay <= 40,
 #' ] # nolint
 #' nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
-#'   max_delay = 40,
 #'   strata_cols = c("age_group", "location")
 #' )
 #' nowcasts_df
@@ -258,7 +259,6 @@ baselinenowcast.data.frame <- function(
     draws = 1000,
     uncertainty_model = fit_by_horizon,
     uncertainty_sampler = sample_nb,
-    max_delay,
     delays_unit = "days",
     strata_cols = NULL,
     strata_sharing = "none",
@@ -279,7 +279,7 @@ baselinenowcast.data.frame <- function(
       message = c("`strata_sharing` cannot be both 'none' and 'delay'/'uncertainty'") # nolint
     )
   }
-  # Filter to max delay
+  # Compute delays for later use
   data$delay <- as.numeric(
     difftime(
       as.Date(data$report_date),
@@ -287,7 +287,7 @@ baselinenowcast.data.frame <- function(
       units = delays_unit
     )
   )
-  data_clean <- data[data$delay <= max_delay, ]
+  data_clean <- data
 
   .validate_strata_cols(
     strata_cols,
@@ -305,7 +305,6 @@ baselinenowcast.data.frame <- function(
   # Create a list of reporting triangles
   list_of_rep_tris <- lapply(list_of_dfs,
     as_reporting_triangle,
-    max_delay = max_delay,
     delays_unit = delays_unit
   )
   # Combine if needed
@@ -316,9 +315,7 @@ baselinenowcast.data.frame <- function(
       data = data_clean,
       strata_cols = strata_cols
     )
-    pooled_triangle <- as_reporting_triangle(pooled_df,
-      max_delay = max_delay
-    )
+    pooled_triangle <- as_reporting_triangle(pooled_df)
     # Get the training volume for all reporting triangles
     tv <- allocate_reference_times(
       reporting_triangle = pooled_triangle,

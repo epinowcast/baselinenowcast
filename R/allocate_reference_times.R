@@ -38,18 +38,22 @@
 #' @family workflow_wrappers
 #' @export
 #' @examples
-#' # Use the defaults
+#' \dontrun{
+#' # The example triangle is too small for the default requirements
+#' # Use a larger triangle in practice
 #' ref_time_allocation_default <- allocate_reference_times(
-#'   example_reporting_triangle
+#'   example_reporting_triangle,
+#'   scale_factor = 1
 #' )
 #' ref_time_allocation_default
-#' # Modify to use less volume and redistribute
+#' # Modify to redistribute with different proportion
 #' ref_time_allocation_alt <- allocate_reference_times(
 #'   reporting_triangle = example_reporting_triangle,
-#'   scale_factor = 2,
+#'   scale_factor = 1,
 #'   prop_delay = 0.6
 #' )
 #' ref_time_allocation_alt
+#' }
 allocate_reference_times <- function(reporting_triangle,
                                      scale_factor = 3,
                                      prop_delay = 0.5,

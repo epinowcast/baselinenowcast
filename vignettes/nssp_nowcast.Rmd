@@ -59,6 +59,7 @@ We need the data in this format to estimate the reporting delay, which we will t
 
 This typically will be pulled using an API, but here we provide the `syn_nssp_line_list` dataset as package data.
 ```{r}
+data("syn_nssp_line_list", package = "baselinenowcast")
 syn_nssp_line_list
 ```
 <div class="alert alert-warning" role="alert">
@@ -269,6 +270,7 @@ In reality you would proceed straight from this dataset to the subsequent steps,
 
 We'll start by loading in the synthetic reporting triangle dataframe, which is also provided as package data.
 ```{r}
+data("syn_nssp_df", package = "baselinenowcast")
 syn_nssp_df
 ```
 <div class="alert alert-warning" role="alert">

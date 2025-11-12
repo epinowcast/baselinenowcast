@@ -15,8 +15,9 @@
 #'    negative binomial for each element of the vector.
 #' @inheritParams estimate_delay
 #' @inheritParams estimate_uncertainty
-#' @returns Vector of predicted draws at each reference date, for all reference
-#'    dates in the input `point_nowcast_matrix`.
+#' @returns Matrix of predicted draws at each reference date, for all reference
+#'    dates in the input `point_nowcast_matrix` (or fewer if using
+#'    `ref_time_aggregator`).
 #' @family generate_probabilistic_nowcasts
 #' @export
 #' @importFrom cli cli_abort cli_warn
@@ -123,15 +124,6 @@ sample_prediction <- function(
     draw_pred
   )
 
-  # Convert to vector and add reference dates as names
-  # After aggregation, aggr_rt may not be a reporting_triangle anymore,
-  # so extract reference dates from rownames
-  reference_dates <- as.Date(rownames(aggr_rt))
-  if (ncol(draw_pred_agg) == 1) {
-    result <- as.vector(draw_pred_agg)
-    names(result) <- as.character(reference_dates)
-    return(result)
-  }
   return(draw_pred_agg)
 }
 
@@ -336,8 +328,7 @@ sample_nowcast <- function(
     delay_aggregator
   )
 
-  # Ensure result is a matrix
-  return(as.matrix(draw))
+  return(draw)
 }
 
 #' Generate multiple draws of a nowcast combining observed and predicted values

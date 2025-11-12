@@ -46,8 +46,9 @@ of the retrospective point nowcast matrix after it has been aggregated
 across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
 }
 \value{
-Vector of predicted draws at each reference date, for all reference
-dates in the input \code{point_nowcast_matrix}.
+Matrix of predicted draws at each reference date, for all reference
+dates in the input \code{point_nowcast_matrix} (or fewer if using
+\code{ref_time_aggregator}).
 }
 \description{
 Get a draw of only the predicted elements of the nowcast vector

@@ -295,12 +295,8 @@ baselinenowcast.data.frame <- function(
   # Filter by max_delay if specified
   if (!is.null(max_delay)) {
     max_delay_in_data <- max(data$delay, na.rm = TRUE)
-    cli_inform(
-      c(
-        "i" = "Filtering data using max_delay = {max_delay}",
-        "i" = "Maximum delay in data before filtering: {max_delay_in_data}"
-      )
-    )
+    cli_inform("Filtering data using max_delay = {max_delay}")
+    cli_inform("Maximum delay in data before filtering: {max_delay_in_data}")
     data_clean <- data[data$delay <= max_delay, ]
   } else {
     data_clean <- data

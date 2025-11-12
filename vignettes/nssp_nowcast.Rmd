@@ -477,7 +477,7 @@ Here we will visualize the results using the 50th and 95th percent prediction in
 ```{r}
 nowcast_summary_df <-
   nowcast_draws_df |>
-  group_by(time) |>
+  group_by(reference_date) |>
   summarise(
     median = median(pred_count),
     q50th_lb = quantile(pred_count, 0.25),

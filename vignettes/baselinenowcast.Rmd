@@ -466,7 +466,6 @@ Prepare the data as of the nowcast date, `latest_training_data` so that we can m
 
 ```{r}
 latest_data_prepped <- latest_training_data |>
-  mutate(time = row_number()) |>
   rename(obs_confirm = confirm) |>
   mutate(reference_date = as.Date(reference_date))
 ```
@@ -483,7 +482,7 @@ Join the nowcasts, data as of the nowcast date, and the final data.
 
 ```{r}
 obs_with_nowcast_draws_df <- nowcast_draws_df |>
-  left_join(latest_data_prepped, by = "time") |>
+  left_join(latest_data_prepped, by = "reference_date") |>
   left_join(final_data_prepped, by = "reference_date")
 head(obs_with_nowcast_draws_df)
 ```

@@ -28,7 +28,7 @@ test_that(
       as.integer(100 * nrow(point_nowcast_matrix))
     )
     expect_identical(ncol(result), 3L)
-    expect_true(all(c("pred_count", "time", "draw") %in% names(result)))
+    expect_true(all(c("pred_count", "reference_date", "draw") %in% names(result)))
     expect_length(unique(result$draw), 100L)
     expect_identical(nrow(result), as.integer(100 * nrow(point_nowcast_matrix)))
     expect_true(all(is.finite(result$pred_count)))
@@ -100,15 +100,16 @@ test_that("sample_nowcasts: time index is correctly assigned", {
     draws = n_draws
   )
 
-  # For each draw, time should go from 1 to nrow(matrix)
+  # For each draw, reference_date should match reporting_triangle dates
+  expected_dates <- get_reference_dates(reporting_triangle)
   for (i in 1:n_draws) {
     draw_data <- result[result$draw == i, ]
     expect_identical(
-      as.integer(draw_data$time),
-      as.integer(seq_len(nrow(point_nowcast_matrix)))
+      draw_data$reference_date,
+      expected_dates
     )
-    # Check data is ordered by time within each draw
-    expect_identical(draw_data$time, sort(draw_data$time))
+    # Check data is ordered by reference_date within each draw
+    expect_identical(draw_data$reference_date, sort(draw_data$reference_date))
   }
 })
 

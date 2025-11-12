@@ -66,7 +66,9 @@ test_that("truncate_triangles can handle a range of ns", {
   expect_error(truncate_triangles(test_triangle, n = -1))
 })
 
-test_that("truncate_triangles replaces values with NA for retrospective snapshots", {
+test_that(
+  "truncate_triangles replaces values with NA for retrospective snapshots",
+  {
   result <- truncate_triangles(test_triangle, n = 1)[[1]]
   # Expect bottom 3 elemets of lower left triangle to be NAs
   expect_true(all(

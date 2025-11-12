@@ -264,7 +264,9 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
   expect_true(all(disp_params > 0))
 })
 
-test_that("estimate_uncertainty returns near-zero dispersion for perfect predictions", {
+test_that(
+  "estimate_uncertainty returns near-zero dispersion for perfect predictions",
+  {
   set.seed(123)
   delay_pmf <- c(0.4, 0.3, 0.2, 0.05, 0.05)
   partial_counts <- c(80, 100, 180, 80, 140)

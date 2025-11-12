@@ -42,6 +42,7 @@ We use the `baselinenowcast` package for nowcasting, `dplyr`, and `tidyr` for da
 For `baselinenowcast`, see the [installation instructions](https://github.com/epinowcast/baselinenowcast#installation).
 ```{r setup, message = FALSE, warning = FALSE, results = 'hide'}
 # Load packages
+library(baselinenowcast)
 library(dplyr)
 library(tidyr)
 library(stringr)
@@ -358,8 +359,7 @@ We can summarise the cases by reference dates and plot.
 training_df_by_ref_date <- training_df |>
   filter(report_date <= nowcast_date) |>
   group_by(reference_date) |>
-  summarise(initial_count = sum(count)) |>
-  mutate(time = row_number())
+  summarise(initial_count = sum(count))
 ```
 
 <details><summary>Click to expand code to create the plot of the initially reported cases</summary>
@@ -412,7 +412,7 @@ rep_tri_mat <- rep_tri_df |>
   select(-reference_date) |>
   as.matrix()
 
-rep_tri <- baselinenowcast::as_reporting_triangle(
+rep_tri <- as_reporting_triangle(
   data = rep_tri_mat,
   reference_dates = reference_dates,
   max_delay = max_delay
@@ -497,19 +497,17 @@ eval_data <- long_df |>
     reference_date <= nowcast_date
   ) |>
   group_by(reference_date) |>
-  summarise(final_count = sum(count)) |>
-  mutate(time = row_number()) |>
-  select(time, final_count)
+  summarise(final_count = sum(count))
 ```
 
 Lastly, join the initial and final reports to the probabilistic nowcast.
 ```{r}
 nowcast_w_data <- nowcast_summary_df |>
   left_join(training_df_by_ref_date,
-    by = "time"
+    by = "reference_date"
   ) |>
   left_join(eval_data,
-    by = "time"
+    by = "reference_date"
   )
 head(nowcast_w_data)
 ```

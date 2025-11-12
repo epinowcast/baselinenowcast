@@ -10,7 +10,9 @@ rep_tri <- as_reporting_triangle(
   data = data_as_of_df
 )
 
-test_that("is_reporting_triangle returns TRUE for valid objects and FALSE otherwise", {
+test_that(
+  "is_reporting_triangle returns TRUE for valid objects and FALSE otherwise",
+  {
   expect_true(is_reporting_triangle(rep_tri))
   expect_false(is_reporting_triangle(matrix(1:10, 2, 5)))
   expect_false(is_reporting_triangle(data.frame(a = 1:5)))
@@ -42,7 +44,9 @@ test_that("get_max_delay returns ncol-1 as integer", {
   )
 })
 
-test_that("get_max_delay with non_zero=TRUE returns maximum delay with non-zero observations", {
+test_that(
+  "get_max_delay with non_zero=TRUE returns max delay with non-zero obs",
+  {
   # Create test triangle with trailing zeros
   test_mat <- matrix(c(
     100, 50, 20, 0, 0,
@@ -70,7 +74,9 @@ test_that("get_max_delay with non_zero=TRUE returns maximum delay with non-zero 
   expect_identical(get_max_delay(zero_tri, non_zero = TRUE), -1L)
 })
 
-test_that("get_mean_delay returns numeric vector of length nrow with values in [0, max_delay]", {
+test_that(
+  "get_mean_delay returns numeric vector length nrow with vals in [0, max_delay]",
+  {
   mean_delays <- get_mean_delay(rep_tri)
   expect_type(mean_delays, "double")
   expect_length(mean_delays, nrow(rep_tri))
@@ -144,7 +150,9 @@ test_that("[.reporting_triangle preserves class and validates", {
   expect_true(is_reporting_triangle(sub_cols))
 })
 
-test_that("[ operator preserves reporting_triangle class and attributes for row subsetting", {
+test_that(
+  "[ operator preserves reporting_triangle class and attributes for row subsetting",
+  {
   # Basic row subsetting
   sub <- rep_tri[1:5, ]
   expect_true(is_reporting_triangle(sub))
@@ -163,7 +171,9 @@ test_that("[ operator preserves reporting_triangle class and attributes for row 
   expect_type(single_row_vec, "double")
 })
 
-test_that("[ operator preserves reporting_triangle class and attributes for column subsetting", {
+test_that(
+  "[ operator preserves reporting_triangle class and attributes for column subsetting",
+  {
   # Basic column subsetting
   sub <- rep_tri[, 1:3]
   expect_true(is_reporting_triangle(sub))
@@ -182,7 +192,9 @@ test_that("[ operator preserves reporting_triangle class and attributes for colu
   expect_type(single_col_vec, "double")
 })
 
-test_that("[ operator preserves reporting_triangle class and attributes for combined subsetting", {
+test_that(
+  "[ operator preserves reporting_triangle class for combined subsetting",
+  {
   # Row and column subsetting
   sub <- rep_tri[1:10, 1:3]
   expect_true(is_reporting_triangle(sub))
@@ -355,7 +367,9 @@ test_that("summary.reporting_triangle runs without error", {
   expect_invisible(summary(rep_tri))
 })
 
-test_that("get_quantile_delay returns integer vector with quantile delays for each row", {
+test_that(
+  "get_quantile_delay returns integer vector with quantile delays for each row",
+  {
   quantile_delays <- get_quantile_delay(rep_tri, p = 0.99)
   expect_type(quantile_delays, "integer")
   expect_length(quantile_delays, nrow(rep_tri))
@@ -403,7 +417,9 @@ test_that("get_quantile_delay returns integer vector with quantile delays for ea
   )
 })
 
-test_that("as.data.frame returns long format with reference_date, delay, count columns", {
+test_that(
+  "as.data.frame returns long format with reference_date, delay, count columns",
+  {
   df <- as.data.frame(rep_tri)
 
   # Check structure

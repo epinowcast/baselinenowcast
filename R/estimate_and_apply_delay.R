@@ -10,8 +10,7 @@
 #' @importFrom cli cli_alert_info
 #' @examples
 #' pt_nowcast_matrix <- estimate_and_apply_delay(
-#'   reporting_triangle = example_reporting_triangle,
-#'   n = 4
+#'   reporting_triangle = example_reporting_triangle
 #' )
 #' pt_nowcast_matrix
 estimate_and_apply_delay <- function(reporting_triangle,

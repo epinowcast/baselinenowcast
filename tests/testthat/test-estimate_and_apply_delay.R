@@ -9,7 +9,9 @@ reporting_triangle <- construct_triangle(
   make_test_triangle(data = complete_triangle)
 )
 
-test_that("estimate_and_apply_delay returns filled reporting_triangle with estimated delay", {
+test_that(
+  "estimate_and_apply_delay returns filled triangle with estimated delay",
+  {
   point_nowcast_matrix <- estimate_and_apply_delay(
     reporting_triangle = reporting_triangle
   )

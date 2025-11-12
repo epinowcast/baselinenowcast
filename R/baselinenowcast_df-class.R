@@ -47,15 +47,10 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
                                    output_type) {
   assert_choice(output_type, choices = c("samples", "point"))
 
-  baselinenowcast_df_dates <- .align_time_to_dates(
-    baselinenowcast_df,
-    reference_dates
-  )
-
-  baselinenowcast_df_dates$output_type <- output_type
-  baselinenowcast_df_ordered <- baselinenowcast_df_dates[order(
-    baselinenowcast_df_dates$reference_date,
-    baselinenowcast_df_dates$draw
+  baselinenowcast_df$output_type <- output_type
+  baselinenowcast_df_ordered <- baselinenowcast_df[order(
+    baselinenowcast_df$reference_date,
+    baselinenowcast_df$draw
   ), ]
 
   result <- structure(
@@ -64,23 +59,6 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
   )
 
   return(result)
-}
-
-#' Validate reference dates in nowcast dataframe
-#' @description Internal helper function that validates the nowcast dataframe
-#'   has a reference_date column. This is a placeholder for backward
-#'   compatibility and may be removed in a future version.
-#'
-#' @param baselinenowcast_df Data.frame containing nowcast information with a
-#'   `reference_date` column.
-#' @param reference_dates Vector of reference dates (unused, kept for
-#'   compatibility).
-#'
-#' @returns The input dataframe unchanged.
-#' @keywords internal
-.align_time_to_dates <- function(baselinenowcast_df, reference_dates) {
-  # All code paths now create dataframes with reference_date directly
-  return(baselinenowcast_df)
 }
 
 #' Assert validity of `baselinenowcast_df` objects

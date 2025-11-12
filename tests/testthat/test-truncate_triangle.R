@@ -109,7 +109,7 @@ test_that("truncate_triangle preserves reporting_triangle class", {
   # Check reference dates are updated correctly
   result_dates <- get_reference_dates(result)
   expect_length(result_dates, 3L)
-  expect_equal(result_dates, ref_dates[1:3])
+  expect_identical(result_dates, ref_dates[1:3])
 
   # Check rownames are set correctly
   expect_identical(rownames(result), as.character(ref_dates[1:3]))

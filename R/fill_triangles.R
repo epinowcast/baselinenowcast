@@ -168,7 +168,7 @@ fill_triangle <- function(reporting_triangle,
                           delay_pmf = NULL,
                           preprocess = preprocess_negative_values) {
   # Lightweight class check - full validation happens in tail() via [
-  assert_reporting_triangle_class(reporting_triangle)
+  assert_rep_tri_class(reporting_triangle)
 
   if (n > nrow(reporting_triangle)) {
     cli_abort(

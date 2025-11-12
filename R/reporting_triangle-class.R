@@ -293,7 +293,7 @@ assert_reporting_triangle <- function(data) {
 #' @return NULL
 #' @keywords internal
 #' @noRd
-assert_reporting_triangle_class <- function(data) {
+assert_rep_tri_class <- function(data) {
   if (!is_reporting_triangle(data)) {
     cli_abort(
       message = "data must have class 'reporting_triangle'"

@@ -178,7 +178,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   # For columns: detect if there's data at or below each position
   # Use cummax from bottom (reverse, cummax, reverse)
   has_data_at_or_below <- apply(not_na, 2, function(col) {
-    rev(cummax(rev(col)))
+    return(rev(cummax(rev(col))))
   })
 
   # Shift down by 1 to get "has data below" (not including current position)
@@ -190,7 +190,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   # For rows: detect if there's data at or to the right of each position
   # Use cummax from right (reverse, cummax, reverse)
   has_data_at_or_right <- t(apply(not_na, 1, function(row) {
-    rev(cummax(rev(row)))
+    return(rev(cummax(rev(row))))
   }))
 
   # Shift right by 1 to get "has data to right"

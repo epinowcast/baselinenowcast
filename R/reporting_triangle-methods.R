@@ -362,11 +362,10 @@ tail.reporting_triangle <- function(x, n = 6L, ...) {
 #' @return Invisibly returns the object.
 #' @family reporting_triangle
 #' @export
-#' @importFrom cli cli_text cli_rule
+#' @importFrom cli cli_text
 #' @method print reporting_triangle
 print.reporting_triangle <- function(x, n_rows = 10, n_cols = 10, ...) {
   cli_text("{.strong Reporting Triangle}")
-  cli_rule()
   .display_triangle_basics(x, show_dimensions = FALSE)
   cli_text("")
 
@@ -393,6 +392,14 @@ print.reporting_triangle <- function(x, n_rows = 10, n_cols = 10, ...) {
   }
 
   print(as.matrix(to_print), ...)
+
+  if (!is.null(row_subset) || !is.null(col_subset)) {
+    cli_text("")
+    cli_text(
+      "Use print(x, n_rows = NULL, n_cols = NULL) to see all data"
+    )
+  }
+
   return(invisible(x))
 }
 
@@ -403,14 +410,13 @@ print.reporting_triangle <- function(x, n_rows = 10, n_cols = 10, ...) {
 #' @return Invisibly returns the object.
 #' @family reporting_triangle
 #' @export
-#' @importFrom cli cli_text cli_rule
+#' @importFrom cli cli_text
 #' @method summary reporting_triangle
 #' @examples
 #' # Display summary statistics
 #' summary(example_reporting_triangle)
 summary.reporting_triangle <- function(object, ...) {
   cli_text("{.strong Reporting Triangle Summary}")
-  cli_rule()
   .display_triangle_basics(object, show_dimensions = TRUE)
   ref_dates <- get_reference_dates(object)
 

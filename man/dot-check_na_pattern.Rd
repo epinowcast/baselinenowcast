@@ -14,17 +14,14 @@ A list with components:
 \itemize{
 \item \code{valid}: Logical indicating if all NAs are in valid bottom-right pattern
 \item \code{n_out_of_pattern}: Count of out-of-pattern NA values
-\item \code{n_expected}: Count of expected NA values (triangular pattern)
-\item \code{positions}: Matrix of logical values indicating out-of-pattern NAs
-\item \code{rows_affected}: Indices of rows with out-of-pattern NAs
 }
 }
 \description{
-Internal function that validates NA positions and provides detailed
-diagnostics. Identifies NA values that don't follow the expected triangular
-reporting delay pattern. Out-of-pattern NAs occur when a value is NA but
-values below it (later reference dates) or to its right (longer delays) are
-non-NA, suggesting data quality issues rather than reporting delay.
+Internal function that validates NA positions. Identifies NA values that
+don't follow the expected triangular reporting delay pattern. Out-of-pattern
+NAs occur when a value is NA but values below it (later reference dates) or
+to its right (longer delays) are non-NA, suggesting data quality issues
+rather than reporting delay.
 }
 \details{
 An NA is considered "out-of-pattern" if:
@@ -35,7 +32,6 @@ An NA is considered "out-of-pattern" if:
 (indicating earlier delays were reported)
 }
 
-This replaces \code{.check_na_bottom_right()} by providing both validation
-(via the \code{valid} field) and detailed diagnostics.
+Uses a vectorised cummax-based approach for efficient validation.
 }
 \keyword{internal}

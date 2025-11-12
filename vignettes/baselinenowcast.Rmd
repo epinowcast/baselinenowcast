@@ -218,8 +218,8 @@ eval_data <- enw_filter_reference_dates(
 )
 ```
 
-Next we obtain the reporting triangle, adding an additional day to the `max_delay` because we want the `max_delay + 1` entries since 0 is a valid delay.
-This also validates that the data is in the correct format and runs preprocessing see `enw_preprocess_data()` for more details.
+Next we obtain the reporting triangle.
+First we preprocess the data to ensure it is in the correct format and has the required columns.
 
 ```{r}
 pobs <- enw_preprocess_data(
@@ -229,44 +229,43 @@ pobs <- enw_preprocess_data(
 ```
 
 Extract components from `pobs`, which is an `epinowcast` object.
-We only have one group here so we only need `reference_date`, `delay`, and `new_confirm`.
+We only have one group here so we only need `reference_date`, `report_date`, and `new_confirm`.
 
 ```{r}
-reporting_triangle_df <- select(
-  pobs$new_confirm[[1]],
-  reference_date,
-  delay,
-  new_confirm
+reporting_triangle_df <- pobs$new_confirm[[1]] |>
+  select(
+    reference_date,
+    report_date,
+    count = new_confirm
+  )
+```
+
+We now create a reporting_triangle object directly from the data frame.
+This handles the conversion from long format to the matrix representation needed for nowcasting.
+
+```{r}
+reporting_triangle <- as_reporting_triangle(
+  data = reporting_triangle_df,
+  reference_date = "reference_date",
+  report_date = "report_date",
+  count = "count"
 )
 ```
 
-We now pivot to wide format to create a matrix, then convert to a reporting_triangle object.
-
+Let's look at the reporting triangle object we've created:
 ```{r}
-reporting_triangle_mat <- reporting_triangle_df |>
-  pivot_wider(names_from = delay, values_from = new_confirm) |>
-  select(-reference_date) |>
-  as.matrix()
+reporting_triangle
+```
 
-reference_dates <- unique(reporting_triangle_df$reference_date)
-
-reporting_triangle <- as_reporting_triangle(
-  data = reporting_triangle_mat,
-  reference_dates = reference_dates,
-  max_delay = max_delay
-)
+And we can get a summary of it:
+```{r}
+summary(reporting_triangle)
 ```
 
 <details><summary>Click to expand code to create the plot of the reporting triangle</summary>
 ```{r}
-triangle_df <- as.data.frame(unclass(reporting_triangle)) |>
-  mutate(time = row_number()) |>
-  pivot_longer(!time,
-    values_to = "count",
-    names_prefix = "V",
-    names_to = "delay"
-  ) |>
-  mutate(delay = as.numeric(delay))
+triangle_df <- as.data.frame(reporting_triangle) |>
+  mutate(time = as.numeric(factor(reference_date)))
 
 plot_triangle <- ggplot(
   triangle_df,

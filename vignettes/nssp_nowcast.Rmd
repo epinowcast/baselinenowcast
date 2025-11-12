@@ -60,7 +60,6 @@ We need the data in this format to estimate the reporting delay, which we will t
 
 This typically will be pulled using an API, but here we provide the `syn_nssp_line_list` dataset as package data.
 ```{r}
-data("syn_nssp_line_list", package = "baselinenowcast")
 syn_nssp_line_list
 ```
 <div class="alert alert-warning" role="alert">
@@ -271,7 +270,6 @@ In reality you would proceed straight from this dataset to the subsequent steps,
 
 We'll start by loading in the synthetic reporting triangle dataframe, which is also provided as package data.
 ```{r}
-data("syn_nssp_df", package = "baselinenowcast")
 syn_nssp_df
 ```
 <div class="alert alert-warning" role="alert">
@@ -381,42 +379,24 @@ plot_inits
 We can see that without nowcasting, the cases appear to be sharply declining at the most recent dates.
 We can't tell from this data alone if the true trend in cases is really declining rapidly or if it is plateauing or increasing, which is why we need to use nowcasting to make an estimate of the eventually reported cases at each visit date.
 
-To do this, we will use `tidyr::complete()` to fill in all combinations of reference dates and delays, filter to exclude all reference dates and delays beyond the maximum reference date, and pivot from long to wide. This will ensure that the combinations that were missing in our dataset (i.e. no cases were reported) but would have been observed will be coded as 0 cases, whereas the ones that have yet to be observed will get coded as NAs.
+We now create a reporting triangle object from the data using `as_reporting_triangle()`, which converts the data from long format to the matrix representation needed for nowcasting.
 ```{r}
-rep_tri_df <- training_df |>
-  complete(
-    reference_date = seq(
-      from = min(reference_date),
-      to = max(reference_date),
-      by = "day"
-    ),
-    delay = 0:max_delay,
-    fill = list(count = 0)
-  ) |>
-  filter(reference_date + days(delay) <= max(reference_date)) |>
-  select(-report_date) |>
-  pivot_wider(
-    names_from = delay,
-    values_from = count
-  )
-head(rep_tri_df)
+rep_tri <- as_reporting_triangle(
+  data = training_df,
+  reference_date = "reference_date",
+  report_date = "report_date",
+  count = "count"
+)
 ```
 
-We now have a data.frame where each row is a reference date, each column is a delay, and each entry represents the number of cases reported corresponding to each reference date and on each delay.
-The bottom right of the reporting triangle contains NAs to indicate that those observations have yet to be observed.
-As a final pre-processing step, we'll convert to a reporting_triangle object.
+Let's look at the reporting triangle object we've created:
 ```{r}
-reference_dates <- rep_tri_df$reference_date
+rep_tri
+```
 
-rep_tri_mat <- rep_tri_df |>
-  select(-reference_date) |>
-  as.matrix()
-
-rep_tri <- as_reporting_triangle(
-  data = rep_tri_mat,
-  reference_dates = reference_dates,
-  max_delay = max_delay
-)
+And we can get a summary of it:
+```{r}
+summary(rep_tri)
 ```
 
 ## Specify the `baselinenowcast` model

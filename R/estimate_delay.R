@@ -56,7 +56,7 @@ estimate_delay <- function(
   assert_reporting_triangle(reporting_triangle)
 
   # Check that the input reporting triangle is formatted properly.
-  .validate_triangle(
+  .validate_for_delay_estimation(
     triangle = reporting_triangle,
     n = n
   )

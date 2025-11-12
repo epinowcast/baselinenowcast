@@ -191,11 +191,6 @@ as_reporting_triangle.matrix <- function(data,
                                          delays_unit = "days",
                                          reference_dates = NULL,
                                          ...) {
-  .validate_triangle(
-    triangle = data,
-    n = nrow(data)
-  )
-
   # Use dummy dates starting from 1900 if no reference_dates provided
   if (is.null(reference_dates)) {
     cli_alert_info(

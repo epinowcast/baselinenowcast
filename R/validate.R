@@ -1,15 +1,13 @@
-#' Validate triangle
-#' Various checks to make sure that the reporting triangle passed in to
-#'   [estimate_delay()] is formatted properly.
-#' @importFrom checkmate assert_class
+#' Validate reporting_triangle for delay estimation
+#' Domain-specific checks to ensure the reporting triangle is suitable for
+#'   delay estimation in [estimate_delay()].
 #' @importFrom checkmate assert_integerish
-#' @importFrom checkmate assert_matrix
 #' @importFrom cli cli_abort
 #' @inheritParams .validate_delay_and_triangle
 #' @inheritParams estimate_delay
 #' @returns NULL, invisibly
 #' @keywords internal
-.validate_triangle <- function(
+.validate_for_delay_estimation <- function(
     triangle,
     n = nrow(triangle)) {
   # Make sure the input triangle is of the correct class and n is an integer
@@ -17,9 +15,11 @@
     triangle_name <- deparse(substitute(triangle)) # nolint
     cli_abort(message = "`{triangle_name}` argument is missing.") # nolint
   }
-  assert_class(triangle, "matrix")
+
+  # First check structural validity
+  validate_reporting_triangle(triangle)
+
   assert_integerish(n)
-  assert_matrix(triangle, all.missing = FALSE)
 
   # Check if the triangle has a valid structure
   # Ensure each column has at least one non-NA value

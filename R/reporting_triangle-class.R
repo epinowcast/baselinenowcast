@@ -182,7 +182,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
       if (!all(row_na[min_na_idx:nc])) {
         # Mark NAs that have non-NA to the right as out of pattern
         for (j in min_na_idx:nc) {
-          if (j < nc && na_positions[i, j] && any(!row_na[(j + 1):nc])) {
+          if (j < nc && na_positions[i, j] && !all(row_na[(j + 1):nc])) {
             out_of_pattern[i, j] <- TRUE
           }
         }
@@ -201,7 +201,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
       if (!all(col_na[min_na_idx:nr])) {
         # Mark NAs that have non-NA below as out of pattern
         for (i in min_na_idx:nr) {
-          if (i < nr && na_positions[i, j] && any(!col_na[(i + 1):nr])) {
+          if (i < nr && na_positions[i, j] && !all(col_na[(i + 1):nr])) {
             out_of_pattern[i, j] <- TRUE
           }
         }

@@ -179,20 +179,35 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
     ))
   }
 
-  # For each column: check if any non-NA appears below an NA
-  # Using cummax going down each column - once NA (TRUE), should stay TRUE
-  col_cummax <- apply(na_positions, 2, cummax)
-  # If cummax is TRUE but original is FALSE, we have data below an NA
-  has_data_below <- col_cummax & !na_positions
+  # For each NA: check if there's any non-NA data below it (same column)
+  # or to the right of it (same row)
+  out_of_pattern <- matrix(FALSE, nrow = nr, ncol = nc)
 
-  # For each row: check if any non-NA appears to right of an NA
-  # Using cummax going right in each row - once NA (TRUE), should stay TRUE
-  row_cummax <- t(apply(na_positions, 1, cummax))
-  # If cummax is TRUE but original is FALSE, we have data to right of NA
-  has_data_right <- row_cummax & !na_positions
+  for (j in seq_len(nc)) {
+    # For this column, find positions where there's a non-NA below an NA
+    not_na <- !na_positions[, j]
+    # If there's any non-NA value below, mark all NAs above it
+    if (any(not_na)) {
+      last_data_row <- max(which(not_na))
+      na_above <- which(na_positions[seq_len(last_data_row), j])
+      if (length(na_above) > 0) {
+        out_of_pattern[na_above, j] <- TRUE
+      }
+    }
+  }
 
-  # Out of pattern if either condition is met
-  out_of_pattern <- has_data_below | has_data_right
+  for (i in seq_len(nr)) {
+    # For this row, find positions where there's a non-NA to the right of an NA
+    not_na <- !na_positions[i, ]
+    # If there's any non-NA value to the right, mark all NAs to its left
+    if (any(not_na)) {
+      last_data_col <- max(which(not_na))
+      na_left <- which(na_positions[i, seq_len(last_data_col)])
+      if (length(na_left) > 0) {
+        out_of_pattern[i, na_left] <- TRUE
+      }
+    }
+  }
 
   n_out_of_pattern <- sum(out_of_pattern)
   n_expected <- sum(na_positions) - n_out_of_pattern

@@ -81,7 +81,7 @@ rep_tri <- as_reporting_triangle(data_as_of) |>
 
 uncertainty_params <- estimate_uncertainty_retro(
   rep_tri,
-  n_history_delay = 20,
+  n_history_delay = 30,
   n_retrospective_nowcasts = 10
 )
 uncertainty_params

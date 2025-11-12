@@ -74,20 +74,17 @@ For more control over individual steps (e.g., custom matrix preparation,
 alternative aggregation), use the low-level functions directly.
 }
 \examples{
+# Create a reporting triangle from syn_nssp_df
+data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+rep_tri <- as_reporting_triangle(data_as_of) |>
+  truncate_to_delay(max_delay = 25)
+
 uncertainty_params <- estimate_uncertainty_retro(
-  example_reporting_triangle,
-  n_history_delay = 5,
-  n_retrospective_nowcasts = 2
+  rep_tri,
+  n_history_delay = 20,
+  n_retrospective_nowcasts = 10
 )
 uncertainty_params
-
-# Estimate with custom parameters
-uncertainty_params_custom <- estimate_uncertainty_retro(
-  example_reporting_triangle,
-  n_history_delay = 4,
-  n_retrospective_nowcasts = 2
-)
-uncertainty_params_custom
 }
 \seealso{
 High-level workflow wrapper functions

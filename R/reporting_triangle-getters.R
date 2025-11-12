@@ -118,10 +118,10 @@ get_report_dates <- function(reference_dates, delays, delays_unit) {
   assert_delays_unit(delays_unit)
 
   add_fn <- switch(delays_unit,
-    "days" = .add_days,
-    "weeks" = .add_weeks,
-    "months" = .add_months,
-    "years" = .add_years
+    days = .add_days,
+    weeks = .add_weeks,
+    months = .add_months,
+    years = .add_years
   )
   return(add_fn(reference_dates, delays))
 }
@@ -219,10 +219,10 @@ get_delays_from_dates <- function(report_dates, reference_dates,
   assert_delays_unit(delays_unit)
 
   diff_fn <- switch(delays_unit,
-    "days" = .diff_days,
-    "weeks" = .diff_weeks,
-    "months" = .diff_months,
-    "years" = .diff_years
+    days = .diff_days,
+    weeks = .diff_weeks,
+    months = .diff_months,
+    years = .diff_years
   )
   return(diff_fn(report_dates, reference_dates))
 }

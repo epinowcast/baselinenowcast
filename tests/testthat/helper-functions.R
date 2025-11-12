@@ -141,13 +141,13 @@ make_test_triangle <- function(nrow = 5, ncol = 4, data = NULL,
   }
 
   if (as_reporting_triangle) {
-    result <- baselinenowcast::as_reporting_triangle(
+    result <- as_reporting_triangle(
       data = mat,
       reference_dates = reference_dates
     )
 
     if (construct) {
-      result <- baselinenowcast::construct_triangle(
+      result <- construct_triangle(
         result, structure = structure
       )
     }

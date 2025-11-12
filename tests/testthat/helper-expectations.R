@@ -188,11 +188,11 @@ expect_estimates_differ <- function(est1, est2, tol = 0.01) {
 #' @param validate Logical; if TRUE, runs full validation (default FALSE)
 #' @keywords internal
 expect_triangle_output <- function(result, input_triangle, validate = FALSE) {
-  testthat::expect_true(baselinenowcast::is_reporting_triangle(result))
+  testthat::expect_true(is_reporting_triangle(result))
   testthat::expect_identical(dim(result), dim(input_triangle))
   if (validate) {
     testthat::expect_no_error(
-      baselinenowcast::validate_reporting_triangle(result)
+      validate_reporting_triangle(result)
     )
   }
   return(invisible(result))

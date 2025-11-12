@@ -187,7 +187,8 @@ test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
     nrow = 6,
     byrow = TRUE
   ))
-  # Triangle 3 can't be used to generate a point nowcast because first column is all zeros
+  # Triangle 3 can't be used to generate a point nowcast
+  # because first column is all zeros
   # We create it as a plain matrix and convert later with suppress
   triangle3_mat <- matrix(
     c(

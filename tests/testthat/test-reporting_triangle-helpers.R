@@ -100,42 +100,47 @@ test_that("get_mean_delay works correctly", {
 
   mean_delays_simple <- get_mean_delay(simple_tri)
   # Row 1: (10*0 + 5*1 + 2*2) / (10 + 5 + 2) = 9/17 ≈ 0.529
-  expect_equal(unname(mean_delays_simple[1]), (10 * 0 + 5 * 1 + 2 * 2) / 17, tol = 1e-6)
+  expect_equal(
+    unname(mean_delays_simple[1]),
+    (10 * 0 + 5 * 1 + 2 * 2) / 17,
+    tol = 1e-6
+  )
   # Row 2: (8*0 + 4*1) / (8 + 4) = 4/12 = 0.333
-  # Note: weighted.mean returns NA when there are NA weights even with na.rm=TRUE
+  # Note: weighted.mean returns NA when there are NA weights
+  # even with na.rm=TRUE
   expect_true(is.na(mean_delays_simple[2]))
 })
 
 test_that("head.reporting_triangle preserves class", {
-  expect_no_warning(h <- head(rep_tri, n = 5))
+  h <- expect_no_warning(head(rep_tri, n = 5))
   expect_true(is_reporting_triangle(h))
   expect_identical(nrow(h), 5L)
   expect_identical(ncol(h), ncol(rep_tri))
 
   # Default n = 6
-  expect_no_warning(h_default <- head(rep_tri))
+  h_default <- expect_no_warning(head(rep_tri))
   expect_identical(nrow(h_default), 6L)
 })
 
 test_that("tail.reporting_triangle preserves class", {
-  expect_no_warning(t <- tail(rep_tri, n = 5))
+  t <- expect_no_warning(tail(rep_tri, n = 5))
   expect_true(is_reporting_triangle(t))
   expect_identical(nrow(t), 5L)
   expect_identical(ncol(t), ncol(rep_tri))
 
   # Default n = 6
-  expect_no_warning(t_default <- tail(rep_tri))
+  t_default <- expect_no_warning(tail(rep_tri))
   expect_identical(nrow(t_default), 6L)
 })
 
 test_that("[.reporting_triangle preserves class and validates", {
   # Row subsetting passes validation without warnings
-  expect_no_warning(sub_rows <- rep_tri[1:10, ])
+  sub_rows <- expect_no_warning(rep_tri[1:10, ])
   expect_true(is_reporting_triangle(sub_rows))
   expect_identical(nrow(sub_rows), 10L)
 
   # Column subsetting changes structure, should still preserve class
-  expect_no_warning(sub_cols <- rep_tri[, 1:5])
+  sub_cols <- expect_no_warning(rep_tri[, 1:5])
   expect_true(is_reporting_triangle(sub_cols))
 })
 
@@ -155,7 +160,7 @@ test_that("[.reporting_triangle row subsetting works correctly", {
   # Extract single row as vector (drop=TRUE, default)
   single_row_vec <- rep_tri[1, ]
   expect_false(is_reporting_triangle(single_row_vec))
-  expect_true(is.numeric(single_row_vec))
+  expect_type(single_row_vec, "double")
 })
 
 test_that("[.reporting_triangle column subsetting works correctly", {
@@ -174,7 +179,7 @@ test_that("[.reporting_triangle column subsetting works correctly", {
   # Extract single column as vector (drop=TRUE, default)
   single_col_vec <- rep_tri[, 1]
   expect_false(is_reporting_triangle(single_col_vec))
-  expect_true(is.numeric(single_col_vec))
+  expect_type(single_col_vec, "double")
 })
 
 test_that("[.reporting_triangle combined subsetting works correctly", {
@@ -188,7 +193,7 @@ test_that("[.reporting_triangle combined subsetting works correctly", {
   # Extract single element
   element <- rep_tri[1, 1]
   expect_false(is_reporting_triangle(element))
-  expect_true(is.numeric(element))
+  expect_type(element, "double")
   expect_length(element, 1L)
 })
 
@@ -472,11 +477,20 @@ test_that("truncate_to_quantile works correctly", {
   expect_lte(get_max_delay(result_50), get_max_delay(result_90))
 
   # Check that reference dates are preserved
-  expect_equal(get_reference_dates(result_99), get_reference_dates(test_tri))
-  expect_equal(get_reference_dates(result_50), get_reference_dates(test_tri))
+  expect_identical(
+    get_reference_dates(result_99),
+    get_reference_dates(test_tri)
+  )
+  expect_identical(
+    get_reference_dates(result_50),
+    get_reference_dates(test_tri)
+  )
 
   # Check that delays_unit attribute is preserved
-  expect_identical(attr(result_99, "delays_unit"), attr(test_tri, "delays_unit"))
+  expect_identical(
+    attr(result_99, "delays_unit"),
+    attr(test_tri, "delays_unit")
+  )
 
   # Test error with invalid p
   expect_error(
@@ -538,12 +552,12 @@ test_that("check_na_pattern detects expected triangular pattern", {
   )
   rt <- as_reporting_triangle(data = mat)
 
-  result <- baselinenowcast:::.check_na_pattern(rt)
+  result <- .check_na_pattern(rt)
 
   expect_true(result$valid)
   expect_identical(result$n_out_of_pattern, 0L)
   expect_identical(result$n_expected, 6L)
-  expect_identical(length(result$rows_affected), 0L)
+  expect_length(result$rows_affected, 0L)
   expect_false(any(result$positions))
 })
 
@@ -558,16 +572,17 @@ test_that("check_na_pattern detects out-of-pattern NAs", {
     ),
     nrow = 4, byrow = TRUE
   )
-  # Modify matrix before converting to reporting_triangle to create invalid pattern
+  # Modify matrix before converting to reporting_triangle
+  # to create invalid pattern
   mat[2, 2] <- NA
 
-  result <- baselinenowcast:::.check_na_pattern(mat)
+  result <- .check_na_pattern(mat)
 
   # One out-of-pattern NA at [2,2] (has data to the right and below)
   expect_false(result$valid)
   expect_identical(result$n_out_of_pattern, 1L)
   expect_identical(result$n_expected, 6L)
-  expect_identical(length(result$rows_affected), 1L)
+  expect_length(result$rows_affected, 1L)
   expect_identical(result$rows_affected, 2L)
   expect_true(result$positions[2, 2])
 })
@@ -586,7 +601,7 @@ test_that("check_na_pattern detects NA with data below", {
   # Modify to create out-of-pattern NA
   mat[1, 3] <- NA
 
-  result <- baselinenowcast:::.check_na_pattern(mat)
+  result <- .check_na_pattern(mat)
 
   # Out-of-pattern at [1,3] (has data at [2,3])
   expect_false(result$valid)
@@ -610,7 +625,7 @@ test_that("check_na_pattern detects NA with data to the right", {
   mat[2, 2] <- NA
   mat[2, 3] <- NA
 
-  result <- baselinenowcast:::.check_na_pattern(mat)
+  result <- .check_na_pattern(mat)
 
   # Out-of-pattern at [2,2] and [2,3] (have data at [2,4])
   expect_false(result$valid)
@@ -625,12 +640,12 @@ test_that("check_na_pattern handles complete triangle", {
   mat <- matrix(1:12, nrow = 3, ncol = 4)
   rt <- as_reporting_triangle(data = mat)
 
-  result <- baselinenowcast:::.check_na_pattern(rt)
+  result <- .check_na_pattern(rt)
 
   expect_true(result$valid)
   expect_identical(result$n_out_of_pattern, 0L)
   expect_identical(result$n_expected, 0L)
-  expect_identical(length(result$rows_affected), 0L)
+  expect_length(result$rows_affected, 0L)
   expect_false(any(result$positions))
 })
 
@@ -649,12 +664,12 @@ test_that("check_na_pattern handles multiple affected rows", {
   mat[1, 2] <- NA
   mat[2, 3] <- NA
 
-  result <- baselinenowcast:::.check_na_pattern(mat)
+  result <- .check_na_pattern(mat)
 
   # Out-of-pattern at [1,2] (data to right) and [2,3] (data to right)
   expect_false(result$valid)
   expect_identical(result$n_out_of_pattern, 2L)
-  expect_identical(length(result$rows_affected), 2L)
+  expect_length(result$rows_affected, 2L)
   expect_true(all(c(1, 2) %in% result$rows_affected))
 })
 
@@ -669,7 +684,7 @@ test_that("check_na_pattern works with plain matrix", {
     nrow = 3, byrow = TRUE
   )
 
-  result <- baselinenowcast:::.check_na_pattern(mat)
+  result <- .check_na_pattern(mat)
 
   expect_true(result$valid)
   expect_identical(result$n_out_of_pattern, 0L)

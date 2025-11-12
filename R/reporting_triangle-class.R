@@ -249,21 +249,21 @@ validate_reporting_triangle <- function(data) {
       n_oop <- na_check$n_out_of_pattern
       cli_abort(
         message = c(
-          "!" = "Invalid reporting triangle structure",
-          "x" = paste0(
+          `!` = "Invalid reporting triangle structure",
+          x = paste0(
             "Found ", n_oop, " NA value",
             if (n_oop != 1) "s" else "",
             " in unexpected position",
             if (n_oop != 1) "s" else ""
           ),
-          "i" = paste0(
+          i = paste0(
             "NA values should only appear in the bottom right ",
             "portion of the triangle"
           ),
-          "i" = paste0(
+          paste0(
             "Affected row",
             if (length(na_check$rows_affected) != 1) "s" else "",
-            ": ", paste(na_check$rows_affected, collapse = ", ")
+            ": ", toString(na_check$rows_affected)
           )
         )
       )

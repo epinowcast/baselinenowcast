@@ -42,7 +42,6 @@ We use the `baselinenowcast` package for nowcasting, `dplyr`, and `tidyr` for da
 For `baselinenowcast`, see the [installation instructions](https://github.com/epinowcast/baselinenowcast#installation).
 ```{r setup, message = FALSE, warning = FALSE, results = 'hide'}
 # Load packages
-library(baselinenowcast)
 library(dplyr)
 library(tidyr)
 library(stringr)
@@ -411,7 +410,7 @@ rep_tri_mat <- rep_tri_df |>
   select(-reference_date) |>
   as.matrix()
 
-rep_tri <- as_reporting_triangle(
+rep_tri <- baselinenowcast::as_reporting_triangle(
   data = rep_tri_mat,
   reference_dates = reference_dates,
   max_delay = max_delay

@@ -139,7 +139,7 @@ test_that("truncate_triangles preserves reporting_triangle class", {
   expect_identical(nrow(result[[1]]), 4L)
   expect_identical(ncol(result[[1]]), 4L)
   expect_identical(get_max_delay(result[[1]]), 3L)
-  expect_identical(length(get_reference_dates(result[[1]])), 4L)
+  expect_length(get_reference_dates(result[[1]]), 4L)
 
   # Check second element
   expect_true(is_reporting_triangle(result[[2]]))
@@ -147,7 +147,7 @@ test_that("truncate_triangles preserves reporting_triangle class", {
   expect_identical(nrow(result[[2]]), 3L)
   expect_identical(ncol(result[[2]]), 4L)
   expect_identical(get_max_delay(result[[2]]), 3L)
-  expect_identical(length(get_reference_dates(result[[2]])), 3L)
+  expect_length(get_reference_dates(result[[2]]), 3L)
 })
 
 test_that("truncate_triangles with plain matrix errors", {

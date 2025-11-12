@@ -9,7 +9,9 @@ point_nowcast_matrix <- matrix(
   byrow = TRUE
 )
 dispersion <- c(0.8, 12.4, 9.1)
-reporting_triangle <- construct_triangle(make_test_triangle(data = point_nowcast_matrix))
+reporting_triangle <- construct_triangle(
+  make_test_triangle(data = point_nowcast_matrix)
+)
 
 
 test_that(
@@ -36,7 +38,10 @@ test_that(
 test_that("sample_nowcasts: draws are distinct and properly indexed", {
   # Setup test data
   dispersion <- c(0.8, 12.4)
-  reporting_triangle <- construct_triangle(make_test_triangle(data = point_nowcast_matrix), structure = 2)
+  reporting_triangle <- construct_triangle(
+    make_test_triangle(data = point_nowcast_matrix),
+    structure = 2
+  )
   n_draws <- 5
 
   # Force seed for reproducibility
@@ -82,7 +87,10 @@ test_that("sample_nowcasts: draws are distinct and properly indexed", {
 test_that("sample_nowcasts: time index is correctly assigned", {
   # Setup test data
   dispersion <- c(0.8, 12.4)
-  reporting_triangle <- construct_triangle(make_test_triangle(data = point_nowcast_matrix), structure = 2)
+  reporting_triangle <- construct_triangle(
+    make_test_triangle(data = point_nowcast_matrix),
+    structure = 2
+  )
   n_draws <- 3
 
   result <- sample_nowcasts(
@@ -152,7 +160,9 @@ test_that(
       byrow = TRUE
     )
     dispersion <- c(0.8, 12.4, 9.1)
-    reporting_triangle <- construct_triangle(make_test_triangle(data = point_nowcast_matrix))
+    reporting_triangle <- construct_triangle(
+      make_test_triangle(data = point_nowcast_matrix)
+    )
 
     result_with_rolling_sum <- sample_nowcasts(
       point_nowcast_matrix,

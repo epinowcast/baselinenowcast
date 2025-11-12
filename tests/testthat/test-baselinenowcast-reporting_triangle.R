@@ -61,8 +61,8 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
   expect_blnc_structure(test_df, expected_cols)
 
   # Note: subsetting warnings are expected during internal operations
-  suppressWarnings(
-    result <- baselinenowcast(rep_tri,
+  result <- suppressWarnings(
+    baselinenowcast(rep_tri,
       delay_pmf = rep(0.2, 26),
       draws = 100
     )

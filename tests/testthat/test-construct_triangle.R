@@ -1,7 +1,7 @@
 #' Expect valid triangle (reporting_triangle with potential NAs in bottom-right)
 #' @keywords internal
 expect_valid_triangle <- function(object, has_nas = TRUE) {
-  testthat::expect_true(baselinenowcast::is_reporting_triangle(object))
+  testthat::expect_true(is_reporting_triangle(object))
   if (has_nas) {
     testthat::expect_true(anyNA(object))
   } else {

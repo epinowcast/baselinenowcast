@@ -53,32 +53,21 @@ the observed counts and the predicted counts for the unobserved elements.
 Generate a single draw of a nowcast combining observed and predicted values
 }
 \examples{
-point_nowcast_matrix <- matrix(
-  c(
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    90, 45, 25, 16.8,
-    80, 40, 21.2, 19.5,
-    70, 34.5, 15.4, 9.1
-  ),
-  nrow = 5,
-  byrow = TRUE
+# Generate point nowcast and uncertainty params from example data
+point_nowcast_matrix <- estimate_and_apply_delay(
+  example_reporting_triangle,
+  n = 4
 )
-ref_dates <- seq(
-  from = as.Date("2025-01-01"),
-  by = "day",
-  length.out = nrow(point_nowcast_matrix)
+reporting_triangle <- construct_triangle(example_reporting_triangle)
+uncertainty_params <- estimate_uncertainty_retro(
+  example_reporting_triangle,
+  n_history_delay = 5,
+  n_retrospective_nowcasts = 2
 )
-point_nowcast_obj <- as_reporting_triangle(
-  data = point_nowcast_matrix,
-  reference_dates = ref_dates
-)
-reporting_triangle <- construct_triangle(point_nowcast_obj)
-disp <- c(0.8, 12.4, 9.1)
 nowcast_draw <- sample_nowcast(
   point_nowcast_matrix,
   reporting_triangle,
-  disp
+  uncertainty_params
 )
 nowcast_draw
 }

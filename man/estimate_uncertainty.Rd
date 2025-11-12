@@ -60,36 +60,12 @@ and estimates at each horizon, starting at 0 up until the max delay
 number of horizons.
 }
 \examples{
-triangle_mat <- matrix(
-  c(
-    78, 40, 24, 9,
-    65, 46, 21, 7,
-    70, 40, 20, 5,
-    80, 50, 10, 10,
-    100, 40, 31, 20,
-    95, 45, 21, NA,
-    82, 42, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 8,
-  byrow = TRUE
-)
-ref_dates <- seq(
-  from = as.Date("2025-01-01"),
-  by = "day",
-  length.out = nrow(triangle_mat)
-)
-triangle <- as_reporting_triangle(
-  data = triangle_mat,
-  reference_dates = ref_dates
-)
-
-trunc_rts <- truncate_triangles(triangle, n = 3)
+# Use example data for retrospective nowcasting
+trunc_rts <- truncate_triangles(example_reporting_triangle, n = 2)
 retro_rts <- construct_triangles(trunc_rts)
 
-retro_nowcasts <- fill_triangles(retro_rts, n = 5)
-# Estimate dispersion parameters using default (negative binomial error
-# model on the sums)
+retro_nowcasts <- fill_triangles(retro_rts, n = 3)
+# Estimate dispersion parameters using default negative binomial model
 disp_params <- estimate_uncertainty(
   point_nowcast_matrices = retro_nowcasts,
   truncated_reporting_triangles = trunc_rts,

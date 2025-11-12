@@ -40,29 +40,12 @@ time and adds them to the predicted counts to form a single draw of the
 nowcast for the final counts by reference time.
 }
 \examples{
+# Use example data
+reporting_triangle <- construct_triangle(example_reporting_triangle)
 pred_counts <- c(10, 20, 30, 40)
-reporting_matrix <- matrix(
-  c(
-    7, 9, 4, 3,
-    1, 2, 3, 4,
-    5, 6, 7, 8,
-    9, 10, 11, 12
-  ),
-  nrow = 4,
-  byrow = TRUE
-)
-ref_dates <- seq(
-  from = as.Date("2025-01-01"),
-  by = "day",
-  length.out = nrow(reporting_matrix)
-)
-reporting_triangle_obj <- as_reporting_triangle(
-  data = reporting_matrix,
-  reference_dates = ref_dates
-)
-reporting_triangle <- construct_triangle(reporting_triangle_obj)
 combine_obs_with_pred(pred_counts, reporting_triangle)
-# Another example with rolling sum
+
+# Example with rolling sum
 if (requireNamespace("zoo", quietly = TRUE)) {
   combine_obs_with_pred(pred_counts,
     reporting_triangle,

@@ -74,34 +74,9 @@ For more control over individual steps (e.g., custom matrix preparation,
 alternative aggregation), use the low-level functions directly.
 }
 \examples{
-# Create example reporting triangle
-triangle_mat <- matrix(
-  c(
-    65, 46, 21, 7,
-    70, 40, 20, 5,
-    80, 50, 10, 10,
-    100, 40, 31, 20,
-    95, 45, 21, NA,
-    82, 42, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 7,
-  byrow = TRUE
-)
-ref_dates <- seq(
-  from = as.Date("2025-01-01"),
-  by = "day",
-  length.out = nrow(triangle_mat)
-)
-triangle <- as_reporting_triangle(
-  data = triangle_mat,
-  reference_dates = ref_dates
-) |>
-  truncate_to_delay(max_delay = 3)
-
-# Estimate uncertainty parameters
+# Use package example data
 uncertainty_params <- estimate_uncertainty_retro(
-  triangle,
+  example_reporting_triangle,
   n_history_delay = 5,
   n_retrospective_nowcasts = 2
 )
@@ -109,7 +84,7 @@ uncertainty_params
 
 # Estimate with custom parameters
 uncertainty_params_custom <- estimate_uncertainty_retro(
-  triangle,
+  example_reporting_triangle,
   n_history_delay = 4,
   n_retrospective_nowcasts = 2
 )

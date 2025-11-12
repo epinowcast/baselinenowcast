@@ -165,10 +165,32 @@ truncate_triangles <- function(reporting_triangle,
   assert_integerish(n, lower = 0)
   trunc_rep_tri_list <- lapply(
     seq_len(n),
-    function(t) truncate_triangle(reporting_triangle, t)
+    function(t) .truncate_triangle_impl(reporting_triangle, t)
   )
 
   return(trunc_rep_tri_list)
+}
+
+#' Internal implementation of truncate_triangle without validation
+#'
+#' @inheritParams truncate_triangle
+#' @return Truncated reporting_triangle
+#' @keywords internal
+#' @noRd
+.truncate_triangle_impl <- function(reporting_triangle, t) {
+  n_obs <- nrow(reporting_triangle)
+  if (t >= n_obs) {
+    cli_abort(
+      message = c(
+        "The as of time point is greater than or equal to the number of ",
+        "rows in the original triangle."
+      )
+    )
+  }
+
+  # Use head method which preserves class and attributes
+  n_rows <- n_obs - t
+  return(head(reporting_triangle, n = n_rows))
 }
 
 #' Get a single truncated triangle
@@ -195,17 +217,5 @@ truncate_triangle <- function(reporting_triangle,
   assert_reporting_triangle(reporting_triangle)
   assert_integerish(t, lower = 0)
 
-  n_obs <- nrow(reporting_triangle)
-  if (t >= n_obs) {
-    cli_abort(
-      message = c(
-        "The as of time point is greater than or equal to the number of ",
-        "rows in the original triangle."
-      )
-    )
-  }
-
-  # Use head method which preserves class and attributes
-  n_rows <- n_obs - t
-  return(head(reporting_triangle, n = n_rows))
+  return(.truncate_triangle_impl(reporting_triangle, t))
 }

@@ -16,9 +16,6 @@
     cli_abort(message = "`{triangle_name}` argument is missing.") # nolint
   }
 
-  # First check structural validity
-  validate_reporting_triangle(triangle)
-
   assert_integerish(n)
 
   # Check if the triangle has a valid structure

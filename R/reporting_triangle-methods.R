@@ -206,15 +206,14 @@ tail.reporting_triangle <- function(x, n = 6L, ...) {
 #' @importFrom cli cli_text
 .display_triangle_basics <- function(x, show_dimensions = FALSE) {
   info <- .get_triangle_info(x)
-  date_range <- .format_reference_date_range(x)
 
   if (show_dimensions) {
     cli_text("Dimensions: {info$n_rows} x {info$n_cols}")
-    cli_text("Reference period: {date_range}")
+    cli_text("Reference period: {.format_reference_date_range(x)}")
     cli_text("Max delay: {info$max_delay} {info$delays_unit}")
   } else {
     cli_text("Delays unit: {info$delays_unit}")
-    cli_text("Reference dates: {date_range}")
+    cli_text("Reference dates: {.format_reference_date_range(x)}")
     cli_text("Max delay: {info$max_delay}")
   }
   cli_text("Structure: {info$structure}")

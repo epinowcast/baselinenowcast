@@ -166,37 +166,33 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   nr <- nrow(mat)
   nc <- ncol(mat)
 
-  # Matrix to track out-of-pattern NAs
-  out_of_pattern <- matrix(FALSE, nrow = nr, ncol = nc)
-
   # Find all NA positions
   na_positions <- is.na(mat)
 
-  if (any(na_positions)) {
-
-  # Check each NA position
-  for (i in seq_len(nr)) {
-    for (j in seq_len(nc)) {
-      if (!na_positions[i, j]) next
-
-      # Check if any values below this NA are non-NA (same column, later rows)
-      has_data_below <- if (i < nr) {
-        !all(is.na(mat[(i + 1):nr, j]))
-      } else {
-        FALSE
-      }
-
-      # Check if any values to the right are non-NA (same row, later delays)
-      has_data_right <- if (j < nc) {
-        !all(is.na(mat[i, (j + 1):nc]))
-      } else {
-        FALSE
-      }
-
-      # Mark as out-of-pattern if either condition is true
-      out_of_pattern[i, j] <- has_data_below || has_data_right
-    }
+  if (!any(na_positions)) {
+    return(list(
+      valid = TRUE,
+      n_out_of_pattern = 0L,
+      n_expected = 0L,
+      positions = matrix(FALSE, nrow = nr, ncol = nc),
+      rows_affected = integer(0)
+    ))
   }
+
+  # For each column: check if any non-NA appears below an NA
+  # Using cummax going down each column - once NA (TRUE), should stay TRUE
+  col_cummax <- apply(na_positions, 2, cummax)
+  # If cummax is TRUE but original is FALSE, we have data below an NA
+  has_data_below <- col_cummax & !na_positions
+
+  # For each row: check if any non-NA appears to right of an NA
+  # Using cummax going right in each row - once NA (TRUE), should stay TRUE
+  row_cummax <- t(apply(na_positions, 1, cummax))
+  # If cummax is TRUE but original is FALSE, we have data to right of NA
+  has_data_right <- row_cummax & !na_positions
+
+  # Out of pattern if either condition is met
+  out_of_pattern <- has_data_below | has_data_right
 
   n_out_of_pattern <- sum(out_of_pattern)
   n_expected <- sum(na_positions) - n_out_of_pattern
@@ -209,15 +205,6 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
     n_expected = n_expected,
     positions = out_of_pattern,
     rows_affected = rows_affected
-  ))
-  }
-
-  return(list(
-    valid = TRUE,
-    n_out_of_pattern = 0L,
-    n_expected = 0L,
-    positions = out_of_pattern,
-    rows_affected = integer(0)
   ))
 }
 

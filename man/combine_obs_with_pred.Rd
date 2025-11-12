@@ -12,7 +12,7 @@ combine_obs_with_pred(
 )
 }
 \arguments{
-\item{predicted_counts}{Vector of predicted counts at each reference time.
+\item{predicted_counts}{Vector of predicted counts at each reference date.
 Note that if using a reference time or delay aggregator function, this
 is assumed to have already been aggregated.}
 
@@ -32,8 +32,8 @@ of the retrospective point nowcast matrix after it has been aggregated
 across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
 }
 \value{
-A vector of predicted counts at each reference time, for all
-reference times in the input \code{reporting_triangle} (or fewer if using
+A vector of predicted counts at each reference date, for all
+reference dates in the input \code{reporting_triangle} (or fewer if using
 \code{ref_time_aggregator})
 }
 \description{

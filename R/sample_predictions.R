@@ -15,8 +15,8 @@
 #'    negative binomial for each element of the vector.
 #' @inheritParams estimate_delay
 #' @inheritParams estimate_uncertainty
-#' @returns Vector of predicted draws at each reference time, for all reference
-#'    times in the input `point_nowcast_matrix`.
+#' @returns Vector of predicted draws at each reference date, for all reference
+#'    dates in the input `point_nowcast_matrix`.
 #' @family generate_probabilistic_nowcasts
 #' @export
 #' @importFrom cli cli_abort cli_warn
@@ -167,13 +167,13 @@ sample_prediction <- function(
 #' time and adds them to the predicted counts to form a single draw of the
 #' nowcast for the final counts by reference time.
 #'
-#' @param predicted_counts Vector of predicted counts at each reference time.
+#' @param predicted_counts Vector of predicted counts at each reference date.
 #'    Note that if using a reference time or delay aggregator function, this
 #'    is assumed to have already been aggregated.
 #' @inheritParams sample_prediction
 #'
-#' @returns A vector of predicted counts at each reference time, for all
-#'    reference times in the input `reporting_triangle` (or fewer if using
+#' @returns A vector of predicted counts at each reference date, for all
+#'    reference dates in the input `reporting_triangle` (or fewer if using
 #'    `ref_time_aggregator`)
 #' @family generate_probabilistic_nowcasts
 #' @export
@@ -210,7 +210,7 @@ combine_obs_with_pred <- function(
 #' @inheritParams sample_prediction
 #' @returns Dataframe containing the predicted point nowcast vectors indexed by
 #'    predicted count (`pred_count`), reference date (`reference_date`), and
-#'    the draw index (`draw`). Returns predictions for all reference times in the
+#'    the draw index (`draw`). Returns predictions for all reference dates in the
 #'    input `reporting_triangle` (or fewer if using `ref_time_aggregator`).
 #' @family generate_probabilistic_nowcasts
 #' @export
@@ -284,9 +284,9 @@ sample_predictions <- function(
 #' Generate a single draw of a nowcast combining observed and predicted values
 #'
 #' @inheritParams sample_prediction
-#' @returns Vector of predicted counts at each reference time based on combining
+#' @returns Vector of predicted counts at each reference date based on combining
 #'    the observed counts and the predicted counts for the unobserved elements.
-#'    Returns values for all reference times in the input `reporting_triangle`
+#'    Returns values for all reference dates in the input `reporting_triangle`
 #'    (or fewer if using `ref_time_aggregator`).
 #' @family generate_probabilistic_nowcasts
 #' @export
@@ -343,7 +343,7 @@ sample_nowcast <- function(
 #' @returns Dataframe containing information for multiple draws with columns
 #'  for the reference date (`reference_date`), the predicted counts
 #'  (`pred_count`), and the draw number (`draw`). Returns predictions for all
-#'  reference times in the input `reporting_triangle` (or fewer if using
+#'  reference dates in the input `reporting_triangle` (or fewer if using
 #'  `ref_time_aggregator`).
 #' @family generate_probabilistic_nowcasts
 #' @export

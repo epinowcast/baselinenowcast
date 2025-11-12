@@ -37,7 +37,7 @@ nowcast vector to generate. Default is \code{1000}.}
 Dataframe containing information for multiple draws with columns
 for the reference date (\code{reference_date}), the predicted counts
 (\code{pred_count}), and the draw number (\code{draw}). Returns predictions for all
-reference times in the input \code{reporting_triangle} (or fewer if using
+reference dates in the input \code{reporting_triangle} (or fewer if using
 \code{ref_time_aggregator}).
 }
 \description{

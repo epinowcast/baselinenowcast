@@ -40,7 +40,6 @@ rep_custom
 \seealso{
 Retrospective data generation functions
 \code{\link{construct_triangles}()},
-\code{\link{truncate_triangle}()},
-\code{\link{truncate_triangles}()}
+\code{\link{truncate_triangle}()}
 }
 \concept{generate_retrospective_data}

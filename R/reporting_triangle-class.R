@@ -322,12 +322,19 @@ is_reporting_triangle <- function(x) {
 #'
 #' @param reporting_triangle The original [reporting_triangle] object.
 #' @param new_matrix The modified matrix data.
+#' @param reference_dates Optional. Reference dates for the new matrix. If NULL,
+#'   extracts from rownames of new_matrix.
 #' @return A new [reporting_triangle] object with the updated matrix data.
 #' @keywords internal
-.update_triangle_matrix <- function(reporting_triangle, new_matrix) {
+.update_triangle_matrix <- function(reporting_triangle, new_matrix,
+                                    reference_dates = NULL) {
+  if (is.null(reference_dates)) {
+    reference_dates <- as.Date(rownames(new_matrix))
+  }
+
   return(new_reporting_triangle(
     reporting_triangle_matrix = new_matrix,
-    reference_dates = get_reference_dates(reporting_triangle),
+    reference_dates = reference_dates,
     delays_unit = get_delays_unit(reporting_triangle)
   ))
 }

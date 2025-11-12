@@ -161,7 +161,11 @@ as.data.frame.reporting_triangle <- function(
 #' head(example_reporting_triangle, n = 3)
 head.reporting_triangle <- function(x, n = 6L, ...) {
   n <- min(n, nrow(x))
-  return(x[seq_len(n), , drop = FALSE])
+  # Convert to matrix, subset, then restore class
+  mat <- as.matrix(x)
+  subset_mat <- mat[seq_len(n), , drop = FALSE]
+  # .update_triangle_matrix will extract reference_dates from rownames
+  return(.update_triangle_matrix(x, subset_mat))
 }
 
 #' Get last rows of a reporting_triangle
@@ -179,7 +183,11 @@ head.reporting_triangle <- function(x, n = 6L, ...) {
 #' tail(example_reporting_triangle, n = 3)
 tail.reporting_triangle <- function(x, n = 6L, ...) {
   n <- min(n, nrow(x))
-  return(x[seq.int(to = nrow(x), length.out = n), , drop = FALSE])
+  # Convert to matrix, subset, then restore class
+  mat <- as.matrix(x)
+  subset_mat <- mat[seq.int(to = nrow(mat), length.out = n), , drop = FALSE]
+  # .update_triangle_matrix will extract reference_dates from rownames
+  return(.update_triangle_matrix(x, subset_mat))
 }
 
 #' Get formatted reference date range string

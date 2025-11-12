@@ -50,15 +50,7 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
   n_delays <- length(delay_pmf)
   n_rows <- nrow(reporting_triangle)
 
-  # Store original attributes to restore after computation
-  original_class <- class(reporting_triangle)
-  original_delays_unit <- get_delays_unit(reporting_triangle)
-  original_dimnames <- dimnames(reporting_triangle)
-
-  # Convert to plain matrix for internal operations
-  tri_mat <- as.matrix(reporting_triangle)
-
-  n_row_nas <- sum(is.na(rowSums(tri_mat)))
+  n_row_nas <- sum(is.na(rowSums(reporting_triangle)))
   if (n_row_nas == 0) {
     cli_abort(
       message = c("`reporting_triangle` doesn't contain any missing values, there is nothing to nowcast.", # nolint
@@ -85,13 +77,14 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
       ))
     },
     2:n_delays,
-    init = tri_mat
+    init = reporting_triangle
   )
 
-  # Restore reporting_triangle class and attributes
-  class(point_nowcast_matrix) <- original_class
-  attr(point_nowcast_matrix, "delays_unit") <- original_delays_unit
-  dimnames(point_nowcast_matrix) <- original_dimnames
+  # Preserve reporting_triangle class and attributes
+  point_nowcast_matrix <- .update_reporting_triangle(
+    point_nowcast_matrix,
+    reporting_triangle
+  )
 
   return(point_nowcast_matrix)
 }
@@ -148,4 +141,20 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
 
 .calc_modified_expectation <- function(x, delay_cdf_prev) {
   return((x + 1 - delay_cdf_prev) / delay_cdf_prev)
+}
+
+#' Update reporting_triangle object preserving class and attributes
+#'
+#' Helper function to restore reporting_triangle class and attributes after
+#' matrix operations.
+#'
+#' @param x Matrix or object to update
+#' @param template reporting_triangle object to copy class and attributes from
+#' @return Object with reporting_triangle class and attributes restored
+#' @keywords internal
+.update_reporting_triangle <- function(x, template) {
+  class(x) <- class(template)
+  attr(x, "delays_unit") <- get_delays_unit(template)
+  dimnames(x) <- dimnames(template)
+  return(x)
 }

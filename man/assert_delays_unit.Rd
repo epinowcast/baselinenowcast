@@ -13,10 +13,6 @@ assert_delays_unit(delays_unit)
 NULL, invisibly. Stops execution with error if validation fails.
 }
 \description{
-Validate each item in the reporting triangle
+Assert delays_unit is valid
 }
-\keyword{Assert}
-\keyword{delays_unit}
 \keyword{internal}
-\keyword{is}
-\keyword{valid}

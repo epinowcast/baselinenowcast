@@ -46,10 +46,10 @@ reporting triangle.
 }
 \examples{
 # Generate retrospective nowcasts from example triangle
-trunc_rts <- truncate_triangles(example_reporting_triangle)
+trunc_rts <- truncate_triangles(example_reporting_triangle, n = 2)
 retro_rts <- construct_triangles(trunc_rts)
 retro_pt_nowcast_mat_list <- fill_triangles(retro_rts)
-retro_pt_nowcast_mat_list[1:3]
+retro_pt_nowcast_mat_list[1:2]
 }
 \seealso{
 Point nowcast generation functions

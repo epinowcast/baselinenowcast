@@ -25,10 +25,10 @@
 #' @importFrom cli cli_abort cli_alert_danger cli_alert_info
 #' @examples
 #' # Generate retrospective nowcasts from example triangle
-#' trunc_rts <- truncate_triangles(example_reporting_triangle)
+#' trunc_rts <- truncate_triangles(example_reporting_triangle, n = 2)
 #' retro_rts <- construct_triangles(trunc_rts)
 #' retro_pt_nowcast_mat_list <- fill_triangles(retro_rts)
-#' retro_pt_nowcast_mat_list[1:3]
+#' retro_pt_nowcast_mat_list[1:2]
 fill_triangles <- function(retro_reporting_triangles,
                            n = min(
                              sapply(retro_reporting_triangles, nrow)
@@ -80,7 +80,9 @@ fill_triangles <- function(retro_reporting_triangles,
   )
 
   # After running, filter the results to find error indices
-  error_indices <- which(sapply(point_nowcast_matrices, is.null))
+  error_indices <- which(vapply(
+    point_nowcast_matrices, is.null, logical(1)
+  ))
   # Print summary
   if (length(error_indices) == length(retro_reporting_triangles)) {
     cli_abort(

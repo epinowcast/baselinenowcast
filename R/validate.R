@@ -447,12 +447,6 @@
 
 #' Validate each item in the reporting triangle
 #'
-#' @inheritParams new_reporting_triangle
-#' @inheritParams as_reporting_triangle.matrix
-#' @inheritParams as_reporting_triangle
-#'
-#' @returns NULL
-#' @keywords internal
 #' Assert delays_unit is valid
 #'
 #' @param delays_unit Character string specifying the temporal granularity

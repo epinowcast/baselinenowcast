@@ -113,7 +113,7 @@ estimate_uncertainty_retro <- function(
   )
 
   if (is.null(pt_nowcast_mat_list) ||
-    all(sapply(pt_nowcast_mat_list, is.null))) {
+    all(vapply(pt_nowcast_mat_list, is.null, logical(1)))) {
     cli_warn(
       message = c(
         "Insufficient data to generate point nowcasts",

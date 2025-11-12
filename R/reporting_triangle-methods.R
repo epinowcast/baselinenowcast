@@ -1,4 +1,12 @@
-#' @rdname subset.reporting_triangle
+#' Subset reporting_triangle objects
+#'
+#' @description
+#' Extract or replace parts of a reporting_triangle object while preserving its
+#' attributes.
+#'
+#' @param x A [reporting_triangle] object
+#' @param ... Indices for subsetting
+#' @return A [reporting_triangle] object with the subset data
 #' @method [ reporting_triangle
 #' @export
 `[.reporting_triangle` <- function(x, ...) {
@@ -209,11 +217,11 @@ tail.reporting_triangle <- function(x, n = 6L, ...) {
 
   if (show_dimensions) {
     cli_text("Dimensions: {info$n_rows} x {info$n_cols}")
-    cli_text("Reference period: {.format_reference_date_range(x)}")
+    cli_text("Reference period: {(.format_reference_date_range(x))}")
     cli_text("Max delay: {info$max_delay} {info$delays_unit}")
   } else {
     cli_text("Delays unit: {info$delays_unit}")
-    cli_text("Reference dates: {.format_reference_date_range(x)}")
+    cli_text("Reference dates: {(.format_reference_date_range(x))}")
     cli_text("Max delay: {info$max_delay}")
   }
   cli_text("Structure: {info$structure}")

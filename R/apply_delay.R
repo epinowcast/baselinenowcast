@@ -81,9 +81,9 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
   )
 
   # Preserve reporting_triangle class and attributes
-  point_nowcast_matrix <- .update_reporting_triangle(
-    point_nowcast_matrix,
-    reporting_triangle
+  point_nowcast_matrix <- .update_triangle_matrix(
+    reporting_triangle,
+    point_nowcast_matrix
   )
 
   return(point_nowcast_matrix)
@@ -141,20 +141,4 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
 
 .calc_modified_expectation <- function(x, delay_cdf_prev) {
   return((x + 1 - delay_cdf_prev) / delay_cdf_prev)
-}
-
-#' Update reporting_triangle object preserving class and attributes
-#'
-#' Helper function to restore reporting_triangle class and attributes after
-#' matrix operations.
-#'
-#' @param x Matrix or object to update
-#' @param template reporting_triangle object to copy class and attributes from
-#' @return Object with reporting_triangle class and attributes restored
-#' @keywords internal
-.update_reporting_triangle <- function(x, template) {
-  class(x) <- class(template)
-  attr(x, "delays_unit") <- get_delays_unit(template)
-  dimnames(x) <- dimnames(template)
-  return(x)
 }

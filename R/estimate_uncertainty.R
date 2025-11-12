@@ -112,7 +112,9 @@ estimate_uncertainty <- function(
   )
 
   # Truncate to only n nowcasts and extract only non-null elements of both lists
-  non_null_indices <- which(!sapply(point_nowcast_matrices[1:n], is.null))
+  non_null_indices <- which(!vapply(
+    point_nowcast_matrices[1:n], is.null, logical(1)
+  ))
   n_iters <- length(non_null_indices)
   list_of_ncs <- point_nowcast_matrices[non_null_indices]
   list_of_obs <- truncated_reporting_triangles[non_null_indices]

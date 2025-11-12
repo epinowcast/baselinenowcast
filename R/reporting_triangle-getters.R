@@ -234,6 +234,9 @@ get_delays_from_dates <- function(report_dates, reference_dates,
 #' @family reporting_triangle
 #' @importFrom stats weighted.mean
 #' @export
+#' @examples
+#' mean_delays <- get_mean_delay(example_reporting_triangle)
+#' mean_delays
 get_mean_delay <- function(x) {
   if (!is_reporting_triangle(x)) {
     cli_abort(message = "x must have class 'reporting_triangle'")
@@ -258,6 +261,14 @@ get_mean_delay <- function(x) {
 #' @family reporting_triangle
 #' @export
 #' @importFrom checkmate assert_numeric
+#' @examples
+#' # Get 99th percentile delay for each reference date
+#' quantile_delays_99 <- get_quantile_delay(example_reporting_triangle)
+#' quantile_delays_99
+#'
+#' # Get median delay
+#' median_delays <- get_quantile_delay(example_reporting_triangle, p = 0.5)
+#' median_delays
 get_quantile_delay <- function(x, p = 0.99) {
   if (!is_reporting_triangle(x)) {
     cli_abort(message = "x must have class 'reporting_triangle'")

@@ -23,6 +23,11 @@ A data.frame with columns reference_date, report_date, delay, count
 \description{
 Convert reporting_triangle to data.frame
 }
+\examples{
+# Convert reporting triangle to data frame
+df <- as.data.frame(example_reporting_triangle)
+head(df)
+}
 \seealso{
 Reporting triangle construction and validation
 \code{\link{[<-.reporting_triangle}()},

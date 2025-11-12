@@ -19,6 +19,10 @@ First rows as a reporting_triangle.
 \description{
 Get first rows of a reporting_triangle
 }
+\examples{
+# Get first 3 rows
+head(example_reporting_triangle, n = 3)
+}
 \seealso{
 Reporting triangle construction and validation
 \code{\link{[<-.reporting_triangle}()},

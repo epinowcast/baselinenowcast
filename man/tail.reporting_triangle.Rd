@@ -19,6 +19,10 @@ Last rows as a reporting_triangle.
 \description{
 Get last rows of a reporting_triangle
 }
+\examples{
+# Get last 3 rows
+tail(example_reporting_triangle, n = 3)
+}
 \seealso{
 Reporting triangle construction and validation
 \code{\link{[<-.reporting_triangle}()},

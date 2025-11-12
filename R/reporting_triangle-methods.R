@@ -106,6 +106,10 @@ as.matrix.reporting_triangle <- function(x, ...) {
 #' @family reporting_triangle
 #' @export
 #' @method as.data.frame reporting_triangle
+#' @examples
+#' # Convert reporting triangle to data frame
+#' df <- as.data.frame(example_reporting_triangle)
+#' head(df)
 as.data.frame.reporting_triangle <- function(
     x, row.names = NULL, optional = FALSE, ...) {
   if (!is_reporting_triangle(x)) {
@@ -151,6 +155,9 @@ as.data.frame.reporting_triangle <- function(
 #' @export
 #' @importFrom utils head
 #' @method head reporting_triangle
+#' @examples
+#' # Get first 3 rows
+#' head(example_reporting_triangle, n = 3)
 head.reporting_triangle <- function(x, n = 6L, ...) {
   n <- min(n, nrow(x))
   return(x[seq_len(n), , drop = FALSE])
@@ -166,6 +173,9 @@ head.reporting_triangle <- function(x, n = 6L, ...) {
 #' @export
 #' @importFrom utils tail
 #' @method tail reporting_triangle
+#' @examples
+#' # Get last 3 rows
+#' tail(example_reporting_triangle, n = 3)
 tail.reporting_triangle <- function(x, n = 6L, ...) {
   n <- min(n, nrow(x))
   return(x[seq.int(to = nrow(x), length.out = n), , drop = FALSE])
@@ -394,6 +404,9 @@ print.reporting_triangle <- function(x, n_rows = 10, n_cols = 10, ...) {
 #' @export
 #' @importFrom cli cli_text cli_rule
 #' @method summary reporting_triangle
+#' @examples
+#' # Display summary statistics
+#' summary(example_reporting_triangle)
 summary.reporting_triangle <- function(object, ...) {
   cli_text("{.strong Reporting Triangle Summary}")
   cli_rule()

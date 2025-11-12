@@ -15,6 +15,10 @@ Vector of mean delays for each reference date (numeric)
 \description{
 Get mean delay for each row of reporting_triangle
 }
+\examples{
+mean_delays <- get_mean_delay(example_reporting_triangle)
+mean_delays
+}
 \seealso{
 Reporting triangle construction and validation
 \code{\link{[<-.reporting_triangle}()},

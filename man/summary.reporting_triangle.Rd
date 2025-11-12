@@ -17,6 +17,10 @@ Invisibly returns the object.
 \description{
 Summarize a reporting_triangle object
 }
+\examples{
+# Display summary statistics
+summary(example_reporting_triangle)
+}
 \seealso{
 Reporting triangle construction and validation
 \code{\link{[<-.reporting_triangle}()},

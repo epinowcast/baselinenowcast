@@ -20,6 +20,15 @@ NA for rows with no observations.
 \description{
 Get quantile delay for each row of reporting_triangle
 }
+\examples{
+# Get 99th percentile delay for each reference date
+quantile_delays_99 <- get_quantile_delay(example_reporting_triangle)
+quantile_delays_99
+
+# Get median delay
+median_delays <- get_quantile_delay(example_reporting_triangle, p = 0.5)
+median_delays
+}
 \seealso{
 Reporting triangle construction and validation
 \code{\link{[<-.reporting_triangle}()},

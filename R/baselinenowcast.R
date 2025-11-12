@@ -90,7 +90,7 @@ baselinenowcast <- function(data,
 #' rep_tri <- as_reporting_triangle(data = data_as_of_df) |>
 #'   truncate_to_delay(max_delay = 25) |>
 #'   tail(n = 40)
-#' nowcast_df <- baselinenowcast(rep_tri)
+#' nowcast_df <- baselinenowcast(rep_tri, draws = 100)
 #' nowcast_df
 baselinenowcast.reporting_triangle <- function(
     data,
@@ -254,7 +254,8 @@ baselinenowcast.reporting_triangle <- function(
 #' ]
 #' nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
 #'   max_delay = 25,
-#'   strata_cols = c("age_group", "location")
+#'   strata_cols = c("age_group", "location"),
+#'   draws = 100
 #' )
 #' nowcasts_df
 baselinenowcast.data.frame <- function(

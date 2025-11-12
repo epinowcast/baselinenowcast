@@ -154,7 +154,8 @@ covid_data_to_nowcast <- germany_covid19_hosp[
 ]
 nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
   max_delay = 25,
-  strata_cols = c("age_group", "location")
+  strata_cols = c("age_group", "location"),
+  draws = 100
 )
 nowcasts_df
 }

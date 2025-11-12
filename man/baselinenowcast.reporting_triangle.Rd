@@ -112,7 +112,7 @@ data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 rep_tri <- as_reporting_triangle(data = data_as_of_df) |>
   truncate_to_delay(max_delay = 25) |>
   tail(n = 40)
-nowcast_df <- baselinenowcast(rep_tri)
+nowcast_df <- baselinenowcast(rep_tri, draws = 100)
 nowcast_df
 }
 \seealso{

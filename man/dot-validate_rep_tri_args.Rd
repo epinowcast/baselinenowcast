@@ -11,7 +11,14 @@
 
 \item{reference_dates}{Date vector of reference dates.}
 
-\item{delays_unit}{Character string specifying temporal granularity.}
+\item{delays_unit}{Character string specifying the temporal granularity of
+the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
+For the matrix method, this is simply passed as an item in the
+\code{reporting_triangle} object which will later be used to create a nowcast
+data.frame. For the data.frame method, this is used to compute the delay
+in terms of the specified unit, and to expand the combinations of
+reference dates and delays to the complete set of combinations in
+the reporting triangle.  Default is \code{"days"}.}
 }
 \description{
 Internal helper to validate the arguments passed to new_reporting_triangle.

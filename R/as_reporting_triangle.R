@@ -149,9 +149,7 @@ as_reporting_triangle.data.frame <- function(
 #' @param data Matrix of a reporting triangle where rows are reference times,
 #'    columns are delays, and entries are the incident counts.
 #'    The number of columns determines the maximum delay.
-#' @param delays_unit Character string specifying the temporal granularity of
-#'    the delays. Options are `"days"`, `"weeks"`, `"months"`, `"years"`.
-#'    Default is `"days"`.
+#' @inheritParams as_reporting_triangle
 #' @param reference_dates Vector of Date objects or character strings indicating
 #'   the reference dates corresponding to each row of the reporting triangle
 #'   matrix (`data`). If NULL (default), dummy dates starting from 1900-01-01

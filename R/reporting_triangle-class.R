@@ -72,7 +72,7 @@ NULL
 #'
 #' @param reporting_triangle_matrix Matrix of reporting triangle data.
 #' @param reference_dates Date vector of reference dates.
-#' @param delays_unit Character string specifying temporal granularity.
+#' @inheritParams as_reporting_triangle
 #' @return NULL
 #' @keywords internal
 .validate_rep_tri_args <- function(reporting_triangle_matrix,
@@ -98,8 +98,7 @@ NULL
 #'   are reference times, columns are delays, and entries are incident counts.
 #' @param reference_dates Vector of Date objects indicating the reference dates
 #'   corresponding to each row of the matrix.
-#' @param delays_unit Character string specifying the temporal granularity.
-#'   Options are `"days"`, `"weeks"`, `"months"`, `"years"`.
+#' @inheritParams as_reporting_triangle
 #'
 #' @returns An object of class [reporting_triangle]
 #' @family reporting_triangle

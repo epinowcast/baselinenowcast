@@ -13,7 +13,12 @@ The number of columns determines the maximum delay.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
-Default is \code{"days"}.}
+For the matrix method, this is simply passed as an item in the
+\code{reporting_triangle} object which will later be used to create a nowcast
+data.frame. For the data.frame method, this is used to compute the delay
+in terms of the specified unit, and to expand the combinations of
+reference dates and delays to the complete set of combinations in
+the reporting triangle.  Default is \code{"days"}.}
 
 \item{reference_dates}{Vector of Date objects or character strings indicating
 the reference dates corresponding to each row of the reporting triangle

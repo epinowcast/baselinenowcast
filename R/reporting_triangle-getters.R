@@ -102,8 +102,7 @@ get_delays_unit <- function(x) {
 #'
 #' @param reference_dates Date vector of reference dates.
 #' @param delays Numeric vector of delays.
-#' @param delays_unit Character string specifying the temporal granularity.
-#'   Options are `"days"`, `"weeks"`, `"months"`, `"years"`.
+#' @inheritParams as_reporting_triangle
 #' @return Date vector of report dates.
 #' @family reporting_triangle
 #' @export
@@ -200,8 +199,7 @@ get_report_dates <- function(reference_dates, delays, delays_unit) {
 #'
 #' @param report_dates Date vector of report dates.
 #' @param reference_dates Date vector of reference dates.
-#' @param delays_unit Character string specifying the time unit for delays.
-#'   Must be one of "days", "weeks", "months", or "years".
+#' @inheritParams as_reporting_triangle
 #' @return Numeric vector of delays.
 #' @family reporting_triangle
 #' @export

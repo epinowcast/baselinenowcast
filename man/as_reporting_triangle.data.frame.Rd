@@ -60,7 +60,6 @@ input options.
 }
 \examples{
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-# max_delay is automatically computed from the data
 as_reporting_triangle(data = data_as_of_df)
 }
 \seealso{

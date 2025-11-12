@@ -79,6 +79,12 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
 #'   removed.
 #' @keywords internal
 .align_time_to_dates <- function(baselinenowcast_df, reference_dates) {
+  # If reference_date column already exists, return as-is
+  if ("reference_date" %in% names(baselinenowcast_df)) {
+    return(baselinenowcast_df)
+  }
+
+  # Otherwise, convert time indices to reference dates
   spine_df <- data.frame(
     reference_date = reference_dates,
     time = seq_along(reference_dates)

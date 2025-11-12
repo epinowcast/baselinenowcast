@@ -216,6 +216,10 @@ as_reporting_triangle.matrix <- function(data,
     reference_dates = reference_dates,
     delays_unit = delays_unit
   )
+
+  # Validate the constructed object
+  assert_reporting_triangle(reporting_triangle_obj)
+
   return(reporting_triangle_obj)
 }
 

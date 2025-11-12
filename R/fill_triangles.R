@@ -167,6 +167,9 @@ fill_triangle <- function(reporting_triangle,
                           n = nrow(reporting_triangle),
                           delay_pmf = NULL,
                           preprocess = preprocess_negative_values) {
+  # Lightweight class check - full validation happens in tail() via [
+  assert_reporting_triangle_class(reporting_triangle)
+
   if (n > nrow(reporting_triangle)) {
     cli_abort(
       message = c(
@@ -178,6 +181,7 @@ fill_triangle <- function(reporting_triangle,
     )
   }
   # Use tail to get last n rows
+  # Validation occurs automatically in [.reporting_triangle
   tri_mat <- tail(reporting_triangle, n = n)
   has_complete_row <- any(rowSums(is.na(tri_mat)) == 0)
   if (isFALSE(has_complete_row)) {

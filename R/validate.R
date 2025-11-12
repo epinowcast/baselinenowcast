@@ -18,9 +18,12 @@
 
   assert_integerish(n)
 
+  # Convert to matrix once to avoid repeated validation in subsetting
+  triangle_mat <- as.matrix(triangle)
+
   # Check if the triangle has a valid structure
   # Ensure each column has at least one non-NA value
-  if (any(colSums(!is.na(triangle)) == 0)) {
+  if (any(colSums(!is.na(triangle_mat)) == 0)) {
     cli_abort(
       message = c(
         "Invalid reporting triangle structure. Each column must have",
@@ -45,9 +48,9 @@
     )
   }
 
-  n_rows <- nrow(triangle)
+  n_rows <- nrow(triangle_mat)
   has_complete_row <- any(
-    rowSums(is.na(triangle[(n_rows - n + 1):n_rows, ])) == 0
+    rowSums(is.na(triangle_mat[(n_rows - n + 1):n_rows, ])) == 0
   )
   if (isFALSE(has_complete_row)) {
     cli_abort(
@@ -60,7 +63,7 @@
     )
   }
 
-  if (isFALSE(.check_lhs_not_only_zeros(triangle[(n_rows - n + 1):n_rows, ]))) { # nolint
+  if (isFALSE(.check_lhs_not_only_zeros(triangle_mat[(n_rows - n + 1):n_rows, ]))) { # nolint
     cli_abort(
       message = c(
         "The values for the recent reference times and delays only contain 0s,",
@@ -72,7 +75,7 @@
       )
     )
   }
-  first_na <- which(is.na(triangle[nrow(triangle), ]))[1]
+  first_na <- which(is.na(triangle_mat[nrow(triangle_mat), ]))[1]
   if (!is.na(first_na) && first_na == 1) {
     cli_abort(
       message = c(

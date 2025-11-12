@@ -123,9 +123,6 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
     delays_unit = delays_unit
   )
 
-  # Validate the constructed object
-  assert_reporting_triangle(result)
-
   return(result)
 }
 
@@ -162,51 +159,60 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   nr <- nrow(mat)
   nc <- ncol(mat)
 
-  # Find all NA positions
-  na_positions <- is.na(mat)
-
-  if (!any(na_positions)) {
+  # Early return if no NAs
+  if (!anyNA(mat)) {
     return(list(
       valid = TRUE,
       n_out_of_pattern = 0L
     ))
   }
 
-  # Use cumulative max to detect "has data at or below/right"
-  not_na <- !na_positions
+  # Track which NA positions are out of pattern
+  out_of_pattern <- matrix(FALSE, nrow = nr, ncol = nc)
+  na_positions <- is.na(mat)
 
-  # For columns: detect if there's data at or below each position
-  # Use cummax from bottom (reverse, cummax, reverse)
-  has_data_at_or_below <- apply(not_na, 2, function(col) {
-    return(rev(cummax(rev(col))))
-  })
+  # Check rows: if NA found, all values to the right must be NA
+  for (i in seq_len(nr)) {
+    row_na <- na_positions[i, ]
+    na_indices <- which(row_na)
 
-  # Shift down by 1 to get "has data below" (not including current position)
-  has_data_below <- rbind(
-    has_data_at_or_below[-1, , drop = FALSE],
-    matrix(FALSE, nrow = 1, ncol = nc)
-  )
+    if (length(na_indices) > 0) {
+      min_na_idx <- min(na_indices)
+      # Check that all entries from first NA onwards are also NA
+      if (!all(row_na[min_na_idx:nc])) {
+        # Mark NAs that have non-NA to the right as out of pattern
+        for (j in min_na_idx:nc) {
+          if (j < nc && na_positions[i, j] && any(!row_na[(j + 1):nc])) {
+            out_of_pattern[i, j] <- TRUE
+          }
+        }
+      }
+    }
+  }
 
-  # For rows: detect if there's data at or to the right of each position
-  # Use cummax from right (reverse, cummax, reverse)
-  has_data_at_or_right <- t(apply(not_na, 1, function(row) {
-    return(rev(cummax(rev(row))))
-  }))
+  # Check columns: if NA found, all values below must be NA
+  for (j in seq_len(nc)) {
+    col_na <- na_positions[, j]
+    na_indices <- which(col_na)
 
-  # Shift right by 1 to get "has data to right"
-  has_data_right <- cbind(
-    has_data_at_or_right[, -1, drop = FALSE],
-    matrix(FALSE, nrow = nr, ncol = 1)
-  )
-
-  # Out of pattern: NA with data below OR data to right
-  out_of_pattern <- na_positions & (has_data_below | has_data_right)
+    if (length(na_indices) > 0) {
+      min_na_idx <- min(na_indices)
+      # Check that all entries from first NA downwards are also NA
+      if (!all(col_na[min_na_idx:nr])) {
+        # Mark NAs that have non-NA below as out of pattern
+        for (i in min_na_idx:nr) {
+          if (i < nr && na_positions[i, j] && any(!col_na[(i + 1):nr])) {
+            out_of_pattern[i, j] <- TRUE
+          }
+        }
+      }
+    }
+  }
 
   n_out_of_pattern <- sum(out_of_pattern)
-  valid <- n_out_of_pattern == 0
 
   return(list(
-    valid = valid,
+    valid = n_out_of_pattern == 0L,
     n_out_of_pattern = n_out_of_pattern
   ))
 }
@@ -275,6 +281,24 @@ validate_reporting_triangle <- function(data) {
 #' @export
 assert_reporting_triangle <- function(data) {
   validate_reporting_triangle(data)
+  return(NULL)
+}
+
+#' Assert object has reporting_triangle class
+#'
+#' Lightweight class check without full validation. Use when validation
+#' will occur through other operations (e.g., subsetting via `[`).
+#'
+#' @param data Object to check for reporting_triangle class.
+#' @return NULL
+#' @keywords internal
+#' @noRd
+assert_reporting_triangle_class <- function(data) {
+  if (!is_reporting_triangle(data)) {
+    cli_abort(
+      message = "data must have class 'reporting_triangle'"
+    )
+  }
   return(NULL)
 }
 

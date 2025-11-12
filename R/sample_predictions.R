@@ -24,14 +24,15 @@
 #' @importFrom utils tail
 #' @examples
 #' # Generate point nowcast and uncertainty params from example data
-#' point_nowcast_matrix <- estimate_and_apply_delay(
-#'   example_reporting_triangle,
-#'   n = 4
-#' )
-#' reporting_triangle <- construct_triangle(example_reporting_triangle)
+#' data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' rep_tri <- as_reporting_triangle(data_as_of) |>
+#'   truncate_to_delay(max_delay = 5) |>
+#'   tail(n = 10)
+#' point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
+#' reporting_triangle <- construct_triangle(rep_tri)
 #' uncertainty_params <- estimate_uncertainty_retro(
-#'   example_reporting_triangle,
-#'   n_history_delay = 5,
+#'   rep_tri,
+#'   n_history_delay = 8,
 #'   n_retrospective_nowcasts = 2
 #' )
 #' nowcast_pred_draw <- sample_prediction(
@@ -211,14 +212,15 @@ combine_obs_with_pred <- function(
 #' @export
 #' @examples
 #' # Generate point nowcast and uncertainty params from example data
-#' point_nowcast_matrix <- estimate_and_apply_delay(
-#'   example_reporting_triangle,
-#'   n = 4
-#' )
-#' reporting_triangle <- construct_triangle(example_reporting_triangle)
+#' data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' rep_tri <- as_reporting_triangle(data_as_of) |>
+#'   truncate_to_delay(max_delay = 5) |>
+#'   tail(n = 10)
+#' point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
+#' reporting_triangle <- construct_triangle(rep_tri)
 #' uncertainty_params <- estimate_uncertainty_retro(
-#'   example_reporting_triangle,
-#'   n_history_delay = 5,
+#'   rep_tri,
+#'   n_history_delay = 8,
 #'   n_retrospective_nowcasts = 2
 #' )
 #' nowcast_pred_draws <- sample_predictions(
@@ -287,14 +289,15 @@ sample_predictions <- function(
 #' @export
 #' @examples
 #' # Generate point nowcast and uncertainty params from example data
-#' point_nowcast_matrix <- estimate_and_apply_delay(
-#'   example_reporting_triangle,
-#'   n = 4
-#' )
-#' reporting_triangle <- construct_triangle(example_reporting_triangle)
+#' data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' rep_tri <- as_reporting_triangle(data_as_of) |>
+#'   truncate_to_delay(max_delay = 5) |>
+#'   tail(n = 10)
+#' point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
+#' reporting_triangle <- construct_triangle(rep_tri)
 #' uncertainty_params <- estimate_uncertainty_retro(
-#'   example_reporting_triangle,
-#'   n_history_delay = 5,
+#'   rep_tri,
+#'   n_history_delay = 8,
 #'   n_retrospective_nowcasts = 2
 #' )
 #' nowcast_draw <- sample_nowcast(
@@ -344,14 +347,15 @@ sample_nowcast <- function(
 #' @export
 #' @examples
 #' # Generate point nowcast and uncertainty params from example data
-#' point_nowcast_matrix <- estimate_and_apply_delay(
-#'   example_reporting_triangle,
-#'   n = 4
-#' )
-#' reporting_triangle <- construct_triangle(example_reporting_triangle)
+#' data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' rep_tri <- as_reporting_triangle(data_as_of) |>
+#'   truncate_to_delay(max_delay = 5) |>
+#'   tail(n = 10)
+#' point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
+#' reporting_triangle <- construct_triangle(rep_tri)
 #' uncertainty_params <- estimate_uncertainty_retro(
-#'   example_reporting_triangle,
-#'   n_history_delay = 5,
+#'   rep_tri,
+#'   n_history_delay = 8,
 #'   n_retrospective_nowcasts = 2
 #' )
 #' nowcast_draws <- sample_nowcasts(

@@ -21,10 +21,6 @@ Obs
 PMF
 PMFs
 RESPINOW
-cli
-idx
-num
-pct
 TimTaylor
 WIS
 Xltd
@@ -41,8 +37,10 @@ cb
 cce
 cdf
 cf
+cli
 color
 com
+cummax
 cumsum
 cutoff
 darkblue
@@ -61,8 +59,8 @@ ggtitle
 github
 gray
 hline
+idx
 infty
-init
 inits
 jamesmbaazam
 jbracher
@@ -81,7 +79,8 @@ nowcast
 nowcasted
 nowcasting
 nowcasts
-org
+num
+pct
 pid
 pilessthand
 pmf
@@ -93,7 +92,6 @@ swo
 th
 thetad
 ub
-wellcomeopenresearch
 xlab
 yintercept
 ylab

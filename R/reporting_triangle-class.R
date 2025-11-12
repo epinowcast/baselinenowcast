@@ -131,19 +131,16 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
 
 #' Check NA pattern validity in reporting triangle
 #'
-#' Internal function that validates NA positions and provides detailed
-#' diagnostics. Identifies NA values that don't follow the expected triangular
-#' reporting delay pattern. Out-of-pattern NAs occur when a value is NA but
-#' values below it (later reference dates) or to its right (longer delays) are
-#' non-NA, suggesting data quality issues rather than reporting delay.
+#' Internal function that validates NA positions. Identifies NA values that
+#' don't follow the expected triangular reporting delay pattern. Out-of-pattern
+#' NAs occur when a value is NA but values below it (later reference dates) or
+#' to its right (longer delays) are non-NA, suggesting data quality issues
+#' rather than reporting delay.
 #'
 #' @param x A matrix or [reporting_triangle] object.
 #' @return A list with components:
 #'   - `valid`: Logical indicating if all NAs are in valid bottom-right pattern
 #'   - `n_out_of_pattern`: Count of out-of-pattern NA values
-#'   - `n_expected`: Count of expected NA values (triangular pattern)
-#'   - `positions`: Matrix of logical values indicating out-of-pattern NAs
-#'   - `rows_affected`: Indices of rows with out-of-pattern NAs
 #'
 #' @details
 #' An NA is considered "out-of-pattern" if:
@@ -152,8 +149,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
 #' - There exists a non-NA value in the same row but a later column
 #'   (indicating earlier delays were reported)
 #'
-#' This replaces `.check_na_bottom_right()` by providing both validation
-#' (via the `valid` field) and detailed diagnostics.
+#' Uses a vectorised cummax-based approach for efficient validation.
 #'
 #' @keywords internal
 .check_na_pattern <- function(x) {
@@ -172,10 +168,7 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   if (!any(na_positions)) {
     return(list(
       valid = TRUE,
-      n_out_of_pattern = 0L,
-      n_expected = 0L,
-      positions = matrix(FALSE, nrow = nr, ncol = nc),
-      rows_affected = integer(0)
+      n_out_of_pattern = 0L
     ))
   }
 
@@ -210,16 +203,11 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   out_of_pattern <- na_positions & (has_data_below | has_data_right)
 
   n_out_of_pattern <- sum(out_of_pattern)
-  n_expected <- sum(na_positions) - n_out_of_pattern
-  rows_affected <- which(rowSums(out_of_pattern) > 0)
   valid <- n_out_of_pattern == 0
 
   return(list(
     valid = valid,
-    n_out_of_pattern = n_out_of_pattern,
-    n_expected = n_expected,
-    positions = out_of_pattern,
-    rows_affected = rows_affected
+    n_out_of_pattern = n_out_of_pattern
   ))
 }
 
@@ -261,11 +249,6 @@ validate_reporting_triangle <- function(data) {
           i = paste0(
             "NA values should only appear in the bottom right ",
             "portion of the triangle"
-          ),
-          paste0(
-            "Affected row",
-            if (length(na_check$rows_affected) != 1) "s" else "",
-            ": ", toString(na_check$rows_affected)
           )
         )
       )

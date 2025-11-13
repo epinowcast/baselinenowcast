@@ -1,5 +1,7 @@
 # baselinenowcast 0.0.0.1000
 
+-   Add a vignette which walks through the low-level function interface on the same nowcasting problem as in the Getting Started vignette.
+-   Modify the Getting Started vignette to use the `baselinenowcast()` wrapper function.
 -   Use the `as_reporting_triangle` and `baselinenowcast` workflow in the vignette which walks through a nowcasting example applied to syndromic surveillance data in the U.S.
 -   Add `preprocess` parameter to `estimate_delay()` to control handling of negative values in reporting triangles. Set to `preprocess_negative_values` by default to redistribute negative values to earlier delays, or set to `NULL` to preserve negative PMF entries. This allows the method to work with reporting corrections that result in net downward adjustments at specific delays (#278).
 -   Export `preprocess_negative_values()` function to allow users to manually handle negative values in reporting triangles by redistributing them to earlier delays (#278).

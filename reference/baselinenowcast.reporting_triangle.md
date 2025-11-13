@@ -9,13 +9,17 @@ object.
 This function implements a nowcasting workflow for a single reporting
 triangle:
 
-1.  [`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md) -
+1.  [`allocate_reference_times()`](https://baselinenowcast.epinowcast.org/reference/allocate_reference_times.md) -
+    Allocate the reference times used for delay and uncertainty
+    estimation
+
+2.  [`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md) -
     Estimate a reporting delay PMF
 
-2.  [`apply_delay()`](https://baselinenowcast.epinowcast.org/reference/apply_delay.md) -
+3.  [`apply_delay()`](https://baselinenowcast.epinowcast.org/reference/apply_delay.md) -
     Generate a point nowcast using the delay PMF
 
-3.  [`estimate_and_apply_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_uncertainty.md) -
+4.  [`estimate_and_apply_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_uncertainty.md) -
     Generate a probabilistic nowcast from a point nowcast and reporting
     triangle
 

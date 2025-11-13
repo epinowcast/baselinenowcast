@@ -542,22 +542,14 @@ nowcast_date <- max(long_df$reference_date) - days(30)
 
 ### 3.2 Format for `baselinenowcast`
 
-From the case counts by reference date and report date, we generate a
-reporting triangle(see the [mathematical
-model](https://baselinenowcast.epinowcast.org/articles/model_definition.md)
-vignette for more details), which pivots the data from long to wide so
-that each row is a reference date and each column is a delay. In order
-to produce a reporting triangle, we need to obtain the number of
-incident case counts at all reference dates and for all corresponding
-report dates up until the maximum delay. First, we’ll remove any reports
-after the nowcast date and any delays after the maximum delay.
+First, we’ll remove any reports after the nowcast date, as these
+wouldn’t have been available to us in real-time.
 
 ``` r
-training_df <- long_df |>
-  filter(report_date <= nowcast_date) |>
-  mutate(delay = as.integer(report_date - reference_date)) |>
-  filter(delay <= max_delay) |>
-  select(reference_date, delay, report_date, count)
+training_df <- filter(
+  long_df,
+  report_date <= nowcast_date
+)
 ```
 
 What would happen if we looked at the trend in case counts without
@@ -568,8 +560,7 @@ summarise the cases by reference dates and plot.
 training_df_by_ref_date <- training_df |>
   filter(report_date <= nowcast_date) |>
   group_by(reference_date) |>
-  summarise(initial_count = sum(count)) |>
-  mutate(time = row_number())
+  summarise(initial_count = sum(count))
 ```
 
 Click to expand code to create the plot of the initially reported cases
@@ -597,76 +588,584 @@ if the true trend in cases is really declining rapidly or if it is
 plateauing or increasing, which is why we need to use nowcasting to make
 an estimate of the eventually reported cases at each visit date.
 
-To do this, we will use
-[`tidyr::complete()`](https://tidyr.tidyverse.org/reference/complete.html)
-to fill in all combinations of reference dates and delays, filter to
-exclude all reference dates and delays beyond the maximum reference
-date, and pivot from long to wide. This will ensure that the
-combinations that were missing in our dataset (i.e. no cases were
-reported) but would have been observed will be coded as 0 cases, whereas
-the ones that have yet to be observed will get coded as NAs.
+From here, we have the case counts by reference and report date up until
+the nowcast date. We will generate a reporting triangle (see the
+[mathematical
+model](https://baselinenowcast.epinowcast.org/articles/model_definition.md)
+vignette for more details), using the helper function
+[`as_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.md).
+This helper function uses the `max_delay` and the reference and report
+dates to fill in all combinations of reference dates and delays, filter
+to exclude delays beyond the maximum delay, and pivot the data from long
+to wide to obtain a reporting triangle where rows are reference dates
+and columns are delays. This is returned as a `reporting_triangle` class
+object which is ready to be used for nowcasting.
 
 ``` r
-rep_tri_df <- training_df |>
-  complete(
-    reference_date = seq(
-      from = min(reference_date),
-      to = max(reference_date),
-      by = "day"
-    ),
-    delay = 0:max_delay,
-    fill = list(count = 0)
-  ) |>
-  filter(reference_date + days(delay) <= max(reference_date)) |>
-  select(-report_date) |>
-  pivot_wider(
-    names_from = delay,
-    values_from = count
-  )
-head(rep_tri_df)
+rep_tri <- as_reporting_triangle(training_df,
+  max_delay = max_delay
+)
 ```
 
-    ## # A tibble: 6 × 27
-    ##   reference_date   `0`   `1`   `2`   `3`   `4`   `5`   `6`   `7`   `8`   `9`
-    ##   <date>         <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
-    ## 1 2025-10-25       194    54    26    13    12    13     5     0     0     0
-    ## 2 2025-10-26       198    53    29    40    11     5     1     0     0    20
-    ## 3 2025-10-27       167    58    33    14     0     7     4     8    12     8
-    ## 4 2025-10-28       145    69    22    11     5    19    23    13     8    15
-    ## 5 2025-10-29       180   100     0    25    12    15    31     7     4    12
-    ## 6 2025-10-30       220    48     0    21    11    16    24    14     0     0
-    ## # ℹ 16 more variables: `10` <dbl>, `11` <dbl>, `12` <dbl>, `13` <dbl>,
-    ## #   `14` <dbl>, `15` <dbl>, `16` <dbl>, `17` <dbl>, `18` <dbl>, `19` <dbl>,
-    ## #   `20` <dbl>, `21` <dbl>, `22` <dbl>, `23` <dbl>, `24` <dbl>, `25` <dbl>
-
-We now have a data.frame where each row is a reference date, each column
-is a delay, and each entry represents the number of cases reported
-corresponding to each reference date and on each delay. The bottom right
-of the reporting triangle contains NAs to indicate that those
-observations have yet to be observed. As a final pre-processing step,
-we’ll format the reporting triangle as just a matrix, for compatibility
-with the low-level functions in `baselinenowcast`.
+You can inspect the reporting triangle matrix itself by accessing the
+\$reporting_triangle_matrix element in the object
 
 ``` r
-rep_tri <- rep_tri_df |>
-  select(-reference_date) |>
-  as.matrix()
+rep_tri$reporting_triangle_matrix
 ```
+
+    ##        [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
+    ##   [1,]  194   54   26   13   12   13    5    0    0     0    14     9    14
+    ##   [2,]  198   53   29   40   11    5    1    0    0    20     0    22     0
+    ##   [3,]  167   58   33   14    0    7    4    8   12     8     0     0     6
+    ##   [4,]  145   69   22   11    5   19   23   13    8    15     0     0     0
+    ##   [5,]  180  100    0   25   12   15   31    7    4    12     5    12     5
+    ##   [6,]  220   48    0   21   11   16   24   14    0     0     0     0     8
+    ##   [7,]  326   94   14   33   42   26   27    0    0    20    11     0     2
+    ##   [8,]  202   87    0   33   31   18    0    0   26    12     0     0     0
+    ##   [9,]  256   75   13   39   19   22    7   11    5     5     5     6     4
+    ##  [10,]  213   43    1   33   14   10   23    8    3    12     4     0     8
+    ##  [11,]  229  128   28   23   10   26    8   15   31    15     8     0    13
+    ##  [12,]  237   38   24   58    1   16   15   11    0    12     0    10     0
+    ##  [13,]  242   87    8    0   13   22   15    7    0     0     0     0     0
+    ##  [14,]  325   78   36   14   26   10   16   15    7    11    26     6    15
+    ##  [15,]  211   72   29   27   25    6   10   16   27    26     0    16     0
+    ##  [16,]  340  162   35   28   22   13   11   12   23    22     0     8     9
+    ##  [17,]  241  139   14   18   14    8   16   14   25    10     1     3     0
+    ##  [18,]  258   98   26   10   13   27    8   33   15     8    21     0    32
+    ##  [19,]  279  126   23    8   35    6   33   31   13     0    12     0     0
+    ##  [20,]  176   15   11   13   10    9   32    1   19    16     0     8     7
+    ##  [21,]  167   41    2   15    0   12   12    8    0     5    12     0     1
+    ##  [22,]  246   35   20   15   11   14    9    0   14     6    18     7    18
+    ##  [23,]  210  134   53    9   22    3   16   34   22    18    12    10    10
+    ##  [24,]  157   83   20    6   16    0   30   22    7     4    13     0     0
+    ##  [25,]  202   65   30   19    0   31   12   37    4     1    24     1     0
+    ##  [26,]  239   61   21    0    8   20    0   32   13     0     0    19    13
+    ##  [27,]  160  109   25   73   32   50   40   26    0    17    11    15    19
+    ##  [28,]  310   63   19   15   26   10   18   10   17    11     8    27     1
+    ##  [29,]  268  114   32   52   27   10   17    6    8    21     5    10     0
+    ##  [30,]  266   80   42   49    6   20    6   30   22    12     6    31     6
+    ##  [31,]  287   95   41   32    8   11   11    1   18    12    12    11     0
+    ##  [32,]  202   36    7    0   17   22   21    8    0     2     0    10    16
+    ##  [33,]  288  146   28    5   41   32   28   12   17    11     0     9     8
+    ##  [34,]  223   60   26    5   14    1   11   27   11     0     5    13     7
+    ##  [35,]  246   35   11   15   21   27   22   10    0     3     0     0     0
+    ##  [36,]  273   22   20   29   35   38    0    0   11     9    17     5     0
+    ##  [37,]  289  113   10   37   28   15    0    6   27    27    28    45     0
+    ##  [38,]  305   89   21   17   13   13   33   30   21    34    17    10     0
+    ##  [39,]  284   92   18   23    9   28   32   32   14    24    10     0     8
+    ##  [40,]  279   91   16   14   12   13   31   13    0     0     6    19    17
+    ##  [41,]  225   82    8   49   27   17   28    8    3     0     0     9    24
+    ##  [42,]  174   60   26   14    7    9   26    7   13    19    15     1     0
+    ##  [43,]  286   90   32   25   21   15    0   11    2     3    26     5     1
+    ##  [44,]  190  107   45   33   34    6   19   14   10    26    31     6     5
+    ##  [45,]  291   72   23   43   11    3   56   48    8    21    14     0    13
+    ##  [46,]  323  168   36   26   38   23   50   52   45    41     0     3    16
+    ##  [47,]  192   83   11   37   33   26   21   15   10     0     0     1     3
+    ##  [48,]  151   70   44   22   38   48   14   17    8     0    13    15     1
+    ##  [49,]  213   93   26   21   15   14   14    5    1    14     7    21     3
+    ##  [50,]  187   77   28   20    8   10   13    0    6    13    14     9     0
+    ##  [51,]  272   56   58   24   36   14    5    9   14    10     8     0     0
+    ##  [52,]  205   98   25   23   29    9   25   15    1    15     0     0     9
+    ##  [53,]  268   53   47   38   16   10   10    9   12    31     0     0     7
+    ##  [54,]  177   96   23   17    8    0   14   13   14     0     0     0     5
+    ##  [55,]  213   63   34   15   23   23    0   21    8     0    11    12     1
+    ##  [56,]  218  113   25   36   26   24   10   18   16     7    22    28    10
+    ##  [57,]  135  101   17   39    9   12   10    8    7     6     4     0     0
+    ##  [58,]  161   35   17   25   12    4    7    0    9    23     7     0     7
+    ##  [59,]  256   70   14   19   28   25   32   15    9    32    12     3     3
+    ##  [60,]  160   75   46   37   17   28   25    5    9     4     0    16    12
+    ##  [61,]  207  105    5   12    8   16   25   11   11     1     0    11     0
+    ##  [62,]  233   71   22   17    8   18   18   23    1     0    12    11     0
+    ##  [63,]  194  128   35   20   19   41   17   21   11    27     0     8     8
+    ##  [64,]  233   34   23   15   22    9   12    0   19     0     0    11     0
+    ##  [65,]  163   71   39   26   22    8    5    0   20    23    14     0     0
+    ##  [66,]  137  142   22   40   15    0   10    0   18    21     0     0     0
+    ##  [67,]  210   70   36   21   18   25   11    6   13     0     0     0    24
+    ##  [68,]  127   46   21   12   25   17    0   12    0     0     0     0     7
+    ##  [69,]  172   61    6   24   16   18   11    0    0     0     0     2     5
+    ##  [70,]  119   29   25   15    0    7    0    0    7     6    13    11     0
+    ##  [71,]   93   70   29   12    8   26   10    8    6    26     0     3     0
+    ##  [72,]  172   63   32   13   20    0    0   18    0     7    19    12     0
+    ##  [73,]  126   44   13   19    0   10   38   22    0    17     5     0     0
+    ##  [74,]  265   79   31   22   16   12   44   36    7    20    13     7    10
+    ##  [75,]  168   48   16   21    6   13   23   17    1     0     2     1    27
+    ##  [76,]  176   23    9   14    0    5   12    9    0     0     0     7     0
+    ##  [77,]  187   56    8    9    0   41    3    0    8     1     0    10     7
+    ##  [78,]  133    5   18   16   28   18    0   12    0     0     8     0     0
+    ##  [79,]   96   46   20   22    8    0    9   13    1     0     0     7     0
+    ##  [80,]  194  139   56   26   13    4   13   20    0     0    14     0     6
+    ##  [81,]  234   76   30   16   12   26   12   15   10    13     7     1     5
+    ##  [82,]  225   49   24    7   31   25   18    0    7     0     4     0    15
+    ##  [83,]  105   56   10   33   22    8   14    8   10     5    11     8     8
+    ##  [84,]  148   27   29   22   15   18   15    0    0    11    13     0     0
+    ##  [85,]  162   60   34    9    0   30   10   12    6    20    11     0    12
+    ##  [86,]  207   54   55    0   23   13    7    0   11     7     6     9     0
+    ##  [87,]  239   69   41   13   12    4   35   34    1    21     8     1     0
+    ##  [88,]  189  108   22   24   24    8   17    7   20    22     0    10    15
+    ##  [89,]  176   53    9   26   12   11   34   31   12     0     0     0     1
+    ##  [90,]  276   25   38   13   42   18   30    9    0     0     7    19     2
+    ##  [91,]  260   25   29   11   12   13   20    0    0     7    18     0     4
+    ##  [92,]  203   47   16   51   29   17   13   34   26    23    20     1    10
+    ##  [93,]  330  147   37   55   13    0   13   30   27    33    28    19     0
+    ##  [94,]  331   93   37   28   40   27   37   30   41    14    26     0     7
+    ##  [95,]  188  105   27   21   26   23   23   31    9    28     0     0    15
+    ##  [96,]  225   72   16   15   26   10   47    4   23     1     0    10     9
+    ##  [97,]  275  230   36   46   30   32   30   13    7     0    36    16     6
+    ##  [98,]  197  127   35   12   14   16    9    0    3    34    22    17    16
+    ##  [99,]  242   87   17   13   20    7   16   13   17    18     8    18     3
+    ## [100,]  294  132   25   19   33   24    7   21    6    24     6     0     0
+    ## [101,]  252  134   66   71   22   11   22   16    8    24    18     9     0
+    ## [102,]  289  105   45   27   13   14   19   30    1     5     0     0    33
+    ## [103,]  297   80   85    0   44   16   27   21   27     9     0    20    17
+    ## [104,]  237   80   40   46    8   24   48   15    0    13    14     5    16
+    ## [105,]  328  145   65   47    1   45   16   27    1    16    42    20    30
+    ## [106,]  342   88   34   10   26    8   27    3    0     3    21    23     4
+    ## [107,]  444   95   48   32   33    6    0   23   50    18     0     0     8
+    ## [108,]  298  225   66   53    7   32   42   25   21    35    23     0    15
+    ## [109,]  314  137   19   19   21   34   32   31   24     9     0     1    10
+    ## [110,]  344  133   30    8   30   28   16   45   41    18    12     0    13
+    ## [111,]  402  228   56   26   34   31   35   19    0     4     6    25    15
+    ## [112,]  305   71   38   24    9   34   34    0   14     2     9     8    44
+    ## [113,]  344   89   43   32   36   13   12   20    0    10     9     0    43
+    ## [114,]  564  122   74   33   48   15   17   21    9    28    34    45     0
+    ## [115,]  417  180   51   30   12   21   11   32   23    14    14    14     0
+    ## [116,]  345  126   90   67   26   12   29   42   17     9     9    11     0
+    ## [117,]  412   88    7    1   18   16   67   28   23     0    13     0    20
+    ## [118,]  306  158   20   22   27   34   45   16   11     0     0     6    28
+    ## [119,]  406  204   42   34   34   20   29    6    6     2    15     1    11
+    ## [120,]  404  151   73   35   34   39   17    9    0    24    15    25    30
+    ## [121,]  313  178   47   12   39   30    9   21   17     9    27     1     8
+    ## [122,]  615  270   35   81   45   26   63   65   42    51    38    15    14
+    ## [123,]  470  243   73   30   35   28   34   25   22     5     0     0     4
+    ## [124,]  662  275   50   23   40   13   43   64   13     0     5    20     3
+    ## [125,]  534  159   74   76   21   52   22   50    0    10    40    22     6
+    ## [126,]  638  196   91   66   38   43   62   20   19    43    39    12    14
+    ## [127,]  591  230   71   68   58   36   12   28   30    44    28    21    25
+    ## [128,]  556  184   47   48   51   40   41   34    5    20    13    22     0
+    ## [129,]  487  252   82   69   23   13   57   33   48    49    25    23     1
+    ## [130,]  603  261   96   47   27   58   60   35   43    33    18     7    30
+    ## [131,]  411  178   65   16   27   17   23   79   46     0     8     9     0
+    ## [132,]  504  224   39   73   50   13   24   17   13    23    22     5    18
+    ## [133,]  533   96   24   45   29   36   31   41   15    14    13    12    33
+    ## [134,]  310  126   43   33   36   12   12   24   28    24    15    32    15
+    ## [135,]  414  215   56   84   46   23   19   24   26    16    35    27     0
+    ## [136,]  689  333  101   90   58   47   17   26   64    37    22     7    10
+    ## [137,]  477  102   67   21    7   30   20   31   51    11    15    11    20
+    ## [138,]  493  185   49   17   44   34   32   57   31     5     6    21    26
+    ## [139,]  340  116   69   17   17   31   26   15   12     5    32     0    34
+    ## [140,]  251  100   32   42   18   20   37   11   11     0    28     0     8
+    ## [141,]  300   99   47   34    5   45   18    0   20    16    20    14    19
+    ## [142,]  378   77   22   16   16    1   11   14   38    14     8    13     0
+    ## [143,]  508  147   37   37   13   15   32   27   16     6    11     4     6
+    ## [144,]  482  172   82    2   35   35   13   30   22     0     0     0     6
+    ## [145,]  295  197   53   47   19   18   36    8   10     0     0    20    18
+    ## [146,]  274   97   28   31   29    5    9   31    7     5     6    18    14
+    ## [147,]  171   36   34   26   13   46   11   12   18     1     8     8    31
+    ## [148,]  280  155   83   46   15   22    3    4   25     0    10    11    NA
+    ## [149,]  246   95   57   19   38   14   10    0    0    10    18    NA    NA
+    ## [150,]  210  131   34   50   35   12    1   25   20     6    NA    NA    NA
+    ## [151,]  221   96   22   10   13    6    0    5    9    NA    NA    NA    NA
+    ## [152,]  291  129   17   26   42   29   23   25   NA    NA    NA    NA    NA
+    ## [153,]  179   96   22   50    9    8   18   NA   NA    NA    NA    NA    NA
+    ## [154,]  284   40   41   54   28   12   NA   NA   NA    NA    NA    NA    NA
+    ## [155,]  217   78   46   14   39   NA   NA   NA   NA    NA    NA    NA    NA
+    ## [156,]  336  161   62   13   NA   NA   NA   NA   NA    NA    NA    NA    NA
+    ## [157,]  296   53   55   NA   NA   NA   NA   NA   NA    NA    NA    NA    NA
+    ## [158,]  210  108   NA   NA   NA   NA   NA   NA   NA    NA    NA    NA    NA
+    ## [159,]  236   NA   NA   NA   NA   NA   NA   NA   NA    NA    NA    NA    NA
+    ##        [,14] [,15] [,16] [,17] [,18] [,19] [,20] [,21] [,22] [,23] [,24] [,25]
+    ##   [1,]     0     0     0     6     0     0     0     0     0    12     0    10
+    ##   [2,]    10     7     0     0    20     0     0     0     0     0    10     0
+    ##   [3,]     0    19     6     9     0     0     0     0     0     0     0     0
+    ##   [4,]     3     0    10     0     9     0     0     0     0     9     0     0
+    ##   [5,]     0     8     0     0     0     5     5     0     0     0     0     0
+    ##   [6,]     0     0     0     0     0     0     0     0     0     0     0     0
+    ##   [7,]     5    14     0     5     8     2     0     0     0     0     0     0
+    ##   [8,]     0     0     0     5     0     0     0     0     0     0     0     0
+    ##   [9,]     0     0     8    12     5     0     0     0    10    13     0     0
+    ##  [10,]     5    22     0     0     0     0     0    11    15     0     0     0
+    ##  [11,]     0    11     5     0    14     0     0     0    17     5     0     6
+    ##  [12,]     0    13     0     1     0     4    19     9     0     9     0     0
+    ##  [13,]     1     0     0     0    10     4     0     2     0     0     0     0
+    ##  [14,]     0     0     0     1     0     0    13     0     0     0     0     7
+    ##  [15,]     0     0     0     9     0     7    10     0     0     6     0    14
+    ##  [16,]     9     0     0     0     0     0     0     3    14     0     0     0
+    ##  [17,]    18     0     0     1    14     3     5     8     0     0     0     0
+    ##  [18,]     8     7    12    24     0     0     4     0     0     0     3     0
+    ##  [19,]    14     0     7    20     0    17     8     9     0     0     0     1
+    ##  [20,]     8     4     1     0     0     0     0     0     0     0     0     0
+    ##  [21,]    15     0     0     0     0     0     0     3     0     0     0     0
+    ##  [22,]    12     0    18    12     0     0     0     0     0     6     0     0
+    ##  [23,]     0     0     8     0     0     0     0     0     0     9    12     0
+    ##  [24,]    21     0     0     8     0     0     0     0     7    10     0     0
+    ##  [25,]    11     0     4     0     0     0     0     0     0    12     0     0
+    ##  [26,]     7     1    10     0     0     0    10     0     0     0     0     0
+    ##  [27,]     0     0     0     0    11    12     1    11     0     0     0     0
+    ##  [28,]     1     0     0     0     0     1     0     0     0     0     1     0
+    ##  [29,]     9    17     0     5     1     0     4     0     0     0     1     0
+    ##  [30,]     9     0    14    21     9     0     0     0     0     0     0     0
+    ##  [31,]     6     8     0     7     0     0     0     0     0     0     0     0
+    ##  [32,]    15     1    11     6     0     7     5     0     9     5     0     0
+    ##  [33,]    17     0     7     9    16     8     6     0     4     0    10     0
+    ##  [34,]     0    18     0     0    11     0     0     0     0     0     0     0
+    ##  [35,]     0     0     0     0     4    13     0     0     0     0     0     0
+    ##  [36,]     0     8     1     0     9     0     0     0     0     0     0     0
+    ##  [37,]     2     9     0     1     1    13     0     0     7     2     0     0
+    ##  [38,]     1    13     0     0    13     0     4     0     0     0     0    17
+    ##  [39,]     7     0     0     0     0     0     0     7     0     0     0     0
+    ##  [40,]     5    14     6     0     0    10     4    15     0     7    15     0
+    ##  [41,]     3     4    12     0     8     0     0     0     0     0     0     0
+    ##  [42,]    10     0     0     7     0     0     7     8     0     0     0     0
+    ##  [43,]     0     0     0     0     7     0     0     0     0     0     0     0
+    ##  [44,]     0     5     0     0     7     0     0     0     0     0     1    16
+    ##  [45,]    10    12     7     8     0     0     8     0     0     0     0     3
+    ##  [46,]     6     6     0     0     4     0    11     8     0     0     0    23
+    ##  [47,]     1     0    20     9     0     0     8     0    10     0     0     0
+    ##  [48,]    11     0     8     0    14    15     0     8     6     0    10     0
+    ##  [49,]    10     0     0     0     0     0     0     0     0     0     0    14
+    ##  [50,]     0     0     0     0     6     0     6     0     0     0     0     0
+    ##  [51,]    14     6     0     0     0     0     0     0     0    15     0     0
+    ##  [52,]    15     0    11    14     0     0     7     7     0     0     0     0
+    ##  [53,]    10    10     0     0     0     0     0     0     0     0     0     0
+    ##  [54,]     0     6     0     0     0     0     0     0     0     0     0     0
+    ##  [55,]    24     0     0     0     0     0     0     1     0     0     0     0
+    ##  [56,]     0     4     0    13     8     1     0    10     5     0     0    18
+    ##  [57,]     0     0    17    14     6     0     0     4     9     0    16     0
+    ##  [58,]     0     9     1     0     0     0     0     0    11     0     4     0
+    ##  [59,]     1    10     0     0     0    13     0     0     0     0     0    14
+    ##  [60,]    13     0     7     4     0     0     0     0     0     0     0     0
+    ##  [61,]     0     8     0     0     0     8     1     9     8     0     0     0
+    ##  [62,]    12     7     0     0     0     8     0     0     0     0     0     0
+    ##  [63,]     0     0     2     0     8     0     6     0     0     0     0     1
+    ##  [64,]     0     0     4     0     0     4     0     0     0     0     4     0
+    ##  [65,]     0     0     7     0     0     0     0     0     0     0     0     0
+    ##  [66,]     0     0     0     0     0     0     0     0     0     0     1     0
+    ##  [67,]     6     0     5     0     0     0     0     0     3     0     0     0
+    ##  [68,]    12     0     0     0     0     0     0     0     0     0     0     0
+    ##  [69,]    30    16     0     0     0     0    10     0     0     0     0     0
+    ##  [70,]     0     0     0     0     0     5     0     0     0     0     0     2
+    ##  [71,]    14     0    16    14     0     0     0     0     0     0     0     0
+    ##  [72,]     0     0     4     0     0     0     0     0     1     0     5     0
+    ##  [73,]     0     5     0     0     0     0     0     0     0     0     0     0
+    ##  [74,]     6     6     0     8     0     0     8     0     5     0     0     0
+    ##  [75,]     0     0     0     0     0     0     0     0     0     0     0     0
+    ##  [76,]     0     0     0     0     0     0     0     0     0     0     0     0
+    ##  [77,]     1     0    15     3     0    17     0     0     0     0     0     4
+    ##  [78,]     0     0     0     0     0     0     7     0     0     0     0     0
+    ##  [79,]     0    15     0     0    17     0     0     0     0     0     0     1
+    ##  [80,]    16     6    13     1     0    11     0     0     0     0     8     0
+    ##  [81,]     0    15    11     0    13     0     0     7     5     8    10     0
+    ##  [82,]     0     0    14     0     0     5    11     0     0     4     0     0
+    ##  [83,]     9     9     5     0    10     0     0     0     0     0     0     1
+    ##  [84,]     1     0     0     0     0     0     0     0     0     0     0     0
+    ##  [85,]     0     0     7     8     3     6     0     0     2     0     6     0
+    ##  [86,]     0    12    10    11     0     0     0     0     0     0     0     0
+    ##  [87,]    15    36     0     0    19     5     9     0     6     0     0     0
+    ##  [88,]    19    10     2     6     0     0     0     0     0     0     0     0
+    ##  [89,]    11     8     0     0     0     0     0    14     6     0     0     0
+    ##  [90,]     8     0     0     6    18     0     8     0     0     0     0     0
+    ##  [91,]     5    11     0     0     0     0     0     0     0     0     0     0
+    ##  [92,]     6     0     0     0     3     0     6    14     4     0     5     0
+    ##  [93,]     0     0     0     0    13     0     0     0     0     0     7     0
+    ##  [94,]     6     0    10     4     0     0     0     0     0     0     0     9
+    ##  [95,]    12    13     1     2     0     1    14     0     0     0     0     0
+    ##  [96,]    16     0     0     0     0     0     1    14     0     6     0     0
+    ##  [97,]     0    17     0     0     2     0     5     9     0     0     0     0
+    ##  [98,]     0     9     0     1     0     0    11     0    10     8     0     0
+    ##  [99,]     0     0     0     9     0    10    10     0     0     0     0     0
+    ## [100,]     0    16     5     0     0     4     0     0     0     0     0     0
+    ## [101,]     0    16     7     9    21     0     0     0    12    13     0     0
+    ## [102,]     7    12     9    10     0     0     0     8     0     0     0     0
+    ## [103,]     5    18     0     0     0     1     8     1    13     7     0     0
+    ## [104,]    17     3     0     0     0     1     8     0    13     0     0     0
+    ## [105,]    19     0     0     0    15     1     0     0     0     0     0     0
+    ## [106,]     7     0     0     9     5     5     0     0     5     0     0     0
+    ## [107,]     0     0    13    21     0    11     0     0     6     6     0     0
+    ## [108,]    16     1     5    21     0     0     0     0     0     0     0     0
+    ## [109,]    14    15    17     0     0     0     0     3     7     1     0     0
+    ## [110,]    23     3    25    15     0     0     0    21     0     1     0     0
+    ## [111,]    12     3    10     0     3    11    20    17    17    14     0     7
+    ## [112,]    13    12     0     6     0     7     0     8     0     0     0     9
+    ## [113,]     8     3     3    29    21     9     1     0     0     0    13     0
+    ## [114,]     0    15    32    10     0     0    12     0     5     0    20     0
+    ## [115,]     0    25    32    18    14    14     0     7     8     9     0     0
+    ## [116,]    26    19     5     8     0     6    32     5     5    12     3     0
+    ## [117,]    12    29    28     0     0    13    21     0     0     0     0     4
+    ## [118,]    37    11     6     0     0     0    14     3     6     0     3     0
+    ## [119,]    46     0    16     8     9     9     0     5     0     0     0     0
+    ## [120,]     0     0     9    26     3     2    13     0     0     0     0     0
+    ## [121,]     0     0    13    25    16    29     0     0    10     0    13     9
+    ## [122,]     6    10    35    38    51     0     2    10     5    23     3    11
+    ## [123,]    16     1    25    32     0     0     0    16     4     0     0     0
+    ## [124,]    14    11    17     6     0     0    22    10     6    10     2     1
+    ## [125,]    19     0     5     0     3     0    33    18     7     0     1     6
+    ## [126,]    18     0    18     0     1     3    11    15     0     9     3     0
+    ## [127,]     8     0    14    31    16     8     0     0     0     0     9    13
+    ## [128,]     8    10    19     6     8    18     0    19     0     7     0     0
+    ## [129,]     9    27    15    10     5    24    17     8     6     5     4    14
+    ## [130,]    37    20    18     7    12    13     0     7     0    13     3     0
+    ## [131,]    13     0     8     3     0     4     5     0     0    15     9     0
+    ## [132,]    28     3     5     0    17    10     0    13     6     8     0     0
+    ## [133,]    19     0     0    20    29    31     5     0     0     0     0    16
+    ## [134,]    17     7    10     2     8     1    14     0     0     7     0     0
+    ## [135,]     1     0     9    10     8     0    15     0     0    10     0     4
+    ## [136,]    16    31     0    11    15     0     0    20     6     3    12    NA
+    ## [137,]     0    17    31    14     0     0    12     7     6    15    NA    NA
+    ## [138,]     6    14     7     0     0     9    15     0     0    NA    NA    NA
+    ## [139,]     4     0     4     0    11     9     0     9    NA    NA    NA    NA
+    ## [140,]     6     0     7    13     7    14    11    NA    NA    NA    NA    NA
+    ## [141,]     0     0     0     0     3     0    NA    NA    NA    NA    NA    NA
+    ## [142,]     0     0    16     3    16    NA    NA    NA    NA    NA    NA    NA
+    ## [143,]    23     0    10    14    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [144,]     0     0     2    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [145,]     2    21    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [146,]    17    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [147,]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [148,]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [149,]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [150,]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [151,]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [152,]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [153,]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [154,]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [155,]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [156,]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [157,]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [158,]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## [159,]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ##        [,26]
+    ##   [1,]     0
+    ##   [2,]     6
+    ##   [3,]     0
+    ##   [4,]     0
+    ##   [5,]     0
+    ##   [6,]     0
+    ##   [7,]     0
+    ##   [8,]     0
+    ##   [9,]     0
+    ##  [10,]     0
+    ##  [11,]    13
+    ##  [12,]     8
+    ##  [13,]     4
+    ##  [14,]     0
+    ##  [15,]     0
+    ##  [16,]     0
+    ##  [17,]     1
+    ##  [18,]     9
+    ##  [19,]     0
+    ##  [20,]     0
+    ##  [21,]     0
+    ##  [22,]     0
+    ##  [23,]     0
+    ##  [24,]     0
+    ##  [25,]     0
+    ##  [26,]     0
+    ##  [27,]     8
+    ##  [28,]     0
+    ##  [29,]     2
+    ##  [30,]     0
+    ##  [31,]     0
+    ##  [32,]     0
+    ##  [33,]     7
+    ##  [34,]     0
+    ##  [35,]     0
+    ##  [36,]     0
+    ##  [37,]     0
+    ##  [38,]     0
+    ##  [39,]     0
+    ##  [40,]     0
+    ##  [41,]     0
+    ##  [42,]     0
+    ##  [43,]     2
+    ##  [44,]    11
+    ##  [45,]     0
+    ##  [46,]     0
+    ##  [47,]     0
+    ##  [48,]     0
+    ##  [49,]     0
+    ##  [50,]     0
+    ##  [51,]     0
+    ##  [52,]     0
+    ##  [53,]     0
+    ##  [54,]     0
+    ##  [55,]     0
+    ##  [56,]     0
+    ##  [57,]     0
+    ##  [58,]     0
+    ##  [59,]     0
+    ##  [60,]     0
+    ##  [61,]     7
+    ##  [62,]     0
+    ##  [63,]     0
+    ##  [64,]     0
+    ##  [65,]     5
+    ##  [66,]     0
+    ##  [67,]     0
+    ##  [68,]     0
+    ##  [69,]     0
+    ##  [70,]     0
+    ##  [71,]     0
+    ##  [72,]     0
+    ##  [73,]     0
+    ##  [74,]     0
+    ##  [75,]     0
+    ##  [76,]     1
+    ##  [77,]     6
+    ##  [78,]     9
+    ##  [79,]     0
+    ##  [80,]     0
+    ##  [81,]     0
+    ##  [82,]     8
+    ##  [83,]     0
+    ##  [84,]     0
+    ##  [85,]     0
+    ##  [86,]    16
+    ##  [87,]     0
+    ##  [88,]     0
+    ##  [89,]     0
+    ##  [90,]     4
+    ##  [91,]     0
+    ##  [92,]     0
+    ##  [93,]     0
+    ##  [94,]     0
+    ##  [95,]     0
+    ##  [96,]     0
+    ##  [97,]     0
+    ##  [98,]     7
+    ##  [99,]     1
+    ## [100,]     0
+    ## [101,]     4
+    ## [102,]     0
+    ## [103,]     0
+    ## [104,]     0
+    ## [105,]     0
+    ## [106,]     0
+    ## [107,]     0
+    ## [108,]     0
+    ## [109,]     1
+    ## [110,]     0
+    ## [111,]     0
+    ## [112,]     0
+    ## [113,]     0
+    ## [114,]     0
+    ## [115,]    13
+    ## [116,]     0
+    ## [117,]     9
+    ## [118,]    19
+    ## [119,]    10
+    ## [120,]    20
+    ## [121,]    42
+    ## [122,]    14
+    ## [123,]     0
+    ## [124,]    11
+    ## [125,]     9
+    ## [126,]     0
+    ## [127,]     0
+    ## [128,]    12
+    ## [129,]     6
+    ## [130,]     0
+    ## [131,]     9
+    ## [132,]     0
+    ## [133,]    10
+    ## [134,]     5
+    ## [135,]    NA
+    ## [136,]    NA
+    ## [137,]    NA
+    ## [138,]    NA
+    ## [139,]    NA
+    ## [140,]    NA
+    ## [141,]    NA
+    ## [142,]    NA
+    ## [143,]    NA
+    ## [144,]    NA
+    ## [145,]    NA
+    ## [146,]    NA
+    ## [147,]    NA
+    ## [148,]    NA
+    ## [149,]    NA
+    ## [150,]    NA
+    ## [151,]    NA
+    ## [152,]    NA
+    ## [153,]    NA
+    ## [154,]    NA
+    ## [155,]    NA
+    ## [156,]    NA
+    ## [157,]    NA
+    ## [158,]    NA
+    ## [159,]    NA
 
 ### 3.3 Specify the `baselinenowcast` model
 
-To specify the number of reference times used for delay and uncertainty
-estimation, we use an algorithm based on the maximum delay. By default,
-it splits the data evenly (or approximately because of odd numbers of
-reference times used for training) between data used for delay and
-uncertainty. See the documentation for
+Next, we’ll specify the number of reference times used for delay and
+uncertainty estimation as a factor of the maximum delay. We’ll also
+specify the proportion of reference times which will be used for delay
+estimation, with the remaining used for estimating uncertainty. We’ll
+set these as the default values used in the, but in a real-world setting
+we recommend performing an evaluation analysis to identify the optimal
+amount of training data to be used for each of these tasks. See the
+documentation for
 [`?allocate_reference_times`](https://baselinenowcast.epinowcast.org/reference/allocate_reference_times.md)
 and the “Default Settings” section of the [mathematical
 model](https://baselinenowcast.epinowcast.org/articles/model_definition.md)
 vignette for more details.
 
 ``` r
-ref_time_allocation <- allocate_reference_times(rep_tri)
+scale_factor <- 3
+prop_delay <- 0.5
+```
+
+Internally, we will call
+[`allocate_reference_times()`](https://baselinenowcast.epinowcast.org/reference/allocate_reference_times.md)
+which uses the reporting triangle matrix and these specifications to
+allocate the number of reference times used for delay and uncertainty
+given the number of reference times available and the maximum delay.
+Since our maximum delay is 25 days, this function will allocate 25\*3
+(75) reference times for fitting the model, with about half of them (37)
+being used for delay estimation and the other half (38) used for
+uncertainty estimation.
+
+## 4 Run the `baselinenowcast` workflow
+
+To produce a nowcast, we can use the
+[`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md)
+function to generate an estimate of the “final” number of cases of BAR
+by reference date. This function chains together the `baselinenowcast`
+workflow, It handles allocating reference times for training
+([`allocate_reference_times()`](https://baselinenowcast.epinowcast.org/reference/allocate_reference_times.md)),
+estimating a delay
+([`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md)),
+generating a point nowcast
+([`apply_delay()`](https://baselinenowcast.epinowcast.org/reference/apply_delay.md)),
+and estimating and applying uncertainty
+([`estimate_and_apply_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_uncertainty.md)),
+while also managing required bookkeeping to return nowcasts by reference
+dates. See
+[`?baselinenowcast.reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.reporting_triangle.md)
+for more details on each step in the workflow, and check out the
+[mathematical_model](https://baselinenowcast.epinowcast.org/articles/model_definition.md)
+for details on the mathematical model used for each component. The
+[`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md)
+function can ingest either a reporting triangle object as we made above,
+or a data.frame with cases by reference and report date for one or
+strata with support for common workflows such as sharing estimates
+across strata. See
+[`?baselinenowcast.data.frame`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.data.frame.md)
+for more details.
+
+By default, the `output_type = "samples"` which means that it will
+estimate and apply uncertainty using past nowcast errors to generate
+probabilistic nowcast draws. Point nowcasts can also be generated by
+specifying `output_type = "point"`. It will by default produce 1000
+draws, but this can be specified as more or less using the `draws`
+argument.
+
+``` r
+nowcast_draws_df <- baselinenowcast(rep_tri,
+  scale_factor = scale_factor,
+  prop_delay = prop_delay,
+  draws = 1000
+)
 ```
 
     ## ℹ 0.5 reference times were specified for delay estimation but 0.493 of reference times used for delay estimation.
@@ -674,111 +1173,33 @@ ref_time_allocation <- allocate_reference_times(rep_tri)
     ## ℹ `prop_delay` not identical to the proportion of reference times used for delay estimation due to rounding.
 
 ``` r
-n_history_delay <- ref_time_allocation$n_history_delay
-n_retrospective_nowcasts <- ref_time_allocation$n_retrospective_nowcasts
-```
-
-The `allocate_reference_times` function returns integer values that
-indicate the number of reference times to use for delay estimate
-(`n_history_delay`) and uncertainty estimate
-(`n_retrospective nowcasts`).
-
-``` r
-message(
-  "Number of reference times used for delay estimation: ",
-  n_history_delay
-)
-```
-
-    ## Number of reference times used for delay estimation: 37
-
-``` r
-message(
-  "Number of reference times used for uncertainty estimation: ",
-  n_retrospective_nowcasts
-)
-```
-
-    ## Number of reference times used for uncertainty estimation: 38
-
-## 4 Run the `baselinenowcast` workflow
-
-To produce a nowcast, we first estimate a reporting delay and use it to
-generate a point estimate, or a single number that serves as our best
-guess for the unknown value, of the expected case counts at each
-unobserved reference date and delay. We refer to this “filled in”
-triangle as a point nowcast matrix. See “Estimating the delay
-distribution from a reporting triangle” and “Point nowcast generation”
-of the [mathematical
-model](https://baselinenowcast.epinowcast.org/articles/model_definition.md)
-for more details. Note that in this example, we have focused on
-syndromic surveillance definitions that rely solely on the presence of
-one or more diagnoses codes, as this means that patients tend to
-transition from a non-case to case only once (rather than reverting back
-to a non-case during the course of their clinical encounter). Our
-nowcasting methods primarily focus on the former use-case, though the
-latter can also be handled in this framework.
-
-``` r
-pt_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = n_history_delay)
-head(pt_nowcast_matrix)
-```
-
-    ##        0   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
-    ## [1,] 194  54 26 13 12 13  5  0  0  0 14  9 14  0  0  0  6  0  0  0  0  0 12  0
-    ## [2,] 198  53 29 40 11  5  1  0  0 20  0 22  0 10  7  0  0 20  0  0  0  0  0 10
-    ## [3,] 167  58 33 14  0  7  4  8 12  8  0  0  6  0 19  6  9  0  0  0  0  0  0  0
-    ## [4,] 145  69 22 11  5 19 23 13  8 15  0  0  0  3  0 10  0  9  0  0  0  0  9  0
-    ## [5,] 180 100  0 25 12 15 31  7  4 12  5 12  5  0  8  0  0  0  5  5  0  0  0  0
-    ## [6,] 220  48  0 21 11 16 24 14  0  0  0  0  8  0  0  0  0  0  0  0  0  0  0  0
-    ##      24 25
-    ## [1,] 10  0
-    ## [2,]  0  6
-    ## [3,]  0  0
-    ## [4,]  0  0
-    ## [5,]  0  0
-    ## [6,]  0  0
-
-Next, we quantify the uncertainty using past nowcast errors, generating
-retrospective nowcasts and comparing against later observed data. We
-then apply the uncertainty by sampling from the observation model to
-produce probabilistic nowcast draws See the section “Uncertainty
-quantification” of the
-[mathematical_model](https://baselinenowcast.epinowcast.org/articles/model_definition.md)
-for more details.
-
-``` r
-nowcast_draws_df <- estimate_and_apply_uncertainty(
-  pt_nowcast_matrix,
-  rep_tri,
-  n_history_delay = n_history_delay,
-  n_retrospective_nowcasts = n_retrospective_nowcasts
-)
-
 head(nowcast_draws_df)
 ```
 
-    ##   pred_count time draw
-    ## 1        382    1    1
-    ## 2        432    2    1
-    ## 3        351    3    1
-    ## 4        361    4    1
-    ## 5        426    5    1
-    ## 6        362    6    1
+    ##     pred_count draw reference_date output_type
+    ## 1          382    1     2025-10-25     samples
+    ## 160        382    2     2025-10-25     samples
+    ## 319        382    3     2025-10-25     samples
+    ## 478        382    4     2025-10-25     samples
+    ## 637        382    5     2025-10-25     samples
+    ## 796        382    6     2025-10-25     samples
+
+Because we specified training volumes that did not result in integer
+reference times, we’ll get a message letting us know that 37/75, or
+0.493 of the reference times are being used for delay estimation.
 
 ## 5 Summarise and plot the nowcast
 
 We now have an estimate of the “final” number of cases of BAR by
-reference date with uncertainty. These are known as probabilistic
-nowcast draws. To summarise the uncertainty, we can compute prediction
-intervals. Here we will visualize the results using the 50th and 95th
-percent prediction intervals, though we suggest showing more prediction
-intervals if possible.
+reference date with uncertainty. To summarise the uncertainty, we can
+compute prediction intervals. Here we will visualize the results using
+the 50th and 95th percent prediction intervals, though we suggest
+showing more prediction intervals if possible.
 
 ``` r
 nowcast_summary_df <-
   nowcast_draws_df |>
-  group_by(time) |>
+  group_by(reference_date) |>
   summarise(
     median = median(pred_count),
     q50th_lb = quantile(pred_count, 0.25),
@@ -803,9 +1224,7 @@ eval_data <- long_df |>
     reference_date <= nowcast_date
   ) |>
   group_by(reference_date) |>
-  summarise(final_count = sum(count)) |>
-  mutate(time = row_number()) |>
-  select(time, final_count)
+  summarise(final_count = sum(count))
 ```
 
 Lastly, join the initial and final reports to the probabilistic nowcast.
@@ -813,23 +1232,23 @@ Lastly, join the initial and final reports to the probabilistic nowcast.
 ``` r
 nowcast_w_data <- nowcast_summary_df |>
   left_join(training_df_by_ref_date,
-    by = "time"
+    by = "reference_date"
   ) |>
   left_join(eval_data,
-    by = "time"
+    by = "reference_date"
   )
 head(nowcast_w_data)
 ```
 
-    ## # A tibble: 6 × 9
-    ##    time median q50th_lb q50th_ub q95th_lb q95th_ub reference_date initial_count
-    ##   <int>  <dbl>    <dbl>    <dbl>    <dbl>    <dbl> <date>                 <dbl>
-    ## 1     1    382      382      382      382      382 2025-10-25               382
-    ## 2     2    432      432      432      432      432 2025-10-26               432
-    ## 3     3    351      351      351      351      351 2025-10-27               351
-    ## 4     4    361      361      361      361      361 2025-10-28               361
-    ## 5     5    426      426      426      426      426 2025-10-29               426
-    ## 6     6    362      362      362      362      362 2025-10-30               362
+    ## # A tibble: 6 × 8
+    ##   reference_date median q50th_lb q50th_ub q95th_lb q95th_ub initial_count
+    ##   <date>          <dbl>    <dbl>    <dbl>    <dbl>    <dbl>         <dbl>
+    ## 1 2025-10-25        382      382      382      382      382           402
+    ## 2 2025-10-26        432      432      432      432      432           439
+    ## 3 2025-10-27        351      351      351      351      351           363
+    ## 4 2025-10-28        361      361      361      361      361           364
+    ## 5 2025-10-29        426      426      426      426      426           442
+    ## 6 2025-10-30        362      362      362      362      362           367
     ## # ℹ 1 more variable: final_count <dbl>
 
 ### 5.1 Plot nowcast against later observed “final” data
@@ -917,7 +1336,7 @@ plot_prob_nowcast <- ggplot(nowcast_data_recent) +
 plot_prob_nowcast
 ```
 
-![](nssp_nowcast_files/figure-html/unnamed-chunk-34-1.png)
+![](nssp_nowcast_files/figure-html/unnamed-chunk-32-1.png)
 
 ## 6 Summary
 
@@ -929,11 +1348,16 @@ using the time stamps of updates in an electronic health record in the
 NSSP dataset to create a count of the number of cases of a specific
 definition indexed by the date of their visit and the date at which the
 patient’s diagnoses was recorded into the surveillance system. From
-there we used the `baselinenowcast` workflow to estimate a delay
-distribution, apply it to generate a point nowcast, and estimate and
-apply uncertainty to generate probabilistic nowcasts. As a final step,
-we compared our nowcasts of the eventual final observed case counts to
-what we later observed and the right-truncated initial reports.
+there we converted the data to a `reporting_triangle` object and then
+ran the `baselinenowcast` workflow using the
+[`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md)
+function to generate probabilistic nowcasts. This function chains
+together multiple steps, and we describe the modular workflow option in
+the [Getting
+Started](https://baselinenowcast.epinowcast.org/articles/baselinenowcst.md)
+vignette. As a final step, we compared our nowcasts of the eventual
+final observed case counts to what we later observed and the
+right-truncated initial reports.
 
 Next steps include scoring the nowcasts we generated using proper
 scoring rules such as the weighted interval score (WIS) or the

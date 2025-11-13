@@ -2,6 +2,9 @@
 
 ## baselinenowcast 0.0.0.1000
 
+- Use the `as_reporting_triangle` and `baselinenowcast` workflow in the
+  vignette which walks through a nowcasting example applied to syndromic
+  surveillance data in the U.S.
 - Add `preprocess` parameter to
   [`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md)
   to control handling of negative values in reporting triangles. Set to

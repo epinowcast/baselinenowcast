@@ -10,6 +10,8 @@ reporting_triangle object and generates a nowcast in the
 form of a baselinenowcast_df object.
 This function implements a nowcasting workflow for a single reporting
 triangle:
+allocate_reference_times() - Allocate the reference times used
+for delay and uncertainty estimation
 estimate_delay() - Estimate a reporting delay PMF
 apply_delay() - Generate a point nowcast using the delay PMF
 estimate_and_apply_uncertainty() - Generate a probabilistic
@@ -33,6 +35,8 @@ reporting_triangle object and generates a nowcast in the
 form of a baselinenowcast_df object.
 This function implements a nowcasting workflow for a single reporting
 triangle:
+allocate_reference_times() - Allocate the reference times used
+for delay and uncertainty estimation
 estimate_delay() - Estimate a reporting delay PMF
 apply_delay() - Generate a point nowcast using the delay PMF
 estimate_and_apply_uncertainty() - Generate a probabilistic
@@ -103,7 +107,9 @@ model, etc.)."><meta property="og:image" content="https://baselinenowcast.epinow
 <a href="reporting_triangle-class.html">reporting_triangle</a> object and generates a nowcast in the
 form of a <a href="baselinenowcast_df-class.html">baselinenowcast_df</a> object.</p>
 <p>This function implements a nowcasting workflow for a single reporting
-triangle:</p><ol><li><p><code><a href="estimate_delay.html">estimate_delay()</a></code> - Estimate a reporting delay PMF</p></li>
+triangle:</p><ol><li><p><code><a href="allocate_reference_times.html">allocate_reference_times()</a></code> - Allocate the reference times used
+for delay and uncertainty estimation</p></li>
+<li><p><code><a href="estimate_delay.html">estimate_delay()</a></code> - Estimate a reporting delay PMF</p></li>
 <li><p><code><a href="apply_delay.html">apply_delay()</a></code> - Generate a point nowcast using the delay PMF</p></li>
 <li><p><code><a href="estimate_and_apply_uncertainty.html">estimate_and_apply_uncertainty()</a></code> - Generate a probabilistic
 nowcast from a point nowcast and reporting triangle</p></li>

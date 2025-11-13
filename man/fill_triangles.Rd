@@ -6,19 +6,15 @@
 \usage{
 fill_triangles(
   retro_reporting_triangles,
-  max_delay = min(sapply(retro_reporting_triangles, ncol)) - 1,
   n = min(sapply(retro_reporting_triangles, nrow)),
   delay_pmf = NULL,
-  preprocess = preprocess_negative_values
+  preprocess = preprocess_negative_values,
+  validate = TRUE
 )
 }
 \arguments{
 \item{retro_reporting_triangles}{List of \code{n} truncated reporting triangle
 matrices with as many rows as available given the truncation.}
-
-\item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-\code{ncol(reporting_triangle) -1}.}
 
 \item{n}{Integer indicating the number of reference times
 (number of rows) to use to estimate the delay distribution for each
@@ -35,7 +31,12 @@ estimation, or NULL to skip preprocessing. Default is
 \code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
 redistributing them to earlier delays. Set to NULL if you want to preserve
 negative PMF entries (e.g., when working with downward corrections where
-negative probabilities reflect systematic adjustments).}
+negative probabilities reflect systematic adjustments). Custom preprocess
+functions must accept a \code{validate} parameter (defaults to TRUE) to enable
+validation optimisation in internal function chains.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 }
 \value{
 \code{point_nowcast_matrices} List of the same number of elements as the
@@ -50,24 +51,15 @@ each triangle or the corresponding delay passed in. It uses the specified
 reporting triangle.
 }
 \examples{
-triangle <- matrix(
-  c(
-    65, 46, 21, 7,
-    70, 40, 20, 5,
-    80, 50, 10, 10,
-    100, 40, 31, 20,
-    95, 45, 21, NA,
-    82, 42, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 7,
-  byrow = TRUE
-)
-
-trunc_rts <- truncate_triangles(triangle)
+# Generate retrospective nowcasts using larger triangle
+data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+rep_tri <- as_reporting_triangle(data_as_of) |>
+  truncate_to_delay(max_delay = 25) |>
+  tail(n = 50)
+trunc_rts <- truncate_triangles(rep_tri, n = 2)
 retro_rts <- construct_triangles(trunc_rts)
-retro_pt_nowcast_mat_list <- fill_triangles(retro_rts)
-retro_pt_nowcast_mat_list[1:3]
+retro_pt_nowcast_mat_list <- fill_triangles(retro_rts, n = 30)
+retro_pt_nowcast_mat_list[1:2]
 }
 \seealso{
 Point nowcast generation functions

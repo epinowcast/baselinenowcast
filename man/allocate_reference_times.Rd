@@ -7,22 +7,18 @@ values for training volume for delay and uncertainty estimation.}
 \usage{
 allocate_reference_times(
   reporting_triangle,
-  max_delay = ncol(reporting_triangle) - 1,
   scale_factor = 3,
   prop_delay = 0.5,
-  n_min_retro_nowcasts = 2
+  n_min_retro_nowcasts = 2,
+  validate = TRUE
 )
 }
 \arguments{
-\item{reporting_triangle}{Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+\item{reporting_triangle}{A \link{reporting_triangle} object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).}
-
-\item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-\code{ncol(reporting_triangle) -1}.}
+reported for the same row (e.g., weekly reporting of daily data).}
 
 \item{scale_factor}{Numeric value indicating the multiplicative factor on
 the maximum delay to be used for estimation of delay and uncertainty.
@@ -34,17 +30,19 @@ estimation. Default is \code{0.5}.}
 
 \item{n_min_retro_nowcasts}{Integer indicating the minimum number of
 reference times needed for uncertainty estimation. Default is \code{2}.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 }
 \value{
 list of n_history_delay and n_retrospective_nowcasts
 }
 \description{
-Given the reporting triangle, the maximum delay, and
-optionally the user-specified scale factor on the max delay to be used as
-total reference times and the proportion of those reference times to
-be used for delay estimation, allocate reference times to the number
-used for delay estimation and the number used as retrospective nowcasts
-for uncertainty estimation.
+Given the reporting triangle and optionally the user-specified
+scale factor on the max delay to be used as total reference times and the
+proportion of those reference times to be used for delay estimation,
+allocate reference times to the number used for delay estimation and the
+number used as retrospective nowcasts for uncertainty estimation.
 
 This function implements an algorithm which:
 \itemize{
@@ -65,28 +63,18 @@ in the reporting triangle.
 }
 }
 \examples{
-triangle <- matrix(
-  c(
-    100, 50, 30, 20,
-    40, 10, 20, 5,
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    40, 10, 20, 5,
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    90, 45, 25, NA,
-    80, 40, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 10,
-  byrow = TRUE
-)
-# Use the defaults
-ref_time_allocation_default <- allocate_reference_times(triangle)
+# Create a reporting triangle from package data
+data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+rep_tri <- as_reporting_triangle(data_as_of) |>
+  truncate_to_delay(max_delay = 25)
+
+# Use the defaults (scale_factor = 3, prop_delay = 0.5)
+ref_time_allocation_default <- allocate_reference_times(rep_tri)
 ref_time_allocation_default
+
 # Modify to use less volume and redistribute
 ref_time_allocation_alt <- allocate_reference_times(
-  reporting_triangle = triangle,
+  reporting_triangle = rep_tri,
   scale_factor = 2,
   prop_delay = 0.6
 )

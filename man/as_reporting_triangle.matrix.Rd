@@ -4,34 +4,21 @@
 \alias{as_reporting_triangle.matrix}
 \title{Create a \code{reporting_triangle} from a matrix}
 \usage{
-\method{as_reporting_triangle}{matrix}(
-  data,
-  max_delay,
-  strata = NULL,
-  delays_unit = "days",
-  reference_dates,
-  ...
-)
+\method{as_reporting_triangle}{matrix}(data, delays_unit = "days", reference_dates = NULL, ...)
 }
 \arguments{
 \item{data}{Matrix of a reporting triangle where rows are reference times,
-columns are delays, and entries are the incident counts.}
-
-\item{max_delay}{Integer indicating the maximum delay.}
-
-\item{strata}{Character string indicating the strata. Default is NULL.}
+columns are delays, and entries are the incident counts.
+The number of columns determines the maximum delay.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
-For the matrix method, this is simply passed as an item in the
-\code{reporting_triangle} object which will later be used to create a nowcast
-data.frame. For the data.frame method, this is used to compute the delay
-in terms of the specified unit, and to expand the combinations of
-reference dates and delays to the complete set of combinations in
-the reporting triangle.  Default is \code{"days"}.}
+Default is \code{"days"}.}
 
-\item{reference_dates}{Vector of character strings indicating the reference
-dates corresponding to each row of the reporting triangle matrix (\code{data}).}
+\item{reference_dates}{Vector of Date objects or character strings indicating
+the reference dates corresponding to each row of the reporting triangle
+matrix (\code{data}). If NULL (default), dummy dates starting from 1900-01-01
+are generated with spacing determined by \code{delays_unit}.}
 
 \item{...}{Additional arguments not used.}
 }
@@ -41,9 +28,8 @@ A \code{\link{reporting_triangle}} object
 \description{
 This method takes a matrix in the format of a reporting triangle, with rows
 as reference dates and columns as delays and elements as incident case
-counts and creates a \link{reporting_triangle} object. See other
-\code{\link[=as_reporting_triangle.data.frame]{as_reporting_triangle.data.frame()}} for other data
-input options.
+counts and creates a \link{reporting_triangle} object.
+See \code{\link[=as_reporting_triangle.data.frame]{as_reporting_triangle.data.frame()}} for creating from data frames.
 }
 \examples{
 rep_tri_mat <- matrix(
@@ -63,23 +49,42 @@ reference_dates <- seq(
   to = as.Date("2025-01-05"),
   by = "day"
 )
-max_delay <- 4
+
+# max_delay is inferred from matrix dimensions (4 in this case)
 rep_tri <- as_reporting_triangle(
   data = rep_tri_mat,
-  reference_dates = reference_dates,
-  max_delay = max_delay
+  reference_dates = reference_dates
 )
 rep_tri
 }
 \seealso{
 Reporting triangle construction and validation
+\code{\link{[.reporting_triangle}()},
+\code{\link{[<-.reporting_triangle}()},
+\code{\link{as.data.frame.reporting_triangle}()},
+\code{\link{as.matrix.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.triangle}()},
 \code{\link{assert_reporting_triangle}()},
-\code{\link{detect_structure}()},
+\code{\link{get_delays_from_dates}()},
+\code{\link{get_delays_unit}()},
+\code{\link{get_max_delay}()},
+\code{\link{get_mean_delay}()},
+\code{\link{get_quantile_delay}()},
+\code{\link{get_reference_dates}()},
+\code{\link{get_report_dates}()},
+\code{\link{get_reporting_structure}()},
+\code{\link{head.reporting_triangle}()},
+\code{\link{is_reporting_triangle}()},
 \code{\link{new_reporting_triangle}()},
-\code{\link{reporting_triangle-class}}
+\code{\link{print.reporting_triangle}()},
+\code{\link{reporting_triangle-class}},
+\code{\link{summary.reporting_triangle}()},
+\code{\link{tail.reporting_triangle}()},
+\code{\link{truncate_to_delay}()},
+\code{\link{truncate_to_quantile}()},
+\code{\link{validate_reporting_triangle}()}
 }
 \concept{reporting_triangle}

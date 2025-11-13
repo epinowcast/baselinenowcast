@@ -16,21 +16,8 @@
 #' @family generate_retrospective_data
 #' @export
 #' @examples
-#' triangle <- matrix(
-#'   c(
-#'     65, 46, 21, 7,
-#'     70, 40, 20, 5,
-#'     80, 50, 10, 10,
-#'     100, 40, 31, 20,
-#'     95, 45, 21, NA,
-#'     82, 42, NA, NA,
-#'     70, NA, NA, NA
-#'   ),
-#'   nrow = 7,
-#'   byrow = TRUE
-#' )
-#'
-#' trunc_rts <- truncate_triangles(triangle, n = 2)
+#' # Generate retrospective triangles from truncated triangles
+#' trunc_rts <- truncate_triangles(example_reporting_triangle, n = 2)
 #' retro_rts <- construct_triangles(trunc_rts)
 #'
 #' # With custom structure
@@ -39,18 +26,19 @@
 #'   structure = 2
 #' )
 #' retro_rts_custom
-construct_triangles <- function(truncated_reporting_triangles, structure = 1) {
-  # Check that input is a list of matrices
-  if (!is.matrix(truncated_reporting_triangles[[1]])) {
-    cli_abort(
-      message = "The elements of `reporting_triangles` must be matrices"
-    )
+construct_triangles <- function(truncated_reporting_triangles,
+                                structure = 1,
+                                validate = TRUE) {
+  # Check that input is a list
+  if (!is.list(truncated_reporting_triangles)) {
+    cli_abort(message = "`truncated_reporting_triangles` must be a list")
   }
 
   reporting_triangles <- lapply(
     truncated_reporting_triangles,
     construct_triangle,
-    structure = structure
+    structure = structure,
+    validate = validate
   )
 
   return(reporting_triangles)
@@ -62,50 +50,40 @@ construct_triangles <- function(truncated_reporting_triangles, structure = 1) {
 #'   right observations from a truncated reporting triangle matrix. It is the
 #'   singular version of `construct_triangles()`.
 #'
-#' @param truncated_reporting_triangle A single truncated reporting triangle.
-#'    May or may not contain NAs.
+#' @param truncated_reporting_triangle A single truncated reporting_triangle
+#'   object. May or may not contain NAs.
 #' @param structure Integer or vector specifying the reporting structure.
 #'   If integer, divides columns evenly by that integer (with last possibly
 #'   truncated).  If vector, the sum must not be greater than or equal to the
 #'   number of columns. Default is 1 (standard triangular structure).
+#' @inheritParams assert_reporting_triangle
 #' @returns A single retrospective reporting triangle matrix with NAs in the
 #'   appropriate positions.
 #' @family generate_retrospective_data
 #' @export
 #' @examples
-#' triangle <- matrix(
-#'   c(
-#'     65, 46, 21, 7,
-#'     70, 40, 20, 5,
-#'     80, 50, 10, 10,
-#'     100, 40, 31, 20,
-#'     95, 45, 21, 10,
-#'     82, 42, 6, NA,
-#'     70, 90, NA, NA
-#'   ),
-#'   nrow = 7,
-#'   byrow = TRUE
-#' )
-#'
 #' # Standard triangular structure (default)
-#' rep_tri <- construct_triangle(triangle)
+#' rep_tri <- construct_triangle(example_reporting_triangle)
 #' rep_tri
 #'
 #' # Ragged structure with 2 columns per delay period
-#' rep_ragged <- construct_triangle(triangle, 2)
+#' rep_ragged <- construct_triangle(example_reporting_triangle, 2)
 #' rep_ragged
 #'
 #' # Custom structure with explicit column counts
-#' rep_custom <- construct_triangle(triangle, c(1, 2))
+#' rep_custom <- construct_triangle(example_reporting_triangle, c(1, 2))
 #' rep_custom
 construct_triangle <- function(truncated_reporting_triangle,
-                               structure = 1) {
+                               structure = 1,
+                               validate = TRUE) {
+  assert_reporting_triangle(truncated_reporting_triangle, validate)
+
   # Get matrix dimensions
   rows <- nrow(truncated_reporting_triangle)
   cols <- ncol(truncated_reporting_triangle)
 
-  # Create a copy of the input matrix
-  result <- truncated_reporting_triangle
+  # Convert to matrix for modification
+  result <- as.matrix(truncated_reporting_triangle)
 
   # Process structure parameter
   if (length(structure) == 1) {
@@ -135,7 +113,8 @@ construct_triangle <- function(truncated_reporting_triangle,
     result[index_row, start_col:cols] <- NA_real_
   }
 
-  return(result)
+  # Convert back to reporting_triangle with preserved attributes
+  return(.update_triangle_matrix(truncated_reporting_triangle, result))
 }
 
 .expand_structure_vec <- function(structure, cols) {

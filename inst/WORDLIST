@@ -19,6 +19,7 @@ Nowcasting
 Nowcasts
 Obs
 PMF
+PMFs
 RESPINOW
 TimTaylor
 WIS
@@ -36,9 +37,12 @@ cb
 cce
 cdf
 cf
+cli
 color
 com
+cummax
 cumsum
+cutoff
 darkblue
 darkred
 dce
@@ -55,6 +59,7 @@ ggtitle
 github
 gray
 hline
+idx
 infty
 init
 inits
@@ -76,7 +81,9 @@ nowcast
 nowcasted
 nowcasting
 nowcasts
+num
 obs
+pct
 pid
 pilessthand
 pmf

@@ -62,14 +62,17 @@ summarise_final_day_mean <- function(df, group_vars = c(
 
 # Test Data Creation Functions ---------------------------------------------
 
-#' Create a fixed simple test triangle matrix
+#' Create a fixed simple test reporting triangle
 #'
-#' Returns a fixed 5x4 matrix with a specific pattern for simple tests.
+#' Returns a fixed 5x4 reporting_triangle object with a specific pattern for
+#' simple tests.
 #'
-#' @return A 5x4 matrix suitable for testing
+#' @param reference_dates Optional vector of reference dates. If NULL, uses
+#'   as_reporting_triangle() default (dummy dates).
+#' @return A reporting_triangle object (5x4) suitable for testing
 #' @keywords internal
-make_simple_triangle <- function() {
-  return(matrix(
+make_simple_triangle <- function(reference_dates = NULL) {
+  mat <- matrix(
     c(
       10, 7, 1, NA,
       15, 12, 2, NA,
@@ -80,25 +83,50 @@ make_simple_triangle <- function() {
     nrow = 5,
     ncol = 4,
     byrow = TRUE
+  )
+
+  return(as_reporting_triangle(
+    data = mat,
+    reference_dates = reference_dates
   ))
 }
 
-#' Create a test triangle matrix with specified dimensions
+#' Create a test reporting triangle with specified dimensions
 #'
-#' Creates a matrix with sequential values for testing purposes.
-#' Optionally adds NAs in bottom-right triangle pattern.
+#' Creates a reporting_triangle object with sequential or custom values.
+#' Optionally adds NAs in bottom-right triangle pattern and/or calls
+#' construct_triangle().
 #'
-#' @param nrow Number of rows
-#' @param ncol Number of columns
+#' @param nrow Number of rows (ignored if data provided)
+#' @param ncol Number of columns (ignored if data provided)
+#' @param data Optional matrix data. If NULL, creates sequential values.
 #' @param with_nas Logical; if TRUE, adds reporting triangle NA pattern
-#' @return A matrix suitable for testing
+#' @param as_reporting_triangle Logical; if TRUE, returns reporting_triangle
+#'   object (default), otherwise returns plain matrix
+#' @param construct Logical; if TRUE, calls construct_triangle() on the result
+#'   (default FALSE)
+#' @param structure Structure parameter to pass to construct_triangle() if
+#'   construct = TRUE
+#' @param reference_dates Optional vector of reference dates. If NULL, uses
+#'   as_reporting_triangle() default (dummy dates).
+#' @return A reporting_triangle object (or matrix if as_reporting_triangle =
+#'   FALSE) suitable for testing
 #' @keywords internal
-make_test_triangle <- function(nrow = 5, ncol = 4, with_nas = FALSE) {
-  mat <- matrix(
-    seq_len(nrow * ncol),
-    nrow = nrow,
-    ncol = ncol
-  )
+make_test_triangle <- function(nrow = 5, ncol = 4, data = NULL,
+                               with_nas = FALSE,
+                               as_reporting_triangle = TRUE, construct = FALSE,
+                               structure = 1, reference_dates = NULL) {
+  if (is.null(data)) {
+    mat <- matrix(
+      seq_len(nrow * ncol),
+      nrow = nrow,
+      ncol = ncol
+    )
+  } else {
+    mat <- data
+    nrow <- nrow(mat)
+    ncol <- ncol(mat)
+  }
 
   if (with_nas) {
     # Add NAs in bottom-right triangle (reporting triangle pattern)
@@ -110,6 +138,21 @@ make_test_triangle <- function(nrow = 5, ncol = 4, with_nas = FALSE) {
         mat[i, na_start:ncol] <- NA
       }
     }
+  }
+
+  if (as_reporting_triangle) {
+    result <- as_reporting_triangle(
+      data = mat,
+      reference_dates = reference_dates
+    )
+
+    if (construct) {
+      result <- construct_triangle(
+        result, structure = structure
+      )
+    }
+
+    return(result)
   }
 
   return(mat)

@@ -4,47 +4,30 @@
 \alias{estimate_and_apply_delay}
 \title{Estimate and apply delay from a reporting triangle}
 \usage{
-estimate_and_apply_delay(
-  reporting_triangle,
-  max_delay = ncol(reporting_triangle) - 1,
-  ...
-)
+estimate_and_apply_delay(reporting_triangle, validate = TRUE, ...)
 }
 \arguments{
-\item{reporting_triangle}{Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+\item{reporting_triangle}{A \link{reporting_triangle} object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).}
+reported for the same row (e.g., weekly reporting of daily data).}
 
-\item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-\code{ncol(reporting_triangle) -1}.}
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 
 \item{...}{Additional arguments passed to the \code{estimate_delay} function}
 }
 \value{
-\code{pt_nowcast_matrix} Matrix of point nowcasts
+\code{pt_nowcast_matrix} A \code{reporting_triangle} object of point nowcasts
+with the same structure as the input
 }
 \description{
 Estimate and apply delay from a reporting triangle
 }
 \examples{
-triangle <- matrix(
-  c(
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    90, 45, 25, NA,
-    80, 40, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 5,
-  byrow = TRUE
-)
 pt_nowcast_matrix <- estimate_and_apply_delay(
-  reporting_triangle = triangle,
-  max_delay = 3,
-  n = 4
+  reporting_triangle = example_reporting_triangle
 )
 pt_nowcast_matrix
 }

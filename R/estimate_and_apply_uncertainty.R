@@ -36,58 +36,57 @@
 #' @export
 #' @importFrom cli cli_abort
 #' @examples
-#' triangle <- matrix(
-#'   c(
-#'     40, 10, 20, 5,
-#'     80, 50, 25, 10,
-#'     100, 50, 30, 20,
-#'     90, 45, 25, NA,
-#'     80, 40, NA, NA,
-#'     70, NA, NA, NA
-#'   ),
-#'   nrow = 6,
-#'   byrow = TRUE
-#' )
+#' # Use package data truncated to appropriate size
+#' data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' triangle <- as_reporting_triangle(data_as_of) |>
+#'   truncate_to_delay(max_delay = 25)
+#'
 #' pt_nowcast_matrix <- estimate_and_apply_delay(
 #'   reporting_triangle = triangle,
-#'   n = 4
+#'   n = 75
 #' )
-#' # Need to tell uncertainty estimator to also use 4 reference times for
-#' # delay estimation, the remaining 2 will then be used for
-#' # uncertainty estimation.
+#' # Use 75 reference times for delay estimation and 40 for uncertainty
 #' nowcast_draws_df <- estimate_and_apply_uncertainty(
 #'   pt_nowcast_matrix,
 #'   triangle,
-#'   n_history_delay = 4,
-#'   n_retrospective_nowcasts = 2
+#'   n_history_delay = 75,
+#'   n_retrospective_nowcasts = 40,
+#'   draws = 100
 #' )
-#' nowcast_draws_df
+#' head(nowcast_draws_df)
 estimate_and_apply_uncertainty <- function(
     point_nowcast_matrix,
     reporting_triangle,
     n_history_delay,
     n_retrospective_nowcasts,
-    max_delay = ncol(reporting_triangle) - 1,
-    structure = detect_structure(reporting_triangle),
+    structure = get_reporting_structure(reporting_triangle),
     draws = 1000,
     delay_pmf = NULL,
     uncertainty_model = fit_by_horizon,
     uncertainty_sampler = sample_nb,
+    validate = TRUE,
     ...) {
-  .validate_multiple_inputs(
-    point_nowcast_matrix = point_nowcast_matrix,
-    reporting_triangle = reporting_triangle,
-    max_delay = max_delay
-  )
+  assert_reporting_triangle(point_nowcast_matrix, validate)
+  assert_reporting_triangle(reporting_triangle, validate)
+
+  # Check that both inputs have the same max_delay
+  max_delay_point <- get_max_delay(point_nowcast_matrix)
+  max_delay_rt <- get_max_delay(reporting_triangle)
+  if (max_delay_point != max_delay_rt) {
+    cli_abort(c(
+      "x" = "`point_nowcast_matrix` and `reporting_triangle` must have the same max_delay.", # nolint
+      "i" = "Got max_delay of {max_delay_point} and {max_delay_rt} respectively." # nolint
+    ))
+  }
 
   uncertainty_params <- estimate_uncertainty_retro(
     reporting_triangle = reporting_triangle,
     n_history_delay = n_history_delay,
     n_retrospective_nowcasts = n_retrospective_nowcasts,
-    max_delay = max_delay,
     structure = structure,
     delay_pmf = delay_pmf,
     uncertainty_model = uncertainty_model,
+    validate = FALSE,
     ...
   )
   nowcast_draws <- sample_nowcasts(

@@ -13,7 +13,7 @@ indexed by reference date and report date}
   draws = 1000,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,
-  max_delay,
+  max_delay = NULL,
   delays_unit = "days",
   strata_cols = NULL,
   strata_sharing = "none",
@@ -69,16 +69,13 @@ arguments \code{pred} for the vector of predictions and uncertainty parameters
 for the corresponding vector of uncertainty parameters, and draws from a
 negative binomial for each element of the vector.}
 
-\item{max_delay}{Integer indicating the maximum delay.}
+\item{max_delay}{Maximum delay (in units of \code{delays_unit}) to include in the
+nowcast. If NULL (default), all delays in the data are used. If specified,
+only observations with delay <= max_delay are included.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
-For the matrix method, this is simply passed as an item in the
-\code{reporting_triangle} object which will later be used to create a nowcast
-data.frame. For the data.frame method, this is used to compute the delay
-in terms of the specified unit, and to expand the combinations of
-reference dates and delays to the complete set of combinations in
-the reporting triangle.  Default is \code{"days"}.}
+Default is \code{"days"}.}
 
 \item{strata_cols}{Vector of character strings indicating the names of the
 columns in \code{data} that determine how to stratify the data for nowcasting.
@@ -100,7 +97,9 @@ estimation, or NULL to skip preprocessing. Default is
 \code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
 redistributing them to earlier delays. Set to NULL if you want to preserve
 negative PMF entries (e.g., when working with downward corrections where
-negative probabilities reflect systematic adjustments).}
+negative probabilities reflect systematic adjustments). Custom preprocess
+functions must accept a \code{validate} parameter (defaults to TRUE) to enable
+validation optimisation in internal function chains.}
 
 \item{...}{Additional arguments passed to
 \code{\link[=estimate_uncertainty]{estimate_uncertainty()}}
@@ -143,13 +142,18 @@ all strata, the shared estimates will be made using the shared set of
 reference and report dates across strata.
 }
 \examples{
+# Filter data to exclude most recent report dates and limit to 75
+# reference dates
+max_ref_date <- max(germany_covid19_hosp$reference_date)
+min_ref_date <- max_ref_date - 74
 covid_data_to_nowcast <- germany_covid19_hosp[
-  germany_covid19_hosp$report_date <
-    max(germany_covid19_hosp$reference_date),
-] # nolint
+  germany_covid19_hosp$report_date < max_ref_date &
+  germany_covid19_hosp$reference_date >= min_ref_date,
+]
 nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
-  max_delay = 40,
-  strata_cols = c("age_group", "location")
+  max_delay = 25,
+  strata_cols = c("age_group", "location"),
+  draws = 100
 )
 nowcasts_df
 }

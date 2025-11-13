@@ -12,15 +12,15 @@ combine_obs_with_pred(
 )
 }
 \arguments{
-\item{predicted_counts}{Vector of predicted counts at each reference time.
+\item{predicted_counts}{Vector of predicted counts at each reference date.
 Note that if using a reference time or delay aggregator function, this
 is assumed to have already been aggregated.}
 
-\item{reporting_triangle}{Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+\item{reporting_triangle}{A \link{reporting_triangle} object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).}
+reported for the same row (e.g., weekly reporting of daily data).}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
@@ -32,7 +32,9 @@ of the retrospective point nowcast matrix after it has been aggregated
 across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
 }
 \value{
-A vector of predicted counts at each reference time
+A vector of predicted counts at each reference date, for all
+reference dates in the input \code{reporting_triangle} (or fewer if using
+\code{ref_time_aggregator})
 }
 \description{
 Internally it sums observed counts from the reporting triangle by reference
@@ -40,20 +42,12 @@ time and adds them to the predicted counts to form a single draw of the
 nowcast for the final counts by reference time.
 }
 \examples{
+# Use example data
+reporting_triangle <- construct_triangle(example_reporting_triangle)
 pred_counts <- c(10, 20, 30, 40)
-reporting_matrix <- matrix(
-  c(
-    7, 9, 4, 3,
-    1, 2, 3, 4,
-    5, 6, 7, 8,
-    9, 10, 11, 12
-  ),
-  nrow = 4,
-  byrow = TRUE
-)
-reporting_triangle <- construct_triangle(reporting_matrix)
 combine_obs_with_pred(pred_counts, reporting_triangle)
-# Another example with rolling sum
+
+# Example with rolling sum
 if (requireNamespace("zoo", quietly = TRUE)) {
   combine_obs_with_pred(pred_counts,
     reporting_triangle,

@@ -1,7 +1,7 @@
 test_that(
   "estimate_uncertainty_retro returns positive numeric vector",
   {
-    triangle <- matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -13,7 +13,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     result <- estimate_uncertainty_retro(
       triangle,
@@ -28,7 +28,7 @@ test_that(
 )
 
 test_that("estimate_uncertainty_retro matches manual workflow", {
-  triangle <- matrix(
+  triangle <- make_test_triangle(data = matrix(
     c(
       65, 46, 21, 7,
       70, 40, 20, 5,
@@ -40,7 +40,7 @@ test_that("estimate_uncertainty_retro matches manual workflow", {
     ),
     nrow = 7,
     byrow = TRUE
-  )
+  ))
 
   # Manual workflow
   n_retrospective_nowcasts <- 2
@@ -58,7 +58,6 @@ test_that("estimate_uncertainty_retro matches manual workflow", {
   n_history_delay <- min(sapply(reporting_triangle_list, nrow))
   pt_nowcast_mat_list <- fill_triangles(
     reporting_triangle_list,
-    max_delay = max_delay,
     n = n_history_delay
   )
   manual_result <- estimate_uncertainty(
@@ -80,7 +79,7 @@ test_that("estimate_uncertainty_retro matches manual workflow", {
 test_that(
   "estimate_uncertainty_retro returns numeric with custom n_history_delay",
   {
-    triangle <- matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -92,7 +91,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     result <- estimate_uncertainty_retro(
       triangle,
@@ -108,7 +107,7 @@ test_that(
 test_that(
   "estimate_uncertainty_retro returns numeric vector with custom n_retro",
   {
-    triangle <- matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -120,7 +119,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     suppressWarnings({
       result <- estimate_uncertainty_retro(
@@ -138,7 +137,7 @@ test_that(
 test_that(
   "estimate_uncertainty_retro returns numeric vector with custom max_delay",
   {
-    triangle <- matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -150,13 +149,12 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     result <- estimate_uncertainty_retro(
       triangle,
       n_history_delay = 5,
-      n_retrospective_nowcasts = 2,
-      max_delay = 3
+      n_retrospective_nowcasts = 2
     )
 
     expect_type(result, "double")
@@ -167,7 +165,7 @@ test_that(
 test_that(
   "estimate_uncertainty_retro returns numeric vector with custom aggregators",
   {
-    triangle <- matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -179,7 +177,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     if (requireNamespace("zoo", quietly = TRUE)) {
       result <- estimate_uncertainty_retro(
@@ -202,7 +200,7 @@ test_that(
 test_that(
   "estimate_uncertainty_retro returns numeric vector with custom structure",
   {
-    triangle <- matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -214,7 +212,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     result <- estimate_uncertainty_retro(
       triangle,
@@ -247,7 +245,7 @@ test_that("estimate_uncertainty_retro validates triangle input", {
 test_that(
   "estimate_uncertainty_retro validates n_history_delay and n_retro",
   {
-    triangle <- matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -259,7 +257,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     expect_error(
       estimate_uncertainty_retro(
@@ -285,7 +283,7 @@ test_that(
 test_that(
   "estimate_uncertainty_retro returns numeric with all custom params",
   {
-    triangle <- matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -297,13 +295,12 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     result <- estimate_uncertainty_retro(
       reporting_triangle = triangle,
       n_retrospective_nowcasts = 2,
       n_history_delay = 5,
-      max_delay = 3,
       ref_time_aggregator = identity,
       delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
       structure = 2,
@@ -316,7 +313,7 @@ test_that(
 )
 
 test_that("estimate_uncertainty_retro validates insufficient data", {
-  triangle <- matrix(
+  triangle <- make_test_triangle(data = matrix(
     c(
       10, 5, 2, 1,
       8, 6, 3, NA,
@@ -325,7 +322,7 @@ test_that("estimate_uncertainty_retro validates insufficient data", {
     ),
     nrow = 4,
     byrow = TRUE
-  )
+  ))
 
   expect_error(
     estimate_uncertainty_retro(
@@ -338,7 +335,7 @@ test_that("estimate_uncertainty_retro validates insufficient data", {
 })
 
 test_that("estimate_uncertainty_retro works with custom delay_pmf", {
-  triangle <- matrix(
+  triangle <- make_test_triangle(data = matrix(
     c(
       65, 46, 21, 7,
       70, 40, 20, 5,
@@ -350,7 +347,7 @@ test_that("estimate_uncertainty_retro works with custom delay_pmf", {
     ),
     nrow = 7,
     byrow = TRUE
-  )
+  ))
 
   custom_delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
 
@@ -377,7 +374,7 @@ test_that("estimate_uncertainty_retro works with custom delay_pmf", {
 test_that(
   "estimate_uncertainty_retro returns numeric vector despite warnings",
   {
-    triangle <- matrix(
+    triangle <- make_test_triangle(data = matrix(
       c(
         65, 46, 21, 7,
         70, 40, 20, 5,
@@ -389,7 +386,7 @@ test_that(
       ),
       nrow = 7,
       byrow = TRUE
-    )
+    ))
 
     suppressWarnings({
       result <- estimate_uncertainty_retro(

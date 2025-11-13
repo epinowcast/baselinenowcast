@@ -36,47 +36,27 @@
 #' @importFrom cli cli_warn
 #'
 #' @examples
-#' # Create example reporting triangle
-#' triangle <- matrix(
-#'   c(
-#'     65, 46, 21, 7,
-#'     70, 40, 20, 5,
-#'     80, 50, 10, 10,
-#'     100, 40, 31, 20,
-#'     95, 45, 21, NA,
-#'     82, 42, NA, NA,
-#'     70, NA, NA, NA
-#'   ),
-#'   nrow = 7,
-#'   byrow = TRUE
-#' )
+#' # Create a reporting triangle from syn_nssp_df
+#' data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' rep_tri <- as_reporting_triangle(data_as_of) |>
+#'   truncate_to_delay(max_delay = 25)
 #'
-#' # Estimate uncertainty parameters
 #' uncertainty_params <- estimate_uncertainty_retro(
-#'   triangle,
-#'   n_history_delay = 5,
-#'   n_retrospective_nowcasts = 2
+#'   rep_tri,
+#'   n_history_delay = 30,
+#'   n_retrospective_nowcasts = 10
 #' )
 #' uncertainty_params
-#'
-#' # Estimate with custom parameters
-#' uncertainty_params_custom <- estimate_uncertainty_retro(
-#'   triangle,
-#'   n_history_delay = 4,
-#'   n_retrospective_nowcasts = 2,
-#'   max_delay = 3
-#' )
-#' uncertainty_params_custom
 estimate_uncertainty_retro <- function(
     reporting_triangle,
     n_history_delay,
     n_retrospective_nowcasts,
-    max_delay = ncol(reporting_triangle) - 1,
-    structure = detect_structure(reporting_triangle),
+    structure = get_reporting_structure(reporting_triangle),
     delay_pmf = NULL,
     preprocess = preprocess_negative_values,
+    validate = TRUE,
     ...) {
-  .validate_triangle(reporting_triangle)
+  assert_reporting_triangle(reporting_triangle, validate)
 
   n_ref_times <- nrow(reporting_triangle)
   min_ref_times_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
@@ -89,24 +69,26 @@ estimate_uncertainty_retro <- function(
 
   trunc_rep_tri_list <- truncate_triangles(
     reporting_triangle = reporting_triangle,
-    n = n_retrospective_nowcasts
+    n = n_retrospective_nowcasts,
+    validate = FALSE
   )
 
   reporting_triangle_list <- construct_triangles(
     truncated_reporting_triangles = trunc_rep_tri_list,
-    structure = structure
+    structure = structure,
+    validate = FALSE
   )
 
   pt_nowcast_mat_list <- fill_triangles(
     retro_reporting_triangles = reporting_triangle_list,
-    max_delay = max_delay,
     n = n_history_delay,
     delay_pmf = delay_pmf,
-    preprocess = preprocess
+    preprocess = preprocess,
+    validate = FALSE
   )
 
   if (is.null(pt_nowcast_mat_list) ||
-    all(sapply(pt_nowcast_mat_list, is.null))) {
+    all(vapply(pt_nowcast_mat_list, is.null, logical(1)))) {
     cli_warn(
       message = c(
         "Insufficient data to generate point nowcasts",
@@ -121,6 +103,7 @@ estimate_uncertainty_retro <- function(
     truncated_reporting_triangles = trunc_rep_tri_list,
     retro_reporting_triangles = reporting_triangle_list,
     n = n_retrospective_nowcasts,
+    validate = FALSE,
     ...
   )
 

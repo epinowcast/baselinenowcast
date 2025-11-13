@@ -4,30 +4,14 @@
 \alias{as_reporting_triangle.triangle}
 \title{Convert ChainLadder triangle to reporting_triangle format}
 \usage{
-\method{as_reporting_triangle}{triangle}(
-  data,
-  max_delay,
-  strata = NULL,
-  delays_unit = "days",
-  reference_dates = NULL,
-  ...
-)
+\method{as_reporting_triangle}{triangle}(data, delays_unit = "days", reference_dates = NULL, ...)
 }
 \arguments{
 \item{data}{A ChainLadder triangle object (class "triangle").}
 
-\item{max_delay}{Integer indicating the maximum delay.}
-
-\item{strata}{Character string indicating the strata. Default is NULL.}
-
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
-For the matrix method, this is simply passed as an item in the
-\code{reporting_triangle} object which will later be used to create a nowcast
-data.frame. For the data.frame method, this is used to compute the delay
-in terms of the specified unit, and to expand the combinations of
-reference dates and delays to the complete set of combinations in
-the reporting triangle.  Default is \code{"days"}.}
+Default is \code{"days"}.}
 
 \item{reference_dates}{Vector of dates corresponding to the rows of the
 triangle.
@@ -61,19 +45,14 @@ extracting the matrix from the ChainLadder triangle object.
 \dontshow{if (requireNamespace("ChainLadder", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 # Create a reporting triangle
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-rep_tri <- as_reporting_triangle(
-  data = data_as_of_df,
-  max_delay = 25
-)
+rep_tri <- as_reporting_triangle(data = data_as_of_df)
 
 # Convert to ChainLadder triangle
 cl_triangle <- as_ChainLadder_triangle(rep_tri)
 
 # Convert back to reporting_triangle (seamless round-trip)
-rep_tri_2 <- as_reporting_triangle(
-  data = cl_triangle,
-  max_delay = 25
-)
+# max_delay is inferred from the ChainLadder triangle dimensions
+rep_tri_2 <- as_reporting_triangle(data = cl_triangle)
 print(rep_tri_2)
 \dontshow{\}) # examplesIf}
 }
@@ -85,13 +64,32 @@ print(rep_tri_2)
 }
 
 Reporting triangle construction and validation
+\code{\link{[.reporting_triangle}()},
+\code{\link{[<-.reporting_triangle}()},
+\code{\link{as.data.frame.reporting_triangle}()},
+\code{\link{as.matrix.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.matrix}()},
 \code{\link{assert_reporting_triangle}()},
-\code{\link{detect_structure}()},
+\code{\link{get_delays_from_dates}()},
+\code{\link{get_delays_unit}()},
+\code{\link{get_max_delay}()},
+\code{\link{get_mean_delay}()},
+\code{\link{get_quantile_delay}()},
+\code{\link{get_reference_dates}()},
+\code{\link{get_report_dates}()},
+\code{\link{get_reporting_structure}()},
+\code{\link{head.reporting_triangle}()},
+\code{\link{is_reporting_triangle}()},
 \code{\link{new_reporting_triangle}()},
-\code{\link{reporting_triangle-class}}
+\code{\link{print.reporting_triangle}()},
+\code{\link{reporting_triangle-class}},
+\code{\link{summary.reporting_triangle}()},
+\code{\link{tail.reporting_triangle}()},
+\code{\link{truncate_to_delay}()},
+\code{\link{truncate_to_quantile}()},
+\code{\link{validate_reporting_triangle}()}
 }
 \concept{reporting_triangle}

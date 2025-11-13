@@ -63,17 +63,16 @@ baselinenowcast <- function(data,
 #'    model, etc.).
 #'
 #' @param data [reporting_triangle] class object to be nowcasted.
-#'   The `data$reporting_triangle_matrix` must contain missing observations
-#'   in the form of NAs in order to generate an output from this function.
+#'   The matrix must contain missing observations in the form of NAs in order
+#'   to generate an output from this function.
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
-#'   first delay column in `data$reporting_triangle_matrix`. Default is NULL,
-#'   which will estimate the delay from the reporting triangle matrix in `data`,
-#'   See [estimate_delay()] for more details.
+#'   first delay column in the reporting triangle. Default is NULL, which will
+#'   estimate the delay from the reporting triangle in `data`. See
+#'   [estimate_delay()] for more details.
 #' @param uncertainty_params Vector of uncertainty parameters ordered from
-#'   horizon 1 to the maximum horizon. Default is `NULL`, which will
-#'   result in computing the uncertainty parameters from the reporting
-#'   triangle matrix `data`. See [estimate_uncertainty()] for more
-#'   details.
+#'   horizon 1 to the maximum horizon. Default is `NULL`, which will result in
+#'   computing the uncertainty parameters from the reporting triangle `data`.
+#'   See [estimate_uncertainty()] for more details.
 #' @param ... Additional arguments passed to
 #'    [estimate_uncertainty()]
 #'    and [sample_nowcast()].
@@ -88,12 +87,13 @@ baselinenowcast <- function(data,
 #' @method baselinenowcast reporting_triangle
 #' @returns Data.frame of class \code{\link{baselinenowcast_df}}
 #' @examples
+#' # Filter to recent data and truncate to reasonable max_delay for faster
+#' # example
 #' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-#' rep_tri <- as_reporting_triangle(
-#'   data = data_as_of_df,
-#'   max_delay = 25
-#' )
-#' nowcast_df <- baselinenowcast(rep_tri)
+#' rep_tri <- as_reporting_triangle(data = data_as_of_df) |>
+#'   truncate_to_delay(max_delay = 25) |>
+#'   tail(n = 40)
+#' nowcast_df <- baselinenowcast(rep_tri, draws = 100)
 #' nowcast_df
 baselinenowcast.reporting_triangle <- function(
     data,
@@ -106,36 +106,39 @@ baselinenowcast.reporting_triangle <- function(
     delay_pmf = NULL,
     uncertainty_params = NULL,
     preprocess = preprocess_negative_values,
+    validate = TRUE,
     ...) {
-  tri <- data$reporting_triangle_matrix
+  assert_reporting_triangle(data, validate)
   output_type <- arg_match(output_type)
   assert_integerish(draws, null.ok = TRUE)
 
-  tv <- allocate_reference_times(tri,
+  reference_dates <- get_reference_dates(data)
+
+  tv <- allocate_reference_times(data,
     scale_factor = scale_factor,
-    prop_delay = prop_delay
+    prop_delay = prop_delay,
+    validate = FALSE
   )
 
   if (is.null(delay_pmf)) {
     delay_pmf <- estimate_delay(
-      reporting_triangle = data$reporting_triangle_matrix,
+      reporting_triangle = data,
       n = tv$n_history_delay,
-      preprocess = preprocess
+      preprocess = preprocess,
+      validate = FALSE
     )
   }
-  # check for delay pmf being the right length/format
-  .validate_delay(tri, delay_pmf)
 
-  pt_nowcast <- apply_delay(tri, delay_pmf)
+  pt_nowcast <- apply_delay(data, delay_pmf, validate = FALSE)
 
   if (output_type == "point") {
     nowcast_df <- data.frame(
-      time = seq_len(nrow(pt_nowcast)),
-      pred_count = rowSums(pt_nowcast)
+      reference_date = reference_dates,
+      pred_count = rowSums(pt_nowcast),
+      draw = 1
     )
-    nowcast_df$draw <- 1
     result_df <- new_baselinenowcast_df(nowcast_df,
-      reference_dates = data$reference_dates,
+      reference_dates = reference_dates,
       output_type = output_type
     )
     return(result_df)
@@ -143,16 +146,16 @@ baselinenowcast.reporting_triangle <- function(
 
   if (is.null(uncertainty_params)) {
     uncertainty_params <- estimate_uncertainty_retro(
-      reporting_triangle = data$reporting_triangle_matrix,
+      reporting_triangle = data,
       n_history_delay = tv$n_history_delay,
       n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
       uncertainty_model = uncertainty_model
     )
   }
-  .validate_uncertainty(tri, uncertainty_params)
+
   nowcast_df <- sample_nowcasts(
     point_nowcast_matrix = pt_nowcast,
-    reporting_triangle = tri,
+    reporting_triangle = data,
     uncertainty_params = uncertainty_params,
     draws = draws,
     uncertainty_sampler = uncertainty_sampler,
@@ -160,7 +163,7 @@ baselinenowcast.reporting_triangle <- function(
   )
 
   result_df <- new_baselinenowcast_df(nowcast_df,
-    reference_dates = data$reference_dates,
+    reference_dates = reference_dates,
     output_type = output_type
   )
 
@@ -215,6 +218,9 @@ baselinenowcast.reporting_triangle <- function(
 #'  can be included. The user can specify these columns with the
 #'  `strata_cols` argument, otherwise it will be assumed that the `data`
 #'  contains only data for a single strata.
+#' @param max_delay Maximum delay (in units of `delays_unit`) to include in the
+#'   nowcast. If NULL (default), all delays in the data are used. If specified,
+#'   only observations with delay <= max_delay are included.
 #' @param strata_cols Vector of character strings indicating the names of the
 #'   columns in `data` that determine how to stratify the data for nowcasting.
 #'   The unique combinations of the entries in the `strata_cols` denote the
@@ -240,18 +246,24 @@ baselinenowcast.reporting_triangle <- function(
 #' @importFrom purrr set_names map_dfr
 #' @importFrom checkmate assert_subset assert_character assert_names
 #'   assert_date
+#' @importFrom cli cli_inform
 #' @family baselinenowcast_df
 #' @export
 #' @method baselinenowcast data.frame
 #' @returns Data.frame of class \code{\link{baselinenowcast_df}}
 #' @examples
+#' # Filter data to exclude most recent report dates and limit to 75
+#' # reference dates
+#' max_ref_date <- max(germany_covid19_hosp$reference_date)
+#' min_ref_date <- max_ref_date - 74
 #' covid_data_to_nowcast <- germany_covid19_hosp[
-#'   germany_covid19_hosp$report_date <
-#'     max(germany_covid19_hosp$reference_date),
-#' ] # nolint
+#'   germany_covid19_hosp$report_date < max_ref_date &
+#'   germany_covid19_hosp$reference_date >= min_ref_date,
+#' ]
 #' nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
-#'   max_delay = 40,
-#'   strata_cols = c("age_group", "location")
+#'   max_delay = 25,
+#'   strata_cols = c("age_group", "location"),
+#'   draws = 100
 #' )
 #' nowcasts_df
 baselinenowcast.data.frame <- function(
@@ -262,7 +274,7 @@ baselinenowcast.data.frame <- function(
     draws = 1000,
     uncertainty_model = fit_by_horizon,
     uncertainty_sampler = sample_nb,
-    max_delay,
+    max_delay = NULL,
     delays_unit = "days",
     strata_cols = NULL,
     strata_sharing = "none",
@@ -283,15 +295,22 @@ baselinenowcast.data.frame <- function(
       message = c("`strata_sharing` cannot be both 'none' and 'delay'/'uncertainty'") # nolint
     )
   }
-  # Filter to max delay
-  data$delay <- as.numeric(
-    difftime(
-      as.Date(data$report_date),
-      as.Date(data$reference_date),
-      units = delays_unit
-    )
+  # Compute delays for later use
+  data$delay <- get_delays_from_dates(
+    data$report_date,
+    data$reference_date,
+    delays_unit
   )
-  data_clean <- data[data$delay <= max_delay, ]
+
+  # Filter by max_delay if specified
+  if (!is.null(max_delay)) {
+    max_delay_in_data <- max(data$delay, na.rm = TRUE)
+    cli_inform("Filtering data using max_delay = {max_delay}")
+    cli_inform("Maximum delay in data before filtering: {max_delay_in_data}")
+    data_clean <- data[data$delay <= max_delay, ]
+  } else {
+    data_clean <- data
+  }
 
   .validate_strata_cols(
     strata_cols,
@@ -309,7 +328,6 @@ baselinenowcast.data.frame <- function(
   # Create a list of reporting triangles
   list_of_rep_tris <- lapply(list_of_dfs,
     as_reporting_triangle,
-    max_delay = max_delay,
     delays_unit = delays_unit
   )
   # Combine if needed
@@ -320,31 +338,32 @@ baselinenowcast.data.frame <- function(
       data = data_clean,
       strata_cols = strata_cols
     )
-    pooled_triangle <- as_reporting_triangle(pooled_df,
-      max_delay = max_delay
-    )
+    pooled_triangle <- as_reporting_triangle(pooled_df)
     # Get the training volume for all reporting triangles
     tv <- allocate_reference_times(
-      reporting_triangle = pooled_triangle$reporting_triangle_matrix,
+      reporting_triangle = pooled_triangle,
       scale_factor = scale_factor,
-      prop_delay = prop_delay
+      prop_delay = prop_delay,
+      validate = FALSE
     )
     if ("delay" %in% strata_sharing) {
       # Estimate delay once on pooled data
       shared_delay_pmf <- estimate_delay(
-        reporting_triangle = pooled_triangle$reporting_triangle_matrix,
+        reporting_triangle = pooled_triangle,
         n = tv$n_history_delay,
-        preprocess = preprocess
+        preprocess = preprocess,
+        validate = FALSE
       )
     }
     if ("uncertainty" %in% strata_sharing) {
       # Estimate uncertainty once on pooled data
       shared_uncertainty_params <- estimate_uncertainty_retro(
-        reporting_triangle = pooled_triangle$reporting_triangle_matrix,
+        reporting_triangle = pooled_triangle,
         n_history_delay = tv$n_history_delay,
         n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
         uncertainty_model = uncertainty_model,
-        preprocess = preprocess
+        preprocess = preprocess,
+        validate = FALSE
       )
     }
   }
@@ -364,7 +383,8 @@ baselinenowcast.data.frame <- function(
         uncertainty_sampler = uncertainty_sampler,
         delay_pmf = shared_delay_pmf,
         uncertainty_params = shared_uncertainty_params,
-        preprocess = preprocess
+        preprocess = preprocess,
+        validate = FALSE
       )
     }, # nolint end
     .id = "name"

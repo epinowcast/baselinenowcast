@@ -4,54 +4,53 @@
 \alias{new_reporting_triangle}
 \title{Class constructor for \code{reporting_triangle} objects}
 \usage{
-new_reporting_triangle(
-  reporting_triangle_matrix,
-  reference_dates,
-  structure,
-  max_delay,
-  delays_unit,
-  strata = NULL
-)
+new_reporting_triangle(reporting_triangle_matrix, reference_dates, delays_unit)
 }
 \arguments{
-\item{reporting_triangle_matrix}{Matrix of reporting triangle}
+\item{reporting_triangle_matrix}{Matrix of reporting triangle where rows
+are reference times, columns are delays, and entries are incident counts.}
 
-\item{reference_dates}{Vector of character strings indicating the reference
-dates corresponding to each row of the reporting triangle matrix (\code{data}).}
-
-\item{structure}{Integer or vector specifying the reporting structure.
-If integer, divides columns evenly by that integer (with last possibly
-truncated).  If vector, the sum must not be greater than or equal to the
-number of columns. Default is 1 (standard triangular structure).}
-
-\item{max_delay}{Integer indicating the maximum delay.}
+\item{reference_dates}{Vector of Date objects indicating the reference dates
+corresponding to each row of the matrix.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
-For the matrix method, this is simply passed as an item in the
-\code{reporting_triangle} object which will later be used to create a nowcast
-data.frame. For the data.frame method, this is used to compute the delay
-in terms of the specified unit, and to expand the combinations of
-reference dates and delays to the complete set of combinations in
-the reporting triangle.  Default is \code{"days"}.}
-
-\item{strata}{Character string indicating the strata. Default is NULL.}
+Default is \code{"days"}.}
 }
 \value{
 An object of class \link{reporting_triangle}
 }
 \description{
-Class constructor for \code{reporting_triangle} objects
+Creates a new reporting_triangle object from a matrix.
 }
 \seealso{
 Reporting triangle construction and validation
+\code{\link{[.reporting_triangle}()},
+\code{\link{[<-.reporting_triangle}()},
+\code{\link{as.data.frame.reporting_triangle}()},
+\code{\link{as.matrix.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.matrix}()},
 \code{\link{as_reporting_triangle.triangle}()},
 \code{\link{assert_reporting_triangle}()},
-\code{\link{detect_structure}()},
-\code{\link{reporting_triangle-class}}
+\code{\link{get_delays_from_dates}()},
+\code{\link{get_delays_unit}()},
+\code{\link{get_max_delay}()},
+\code{\link{get_mean_delay}()},
+\code{\link{get_quantile_delay}()},
+\code{\link{get_reference_dates}()},
+\code{\link{get_report_dates}()},
+\code{\link{get_reporting_structure}()},
+\code{\link{head.reporting_triangle}()},
+\code{\link{is_reporting_triangle}()},
+\code{\link{print.reporting_triangle}()},
+\code{\link{reporting_triangle-class}},
+\code{\link{summary.reporting_triangle}()},
+\code{\link{tail.reporting_triangle}()},
+\code{\link{truncate_to_delay}()},
+\code{\link{truncate_to_quantile}()},
+\code{\link{validate_reporting_triangle}()}
 }
 \concept{reporting_triangle}

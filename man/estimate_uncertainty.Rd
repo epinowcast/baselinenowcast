@@ -11,7 +11,8 @@ estimate_uncertainty(
   n = length(point_nowcast_matrices),
   uncertainty_model = fit_by_horizon,
   ref_time_aggregator = identity,
-  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+  delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
+  validate = TRUE
 )
 }
 \arguments{
@@ -45,6 +46,9 @@ which does not aggregate across reference times.}
 \item{delay_aggregator}{Function that operates along the columns (delays)
 of the retrospective point nowcast matrix after it has been aggregated
 across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 }
 \value{
 \code{uncertainty_params} Vector of length of the number of horizons,
@@ -60,27 +64,16 @@ and estimates at each horizon, starting at 0 up until the max delay
 number of horizons.
 }
 \examples{
-triangle <- matrix(
-  c(
-    78, 40, 24, 9,
-    65, 46, 21, 7,
-    70, 40, 20, 5,
-    80, 50, 10, 10,
-    100, 40, 31, 20,
-    95, 45, 21, NA,
-    82, 42, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 8,
-  byrow = TRUE
-)
+# Use example data to create reporting triangle
+data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+rep_tri <- as_reporting_triangle(data = data_as_of_df)
 
-trunc_rts <- truncate_triangles(triangle, n = 3)
+# Create retrospective nowcasts
+trunc_rts <- truncate_triangles(rep_tri, n = 2)
 retro_rts <- construct_triangles(trunc_rts)
+retro_nowcasts <- fill_triangles(retro_rts)
 
-retro_nowcasts <- fill_triangles(retro_rts, n = 5)
-# Estimate dispersion parameters using default (negative binomial error
-# model on the sums)
+# Estimate dispersion parameters using default negative binomial model
 disp_params <- estimate_uncertainty(
   point_nowcast_matrices = retro_nowcasts,
   truncated_reporting_triangles = trunc_rts,

@@ -5,6 +5,7 @@ linters: all_linters(
     function_argument_linter = NULL,
     indentation_linter = NULL,
     object_name_linter = NULL,
+    object_usage_linter = NULL,
     return_linter(return_style = "explicit"),
     cyclocomp_linter(25L)
   )

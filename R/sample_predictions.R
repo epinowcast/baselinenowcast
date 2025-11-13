@@ -15,30 +15,30 @@
 #'    negative binomial for each element of the vector.
 #' @inheritParams estimate_delay
 #' @inheritParams estimate_uncertainty
-#' @returns Vector of predicted draws at each reference time, for all reference
-#'    times in the input `point_nowcast_matrix`.
+#' @returns Matrix of predicted draws at each reference date, for all reference
+#'    dates in the input `point_nowcast_matrix` (or fewer if using
+#'    `ref_time_aggregator`).
 #' @family generate_probabilistic_nowcasts
 #' @export
 #' @importFrom cli cli_abort cli_warn
 #' @importFrom utils tail
 #' @examples
-#' point_nowcast_matrix <- matrix(
-#'   c(
-#'     80, 50, 25, 10,
-#'     100, 50, 30, 20,
-#'     90, 45, 25, 16.8,
-#'     80, 40, 21.2, 19.5,
-#'     70, 34.5, 15.4, 9.1
-#'   ),
-#'   nrow = 5,
-#'   byrow = TRUE
+#' # Generate point nowcast and uncertainty params from example data
+#' data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' rep_tri <- as_reporting_triangle(data_as_of) |>
+#'   truncate_to_delay(max_delay = 5) |>
+#'   tail(n = 10)
+#' point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
+#' reporting_triangle <- construct_triangle(rep_tri)
+#' uncertainty_params <- estimate_uncertainty_retro(
+#'   rep_tri,
+#'   n_history_delay = 8,
+#'   n_retrospective_nowcasts = 2
 #' )
-#' reporting_triangle <- construct_triangle(point_nowcast_matrix)
-#' disp <- c(0.8, 12.4, 9.1)
 #' nowcast_pred_draw <- sample_prediction(
 #'   point_nowcast_matrix,
 #'   reporting_triangle,
-#'   disp
+#'   uncertainty_params
 #' )
 #' nowcast_pred_draw
 #'
@@ -47,7 +47,7 @@
 #'   nowcast_pred_draw_agg <- sample_prediction(
 #'     point_nowcast_matrix,
 #'     reporting_triangle,
-#'     disp,
+#'     uncertainty_params,
 #'     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
 #'   )
 #'   nowcast_pred_draw_agg
@@ -124,6 +124,7 @@ sample_prediction <- function(
     top_matrix,
     draw_pred
   )
+
   return(draw_pred_agg)
 }
 
@@ -149,8 +150,9 @@ sample_prediction <- function(
     )
   }
 
-  pred_mat <- point_nowcast_matrix
-  pred_mat[!is.na(reporting_triangle)] <- NA
+  # Convert to plain matrix to avoid validation when setting observed to NA
+  pred_mat <- as.matrix(point_nowcast_matrix)
+  pred_mat[!is.na(as.matrix(reporting_triangle))] <- NA
   return(pred_mat)
 }
 
@@ -160,29 +162,23 @@ sample_prediction <- function(
 #' time and adds them to the predicted counts to form a single draw of the
 #' nowcast for the final counts by reference time.
 #'
-#' @param predicted_counts Vector of predicted counts at each reference time.
+#' @param predicted_counts Vector of predicted counts at each reference date.
 #'    Note that if using a reference time or delay aggregator function, this
 #'    is assumed to have already been aggregated.
 #' @inheritParams sample_prediction
 #'
-#' @returns A vector of predicted counts at each reference time
+#' @returns A vector of predicted counts at each reference date, for all
+#'    reference dates in the input `reporting_triangle` (or fewer if using
+#'    `ref_time_aggregator`)
 #' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
+#' # Use example data
+#' reporting_triangle <- construct_triangle(example_reporting_triangle)
 #' pred_counts <- c(10, 20, 30, 40)
-#' reporting_matrix <- matrix(
-#'   c(
-#'     7, 9, 4, 3,
-#'     1, 2, 3, 4,
-#'     5, 6, 7, 8,
-#'     9, 10, 11, 12
-#'   ),
-#'   nrow = 4,
-#'   byrow = TRUE
-#' )
-#' reporting_triangle <- construct_triangle(reporting_matrix)
 #' combine_obs_with_pred(pred_counts, reporting_triangle)
-#' # Another example with rolling sum
+#'
+#' # Example with rolling sum
 #' if (requireNamespace("zoo", quietly = TRUE)) {
 #'   combine_obs_with_pred(pred_counts,
 #'     reporting_triangle,
@@ -208,38 +204,40 @@ combine_obs_with_pred <- function(
 #' @param ... Additional arguments passed to `sample_prediction`.
 #' @inheritParams sample_prediction
 #' @returns Dataframe containing the predicted point nowcast vectors indexed by
-#'    reference time (`pred_count`), reference time (`time`), and the draw index
-#'    (`draw`).
+#'    predicted count (`pred_count`), reference date (`reference_date`), and
+#'    the draw index (`draw`). Returns predictions for all reference dates
+#'    in the input `reporting_triangle` (or fewer if using
+#'    `ref_time_aggregator`).
 #' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
-#' point_nowcast_matrix <- matrix(
-#'   c(
-#'     80, 50, 25, 10,
-#'     100, 50, 30, 20,
-#'     90, 45, 25, 16.8,
-#'     80, 40, 21.2, 19.5,
-#'     70, 34.5, 15.4, 9.1
-#'   ),
-#'   nrow = 5,
-#'   byrow = TRUE
+#' # Generate point nowcast and uncertainty params from example data
+#' data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' rep_tri <- as_reporting_triangle(data_as_of) |>
+#'   truncate_to_delay(max_delay = 5) |>
+#'   tail(n = 10)
+#' point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
+#' reporting_triangle <- construct_triangle(rep_tri)
+#' uncertainty_params <- estimate_uncertainty_retro(
+#'   rep_tri,
+#'   n_history_delay = 8,
+#'   n_retrospective_nowcasts = 2
 #' )
-#' reporting_triangle <- construct_triangle(point_nowcast_matrix)
-#' disp <- c(0.8, 12.4, 9.1)
 #' nowcast_pred_draws <- sample_predictions(
 #'   point_nowcast_matrix,
 #'   reporting_triangle,
-#'   disp,
+#'   uncertainty_params,
 #'   draws = 5
 #' )
 #' nowcast_pred_draws
+#'
 #' # Get nowcast pred draws over rolling sum
 #' if (requireNamespace("zoo", quietly = TRUE)) {
 #'   nowcast_pred_draws_rolling_df <- sample_predictions(
 #'     point_nowcast_matrix,
 #'     reporting_triangle,
-#'     disp,
-#'     500,
+#'     uncertainty_params,
+#'     draws = 5,
 #'     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
 #'   )
 #'   nowcast_pred_draws_rolling_df
@@ -251,7 +249,7 @@ sample_predictions <- function(
     draws = 1000,
     ...) {
   assert_integerish(draws, lower = 1)
-  reference_times <- seq_len(nrow(point_nowcast_matrix))
+  reference_dates <- get_reference_dates(reporting_triangle)
 
   draws_df_list <- lapply(seq_len(draws), function(i) {
     pred_counts <- sample_prediction(
@@ -264,13 +262,13 @@ sample_predictions <- function(
     pred_counts_padded <- c(
       rep(
         NA,
-        length(reference_times) - length(pred_counts)
+        length(reference_dates) - length(pred_counts)
       ),
       pred_counts
     )
     return(data.frame(
       pred_count = pred_counts_padded,
-      time = reference_times,
+      reference_date = reference_dates,
       draw = i
     ))
   })
@@ -283,28 +281,29 @@ sample_predictions <- function(
 #' Generate a single draw of a nowcast combining observed and predicted values
 #'
 #' @inheritParams sample_prediction
-#' @returns Vector of predicted counts at each reference time based on combining
+#' @returns Vector of predicted counts at each reference date based on combining
 #'    the observed counts and the predicted counts for the unobserved elements.
+#'    Returns values for all reference dates in the input `reporting_triangle`
+#'    (or fewer if using `ref_time_aggregator`).
 #' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
-#' point_nowcast_matrix <- matrix(
-#'   c(
-#'     80, 50, 25, 10,
-#'     100, 50, 30, 20,
-#'     90, 45, 25, 16.8,
-#'     80, 40, 21.2, 19.5,
-#'     70, 34.5, 15.4, 9.1
-#'   ),
-#'   nrow = 5,
-#'   byrow = TRUE
+#' # Generate point nowcast and uncertainty params from example data
+#' data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' rep_tri <- as_reporting_triangle(data_as_of) |>
+#'   truncate_to_delay(max_delay = 5) |>
+#'   tail(n = 10)
+#' point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
+#' reporting_triangle <- construct_triangle(rep_tri)
+#' uncertainty_params <- estimate_uncertainty_retro(
+#'   rep_tri,
+#'   n_history_delay = 8,
+#'   n_retrospective_nowcasts = 2
 #' )
-#' reporting_triangle <- construct_triangle(point_nowcast_matrix)
-#' disp <- c(0.8, 12.4, 9.1)
 #' nowcast_draw <- sample_nowcast(
 #'   point_nowcast_matrix,
 #'   reporting_triangle,
-#'   disp
+#'   uncertainty_params
 #' )
 #' nowcast_draw
 sample_nowcast <- function(
@@ -340,28 +339,29 @@ sample_nowcast <- function(
 #' @inheritParams sample_predictions
 #' @param ... Additional arguments passed to `sample_nowcast`.
 #' @returns Dataframe containing information for multiple draws with columns
-#'  for the reference time (`time`), the predicted counts (`pred_count`), and
-#'  the draw number (`draw`).
+#'  for the reference date (`reference_date`), the predicted counts
+#'  (`pred_count`), and the draw number (`draw`). Returns predictions for all
+#'  reference dates in the input `reporting_triangle` (or fewer if using
+#'  `ref_time_aggregator`).
 #' @family generate_probabilistic_nowcasts
 #' @export
 #' @examples
-#' point_nowcast_matrix <- matrix(
-#'   c(
-#'     80, 50, 25, 10,
-#'     100, 50, 30, 20,
-#'     90, 45, 25, 16.8,
-#'     80, 40, 21.2, 19.5,
-#'     70, 34.5, 15.4, 9.1
-#'   ),
-#'   nrow = 5,
-#'   byrow = TRUE
+#' # Generate point nowcast and uncertainty params from example data
+#' data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' rep_tri <- as_reporting_triangle(data_as_of) |>
+#'   truncate_to_delay(max_delay = 5) |>
+#'   tail(n = 10)
+#' point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
+#' reporting_triangle <- construct_triangle(rep_tri)
+#' uncertainty_params <- estimate_uncertainty_retro(
+#'   rep_tri,
+#'   n_history_delay = 8,
+#'   n_retrospective_nowcasts = 2
 #' )
-#' reporting_triangle <- construct_triangle(point_nowcast_matrix)
-#' disp <- c(0.8, 12.4, 9.1)
 #' nowcast_draws <- sample_nowcasts(
 #'   point_nowcast_matrix,
 #'   reporting_triangle,
-#'   disp,
+#'   uncertainty_params,
 #'   draws = 5
 #' )
 #' nowcast_draws
@@ -371,7 +371,7 @@ sample_nowcasts <- function(
     uncertainty_params,
     draws = 1000,
     ...) {
-  reference_times <- seq_len(nrow(point_nowcast_matrix))
+  reference_dates <- get_reference_dates(reporting_triangle)
 
   draws_df_list <- lapply(seq_len(draws), function(i) {
     pred_counts <- sample_nowcast(
@@ -384,14 +384,14 @@ sample_nowcasts <- function(
     pred_counts_padded <- c(
       rep(
         NA,
-        length(reference_times) - length(pred_counts)
+        length(reference_dates) - length(pred_counts)
       ),
       pred_counts
     )
 
     return(data.frame(
       pred_count = pred_counts_padded,
-      time = reference_times,
+      reference_date = reference_dates,
       draw = i
     ))
   })

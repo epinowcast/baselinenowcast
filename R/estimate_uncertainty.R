@@ -30,6 +30,7 @@
 #' @param delay_aggregator Function that operates along the columns (delays)
 #'    of the retrospective point nowcast matrix after it has been aggregated
 #'    across reference times. Default is `function(x) rowSums(x, na.rm = TRUE)`.
+#' @inheritParams assert_reporting_triangle
 #' @importFrom checkmate assert_integerish
 #' @importFrom cli cli_abort cli_warn
 #' @returns `uncertainty_params` Vector of length of the number of horizons,
@@ -40,27 +41,16 @@
 #' @export
 #'
 #' @examples
-#' triangle <- matrix(
-#'   c(
-#'     78, 40, 24, 9,
-#'     65, 46, 21, 7,
-#'     70, 40, 20, 5,
-#'     80, 50, 10, 10,
-#'     100, 40, 31, 20,
-#'     95, 45, 21, NA,
-#'     82, 42, NA, NA,
-#'     70, NA, NA, NA
-#'   ),
-#'   nrow = 8,
-#'   byrow = TRUE
-#' )
+#' # Use example data to create reporting triangle
+#' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' rep_tri <- as_reporting_triangle(data = data_as_of_df)
 #'
-#' trunc_rts <- truncate_triangles(triangle, n = 3)
+#' # Create retrospective nowcasts
+#' trunc_rts <- truncate_triangles(rep_tri, n = 2)
 #' retro_rts <- construct_triangles(trunc_rts)
+#' retro_nowcasts <- fill_triangles(retro_rts)
 #'
-#' retro_nowcasts <- fill_triangles(retro_rts, n = 5)
-#' # Estimate dispersion parameters using default (negative binomial error
-#' # model on the sums)
+#' # Estimate dispersion parameters using default negative binomial model
 #' disp_params <- estimate_uncertainty(
 #'   point_nowcast_matrices = retro_nowcasts,
 #'   truncated_reporting_triangles = trunc_rts,
@@ -85,7 +75,8 @@ estimate_uncertainty <- function(
     n = length(point_nowcast_matrices),
     uncertainty_model = fit_by_horizon,
     ref_time_aggregator = identity,
-    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
+    delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
+    validate = TRUE) {
   assert_integerish(n, lower = 0)
   .check_list_length(
     point_nowcast_matrices,
@@ -103,11 +94,23 @@ estimate_uncertainty <- function(
   )
 
   # Truncate to only n nowcasts and extract only non-null elements of both lists
-  non_null_indices <- which(!sapply(point_nowcast_matrices[1:n], is.null))
+  non_null_indices <- which(!vapply(
+    point_nowcast_matrices[1:n], is.null, logical(1)
+  ))
   n_iters <- length(non_null_indices)
   list_of_ncs <- point_nowcast_matrices[non_null_indices]
   list_of_obs <- truncated_reporting_triangles[non_null_indices]
   list_of_rts <- retro_reporting_triangles[non_null_indices]
+
+  # Validate reporting triangles if requested
+  if (isTRUE(validate)) {
+    lapply(list_of_obs, assert_reporting_triangle, validate = TRUE)
+    lapply(list_of_rts, assert_reporting_triangle, validate = TRUE)
+  }
+
+  # Convert to plain matrices - we only need matrix operations from here on
+  list_of_obs <- lapply(list_of_obs, as.matrix)
+  list_of_rts <- lapply(list_of_rts, as.matrix)
   if (n_iters == 0) {
     cli_abort(
       message = c(

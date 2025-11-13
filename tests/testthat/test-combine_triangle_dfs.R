@@ -200,7 +200,7 @@ test_that(".combine_triangle_dfs works with numeric counts", {
 })
 
 test_that(paste0(
-  ".combine_triangles_df returns the the full set of ",
+  ".combine_triangles_df returns the full set of ",
   "reference and report dates when there is only one strata"
 ), {
   skip_if_not_installed("dplyr")

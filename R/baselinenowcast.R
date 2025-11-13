@@ -40,6 +40,8 @@ baselinenowcast <- function(data,
 #'  This function implements a nowcasting workflow for a single reporting
 #'  triangle:
 #'  \enumerate{
+#'      \item [allocate_reference_times()] - Allocate the reference times used
+#'        for delay and uncertainty estimation
 #'      \item [estimate_delay()] - Estimate a reporting delay PMF
 #'      \item [apply_delay()] - Generate a point nowcast using the delay PMF
 #'      \item [estimate_and_apply_uncertainty()] - Generate a probabilistic

@@ -87,6 +87,8 @@ form of a \link{baselinenowcast_df} object.
 This function implements a nowcasting workflow for a single reporting
 triangle:
 \enumerate{
+\item \code{\link[=allocate_reference_times]{allocate_reference_times()}} - Allocate the reference times used
+for delay and uncertainty estimation
 \item \code{\link[=estimate_delay]{estimate_delay()}} - Estimate a reporting delay PMF
 \item \code{\link[=apply_delay]{apply_delay()}} - Generate a point nowcast using the delay PMF
 \item \code{\link[=estimate_and_apply_uncertainty]{estimate_and_apply_uncertainty()}} - Generate a probabilistic

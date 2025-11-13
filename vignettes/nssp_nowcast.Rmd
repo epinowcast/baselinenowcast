@@ -340,15 +340,12 @@ nowcast_date <- max(long_df$reference_date) - days(30)
 
 ## Format for `baselinenowcast`
 
-From the case counts by reference date and report date, we generate a reporting triangle(see the [mathematical model](model_definition.html) vignette for more details), which pivots the data from long to wide so that each row is a reference date and each column is a delay.
-In order to produce a reporting triangle, we need to obtain the number of incident case counts at all reference dates and for all corresponding report dates up until the maximum delay.
-First, we'll remove any reports after the nowcast date and any delays after the maximum delay.
+First, we'll remove any reports after the nowcast date, as these wouldn't have been available to us in real-time.
 ```{r}
-training_df <- long_df |>
-  filter(report_date <= nowcast_date) |>
-  mutate(delay = as.integer(report_date - reference_date)) |>
-  filter(delay <= max_delay) |>
-  select(reference_date, delay, report_date, count)
+training_df <- filter(
+  long_df,
+  report_date <= nowcast_date
+)
 ```
 
 What would happen if we looked at the trend in case counts without correcting for downward bias due to partial observations?
@@ -357,8 +354,7 @@ We can summarise the cases by reference dates and plot.
 training_df_by_ref_date <- training_df |>
   filter(report_date <= nowcast_date) |>
   group_by(reference_date) |>
-  summarise(initial_count = sum(count)) |>
-  mutate(time = row_number())
+  summarise(initial_count = sum(count))
 ```
 
 <details><summary>Click to expand code to create the plot of the initially reported cases</summary>
@@ -380,95 +376,69 @@ plot_inits
 We can see that without nowcasting, the cases appear to be sharply declining at the most recent dates.
 We can't tell from this data alone if the true trend in cases is really declining rapidly or if it is plateauing or increasing, which is why we need to use nowcasting to make an estimate of the eventually reported cases at each visit date.
 
-To do this, we will use `tidyr::complete()` to fill in all combinations of reference dates and delays, filter to exclude all reference dates and delays beyond the maximum reference date, and pivot from long to wide. This will ensure that the combinations that were missing in our dataset (i.e. no cases were reported) but would have been observed will be coded as 0 cases, whereas the ones that have yet to be observed will get coded as NAs.
+From here, we have the case counts by reference and report date up until the nowcast date.
+We will generate a reporting triangle (see the [mathematical model](model_definition.html) vignette for more details), using the helper function `as_reporting_triangle()`.
+This helper function uses the `max_delay` and the reference and report dates to fill in all combinations of reference dates and delays, filter to exclude delays beyond the maximum delay, and
+pivot the data from long to wide to obtain a reporting triangle where rows are reference dates and columns are delays.
+This is returned as a `reporting_triangle` class object which is ready to be used for nowcasting.
+
 ```{r}
-rep_tri_df <- training_df |>
-  complete(
-    reference_date = seq(
-      from = min(reference_date),
-      to = max(reference_date),
-      by = "day"
-    ),
-    delay = 0:max_delay,
-    fill = list(count = 0)
-  ) |>
-  filter(reference_date + days(delay) <= max(reference_date)) |>
-  select(-report_date) |>
-  pivot_wider(
-    names_from = delay,
-    values_from = count
-  )
-head(rep_tri_df)
+rep_tri <- as_reporting_triangle(training_df,
+  max_delay = max_delay
+)
 ```
 
-We now have a data.frame where each row is a reference date, each column is a delay, and each entry represents the number of cases reported corresponding to each reference date and on each delay.
-The bottom right of the reporting triangle contains NAs to indicate that those observations have yet to be observed.
-As a final pre-processing step, we'll format the reporting triangle as just a matrix, for compatibility with the low-level functions in `baselinenowcast`.
+You can inspect the reporting triangle matrix itself by accessing the $reporting_triangle_matrix element in the object
 ```{r}
-rep_tri <- rep_tri_df |>
-  select(-reference_date) |>
-  as.matrix()
+rep_tri$reporting_triangle_matrix
 ```
 
 ## Specify the `baselinenowcast` model
 
-To specify the number of reference times used for delay and uncertainty estimation, we use an algorithm based on the maximum delay.
-By default, it splits the data evenly (or approximately because of odd numbers of reference times used for training) between data used for delay and uncertainty.
+Next, we'll specify the number of reference times used for delay and uncertainty estimation as a factor of the maximum delay.
+We'll also specify the proportion of reference times which will be used for delay estimation, with the remaining used for estimating uncertainty.
+We'll set these as the default values used in the, but in a real-world setting we recommend performing an evaluation analysis to identify the optimal amount of training data to be used for each of these tasks.
 See the documentation for `?allocate_reference_times` and the "Default Settings" section of the [mathematical model](model_definition.html) vignette for more details.
 ```{r}
-ref_time_allocation <- allocate_reference_times(rep_tri)
-n_history_delay <- ref_time_allocation$n_history_delay
-n_retrospective_nowcasts <- ref_time_allocation$n_retrospective_nowcasts
+scale_factor <- 3
+prop_delay <- 0.5
 ```
 
-The `allocate_reference_times` function returns integer values that indicate the number of reference times to use for delay estimate (`n_history_delay`) and uncertainty estimate (`n_retrospective nowcasts`).
-```{r}
-message(
-  "Number of reference times used for delay estimation: ",
-  n_history_delay
-)
-message(
-  "Number of reference times used for uncertainty estimation: ",
-  n_retrospective_nowcasts
-)
-```
+Internally, we will call `allocate_reference_times()` which uses the reporting triangle matrix and these specifications to allocate the number of reference times used for delay and uncertainty given the number of reference times available and the maximum delay.
+Since our maximum delay is 25 days, this function will allocate 25*3 (75) reference times for fitting the model, with about half of them (37) being used for delay estimation and the other half (38) used for uncertainty estimation.
 
 # Run the `baselinenowcast` workflow
 
-To produce a nowcast, we first estimate a reporting delay and use it to generate a point estimate, or a single number that serves as our best guess for the unknown value, of the expected case counts at each unobserved reference date and delay.
-We refer to this "filled in" triangle as a point nowcast matrix.
-See "Estimating the delay distribution from a reporting triangle" and "Point nowcast generation" of the [mathematical model](model_definition.html) for more details.
-Note that in this example, we have focused on syndromic surveillance definitions that rely solely on the presence of one or more diagnoses codes, as this means that patients tend to transition from a non-case to case only once (rather than reverting back to a non-case during the course of their clinical encounter).
-Our nowcasting methods primarily focus on the former use-case, though the latter can also be handled in this framework.
-```{r}
-pt_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = n_history_delay)
-head(pt_nowcast_matrix)
-```
+To produce a nowcast, we can use the `baselinenowcast()` function to generate an estimate of the "final" number of cases of BAR by reference date.
+This function chains together the `baselinenowcast` workflow,
+It handles allocating reference times for training (`allocate_reference_times()`), estimating a delay (`estimate_delay()`), generating a point nowcast (`apply_delay()`), and estimating and applying uncertainty (`estimate_and_apply_uncertainty()`), while also managing required bookkeeping to return nowcasts by reference dates.
+See `?baselinenowcast.reporting_triangle` for more details on each step in the workflow, and check out the [mathematical_model](model_definition.html) for details on the mathematical model used for each component.
+The `baselinenowcast()` function can ingest either a reporting triangle object as we made above, or a data.frame with cases by reference and report date for one or strata with support for common workflows such as sharing estimates across strata.
+See `?baselinenowcast.data.frame ` for more details.
 
-Next, we quantify the uncertainty using past nowcast errors, generating retrospective nowcasts and comparing against later observed data.
-We then apply the uncertainty by sampling from the observation model to produce probabilistic nowcast draws
-See the section "Uncertainty quantification" of the [mathematical_model](model_definition.html) for more details.
+By default, the `output_type = "samples"` which means that it will estimate and apply uncertainty using past nowcast errors to generate probabilistic nowcast draws.
+Point nowcasts can also be generated by specifying `output_type = "point"`.
+It will by default produce 1000 draws, but this can be specified as more or less using the `draws` argument.
 ```{r}
-nowcast_draws_df <- estimate_and_apply_uncertainty(
-  pt_nowcast_matrix,
-  rep_tri,
-  n_history_delay = n_history_delay,
-  n_retrospective_nowcasts = n_retrospective_nowcasts
+nowcast_draws_df <- baselinenowcast(rep_tri,
+  scale_factor = scale_factor,
+  prop_delay = prop_delay,
+  draws = 1000
 )
 
 head(nowcast_draws_df)
 ```
+Because we specified training volumes that did not result in integer reference times, we'll get a message letting us know that 37/75, or 0.493 of the reference times are being used for delay estimation.
 
 # Summarise and plot the nowcast
 
 We now have an estimate of the "final" number of cases of BAR by reference date with uncertainty.
-These are known as probabilistic nowcast draws.
 To summarise the uncertainty, we can compute prediction intervals.
 Here we will visualize the results using the 50th and 95th percent prediction intervals, though we suggest showing more prediction intervals if possible.
 ```{r}
 nowcast_summary_df <-
   nowcast_draws_df |>
-  group_by(time) |>
+  group_by(reference_date) |>
   summarise(
     median = median(pred_count),
     q50th_lb = quantile(pred_count, 0.25),
@@ -488,19 +458,17 @@ eval_data <- long_df |>
     reference_date <= nowcast_date
   ) |>
   group_by(reference_date) |>
-  summarise(final_count = sum(count)) |>
-  mutate(time = row_number()) |>
-  select(time, final_count)
+  summarise(final_count = sum(count))
 ```
 
 Lastly, join the initial and final reports to the probabilistic nowcast.
 ```{r}
 nowcast_w_data <- nowcast_summary_df |>
   left_join(training_df_by_ref_date,
-    by = "time"
+    by = "reference_date"
   ) |>
   left_join(eval_data,
-    by = "time"
+    by = "reference_date"
   )
 head(nowcast_w_data)
 ```
@@ -586,7 +554,8 @@ plot_prob_nowcast
 
 In this vignette we used `baselinenowcast ` to nowcast cases of BAR starting from synthetic syndromic surveillance system data designed to mirror the U.S. NSSP dataset.
 We walked through the process of defining a syndromic surveillance definition using a list of diagnoses codes, and using the time stamps of updates in an electronic health record in the NSSP dataset to create a count of the number of cases of a specific definition indexed by the date of their visit and the date at which the patient's diagnoses was recorded into the surveillance system.
-From there we used the `baselinenowcast` workflow to estimate a delay distribution, apply it to generate a point nowcast, and estimate and apply uncertainty to generate probabilistic nowcasts.
+From there we converted the data to a `reporting_triangle` object and then ran the `baselinenowcast` workflow using the `baselinenowcast()` function to generate probabilistic nowcasts.
+This function chains together multiple steps, and we describe the modular workflow option in the [Getting Started](baselinenowcst.html) vignette.
 As a final step, we compared our nowcasts of the eventual final observed case counts to what we later observed and the right-truncated initial reports.
 
 Next steps include scoring the nowcasts we generated using proper scoring rules such as the weighted interval score (WIS) or the continuous ranked probability score (CRPS) and computing metrics such as the interval coverage to assess how well the observed data falls within our uncertainty bands.

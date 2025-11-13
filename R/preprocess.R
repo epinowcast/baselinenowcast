@@ -17,6 +17,7 @@
 #' Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R #nolint
 #'
 #' @param reporting_triangle A [reporting_triangle] object.
+#' @inheritParams assert_reporting_triangle
 #'
 #' @return A [reporting_triangle] object with negative values handled via
 #'   redistribution to earlier delays.

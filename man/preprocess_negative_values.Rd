@@ -8,6 +8,9 @@ preprocess_negative_values(reporting_triangle, validate = TRUE)
 }
 \arguments{
 \item{reporting_triangle}{A \link{reporting_triangle} object.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 }
 \value{
 A \link{reporting_triangle} object with negative values handled via

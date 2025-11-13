@@ -324,14 +324,10 @@ See documentation for `sample_nowcasts()`for further details.
 
 Let's visualize the nowcast compared to the final observed data.
 We first need to join our nowcast with the original data so we can see our nowcast by reference date.
-We'll do this by adding a `time` column to `latest_data`.
 
 ```{r}
-latest_data_w_time <- latest_data |>
-  mutate(time = row_number())
-
 obs_with_nowcast_draws_df <- nowcast_draws_df |>
-  left_join(latest_data_w_time, by = "time") |>
+  left_join(latest_data, by = "reference_date") |>
   left_join(initial_reports, by = "reference_date")
 head(obs_with_nowcast_draws_df)
 ```

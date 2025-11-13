@@ -1,6 +1,6 @@
 ---
-title: "Modular workflow for flexible model development"
-description: "An example walking through the low-level function interface for building a nowcast model"
+title: "Modular workflow demonstration"
+description: "An example walking through the low-level function interface for specifying a nowcast model"
 output:
   bookdown::html_vignette2:
     fig_caption: yes
@@ -102,31 +102,6 @@ See the [NSSP nowcast](nssp_nowcast.html) for an example
 max_delay <- 30
 ```
 
-In the modular workflow, we can specify precisely the number of reference times used for delay estimation and uncertainty estimation.
-We will use the same values as are used by default in the `allocate_reference_times()` function, which is called internally within `baselinenowcast()`.
-See `?allocate_reference_times` for more details.
-
-We will use 3 times the maximum delay for the total training volume.
-
-```{r}
-n_training_volume <- 3 * max_delay
-```
-
-We will use the most recent 50% of the reference times for delay estimation.
-
-```{r}
-n_history_delay <- as.integer(0.5 * n_training_volume)
-```
-
-For uncertainty estimation, we will generate retrospective nowcast datasets with the most recent 50% of the reference times.
-
-```{r}
-n_retrospective_nowcasts <- as.integer(0.5 * n_training_volume)
-```
-
-This means that in order to estimate the delay using the same amount of data, the oldest retrospective nowcast dataset will use the first 50% of the reference times.
-Note this uses the most recent observations.
-
 # Pre-processing
 
 We'll start by generating a `reporting_triangle` object from the `observed_data` which contains incident case counts indexed by reference and report date.
@@ -137,6 +112,23 @@ rep_tri <- as_reporting_triangle(observed_data,
 ```
 
 We will use the `reporting_triangle` class object, `rep_tri` for the remaining workflow steps.
+
+In the modular workflow, we can specify the number of reference times used for delay and uncertainty estimation directly, or we can use the `allocate_reference_times()` function.
+In this function, we specify the `scale_factor` which indicates the multiplicative factor on the maximum delay to determine the number of reference times for training the model, and the `prop_delay` which indicates what proportion of the reference times used for training are for delay estimation, with the remainder being used for uncertainty.
+
+We will use the same values as are used by default in the `allocate_reference_times()` function, which is called internally within `baselinenowcast()`.
+See `?allocate_reference_times` for more details.
+```{r}
+scale_factor <- 3
+prop_delay <- 0.5
+tv <- allocate_reference_times(
+  data = rep_tri$reporting_triangle_matrix,
+  scale_factor = scale_factor,
+  prop_delay = prop_delay
+)
+n_history_delay <- tv$n_history_delay
+n_retrospective_nowcasts <- tv$n_retrospective_nowcasts
+```
 
 # Estimate delay
 
@@ -249,21 +241,25 @@ Here we can see that our point nowcast (blue) slightly underestimates what was e
 So far, we've demonstrated how to generate a point estimate of a nowcast.
 We would like to generate probabilistic nowcasts.
 
-The method used to estimate the uncertainty works by generating retrospective reporting triangles using what would have been available as of each retrospective nowcast time to estimate a delay distribution, generate a point nowcast matrix, and compare the estimated counts at each reference time to those that have been observed at each nowcast horizon.
-It assumes that the observations follow a negative binomial observation model, and independently estimates the dispersion in the negative binomial at each forecast horizon.
+We'll do so by estimating uncertainty using past nowcast errors.
 
 We repeat this process for `n_retrospective_nowcasts` reference times in the current reporting triangle, starting from the latest reference time and working backwards, ultimately using all `n_retrospective_nowcasts` and `n_history_delay` reference times.
 
+We'll start by creating a list of truncated triangles using the `truncate_triangles()` function which successively removes an addition additional reference time from the original reporting triangle `n` times.
 
 ```{r}
 trunc_rep_tri_list <- truncate_triangles(
   rep_tri$reporting_triangle_matrix,
   n = n_retrospective_nowcasts
 )
+```
+
+For each truncated triangle, we will use the `construct_triangles()` function to generate what would have been available as of the latest reference time within each truncated triangle.
+We refer to these as retrospective reporting triangles.
+
+```{r}
 retro_rep_tri_list <- construct_triangles(trunc_rep_tri_list)
 ```
-This results in a list of retrospective reporting triangles.
-See the documentation for `truncate_triangles()` and `construct_triangles()` for more information on the inputs and outputs of these functions.
 
 Next we will pass this list of reporting triangles to the `fill_triangles()` and specify `n`, the number of reference times to be used to estimate the delay for each nowcast, which we will set as the `n_history_delay` previous specified.
 
@@ -273,6 +269,8 @@ retro_pt_nowcast_mat_list <- fill_triangles(
   n = n_history_delay
 )
 ```
+
+This function will generate a list of point nowcast matrices using the delay estimated from each retrospective reporting triangle.
 
 Next, we will use the retrospective reporting triangles, the point nowcast matrices, and the truncated reporting triangles to estimate the uncertainty at each horizon, starting at horizon 0 using the `estimate_uncertainty()` function.
 
@@ -284,6 +282,8 @@ disp_params <- estimate_uncertainty(
   n = n_retrospective_nowcasts
 )
 ```
+T
+his function uses a negative binomial observation model by default, and independently estimates the dispersion in the negative binomial at each forecast horizon.
 
 Note that the estimation of uncertainty from a reporting triangle can be done in a single step using the `estimate_uncertainty_retro()` function, which chains together the truncation of triangles, construction of retrospective reporting triangles, the generation of point nowcasts via filling the triangles, and the estimation of the uncertainty from the estimates compared to the observations.
 
@@ -422,11 +422,9 @@ In this vignette we used the `baselinenowcast` low-level modular functions to co
 This modular workflow allows for maximum flexibility and the ability to interrogate intermediate steps.
 The idea is that from these component functions, a wide range of `baselinenowcast` models can be developed via a pipeline-based approach where the outputs of one function are passed to the inputs of another function, or the inputs of one function can for example be swapped with an external estimate.
 
-This vignette walks through and produces the exact same results as in the [Getting Started](baselinenowcast.html) vignette, which uses the package default settings to specify the model.
+This vignette walks through and produces the same results as in the [Getting Started](baselinenowcast.html) vignette, which uses the package default settings to specify the model.
 However, the optimal settings will depend on the context and its important to tune the model to your dataset and needs.
 In our [publication](https://wellcomeopenresearch.org/articles/10-614/v1) we show examples using the various model specifications to produce and evaluate the performance of age-group specific nowcasts of COVID-19 in Germany and norovirus cases in England.
 Here's a [link](https://github.com/epinowcast/baselinenowcast-paper) to the code used to generate those nowcasts if interested in doing something similar for your own settings.
 
-<!-- Noting redundancy here and above with nssp nowcast and getting started -->
-Visual inspection of the nowcasts produced, as well as visual inspection of the data such as the mean reporting delay over time and across weekdays, can help identify which specifications are most likely to improve performance.
 We encourage users to test the performance of different specifications of their model, ideally by producing nowcasts from different model specifications for a range of past nowcast dates, using the data that would have been available as of the past nowcast date, and comparing those nowcasts to later observed data.

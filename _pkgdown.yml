@@ -18,7 +18,7 @@ navbar:
       menu:
         - text: "Getting started"
           href: articles/baselinenowcast.html
-        - text: "Modular workflow for flexible model development"
+        - text: "Modular workflow demonstration"
           href: articles/modular_workflow.html
         - text: "Mathematical model"
           href: articles/model_definition.html

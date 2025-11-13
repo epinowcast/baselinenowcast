@@ -214,10 +214,8 @@ This function chains together the following nowcasting steps:
 5. Sample from the uncertainty model to generate probabilistic draws of the nowcast (`sample_nowcasts()`).
 
 See the documentation for each of these functions for more details on the specific workflow step, and the documentation for `?baselinenowcast.reporting_triangle` for input options.
-In this example, we will demonstrate how to specify the reference time allocation and the number of draws we want returned, and will otherwise use the default specifications.
-This will by default generate 1000 draws of a probabilistic nowcast.
+In this example, we will demonstrate how to specify the reference time allocation and the number of probabilistic draws to include, and will otherwise use the default specifications.
 A point nowcast can be returned by specifying `output_type = "point"`.
-
 
 ```{r}
 nowcast_draws_df <- baselinenowcast(
@@ -311,8 +309,8 @@ Black lines show the "final" data from October 1, 2021.
 
 # Summary
 
-In this vignette we used `baselinenowcast` functions to convert a dataframe with incident cases indexed by reference date and report date to a `reporting_triangle` object using the `as_reporting_triangle` function, and then used the `baselinenowcast()` function to generate a probabilistic nowcast dataframe.
-The `baselinenowcast()` function internally ran each of the steps of our nowcasting workflow including estimating a delay distribution, applying it to generate a point nowcast, and estimating and applying uncertainty to generate probabilistic nowcasts.
+In this vignette we used `baselinenowcast` functions to generate a probabilistic nowcast from a dataframe of incident COVID-19 hospital admissions indexed by reference date and report date in Germany.
+To do this, we first converted the input data to a `reporting_triangle` and then called the `baselinenowcast()` function which ran each of the steps of our nowcasting workflow.
 As a final step, we compared our nowcasts of the final cases to the eventual final observed cases and the initially reported case counts.
 
 The `baselinenowcast()` function also directly supports nowcasting for multiple strata and common tasks for handling multiple strata such as sharing delay and uncertainty estimates across strata.
@@ -320,14 +318,17 @@ See the documentation for `?baselinenowcast.data.frame` for more details.
 
 Alternatively, you might be interested in building a more customisable nowcasting workflow.
 This is supported by our modular workflow which enables a pipeline-based approach using low-level functions.
-For an example of walking through this same nowcasting problem with the modular workflow, see the [modular workflow](modular_workflow.html) vignette.
-<!-- Note, the below relies heavily on the summary in nssp_nowcast, so we could make this a code chunk like installation to avoid duplication -->
+For an example of walking through this same nowcasting problem using the low-level functions directly, see the [modular workflow](modular_workflow.html) vignette.
 
 In this vignette we use the package's default settings to specify the model, but the optimal settings will depend on the context and its important to tune the model for your dataset and needs.
-The user has a number of choices in how to specify the model, such as the amount of training data to use for delay or uncertainty estimation, the choice of observation model, whether to separately estimate delays by weekday, or whether to borrow estimates from across different strata such as age groups or locations.
-See the [model definition](model_definition.html) for more details on the mathematical methods.
-In our [publication](https://wellcomeopenresearch.org/articles/10-614/v1) we show examples using the various model specifications to produce and evaluate the performance of age-group specific nowcasts of COVID-19 in Germany and norovirus cases in England.
-Here's a [link](https://github.com/epinowcast/baselinenowcast-paper) to the code used to generate those nowcasts if interested in doing something similar for your own settings.
+The user has a number of choices in how to specify the model, such as:
 
-Visual inspection of the nowcasts produced, as well as visual inspection of the data such as the mean reporting delay over time and across weekdays, can help identify which specifications are most likely to improve performance.
+- the amount of training data to use for delay or uncertainty estimation
+- the choice of observation model
+- how to stratify nowcasts e.g. by age group or weekday
+- whether to borrow estimates from across different strata
+
+In our [publication](https://wellcomeopenresearch.org/articles/10-614/v1) we show examples using the various model specifications to produce and evaluate the performance of age-group specific nowcasts of COVID-19 in Germany and norovirus cases in England.
+Here's a [link](https://github.com/epinowcast/baselinenowcast-paper) to the code used to generate those nowcasts if interested in doing something similar for your own setting.
+
 We encourage users to test the performance of different specifications of their model, ideally by producing nowcasts from different model specifications for a range of past nowcast dates, using the data that would have been available as of the past nowcast date, and comparing those nowcasts to later observed data.

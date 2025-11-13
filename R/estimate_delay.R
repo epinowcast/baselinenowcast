@@ -24,7 +24,10 @@
 #'   [preprocess_negative_values()], which handles negative values by
 #'   redistributing them to earlier delays. Set to NULL if you want to preserve
 #'   negative PMF entries (e.g., when working with downward corrections where
-#'   negative probabilities reflect systematic adjustments).
+#'   negative probabilities reflect systematic adjustments). Custom preprocess
+#'   functions must accept a `validate` parameter (defaults to TRUE) to enable
+#'   validation optimisation in internal function chains.
+#' @inheritParams assert_reporting_triangle
 #' @returns Vector indexed at 0 of length `ncol(reporting_triangle)` with
 #'   columns indicating the point estimate of the empirical probability
 #'   mass on each delay.
@@ -52,8 +55,9 @@
 estimate_delay <- function(
     reporting_triangle,
     n = nrow(reporting_triangle),
-    preprocess = preprocess_negative_values) {
-  assert_reporting_triangle(reporting_triangle)
+    preprocess = preprocess_negative_values,
+    validate = TRUE) {
+  assert_reporting_triangle(reporting_triangle, validate)
 
   # Check that the input reporting triangle is formatted properly.
   .validate_for_delay_estimation(
@@ -66,7 +70,7 @@ estimate_delay <- function(
 
   # Apply preprocessing if provided
   if (!is.null(preprocess)) {
-    trunc_triangle <- preprocess(trunc_triangle)
+    trunc_triangle <- preprocess(trunc_triangle, validate = FALSE)
   }
 
   # Convert to matrix for chainladder fill

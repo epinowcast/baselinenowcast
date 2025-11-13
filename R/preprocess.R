@@ -43,8 +43,8 @@
 #' # Preprocess to handle negatives
 #' preprocessed <- preprocess_negative_values(example_downward_corr_rt)
 #' preprocessed
-preprocess_negative_values <- function(reporting_triangle) {
-  assert_reporting_triangle(reporting_triangle)
+preprocess_negative_values <- function(reporting_triangle, validate = TRUE) {
+  assert_reporting_triangle(reporting_triangle, validate)
 
   # Convert to matrix for processing
   triangle_mat <- as.matrix(reporting_triangle)

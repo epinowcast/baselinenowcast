@@ -14,13 +14,18 @@
 #' )
 #' pt_nowcast_matrix
 estimate_and_apply_delay <- function(reporting_triangle,
+                                     validate = TRUE,
                                      ...) {
+  assert_reporting_triangle(reporting_triangle, validate)
+
   delay_pmf <- estimate_delay(
     reporting_triangle,
+    validate = FALSE,
     ...
   )
 
-  point_nowcast_matrix <- apply_delay(reporting_triangle, delay_pmf)
+  point_nowcast_matrix <- apply_delay(reporting_triangle, delay_pmf,
+                                      validate = FALSE)
 
   return(point_nowcast_matrix)
 }

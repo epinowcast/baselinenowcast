@@ -277,7 +277,7 @@ test_that("estimate_delay with negative PMF produces non-increasing CDF", {
 
 test_that("estimate_delay custom preprocessing function works", {
   # Custom preprocessing that doubles all values
-  custom_preprocess <- function(triangle) {
+  custom_preprocess <- function(triangle, validate = TRUE) {
     return(triangle * 2)
   }
 

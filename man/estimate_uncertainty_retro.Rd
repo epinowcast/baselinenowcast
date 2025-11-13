@@ -11,6 +11,7 @@ estimate_uncertainty_retro(
   structure = get_reporting_structure(reporting_triangle),
   delay_pmf = NULL,
   preprocess = preprocess_negative_values,
+  validate = TRUE,
   ...
 )
 }
@@ -43,7 +44,12 @@ estimation, or NULL to skip preprocessing. Default is
 \code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
 redistributing them to earlier delays. Set to NULL if you want to preserve
 negative PMF entries (e.g., when working with downward corrections where
-negative probabilities reflect systematic adjustments).}
+negative probabilities reflect systematic adjustments). Custom preprocess
+functions must accept a \code{validate} parameter (defaults to TRUE) to enable
+validation optimisation in internal function chains.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 
 \item{...}{Additional arguments passed to \code{\link[=estimate_uncertainty]{estimate_uncertainty()}}.}
 }

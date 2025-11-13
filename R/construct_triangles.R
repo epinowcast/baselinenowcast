@@ -26,7 +26,9 @@
 #'   structure = 2
 #' )
 #' retro_rts_custom
-construct_triangles <- function(truncated_reporting_triangles, structure = 1) {
+construct_triangles <- function(truncated_reporting_triangles,
+                                structure = 1,
+                                validate = TRUE) {
   # Check that input is a list
   if (!is.list(truncated_reporting_triangles)) {
     cli_abort(message = "`truncated_reporting_triangles` must be a list")
@@ -35,7 +37,8 @@ construct_triangles <- function(truncated_reporting_triangles, structure = 1) {
   reporting_triangles <- lapply(
     truncated_reporting_triangles,
     construct_triangle,
-    structure = structure
+    structure = structure,
+    validate = validate
   )
 
   return(reporting_triangles)
@@ -53,6 +56,7 @@ construct_triangles <- function(truncated_reporting_triangles, structure = 1) {
 #'   If integer, divides columns evenly by that integer (with last possibly
 #'   truncated).  If vector, the sum must not be greater than or equal to the
 #'   number of columns. Default is 1 (standard triangular structure).
+#' @inheritParams assert_reporting_triangle
 #' @returns A single retrospective reporting triangle matrix with NAs in the
 #'   appropriate positions.
 #' @family generate_retrospective_data
@@ -70,8 +74,9 @@ construct_triangles <- function(truncated_reporting_triangles, structure = 1) {
 #' rep_custom <- construct_triangle(example_reporting_triangle, c(1, 2))
 #' rep_custom
 construct_triangle <- function(truncated_reporting_triangle,
-                               structure = 1) {
-  assert_reporting_triangle(truncated_reporting_triangle)
+                               structure = 1,
+                               validate = TRUE) {
+  assert_reporting_triangle(truncated_reporting_triangle, validate)
 
   # Get matrix dimensions
   rows <- nrow(truncated_reporting_triangle)

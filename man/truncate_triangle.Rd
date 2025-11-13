@@ -4,7 +4,7 @@
 \alias{truncate_triangle}
 \title{Get a single truncated triangle}
 \usage{
-truncate_triangle(reporting_triangle, t)
+truncate_triangle(reporting_triangle, t, validate = TRUE)
 }
 \arguments{
 \item{reporting_triangle}{A \link{reporting_triangle} object with rows
@@ -15,6 +15,9 @@ reported for the same row (e.g., weekly reporting of daily data).}
 
 \item{t}{Integer indicating the number of timepoints to truncate off the
 bottom of the original reporting triangle.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 }
 \value{
 \code{trunc_rep_tri} A \code{reporting_triangle} object with \code{t} fewer rows

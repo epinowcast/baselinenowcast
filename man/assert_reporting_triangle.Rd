@@ -4,10 +4,13 @@
 \alias{assert_reporting_triangle}
 \title{Assert validity of \code{reporting_triangle} objects}
 \usage{
-assert_reporting_triangle(data)
+assert_reporting_triangle(data, validate = TRUE)
 }
 \arguments{
 \item{data}{A \link{reporting_triangle} object to check for validity.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 }
 \description{
 Assert validity of \code{reporting_triangle} objects

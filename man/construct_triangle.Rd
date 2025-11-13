@@ -4,7 +4,11 @@
 \alias{construct_triangle}
 \title{Generate a single retrospective reporting triangle}
 \usage{
-construct_triangle(truncated_reporting_triangle, structure = 1)
+construct_triangle(
+  truncated_reporting_triangle,
+  structure = 1,
+  validate = TRUE
+)
 }
 \arguments{
 \item{truncated_reporting_triangle}{A single truncated reporting_triangle
@@ -14,6 +18,9 @@ object. May or may not contain NAs.}
 If integer, divides columns evenly by that integer (with last possibly
 truncated).  If vector, the sum must not be greater than or equal to the
 number of columns. Default is 1 (standard triangular structure).}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 }
 \value{
 A single retrospective reporting triangle matrix with NAs in the

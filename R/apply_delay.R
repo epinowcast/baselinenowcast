@@ -16,6 +16,7 @@
 #'   representing the delays
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
 #'   first delay column in `reporting_triangle`.
+#' @inheritParams assert_reporting_triangle
 #' @return `point_nowcast_matrix` Matrix of the same number of rows and columns
 #'    as the `rep_mat_to_nowcast` but with the missing values filled in as point
 #'    estimates
@@ -39,8 +40,8 @@
 #' # The nowcast includes negative predictions at delay 2,
 #' # correctly reflecting expected downward corrections
 #' print(nowcast_with_corrections)
-apply_delay <- function(reporting_triangle, delay_pmf) {
-  assert_reporting_triangle(reporting_triangle)
+apply_delay <- function(reporting_triangle, delay_pmf, validate = TRUE) {
+  assert_reporting_triangle(reporting_triangle, validate)
 
   # Checks that the delay df and the triangle are compatible
   .validate_delay_and_triangle(

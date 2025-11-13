@@ -54,8 +54,9 @@ estimate_uncertainty_retro <- function(
     structure = get_reporting_structure(reporting_triangle),
     delay_pmf = NULL,
     preprocess = preprocess_negative_values,
+    validate = TRUE,
     ...) {
-  assert_reporting_triangle(reporting_triangle)
+  assert_reporting_triangle(reporting_triangle, validate)
 
   n_ref_times <- nrow(reporting_triangle)
   min_ref_times_delay <- sum(is.na(rowSums(reporting_triangle))) + 1
@@ -68,19 +69,22 @@ estimate_uncertainty_retro <- function(
 
   trunc_rep_tri_list <- truncate_triangles(
     reporting_triangle = reporting_triangle,
-    n = n_retrospective_nowcasts
+    n = n_retrospective_nowcasts,
+    validate = FALSE
   )
 
   reporting_triangle_list <- construct_triangles(
     truncated_reporting_triangles = trunc_rep_tri_list,
-    structure = structure
+    structure = structure,
+    validate = FALSE
   )
 
   pt_nowcast_mat_list <- fill_triangles(
     retro_reporting_triangles = reporting_triangle_list,
     n = n_history_delay,
     delay_pmf = delay_pmf,
-    preprocess = preprocess
+    preprocess = preprocess,
+    validate = FALSE
   )
 
   if (is.null(pt_nowcast_mat_list) ||

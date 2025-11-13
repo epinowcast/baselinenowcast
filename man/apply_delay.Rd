@@ -4,7 +4,7 @@
 \alias{apply_delay}
 \title{Apply the delay to generate a point nowcast}
 \usage{
-apply_delay(reporting_triangle, delay_pmf)
+apply_delay(reporting_triangle, delay_pmf, validate = TRUE)
 }
 \arguments{
 \item{reporting_triangle}{Matrix of the reporting triangle to be
@@ -13,6 +13,9 @@ representing the delays}
 
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
 first delay column in \code{reporting_triangle}.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 }
 \value{
 \code{point_nowcast_matrix} Matrix of the same number of rows and columns

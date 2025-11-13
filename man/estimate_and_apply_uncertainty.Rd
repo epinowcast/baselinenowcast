@@ -14,6 +14,7 @@ estimate_and_apply_uncertainty(
   delay_pmf = NULL,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,
+  validate = TRUE,
   ...
 )
 }
@@ -63,6 +64,9 @@ from the observation model. Default is \code{sample_nb} which expects
 arguments \code{pred} for the vector of predictions and uncertainty parameters
 for the corresponding vector of uncertainty parameters, and draws from a
 negative binomial for each element of the vector.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 
 \item{...}{Additional arguments to \code{estimate_uncertainty()} and
 \code{sample_prediction()}.}

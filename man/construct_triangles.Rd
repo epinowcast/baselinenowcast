@@ -4,7 +4,11 @@
 \alias{construct_triangles}
 \title{Generate retrospective reporting triangles}
 \usage{
-construct_triangles(truncated_reporting_triangles, structure = 1)
+construct_triangles(
+  truncated_reporting_triangles,
+  structure = 1,
+  validate = TRUE
+)
 }
 \arguments{
 \item{truncated_reporting_triangles}{List of \code{n} truncated reporting triangle
@@ -14,6 +18,9 @@ matrices with as many rows as available given the truncation.}
 If integer, divides columns evenly by that integer (with last possibly
 truncated).  If vector, the sum must not be greater than or equal to the
 number of columns. Default is 1 (standard triangular structure).}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 }
 \value{
 \code{reporting_triangles} List of retrospective reporting triangles,

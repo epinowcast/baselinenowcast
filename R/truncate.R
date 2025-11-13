@@ -171,6 +171,7 @@ truncate_to_delay <- function(x, max_delay) {
 #'   from, where the minimum requirement is one more than the  number of
 #'   horizon rows (rows containing NAs).
 #' @inheritParams estimate_delay
+#' @inheritParams assert_reporting_triangle
 #' @returns `trunc_rep_tri_list` List of `n` truncated `reporting_triangle`
 #'   objects with as many rows as available given the truncation, and the same
 #'   number of columns as the input `reporting_triangle`.
@@ -183,8 +184,9 @@ truncate_to_delay <- function(x, max_delay) {
 #' truncated_rts[1:2]
 truncate_triangles <- function(reporting_triangle,
                                n = nrow(reporting_triangle) -
-                                 sum(is.na(rowSums(reporting_triangle))) - 1) {
-  assert_reporting_triangle(reporting_triangle)
+                                 sum(is.na(rowSums(reporting_triangle))) - 1,
+                               validate = TRUE) {
+  assert_reporting_triangle(reporting_triangle, validate)
   assert_integerish(n, lower = 0)
   trunc_rep_tri_list <- lapply(
     seq_len(n),
@@ -214,9 +216,10 @@ truncate_triangles <- function(reporting_triangle,
 #' trunc_rep_tri <- truncate_triangle(example_reporting_triangle, t = 1)
 #' trunc_rep_tri
 truncate_triangle <- function(reporting_triangle,
-                              t) {
+                              t,
+                              validate = TRUE) {
   # Full validation for standalone use
-  assert_reporting_triangle(reporting_triangle)
+  assert_reporting_triangle(reporting_triangle, validate)
   assert_integerish(t, lower = 0)
 
   return(.truncate_triangle_impl(reporting_triangle, t))

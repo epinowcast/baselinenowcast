@@ -4,7 +4,7 @@
 \alias{estimate_and_apply_delay}
 \title{Estimate and apply delay from a reporting triangle}
 \usage{
-estimate_and_apply_delay(reporting_triangle, ...)
+estimate_and_apply_delay(reporting_triangle, validate = TRUE, ...)
 }
 \arguments{
 \item{reporting_triangle}{A \link{reporting_triangle} object with rows
@@ -12,6 +12,9 @@ representing reference times and columns representing delays.
 Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row (e.g., weekly reporting of daily data).}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 
 \item{...}{Additional arguments passed to the \code{estimate_delay} function}
 }

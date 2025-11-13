@@ -64,7 +64,11 @@ estimate_and_apply_uncertainty <- function(
     delay_pmf = NULL,
     uncertainty_model = fit_by_horizon,
     uncertainty_sampler = sample_nb,
+    validate = TRUE,
     ...) {
+  assert_reporting_triangle(point_nowcast_matrix, validate)
+  assert_reporting_triangle(reporting_triangle, validate)
+
   # Check that both inputs have the same max_delay
   max_delay_point <- get_max_delay(point_nowcast_matrix)
   max_delay_rt <- get_max_delay(reporting_triangle)
@@ -82,6 +86,7 @@ estimate_and_apply_uncertainty <- function(
     structure = structure,
     delay_pmf = delay_pmf,
     uncertainty_model = uncertainty_model,
+    validate = FALSE,
     ...
   )
   nowcast_draws <- sample_nowcasts(

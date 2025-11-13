@@ -104,7 +104,9 @@ baselinenowcast.reporting_triangle <- function(
     delay_pmf = NULL,
     uncertainty_params = NULL,
     preprocess = preprocess_negative_values,
+    validate = TRUE,
     ...) {
+  assert_reporting_triangle(data, validate)
   output_type <- arg_match(output_type)
   assert_integerish(draws, null.ok = TRUE)
 
@@ -112,18 +114,20 @@ baselinenowcast.reporting_triangle <- function(
 
   tv <- allocate_reference_times(data,
     scale_factor = scale_factor,
-    prop_delay = prop_delay
+    prop_delay = prop_delay,
+    validate = FALSE
   )
 
   if (is.null(delay_pmf)) {
     delay_pmf <- estimate_delay(
       reporting_triangle = data,
       n = tv$n_history_delay,
-      preprocess = preprocess
+      preprocess = preprocess,
+      validate = FALSE
     )
   }
 
-  pt_nowcast <- apply_delay(data, delay_pmf)
+  pt_nowcast <- apply_delay(data, delay_pmf, validate = FALSE)
 
   if (output_type == "point") {
     nowcast_df <- data.frame(
@@ -337,14 +341,16 @@ baselinenowcast.data.frame <- function(
     tv <- allocate_reference_times(
       reporting_triangle = pooled_triangle,
       scale_factor = scale_factor,
-      prop_delay = prop_delay
+      prop_delay = prop_delay,
+      validate = FALSE
     )
     if ("delay" %in% strata_sharing) {
       # Estimate delay once on pooled data
       shared_delay_pmf <- estimate_delay(
         reporting_triangle = pooled_triangle,
         n = tv$n_history_delay,
-        preprocess = preprocess
+        preprocess = preprocess,
+        validate = FALSE
       )
     }
     if ("uncertainty" %in% strata_sharing) {
@@ -354,7 +360,8 @@ baselinenowcast.data.frame <- function(
         n_history_delay = tv$n_history_delay,
         n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
         uncertainty_model = uncertainty_model,
-        preprocess = preprocess
+        preprocess = preprocess,
+        validate = FALSE
       )
     }
   }
@@ -374,7 +381,8 @@ baselinenowcast.data.frame <- function(
         uncertainty_sampler = uncertainty_sampler,
         delay_pmf = shared_delay_pmf,
         uncertainty_params = shared_uncertainty_params,
-        preprocess = preprocess
+        preprocess = preprocess,
+        validate = FALSE
       )
     }, # nolint end
     .id = "name"

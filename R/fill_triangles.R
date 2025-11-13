@@ -8,6 +8,7 @@
 #'
 #' @inheritParams estimate_uncertainty
 #' @inheritParams estimate_delay
+#' @inheritParams assert_reporting_triangle
 #' @param n Integer indicating the number of reference times
 #'    (number of rows) to use to estimate the delay distribution for each
 #'    reporting triangle. Default is the minimum of the number of rows of
@@ -38,7 +39,8 @@ fill_triangles <- function(retro_reporting_triangles,
                              sapply(retro_reporting_triangles, nrow)
                            ),
                            delay_pmf = NULL,
-                           preprocess = preprocess_negative_values) {
+                           preprocess = preprocess_negative_values,
+                           validate = TRUE) {
   if (is.list(delay_pmf)) { # name as a list and check length of elements
     delay_pmf_list <- delay_pmf
     if (length(delay_pmf_list) != length(retro_reporting_triangles)) {
@@ -61,7 +63,8 @@ fill_triangles <- function(retro_reporting_triangles,
         reporting_triangle = triangle,
         delay_pmf = pmf,
         n = n,
-        preprocess = preprocess
+        preprocess = preprocess,
+        validate = validate
       )
       if (!is.null(result$error)) {
         # Print the index and the error message
@@ -151,6 +154,7 @@ fill_triangles <- function(retro_reporting_triangles,
 #'    Default is `NULL`, which will estimate a delay from the
 #'    `reporting_triangle`.
 #' @inheritParams estimate_delay
+#' @inheritParams assert_reporting_triangle
 #' @returns `point_nowcast_matrix` Matrix of the same number of rows and
 #'   columns as the `reporting_triangle` but with the missing values filled
 #'   in as point estimates.
@@ -166,9 +170,10 @@ fill_triangles <- function(retro_reporting_triangles,
 fill_triangle <- function(reporting_triangle,
                           n = nrow(reporting_triangle),
                           delay_pmf = NULL,
-                          preprocess = preprocess_negative_values) {
-  # Lightweight class check - full validation happens in tail() via [
-  assert_rep_tri_class(reporting_triangle)
+                          preprocess = preprocess_negative_values,
+                          validate = TRUE) {
+
+  assert_reporting_triangle(reporting_triangle, validate)
 
   if (n > nrow(reporting_triangle)) {
     cli_abort(
@@ -180,8 +185,7 @@ fill_triangle <- function(reporting_triangle,
       )
     )
   }
-  # Use tail to get last n rows
-  # Validation occurs automatically in [.reporting_triangle
+
   tri_mat <- tail(reporting_triangle, n = n)
   has_complete_row <- any(rowSums(is.na(tri_mat)) == 0)
   if (isFALSE(has_complete_row)) {
@@ -197,10 +201,12 @@ fill_triangle <- function(reporting_triangle,
     delay_pmf <- estimate_delay(
       reporting_triangle = reporting_triangle,
       n = n,
-      preprocess = preprocess
+      preprocess = preprocess,
+      validate = FALSE
     )
   }
 
-  point_nowcast_matrix <- apply_delay(reporting_triangle, delay_pmf)
+  point_nowcast_matrix <- apply_delay(reporting_triangle, delay_pmf,
+                                      validate = FALSE)
   return(point_nowcast_matrix)
 }

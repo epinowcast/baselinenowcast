@@ -9,7 +9,8 @@ allocate_reference_times(
   reporting_triangle,
   scale_factor = 3,
   prop_delay = 0.5,
-  n_min_retro_nowcasts = 2
+  n_min_retro_nowcasts = 2,
+  validate = TRUE
 )
 }
 \arguments{
@@ -29,6 +30,9 @@ estimation. Default is \code{0.5}.}
 
 \item{n_min_retro_nowcasts}{Integer indicating the minimum number of
 reference times needed for uncertainty estimation. Default is \code{2}.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 }
 \value{
 list of n_history_delay and n_retrospective_nowcasts

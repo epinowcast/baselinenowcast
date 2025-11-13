@@ -4,7 +4,7 @@
 \alias{preprocess_negative_values}
 \title{Preprocess negative values in the reporting triangle}
 \usage{
-preprocess_negative_values(reporting_triangle)
+preprocess_negative_values(reporting_triangle, validate = TRUE)
 }
 \arguments{
 \item{reporting_triangle}{A \link{reporting_triangle} object.}

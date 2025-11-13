@@ -15,6 +15,10 @@ Vector of Date objects
 \description{
 Get reference dates from reporting_triangle
 }
+\examples{
+ref_dates <- get_reference_dates(example_reporting_triangle)
+head(ref_dates)
+}
 \seealso{
 Reporting triangle construction and validation
 \code{\link{[.reporting_triangle}()},

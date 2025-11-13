@@ -15,6 +15,10 @@ Character string indicating the delays unit.
 \description{
 Get delays unit from a reporting triangle
 }
+\examples{
+delays_unit <- get_delays_unit(example_reporting_triangle)
+delays_unit
+}
 \seealso{
 Reporting triangle construction and validation
 \code{\link{[.reporting_triangle}()},

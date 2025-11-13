@@ -19,6 +19,15 @@ Maximum delay (integer), or -1 if all zero when non_zero = TRUE
 \description{
 Get maximum delay from reporting_triangle
 }
+\examples{
+# Get maximum delay from triangle structure
+max_delay <- get_max_delay(example_reporting_triangle)
+max_delay
+
+# Get maximum delay with non-zero observations
+max_delay_nz <- get_max_delay(example_reporting_triangle, non_zero = TRUE)
+max_delay_nz
+}
 \seealso{
 Reporting triangle construction and validation
 \code{\link{[.reporting_triangle}()},

@@ -4,6 +4,9 @@
 #' @return Vector of Date objects
 #' @family reporting_triangle
 #' @export
+#' @examples
+#' ref_dates <- get_reference_dates(example_reporting_triangle)
+#' head(ref_dates)
 get_reference_dates <- function(x) {
   if (!is_reporting_triangle(x)) {
     cli_abort(message = "x must have class 'reporting_triangle'")
@@ -20,6 +23,14 @@ get_reference_dates <- function(x) {
 #' @return Maximum delay (integer), or -1 if all zero when non_zero = TRUE
 #' @family reporting_triangle
 #' @export
+#' @examples
+#' # Get maximum delay from triangle structure
+#' max_delay <- get_max_delay(example_reporting_triangle)
+#' max_delay
+#'
+#' # Get maximum delay with non-zero observations
+#' max_delay_nz <- get_max_delay(example_reporting_triangle, non_zero = TRUE)
+#' max_delay_nz
 get_max_delay <- function(x, non_zero = FALSE) {
   if (!is_reporting_triangle(x)) {
     cli_abort(message = "x must have class 'reporting_triangle'")
@@ -43,6 +54,9 @@ get_max_delay <- function(x, non_zero = FALSE) {
 #' @return Character string indicating the delays unit.
 #' @family reporting_triangle
 #' @export
+#' @examples
+#' delays_unit <- get_delays_unit(example_reporting_triangle)
+#' delays_unit
 get_delays_unit <- function(x) {
   if (inherits(x, "reporting_triangle")) {
     return(attr(x, "delays_unit"))

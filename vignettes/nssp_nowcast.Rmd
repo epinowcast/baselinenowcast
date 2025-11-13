@@ -378,31 +378,40 @@ We can't tell from this data alone if the true trend in cases is really declinin
 
 From here, we have the case counts by reference and report date up until the nowcast date.
 We will generate a reporting triangle (see the [mathematical model](model_definition.html) vignette for more details), using the helper function `as_reporting_triangle()`.
-This helper function uses the `max_delay` and the reference and report dates to fill in all combinations of reference dates and delays, filter to exclude delays beyond the maximum delay, and
-pivot the data from long to wide to obtain a reporting triangle where rows are reference dates and columns are delays.
+This helper function fills in all combinations of reference dates and delays and pivots the data from long to wide to obtain a reporting triangle where rows are reference dates and columns are delays.
 This is returned as a `reporting_triangle` class object which is ready to be used for nowcasting.
 
 ```{r}
-rep_tri <- as_reporting_triangle(training_df,
-  max_delay = max_delay
-)
+rep_tri_full <- as_reporting_triangle(training_df)
 ```
 
 Let's look at the reporting triangle object we've created:
 ```{r}
-rep_tri
+rep_tri_full
 ```
 
 And we can get a summary of it:
 ```{r}
-summary(rep_tri)
+summary(rep_tri_full)
+```
+
+We can see the maximum delay inferred from the data.
+For this analysis, we want to limit our reporting triangle to a maximum delay of 25 days using `truncate_to_delay()`:
+
+```{r}
+rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
+```
+
+Let's check the truncated triangle:
+```{r}
+rep_tri
 ```
 
 ## Specify the `baselinenowcast` model
 
 Next, we'll specify the number of reference times used for delay and uncertainty estimation as a factor of the maximum delay.
 We'll also specify the proportion of reference times which will be used for delay estimation, with the remaining used for estimating uncertainty.
-We'll set these as the default values used in the, but in a real-world setting we recommend performing an evaluation analysis to identify the optimal amount of training data to be used for each of these tasks.
+We'll set these as the default values, but in a real-world setting we recommend performing an evaluation analysis to identify the optimal amount of training data to be used for each of these tasks.
 See the documentation for `?allocate_reference_times` and the "Default Settings" section of the [mathematical model](model_definition.html) vignette for more details.
 ```{r}
 scale_factor <- 3

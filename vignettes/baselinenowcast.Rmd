@@ -163,24 +163,34 @@ scale_factor <- 3
 prop_delay <- 0.5
 ```
 
-Next we obtain a `reporting_triangle` using the `as_reporting_triangle()` function, which expects a data.frame with case counts indexed by reference date and report date and the maximum delay.
+Next we obtain a `reporting_triangle` using the `as_reporting_triangle()` function, which expects a data.frame with case counts indexed by reference date and report date.
 This function computes the delay between the reference and report date and pivots the data from long to wide, so that the rows are reference times and the columns indicate the delay between the reference and report date, and the entries indicate the incident case counts.
 This also validates that the data is in the correct format and runs pre-processing to fill in any missing dates, see `?as_reporting_triangle.data.frame` and `?reporting_triangle` for more details on required inputs and the format of the `reporting_triangle` object.
 
 ```{r}
-rep_tri <- as_reporting_triangle(observed_data,
-  max_delay = max_delay
-)
+rep_tri_full <- as_reporting_triangle(observed_data)
 ```
 
 Let's look at the reporting triangle object we've created:
 ```{r}
-rep_tri
+rep_tri_full
 ```
 
 And we can get a summary of it:
 ```{r}
-summary(rep_tri)
+summary(rep_tri_full)
+```
+
+We can see the maximum delay inferred from the data.
+For this analysis, we want to limit our reporting triangle to a maximum delay of 30 days using `truncate_to_delay()`:
+
+```{r}
+rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
+```
+
+Let's check the truncated triangle:
+```{r}
+rep_tri
 ```
 
 <details><summary>Click to expand code to create the plot of the reporting triangle</summary>

@@ -106,12 +106,23 @@ max_delay <- 30
 
 We'll start by generating a `reporting_triangle` object from the `observed_data` which contains incident case counts indexed by reference and report date.
 ```{r}
-rep_tri <- as_reporting_triangle(observed_data,
-  max_delay = max_delay
-)
+rep_tri_full <- as_reporting_triangle(observed_data)
 ```
 
-We will use the `reporting_triangle` class object, `rep_tri` for the remaining workflow steps.
+Let's look at the reporting triangle we've created:
+```{r}
+rep_tri_full
+```
+
+We can see the maximum delay inferred from the data.
+For this analysis, we want to limit our reporting triangle to a maximum delay of 30 days:
+
+```{r}
+rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
+rep_tri
+```
+
+We will use this `reporting_triangle` class object, `rep_tri`, for the remaining workflow steps.
 
 In the modular workflow, we can specify the number of reference times used for delay and uncertainty estimation directly, or we can use the `allocate_reference_times()` function.
 In this function, we specify the `scale_factor` which indicates the multiplicative factor on the maximum delay to determine the number of reference times for training the model, and the `prop_delay` which indicates what proportion of the reference times used for training are for delay estimation, with the remainder being used for uncertainty.

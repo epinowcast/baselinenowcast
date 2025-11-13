@@ -28,7 +28,9 @@ test_that(
       as.integer(100 * nrow(point_nowcast_matrix))
     )
     expect_identical(ncol(result), 3L)
-    expect_true(all(c("pred_count", "reference_date", "draw") %in% names(result)))
+    expect_true(
+      all(c("pred_count", "reference_date", "draw") %in% names(result))
+    )
     expect_length(unique(result$draw), 100L)
     expect_identical(nrow(result), as.integer(100 * nrow(point_nowcast_matrix)))
     expect_true(all(is.finite(result$pred_count)))
@@ -183,9 +185,13 @@ test_that(
     # which should be true for both the observations and the
     # predictions
     first_date <- min(result$reference_date)
-    sum_result <- sum(result$pred_count[result$reference_date != first_date], na.rm = TRUE)
+    sum_result <- sum(
+      result$pred_count[result$reference_date != first_date], na.rm = TRUE
+    )
     sum_result_rolling_sum <- sum(
-      result_with_rolling_sum$pred_count[result_with_rolling_sum$reference_date != first_date],
+      result_with_rolling_sum$pred_count[
+        result_with_rolling_sum$reference_date != first_date
+      ],
       na.rm = TRUE
     )
     expect_equal(sum_result_rolling_sum / sum_result, 2, tol = 0.2)
@@ -195,15 +201,21 @@ test_that(
     dates <- sort(unique(result$reference_date))
     expect_identical(
       sum(result$pred_count[result$reference_date %in% dates[1:2]]),
-      sum(result_with_rolling_sum$pred_count[result_with_rolling_sum$reference_date == dates[2]])
+      sum(
+        result_with_rolling_sum$pred_count[
+          result_with_rolling_sum$reference_date == dates[2]
+        ]
+      )
     )
     # All draws should be the same
     expect_identical(
       result_with_rolling_sum$pred_count[
-        result_with_rolling_sum$reference_date == dates[2] & result_with_rolling_sum$draw == 2
+        result_with_rolling_sum$reference_date == dates[2] &
+          result_with_rolling_sum$draw == 2
       ],
       result_with_rolling_sum$pred_count[
-        result_with_rolling_sum$reference_date == dates[2] & result_with_rolling_sum$draw == 1
+        result_with_rolling_sum$reference_date == dates[2] &
+          result_with_rolling_sum$draw == 1
       ]
     )
   }

@@ -28,7 +28,9 @@ test_that(
       as.integer(100 * nrow(point_nowcast_matrix))
     )
     expect_identical(ncol(result), 3L)
-    expect_true(all(c("pred_count", "reference_date", "draw") %in% names(result)))
+    expect_true(
+      all(c("pred_count", "reference_date", "draw") %in% names(result))
+    )
     expect_length(unique(result$draw), 100L)
     expect_identical(nrow(result), as.integer(100 * nrow(point_nowcast_matrix)))
     expect_false(all(is.na(result$pred_count)))

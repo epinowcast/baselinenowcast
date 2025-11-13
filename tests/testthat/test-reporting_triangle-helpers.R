@@ -75,7 +75,7 @@ test_that(
 })
 
 test_that(
-  "get_mean_delay returns numeric vector length nrow with vals in [0, max_delay]",
+  "get_mean_delay returns numeric vector length nrow with vals [0, max_delay]",
   {
   mean_delays <- get_mean_delay(rep_tri)
   expect_type(mean_delays, "double")
@@ -151,7 +151,7 @@ test_that("[.reporting_triangle preserves class and validates", {
 })
 
 test_that(
-  "[ operator preserves reporting_triangle class and attributes for row subsetting",
+  "[ operator preserves reporting_triangle class and attributes for rows",
   {
   # Basic row subsetting
   sub <- rep_tri[1:5, ]
@@ -172,7 +172,7 @@ test_that(
 })
 
 test_that(
-  "[ operator preserves reporting_triangle class and attributes for column subsetting",
+  "[ operator preserves reporting_triangle class and attributes for cols",
   {
   # Basic column subsetting
   sub <- rep_tri[, 1:3]

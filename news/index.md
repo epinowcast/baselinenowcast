@@ -2,6 +2,11 @@
 
 ## baselinenowcast 0.0.0.1000
 
+- Add a vignette which walks through the low-level function interface on
+  the same nowcasting problem as in the Getting Started vignette.
+- Modify the Getting Started vignette to use the
+  [`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md)
+  wrapper function.
 - Use the `as_reporting_triangle` and `baselinenowcast` workflow in the
   vignette which walks through a nowcasting example applied to syndromic
   surveillance data in the U.S.

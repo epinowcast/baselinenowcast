@@ -49,6 +49,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/baselinenowcast.html">Getting started</a></li>
+    <li><a class="dropdown-item" href="../articles/modular_workflow.html">Modular workflow demonstration</a></li>
     <li><a class="dropdown-item" href="../articles/model_definition.html">Mathematical model</a></li>
     <li><a class="dropdown-item" href="../articles/nomenclature.html">Nomenclature</a></li>
     <li><a class="dropdown-item" href="../articles/nssp_nowcast.html">A case study nowcasting applied to the U.S. National Syndromic Surveillance Program (NSSP) data</a></li>
@@ -1165,7 +1166,7 @@ See the <a href="epiforecasts.io/scoringutils/"><code>scoringutils</code> R pack
 In this vignette we used the package’s default settings to specify the model, but the optimal settings will be dependent on the context and its important to tune the model for your dataset and needs.
 The user has a number of choices in how to specify the model, such as the amount of training data to use for delay or uncertainty estimation, the choice of observation model, whether to separately estimate delays by weekday, or whether to borrow estimates from across different strata such as age groups or locations.
 See the <a href="baselinenowcast.html">Getting Started</a> vignette and <a href="model_definition.html">model definition</a> for more details on the different model specifications.
-In our <a href="https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v1.full" class="external-link">pre-print</a> we show examples using the various model specifications to produce and evaluate the performance of age-group specific nowcasts of COVID-19 in Germany and norovirus cases in England.
+In our <a href="https://wellcomeopenresearch.org/articles/10-614/v1" class="external-link">publication</a> we show examples using the various model specifications to produce and evaluate the performance of age-group specific nowcasts of COVID-19 in Germany and norovirus cases in England.
 Here’s a <a href="https://github.com/epinowcast/baselinenowcast-paper" class="external-link">link</a> to the code used to generate those nowcasts if interested in doing something similar for your own settings.</p>
 <p>Visual inspection of the nowcasts produced, as well as visual inspection of the data such as the mean reporting delay over time and across weekdays, can help identify which specifications are most likely to improve performance.
 We encourage users to test the performance of different specifications of their model, ideally by producing nowcasts from different model specifications for a range of past nowcast dates, using the data that would have been available as of the past nowcast date, and comparing those nowcasts to later observed data.

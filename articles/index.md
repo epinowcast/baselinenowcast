@@ -12,6 +12,12 @@
 
   Description of mathematical methods used in the package
 
+- [Modular workflow
+  demonstration](https://baselinenowcast.epinowcast.org/articles/modular_workflow.md):
+
+  An example walking through the low-level function interface for
+  specifying a nowcast model
+
 - [Nowcasting
   nomenclature](https://baselinenowcast.epinowcast.org/articles/nomenclature.md):
 

@@ -26,6 +26,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/baselinenowcast.html">Getting started</a></li>
+    <li><a class="dropdown-item" href="../articles/modular_workflow.html">Modular workflow demonstration</a></li>
     <li><a class="dropdown-item" href="../articles/model_definition.html">Mathematical model</a></li>
     <li><a class="dropdown-item" href="../articles/nomenclature.html">Nomenclature</a></li>
     <li><a class="dropdown-item" href="../articles/nssp_nowcast.html">A case study nowcasting applied to the U.S. National Syndromic Surveillance Program (NSSP) data</a></li>
@@ -53,7 +54,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.0.1000" id="baselinenowcast-0001000">baselinenowcast 0.0.0.1000<a class="anchor" aria-label="anchor" href="#baselinenowcast-0001000"></a></h2>
-<ul><li>Use the <code>as_reporting_triangle</code> and <code>baselinenowcast</code> workflow in the vignette which walks through a nowcasting example applied to syndromic surveillance data in the U.S.</li>
+<ul><li>Add a vignette which walks through the low-level function interface on the same nowcasting problem as in the Getting Started vignette.</li>
+<li>Modify the Getting Started vignette to use the <code><a href="../reference/baselinenowcast.html">baselinenowcast()</a></code> wrapper function.</li>
+<li>Use the <code>as_reporting_triangle</code> and <code>baselinenowcast</code> workflow in the vignette which walks through a nowcasting example applied to syndromic surveillance data in the U.S.</li>
 <li>Add <code>preprocess</code> parameter to <code><a href="../reference/estimate_delay.html">estimate_delay()</a></code> to control handling of negative values in reporting triangles. Set to <code>preprocess_negative_values</code> by default to redistribute negative values to earlier delays, or set to <code>NULL</code> to preserve negative PMF entries. This allows the method to work with reporting corrections that result in net downward adjustments at specific delays (<a href="https://github.com/epinowcast/baselinenowcast/issues/278" class="external-link">#278</a>).</li>
 <li>Export <code><a href="../reference/preprocess_negative_values.html">preprocess_negative_values()</a></code> function to allow users to manually handle negative values in reporting triangles by redistributing them to earlier delays (<a href="https://github.com/epinowcast/baselinenowcast/issues/278" class="external-link">#278</a>).</li>
 <li>Improve PMF validation message to be more informative when the delay PMF does not sum to approximately 1. The message now shows the actual sum and clarifies that this may be expected when working with downward corrections or incomplete data (<a href="https://github.com/epinowcast/baselinenowcast/issues/148" class="external-link">#148</a>, <a href="https://github.com/epinowcast/baselinenowcast/issues/278" class="external-link">#278</a>).</li>

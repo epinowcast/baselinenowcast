@@ -1378,8 +1378,8 @@ Started](https://baselinenowcast.epinowcast.org/articles/baselinenowcast.md)
 vignette and [model
 definition](https://baselinenowcast.epinowcast.org/articles/model_definition.md)
 for more details on the different model specifications. In our
-[pre-print](https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v1.full)
-we show examples using the various model specifications to produce and
+[publication](https://wellcomeopenresearch.org/articles/10-614/v1) we
+show examples using the various model specifications to produce and
 evaluate the performance of age-group specific nowcasts of COVID-19 in
 Germany and norovirus cases in England. Here’s a
 [link](https://github.com/epinowcast/baselinenowcast-paper) to the code

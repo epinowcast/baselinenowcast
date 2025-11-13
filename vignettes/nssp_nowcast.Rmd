@@ -388,9 +388,14 @@ rep_tri <- as_reporting_triangle(training_df,
 )
 ```
 
-You can inspect the reporting triangle matrix itself by accessing the $reporting_triangle_matrix element in the object
+Let's look at the reporting triangle object we've created:
 ```{r}
-rep_tri$reporting_triangle_matrix
+rep_tri
+```
+
+And we can get a summary of it:
+```{r}
+summary(rep_tri)
 ```
 
 ## Specify the `baselinenowcast` model

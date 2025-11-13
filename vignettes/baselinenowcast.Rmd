@@ -173,18 +173,20 @@ rep_tri <- as_reporting_triangle(observed_data,
 )
 ```
 
-The `reporting_triangle` object is a matrix with named rows for the reference dates corresponding to each row of the matrix.
+Let's look at the reporting triangle object we've created:
+```{r}
+rep_tri
+```
+
+And we can get a summary of it:
+```{r}
+summary(rep_tri)
+```
 
 <details><summary>Click to expand code to create the plot of the reporting triangle</summary>
 ```{r}
-triangle_df <- as.data.frame(rep_tri$reporting_triangle_matrix) |>
-  mutate(time = row_number()) |>
-  pivot_longer(!time,
-    values_to = "count",
-    names_prefix = "V",
-    names_to = "delay"
-  ) |>
-  mutate(delay = as.numeric(delay))
+triangle_df <- as.data.frame(rep_tri) |>
+  mutate(time = as.numeric(factor(reference_date)))
 
 plot_triangle <- ggplot(
   triangle_df,

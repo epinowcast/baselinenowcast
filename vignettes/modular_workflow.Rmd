@@ -122,7 +122,7 @@ See `?allocate_reference_times` for more details.
 scale_factor <- 3
 prop_delay <- 0.5
 tv <- allocate_reference_times(
-  reporting_triangle = rep_tri$reporting_triangle_matrix,
+  reporting_triangle = rep_tri,
   scale_factor = scale_factor,
   prop_delay = prop_delay
 )
@@ -139,8 +139,7 @@ See documentation for `estimate_delay()` for a full description of the function 
 
 ```{r}
 delay_pmf <- estimate_delay(
-  reporting_triangle = rep_tri$reporting_triangle_matrix,
-  max_delay = max_delay,
+  reporting_triangle = rep_tri,
   n = n_history_delay
 )
 ```
@@ -181,7 +180,7 @@ It is worth noting that we could also have estimated the delay and applied it in
 
 ```{r}
 point_nowcast_matrix <- apply_delay(
-  reporting_triangle = rep_tri$reporting_triangle_matrix,
+  reporting_triangle = rep_tri,
   delay_pmf = delay_pmf
 )
 ```
@@ -249,7 +248,7 @@ We'll start by creating a list of truncated triangles using the `truncate_triang
 
 ```{r}
 trunc_rep_tri_list <- truncate_triangles(
-  rep_tri$reporting_triangle_matrix,
+  rep_tri,
   n = n_retrospective_nowcasts
 )
 ```
@@ -300,7 +299,7 @@ Note that from a point nowcast and a reporting triangle, one could also estimate
 ```{r}
 nowcast_draws_df <- sample_nowcasts(
   point_nowcast_matrix,
-  rep_tri$reporting_triangle_matrix,
+  rep_tri,
   uncertainty_params = disp_params,
   draws = 100
 )

@@ -122,7 +122,7 @@ See `?allocate_reference_times` for more details.
 scale_factor <- 3
 prop_delay <- 0.5
 tv <- allocate_reference_times(
-  data = rep_tri$reporting_triangle_matrix,
+  reporting_triangle = rep_tri$reporting_triangle_matrix,
   scale_factor = scale_factor,
   prop_delay = prop_delay
 )

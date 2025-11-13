@@ -82,11 +82,6 @@
   "softwareSuggestions": [
     {
       "@type": "SoftwareApplication",
-      "identifier": "epinowcast",
-      "name": "epinowcast"
-    },
-    {
-      "@type": "SoftwareApplication",
       "identifier": "bookdown",
       "name": "bookdown",
       "provider": {
@@ -346,7 +341,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "2752.276KB",
+  "fileSize": "2773.154KB",
   "citation": [
     {
       "@type": "ScholarlyArticle",

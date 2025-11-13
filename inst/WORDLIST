@@ -71,6 +71,7 @@ kaitejohnson
 lauraajones
 leq
 linetype
+linewidth
 mathbb
 mathbf
 negbin
@@ -80,11 +81,11 @@ nowcast
 nowcasted
 nowcasting
 nowcasts
-num
-pct
+obs
 pid
 pilessthand
 pmf
+pred
 prob
 sbfnk
 seabbs

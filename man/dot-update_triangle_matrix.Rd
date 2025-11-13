@@ -12,7 +12,7 @@
 \item{new_matrix}{The modified matrix data.}
 
 \item{reference_dates}{Optional. Reference dates for the new matrix. If NULL,
-extracts from rownames of new_matrix.}
+extracts from the original reporting_triangle object.}
 }
 \value{
 A new \link{reporting_triangle} object with the updated matrix data.

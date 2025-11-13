@@ -107,13 +107,13 @@ as_reporting_triangle.data.frame <- function(
     )
 
   ix <- is.na(all_combos$count)
-  max_report_delay <- get_delays_from_dates(
+  max_observable_delay <- get_delays_from_dates(
     rep(max(data$report_date), sum(ix)),
     all_combos$reference_date[ix],
     delays_unit
   )
   all_combos$count[ix] <- ifelse(
-    max_report_delay >= all_combos$delay[ix],
+    max_observable_delay >= all_combos$delay[ix],
     0, all_combos$count[ix]
   )
 

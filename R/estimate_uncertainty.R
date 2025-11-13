@@ -30,6 +30,7 @@
 #' @param delay_aggregator Function that operates along the columns (delays)
 #'    of the retrospective point nowcast matrix after it has been aggregated
 #'    across reference times. Default is `function(x) rowSums(x, na.rm = TRUE)`.
+#' @inheritParams assert_reporting_triangle
 #' @importFrom checkmate assert_integerish
 #' @importFrom cli cli_abort cli_warn
 #' @returns `uncertainty_params` Vector of length of the number of horizons,
@@ -74,7 +75,8 @@ estimate_uncertainty <- function(
     n = length(point_nowcast_matrices),
     uncertainty_model = fit_by_horizon,
     ref_time_aggregator = identity,
-    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
+    delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
+    validate = TRUE) {
   assert_integerish(n, lower = 0)
   .check_list_length(
     point_nowcast_matrices,
@@ -99,6 +101,16 @@ estimate_uncertainty <- function(
   list_of_ncs <- point_nowcast_matrices[non_null_indices]
   list_of_obs <- truncated_reporting_triangles[non_null_indices]
   list_of_rts <- retro_reporting_triangles[non_null_indices]
+
+  # Validate reporting triangles if requested
+  if (isTRUE(validate)) {
+    lapply(list_of_obs, assert_reporting_triangle, validate = TRUE)
+    lapply(list_of_rts, assert_reporting_triangle, validate = TRUE)
+  }
+
+  # Convert to plain matrices - we only need matrix operations from here on
+  list_of_obs <- lapply(list_of_obs, as.matrix)
+  list_of_rts <- lapply(list_of_rts, as.matrix)
   if (n_iters == 0) {
     cli_abort(
       message = c(

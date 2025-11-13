@@ -94,7 +94,8 @@ test_that("estimate_uncertainty: Edge cases are handled properly", {
   expect_warning(estimate_uncertainty(
     valid_nowcasts,
     lapply(valid_nowcasts, round),
-    valid_rts
+    valid_rts,
+    validate = FALSE
   ))
 
   # NA-filled matrices

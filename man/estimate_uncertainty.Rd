@@ -11,7 +11,8 @@ estimate_uncertainty(
   n = length(point_nowcast_matrices),
   uncertainty_model = fit_by_horizon,
   ref_time_aggregator = identity,
-  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+  delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
+  validate = TRUE
 )
 }
 \arguments{
@@ -45,6 +46,9 @@ which does not aggregate across reference times.}
 \item{delay_aggregator}{Function that operates along the columns (delays)
 of the retrospective point nowcast matrix after it has been aggregated
 across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 }
 \value{
 \code{uncertainty_params} Vector of length of the number of horizons,

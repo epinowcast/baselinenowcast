@@ -103,6 +103,7 @@ estimate_uncertainty_retro <- function(
     truncated_reporting_triangles = trunc_rep_tri_list,
     retro_reporting_triangles = reporting_triangle_list,
     n = n_retrospective_nowcasts,
+    validate = FALSE,
     ...
   )
 

@@ -4,23 +4,45 @@
 \alias{assert_reporting_triangle}
 \title{Assert validity of \code{reporting_triangle} objects}
 \usage{
-assert_reporting_triangle(data)
+assert_reporting_triangle(data, validate = TRUE)
 }
 \arguments{
 \item{data}{A \link{reporting_triangle} object to check for validity.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 }
 \description{
 Assert validity of \code{reporting_triangle} objects
 }
 \seealso{
 Reporting triangle construction and validation
+\code{\link{[.reporting_triangle}()},
+\code{\link{[<-.reporting_triangle}()},
+\code{\link{as.data.frame.reporting_triangle}()},
+\code{\link{as.matrix.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.matrix}()},
 \code{\link{as_reporting_triangle.triangle}()},
-\code{\link{detect_structure}()},
+\code{\link{get_delays_from_dates}()},
+\code{\link{get_delays_unit}()},
+\code{\link{get_max_delay}()},
+\code{\link{get_mean_delay}()},
+\code{\link{get_quantile_delay}()},
+\code{\link{get_reference_dates}()},
+\code{\link{get_report_dates}()},
+\code{\link{get_reporting_structure}()},
+\code{\link{head.reporting_triangle}()},
+\code{\link{is_reporting_triangle}()},
 \code{\link{new_reporting_triangle}()},
-\code{\link{reporting_triangle-class}}
+\code{\link{print.reporting_triangle}()},
+\code{\link{reporting_triangle-class}},
+\code{\link{summary.reporting_triangle}()},
+\code{\link{tail.reporting_triangle}()},
+\code{\link{truncate_to_delay}()},
+\code{\link{truncate_to_quantile}()},
+\code{\link{validate_reporting_triangle}()}
 }
 \concept{reporting_triangle}

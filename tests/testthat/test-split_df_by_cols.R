@@ -30,7 +30,7 @@ test_that(".split_df_by_cols splits by multiple columns", {
 
   expected_names <- c("A___X", "A___Y", "B___X", "B___Y")
   expect_list_structure(result, expected_length = 4)
-  expect_true(all(names(result) %in% expected_names))
+  expect_true(setequal(names(result), expected_names))
   expect_identical(nrow(result[["A___X"]]), 1L)
   expect_identical(result[["A___X"]]$value, 1L)
   expect_identical(result[["B___Y"]]$value, 4L)

@@ -49,10 +49,7 @@ To convert back to a \link{reporting_triangle} object, use
 \dontshow{if (requireNamespace("ChainLadder", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 # Create a reporting triangle from synthetic NSSP data
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-rep_tri <- as_reporting_triangle(
-  data = data_as_of_df,
-  max_delay = 25
-)
+rep_tri <- as_reporting_triangle(data = data_as_of_df)
 
 # Convert to ChainLadder triangle format
 cl_triangle <- as_ChainLadder_triangle(rep_tri)
@@ -69,13 +66,32 @@ plot(cl_triangle)
 }
 
 Reporting triangle construction and validation
+\code{\link{[.reporting_triangle}()},
+\code{\link{[<-.reporting_triangle}()},
+\code{\link{as.data.frame.reporting_triangle}()},
+\code{\link{as.matrix.reporting_triangle}()},
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.matrix}()},
 \code{\link{as_reporting_triangle.triangle}()},
 \code{\link{assert_reporting_triangle}()},
-\code{\link{detect_structure}()},
+\code{\link{get_delays_from_dates}()},
+\code{\link{get_delays_unit}()},
+\code{\link{get_max_delay}()},
+\code{\link{get_mean_delay}()},
+\code{\link{get_quantile_delay}()},
+\code{\link{get_reference_dates}()},
+\code{\link{get_report_dates}()},
+\code{\link{get_reporting_structure}()},
+\code{\link{head.reporting_triangle}()},
+\code{\link{is_reporting_triangle}()},
 \code{\link{new_reporting_triangle}()},
-\code{\link{reporting_triangle-class}}
+\code{\link{print.reporting_triangle}()},
+\code{\link{reporting_triangle-class}},
+\code{\link{summary.reporting_triangle}()},
+\code{\link{tail.reporting_triangle}()},
+\code{\link{truncate_to_delay}()},
+\code{\link{truncate_to_quantile}()},
+\code{\link{validate_reporting_triangle}()}
 }
 \concept{reporting_triangle}

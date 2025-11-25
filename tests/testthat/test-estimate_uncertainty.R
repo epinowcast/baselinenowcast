@@ -38,8 +38,8 @@ nowcast2 <- matrix(
 valid_nowcasts <- list(nowcast1, nowcast2)
 
 valid_trunc_rts <- list(
-  test_triangle[1:5, ],
-  test_triangle[1:4, ]
+  make_test_triangle(data = test_triangle[1:5, ]),
+  make_test_triangle(data = test_triangle[1:4, ])
 )
 
 
@@ -72,7 +72,7 @@ test_that("estimate_uncertainty can handle rolling sum with k=3", {
 })
 
 
-test_that("estimate_uncertainty works correctly with default and n parameters", { # nolint
+test_that("estimate_uncertainty returns numeric vector of length n_horizons", { # nolint
   result_default <- estimate_uncertainty(
     valid_nowcasts,
     valid_trunc_rts,
@@ -94,7 +94,8 @@ test_that("estimate_uncertainty: Edge cases are handled properly", {
   expect_warning(estimate_uncertainty(
     valid_nowcasts,
     lapply(valid_nowcasts, round),
-    valid_rts
+    valid_rts,
+    validate = FALSE
   ))
 
   # NA-filled matrices
@@ -146,7 +147,7 @@ test_that("estimate_uncertainty returns an error if passing in only NULLs", {
 })
 
 test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
-  base_tri <- matrix(
+  base_tri <- make_test_triangle(data = matrix(
     c(
       89, 54, 10, 5,
       65, 46, 21, 7,
@@ -159,9 +160,9 @@ test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
     ),
     nrow = 8,
     byrow = TRUE
-  )
+  ))
 
-  test_triangle_1 <- matrix(
+  test_triangle_1 <- make_test_triangle(data = matrix(
     c(
       65, 46, 21, 7,
       70, 40, 20, 5,
@@ -173,9 +174,9 @@ test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
     ),
     nrow = 7,
     byrow = TRUE
-  )
+  ))
 
-  test_triangle_2 <- matrix(
+  test_triangle_2 <- make_test_triangle(data = matrix(
     c(
       65, 46, 21, 7,
       70, 40, 20, 5,
@@ -186,8 +187,11 @@ test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
     ),
     nrow = 6,
     byrow = TRUE
-  )
-  triangle3 <- matrix(
+  ))
+  # Triangle 3 can't be used to generate a point nowcast
+  # because first column is all zeros
+  # We create it as a plain matrix and convert later with suppress
+  triangle3_mat <- matrix(
     c(
       0, 40, 20, 5,
       0, 50, 10, 10,
@@ -198,7 +202,15 @@ test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
     nrow = 5,
     byrow = TRUE
   )
-  # Triangle 3 can't be used to generate a point nowcast
+  # Create triangle3 by suppressing the validation warning
+  # This triangle is intentionally invalid for testing error handling
+  triangle3 <- structure(
+    triangle3_mat,
+    class = c("reporting_triangle", "matrix", "array"),
+    max_delay = 3L,
+    reference_dates = seq(as.Date("1900-01-01"), by = "days", length.out = 5),
+    delays_unit = "days"
+  )
   retro_rts_list <- list(test_triangle_1, test_triangle_2, triangle3)
 
   pt_nowcast_list <- expect_message(
@@ -229,10 +241,8 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
   complete_triangle <- do.call(rbind, complete_triangle)
 
   # Create a reporting triangle with every other day reporting
-  ragged_triangle <- construct_triangle(
-    complete_triangle,
-    structure = 2
-  )
+  ragged_triangle <- make_test_triangle(data = complete_triangle) |>
+    construct_triangle(structure = 2)
 
   # Create truncated triangles and retrospective triangles
   trunc_rts <- truncate_triangles(ragged_triangle)
@@ -255,7 +265,9 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
   expect_true(all(disp_params > 0))
 })
 
-test_that("estimate_uncertainty: works as expected with perfect data", {
+test_that(
+  "estimate_uncertainty returns near-zero dispersion for perfect predictions",
+  {
   set.seed(123)
   delay_pmf <- c(0.4, 0.3, 0.2, 0.05, 0.05)
   partial_counts <- c(80, 100, 180, 80, 140)
@@ -263,8 +275,10 @@ test_that("estimate_uncertainty: works as expected with perfect data", {
   # Create a complete triangle based on the known delay PMF
   rep_mat_rows <- lapply(partial_counts, function(x) x * delay_pmf)
   rep_mat <- do.call(rbind, rep_mat_rows)
-  triangle <- construct_triangle(rep_mat)
+  triangle <- make_test_triangle(data = rep_mat) |>
+    construct_triangle()
   reporting_triangle <- rbind(rep_mat, triangle)
+  reporting_triangle <- make_test_triangle(data = reporting_triangle)
 
   pt_nowcast_mat <- fill_triangle(reporting_triangle)
   truncated_reporting_triangles <- truncate_triangles(reporting_triangle)
@@ -283,7 +297,7 @@ test_that("estimate_uncertainty: works as expected with perfect data", {
   expect_equal(dispersion[3], 999, tol = 1)
 })
 
-test_that("estimate_uncertainty: works as expected with some dispersion for both ks", { # nolint
+test_that("estimate_uncertainty estimates positive dispersion for noisy predictions", { # nolint
   skip_if_not_installed("zoo")
   set.seed(123)
   delay_pmf <- c(0.4, 0.3, 0.2, 0.05, 0.05)
@@ -292,8 +306,10 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
   # Create a complete triangle based on the known delay PMF
   rep_mat_rows <- lapply(partial_counts, function(x) x * delay_pmf)
   rep_mat <- do.call(rbind, rep_mat_rows)
-  triangle <- construct_triangle(rep_mat)
+  triangle <- make_test_triangle(data = rep_mat) |>
+    construct_triangle()
   reporting_triangle <- rbind(rep_mat, triangle)
+  reporting_triangle <- make_test_triangle(data = reporting_triangle)
 
 
   pt_nowcast_mat <- fill_triangle(reporting_triangle)
@@ -370,8 +386,10 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
   # Create a complete triangle based on the known delay PMF
   rep_mat_rows <- lapply(partial_counts, function(x) x * delay_pmf)
   rep_mat <- do.call(rbind, rep_mat_rows)
-  triangle <- construct_triangle(rep_mat)
+  triangle <- make_test_triangle(data = rep_mat) |>
+    construct_triangle()
   reporting_triangle <- rbind(rep_mat, rep_mat, rep_mat, rep_mat, triangle)
+  reporting_triangle <- make_test_triangle(data = reporting_triangle)
 
 
   pt_nowcast_mat <- fill_triangle(reporting_triangle)
@@ -389,17 +407,26 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
     retro_rep_tri <- construct_triangle(trunc_rep_tri_orig)
     # For the last 4 horizons, replace each row with negative binomial draws
     # with a mean of the point nowcast matrix
-    trunc_rep_tri <- trunc_rep_tri_orig
+    # Work with the underlying matrix to avoid validation issues
+    trunc_rep_tri_mat <- unclass(trunc_rep_tri_orig)
     # Add uncertainty to each horizon 1:4
     for (j in 1:4) {
       max_t_loop <- nrow(trunc_rep_tri_orig)
-      trunc_rep_tri[max_t_loop - j + 1, ] <- rnbinom(
+      trunc_rep_tri_mat[max_t_loop - j + 1, ] <- rnbinom(
         n = ncol(trunc_rep_tri_orig),
         mu = trunc_pt_nowcast_mat[max_t_loop - j + 1, ],
         size = disp_param
       )
     }
-    trunc_rep_tri[is.na(trunc_rep_tri_orig)] <- NA
+    trunc_rep_tri_mat[is.na(unclass(trunc_rep_tri_orig))] <- NA
+
+    # Reconstruct as reporting_triangle
+    # Need to convert matrix to reporting_triangle first
+    trunc_rep_tri <- as_reporting_triangle(
+      data = trunc_rep_tri_mat,
+      reference_dates = get_reference_dates(trunc_rep_tri_orig)
+    )
+    trunc_rep_tri <- construct_triangle(trunc_rep_tri)
 
     truncated_reporting_triangles <- append(
       truncated_reporting_triangles,
@@ -462,6 +489,7 @@ test_that("estimate_uncertainty: can handle weekday filter with large ragged tri
     as.matrix()
 
   short_ragged_triangle <- ragged_triangle[(nrow(ragged_triangle) - 15):nrow(ragged_triangle), ] # nolint
+  short_ragged_triangle <- make_test_triangle(data = short_ragged_triangle)
 
   # Create truncated and retrospective reporting triangles
   trunc_rts <- truncate_triangles(short_ragged_triangle, n = 5)
@@ -499,10 +527,8 @@ test_that("estimate_uncertainty: can handle weekday filter with small ragged tri
   )
 
   # Create a reporting triangle with every other day reporting
-  ragged_triangle <- construct_triangle(
-    complete_triangle,
-    structure = 2
-  )
+  ragged_triangle <- make_test_triangle(data = complete_triangle) |>
+    construct_triangle(structure = 2)
 
   # Create truncated triangles and retrospective triangles
   trunc_rts <- truncate_triangles(ragged_triangle, n = 2)

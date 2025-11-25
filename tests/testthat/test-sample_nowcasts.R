@@ -9,7 +9,9 @@ point_nowcast_matrix <- matrix(
   byrow = TRUE
 )
 dispersion <- c(0.8, 12.4, 9.1)
-reporting_triangle <- construct_triangle(point_nowcast_matrix)
+reporting_triangle <- construct_triangle(
+  make_test_triangle(data = point_nowcast_matrix)
+)
 
 
 test_that(
@@ -26,7 +28,9 @@ test_that(
       as.integer(100 * nrow(point_nowcast_matrix))
     )
     expect_identical(ncol(result), 3L)
-    expect_true(all(c("pred_count", "time", "draw") %in% names(result)))
+    expect_true(
+      all(c("pred_count", "reference_date", "draw") %in% names(result))
+    )
     expect_length(unique(result$draw), 100L)
     expect_identical(nrow(result), as.integer(100 * nrow(point_nowcast_matrix)))
     expect_true(all(is.finite(result$pred_count)))
@@ -36,7 +40,10 @@ test_that(
 test_that("sample_nowcasts: draws are distinct and properly indexed", {
   # Setup test data
   dispersion <- c(0.8, 12.4)
-  reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
+  reporting_triangle <- construct_triangle(
+    make_test_triangle(data = point_nowcast_matrix),
+    structure = 2
+  )
   n_draws <- 5
 
   # Force seed for reproducibility
@@ -82,7 +89,10 @@ test_that("sample_nowcasts: draws are distinct and properly indexed", {
 test_that("sample_nowcasts: time index is correctly assigned", {
   # Setup test data
   dispersion <- c(0.8, 12.4)
-  reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
+  reporting_triangle <- construct_triangle(
+    make_test_triangle(data = point_nowcast_matrix),
+    structure = 2
+  )
   n_draws <- 3
 
   result <- sample_nowcasts(
@@ -92,15 +102,16 @@ test_that("sample_nowcasts: time index is correctly assigned", {
     draws = n_draws
   )
 
-  # For each draw, time should go from 1 to nrow(matrix)
+  # For each draw, reference_date should match reporting_triangle dates
+  expected_dates <- get_reference_dates(reporting_triangle)
   for (i in 1:n_draws) {
     draw_data <- result[result$draw == i, ]
     expect_identical(
-      as.integer(draw_data$time),
-      as.integer(seq_len(nrow(point_nowcast_matrix)))
+      draw_data$reference_date,
+      expected_dates
     )
-    # Check data is ordered by time within each draw
-    expect_identical(draw_data$time, sort(draw_data$time))
+    # Check data is ordered by reference_date within each draw
+    expect_identical(draw_data$reference_date, sort(draw_data$reference_date))
   }
 })
 
@@ -109,13 +120,17 @@ test_that("sample_nowcasts: function works with different number of draws", {
   point_nowcast_matrix <- matrix(
     c(
       100, 50, 30, 20,
-      90, 45, 25, 16.8
+      90, 45, 25, 16.8,
+      80, 40, 21.2, 19.5
     ),
-    nrow = 2,
+    nrow = 3,
     byrow = TRUE
   )
   dispersion <- c(0.8, 0.2)
-  reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
+  reporting_triangle <- construct_triangle(
+    make_test_triangle(data = point_nowcast_matrix),
+    structure = 2
+  )
   n_draws <- 100
 
   result <- sample_nowcasts(
@@ -129,7 +144,7 @@ test_that("sample_nowcasts: function works with different number of draws", {
   expect_length(unique(result$draw), as.integer(n_draws))
   expect_identical(
     nrow(result),
-    as.integer(n_draws * nrow(point_nowcast_matrix))
+    as.integer(n_draws * 3L)
   )
 })
 
@@ -148,7 +163,9 @@ test_that(
       byrow = TRUE
     )
     dispersion <- c(0.8, 12.4, 9.1)
-    reporting_triangle <- construct_triangle(point_nowcast_matrix)
+    reporting_triangle <- construct_triangle(
+      make_test_triangle(data = point_nowcast_matrix)
+    )
 
     result_with_rolling_sum <- sample_nowcasts(
       point_nowcast_matrix,
@@ -167,26 +184,38 @@ test_that(
     # Test that result_with_rolling_sum is roughly double,
     # which should be true for both the observations and the
     # predictions
-    sum_result <- sum(result$pred_count[result$time != 1])
+    first_date <- min(result$reference_date)
+    sum_result <- sum(
+      result$pred_count[result$reference_date != first_date], na.rm = TRUE
+    )
     sum_result_rolling_sum <- sum(
-      result_with_rolling_sum$pred_count[result_with_rolling_sum$time != 1],
+      result_with_rolling_sum$pred_count[
+        result_with_rolling_sum$reference_date != first_date
+      ],
       na.rm = TRUE
     )
     expect_equal(sum_result_rolling_sum / sum_result, 2, tol = 0.2)
 
     # The sum of the first two time points should be the same as the value
     # at t=2 for the rolling sum
+    dates <- sort(unique(result$reference_date))
     expect_identical(
-      sum(result$pred_count[result$time <= 2]),
-      sum(result_with_rolling_sum$pred_count[result_with_rolling_sum$time == 2])
+      sum(result$pred_count[result$reference_date %in% dates[1:2]]),
+      sum(
+        result_with_rolling_sum$pred_count[
+          result_with_rolling_sum$reference_date == dates[2]
+        ]
+      )
     )
     # All draws should be the same
     expect_identical(
       result_with_rolling_sum$pred_count[
-        result_with_rolling_sum$time == 2 & result_with_rolling_sum$draw == 2
+        result_with_rolling_sum$reference_date == dates[2] &
+          result_with_rolling_sum$draw == 2
       ],
       result_with_rolling_sum$pred_count[
-        result_with_rolling_sum$time == 2 & result_with_rolling_sum$draw == 1
+        result_with_rolling_sum$reference_date == dates[2] &
+          result_with_rolling_sum$draw == 1
       ]
     )
   }
@@ -197,7 +226,7 @@ test_that("sample_nowcasts: longer k aggregates correctly", {
   rep_mat <- matrix(sample.int(1, 20, size = 4 * 10, replace = TRUE),
     nrow = 10, ncol = 4
   )
-  triangle <- construct_triangle(rep_mat)
+  triangle <- construct_triangle(make_test_triangle(data = rep_mat))
 
   pt_nowcast_mat <- fill_triangle(triangle)
   dispersion <- c(10, 10, 10)

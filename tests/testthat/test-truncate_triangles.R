@@ -1,5 +1,5 @@
 # Sample matrix from the example
-test_triangle <- matrix(
+test_triangle <- make_test_triangle(data = matrix(
   c(
     65, 46, 21, 7,
     70, 40, 20, 5,
@@ -11,7 +11,7 @@ test_triangle <- matrix(
   ),
   nrow = 7,
   byrow = TRUE
-)
+))
 
 test_that("truncate_triangles returns correct number of truncated matrices with valid input", { # nolint
   n <- 2
@@ -29,7 +29,7 @@ test_that("truncate_triangles returns correct number of truncated matrices with 
   expect_identical(nrow(result[[2]]), nrow(test_triangle) - 2L)
 })
 
-test_that("truncate_triangles default n calculation works correctly", {
+test_that("truncate_triangles calculates default n from triangle structure", {
   expected_default <- nrow(test_triangle) -
     sum(is.na(rowSums(test_triangle))) - 1
   result <- truncate_triangles(test_triangle)
@@ -44,7 +44,7 @@ test_that("truncate_triangles edge cases are handled properly", {
   # Input validation
   expect_error(
     truncate_triangles(as.data.frame(test_triangle)),
-    "Assertion on 'triangle' failed: Must inherit from class 'matrix'"
+    "data must be a matrix"
   ) # nolint
   expect_error(
     truncate_triangles(test_triangle, n = -1),
@@ -66,7 +66,9 @@ test_that("truncate_triangles can handle a range of ns", {
   expect_error(truncate_triangles(test_triangle, n = -1))
 })
 
-test_that("truncate_triangles NA replacement works as expected", {
+test_that(
+  "truncate_triangles replaces values with NA for retrospective snapshots",
+  {
   result <- truncate_triangles(test_triangle, n = 1)[[1]]
   # Expect bottom 3 elemets of lower left triangle to be NAs
   expect_true(all(
@@ -95,8 +97,9 @@ test_that("truncate_triangles: default works well for ragged triangle", {
   )
 
   # Create a complete triangle based on the known delay PMF
-  complete_triangle <- lapply(counts, function(x) round(x * sim_delay_pmf))
-  complete_triangle <- do.call(rbind, complete_triangle)
+  complete_triangle_mat <- lapply(counts, function(x) round(x * sim_delay_pmf))
+  complete_triangle_mat <- do.call(rbind, complete_triangle_mat)
+  complete_triangle <- make_test_triangle(data = complete_triangle_mat)
 
   ragged_triangle <- construct_triangle(
     complete_triangle,
@@ -105,4 +108,54 @@ test_that("truncate_triangles: default works well for ragged triangle", {
 
   truncated_triangles <- truncate_triangles(ragged_triangle)
   expect_length(truncated_triangles, 1L)
+})
+
+test_that("truncate_triangles preserves reporting_triangle class", {
+  rep_tri_mat <- matrix(
+    c(
+      100, 50, 25, 10,
+      80, 40, 20, 5,
+      90, 45, 15, NA,
+      70, 35, NA, NA,
+      60, NA, NA, NA
+    ),
+    nrow = 5,
+    byrow = TRUE
+  )
+  ref_dates <- seq(as.Date("2025-01-01"), by = "day", length.out = 5)
+  rep_tri_obj <- as_reporting_triangle(
+    data = rep_tri_mat,
+    reference_dates = ref_dates,
+    max_delay = 3
+  )
+
+  # Truncate to 2 triangles
+  result <- truncate_triangles(rep_tri_obj, n = 2)
+
+  # Check list properties
+  expect_length(result, 2)
+
+  # Check first element
+  expect_true(is_reporting_triangle(result[[1]]))
+  expect_s3_class(result[[1]], "reporting_triangle")
+  expect_identical(nrow(result[[1]]), 4L)
+  expect_identical(ncol(result[[1]]), 4L)
+  expect_identical(get_max_delay(result[[1]]), 3L)
+  expect_length(get_reference_dates(result[[1]]), 4L)
+
+  # Check second element
+  expect_true(is_reporting_triangle(result[[2]]))
+  expect_s3_class(result[[2]], "reporting_triangle")
+  expect_identical(nrow(result[[2]]), 3L)
+  expect_identical(ncol(result[[2]]), 4L)
+  expect_identical(get_max_delay(result[[2]]), 3L)
+  expect_length(get_reference_dates(result[[2]]), 3L)
+})
+
+test_that("truncate_triangles with plain matrix errors", {
+  plain_mat <- matrix(1:20, nrow = 5, ncol = 4)
+  expect_error(
+    truncate_triangles(plain_mat, n = 2),
+    "data must have class 'reporting_triangle'"
+  )
 })

@@ -1,47 +1,33 @@
-#' Validate triangle
-#' Various checks to make sure that the reporting triangle passed in to
-#'   [estimate_delay()] is formatted properly.
-#' @importFrom checkmate assert_class
+#' Validate reporting_triangle for delay estimation
+#' Domain-specific checks to ensure the reporting triangle is suitable for
+#'   delay estimation in [estimate_delay()].
 #' @importFrom checkmate assert_integerish
-#' @importFrom checkmate assert_matrix
 #' @importFrom cli cli_abort
 #' @inheritParams .validate_delay_and_triangle
 #' @inheritParams estimate_delay
 #' @returns NULL, invisibly
 #' @keywords internal
-.validate_triangle <- function(
+.validate_for_delay_estimation <- function(
     triangle,
-    max_delay = ncol(triangle) - 1,
     n = nrow(triangle)) {
-  # Make sure the input triangle is of the correct class, and n and max_delay
-  # are integers
+  # Make sure the input triangle is of the correct class and n is an integer
   if (is.null(triangle)) {
     triangle_name <- deparse(substitute(triangle)) # nolint
     cli_abort(message = "`{triangle_name}` argument is missing.") # nolint
   }
-  assert_class(triangle, "matrix")
-  assert_integerish(max_delay)
+
   assert_integerish(n)
-  assert_matrix(triangle, all.missing = FALSE)
+
+  # Convert to matrix once to avoid repeated validation in subsetting
+  triangle_mat <- as.matrix(triangle)
 
   # Check if the triangle has a valid structure
   # Ensure each column has at least one non-NA value
-  if (any(colSums(!is.na(triangle)) == 0)) {
+  if (any(colSums(!is.na(triangle_mat)) == 0)) {
     cli_abort(
       message = c(
         "Invalid reporting triangle structure. Each column must have",
         "at least one non-NA value."
-      )
-    )
-  }
-
-  # For ragged triangles (e.g. weekly reporting of daily data),
-  # we need to ensure the triangle has proper structure
-  if (!.check_na_bottom_right(triangle)) {
-    cli_abort(
-      message = c(
-        "Invalid reporting triangle structure. NA values should only",
-        "appear in the bottom right portion of the triangle."
       )
     )
   }
@@ -56,37 +42,15 @@
     )
   }
 
-  if (ncol(triangle) < (max_delay + 1)) {
+  if (n < 1) {
     cli_abort(
-      message = c(
-        "Number of delays in input data not sufficient for",
-        "user specified maximum delay"
-      )
+      message = "Insufficient `n`, must be greater than or equal to 1."
     )
   }
 
-  if ((max_delay < 1 || n < 1)) {
-    cli_abort(
-      message = c(
-        "Insufficient `max_delay` or `n`, must be greater than ",
-        "or equal to 1."
-      )
-    )
-  }
-
-  if (!.check_na_bottom_right(triangle)) {
-    cli_abort(
-      message = c(
-        "Reporting triangle contains NA values in elements other than ",
-        "the bottom right of the matrix. Cannot produce nowcasts from this ",
-        "triangle."
-      )
-    )
-  }
-
-  n_rows <- nrow(triangle)
+  n_rows <- nrow(triangle_mat)
   has_complete_row <- any(
-    rowSums(is.na(triangle[(n_rows - n + 1):n_rows, ])) == 0
+    rowSums(is.na(triangle_mat[(n_rows - n + 1):n_rows, ])) == 0
   )
   if (isFALSE(has_complete_row)) {
     cli_abort(
@@ -99,7 +63,7 @@
     )
   }
 
-  if (isFALSE(.check_lhs_not_only_zeros(triangle[(n_rows - n + 1):n_rows, ]))) { # nolint
+  if (isFALSE(.check_lhs_not_only_zeros(triangle_mat[(n_rows - n + 1):n_rows, ]))) { # nolint
     cli_abort(
       message = c(
         "The values for the recent reference times and delays only contain 0s,",
@@ -111,7 +75,7 @@
       )
     )
   }
-  first_na <- which(is.na(triangle[nrow(triangle), ]))[1]
+  first_na <- which(is.na(triangle_mat[nrow(triangle_mat), ]))[1]
   if (!is.na(first_na) && first_na == 1) {
     cli_abort(
       message = c(
@@ -191,45 +155,6 @@
   return(has_non_zeros)
 }
 
-#' Check that the maximum delay is not too large, error if it is
-#'
-#' @inheritParams .validate_delay_and_triangle
-#' @inheritParams estimate_delay
-#'
-#' @returns NULL invisibly
-#' @keywords internal
-.validate_max_delay <- function(triangle,
-                                max_delay) {
-  if (max_delay > ncol(triangle) - 1) {
-    cli_abort(
-      message = "The maximum delay must be less than the number of columns in the reporting triangle." # nolint
-    )
-  }
-
-  return(NULL)
-}
-#' Check that the reporting triangle contains the correct number of columns for
-#'   the specified maximum delay
-#'
-#' @inheritParams .validate_delay_and_triangle
-#' @inheritParams estimate_delay
-#' @importFrom cli cli_alert_info
-#'
-#' @returns reporting_triangle
-#' @keywords internal
-.check_to_filter_to_max_delay <- function(triangle,
-                                          max_delay) {
-  if (max_delay < ncol(triangle) - 1) {
-    # filter the reporting triangle to be less than the maximum delay
-    triangle <- triangle[, 1:(max_delay + 1)]
-
-    cli_alert_info(
-      text = "Additional columns of the reporting triangle were provided than are needed for the specified maximum delay. The reporting triangle will be filtered to include only the first {max_delay+1} delays." # nolint
-    )
-  }
-  return(triangle)
-}
-
 #' Validate triangle to nowcast and delay PMF together
 #' Various checks to make sure that the reporting triangle  and the delay PMF
 #'   passed in to [apply_delay()] are formatted properly and compatible.
@@ -299,24 +224,15 @@
 #' @keywords internal
 .validate_multiple_inputs <- function(
     point_nowcast_matrix,
-    reporting_triangle,
-    max_delay) {
-  # Basic input validation
-  if (!is.matrix(point_nowcast_matrix)) {
-    cli_abort("`point_nowcast_matrix` must be a matrix.")
-  }
+    reporting_triangle) {
+  # Check that both inputs have the same max_delay (same number of columns)
+  max_delay_point <- get_max_delay(point_nowcast_matrix)
+  max_delay_rt <- get_max_delay(reporting_triangle)
 
-  if (ncol(point_nowcast_matrix) != ncol(reporting_triangle)) {
+  if (max_delay_point != max_delay_rt) {
     cli_abort(c(
-      "x" = "`point_nowcast_matrix` and `reporting_triangle` must have the same number of columns.", # nolint
-      "i" = "Got {ncol(point_nowcast_matrix)} and {ncol(reporting_triangle)} respectively." # nolint
-    ))
-  }
-
-  if (ncol(reporting_triangle) != (max_delay + 1)) {
-    cli_abort(c(
-      "x" = "Inconsistent `max_delay`.", # nolint
-      "i" = "`ncol(reporting_triangle)` = {ncol(reporting_triangle)} but `max_delay + 1` = {max_delay + 1}." # nolint
+      "x" = "`point_nowcast_matrix` and `reporting_triangle` must have the same max_delay.", # nolint
+      "i" = "Got max_delay of {max_delay_point} and {max_delay_rt} respectively." # nolint
     ))
   }
 
@@ -531,38 +447,17 @@
 
 #' Validate each item in the reporting triangle
 #'
-#' @inheritParams new_reporting_triangle
-#' @inheritParams as_reporting_triangle.matrix
-#' @inheritParams construct_triangle
-#' @inheritParams as_reporting_triangle
+#' Assert delays_unit is valid
 #'
-#' @returns NULL
+#' @param delays_unit Character string specifying the temporal granularity
+#' @returns NULL, invisibly. Stops execution with error if validation fails.
 #' @keywords internal
-.validate_rep_tri_args <- function(reporting_triangle_matrix,
-                                   reference_dates,
-                                   structure,
-                                   max_delay,
-                                   delays_unit,
-                                   strata = NULL) {
-  assert_matrix(reporting_triangle_matrix)
-  assert_date(reference_dates,
-    unique = TRUE,
-    null.ok = FALSE,
-    min.len = 1,
-    len = nrow(reporting_triangle_matrix)
-  )
-
-  assert_numeric(structure, lower = 0)
-  assert_integerish(structure, min.len = 1)
-  assert_integerish(max_delay, min.len = 1, lower = 1)
-  assert_character(delays_unit, len = 1)
-  assert_character(strata, null.ok = TRUE)
-
+assert_delays_unit <- function(delays_unit) {
   assert_character(delays_unit, len = 1)
   assert_choice(delays_unit,
     choices = c("days", "weeks", "months", "years")
   )
-  return(NULL)
+  return(invisible(NULL))
 }
 
 #' Validate each of the strata columns passed to baselinenowcast

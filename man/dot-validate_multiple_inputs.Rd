@@ -6,22 +6,18 @@
 the reporting triangle, point nowcast matrix, and specified maximum delay
 are correct.}
 \usage{
-.validate_multiple_inputs(point_nowcast_matrix, reporting_triangle, max_delay)
+.validate_multiple_inputs(point_nowcast_matrix, reporting_triangle)
 }
 \arguments{
 \item{point_nowcast_matrix}{Matrix of point nowcast predictions and
 observations, with rows representing the reference times and columns
 representing the delays.}
 
-\item{reporting_triangle}{Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+\item{reporting_triangle}{A \link{reporting_triangle} object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).}
-
-\item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-\code{ncol(reporting_triangle) -1}.}
+reported for the same row (e.g., weekly reporting of daily data).}
 }
 \value{
 NULL, invisibly

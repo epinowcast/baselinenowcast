@@ -18,11 +18,11 @@ sample_prediction(
 observations, with rows representing the reference times and columns
 representing the delays.}
 
-\item{reporting_triangle}{Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+\item{reporting_triangle}{A \link{reporting_triangle} object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).}
+reported for the same row (e.g., weekly reporting of daily data).}
 
 \item{uncertainty_params}{Vector of uncertainty parameters ordered from
 horizon 1 to the maximum horizon. Note that these will be reversed
@@ -46,30 +46,30 @@ of the retrospective point nowcast matrix after it has been aggregated
 across reference times. Default is \code{function(x) rowSums(x, na.rm = TRUE)}.}
 }
 \value{
-Vector of predicted draws at each reference time, for all reference
-times in the input \code{point_nowcast_matrix}.
+Matrix of predicted draws at each reference date, for all reference
+dates in the input \code{point_nowcast_matrix} (or fewer if using
+\code{ref_time_aggregator}).
 }
 \description{
 Get a draw of only the predicted elements of the nowcast vector
 }
 \examples{
-point_nowcast_matrix <- matrix(
-  c(
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    90, 45, 25, 16.8,
-    80, 40, 21.2, 19.5,
-    70, 34.5, 15.4, 9.1
-  ),
-  nrow = 5,
-  byrow = TRUE
+# Generate point nowcast and uncertainty params from example data
+data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+rep_tri <- as_reporting_triangle(data_as_of) |>
+  truncate_to_delay(max_delay = 5) |>
+  tail(n = 10)
+point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
+reporting_triangle <- construct_triangle(rep_tri)
+uncertainty_params <- estimate_uncertainty_retro(
+  rep_tri,
+  n_history_delay = 8,
+  n_retrospective_nowcasts = 2
 )
-reporting_triangle <- construct_triangle(point_nowcast_matrix)
-disp <- c(0.8, 12.4, 9.1)
 nowcast_pred_draw <- sample_prediction(
   point_nowcast_matrix,
   reporting_triangle,
-  disp
+  uncertainty_params
 )
 nowcast_pred_draw
 
@@ -78,7 +78,7 @@ if (requireNamespace("zoo", quietly = TRUE)) {
   nowcast_pred_draw_agg <- sample_prediction(
     point_nowcast_matrix,
     reporting_triangle,
-    disp,
+    uncertainty_params,
     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
   )
   nowcast_pred_draw_agg

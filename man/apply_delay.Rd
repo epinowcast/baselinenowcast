@@ -4,7 +4,7 @@
 \alias{apply_delay}
 \title{Apply the delay to generate a point nowcast}
 \usage{
-apply_delay(reporting_triangle, delay_pmf)
+apply_delay(reporting_triangle, delay_pmf, validate = TRUE)
 }
 \arguments{
 \item{reporting_triangle}{Matrix of the reporting triangle to be
@@ -13,6 +13,9 @@ representing the delays}
 
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
 first delay column in \code{reporting_triangle}.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 }
 \value{
 \code{point_nowcast_matrix} Matrix of the same number of rows and columns
@@ -33,36 +36,18 @@ German Hospitalization Nowcasting Hub.
 Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
 }
 \examples{
-# Example 1: Standard usage with positive delay PMF
-triangle <- matrix(
-  c(
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    90, 45, 25, NA,
-    80, 40, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 5,
-  byrow = TRUE
-)
-delay_pmf <- estimate_delay(
-  reporting_triangle = triangle,
-  max_delay = 3,
-  n = 4
-)
+# Example 1: Standard usage with example dataset
+delay_pmf <- estimate_delay(example_reporting_triangle)
 point_nowcast_matrix <- apply_delay(
-  reporting_triangle = triangle,
+  reporting_triangle = example_reporting_triangle,
   delay_pmf = delay_pmf
 )
 print(point_nowcast_matrix)
 
-# Example 2: Using delay PMF with negative entries from downward
-# corrections. Create a delay PMF with a negative value representing
-# systematic corrections
+# Example 2: Using delay PMF with negative entries from downward corrections
 delay_pmf_negative <- c(0.7, 0.4, -0.15, 0.05)
-
 nowcast_with_corrections <- apply_delay(
-  reporting_triangle = example_downward_corr_mat,
+  reporting_triangle = example_downward_corr_rt,
   delay_pmf = delay_pmf_negative
 )
 # The nowcast includes negative predictions at delay 2,

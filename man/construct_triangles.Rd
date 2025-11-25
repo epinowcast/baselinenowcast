@@ -4,7 +4,11 @@
 \alias{construct_triangles}
 \title{Generate retrospective reporting triangles}
 \usage{
-construct_triangles(truncated_reporting_triangles, structure = 1)
+construct_triangles(
+  truncated_reporting_triangles,
+  structure = 1,
+  validate = TRUE
+)
 }
 \arguments{
 \item{truncated_reporting_triangles}{List of \code{n} truncated reporting triangle
@@ -14,6 +18,9 @@ matrices with as many rows as available given the truncation.}
 If integer, divides columns evenly by that integer (with last possibly
 truncated).  If vector, the sum must not be greater than or equal to the
 number of columns. Default is 1 (standard triangular structure).}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 }
 \value{
 \code{reporting_triangles} List of retrospective reporting triangles,
@@ -28,21 +35,8 @@ maximum reference time. It operates on each element in the list in order
 nowcast time).
 }
 \examples{
-triangle <- matrix(
-  c(
-    65, 46, 21, 7,
-    70, 40, 20, 5,
-    80, 50, 10, 10,
-    100, 40, 31, 20,
-    95, 45, 21, NA,
-    82, 42, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 7,
-  byrow = TRUE
-)
-
-trunc_rts <- truncate_triangles(triangle, n = 2)
+# Generate retrospective triangles from truncated triangles
+trunc_rts <- truncate_triangles(example_reporting_triangle, n = 2)
 retro_rts <- construct_triangles(trunc_rts)
 
 # With custom structure

@@ -15,13 +15,14 @@
   delay_pmf = NULL,
   uncertainty_params = NULL,
   preprocess = preprocess_negative_values,
+  validate = TRUE,
   ...
 )
 }
 \arguments{
 \item{data}{\link{reporting_triangle} class object to be nowcasted.
-The \code{data$reporting_triangle_matrix} must contain missing observations
-in the form of NAs in order to generate an output from this function.}
+The matrix must contain missing observations in the form of NAs in order
+to generate an output from this function.}
 
 \item{scale_factor}{Numeric value indicating the multiplicative factor on
 the maximum delay to be used for estimation of delay and uncertainty.
@@ -55,22 +56,26 @@ for the corresponding vector of uncertainty parameters, and draws from a
 negative binomial for each element of the vector.}
 
 \item{delay_pmf}{Vector of delays assumed to be indexed starting at the
-first delay column in \code{data$reporting_triangle_matrix}. Default is NULL,
-which will estimate the delay from the reporting triangle matrix in \code{data},
-See \code{\link[=estimate_delay]{estimate_delay()}} for more details.}
+first delay column in the reporting triangle. Default is NULL, which will
+estimate the delay from the reporting triangle in \code{data}. See
+\code{\link[=estimate_delay]{estimate_delay()}} for more details.}
 
 \item{uncertainty_params}{Vector of uncertainty parameters ordered from
-horizon 1 to the maximum horizon. Default is \code{NULL}, which will
-result in computing the uncertainty parameters from the reporting
-triangle matrix \code{data}. See \code{\link[=estimate_uncertainty]{estimate_uncertainty()}} for more
-details.}
+horizon 1 to the maximum horizon. Default is \code{NULL}, which will result in
+computing the uncertainty parameters from the reporting triangle \code{data}.
+See \code{\link[=estimate_uncertainty]{estimate_uncertainty()}} for more details.}
 
 \item{preprocess}{Function to apply to the truncated triangle before
 estimation, or NULL to skip preprocessing. Default is
 \code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
 redistributing them to earlier delays. Set to NULL if you want to preserve
 negative PMF entries (e.g., when working with downward corrections where
-negative probabilities reflect systematic adjustments).}
+negative probabilities reflect systematic adjustments). Custom preprocess
+functions must accept a \code{validate} parameter (defaults to TRUE) to enable
+validation optimisation in internal function chains.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 
 \item{...}{Additional arguments passed to
 \code{\link[=estimate_uncertainty]{estimate_uncertainty()}}
@@ -110,12 +115,13 @@ reference times for delay and uncertainty estimation, the observation
 model, etc.).
 }
 \examples{
+# Filter to recent data and truncate to reasonable max_delay for faster
+# example
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
-rep_tri <- as_reporting_triangle(
-  data = data_as_of_df,
-  max_delay = 25
-)
-nowcast_df <- baselinenowcast(rep_tri)
+rep_tri <- as_reporting_triangle(data = data_as_of_df) |>
+  truncate_to_delay(max_delay = 25) |>
+  tail(n = 40)
+nowcast_df <- baselinenowcast(rep_tri, draws = 100)
 nowcast_df
 }
 \seealso{

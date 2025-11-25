@@ -16,48 +16,33 @@
 #'   representing the delays
 #' @param delay_pmf Vector of delays assumed to be indexed starting at the
 #'   first delay column in `reporting_triangle`.
+#' @inheritParams assert_reporting_triangle
 #' @return `point_nowcast_matrix` Matrix of the same number of rows and columns
 #'    as the `rep_mat_to_nowcast` but with the missing values filled in as point
 #'    estimates
 #' @family generate_point_nowcasts
 #' @export
 #' @examples
-#' # Example 1: Standard usage with positive delay PMF
-#' triangle <- matrix(
-#'   c(
-#'     80, 50, 25, 10,
-#'     100, 50, 30, 20,
-#'     90, 45, 25, NA,
-#'     80, 40, NA, NA,
-#'     70, NA, NA, NA
-#'   ),
-#'   nrow = 5,
-#'   byrow = TRUE
-#' )
-#' delay_pmf <- estimate_delay(
-#'   reporting_triangle = triangle,
-#'   max_delay = 3,
-#'   n = 4
-#' )
+#' # Example 1: Standard usage with example dataset
+#' delay_pmf <- estimate_delay(example_reporting_triangle)
 #' point_nowcast_matrix <- apply_delay(
-#'   reporting_triangle = triangle,
+#'   reporting_triangle = example_reporting_triangle,
 #'   delay_pmf = delay_pmf
 #' )
 #' print(point_nowcast_matrix)
 #'
-#' # Example 2: Using delay PMF with negative entries from downward
-#' # corrections. Create a delay PMF with a negative value representing
-#' # systematic corrections
+#' # Example 2: Using delay PMF with negative entries from downward corrections
 #' delay_pmf_negative <- c(0.7, 0.4, -0.15, 0.05)
-#'
 #' nowcast_with_corrections <- apply_delay(
-#'   reporting_triangle = example_downward_corr_mat,
+#'   reporting_triangle = example_downward_corr_rt,
 #'   delay_pmf = delay_pmf_negative
 #' )
 #' # The nowcast includes negative predictions at delay 2,
 #' # correctly reflecting expected downward corrections
 #' print(nowcast_with_corrections)
-apply_delay <- function(reporting_triangle, delay_pmf) {
+apply_delay <- function(reporting_triangle, delay_pmf, validate = TRUE) {
+  assert_reporting_triangle(reporting_triangle, validate)
+
   # Checks that the delay df and the triangle are compatible
   .validate_delay_and_triangle(
     reporting_triangle,
@@ -80,6 +65,10 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
   # Precompute CDFs for the delay PMF
   delay_cdf <- cumsum(delay_pmf)
 
+  # Convert to plain matrix for efficiency in Reduce iterations
+  # (avoids repeated validation/attribute checks)
+  init_matrix <- as.matrix(reporting_triangle)
+
   # Iterates through each column (delay) and adds entries to the reporting
   # matrix to nowcast
   point_nowcast_matrix <- Reduce(
@@ -93,8 +82,15 @@ apply_delay <- function(reporting_triangle, delay_pmf) {
       ))
     },
     2:n_delays,
-    init = reporting_triangle
+    init = init_matrix
   )
+
+  # Preserve reporting_triangle class and attributes
+  point_nowcast_matrix <- .update_triangle_matrix(
+    reporting_triangle,
+    point_nowcast_matrix
+  )
+
   return(point_nowcast_matrix)
 }
 

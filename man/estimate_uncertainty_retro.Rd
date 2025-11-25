@@ -8,19 +8,19 @@ estimate_uncertainty_retro(
   reporting_triangle,
   n_history_delay,
   n_retrospective_nowcasts,
-  max_delay = ncol(reporting_triangle) - 1,
-  structure = detect_structure(reporting_triangle),
+  structure = get_reporting_structure(reporting_triangle),
   delay_pmf = NULL,
   preprocess = preprocess_negative_values,
+  validate = TRUE,
   ...
 )
 }
 \arguments{
-\item{reporting_triangle}{Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+\item{reporting_triangle}{A \link{reporting_triangle} object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).}
+reported for the same row (e.g., weekly reporting of daily data).}
 
 \item{n_history_delay}{Integer indicating the number of reference times
 (observations) to be used in the estimate of the reporting delay, always
@@ -28,10 +28,6 @@ starting from the most recent reporting delay.}
 
 \item{n_retrospective_nowcasts}{Integer indicating the number of
 retrospective nowcast times to use for uncertainty estimation.}
-
-\item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-\code{ncol(reporting_triangle) -1}.}
 
 \item{structure}{Integer or vector specifying the reporting structure.
 If integer, divides columns evenly by that integer (with last possibly
@@ -48,7 +44,12 @@ estimation, or NULL to skip preprocessing. Default is
 \code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
 redistributing them to earlier delays. Set to NULL if you want to preserve
 negative PMF entries (e.g., when working with downward corrections where
-negative probabilities reflect systematic adjustments).}
+negative probabilities reflect systematic adjustments). Custom preprocess
+functions must accept a \code{validate} parameter (defaults to TRUE) to enable
+validation optimisation in internal function chains.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 
 \item{...}{Additional arguments passed to \code{\link[=estimate_uncertainty]{estimate_uncertainty()}}.}
 }
@@ -79,37 +80,17 @@ For more control over individual steps (e.g., custom matrix preparation,
 alternative aggregation), use the low-level functions directly.
 }
 \examples{
-# Create example reporting triangle
-triangle <- matrix(
-  c(
-    65, 46, 21, 7,
-    70, 40, 20, 5,
-    80, 50, 10, 10,
-    100, 40, 31, 20,
-    95, 45, 21, NA,
-    82, 42, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 7,
-  byrow = TRUE
-)
+# Create a reporting triangle from syn_nssp_df
+data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+rep_tri <- as_reporting_triangle(data_as_of) |>
+  truncate_to_delay(max_delay = 25)
 
-# Estimate uncertainty parameters
 uncertainty_params <- estimate_uncertainty_retro(
-  triangle,
-  n_history_delay = 5,
-  n_retrospective_nowcasts = 2
+  rep_tri,
+  n_history_delay = 30,
+  n_retrospective_nowcasts = 10
 )
 uncertainty_params
-
-# Estimate with custom parameters
-uncertainty_params_custom <- estimate_uncertainty_retro(
-  triangle,
-  n_history_delay = 4,
-  n_retrospective_nowcasts = 2,
-  max_delay = 3
-)
-uncertainty_params_custom
 }
 \seealso{
 High-level workflow wrapper functions

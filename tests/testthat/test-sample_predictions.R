@@ -9,7 +9,9 @@ point_nowcast_matrix <- matrix(
   byrow = TRUE
 )
 dispersion <- c(0.8, 12.4, 9.1)
-reporting_triangle <- construct_triangle(point_nowcast_matrix)
+reporting_triangle <- construct_triangle(
+  make_test_triangle(data = point_nowcast_matrix)
+)
 test_that(
   "sample_predictions: returns a dataframe with correct structure",
   {
@@ -26,7 +28,9 @@ test_that(
       as.integer(100 * nrow(point_nowcast_matrix))
     )
     expect_identical(ncol(result), 3L)
-    expect_true(all(c("pred_count", "time", "draw") %in% names(result)))
+    expect_true(
+      all(c("pred_count", "reference_date", "draw") %in% names(result))
+    )
     expect_length(unique(result$draw), 100L)
     expect_identical(nrow(result), as.integer(100 * nrow(point_nowcast_matrix)))
     expect_false(all(is.na(result$pred_count)))
@@ -46,7 +50,10 @@ test_that("sample_predictions: draws are distinct and properly indexed", {
     byrow = TRUE
   )
   dispersion <- c(0.8, 12.4)
-  reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
+  reporting_triangle <- construct_triangle(
+    make_test_triangle(data = point_nowcast_matrix),
+    structure = 2
+  )
   n_draws <- 5
 
   # Force seed for reproducibility
@@ -101,7 +108,10 @@ test_that("sample_predictions: time index is correctly assigned", {
     byrow = TRUE
   )
   dispersion <- c(0.8, 12.4)
-  reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
+  reporting_triangle <- construct_triangle(
+    make_test_triangle(data = point_nowcast_matrix),
+    structure = 2
+  )
   n_draws <- 3
 
   result <- sample_predictions(
@@ -111,15 +121,16 @@ test_that("sample_predictions: time index is correctly assigned", {
     draws = n_draws
   )
 
-  # For each draw, time should go from 1 to nrow(matrix)
+  # For each draw, reference_date should match reporting_triangle dates
+  expected_dates <- get_reference_dates(reporting_triangle)
   for (i in 1:n_draws) {
     draw_data <- result[result$draw == i, ]
     expect_identical(
-      as.integer(draw_data$time),
-      as.integer(seq_len(nrow(point_nowcast_matrix)))
+      draw_data$reference_date,
+      expected_dates
     )
-    # Check data is ordered by time within each draw
-    expect_identical(draw_data$time, sort(draw_data$time))
+    # Check data is ordered by reference_date within each draw
+    expect_identical(draw_data$reference_date, sort(draw_data$reference_date))
   }
 })
 
@@ -128,13 +139,17 @@ test_that("sample_predictions works with different number of draws", {
   point_nowcast_matrix <- matrix(
     c(
       100, 50, 30, 20,
-      90, 45, 25, 16.8
+      90, 45, 25, 16.8,
+      80, 40, 21.2, 19.5
     ),
-    nrow = 2,
+    nrow = 3,
     byrow = TRUE
   )
   dispersion <- c(0.8, 0.2)
-  reporting_triangle <- construct_triangle(point_nowcast_matrix, structure = 2)
+  reporting_triangle <- construct_triangle(
+    make_test_triangle(data = point_nowcast_matrix),
+    structure = 2
+  )
   n_draws <- 100
 
   result <- sample_predictions(
@@ -148,7 +163,7 @@ test_that("sample_predictions works with different number of draws", {
   expect_length(unique(result$draw), as.integer(n_draws))
   expect_identical(
     nrow(result),
-    as.integer(n_draws * nrow(point_nowcast_matrix))
+    as.integer(n_draws * 3L)
   )
 })
 

@@ -6,22 +6,18 @@
 \usage{
 fill_triangle(
   reporting_triangle,
-  max_delay = ncol(reporting_triangle) - 1,
   n = nrow(reporting_triangle),
   delay_pmf = NULL,
-  preprocess = preprocess_negative_values
+  preprocess = preprocess_negative_values,
+  validate = TRUE
 )
 }
 \arguments{
-\item{reporting_triangle}{Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+\item{reporting_triangle}{A \link{reporting_triangle} object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).}
-
-\item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-\code{ncol(reporting_triangle) -1}.}
+reported for the same row (e.g., weekly reporting of daily data).}
 
 \item{n}{Integer indicating the number of reference times (observations) to
 be used in the estimate of the reporting delay, always starting from the
@@ -38,7 +34,12 @@ estimation, or NULL to skip preprocessing. Default is
 \code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
 redistributing them to earlier delays. Set to NULL if you want to preserve
 negative PMF entries (e.g., when working with downward corrections where
-negative probabilities reflect systematic adjustments).}
+negative probabilities reflect systematic adjustments). Custom preprocess
+functions must accept a \code{validate} parameter (defaults to TRUE) to enable
+validation optimisation in internal function chains.}
+
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
 }
 \value{
 \code{point_nowcast_matrix} Matrix of the same number of rows and
@@ -53,19 +54,9 @@ used to generate the nowcast, otherwise, a delay distribution will be
 estimated from the \code{reporting_triangle}.
 }
 \examples{
-triangle <- matrix(
-  c(
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    90, 45, 25, NA,
-    80, 40, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 5,
-  byrow = TRUE
-)
+# Fill triangle using default delay estimation
 point_nowcast_matrix <- fill_triangle(
-  reporting_triangle = triangle
+  reporting_triangle = example_reporting_triangle
 )
 point_nowcast_matrix
 }

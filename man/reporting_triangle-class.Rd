@@ -10,35 +10,104 @@ nowcasting.
 }
 \section{Structure}{
 
-A \code{reporting_triangle} is a list with the following components:
-\describe{
-\item{reporting_triangle_matrix}{Matrix with which rows are reference
-times and columns are delays and
-entries are incident cases at each reference time and delay.}
-\item{reference_dates}{Vector of the same length as the rows of the
-matrix indicating the dates corresponding to the reference times in the
-rows of the reporting triangle.}
-\item{structure}{Vector indicating the "structure" of the reporting
-triangle, see \code{\link[=construct_triangle]{construct_triangle()}} for more details.}
-\item{max_delay}{Integer indicating the maximum delay.}
-\item{delays_unit}{Character string indicating the unit of the delays.
-Valid options are "days", "weeks", "months", "years".}
-\item{strata}{Character string indicating the strata.}
+A \code{reporting_triangle} is a matrix with class
+\code{c("reporting_triangle", "matrix")}:
+\itemize{
+\item Rows: Reference dates
+\item Columns: Delays (0, 1, 2, ...)
+\item Entries: Incident cases at each reference date and delay
+\item Row names: Reference dates as character
+\item Column names: Delays as character
 }
+
+Attributes:
+\itemize{
+\item \code{delays_unit}: Character ("days", "weeks", "months", "years")
+}
+
+Reference dates are stored as row names and can be extracted using
+\code{\link[=get_reference_dates]{get_reference_dates()}}.
+The maximum delay can be obtained using \code{\link[=get_max_delay]{get_max_delay()}}.
+The structure can be computed using \code{\link[=get_reporting_structure]{get_reporting_structure()}}.
 See the corresponding \code{\link[=as_reporting_triangle.matrix]{as_reporting_triangle.matrix()}} and
 \code{\link[=as_reporting_triangle.data.frame]{as_reporting_triangle.data.frame()}} functions
 for more details on the required input formats to generate the object.
 }
 
+\section{Working with reporting triangles}{
+
+Reporting triangle objects provide:
+
+\strong{Inspection and display:}
+\itemize{
+\item \code{print()}: Informative display with metadata
+\item \code{summary()}: Statistics including completion, delays, and zeros
+\item \code{head()}, \code{tail()}: Extract first or last rows
+\item Standard matrix operations: \code{rowSums()}, \code{colSums()}
+}
+
+\strong{Subsetting and modification:}
+\itemize{
+\item \code{[} and \verb{[<-}: Extract or assign values with automatic validation
+\item Subsetting preserves class and attributes when result is a matrix
+}
+
+\strong{Package functions:}
+\itemize{
+\item \code{\link[=fill_triangle]{fill_triangle()}}: Fill missing values with zeros
+\item \code{\link[=estimate_delay]{estimate_delay()}}: Extract delay distribution from triangle
+\item \code{\link[=apply_delay]{apply_delay()}}: Apply delay distribution for nowcasting
+\item \code{\link[=truncate_triangle]{truncate_triangle()}}: Remove most recent rows
+\item \code{\link[=preprocess_negative_values]{preprocess_negative_values()}}: Handle reporting corrections
+}
+}
+
+\examples{
+# Create a reporting triangle from data
+data <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+rep_tri <- as_reporting_triangle(data = data)
+
+# Use with low-level functions
+filled <- fill_triangle(rep_tri)
+delay_pmf <- estimate_delay(rep_tri)
+nowcast <- apply_delay(rep_tri, delay_pmf)
+
+# Direct matrix operations
+total_by_date <- rowSums(rep_tri, na.rm = TRUE)
+total_by_delay <- colSums(rep_tri, na.rm = TRUE)
+
+# Subsetting and inspection
+recent <- tail(rep_tri, n = 10)
+summary(rep_tri)
+}
 \seealso{
 Reporting triangle construction and validation
+\code{\link{[.reporting_triangle}()},
+\code{\link{[<-.reporting_triangle}()},
+\code{\link{as.data.frame.reporting_triangle}()},
+\code{\link{as.matrix.reporting_triangle}()},
 \code{\link{as_ChainLadder_triangle}()},
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.matrix}()},
 \code{\link{as_reporting_triangle.triangle}()},
 \code{\link{assert_reporting_triangle}()},
-\code{\link{detect_structure}()},
-\code{\link{new_reporting_triangle}()}
+\code{\link{get_delays_from_dates}()},
+\code{\link{get_delays_unit}()},
+\code{\link{get_max_delay}()},
+\code{\link{get_mean_delay}()},
+\code{\link{get_quantile_delay}()},
+\code{\link{get_reference_dates}()},
+\code{\link{get_report_dates}()},
+\code{\link{get_reporting_structure}()},
+\code{\link{head.reporting_triangle}()},
+\code{\link{is_reporting_triangle}()},
+\code{\link{new_reporting_triangle}()},
+\code{\link{print.reporting_triangle}()},
+\code{\link{summary.reporting_triangle}()},
+\code{\link{tail.reporting_triangle}()},
+\code{\link{truncate_to_delay}()},
+\code{\link{truncate_to_quantile}()},
+\code{\link{validate_reporting_triangle}()}
 }
 \concept{reporting_triangle}

@@ -9,12 +9,12 @@ estimate_and_apply_uncertainty(
   reporting_triangle,
   n_history_delay,
   n_retrospective_nowcasts,
-  max_delay = ncol(reporting_triangle) - 1,
-  structure = detect_structure(reporting_triangle),
+  structure = get_reporting_structure(reporting_triangle),
   draws = 1000,
   delay_pmf = NULL,
   uncertainty_model = fit_by_horizon,
   uncertainty_sampler = sample_nb,
+  validate = TRUE,
   ...
 )
 }
@@ -23,11 +23,11 @@ estimate_and_apply_uncertainty(
 observations, with rows representing the reference times and columns
 representing the delays.}
 
-\item{reporting_triangle}{Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+\item{reporting_triangle}{A \link{reporting_triangle} object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).}
+reported for the same row (e.g., weekly reporting of daily data).}
 
 \item{n_history_delay}{Integer indicating the number of reference times
 (observations) to be used in the estimate of the reporting delay, always
@@ -35,10 +35,6 @@ starting from the most recent reporting delay.}
 
 \item{n_retrospective_nowcasts}{Integer indicating the number of
 retrospective nowcast times to use for uncertainty estimation.}
-
-\item{max_delay}{Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-\code{ncol(reporting_triangle) -1}.}
 
 \item{structure}{Integer or vector specifying the reporting structure.
 If integer, divides columns evenly by that integer (with last possibly
@@ -69,6 +65,9 @@ arguments \code{pred} for the vector of predictions and uncertainty parameters
 for the corresponding vector of uncertainty parameters, and draws from a
 negative binomial for each element of the vector.}
 
+\item{validate}{Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.}
+
 \item{...}{Additional arguments to \code{estimate_uncertainty()} and
 \code{sample_prediction()}.}
 }
@@ -94,32 +93,24 @@ low-level functions (\code{\link[=truncate_triangles]{truncate_triangles()}}, \c
 \code{\link[=fill_triangles]{fill_triangles()}}, \code{\link[=estimate_uncertainty]{estimate_uncertainty()}}) directly.
 }
 \examples{
-triangle <- matrix(
-  c(
-    40, 10, 20, 5,
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    90, 45, 25, NA,
-    80, 40, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 6,
-  byrow = TRUE
-)
+# Use package data truncated to appropriate size
+data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+triangle <- as_reporting_triangle(data_as_of) |>
+  truncate_to_delay(max_delay = 25)
+
 pt_nowcast_matrix <- estimate_and_apply_delay(
   reporting_triangle = triangle,
-  n = 4
+  n = 75
 )
-# Need to tell uncertainty estimator to also use 4 reference times for
-# delay estimation, the remaining 2 will then be used for
-# uncertainty estimation.
+# Use 75 reference times for delay estimation and 40 for uncertainty
 nowcast_draws_df <- estimate_and_apply_uncertainty(
   pt_nowcast_matrix,
   triangle,
-  n_history_delay = 4,
-  n_retrospective_nowcasts = 2
+  n_history_delay = 75,
+  n_retrospective_nowcasts = 40,
+  draws = 100
 )
-nowcast_draws_df
+head(nowcast_draws_df)
 }
 \seealso{
 High-level workflow wrapper functions

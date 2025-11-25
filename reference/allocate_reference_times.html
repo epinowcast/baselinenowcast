@@ -5,12 +5,11 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Allocate training volume based on combination of defaults and user-specified values for training volume for delay and uncertainty estimation. — allocate_reference_times"><meta name="description" content="Given the reporting triangle, the maximum delay, and
-optionally the user-specified scale factor on the max delay to be used as
-total reference times and the proportion of those reference times to
-be used for delay estimation, allocate reference times to the number
-used for delay estimation and the number used as retrospective nowcasts
-for uncertainty estimation.
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Allocate training volume based on combination of defaults and user-specified values for training volume for delay and uncertainty estimation. — allocate_reference_times"><meta name="description" content="Given the reporting triangle and optionally the user-specified
+scale factor on the max delay to be used as total reference times and the
+proportion of those reference times to be used for delay estimation,
+allocate reference times to the number used for delay estimation and the
+number used as retrospective nowcasts for uncertainty estimation.
 This function implements an algorithm which:
 if the specified number of reference times
 (scale_factor x max delay) is less than or equal to the number of
@@ -27,12 +26,11 @@ the function errors if the minimum requirements for delay and
 uncertainty estimation are not possible from the number of reference times
 in the reporting triangle.
 
-"><meta property="og:description" content="Given the reporting triangle, the maximum delay, and
-optionally the user-specified scale factor on the max delay to be used as
-total reference times and the proportion of those reference times to
-be used for delay estimation, allocate reference times to the number
-used for delay estimation and the number used as retrospective nowcasts
-for uncertainty estimation.
+"><meta property="og:description" content="Given the reporting triangle and optionally the user-specified
+scale factor on the max delay to be used as total reference times and the
+proportion of those reference times to be used for delay estimation,
+allocate reference times to the number used for delay estimation and the
+number used as retrospective nowcasts for uncertainty estimation.
 This function implements an algorithm which:
 if the specified number of reference times
 (scale_factor x max delay) is less than or equal to the number of
@@ -98,12 +96,11 @@ in the reporting triangle.
     </div>
 
     <div class="ref-description section level2">
-    <p>Given the reporting triangle, the maximum delay, and
-optionally the user-specified scale factor on the max delay to be used as
-total reference times and the proportion of those reference times to
-be used for delay estimation, allocate reference times to the number
-used for delay estimation and the number used as retrospective nowcasts
-for uncertainty estimation.</p>
+    <p>Given the reporting triangle and optionally the user-specified
+scale factor on the max delay to be used as total reference times and the
+proportion of those reference times to be used for delay estimation,
+allocate reference times to the number used for delay estimation and the
+number used as retrospective nowcasts for uncertainty estimation.</p>
 <p>This function implements an algorithm which:</p><ul><li><p>if the specified number of reference times
 (<code>scale_factor</code> x <code>max delay</code>) is less than or equal to the number of
 reference times available in the reporting triangle, split reference times
@@ -124,10 +121,10 @@ in the reporting triangle.</p></li>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">allocate_reference_times</span><span class="op">(</span></span>
 <span>  <span class="va">reporting_triangle</span>,</span>
-<span>  max_delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
 <span>  scale_factor <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  prop_delay <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  n_min_retro_nowcasts <span class="op">=</span> <span class="fl">2</span></span>
+<span>  n_min_retro_nowcasts <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  validate <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -136,17 +133,11 @@ in the reporting triangle.</p></li>
 
 
 <dl><dt id="arg-reporting-triangle">reporting_triangle<a class="anchor" aria-label="anchor" href="#arg-reporting-triangle"></a></dt>
-<dd><p>Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+<dd><p>A <a href="reporting_triangle-class.html">reporting_triangle</a> object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).</p></dd>
-
-
-<dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
-<dd><p>Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-<code>ncol(reporting_triangle) -1</code>.</p></dd>
+reported for the same row (e.g., weekly reporting of daily data).</p></dd>
 
 
 <dt id="arg-scale-factor">scale_factor<a class="anchor" aria-label="anchor" href="#arg-scale-factor"></a></dt>
@@ -165,6 +156,11 @@ estimation. Default is <code>0.5</code>.</p></dd>
 <dd><p>Integer indicating the minimum number of
 reference times needed for uncertainty estimation. Default is <code>2</code>.</p></dd>
 
+
+<dt id="arg-validate">validate<a class="anchor" aria-label="anchor" href="#arg-validate"></a></dt>
+<dd><p>Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -180,47 +176,37 @@ reference times needed for uncertainty estimation. Default is <code>2</code>.</p
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fl">100</span>, <span class="fl">50</span>, <span class="fl">30</span>, <span class="fl">20</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">40</span>, <span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">80</span>, <span class="fl">50</span>, <span class="fl">25</span>, <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">100</span>, <span class="fl">50</span>, <span class="fl">30</span>, <span class="fl">20</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">40</span>, <span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">80</span>, <span class="fl">50</span>, <span class="fl">25</span>, <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">100</span>, <span class="fl">50</span>, <span class="fl">30</span>, <span class="fl">20</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">90</span>, <span class="fl">45</span>, <span class="fl">25</span>, <span class="cn">NA</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">80</span>, <span class="fl">40</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">70</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  nrow <span class="op">=</span> <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>  byrow <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Use the defaults</span></span></span>
-<span class="r-in"><span><span class="va">ref_time_allocation_default</span> <span class="op">&lt;-</span> <span class="fu">allocate_reference_times</span><span class="op">(</span><span class="va">triangle</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 0.5 reference times were specified for delay estimation but 0.444 of reference times used for delay estimation.</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create a reporting triangle from package data</span></span></span>
+<span class="r-in"><span><span class="va">data_as_of</span> <span class="op">&lt;-</span> <span class="va">syn_nssp_df</span><span class="op">[</span><span class="va">syn_nssp_df</span><span class="op">$</span><span class="va">report_date</span> <span class="op">&lt;=</span> <span class="st">"2026-04-01"</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">rep_tri</span> <span class="op">&lt;-</span> <span class="fu"><a href="as_reporting_triangle.html">as_reporting_triangle</a></span><span class="op">(</span><span class="va">data_as_of</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="truncate_to_delay.html">truncate_to_delay</a></span><span class="op">(</span>max_delay <span class="op">=</span> <span class="fl">25</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using max_delay = 154 from data</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Truncating from max_delay = 154 to 25.</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Use the defaults (scale_factor = 3, prop_delay = 0.5)</span></span></span>
+<span class="r-in"><span><span class="va">ref_time_allocation_default</span> <span class="op">&lt;-</span> <span class="fu">allocate_reference_times</span><span class="op">(</span><span class="va">rep_tri</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 0.5 reference times were specified for delay estimation but 0.493 of reference times used for delay estimation.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `prop_delay` not identical to the proportion of reference times used for delay estimation due to rounding.</span>
 <span class="r-in"><span><span class="va">ref_time_allocation_default</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $n_history_delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 37</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $n_retrospective_nowcasts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 38</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Modify to use less volume and redistribute</span></span></span>
 <span class="r-in"><span><span class="va">ref_time_allocation_alt</span> <span class="op">&lt;-</span> <span class="fu">allocate_reference_times</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  reporting_triangle <span class="op">=</span> <span class="va">triangle</span>,</span></span>
+<span class="r-in"><span>  reporting_triangle <span class="op">=</span> <span class="va">rep_tri</span>,</span></span>
 <span class="r-in"><span>  scale_factor <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  prop_delay <span class="op">=</span> <span class="fl">0.6</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 0.6 reference times were specified for delay estimation but 0.667 of reference times used for delay estimation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> This is due to the minumim requirement for the number of reference times needed for delay estimation (4).</span>
 <span class="r-in"><span><span class="va">ref_time_allocation_alt</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $n_history_delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 30</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $n_retrospective_nowcasts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>

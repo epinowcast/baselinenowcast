@@ -24,11 +24,12 @@ sample_prediction(
 
 - reporting_triangle:
 
-  Matrix of the reporting triangle, with rows representing the time
-  points of reference and columns representing the delays. Can be a
-  reporting matrix or incomplete reporting matrix. Can also be a ragged
-  reporting triangle, where multiple columns are reported for the same
-  row. (e.g. weekly reporting of daily data).
+  A
+  [reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+  object with rows representing reference times and columns representing
+  delays. Can be a reporting matrix or incomplete reporting matrix. Can
+  also be a ragged reporting triangle, where multiple columns are
+  reported for the same row (e.g., weekly reporting of daily data).
 
 - uncertainty_params:
 
@@ -61,8 +62,9 @@ sample_prediction(
 
 ## Value
 
-Vector of predicted draws at each reference time, for all reference
-times in the input `point_nowcast_matrix`.
+Matrix of predicted draws at each reference date, for all reference
+dates in the input `point_nowcast_matrix` (or fewer if using
+`ref_time_aggregator`).
 
 ## See also
 
@@ -76,45 +78,56 @@ Probabilistic nowcast generation functions
 ## Examples
 
 ``` r
-point_nowcast_matrix <- matrix(
-  c(
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    90, 45, 25, 16.8,
-    80, 40, 21.2, 19.5,
-    70, 34.5, 15.4, 9.1
-  ),
-  nrow = 5,
-  byrow = TRUE
+# Generate point nowcast and uncertainty params from example data
+data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+rep_tri <- as_reporting_triangle(data_as_of) |>
+  truncate_to_delay(max_delay = 5) |>
+  tail(n = 10)
+#> ℹ Using max_delay = 154 from data
+#> ℹ Truncating from max_delay = 154 to 5.
+point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
+reporting_triangle <- construct_triangle(rep_tri)
+uncertainty_params <- estimate_uncertainty_retro(
+  rep_tri,
+  n_history_delay = 8,
+  n_retrospective_nowcasts = 2
 )
-reporting_triangle <- construct_triangle(point_nowcast_matrix)
-disp <- c(0.8, 12.4, 9.1)
 nowcast_pred_draw <- sample_prediction(
   point_nowcast_matrix,
   reporting_triangle,
-  disp
+  uncertainty_params
 )
 nowcast_pred_draw
-#>      [,1]
-#> [1,]    0
-#> [2,]    0
-#> [3,]   30
-#> [4,]   34
-#> [5,]    9
+#>            [,1]
+#>               0
+#>               0
+#>               0
+#>               0
+#>               0
+#> 2026-03-28   17
+#> 2026-03-29   49
+#> 2026-03-30  150
+#> 2026-03-31  144
+#> 2026-04-01  157
 
 # Get draws on the rolling sum
 if (requireNamespace("zoo", quietly = TRUE)) {
   nowcast_pred_draw_agg <- sample_prediction(
     point_nowcast_matrix,
     reporting_triangle,
-    disp,
+    uncertainty_params,
     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
   )
   nowcast_pred_draw_agg
 }
-#>      [,1]
-#> [1,]    0
-#> [2,]   25
-#> [3,]   71
-#> [4,]  237
+#>       [,1]
+#>  [1,]    0
+#>  [2,]    0
+#>  [3,]    0
+#>  [4,]    0
+#>  [5,]   19
+#>  [6,]  239
+#>  [7,]  207
+#>  [8,]  231
+#>  [9,]  543
 ```

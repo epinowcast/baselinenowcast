@@ -61,6 +61,7 @@ patient-level line-list data.
 ## See also
 
 Example datasets
-[`example_downward_corr_mat`](https://baselinenowcast.epinowcast.org/reference/example_downward_corr_mat.md),
+[`example_downward_corr_rt`](https://baselinenowcast.epinowcast.org/reference/example_downward_corr_rt.md),
+[`example_reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/example_reporting_triangle.md),
 [`germany_covid19_hosp`](https://baselinenowcast.epinowcast.org/reference/germany_covid19_hosp.md),
 [`syn_nssp_df`](https://baselinenowcast.epinowcast.org/reference/syn_nssp_df.md)

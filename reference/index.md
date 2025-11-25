@@ -10,6 +10,12 @@ workflows.
 Functions for creating, converting, and validating reporting triangle
 objects from matrices or data frames.
 
+- [`as.data.frame(`*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/reference/as.data.frame.reporting_triangle.md)
+  : Convert reporting_triangle to data.frame
+
+- [`as.matrix(`*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/reference/as.matrix.reporting_triangle.md)
+  : Convert reporting_triangle to plain matrix
+
 - [`as_ChainLadder_triangle()`](https://baselinenowcast.epinowcast.org/reference/as_ChainLadder_triangle.md)
   : Convert reporting_triangle to ChainLadder triangle format
 
@@ -36,17 +42,68 @@ objects from matrices or data frames.
 
   Assert validity of `reporting_triangle` objects
 
-- [`detect_structure()`](https://baselinenowcast.epinowcast.org/reference/detect_structure.md)
-  : Detect the structure of a reporting triangle
+- [`get_delays_from_dates()`](https://baselinenowcast.epinowcast.org/reference/get_delays_from_dates.md)
+  : Compute delays between report dates and reference dates
+
+- [`get_delays_unit()`](https://baselinenowcast.epinowcast.org/reference/get_delays_unit.md)
+  : Get delays unit from a reporting triangle
+
+- [`get_max_delay()`](https://baselinenowcast.epinowcast.org/reference/get_max_delay.md)
+  : Get maximum delay from reporting_triangle
+
+- [`get_mean_delay()`](https://baselinenowcast.epinowcast.org/reference/get_mean_delay.md)
+  : Get mean delay for each row of reporting_triangle
+
+- [`get_quantile_delay()`](https://baselinenowcast.epinowcast.org/reference/get_quantile_delay.md)
+  : Get quantile delay for each row of reporting_triangle
+
+- [`get_reference_dates()`](https://baselinenowcast.epinowcast.org/reference/get_reference_dates.md)
+  : Get reference dates from reporting_triangle
+
+- [`get_report_dates()`](https://baselinenowcast.epinowcast.org/reference/get_report_dates.md)
+  : Compute report dates from reference dates and delays
+
+- [`get_reporting_structure()`](https://baselinenowcast.epinowcast.org/reference/get_reporting_structure.md)
+  : Get reporting structure from a reporting triangle
+
+- [`head(`*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/reference/head.reporting_triangle.md)
+  : Get first rows of a reporting_triangle
+
+- [`is_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/is_reporting_triangle.md)
+  : Check if an object is a reporting_triangle
 
 - [`new_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/new_reporting_triangle.md)
   :
 
   Class constructor for `reporting_triangle` objects
 
+- [`print(`*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/reference/print.reporting_triangle.md)
+  : Print a reporting_triangle object
+
 - [`reporting_triangle-class`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
   [`reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
   : Reporting Triangle Object
+
+- [`` `[`( ``*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/reference/sub-.reporting_triangle.md)
+  : Subset reporting_triangle objects
+
+- [`` `[<-`( ``*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/reference/subset-.reporting_triangle.md)
+  : Subset assignment for reporting_triangle objects
+
+- [`summary(`*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/reference/summary.reporting_triangle.md)
+  : Summarize a reporting_triangle object
+
+- [`tail(`*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/reference/tail.reporting_triangle.md)
+  : Get last rows of a reporting_triangle
+
+- [`truncate_to_delay()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_delay.md)
+  : Truncate reporting triangle to a specific maximum delay
+
+- [`truncate_to_quantile()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_quantile.md)
+  : Truncate reporting_triangle to quantile-based maximum delay
+
+- [`validate_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/validate_reporting_triangle.md)
+  : Validate a reporting_triangle object
 
 ### Nowcast data frames
 
@@ -173,6 +230,10 @@ estimates with uncertainty quantification from observation error models.
 
 Example datasets included with the package.
 
+- [`example_downward_corr_rt`](https://baselinenowcast.epinowcast.org/reference/example_downward_corr_rt.md)
+  : Example reporting triangle with downward corrections
+- [`example_reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/example_reporting_triangle.md)
+  : Simple example reporting triangle for demonstrations
 - [`germany_covid19_hosp`](https://baselinenowcast.epinowcast.org/reference/germany_covid19_hosp.md)
   : Incident COVID-19 hospitalisations indexed by the date of positive
   test (reference date) and report date from Germany in 2021 and 2022.

@@ -11,10 +11,10 @@ will be estimated from the `reporting_triangle`.
 ``` r
 fill_triangle(
   reporting_triangle,
-  max_delay = ncol(reporting_triangle) - 1,
   n = nrow(reporting_triangle),
   delay_pmf = NULL,
-  preprocess = preprocess_negative_values
+  preprocess = preprocess_negative_values,
+  validate = TRUE
 )
 ```
 
@@ -22,17 +22,12 @@ fill_triangle(
 
 - reporting_triangle:
 
-  Matrix of the reporting triangle, with rows representing the time
-  points of reference and columns representing the delays. Can be a
-  reporting matrix or incomplete reporting matrix. Can also be a ragged
-  reporting triangle, where multiple columns are reported for the same
-  row. (e.g. weekly reporting of daily data).
-
-- max_delay:
-
-  Integer indicating the maximum delay to estimate, in units of the
-  delay. The default is to use the whole reporting triangle,
-  `ncol(reporting_triangle) -1`.
+  A
+  [reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+  object with rows representing reference times and columns representing
+  delays. Can be a reporting matrix or incomplete reporting matrix. Can
+  also be a ragged reporting triangle, where multiple columns are
+  reported for the same row (e.g., weekly reporting of daily data).
 
 - n:
 
@@ -55,7 +50,14 @@ fill_triangle(
   which handles negative values by redistributing them to earlier
   delays. Set to NULL if you want to preserve negative PMF entries
   (e.g., when working with downward corrections where negative
-  probabilities reflect systematic adjustments).
+  probabilities reflect systematic adjustments). Custom preprocess
+  functions must accept a `validate` parameter (defaults to TRUE) to
+  enable validation optimisation in internal function chains.
+
+- validate:
+
+  Logical. If TRUE (default), validates the object. Set to FALSE only
+  when called from functions that already validated.
 
 ## Value
 
@@ -72,25 +74,22 @@ Point nowcast generation functions
 ## Examples
 
 ``` r
-triangle <- matrix(
-  c(
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    90, 45, 25, NA,
-    80, 40, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 5,
-  byrow = TRUE
-)
+# Fill triangle using default delay estimation
 point_nowcast_matrix <- fill_triangle(
-  reporting_triangle = triangle
+  reporting_triangle = example_reporting_triangle
 )
 point_nowcast_matrix
-#>      [,1]     [,2]     [,3]     [,4]
-#> [1,]   80 50.00000 25.00000 10.00000
-#> [2,]  100 50.00000 30.00000 20.00000
-#> [3,]   90 45.00000 25.00000 14.33572
-#> [4,]   80 40.00000 23.17697 12.82918
-#> [5,]   70 37.26249 20.72155 11.46862
+#> Reporting Triangle
+#> ℹ The reporting triangle does not contain any missing values.
+#> Delays unit: days
+#> Reference dates: 2024-01-01 to 2024-01-05
+#> Max delay: 3
+#> Structure: 0
+#> 
+#>              0        1        2        3
+#> 2024-01-01  80 50.00000 25.00000 10.00000
+#> 2024-01-02 100 50.00000 20.00000 10.97165
+#> 2024-01-03  90 45.00000 21.72707 10.11533
+#> 2024-01-04 110 59.32834 27.24413 12.68600
+#> 2024-01-05  95 51.27278 23.53877 10.95949
 ```

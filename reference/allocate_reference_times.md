@@ -1,11 +1,10 @@
 # Allocate training volume based on combination of defaults and user-specified values for training volume for delay and uncertainty estimation.
 
-Given the reporting triangle, the maximum delay, and optionally the
-user-specified scale factor on the max delay to be used as total
-reference times and the proportion of those reference times to be used
-for delay estimation, allocate reference times to the number used for
-delay estimation and the number used as retrospective nowcasts for
-uncertainty estimation.
+Given the reporting triangle and optionally the user-specified scale
+factor on the max delay to be used as total reference times and the
+proportion of those reference times to be used for delay estimation,
+allocate reference times to the number used for delay estimation and the
+number used as retrospective nowcasts for uncertainty estimation.
 
 This function implements an algorithm which:
 
@@ -31,10 +30,10 @@ This function implements an algorithm which:
 ``` r
 allocate_reference_times(
   reporting_triangle,
-  max_delay = ncol(reporting_triangle) - 1,
   scale_factor = 3,
   prop_delay = 0.5,
-  n_min_retro_nowcasts = 2
+  n_min_retro_nowcasts = 2,
+  validate = TRUE
 )
 ```
 
@@ -42,17 +41,12 @@ allocate_reference_times(
 
 - reporting_triangle:
 
-  Matrix of the reporting triangle, with rows representing the time
-  points of reference and columns representing the delays. Can be a
-  reporting matrix or incomplete reporting matrix. Can also be a ragged
-  reporting triangle, where multiple columns are reported for the same
-  row. (e.g. weekly reporting of daily data).
-
-- max_delay:
-
-  Integer indicating the maximum delay to estimate, in units of the
-  delay. The default is to use the whole reporting triangle,
-  `ncol(reporting_triangle) -1`.
+  A
+  [reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+  object with rows representing reference times and columns representing
+  delays. Can be a reporting matrix or incomplete reporting matrix. Can
+  also be a ragged reporting triangle, where multiple columns are
+  reported for the same row (e.g., weekly reporting of daily data).
 
 - scale_factor:
 
@@ -71,6 +65,11 @@ allocate_reference_times(
   Integer indicating the minimum number of reference times needed for
   uncertainty estimation. Default is `2`.
 
+- validate:
+
+  Logical. If TRUE (default), validates the object. Set to FALSE only
+  when called from functions that already validated.
+
 ## Value
 
 list of n_history_delay and n_retrospective_nowcasts
@@ -85,46 +84,36 @@ High-level workflow wrapper functions
 ## Examples
 
 ``` r
-triangle <- matrix(
-  c(
-    100, 50, 30, 20,
-    40, 10, 20, 5,
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    40, 10, 20, 5,
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    90, 45, 25, NA,
-    80, 40, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 10,
-  byrow = TRUE
-)
-# Use the defaults
-ref_time_allocation_default <- allocate_reference_times(triangle)
-#> ℹ 0.5 reference times were specified for delay estimation but 0.444 of reference times used for delay estimation.
+# Create a reporting triangle from package data
+data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+rep_tri <- as_reporting_triangle(data_as_of) |>
+  truncate_to_delay(max_delay = 25)
+#> ℹ Using max_delay = 154 from data
+#> ℹ Truncating from max_delay = 154 to 25.
+
+# Use the defaults (scale_factor = 3, prop_delay = 0.5)
+ref_time_allocation_default <- allocate_reference_times(rep_tri)
+#> ℹ 0.5 reference times were specified for delay estimation but 0.493 of reference times used for delay estimation.
 #> ℹ `prop_delay` not identical to the proportion of reference times used for delay estimation due to rounding.
 ref_time_allocation_default
 #> $n_history_delay
-#> [1] 4
+#> [1] 37
 #> 
 #> $n_retrospective_nowcasts
-#> [1] 5
+#> [1] 38
 #> 
+
 # Modify to use less volume and redistribute
 ref_time_allocation_alt <- allocate_reference_times(
-  reporting_triangle = triangle,
+  reporting_triangle = rep_tri,
   scale_factor = 2,
   prop_delay = 0.6
 )
-#> ℹ 0.6 reference times were specified for delay estimation but 0.667 of reference times used for delay estimation.
-#> ℹ This is due to the minumim requirement for the number of reference times needed for delay estimation (4).
 ref_time_allocation_alt
 #> $n_history_delay
-#> [1] 4
+#> [1] 30
 #> 
 #> $n_retrospective_nowcasts
-#> [1] 2
+#> [1] 20
 #> 
 ```

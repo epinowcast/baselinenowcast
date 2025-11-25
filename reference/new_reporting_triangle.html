@@ -5,7 +5,7 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Class constructor for reporting_triangle objects — new_reporting_triangle"><meta name="description" content="Class constructor for reporting_triangle objects"><meta property="og:description" content="Class constructor for reporting_triangle objects"><meta property="og:image" content="https://baselinenowcast.epinowcast.org/logo.png"></head><body>
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Class constructor for reporting_triangle objects — new_reporting_triangle"><meta name="description" content="Creates a new reporting_triangle object from a matrix."><meta property="og:description" content="Creates a new reporting_triangle object from a matrix."><meta property="og:image" content="https://baselinenowcast.epinowcast.org/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -54,19 +54,12 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Class constructor for <code>reporting_triangle</code> objects</p>
+    <p>Creates a new reporting_triangle object from a matrix.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">new_reporting_triangle</span><span class="op">(</span></span>
-<span>  <span class="va">reporting_triangle_matrix</span>,</span>
-<span>  <span class="va">reference_dates</span>,</span>
-<span>  <span class="va">structure</span>,</span>
-<span>  <span class="va">max_delay</span>,</span>
-<span>  <span class="va">delays_unit</span>,</span>
-<span>  strata <span class="op">=</span> <span class="cn">NULL</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">new_reporting_triangle</span><span class="op">(</span><span class="va">reporting_triangle_matrix</span>, <span class="va">reference_dates</span>, <span class="va">delays_unit</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -74,38 +67,19 @@
 
 
 <dl><dt id="arg-reporting-triangle-matrix">reporting_triangle_matrix<a class="anchor" aria-label="anchor" href="#arg-reporting-triangle-matrix"></a></dt>
-<dd><p>Matrix of reporting triangle</p></dd>
+<dd><p>Matrix of reporting triangle where rows
+are reference times, columns are delays, and entries are incident counts.</p></dd>
 
 
 <dt id="arg-reference-dates">reference_dates<a class="anchor" aria-label="anchor" href="#arg-reference-dates"></a></dt>
-<dd><p>Vector of character strings indicating the reference
-dates corresponding to each row of the reporting triangle matrix (<code>data</code>).</p></dd>
-
-
-<dt id="arg-structure">structure<a class="anchor" aria-label="anchor" href="#arg-structure"></a></dt>
-<dd><p>Integer or vector specifying the reporting structure.
-If integer, divides columns evenly by that integer (with last possibly
-truncated).  If vector, the sum must not be greater than or equal to the
-number of columns. Default is 1 (standard triangular structure).</p></dd>
-
-
-<dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
-<dd><p>Integer indicating the maximum delay.</p></dd>
+<dd><p>Vector of Date objects indicating the reference dates
+corresponding to each row of the matrix.</p></dd>
 
 
 <dt id="arg-delays-unit">delays_unit<a class="anchor" aria-label="anchor" href="#arg-delays-unit"></a></dt>
 <dd><p>Character string specifying the temporal granularity of
 the delays. Options are <code>"days"</code>, <code>"weeks"</code>, <code>"months"</code>, <code>"years"</code>.
-For the matrix method, this is simply passed as an item in the
-<code>reporting_triangle</code> object which will later be used to create a nowcast
-data.frame. For the data.frame method, this is used to compute the delay
-in terms of the specified unit, and to expand the combinations of
-reference dates and delays to the complete set of combinations in
-the reporting triangle.  Default is <code>"days"</code>.</p></dd>
-
-
-<dt id="arg-strata">strata<a class="anchor" aria-label="anchor" href="#arg-strata"></a></dt>
-<dd><p>Character string indicating the strata. Default is NULL.</p></dd>
+Default is <code>"days"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -115,14 +89,33 @@ the reporting triangle.  Default is <code>"days"</code>.</p></dd>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Reporting triangle construction and validation
+<code><a href="sub-.reporting_triangle.html">[.reporting_triangle()</a></code>,
+<code>[&lt;-.reporting_triangle()</code>,
+<code><a href="as.data.frame.reporting_triangle.html">as.data.frame.reporting_triangle()</a></code>,
+<code><a href="as.matrix.reporting_triangle.html">as.matrix.reporting_triangle()</a></code>,
 <code><a href="as_ChainLadder_triangle.html">as_ChainLadder_triangle()</a></code>,
 <code><a href="as_reporting_triangle.html">as_reporting_triangle()</a></code>,
 <code><a href="as_reporting_triangle.data.frame.html">as_reporting_triangle.data.frame()</a></code>,
 <code><a href="as_reporting_triangle.matrix.html">as_reporting_triangle.matrix()</a></code>,
 <code><a href="as_reporting_triangle.triangle.html">as_reporting_triangle.triangle()</a></code>,
 <code><a href="assert_reporting_triangle.html">assert_reporting_triangle()</a></code>,
-<code><a href="detect_structure.html">detect_structure()</a></code>,
-<code><a href="reporting_triangle-class.html">reporting_triangle-class</a></code></p></div>
+<code><a href="get_delays_from_dates.html">get_delays_from_dates()</a></code>,
+<code><a href="get_delays_unit.html">get_delays_unit()</a></code>,
+<code><a href="get_max_delay.html">get_max_delay()</a></code>,
+<code><a href="get_mean_delay.html">get_mean_delay()</a></code>,
+<code><a href="get_quantile_delay.html">get_quantile_delay()</a></code>,
+<code><a href="get_reference_dates.html">get_reference_dates()</a></code>,
+<code><a href="get_report_dates.html">get_report_dates()</a></code>,
+<code><a href="get_reporting_structure.html">get_reporting_structure()</a></code>,
+<code><a href="head.reporting_triangle.html">head.reporting_triangle()</a></code>,
+<code><a href="is_reporting_triangle.html">is_reporting_triangle()</a></code>,
+<code><a href="print.reporting_triangle.html">print.reporting_triangle()</a></code>,
+<code><a href="reporting_triangle-class.html">reporting_triangle-class</a></code>,
+<code><a href="summary.reporting_triangle.html">summary.reporting_triangle()</a></code>,
+<code><a href="tail.reporting_triangle.html">tail.reporting_triangle()</a></code>,
+<code><a href="truncate_to_delay.html">truncate_to_delay()</a></code>,
+<code><a href="truncate_to_quantile.html">truncate_to_quantile()</a></code>,
+<code><a href="validate_reporting_triangle.html">validate_reporting_triangle()</a></code></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

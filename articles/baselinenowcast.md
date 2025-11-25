@@ -243,13 +243,12 @@ prop_delay <- 0.5
 Next we obtain a `reporting_triangle` using the
 [`as_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.md)
 function, which expects a data.frame with case counts indexed by
-reference date and report date and the maximum delay. This function
-computes the delay between the reference and report date and pivots the
-data from long to wide, so that the rows are reference times and the
-columns indicate the delay between the reference and report date, and
-the entries indicate the incident case counts. This also validates that
-the data is in the correct format and runs pre-processing to fill in any
-missing dates, see
+reference date and report date. This function computes the delay between
+the reference and report date and pivots the data from long to wide, so
+that the rows are reference times and the columns indicate the delay
+between the reference and report date, and the entries indicate the
+incident case counts. This also validates that the data is in the
+correct format and runs pre-processing to fill in any missing dates, see
 [`?as_reporting_triangle.data.frame`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.data.frame.md)
 and
 [`?reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
@@ -259,27 +258,168 @@ for more details on required inputs and the format of the
 Code
 
 ``` r
-rep_tri <- as_reporting_triangle(observed_data,
-  max_delay = max_delay
-)
+rep_tri_full <- as_reporting_triangle(observed_data)
 ```
 
-The `reporting_triangle` object is a matrix with named rows for the
-reference dates corresponding to each row of the matrix.
+    ## ℹ Using max_delay = 40 from data
+
+Let’s look at the reporting triangle object we’ve created:
+
+Code
+
+``` r
+rep_tri_full
+```
+
+    ## Reporting Triangle
+
+    ## Delays unit: days
+
+    ## Reference dates: 2021-04-06 to 2021-08-01
+
+    ## Max delay: 40
+
+    ## Structure: 1
+
+    ## 
+
+    ## Showing last 10 of 118 rows
+
+    ## Showing first 10 of 41 columns
+
+    ## 
+
+    ##             0  1  2  3  4  5  6  7  8  9
+    ## 2021-07-23 30 12  4  1 10  6  0  2  2  1
+    ## 2021-07-24 31  8  4  9  8  2  5  2  1 NA
+    ## 2021-07-25  8  4 14  8  6  5  1  3 NA NA
+    ## 2021-07-26  9  6  2  3  0  0  0 NA NA NA
+    ## 2021-07-27 35 11  6  4  4  1 NA NA NA NA
+    ## 2021-07-28 51 28 25  3  5 NA NA NA NA NA
+    ## 2021-07-29 47 37  9  2 NA NA NA NA NA NA
+    ## 2021-07-30 36 20  2 NA NA NA NA NA NA NA
+    ## 2021-07-31 38 16 NA NA NA NA NA NA NA NA
+    ## 2021-08-01  7 NA NA NA NA NA NA NA NA NA
+
+    ## 
+
+    ## Use print(x, n_rows = NULL, n_cols = NULL) to see all data
+
+And we can get a summary of it:
+
+Code
+
+``` r
+summary(rep_tri_full)
+```
+
+    ## Reporting Triangle Summary
+
+    ## Dimensions: 118 x 41
+
+    ## Reference period: 2021-04-06 to 2021-08-01
+
+    ## Max delay: 40 days
+
+    ## Structure: 1
+
+    ## Most recent complete date: 2021-06-22 (67 cases)
+
+    ## Dates requiring nowcast: 40 (complete: 78)
+
+    ## Rows with negatives: 0
+
+    ## Zeros: 1278 (31.8% of non-NA values)
+
+    ## Zeros per row summary:
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ##    0.00    4.00    8.00   10.83   19.00   33.00
+
+    ## 
+
+    ## Mean delay summary (complete rows):
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ##   2.525   4.857   5.650   5.469   6.174   7.678
+
+    ## 
+
+    ## 99% quantile delay (complete rows):
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ##   17.00   33.00   35.00   34.31   37.00   40.00
+
+We can see the maximum delay is set to the maximum observed delay, which
+in some cases will be a lot larger than the delays we want to model. We
+strongly recommend using the
+[`truncate_to_delay()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_delay.md)
+or
+[`truncate_to_quantile()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_quantile.md)
+functions to set the maximum delay in your nowcasting problem. Choosing
+too large a maximum delay will mean that there is less data, or
+potentially insufficient data, available for estimating uncertainty from
+retrospective nowcast errors. For this analysis, we want to limit our
+reporting triangle to a maximum delay of 30 days using
+[`truncate_to_delay()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_delay.md):
+
+Code
+
+``` r
+rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
+```
+
+    ## ℹ Truncating from max_delay = 40 to 30.
+
+Let’s check the truncated triangle:
+
+Code
+
+``` r
+rep_tri
+```
+
+    ## Reporting Triangle
+
+    ## Delays unit: days
+
+    ## Reference dates: 2021-04-06 to 2021-08-01
+
+    ## Max delay: 30
+
+    ## Structure: 1
+
+    ## 
+
+    ## Showing last 10 of 118 rows
+
+    ## Showing first 10 of 31 columns
+
+    ## 
+
+    ##             0  1  2  3  4  5  6  7  8  9
+    ## 2021-07-23 30 12  4  1 10  6  0  2  2  1
+    ## 2021-07-24 31  8  4  9  8  2  5  2  1 NA
+    ## 2021-07-25  8  4 14  8  6  5  1  3 NA NA
+    ## 2021-07-26  9  6  2  3  0  0  0 NA NA NA
+    ## 2021-07-27 35 11  6  4  4  1 NA NA NA NA
+    ## 2021-07-28 51 28 25  3  5 NA NA NA NA NA
+    ## 2021-07-29 47 37  9  2 NA NA NA NA NA NA
+    ## 2021-07-30 36 20  2 NA NA NA NA NA NA NA
+    ## 2021-07-31 38 16 NA NA NA NA NA NA NA NA
+    ## 2021-08-01  7 NA NA NA NA NA NA NA NA NA
+
+    ## 
+
+    ## Use print(x, n_rows = NULL, n_cols = NULL) to see all data
 
 Click to expand code to create the plot of the reporting triangle
 
 Code
 
 ``` r
-triangle_df <- as.data.frame(rep_tri$reporting_triangle_matrix) |>
-  mutate(time = row_number()) |>
-  pivot_longer(!time,
-    values_to = "count",
-    names_prefix = "V",
-    names_to = "delay"
-  ) |>
-  mutate(delay = as.numeric(delay))
+triangle_df <- as.data.frame(rep_tri) |>
+  mutate(time = as.numeric(factor(reference_date)))
 
 plot_triangle <- ggplot(
   triangle_df,
@@ -298,7 +438,7 @@ Code
 plot_triangle
 ```
 
-![](baselinenowcast_files/figure-html/unnamed-chunk-11-1.png) Here, the
+![](baselinenowcast_files/figure-html/unnamed-chunk-15-1.png) Here, the
 grey indicates matrix elements that are `NA`, which we would expect to
 be the case in the bottom right portion of the reporting triangle where
 the counts have yet to be observed.
@@ -366,13 +506,13 @@ obs_with_nowcast_draws_df <- nowcast_draws_df |>
 head(obs_with_nowcast_draws_df)
 ```
 
-    ##   pred_count draw reference_date output_type final_count initial_count
-    ## 1        609    1     2021-04-06     samples         615           615
-    ## 2        609    2     2021-04-06     samples         615           615
-    ## 3        609    3     2021-04-06     samples         615           615
-    ## 4        609    4     2021-04-06     samples         615           615
-    ## 5        609    5     2021-04-06     samples         615           615
-    ## 6        609    6     2021-04-06     samples         615           615
+    ##   pred_count reference_date draw output_type final_count initial_count
+    ## 1        609     2021-04-06    1     samples         615           615
+    ## 2        609     2021-04-06    2     samples         615           615
+    ## 3        609     2021-04-06    3     samples         615           615
+    ## 4        609     2021-04-06    4     samples         615           615
+    ## 5        609     2021-04-06    5     samples         615           615
+    ## 6        609     2021-04-06    6     samples         615           615
 
 Click to expand code to create the plot of the probabilistic nowcast
 
@@ -442,7 +582,7 @@ Code
 plot_prob_nowcast
 ```
 
-![](baselinenowcast_files/figure-html/unnamed-chunk-15-1.png) Gray lines
+![](baselinenowcast_files/figure-html/unnamed-chunk-19-1.png) Gray lines
 indicate the probabilistic nowcast draws, which are a combination of the
 already observed data at each reference date and the predicted nowcast
 draws at each reference date. Black lines show the “final” data from

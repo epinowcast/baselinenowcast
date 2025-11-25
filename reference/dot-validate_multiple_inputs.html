@@ -65,7 +65,7 @@ are correct.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.validate_multiple_inputs</span><span class="op">(</span><span class="va">point_nowcast_matrix</span>, <span class="va">reporting_triangle</span>, <span class="va">max_delay</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.validate_multiple_inputs</span><span class="op">(</span><span class="va">point_nowcast_matrix</span>, <span class="va">reporting_triangle</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -79,17 +79,11 @@ representing the delays.</p></dd>
 
 
 <dt id="arg-reporting-triangle">reporting_triangle<a class="anchor" aria-label="anchor" href="#arg-reporting-triangle"></a></dt>
-<dd><p>Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+<dd><p>A <a href="reporting_triangle-class.html">reporting_triangle</a> object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).</p></dd>
-
-
-<dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
-<dd><p>Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-<code>ncol(reporting_triangle) -1</code>.</p></dd>
+reported for the same row (e.g., weekly reporting of daily data).</p></dd>
 
 </dl></div>
     <div class="section level2">

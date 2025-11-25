@@ -78,17 +78,17 @@ nowcast for the final counts by reference time.</p>
 
 
 <dl><dt id="arg-predicted-counts">predicted_counts<a class="anchor" aria-label="anchor" href="#arg-predicted-counts"></a></dt>
-<dd><p>Vector of predicted counts at each reference time.
+<dd><p>Vector of predicted counts at each reference date.
 Note that if using a reference time or delay aggregator function, this
 is assumed to have already been aggregated.</p></dd>
 
 
 <dt id="arg-reporting-triangle">reporting_triangle<a class="anchor" aria-label="anchor" href="#arg-reporting-triangle"></a></dt>
-<dd><p>Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+<dd><p>A <a href="reporting_triangle-class.html">reporting_triangle</a> object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).</p></dd>
+reported for the same row (e.g., weekly reporting of daily data).</p></dd>
 
 
 <dt id="arg-ref-time-aggregator">ref_time_aggregator<a class="anchor" aria-label="anchor" href="#arg-ref-time-aggregator"></a></dt>
@@ -106,7 +106,9 @@ across reference times. Default is <code>function(x) rowSums(x, na.rm = TRUE)</c
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A vector of predicted counts at each reference time</p>
+    <p>A vector of predicted counts at each reference date, for all
+reference dates in the input <code>reporting_triangle</code> (or fewer if using
+<code>ref_time_aggregator</code>)</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -120,29 +122,22 @@ across reference times. Default is <code>function(x) rowSums(x, na.rm = TRUE)</c
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pred_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">30</span>, <span class="fl">40</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">reporting_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fl">7</span>, <span class="fl">9</span>, <span class="fl">4</span>, <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">5</span>, <span class="fl">6</span>, <span class="fl">7</span>, <span class="fl">8</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">9</span>, <span class="fl">10</span>, <span class="fl">11</span>, <span class="fl">12</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  nrow <span class="op">=</span> <span class="fl">4</span>,</span></span>
-<span class="r-in"><span>  byrow <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">reporting_triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="construct_triangle.html">construct_triangle</a></span><span class="op">(</span><span class="va">reporting_matrix</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Use example data</span></span></span>
+<span class="r-in"><span><span class="va">reporting_triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="construct_triangle.html">construct_triangle</a></span><span class="op">(</span><span class="va">example_reporting_triangle</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pred_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">30</span>, <span class="fl">40</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">combine_obs_with_pred</span><span class="op">(</span><span class="va">pred_counts</span>, <span class="va">reporting_triangle</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 33 26 41 49</span>
-<span class="r-in"><span><span class="co"># Another example with rolling sum</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>longer object length is not a multiple of shorter object length</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-01 2024-01-02 2024-01-03 2024-01-04 2024-01-05 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        175        190        165        150        105 </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example with rolling sum</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"zoo"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu">combine_obs_with_pred</span><span class="op">(</span><span class="va">pred_counts</span>,</span></span>
 <span class="r-in"><span>    <span class="va">reporting_triangle</span>,</span></span>
 <span class="r-in"><span>    ref_time_aggregator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">zoo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/zoo/man/rollmean.html" class="external-link">rollsum</a></span><span class="op">(</span><span class="va">x</span>, k <span class="op">=</span> <span class="fl">2</span>, align <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>longer object length is not a multiple of shorter object length</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 36 34 44 66</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 335 305 230 245</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -1,10 +1,9 @@
 # Preprocess negative values in the reporting triangle
 
-Takes in a reporting triangle and returns a matrix in the same format as
-the input triangle, but with negative values of reporting handled by
-redistributing them to earlier delays (from longer delay to shorter).
-This is useful when dealing with reporting corrections that can result
-in negative incremental counts.
+Takes in a reporting triangle and returns it with negative values of
+reporting handled by redistributing them to earlier delays (from longer
+delay to shorter). This is useful when dealing with reporting
+corrections that can result in negative incremental counts.
 
 When negative values are detected, they are set to zero and the negative
 amount is subtracted from the count at the next earlier delay (moving
@@ -20,20 +19,28 @@ https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.
 ## Usage
 
 ``` r
-preprocess_negative_values(triangle)
+preprocess_negative_values(reporting_triangle, validate = TRUE)
 ```
 
 ## Arguments
 
-- triangle:
+- reporting_triangle:
 
-  Matrix of the reporting triangle, with rows representing the time
-  points of reference and columns representing the delays.
+  A
+  [reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+  object.
+
+- validate:
+
+  Logical. If TRUE (default), validates the object. Set to FALSE only
+  when called from functions that already validated.
 
 ## Value
 
-Matrix of positive integers with negative values of reporting handled
-via redistribution to earlier delays.
+A
+[reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+object with negative values handled via redistribution to earlier
+delays.
 
 ## Details
 
@@ -66,19 +73,24 @@ Delay distribution estimation functions
 ## Examples
 
 ``` r
-# Triangle with negative values from corrections
-triangle_with_neg <- matrix(c(
-  10, 5, -2, 3,
-  8, -3, 4, 2,
-  1, 6, 3, -1
-), nrow = 3, byrow = TRUE)
-
+# Using example dataset with negative values from corrections
 # Preprocess to handle negatives
-preprocessed <- preprocess_negative_values(triangle_with_neg)
+preprocessed <- preprocess_negative_values(example_downward_corr_rt)
 #> ℹ Negative values detected in reporting triangle and will be corrected
 preprocessed
-#>      [,1] [,2] [,3] [,4]
-#> [1,]   10    3    0    3
-#> [2,]    5    0    4    2
-#> [3,]    1    6    2    0
+#> Reporting Triangle
+#> Delays unit: days
+#> Reference dates: 2024-01-01 to 2024-01-08
+#> Max delay: 3
+#> Structure: 1
+#> 
+#>              0  1  2  3
+#> 2024-01-01 100 40  0 10
+#> 2024-01-02 120 45  0 15
+#> 2024-01-03 110 43  0 12
+#> 2024-01-04 130 47  0 18
+#> 2024-01-05 115 44  0 14
+#> 2024-01-06 125 46  0 NA
+#> 2024-01-07 105 62 NA NA
+#> 2024-01-08  95 NA NA NA
 ```

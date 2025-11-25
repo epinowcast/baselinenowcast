@@ -65,7 +65,11 @@ singular version of <code><a href="construct_triangles.html">construct_triangles
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">construct_triangle</span><span class="op">(</span><span class="va">truncated_reporting_triangle</span>, structure <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">construct_triangle</span><span class="op">(</span></span>
+<span>  <span class="va">truncated_reporting_triangle</span>,</span>
+<span>  structure <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  validate <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -73,8 +77,8 @@ singular version of <code><a href="construct_triangles.html">construct_triangles
 
 
 <dl><dt id="arg-truncated-reporting-triangle">truncated_reporting_triangle<a class="anchor" aria-label="anchor" href="#arg-truncated-reporting-triangle"></a></dt>
-<dd><p>A single truncated reporting triangle.
-May or may not contain NAs.</p></dd>
+<dd><p>A single truncated reporting_triangle
+object. May or may not contain NAs.</p></dd>
 
 
 <dt id="arg-structure">structure<a class="anchor" aria-label="anchor" href="#arg-structure"></a></dt>
@@ -82,6 +86,11 @@ May or may not contain NAs.</p></dd>
 If integer, divides columns evenly by that integer (with last possibly
 truncated).  If vector, the sum must not be greater than or equal to the
 number of columns. Default is 1 (standard triangular structure).</p></dd>
+
+
+<dt id="arg-validate">validate<a class="anchor" aria-label="anchor" href="#arg-validate"></a></dt>
+<dd><p>Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -99,55 +108,53 @@ appropriate positions.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fl">65</span>, <span class="fl">46</span>, <span class="fl">21</span>, <span class="fl">7</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">70</span>, <span class="fl">40</span>, <span class="fl">20</span>, <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">80</span>, <span class="fl">50</span>, <span class="fl">10</span>, <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">100</span>, <span class="fl">40</span>, <span class="fl">31</span>, <span class="fl">20</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">95</span>, <span class="fl">45</span>, <span class="fl">21</span>, <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">82</span>, <span class="fl">42</span>, <span class="fl">6</span>, <span class="cn">NA</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">70</span>, <span class="fl">90</span>, <span class="cn">NA</span>, <span class="cn">NA</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  nrow <span class="op">=</span> <span class="fl">7</span>,</span></span>
-<span class="r-in"><span>  byrow <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Standard triangular structure (default)</span></span></span>
-<span class="r-in"><span><span class="va">rep_tri</span> <span class="op">&lt;-</span> <span class="fu">construct_triangle</span><span class="op">(</span><span class="va">triangle</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Standard triangular structure (default)</span></span></span>
+<span class="r-in"><span><span class="va">rep_tri</span> <span class="op">&lt;-</span> <span class="fu">construct_triangle</span><span class="op">(</span><span class="va">example_reporting_triangle</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">rep_tri</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   65   46   21    7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   70   40   20    5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   80   50   10   10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]  100   40   31   20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5,]   95   45   21   NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [6,]   82   42   NA   NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [7,]   70   NA   NA   NA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Reporting Triangle</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Delays unit: days</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Reference dates: 2024-01-01 to 2024-01-05</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Max delay: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Structure: 1, 0, 1, 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              0  1  2  3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-01  80 50 25 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-02 100 50 20 NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-03  90 45 NA NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-04 110 NA NA NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-05  95 NA NA NA</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Ragged structure with 2 columns per delay period</span></span></span>
-<span class="r-in"><span><span class="va">rep_ragged</span> <span class="op">&lt;-</span> <span class="fu">construct_triangle</span><span class="op">(</span><span class="va">triangle</span>, <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">rep_ragged</span> <span class="op">&lt;-</span> <span class="fu">construct_triangle</span><span class="op">(</span><span class="va">example_reporting_triangle</span>, <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">rep_ragged</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   65   46   21    7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   70   40   20    5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   80   50   10   10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]  100   40   31   20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5,]   95   45   21   10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [6,]   82   42    6   NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [7,]   70   90   NA   NA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Reporting Triangle</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Delays unit: days</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Reference dates: 2024-01-01 to 2024-01-05</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Max delay: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Structure: 1, 0, 1, 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              0  1  2  3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-01  80 50 25 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-02 100 50 20 NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-03  90 45 NA NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-04 110 NA NA NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-05  95 NA NA NA</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Custom structure with explicit column counts</span></span></span>
-<span class="r-in"><span><span class="va">rep_custom</span> <span class="op">&lt;-</span> <span class="fu">construct_triangle</span><span class="op">(</span><span class="va">triangle</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">rep_custom</span> <span class="op">&lt;-</span> <span class="fu">construct_triangle</span><span class="op">(</span><span class="va">example_reporting_triangle</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">rep_custom</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   65   46   21    7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   70   40   20    5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   80   50   10   10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]  100   40   31   20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5,]   95   45   21   10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [6,]   82   42    6   NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [7,]   70   NA   NA   NA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Reporting Triangle</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Delays unit: days</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Reference dates: 2024-01-01 to 2024-01-05</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Max delay: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Structure: 1, 0, 1, 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              0  1  2  3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-01  80 50 25 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-02 100 50 20 NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-03  90 45 NA NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-04 110 NA NA NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-05  95 NA NA NA</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

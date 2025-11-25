@@ -32,10 +32,10 @@ estimate_uncertainty_retro(
   reporting_triangle,
   n_history_delay,
   n_retrospective_nowcasts,
-  max_delay = ncol(reporting_triangle) - 1,
-  structure = detect_structure(reporting_triangle),
+  structure = get_reporting_structure(reporting_triangle),
   delay_pmf = NULL,
   preprocess = preprocess_negative_values,
+  validate = TRUE,
   ...
 )
 ```
@@ -44,11 +44,12 @@ estimate_uncertainty_retro(
 
 - reporting_triangle:
 
-  Matrix of the reporting triangle, with rows representing the time
-  points of reference and columns representing the delays. Can be a
-  reporting matrix or incomplete reporting matrix. Can also be a ragged
-  reporting triangle, where multiple columns are reported for the same
-  row. (e.g. weekly reporting of daily data).
+  A
+  [reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+  object with rows representing reference times and columns representing
+  delays. Can be a reporting matrix or incomplete reporting matrix. Can
+  also be a ragged reporting triangle, where multiple columns are
+  reported for the same row (e.g., weekly reporting of daily data).
 
 - n_history_delay:
 
@@ -60,12 +61,6 @@ estimate_uncertainty_retro(
 
   Integer indicating the number of retrospective nowcast times to use
   for uncertainty estimation.
-
-- max_delay:
-
-  Integer indicating the maximum delay to estimate, in units of the
-  delay. The default is to use the whole reporting triangle,
-  `ncol(reporting_triangle) -1`.
 
 - structure:
 
@@ -89,7 +84,14 @@ estimate_uncertainty_retro(
   which handles negative values by redistributing them to earlier
   delays. Set to NULL if you want to preserve negative PMF entries
   (e.g., when working with downward corrections where negative
-  probabilities reflect systematic adjustments).
+  probabilities reflect systematic adjustments). Custom preprocess
+  functions must accept a `validate` parameter (defaults to TRUE) to
+  enable validation optimisation in internal function chains.
+
+- validate:
+
+  Logical. If TRUE (default), validates the object. Set to FALSE only
+  when called from functions that already validated.
 
 - ...:
 
@@ -113,37 +115,22 @@ High-level workflow wrapper functions
 ## Examples
 
 ``` r
-# Create example reporting triangle
-triangle <- matrix(
-  c(
-    65, 46, 21, 7,
-    70, 40, 20, 5,
-    80, 50, 10, 10,
-    100, 40, 31, 20,
-    95, 45, 21, NA,
-    82, 42, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 7,
-  byrow = TRUE
-)
+# Create a reporting triangle from syn_nssp_df
+data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+rep_tri <- as_reporting_triangle(data_as_of) |>
+  truncate_to_delay(max_delay = 25)
+#> ℹ Using max_delay = 154 from data
+#> ℹ Truncating from max_delay = 154 to 25.
 
-# Estimate uncertainty parameters
 uncertainty_params <- estimate_uncertainty_retro(
-  triangle,
-  n_history_delay = 5,
-  n_retrospective_nowcasts = 2
+  rep_tri,
+  n_history_delay = 30,
+  n_retrospective_nowcasts = 10
 )
 uncertainty_params
-#> [1] 999.999936   5.078299   3.034222
-
-# Estimate with custom parameters
-uncertainty_params_custom <- estimate_uncertainty_retro(
-  triangle,
-  n_history_delay = 4,
-  n_retrospective_nowcasts = 2,
-  max_delay = 3
-)
-uncertainty_params_custom
-#> [1] 999.999908   2.985022   4.850320
+#>  [1] 15.5332295 10.0728853  4.0528122  4.4307525  5.2296859  4.5942518
+#>  [7]  5.4795967  5.3292982  2.6502624  2.2989398  2.0225177  1.6874664
+#> [13]  1.4401393  1.4909153  2.1489536  2.6053864  3.6601337  5.1271216
+#> [19]  7.0165474  2.1741529  4.5010526  3.6969221  1.1146483  0.4782235
+#> [25]  0.3418897
 ```

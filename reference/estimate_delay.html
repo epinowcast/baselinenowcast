@@ -6,18 +6,20 @@
     }
   };
 </script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Estimate a delay distribution from a reporting triangle — estimate_delay"><meta name="description" content="Provides an estimate of the reporting delay as a function
-of the delay, based on the reporting triangle and the specified maximum
-delay and number of reference date observations to be used in the
-estimation. This point estimate of the delay is computed empirically,
-using an iterative algorithm starting from the most recent observations.
+of the delay, based on the reporting triangle and the number of reference
+date observations to be used in the estimation. This point estimate of the
+delay is computed empirically, using an iterative algorithm starting from
+the most recent observations. Use truncate_to_delay() if you want to
+limit the maximum delay before estimation.
 This code was adapted from code written (under an MIT license)
 by the Karlsruhe Institute of Technology RESPINOW
 German Hospitalization Nowcasting Hub.
 Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint"><meta property="og:description" content="Provides an estimate of the reporting delay as a function
-of the delay, based on the reporting triangle and the specified maximum
-delay and number of reference date observations to be used in the
-estimation. This point estimate of the delay is computed empirically,
-using an iterative algorithm starting from the most recent observations.
+of the delay, based on the reporting triangle and the number of reference
+date observations to be used in the estimation. This point estimate of the
+delay is computed empirically, using an iterative algorithm starting from
+the most recent observations. Use truncate_to_delay() if you want to
+limit the maximum delay before estimation.
 This code was adapted from code written (under an MIT license)
 by the Karlsruhe Institute of Technology RESPINOW
 German Hospitalization Nowcasting Hub.
@@ -71,10 +73,11 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116
 
     <div class="ref-description section level2">
     <p>Provides an estimate of the reporting delay as a function
-of the delay, based on the reporting triangle and the specified maximum
-delay and number of reference date observations to be used in the
-estimation. This point estimate of the delay is computed empirically,
-using an iterative algorithm starting from the most recent observations.
+of the delay, based on the reporting triangle and the number of reference
+date observations to be used in the estimation. This point estimate of the
+delay is computed empirically, using an iterative algorithm starting from
+the most recent observations. Use <code><a href="truncate_to_delay.html">truncate_to_delay()</a></code> if you want to
+limit the maximum delay before estimation.
 This code was adapted from code written (under an MIT license)
 by the Karlsruhe Institute of Technology RESPINOW
 German Hospitalization Nowcasting Hub.
@@ -85,9 +88,9 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">estimate_delay</span><span class="op">(</span></span>
 <span>  <span class="va">reporting_triangle</span>,</span>
-<span>  max_delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
 <span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span>,</span>
-<span>  preprocess <span class="op">=</span> <span class="va">preprocess_negative_values</span></span>
+<span>  preprocess <span class="op">=</span> <span class="va">preprocess_negative_values</span>,</span>
+<span>  validate <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -96,17 +99,11 @@ Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116
 
 
 <dl><dt id="arg-reporting-triangle">reporting_triangle<a class="anchor" aria-label="anchor" href="#arg-reporting-triangle"></a></dt>
-<dd><p>Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+<dd><p>A <a href="reporting_triangle-class.html">reporting_triangle</a> object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).</p></dd>
-
-
-<dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
-<dd><p>Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-<code>ncol(reporting_triangle) -1</code>.</p></dd>
+reported for the same row (e.g., weekly reporting of daily data).</p></dd>
 
 
 <dt id="arg-n">n<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
@@ -122,13 +119,20 @@ estimation, or NULL to skip preprocessing. Default is
 <code><a href="preprocess_negative_values.html">preprocess_negative_values()</a></code>, which handles negative values by
 redistributing them to earlier delays. Set to NULL if you want to preserve
 negative PMF entries (e.g., when working with downward corrections where
-negative probabilities reflect systematic adjustments).</p></dd>
+negative probabilities reflect systematic adjustments). Custom preprocess
+functions must accept a <code>validate</code> parameter (defaults to TRUE) to enable
+validation optimisation in internal function chains.</p></dd>
+
+
+<dt id="arg-validate">validate<a class="anchor" aria-label="anchor" href="#arg-validate"></a></dt>
+<dd><p>Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Vector indexed at 0 of length <code>max_delay + 1</code> with columns
-indicating the point estimate of the empirical probability
+    <p>Vector indexed at 0 of length <code>ncol(reporting_triangle)</code> with
+columns indicating the point estimate of the empirical probability
 mass on each delay.</p>
     </div>
     <div class="section level2">
@@ -140,35 +144,24 @@ mass on each delay.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example 1: Standard usage with default preprocessing</span></span></span>
-<span class="r-in"><span><span class="va">triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fl">80</span>, <span class="fl">50</span>, <span class="fl">25</span>, <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">100</span>, <span class="fl">50</span>, <span class="fl">30</span>, <span class="fl">20</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">90</span>, <span class="fl">45</span>, <span class="fl">25</span>, <span class="cn">NA</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">80</span>, <span class="fl">40</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">70</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  nrow <span class="op">=</span> <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>  byrow <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">delay_pmf</span> <span class="op">&lt;-</span> <span class="fu">estimate_delay</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  reporting_triangle <span class="op">=</span> <span class="va">triangle</span>,</span></span>
-<span class="r-in"><span>  max_delay <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  n <span class="op">=</span> <span class="fl">4</span></span></span>
+<span class="r-in"><span>  reporting_triangle <span class="op">=</span> <span class="va">example_reporting_triangle</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">delay_pmf</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5029412 0.2514706 0.1455882 0.1000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          0          1          2          3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.52654815 0.28277586 0.13006993 0.06060606 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 2: Using data with downward corrections without preprocessing</span></span></span>
 <span class="r-in"><span><span class="co"># This preserves negative PMF entries reflecting systematic corrections</span></span></span>
+<span class="r-in"><span><span class="va">triangle_ex2</span> <span class="op">&lt;-</span> <span class="va">example_downward_corr_rt</span></span></span>
 <span class="r-in"><span><span class="va">delay_pmf_negative</span> <span class="op">&lt;-</span> <span class="fu">estimate_delay</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  reporting_triangle <span class="op">=</span> <span class="va">example_downward_corr_mat</span>,</span></span>
-<span class="r-in"><span>  max_delay <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>  reporting_triangle <span class="op">=</span> <span class="va">triangle_ex2</span>,</span></span>
 <span class="r-in"><span>  n <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>  preprocess <span class="op">=</span> <span class="cn">NULL</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">delay_pmf_negative</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1]  0.66544955  0.38806216 -0.14046823  0.08695652</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           0           1           2           3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  0.66544955  0.38806216 -0.14046823  0.08695652 </span>
 <span class="r-in"><span><span class="co"># Note: PMF may contain negative values and not sum to 1</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">delay_pmf_negative</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>

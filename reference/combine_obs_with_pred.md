@@ -19,17 +19,18 @@ combine_obs_with_pred(
 
 - predicted_counts:
 
-  Vector of predicted counts at each reference time. Note that if using
+  Vector of predicted counts at each reference date. Note that if using
   a reference time or delay aggregator function, this is assumed to have
   already been aggregated.
 
 - reporting_triangle:
 
-  Matrix of the reporting triangle, with rows representing the time
-  points of reference and columns representing the delays. Can be a
-  reporting matrix or incomplete reporting matrix. Can also be a ragged
-  reporting triangle, where multiple columns are reported for the same
-  row. (e.g. weekly reporting of daily data).
+  A
+  [reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+  object with rows representing reference times and columns representing
+  delays. Can be a reporting matrix or incomplete reporting matrix. Can
+  also be a ragged reporting triangle, where multiple columns are
+  reported for the same row (e.g., weekly reporting of daily data).
 
 - ref_time_aggregator:
 
@@ -46,7 +47,9 @@ combine_obs_with_pred(
 
 ## Value
 
-A vector of predicted counts at each reference time
+A vector of predicted counts at each reference date, for all reference
+dates in the input `reporting_triangle` (or fewer if using
+`ref_time_aggregator`)
 
 ## See also
 
@@ -60,27 +63,20 @@ Probabilistic nowcast generation functions
 ## Examples
 
 ``` r
+# Use example data
+reporting_triangle <- construct_triangle(example_reporting_triangle)
 pred_counts <- c(10, 20, 30, 40)
-reporting_matrix <- matrix(
-  c(
-    7, 9, 4, 3,
-    1, 2, 3, 4,
-    5, 6, 7, 8,
-    9, 10, 11, 12
-  ),
-  nrow = 4,
-  byrow = TRUE
-)
-reporting_triangle <- construct_triangle(reporting_matrix)
 combine_obs_with_pred(pred_counts, reporting_triangle)
-#> [1] 33 26 41 49
-# Another example with rolling sum
+#> Warning: longer object length is not a multiple of shorter object length
+#> 2024-01-01 2024-01-02 2024-01-03 2024-01-04 2024-01-05 
+#>        175        190        165        150        105 
+
+# Example with rolling sum
 if (requireNamespace("zoo", quietly = TRUE)) {
   combine_obs_with_pred(pred_counts,
     reporting_triangle,
     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
   )
 }
-#> Warning: longer object length is not a multiple of shorter object length
-#> [1] 36 34 44 66
+#> [1] 335 305 230 245
 ```

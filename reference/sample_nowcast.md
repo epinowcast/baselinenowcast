@@ -25,11 +25,12 @@ sample_nowcast(
 
 - reporting_triangle:
 
-  Matrix of the reporting triangle, with rows representing the time
-  points of reference and columns representing the delays. Can be a
-  reporting matrix or incomplete reporting matrix. Can also be a ragged
-  reporting triangle, where multiple columns are reported for the same
-  row. (e.g. weekly reporting of daily data).
+  A
+  [reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+  object with rows representing reference times and columns representing
+  delays. Can be a reporting matrix or incomplete reporting matrix. Can
+  also be a ragged reporting triangle, where multiple columns are
+  reported for the same row (e.g., weekly reporting of daily data).
 
 - uncertainty_params:
 
@@ -62,8 +63,10 @@ sample_nowcast(
 
 ## Value
 
-Vector of predicted counts at each reference time based on combining the
+Vector of predicted counts at each reference date based on combining the
 observed counts and the predicted counts for the unobserved elements.
+Returns values for all reference dates in the input `reporting_triangle`
+(or fewer if using `ref_time_aggregator`).
 
 ## See also
 
@@ -77,29 +80,35 @@ Probabilistic nowcast generation functions
 ## Examples
 
 ``` r
-point_nowcast_matrix <- matrix(
-  c(
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    90, 45, 25, 16.8,
-    80, 40, 21.2, 19.5,
-    70, 34.5, 15.4, 9.1
-  ),
-  nrow = 5,
-  byrow = TRUE
+# Generate point nowcast and uncertainty params from example data
+data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+rep_tri <- as_reporting_triangle(data_as_of) |>
+  truncate_to_delay(max_delay = 5) |>
+  tail(n = 10)
+#> ℹ Using max_delay = 154 from data
+#> ℹ Truncating from max_delay = 154 to 5.
+point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
+reporting_triangle <- construct_triangle(rep_tri)
+uncertainty_params <- estimate_uncertainty_retro(
+  rep_tri,
+  n_history_delay = 8,
+  n_retrospective_nowcasts = 2
 )
-reporting_triangle <- construct_triangle(point_nowcast_matrix)
-disp <- c(0.8, 12.4, 9.1)
 nowcast_draw <- sample_nowcast(
   point_nowcast_matrix,
   reporting_triangle,
-  disp
+  uncertainty_params
 )
 nowcast_draw
-#>      [,1]
-#> [1,]  165
-#> [2,]  200
-#> [3,]  186
-#> [4,]  175
-#> [5,]   88
+#>            [,1]
+#>             472
+#>             368
+#>             534
+#>             364
+#>             459
+#> 2026-03-28  402
+#> 2026-03-29  620
+#> 2026-03-30  412
+#> 2026-03-31  457
+#> 2026-04-01  422
 ```

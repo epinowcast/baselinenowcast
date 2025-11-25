@@ -24,11 +24,12 @@ sample_nowcasts(
 
 - reporting_triangle:
 
-  Matrix of the reporting triangle, with rows representing the time
-  points of reference and columns representing the delays. Can be a
-  reporting matrix or incomplete reporting matrix. Can also be a ragged
-  reporting triangle, where multiple columns are reported for the same
-  row. (e.g. weekly reporting of daily data).
+  A
+  [reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+  object with rows representing reference times and columns representing
+  delays. Can be a reporting matrix or incomplete reporting matrix. Can
+  also be a ragged reporting triangle, where multiple columns are
+  reported for the same row (e.g., weekly reporting of daily data).
 
 - uncertainty_params:
 
@@ -49,8 +50,10 @@ sample_nowcasts(
 ## Value
 
 Dataframe containing information for multiple draws with columns for the
-reference time (`time`), the predicted counts (`pred_count`), and the
-draw number (`draw`).
+reference date (`reference_date`), the predicted counts (`pred_count`),
+and the draw number (`draw`). Returns predictions for all reference
+dates in the input `reporting_triangle` (or fewer if using
+`ref_time_aggregator`).
 
 ## See also
 
@@ -64,50 +67,76 @@ Probabilistic nowcast generation functions
 ## Examples
 
 ``` r
-point_nowcast_matrix <- matrix(
-  c(
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    90, 45, 25, 16.8,
-    80, 40, 21.2, 19.5,
-    70, 34.5, 15.4, 9.1
-  ),
-  nrow = 5,
-  byrow = TRUE
+# Generate point nowcast and uncertainty params from example data
+data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+rep_tri <- as_reporting_triangle(data_as_of) |>
+  truncate_to_delay(max_delay = 5) |>
+  tail(n = 10)
+#> ℹ Using max_delay = 154 from data
+#> ℹ Truncating from max_delay = 154 to 5.
+point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
+reporting_triangle <- construct_triangle(rep_tri)
+uncertainty_params <- estimate_uncertainty_retro(
+  rep_tri,
+  n_history_delay = 8,
+  n_retrospective_nowcasts = 2
 )
-reporting_triangle <- construct_triangle(point_nowcast_matrix)
-disp <- c(0.8, 12.4, 9.1)
 nowcast_draws <- sample_nowcasts(
   point_nowcast_matrix,
   reporting_triangle,
-  disp,
+  uncertainty_params,
   draws = 5
 )
 nowcast_draws
-#>    pred_count time draw
-#> 1         165    1    1
-#> 2         200    2    1
-#> 3         168    3    1
-#> 4         141    4    1
-#> 5         201    5    1
-#> 6         165    1    2
-#> 7         200    2    2
-#> 8         168    3    2
-#> 9         165    4    2
-#> 10        158    5    2
-#> 11        165    1    3
-#> 12        200    2    3
-#> 13        174    3    3
-#> 14        153    4    3
-#> 15        192    5    3
-#> 16        165    1    4
-#> 17        200    2    4
-#> 18        181    3    4
-#> 19        151    4    4
-#> 20         92    5    4
-#> 21        165    1    5
-#> 22        200    2    5
-#> 23        185    3    5
-#> 24        151    4    5
-#> 25        115    5    5
+#>    pred_count reference_date draw
+#> 1         472     2026-03-23    1
+#> 2         368     2026-03-24    1
+#> 3         534     2026-03-25    1
+#> 4         364     2026-03-26    1
+#> 5         459     2026-03-27    1
+#> 6         406     2026-03-28    1
+#> 7         598     2026-03-29    1
+#> 8         538     2026-03-30    1
+#> 9         490     2026-03-31    1
+#> 10        349     2026-04-01    1
+#> 11        472     2026-03-23    2
+#> 12        368     2026-03-24    2
+#> 13        534     2026-03-25    2
+#> 14        364     2026-03-26    2
+#> 15        459     2026-03-27    2
+#> 16        402     2026-03-28    2
+#> 17        641     2026-03-29    2
+#> 18        505     2026-03-30    2
+#> 19        468     2026-03-31    2
+#> 20        350     2026-04-01    2
+#> 21        472     2026-03-23    3
+#> 22        368     2026-03-24    3
+#> 23        534     2026-03-25    3
+#> 24        364     2026-03-26    3
+#> 25        459     2026-03-27    3
+#> 26        408     2026-03-28    3
+#> 27        676     2026-03-29    3
+#> 28        493     2026-03-30    3
+#> 29        410     2026-03-31    3
+#> 30        520     2026-04-01    3
+#> 31        472     2026-03-23    4
+#> 32        368     2026-03-24    4
+#> 33        534     2026-03-25    4
+#> 34        364     2026-03-26    4
+#> 35        459     2026-03-27    4
+#> 36        408     2026-03-28    4
+#> 37        609     2026-03-29    4
+#> 38        454     2026-03-30    4
+#> 39        448     2026-03-31    4
+#> 40        453     2026-04-01    4
+#> 41        472     2026-03-23    5
+#> 42        368     2026-03-24    5
+#> 43        534     2026-03-25    5
+#> 44        364     2026-03-26    5
+#> 45        459     2026-03-27    5
+#> 46        410     2026-03-28    5
+#> 47        612     2026-03-29    5
+#> 48        422     2026-03-30    5
+#> 49        425     2026-03-31    5
+#> 50        371     2026-04-01    5
 ```

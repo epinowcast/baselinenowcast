@@ -78,7 +78,8 @@ number of horizons.</p>
 <span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">point_nowcast_matrices</span><span class="op">)</span>,</span>
 <span>  uncertainty_model <span class="op">=</span> <span class="va">fit_by_horizon</span>,</span>
 <span>  ref_time_aggregator <span class="op">=</span> <span class="va">identity</span>,</span>
-<span>  delay_aggregator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  delay_aggregator <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  validate <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -130,6 +131,11 @@ which does not aggregate across reference times.</p></dd>
 of the retrospective point nowcast matrix after it has been aggregated
 across reference times. Default is <code>function(x) rowSums(x, na.rm = TRUE)</code>.</p></dd>
 
+
+<dt id="arg-validate">validate<a class="anchor" aria-label="anchor" href="#arg-validate"></a></dt>
+<dd><p>Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -147,34 +153,54 @@ model.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fl">78</span>, <span class="fl">40</span>, <span class="fl">24</span>, <span class="fl">9</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">65</span>, <span class="fl">46</span>, <span class="fl">21</span>, <span class="fl">7</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">70</span>, <span class="fl">40</span>, <span class="fl">20</span>, <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">80</span>, <span class="fl">50</span>, <span class="fl">10</span>, <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">100</span>, <span class="fl">40</span>, <span class="fl">31</span>, <span class="fl">20</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">95</span>, <span class="fl">45</span>, <span class="fl">21</span>, <span class="cn">NA</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">82</span>, <span class="fl">42</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">70</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  nrow <span class="op">=</span> <span class="fl">8</span>,</span></span>
-<span class="r-in"><span>  byrow <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Use example data to create reporting triangle</span></span></span>
+<span class="r-in"><span><span class="va">data_as_of_df</span> <span class="op">&lt;-</span> <span class="va">syn_nssp_df</span><span class="op">[</span><span class="va">syn_nssp_df</span><span class="op">$</span><span class="va">report_date</span> <span class="op">&lt;=</span> <span class="st">"2026-04-01"</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">rep_tri</span> <span class="op">&lt;-</span> <span class="fu"><a href="as_reporting_triangle.html">as_reporting_triangle</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">data_as_of_df</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using max_delay = 154 from data</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">trunc_rts</span> <span class="op">&lt;-</span> <span class="fu"><a href="truncate_triangles.html">truncate_triangles</a></span><span class="op">(</span><span class="va">triangle</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Create retrospective nowcasts</span></span></span>
+<span class="r-in"><span><span class="va">trunc_rts</span> <span class="op">&lt;-</span> <span class="fu"><a href="truncate_triangles.html">truncate_triangles</a></span><span class="op">(</span><span class="va">rep_tri</span>, n <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">retro_rts</span> <span class="op">&lt;-</span> <span class="fu"><a href="construct_triangles.html">construct_triangles</a></span><span class="op">(</span><span class="va">trunc_rts</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">retro_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="fill_triangles.html">fill_triangles</a></span><span class="op">(</span><span class="va">retro_rts</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">retro_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="fill_triangles.html">fill_triangles</a></span><span class="op">(</span><span class="va">retro_rts</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Estimate dispersion parameters using default (negative binomial error</span></span></span>
-<span class="r-in"><span><span class="co"># model on the sums)</span></span></span>
+<span class="r-in"><span><span class="co"># Estimate dispersion parameters using default negative binomial model</span></span></span>
 <span class="r-in"><span><span class="va">disp_params</span> <span class="op">&lt;-</span> <span class="fu">estimate_uncertainty</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  point_nowcast_matrices <span class="op">=</span> <span class="va">retro_nowcasts</span>,</span></span>
 <span class="r-in"><span>  truncated_reporting_triangles <span class="op">=</span> <span class="va">trunc_rts</span>,</span></span>
 <span class="r-in"><span>  retro_reporting_triangles <span class="op">=</span> <span class="va">retro_rts</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">disp_params</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 999.999942   4.995964   3.937042</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  11.3024846   6.5723896   2.5952630   2.7925662  37.2124366</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [6] 999.9999442  12.4500844 999.9999014   6.8669997   7.6539534</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [11]   1.0521862   0.4650880   2.7053717   0.5904918   1.7773856</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [16]   3.1155077   0.8435241   0.2312235   2.2117861   0.2150130</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [21]   0.2651624   0.8098215   1.7313731 999.9998982   1.1099185</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [26]   0.2699157   0.1253986   0.1192670   0.1000784   0.8390552</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [31]   0.1000784   0.1000784   0.2373649   0.1045634   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [36]   0.2949140   0.1000784   0.1000784   0.1000784   0.2251535</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [41]   0.1275446   0.1000784   0.1388573   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [46]   0.1000784 999.9998975   1.1995052   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [51]   0.1000784   0.1000784   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [56]   0.1000784   0.1000784   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [61]   0.1000784   0.1000784   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [66]   0.1000784   0.1000784   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [71]   0.1000784   0.1000784   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [76]   0.1000784   0.1000784   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [81]   0.1000784   0.1000784   0.1000784   0.1000784 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [86]   0.1000784   0.1000784   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91]   0.1000784   0.1000784   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [96]   0.1000784   0.1000784   0.1000784 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [101]   0.1000784   0.1000784   0.1000784   0.1000784 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [106]   0.1000784   0.1000784   0.1000784 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [111] 999.9999287 999.9999287 999.9999287 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [116] 999.9999287 999.9999287 999.9999287 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [121] 999.9999287 999.9999287   0.1000784   0.1000784 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [126] 999.9999287 999.9999287 999.9999287 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [131] 999.9999287 999.9999287   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [136]   0.1000784 999.9999287 999.9999287 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [141] 999.9999287 999.9999287 999.9999287 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [146] 999.9999287 999.9999287 999.9999287 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [151] 999.9999287 999.9999287 999.9999287 999.9999287</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Estimate dispersion parameters from rolling sum on the reference times</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"zoo"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
@@ -186,7 +212,37 @@ model.</p>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">disp_params_agg</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 333.84093  10.32929  16.76673</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  67.2814366  46.1937528   6.5234536  14.6418994 999.9999091</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [6] 999.9999063 999.9999064 999.9999042 133.1830143  85.2348341</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [11]   4.3347357   2.6104948   4.9707196   1.1615881  40.5117886</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [16]   8.3077858   2.4123936   8.1272501   2.3392506   3.1127881</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [21]   6.8129843   2.0275206   1.4125405 999.9999393   1.0159982</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [26]   0.8015210   0.7529198   0.6777585   0.3368692  19.0399805</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [31]   0.3067500   0.1000784   0.4453096   0.1012936   0.5085173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [36]   1.3786030   0.1000784   0.1000784   0.1000784   0.1882146</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [41]   0.8623161   0.2242091   0.6499149   0.1000784   0.7170622</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [46]   0.1000784 999.9998995   0.4818577   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [51]   0.1000784   0.1000784   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [56]   0.1000784   0.1000784   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [61]   0.1000784   0.1000784   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [66]   0.1000784   0.1000784   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [71]   0.1000784   0.1000784   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [76]   0.1000784   0.1000784 999.9998993   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [81]   0.1000784   0.1000784   0.1000784   0.1000784 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [86]   0.1000784 999.9998997   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91]   0.1000784   0.1000784   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [96]   0.1000784   0.1000784   0.1000784 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [101]   0.1000784   0.1000784   0.1000784   0.1000784 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [106]   0.1000784   0.1000784   0.1000784 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [111] 999.9999287 999.9999287 999.9999287 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [116] 999.9999287 999.9999287 999.9999287 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [121] 999.9999287 999.9999287   0.1000784   0.1000784 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [126] 999.9999287 999.9999287 999.9999287 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [131] 999.9999287 999.9999287   0.1000784   0.1000784   0.1000784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [136]   0.1000784 999.9999287 999.9999287 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [141] 999.9999287 999.9999287 999.9999287 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [146] 999.9999287 999.9999287 999.9999287 999.9999287 999.9999287</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [151] 999.9999287 999.9999287 999.9999287 999.9999287</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

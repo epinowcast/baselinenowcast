@@ -80,11 +80,11 @@ representing the delays.</p></dd>
 
 
 <dt id="arg-reporting-triangle">reporting_triangle<a class="anchor" aria-label="anchor" href="#arg-reporting-triangle"></a></dt>
-<dd><p>Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+<dd><p>A <a href="reporting_triangle-class.html">reporting_triangle</a> object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).</p></dd>
+reported for the same row (e.g., weekly reporting of daily data).</p></dd>
 
 
 <dt id="arg-uncertainty-params">uncertainty_params<a class="anchor" aria-label="anchor" href="#arg-uncertainty-params"></a></dt>
@@ -118,8 +118,10 @@ across reference times. Default is <code>function(x) rowSums(x, na.rm = TRUE)</c
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Vector of predicted counts at each reference time based on combining
-the observed counts and the predicted counts for the unobserved elements.</p>
+    <p>Vector of predicted counts at each reference date based on combining
+the observed counts and the predicted counts for the unobserved elements.
+Returns values for all reference dates in the input <code>reporting_triangle</code>
+(or fewer if using <code>ref_time_aggregator</code>).</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -133,31 +135,37 @@ the observed counts and the predicted counts for the unobserved elements.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">point_nowcast_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fl">80</span>, <span class="fl">50</span>, <span class="fl">25</span>, <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">100</span>, <span class="fl">50</span>, <span class="fl">30</span>, <span class="fl">20</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">90</span>, <span class="fl">45</span>, <span class="fl">25</span>, <span class="fl">16.8</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">80</span>, <span class="fl">40</span>, <span class="fl">21.2</span>, <span class="fl">19.5</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">70</span>, <span class="fl">34.5</span>, <span class="fl">15.4</span>, <span class="fl">9.1</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  nrow <span class="op">=</span> <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>  byrow <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Generate point nowcast and uncertainty params from example data</span></span></span>
+<span class="r-in"><span><span class="va">data_as_of</span> <span class="op">&lt;-</span> <span class="va">syn_nssp_df</span><span class="op">[</span><span class="va">syn_nssp_df</span><span class="op">$</span><span class="va">report_date</span> <span class="op">&lt;=</span> <span class="st">"2026-04-01"</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">rep_tri</span> <span class="op">&lt;-</span> <span class="fu"><a href="as_reporting_triangle.html">as_reporting_triangle</a></span><span class="op">(</span><span class="va">data_as_of</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="truncate_to_delay.html">truncate_to_delay</a></span><span class="op">(</span>max_delay <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using max_delay = 154 from data</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Truncating from max_delay = 154 to 5.</span>
+<span class="r-in"><span><span class="va">point_nowcast_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_and_apply_delay.html">estimate_and_apply_delay</a></span><span class="op">(</span><span class="va">rep_tri</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">reporting_triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="construct_triangle.html">construct_triangle</a></span><span class="op">(</span><span class="va">rep_tri</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">uncertainty_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_uncertainty_retro.html">estimate_uncertainty_retro</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">rep_tri</span>,</span></span>
+<span class="r-in"><span>  n_history_delay <span class="op">=</span> <span class="fl">8</span>,</span></span>
+<span class="r-in"><span>  n_retrospective_nowcasts <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">reporting_triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="construct_triangle.html">construct_triangle</a></span><span class="op">(</span><span class="va">point_nowcast_matrix</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">disp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">12.4</span>, <span class="fl">9.1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">nowcast_draw</span> <span class="op">&lt;-</span> <span class="fu">sample_nowcast</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">point_nowcast_matrix</span>,</span></span>
 <span class="r-in"><span>  <span class="va">reporting_triangle</span>,</span></span>
-<span class="r-in"><span>  <span class="va">disp</span></span></span>
+<span class="r-in"><span>  <span class="va">uncertainty_params</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">nowcast_draw</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]  165</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]  200</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]  186</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]  175</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5,]   88</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            [,1]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             472</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             368</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             534</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             459</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-03-28  402</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-03-29  620</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-03-30  412</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-03-31  457</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2026-04-01  422</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

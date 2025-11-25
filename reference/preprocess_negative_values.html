@@ -5,11 +5,10 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Preprocess negative values in the reporting triangle — preprocess_negative_values"><meta name="description" content="Takes in a reporting triangle and returns a matrix in the same format
-as the input triangle, but with negative values of reporting handled by
-redistributing them to earlier delays (from longer delay to shorter).
-This is useful when dealing with reporting corrections that can result in
-negative incremental counts.
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Preprocess negative values in the reporting triangle — preprocess_negative_values"><meta name="description" content="Takes in a reporting triangle and returns it with negative values of
+reporting handled by redistributing them to earlier delays (from longer
+delay to shorter). This is useful when dealing with reporting corrections
+that can result in negative incremental counts.
 When negative values are detected, they are set to zero and the negative
 amount is subtracted from the count at the next earlier delay (moving from
 right to left in each row). This process continues until either the
@@ -17,11 +16,10 @@ negative value is fully absorbed or the first delay is reached.
 This code was adapted from code written (under an MIT license)
 by the Karlsruhe Institute of Technology RESPINOW
 German Hospitalization Nowcasting Hub.
-Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R #nolint"><meta property="og:description" content="Takes in a reporting triangle and returns a matrix in the same format
-as the input triangle, but with negative values of reporting handled by
-redistributing them to earlier delays (from longer delay to shorter).
-This is useful when dealing with reporting corrections that can result in
-negative incremental counts.
+Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R #nolint"><meta property="og:description" content="Takes in a reporting triangle and returns it with negative values of
+reporting handled by redistributing them to earlier delays (from longer
+delay to shorter). This is useful when dealing with reporting corrections
+that can result in negative incremental counts.
 When negative values are detected, they are set to zero and the negative
 amount is subtracted from the count at the next earlier delay (moving from
 right to left in each row). This process continues until either the
@@ -78,11 +76,10 @@ Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/basel
     </div>
 
     <div class="ref-description section level2">
-    <p>Takes in a reporting triangle and returns a matrix in the same format
-as the input triangle, but with negative values of reporting handled by
-redistributing them to earlier delays (from longer delay to shorter).
-This is useful when dealing with reporting corrections that can result in
-negative incremental counts.</p>
+    <p>Takes in a reporting triangle and returns it with negative values of
+reporting handled by redistributing them to earlier delays (from longer
+delay to shorter). This is useful when dealing with reporting corrections
+that can result in negative incremental counts.</p>
 <p>When negative values are detected, they are set to zero and the negative
 amount is subtracted from the count at the next earlier delay (moving from
 right to left in each row). This process continues until either the
@@ -95,22 +92,26 @@ Modified from https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/basel
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">preprocess_negative_values</span><span class="op">(</span><span class="va">triangle</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">preprocess_negative_values</span><span class="op">(</span><span class="va">reporting_triangle</span>, validate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-triangle">triangle<a class="anchor" aria-label="anchor" href="#arg-triangle"></a></dt>
-<dd><p>Matrix of the reporting triangle, with rows representing
-the time points of reference and columns representing the delays.</p></dd>
+<dl><dt id="arg-reporting-triangle">reporting_triangle<a class="anchor" aria-label="anchor" href="#arg-reporting-triangle"></a></dt>
+<dd><p>A <a href="reporting_triangle-class.html">reporting_triangle</a> object.</p></dd>
+
+
+<dt id="arg-validate">validate<a class="anchor" aria-label="anchor" href="#arg-validate"></a></dt>
+<dd><p>Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Matrix of positive integers with negative values of reporting
-handled via redistribution to earlier delays.</p>
+    <p>A <a href="reporting_triangle-class.html">reporting_triangle</a> object with negative values handled via
+redistribution to earlier delays.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -131,21 +132,26 @@ probabilities</p></li>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Triangle with negative values from corrections</span></span></span>
-<span class="r-in"><span><span class="va">triangle_with_neg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fl">10</span>, <span class="fl">5</span>, <span class="op">-</span><span class="fl">2</span>, <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  <span class="fl">8</span>, <span class="op">-</span><span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">2</span>,</span></span>
-<span class="r-in"><span>  <span class="fl">1</span>, <span class="fl">6</span>, <span class="fl">3</span>, <span class="op">-</span><span class="fl">1</span></span></span>
-<span class="r-in"><span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Using example dataset with negative values from corrections</span></span></span>
 <span class="r-in"><span><span class="co"># Preprocess to handle negatives</span></span></span>
-<span class="r-in"><span><span class="va">preprocessed</span> <span class="op">&lt;-</span> <span class="fu">preprocess_negative_values</span><span class="op">(</span><span class="va">triangle_with_neg</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">preprocessed</span> <span class="op">&lt;-</span> <span class="fu">preprocess_negative_values</span><span class="op">(</span><span class="va">example_downward_corr_rt</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative values detected in reporting triangle and will be corrected</span>
 <span class="r-in"><span><span class="va">preprocessed</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   10    3    0    3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    5    0    4    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]    1    6    2    0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Reporting Triangle</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Delays unit: days</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Reference dates: 2024-01-01 to 2024-01-08</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Max delay: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Structure: 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              0  1  2  3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-01 100 40  0 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-02 120 45  0 15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-03 110 43  0 12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-04 130 47  0 18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-05 115 44  0 14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-06 125 46  0 NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-07 105 62 NA NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-08  95 NA NA NA</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

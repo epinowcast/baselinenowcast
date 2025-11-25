@@ -45,12 +45,6 @@ number required
   delay to be used for estimation of delay and uncertainty. Default is
   `3`.
 
-- max_delay:
-
-  Integer indicating the maximum delay to estimate, in units of the
-  delay. The default is to use the whole reporting triangle,
-  `ncol(reporting_triangle) -1`.
-
 ## Value
 
 `n_used` Integer indicating how many reference times will be used

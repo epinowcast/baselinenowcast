@@ -8,14 +8,19 @@ is the singular version of
 ## Usage
 
 ``` r
-construct_triangle(truncated_reporting_triangle, structure = 1)
+construct_triangle(
+  truncated_reporting_triangle,
+  structure = 1,
+  validate = TRUE
+)
 ```
 
 ## Arguments
 
 - truncated_reporting_triangle:
 
-  A single truncated reporting triangle. May or may not contain NAs.
+  A single truncated reporting_triangle object. May or may not contain
+  NAs.
 
 - structure:
 
@@ -23,6 +28,11 @@ construct_triangle(truncated_reporting_triangle, structure = 1)
   divides columns evenly by that integer (with last possibly truncated).
   If vector, the sum must not be greater than or equal to the number of
   columns. Default is 1 (standard triangular structure).
+
+- validate:
+
+  Logical. If TRUE (default), validates the object. Set to FALSE only
+  when called from functions that already validated.
 
 ## Value
 
@@ -39,53 +49,51 @@ Retrospective data generation functions
 ## Examples
 
 ``` r
-triangle <- matrix(
-  c(
-    65, 46, 21, 7,
-    70, 40, 20, 5,
-    80, 50, 10, 10,
-    100, 40, 31, 20,
-    95, 45, 21, 10,
-    82, 42, 6, NA,
-    70, 90, NA, NA
-  ),
-  nrow = 7,
-  byrow = TRUE
-)
-
 # Standard triangular structure (default)
-rep_tri <- construct_triangle(triangle)
+rep_tri <- construct_triangle(example_reporting_triangle)
 rep_tri
-#>      [,1] [,2] [,3] [,4]
-#> [1,]   65   46   21    7
-#> [2,]   70   40   20    5
-#> [3,]   80   50   10   10
-#> [4,]  100   40   31   20
-#> [5,]   95   45   21   NA
-#> [6,]   82   42   NA   NA
-#> [7,]   70   NA   NA   NA
+#> Reporting Triangle
+#> Delays unit: days
+#> Reference dates: 2024-01-01 to 2024-01-05
+#> Max delay: 3
+#> Structure: 1, 0, 1, 1
+#> 
+#>              0  1  2  3
+#> 2024-01-01  80 50 25 10
+#> 2024-01-02 100 50 20 NA
+#> 2024-01-03  90 45 NA NA
+#> 2024-01-04 110 NA NA NA
+#> 2024-01-05  95 NA NA NA
 
 # Ragged structure with 2 columns per delay period
-rep_ragged <- construct_triangle(triangle, 2)
+rep_ragged <- construct_triangle(example_reporting_triangle, 2)
 rep_ragged
-#>      [,1] [,2] [,3] [,4]
-#> [1,]   65   46   21    7
-#> [2,]   70   40   20    5
-#> [3,]   80   50   10   10
-#> [4,]  100   40   31   20
-#> [5,]   95   45   21   10
-#> [6,]   82   42    6   NA
-#> [7,]   70   90   NA   NA
+#> Reporting Triangle
+#> Delays unit: days
+#> Reference dates: 2024-01-01 to 2024-01-05
+#> Max delay: 3
+#> Structure: 1, 0, 1, 1
+#> 
+#>              0  1  2  3
+#> 2024-01-01  80 50 25 10
+#> 2024-01-02 100 50 20 NA
+#> 2024-01-03  90 45 NA NA
+#> 2024-01-04 110 NA NA NA
+#> 2024-01-05  95 NA NA NA
 
 # Custom structure with explicit column counts
-rep_custom <- construct_triangle(triangle, c(1, 2))
+rep_custom <- construct_triangle(example_reporting_triangle, c(1, 2))
 rep_custom
-#>      [,1] [,2] [,3] [,4]
-#> [1,]   65   46   21    7
-#> [2,]   70   40   20    5
-#> [3,]   80   50   10   10
-#> [4,]  100   40   31   20
-#> [5,]   95   45   21   10
-#> [6,]   82   42    6   NA
-#> [7,]   70   NA   NA   NA
+#> Reporting Triangle
+#> Delays unit: days
+#> Reference dates: 2024-01-01 to 2024-01-05
+#> Max delay: 3
+#> Structure: 1, 0, 1, 1
+#> 
+#>              0  1  2  3
+#> 2024-01-01  80 50 25 10
+#> 2024-01-02 100 50 20 NA
+#> 2024-01-03  90 45 NA NA
+#> 2024-01-04 110 NA NA NA
+#> 2024-01-05  95 NA NA NA
 ```

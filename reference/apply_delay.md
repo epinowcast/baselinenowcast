@@ -16,7 +16,7 @@ https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab2907
 ## Usage
 
 ``` r
-apply_delay(reporting_triangle, delay_pmf)
+apply_delay(reporting_triangle, delay_pmf, validate = TRUE)
 ```
 
 ## Arguments
@@ -31,6 +31,11 @@ apply_delay(reporting_triangle, delay_pmf)
 
   Vector of delays assumed to be indexed starting at the first delay
   column in `reporting_triangle`.
+
+- validate:
+
+  Logical. If TRUE (default), validates the object. Set to FALSE only
+  when called from functions that already validated.
 
 ## Value
 
@@ -47,54 +52,50 @@ Point nowcast generation functions
 ## Examples
 
 ``` r
-# Example 1: Standard usage with positive delay PMF
-triangle <- matrix(
-  c(
-    80, 50, 25, 10,
-    100, 50, 30, 20,
-    90, 45, 25, NA,
-    80, 40, NA, NA,
-    70, NA, NA, NA
-  ),
-  nrow = 5,
-  byrow = TRUE
-)
-delay_pmf <- estimate_delay(
-  reporting_triangle = triangle,
-  max_delay = 3,
-  n = 4
-)
+# Example 1: Standard usage with example dataset
+delay_pmf <- estimate_delay(example_reporting_triangle)
 point_nowcast_matrix <- apply_delay(
-  reporting_triangle = triangle,
+  reporting_triangle = example_reporting_triangle,
   delay_pmf = delay_pmf
 )
 print(point_nowcast_matrix)
-#>      [,1]     [,2]     [,3]     [,4]
-#> [1,]   80 50.00000 25.00000 10.00000
-#> [2,]  100 50.00000 30.00000 20.00000
-#> [3,]   90 45.00000 25.00000 17.78889
-#> [4,]   80 40.00000 23.20529 15.92281
-#> [5,]   70 35.24853 20.35851 13.96745
+#> Reporting Triangle
+#> ℹ The reporting triangle does not contain any missing values.
+#> Delays unit: days
+#> Reference dates: 2024-01-01 to 2024-01-05
+#> Max delay: 3
+#> Structure: 0
+#> 
+#>              0        1        2        3
+#> 2024-01-01  80 50.00000 25.00000 10.00000
+#> 2024-01-02 100 50.00000 20.00000 10.97165
+#> 2024-01-03  90 45.00000 21.72707 10.11533
+#> 2024-01-04 110 59.32834 27.24413 12.68600
+#> 2024-01-05  95 51.27278 23.53877 10.95949
 
-# Example 2: Using delay PMF with negative entries from downward
-# corrections. Create a delay PMF with a negative value representing
-# systematic corrections
+# Example 2: Using delay PMF with negative entries from downward corrections
 delay_pmf_negative <- c(0.7, 0.4, -0.15, 0.05)
-
 nowcast_with_corrections <- apply_delay(
-  reporting_triangle = example_downward_corr_mat,
+  reporting_triangle = example_downward_corr_rt,
   delay_pmf = delay_pmf_negative
 )
 # The nowcast includes negative predictions at delay 2,
 # correctly reflecting expected downward corrections
 print(nowcast_with_corrections)
-#>      [,1]     [,2]      [,3]      [,4]
-#> [1,]  100 60.00000 -20.00000 10.000000
-#> [2,]  120 70.00000 -25.00000 15.000000
-#> [3,]  110 65.00000 -22.00000 12.000000
-#> [4,]  130 75.00000 -28.00000 18.000000
-#> [5,]  115 68.00000 -24.00000 14.000000
-#> [6,]  125 72.00000 -26.00000  9.002632
-#> [7,]  105 62.00000 -22.75909  7.594258
-#> [8,]   95 54.45714 -20.36688  6.796856
+#> Reporting Triangle
+#> ℹ The reporting triangle does not contain any missing values.
+#> Delays unit: days
+#> Reference dates: 2024-01-01 to 2024-01-08
+#> Max delay: 3
+#> Structure: 0
+#> 
+#>              0        1         2         3
+#> 2024-01-01 100 60.00000 -20.00000 10.000000
+#> 2024-01-02 120 70.00000 -25.00000 15.000000
+#> 2024-01-03 110 65.00000 -22.00000 12.000000
+#> 2024-01-04 130 75.00000 -28.00000 18.000000
+#> 2024-01-05 115 68.00000 -24.00000 14.000000
+#> 2024-01-06 125 72.00000 -26.00000  9.002632
+#> 2024-01-07 105 62.00000 -22.75909  7.594258
+#> 2024-01-08  95 54.45714 -20.36688  6.796856
 ```

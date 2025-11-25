@@ -73,10 +73,10 @@ estimated from the <code>reporting_triangle</code>.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fill_triangle</span><span class="op">(</span></span>
 <span>  <span class="va">reporting_triangle</span>,</span>
-<span>  max_delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
 <span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">reporting_triangle</span><span class="op">)</span>,</span>
 <span>  delay_pmf <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  preprocess <span class="op">=</span> <span class="va">preprocess_negative_values</span></span>
+<span>  preprocess <span class="op">=</span> <span class="va">preprocess_negative_values</span>,</span>
+<span>  validate <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -85,17 +85,11 @@ estimated from the <code>reporting_triangle</code>.</p>
 
 
 <dl><dt id="arg-reporting-triangle">reporting_triangle<a class="anchor" aria-label="anchor" href="#arg-reporting-triangle"></a></dt>
-<dd><p>Matrix of the reporting triangle, with rows
-representing the time points of reference and columns representing the
-delays. Can be a reporting matrix or incomplete reporting matrix.
+<dd><p>A <a href="reporting_triangle-class.html">reporting_triangle</a> object with rows
+representing reference times and columns representing delays.
+Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
-reported for the same row. (e.g. weekly reporting of daily data).</p></dd>
-
-
-<dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
-<dd><p>Integer indicating the maximum delay to estimate, in units
-of the delay. The default is to use the whole reporting triangle,
-<code>ncol(reporting_triangle) -1</code>.</p></dd>
+reported for the same row (e.g., weekly reporting of daily data).</p></dd>
 
 
 <dt id="arg-n">n<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
@@ -118,7 +112,14 @@ estimation, or NULL to skip preprocessing. Default is
 <code><a href="preprocess_negative_values.html">preprocess_negative_values()</a></code>, which handles negative values by
 redistributing them to earlier delays. Set to NULL if you want to preserve
 negative PMF entries (e.g., when working with downward corrections where
-negative probabilities reflect systematic adjustments).</p></dd>
+negative probabilities reflect systematic adjustments). Custom preprocess
+functions must accept a <code>validate</code> parameter (defaults to TRUE) to enable
+validation optimisation in internal function chains.</p></dd>
+
+
+<dt id="arg-validate">validate<a class="anchor" aria-label="anchor" href="#arg-validate"></a></dt>
+<dd><p>Logical. If TRUE (default), validates the object. Set to
+FALSE only when called from functions that already validated.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -136,27 +137,24 @@ in as point estimates.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fl">80</span>, <span class="fl">50</span>, <span class="fl">25</span>, <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">100</span>, <span class="fl">50</span>, <span class="fl">30</span>, <span class="fl">20</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">90</span>, <span class="fl">45</span>, <span class="fl">25</span>, <span class="cn">NA</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">80</span>, <span class="fl">40</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">70</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  nrow <span class="op">=</span> <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>  byrow <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Fill triangle using default delay estimation</span></span></span>
 <span class="r-in"><span><span class="va">point_nowcast_matrix</span> <span class="op">&lt;-</span> <span class="fu">fill_triangle</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  reporting_triangle <span class="op">=</span> <span class="va">triangle</span></span></span>
+<span class="r-in"><span>  reporting_triangle <span class="op">=</span> <span class="va">example_reporting_triangle</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">point_nowcast_matrix</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1]     [,2]     [,3]     [,4]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   80 50.00000 25.00000 10.00000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]  100 50.00000 30.00000 20.00000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   90 45.00000 25.00000 14.33572</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]   80 40.00000 23.17697 12.82918</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5,]   70 37.26249 20.72155 11.46862</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Reporting Triangle</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The reporting triangle does not contain any missing values.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Delays unit: days</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Reference dates: 2024-01-01 to 2024-01-05</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Max delay: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Structure: 0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              0        1        2        3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-01  80 50.00000 25.00000 10.00000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-02 100 50.00000 20.00000 10.97165</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-03  90 45.00000 21.72707 10.11533</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-04 110 59.32834 27.24413 12.68600</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-05  95 51.27278 23.53877 10.95949</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

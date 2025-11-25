@@ -8,7 +8,7 @@ specified maximum delay are correct.
 ## Usage
 
 ``` r
-.validate_multiple_inputs(point_nowcast_matrix, reporting_triangle, max_delay)
+.validate_multiple_inputs(point_nowcast_matrix, reporting_triangle)
 ```
 
 ## Arguments
@@ -20,17 +20,12 @@ specified maximum delay are correct.
 
 - reporting_triangle:
 
-  Matrix of the reporting triangle, with rows representing the time
-  points of reference and columns representing the delays. Can be a
-  reporting matrix or incomplete reporting matrix. Can also be a ragged
-  reporting triangle, where multiple columns are reported for the same
-  row. (e.g. weekly reporting of daily data).
-
-- max_delay:
-
-  Integer indicating the maximum delay to estimate, in units of the
-  delay. The default is to use the whole reporting triangle,
-  `ncol(reporting_triangle) -1`.
+  A
+  [reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
+  object with rows representing reference times and columns representing
+  delays. Can be a reporting matrix or incomplete reporting matrix. Can
+  also be a ragged reporting triangle, where multiple columns are
+  reported for the same row (e.g., weekly reporting of daily data).
 
 ## Value
 

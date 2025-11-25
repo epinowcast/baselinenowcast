@@ -181,7 +181,9 @@ And we can get a summary of it:
 summary(rep_tri_full)
 ```
 
-We can see the maximum delay inferred from the data.
+We can see the maximum delay is set to the maximum observed delay, which in some cases will be a lot larger than the delays we want to model.
+We strongly recommend using the `truncate_to_delay()` or `truncate_to_quantile()` functions to set the maximum delay in your nowcasting problem. 
+Choosing too large a maximum delay will mean that there is less data, or potentially insufficient data, available for estimating uncertainty from retrospective nowcast errors. 
 For this analysis, we want to limit our reporting triangle to a maximum delay of 30 days using `truncate_to_delay()`:
 
 ```{r}

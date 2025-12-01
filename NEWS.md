@@ -1,5 +1,6 @@
 # baselinenowcast 0.0.0.1000
 
+-   Rename `truncate_triangle()` to `truncate_to_row()` and `truncate_triangles()` to `truncate_to_rows()` to clarify that these functions truncate by row count and distinguish them from other truncation utilities such as `truncate_to_quantile()` (#336).
 -   Add `preprocess` parameter to `estimate_delay()` to control handling of negative values in reporting triangles. Set to `preprocess_negative_values` by default to redistribute negative values to earlier delays, or set to `NULL` to preserve negative PMF entries. This allows the method to work with reporting corrections that result in net downward adjustments at specific delays (#278).
 -   Export `preprocess_negative_values()` function to allow users to manually handle negative values in reporting triangles by redistributing them to earlier delays (#278).
 -   Improve PMF validation message to be more informative when the delay PMF does not sum to approximately 1. The message now shows the actual sum and clarifies that this may be expected when working with downward corrections or incomplete data (#148, #278).

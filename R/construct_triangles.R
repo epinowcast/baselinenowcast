@@ -17,7 +17,7 @@
 #' @export
 #' @examples
 #' # Generate retrospective triangles from truncated triangles
-#' trunc_rts <- truncate_triangles(example_reporting_triangle, n = 2)
+#' trunc_rts <- truncate_to_rows(example_reporting_triangle, n = 2)
 #' retro_rts <- construct_triangles(trunc_rts)
 #'
 #' # With custom structure

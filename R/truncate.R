@@ -156,13 +156,13 @@ truncate_to_delay <- function(x, max_delay) {
   return(head(reporting_triangle, n = n_rows))
 }
 
-#' Generate truncated reporting triangles
+#' Truncate reporting triangle by removing bottom rows
 #'
-#' This function ingests a reporting triangle/matrix and the number of
-#'   truncated reporting triangles we want to create, `n`, and iteratively
-#'   truncates the reporting triangle, working from the latest reference time
-#'   (bottom) to the older reference times (top) for `n`
-#'   snapshots.
+#' Generates a list of retrospective reporting triangles by successively
+#'   removing rows from the bottom of the original triangle.
+#' Each truncated triangle represents what would have been observed at an
+#'   earlier reference time.
+#' This function truncates by row count, removing the most recent observations.
 #'
 #' @param n Integer indicating the number of retrospective
 #'   truncated triangles to be generated, always starting from the most
@@ -180,9 +180,9 @@ truncate_to_delay <- function(x, max_delay) {
 #' @export
 #' @examples
 #' # Generate multiple truncated triangles
-#' truncated_rts <- truncate_triangles(example_reporting_triangle, n = 2)
+#' truncated_rts <- truncate_to_rows(example_reporting_triangle, n = 2)
 #' truncated_rts[1:2]
-truncate_triangles <- function(reporting_triangle,
+truncate_to_rows <- function(reporting_triangle,
                                n = nrow(reporting_triangle) -
                                  sum(is.na(rowSums(reporting_triangle))) - 1,
                                validate = TRUE) {
@@ -196,10 +196,10 @@ truncate_triangles <- function(reporting_triangle,
   return(trunc_rep_tri_list)
 }
 
-#' Get a single truncated triangle
+#' Truncate reporting triangle to a specific row
 #'
-#' This function takes in a reporting triangle and an integer `t` and generates
-#'   a truncated reporting triangle, removing the last `t` observations.
+#' Removes the last `t` rows from a reporting triangle to simulate what would
+#'   have been observed at an earlier reference time.
 #'
 #' @inheritParams estimate_delay
 #' @param t Integer indicating the number of timepoints to truncate off the
@@ -213,9 +213,9 @@ truncate_triangles <- function(reporting_triangle,
 #' @export
 #' @examples
 #' # Generate single truncated triangle
-#' trunc_rep_tri <- truncate_triangle(example_reporting_triangle, t = 1)
+#' trunc_rep_tri <- truncate_to_row(example_reporting_triangle, t = 1)
 #' trunc_rep_tri
-truncate_triangle <- function(reporting_triangle,
+truncate_to_row <- function(reporting_triangle,
                               t,
                               validate = TRUE) {
   # Full validation for standalone use

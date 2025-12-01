@@ -46,7 +46,7 @@
 #' rep_tri <- as_reporting_triangle(data = data_as_of_df)
 #'
 #' # Create retrospective nowcasts
-#' trunc_rts <- truncate_triangles(rep_tri, n = 2)
+#' trunc_rts <- truncate_to_rows(rep_tri, n = 2)
 #' retro_rts <- construct_triangles(trunc_rts)
 #' retro_nowcasts <- fill_triangles(retro_rts)
 #'

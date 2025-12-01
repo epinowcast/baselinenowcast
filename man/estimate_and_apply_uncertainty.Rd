@@ -89,7 +89,7 @@ using retrospective nowcasts
 To obtain estimates of uncertainty parameters, use
 \code{\link[=estimate_uncertainty_retro]{estimate_uncertainty_retro()}}. For full control over individual steps
 (e.g., custom matrix preparation, alternative aggregation), use the
-low-level functions (\code{\link[=truncate_triangles]{truncate_triangles()}}, \code{\link[=construct_triangles]{construct_triangles()}},
+low-level functions (\code{\link[=truncate_to_rows]{truncate_to_rows()}}, \code{\link[=construct_triangles]{construct_triangles()}},
 \code{\link[=fill_triangles]{fill_triangles()}}, \code{\link[=estimate_uncertainty]{estimate_uncertainty()}}) directly.
 }
 \examples{

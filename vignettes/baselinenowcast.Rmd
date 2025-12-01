@@ -399,13 +399,13 @@ We repeat this process for `n_retrospective_nowcasts` reference times in the cur
 
 
 ```{r}
-trunc_rep_tri_list <- truncate_triangles(reporting_triangle,
+trunc_rep_tri_list <- truncate_to_rows(reporting_triangle,
   n = n_retrospective_nowcasts
 )
 retro_rep_tri_list <- construct_triangles(trunc_rep_tri_list)
 ```
 This results in a list of retrospective reporting triangles.
-See the documentation for `truncate_triangles()` and `construct_triangles()` for more information on the inputs and outputs of these functions.
+See the documentation for `truncate_to_rows()` and `construct_triangles()` for more information on the inputs and outputs of these functions.
 
 Next we will pass this list of reporting triangles to the `fill_triangles()` and specify `n`, the number of reference times to be used to estimate the delay for each nowcast, which we will set as the `n_history_delay` previous specified.
 

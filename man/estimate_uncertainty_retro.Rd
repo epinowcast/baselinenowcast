@@ -66,7 +66,7 @@ on retrospective nowcast performance.
 
 This function chains the retrospective nowcasting workflow:
 \enumerate{
-\item \code{\link[=truncate_triangles]{truncate_triangles()}} - Create retrospective snapshots
+\item \code{\link[=truncate_to_rows]{truncate_to_rows()}} - Create retrospective snapshots
 \item \code{\link[=construct_triangles]{construct_triangles()}} - Generate retrospective reporting triangles
 \item \code{\link[=fill_triangles]{fill_triangles()}} - Generate point nowcasts
 \item \code{\link[=estimate_uncertainty]{estimate_uncertainty()}} - Estimate uncertainty parameters

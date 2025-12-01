@@ -38,7 +38,7 @@
 #'   byrow = TRUE
 #' )
 #'
-#' trunc_rts <- truncate_triangles(triangle)
+#' trunc_rts <- truncate_to_rows(triangle)
 #' retro_rts <- construct_triangles(trunc_rts)
 #' retro_pt_nowcast_mat_list <- fill_triangles(retro_rts)
 #' retro_pt_nowcast_mat_list[1:3]

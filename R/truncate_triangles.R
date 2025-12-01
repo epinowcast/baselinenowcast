@@ -34,16 +34,16 @@
 #'   byrow = TRUE
 #' )
 #'
-#' truncated_rts <- truncate_triangles(triangle, n = 2)
+#' truncated_rts <- truncate_to_rows(triangle, n = 2)
 #' truncated_rts[1:2]
-truncate_triangles <- function(reporting_triangle,
-                               n = nrow(reporting_triangle) -
-                                 sum(is.na(rowSums(reporting_triangle))) - 1) {
+truncate_to_rows <- function(reporting_triangle,
+                             n = nrow(reporting_triangle) -
+                               sum(is.na(rowSums(reporting_triangle))) - 1) {
   .validate_triangle(reporting_triangle)
   assert_integerish(n, lower = 0)
   trunc_rep_tri_list <- lapply(
     seq_len(n),
-    truncate_triangle,
+    truncate_to_row,
     reporting_triangle
   )
 
@@ -80,10 +80,10 @@ truncate_triangles <- function(reporting_triangle,
 #'   byrow = TRUE
 #' )
 #'
-#' trunc_rep_tri <- truncate_triangle(t = 1, reporting_triangle = triangle)
+#' trunc_rep_tri <- truncate_to_row(t = 1, reporting_triangle = triangle)
 #' trunc_rep_tri
-truncate_triangle <- function(t,
-                              reporting_triangle) {
+truncate_to_row <- function(t,
+                            reporting_triangle) {
   n_obs <- nrow(reporting_triangle)
   if (t >= n_obs) {
     cli_abort(

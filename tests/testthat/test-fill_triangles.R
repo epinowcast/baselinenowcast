@@ -222,7 +222,7 @@ test_that("fill_triangles uses full number of rows in n_history_delay", { # noli
   slight_dif_triangle <- fill_triangle(triangle, n = 7)
 
   expect_equal(slight_dif_triangle, complete_triangle, tol = 0.5)
-  truncated_rts <- truncate_triangles(triangle, n = 2)
+  truncated_rts <- truncate_to_rows(triangle, n = 2)
   truncated_rts[1:2]
   # These will always have the first row at the top. First one will be with
   # last row cut off, second will be with last 2 rows cut off
@@ -270,7 +270,7 @@ test_that("fill_triangles uses correct rows", {
   triangle
 
 
-  truncated_rts <- truncate_triangles(triangle, n = 2)
+  truncated_rts <- truncate_to_rows(triangle, n = 2)
   truncated_rts[1:2] # check that these all have 1s
   # These will always have the first row at the top. First one will be with
   # last row cut off, second will be with last 2 rows cut off

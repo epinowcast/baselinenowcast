@@ -111,7 +111,7 @@ prep_latest_data <- latest_training_data |>
   select(type, reference_date, count = confirm)
 
 # Create list of truncated reporting triangles
-trunc_rep_tri_list <- truncate_triangles(
+trunc_rep_tri_list <- truncate_to_rows(
   reporting_triangle,
   n = n_retrospective_nowcasts
 )

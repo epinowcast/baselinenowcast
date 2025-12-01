@@ -150,7 +150,7 @@ To estimate the uncertainty in the nowcasts, we use the nowcast errors from $M$ 
 
 We first obtain "vintage" reporting triangles of the raw reporting triangle (i.e., before pre-processing) to replicate the data which would have been available as of times $s^* = t^*-1, ..., t^*-M$, i.e., the last $M$ time points on which nowcasts could have been generated. This simply corresponds to the stepwise omission of all entries with $t + d > s^*$, which for each $s^*$ is a diagonal from the bottom left to the top right. The same pre-processing step as in Section [Preprocessing of the reporting triangle](#preprocessing) is applied to each vintage reporting triangle.
 
-This can be achieved in a stepwise manner using the functions `truncate_triangles()` and `construct_triangles()` which return a list of `n` retrospective reporting triangles in order from most recent to oldest.
+This can be achieved in a stepwise manner using the functions `truncate_to_rows()` and `construct_triangles()` which return a list of `n` retrospective reporting triangles in order from most recent to oldest.
 
 ### Generation of retrospective point nowcast matrices
 

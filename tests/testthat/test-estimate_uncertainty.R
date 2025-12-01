@@ -204,7 +204,7 @@ test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
   pt_nowcast_list <- expect_message(
     fill_triangles(retro_rts_list)
   )
-  truncated_reporting_triangles <- truncate_triangles(base_tri)
+  truncated_reporting_triangles <- truncate_to_rows(base_tri)
   rt_list <- construct_triangles(truncated_reporting_triangles)
   # Since only two point nowcasts are non-null, this will warn
   expect_warning(estimate_uncertainty(
@@ -235,7 +235,7 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
   )
 
   # Create truncated triangles and retrospective triangles
-  trunc_rts <- truncate_triangles(ragged_triangle)
+  trunc_rts <- truncate_to_rows(ragged_triangle)
   retro_rts <- construct_triangles(trunc_rts, structure = 2)
 
   # Generate nowcasts from the ragged triangles
@@ -267,7 +267,7 @@ test_that("estimate_uncertainty: works as expected with perfect data", {
   reporting_triangle <- rbind(rep_mat, triangle)
 
   pt_nowcast_mat <- fill_triangle(reporting_triangle)
-  truncated_reporting_triangles <- truncate_triangles(reporting_triangle)
+  truncated_reporting_triangles <- truncate_to_rows(reporting_triangle)
   retro_reporting_triangles <- construct_triangles(truncated_reporting_triangles) # nolint
 
   point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
@@ -320,7 +320,7 @@ test_that("estimate_uncertainty: works as expected with some dispersion for both
     )
   }
 
-  truncated_reporting_triangles <- truncate_triangles(rep_tri_new)
+  truncated_reporting_triangles <- truncate_to_rows(rep_tri_new)
   retro_reporting_triangles <- construct_triangles(truncated_reporting_triangles) # nolint
 
   point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
@@ -464,7 +464,7 @@ test_that("estimate_uncertainty: can handle weekday filter with large ragged tri
   short_ragged_triangle <- ragged_triangle[(nrow(ragged_triangle) - 15):nrow(ragged_triangle), ] # nolint
 
   # Create truncated and retrospective reporting triangles
-  trunc_rts <- truncate_triangles(short_ragged_triangle, n = 5)
+  trunc_rts <- truncate_to_rows(short_ragged_triangle, n = 5)
   retro_rts <- construct_triangles(trunc_rts,
     structure = c(2, 7, 7, 7, 7, 7)
   )
@@ -505,7 +505,7 @@ test_that("estimate_uncertainty: can handle weekday filter with small ragged tri
   )
 
   # Create truncated triangles and retrospective triangles
-  trunc_rts <- truncate_triangles(ragged_triangle, n = 2)
+  trunc_rts <- truncate_to_rows(ragged_triangle, n = 2)
   retro_rts <- construct_triangles(trunc_rts, structure = 2)
 
   # Generate nowcasts from the ragged triangles

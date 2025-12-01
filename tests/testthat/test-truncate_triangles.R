@@ -13,9 +13,9 @@ test_triangle <- matrix(
   byrow = TRUE
 )
 
-test_that("truncate_triangles returns correct number of truncated matrices with valid input", { # nolint
+test_that("truncate_to_rows returns correct number of truncated matrices with valid input", { # nolint
   n <- 2
-  result <- truncate_triangles(test_triangle, n = n)
+  result <- truncate_to_rows(test_triangle, n = n)
 
   # Verify list length
   expect_length(result, n)
@@ -29,45 +29,45 @@ test_that("truncate_triangles returns correct number of truncated matrices with 
   expect_identical(nrow(result[[2]]), nrow(test_triangle) - 2L)
 })
 
-test_that("truncate_triangles default n calculation works correctly", {
+test_that("truncate_to_rows default n calculation works correctly", {
   expected_default <- nrow(test_triangle) -
     sum(is.na(rowSums(test_triangle))) - 1
-  result <- truncate_triangles(test_triangle)
+  result <- truncate_to_rows(test_triangle)
   expect_length(result, expected_default)
 })
 
 
-test_that("truncate_triangles edge cases are handled properly", {
+test_that("truncate_to_rows edge cases are handled properly", {
   # n = 0 returns empty list
-  expect_length(truncate_triangles(test_triangle, n = 0), 0)
+  expect_length(truncate_to_rows(test_triangle, n = 0), 0)
 
   # Input validation
   expect_error(
-    truncate_triangles(as.data.frame(test_triangle)),
+    truncate_to_rows(as.data.frame(test_triangle)),
     "Assertion on 'triangle' failed: Must inherit from class 'matrix'"
   ) # nolint
   expect_error(
-    truncate_triangles(test_triangle, n = -1),
+    truncate_to_rows(test_triangle, n = -1),
     "Assertion on 'n' failed: Element 1 is not >= 0."
   )
   expect_error(
-    truncate_triangles(test_triangle, n = 2.5),
+    truncate_to_rows(test_triangle, n = 2.5),
     "Assertion on 'n' failed: Must be of type 'integerish'"
   )
 })
 
-test_that("truncate_triangles can handle a range of ns", {
+test_that("truncate_to_rows can handle a range of ns", {
   ncols <- ncol(test_triangle) - 1
   nrows <- nrow(test_triangle) - 1
 
-  expect_silent(truncate_triangles(test_triangle, n = ncols))
-  expect_silent(truncate_triangles(test_triangle, n = nrows))
-  expect_silent(truncate_triangles(test_triangle, n = 2))
-  expect_error(truncate_triangles(test_triangle, n = -1))
+  expect_silent(truncate_to_rows(test_triangle, n = ncols))
+  expect_silent(truncate_to_rows(test_triangle, n = nrows))
+  expect_silent(truncate_to_rows(test_triangle, n = 2))
+  expect_error(truncate_to_rows(test_triangle, n = -1))
 })
 
-test_that("truncate_triangles NA replacement works as expected", {
-  result <- truncate_triangles(test_triangle, n = 1)[[1]]
+test_that("truncate_to_rows NA replacement works as expected", {
+  result <- truncate_to_rows(test_triangle, n = 1)[[1]]
   # Expect bottom 3 elemets of lower left triangle to be NAs
   expect_true(all(
     anyNA(result[5, 4]),
@@ -75,8 +75,8 @@ test_that("truncate_triangles NA replacement works as expected", {
   ))
 })
 
-test_that("truncate_triangles truncated matrices preserve original structure", {
-  result <- truncate_triangles(test_triangle, n = 1)[[1]]
+test_that("truncate_to_rows truncated matrices preserve original structure", {
+  result <- truncate_to_rows(test_triangle, n = 1)[[1]]
 
   # Verify first rows remain unchanged
   expect_identical(
@@ -85,7 +85,7 @@ test_that("truncate_triangles truncated matrices preserve original structure", {
   )
 })
 
-test_that("truncate_triangles: default works well for ragged triangle", {
+test_that("truncate_to_rows: default works well for ragged triangle", {
   sim_delay_pmf <- c(0.1, 0.2, 0.3, 0.1, 0.1, 0.1)
 
   # Generate counts for each reference date
@@ -103,6 +103,6 @@ test_that("truncate_triangles: default works well for ragged triangle", {
     structure = 2
   )
 
-  truncated_triangles <- truncate_triangles(ragged_triangle)
+  truncated_triangles <- truncate_to_rows(ragged_triangle)
   expect_length(truncated_triangles, 1L)
 })

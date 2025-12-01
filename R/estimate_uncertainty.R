@@ -55,7 +55,7 @@
 #'   byrow = TRUE
 #' )
 #'
-#' trunc_rts <- truncate_triangles(triangle, n = 3)
+#' trunc_rts <- truncate_to_rows(triangle, n = 3)
 #' retro_rts <- construct_triangles(trunc_rts)
 #'
 #' retro_nowcasts <- fill_triangles(retro_rts, n = 5)

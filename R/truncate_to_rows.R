@@ -1,10 +1,11 @@
-#' Generate truncated reporting triangles
+#' Truncate reporting triangle by removing bottom rows
 #'
-#' This function ingests a reporting triangle/matrix and the number of
-#'   truncated reporting triangles we want to create, `n`, and iteratively
-#'   truncates the reporting triangle, working from the latest reference time
-#'   (bottom) to the older reference times (top) for `n`
-#'   snapshots.
+#' Generates a list of retrospective reporting triangles by successively
+#'   removing rows from the bottom of the original triangle.
+#' Each truncated triangle represents what would have been observed at an
+#'   earlier reference time.
+#' This function truncates by row count, removing the most recent observations.
+#' For other truncation approaches, see [truncate_to_quantile()].
 #'
 #' @param n Integer indicating the number of retrospective
 #'   truncated triangles to be generated, always starting from the most
@@ -50,10 +51,12 @@ truncate_to_rows <- function(reporting_triangle,
   return(trunc_rep_tri_list)
 }
 
-#' Get a single truncated triangle
+#' Truncate reporting triangle to a specific row
 #'
-#' This function takes in a integer `t` and a reporting triangle and generates
-#'   a truncated reporting triangle, remove the last `t` observations.
+#' Removes the last `t` rows from a reporting triangle to simulate what would
+#'   have been observed at an earlier reference time.
+#' This function truncates by row count.
+#' For other truncation approaches, see [truncate_to_quantile()].
 #'
 #' @param t Integer indicating the number of timepoints to truncate off the
 #'   bottom of the original reporting triangle.

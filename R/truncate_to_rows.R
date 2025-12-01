@@ -5,7 +5,6 @@
 #' Each truncated triangle represents what would have been observed at an
 #'   earlier reference time.
 #' This function truncates by row count, removing the most recent observations.
-#' For other truncation approaches, see [truncate_to_quantile()].
 #'
 #' @param n Integer indicating the number of retrospective
 #'   truncated triangles to be generated, always starting from the most
@@ -56,7 +55,6 @@ truncate_to_rows <- function(reporting_triangle,
 #' Removes the last `t` rows from a reporting triangle to simulate what would
 #'   have been observed at an earlier reference time.
 #' This function truncates by row count.
-#' For other truncation approaches, see [truncate_to_quantile()].
 #'
 #' @param t Integer indicating the number of timepoints to truncate off the
 #'   bottom of the original reporting triangle.

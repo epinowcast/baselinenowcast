@@ -34,7 +34,6 @@ removing rows from the bottom of the original triangle.
 Each truncated triangle represents what would have been observed at an
 earlier reference time.
 This function truncates by row count, removing the most recent observations.
-For other truncation approaches, see \code{\link[=truncate_to_quantile]{truncate_to_quantile()}}.
 }
 \examples{
 triangle <- matrix(

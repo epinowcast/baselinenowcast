@@ -24,7 +24,6 @@ reported for the same row. (e.g. weekly reporting of daily data).}
 Removes the last \code{t} rows from a reporting triangle to simulate what would
 have been observed at an earlier reference time.
 This function truncates by row count.
-For other truncation approaches, see \code{\link[=truncate_to_quantile]{truncate_to_quantile()}}.
 }
 \examples{
 # example code

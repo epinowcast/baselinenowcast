@@ -284,7 +284,9 @@ test_that(
     truncated_reporting_triangles <- truncate_triangles(reporting_triangle)
     retro_reporting_triangles <- apply_reporting_structures(truncated_reporting_triangles) # nolint
 
-    point_nowcast_matrices <- estimate_and_apply_delays(retro_reporting_triangles)
+    point_nowcast_matrices <- estimate_and_apply_delays(
+      retro_reporting_triangles
+    )
 
     dispersion <- estimate_uncertainty(
       point_nowcast_matrices,
@@ -498,7 +500,8 @@ test_that("estimate_uncertainty: can handle weekday filter with large ragged tri
     structure = c(2, 7, 7, 7, 7, 7)
   )
 
-  retro_nowcasts <- estimate_and_apply_delays(retro_rts, n = 10) # Use 10 reference times
+  # Use 10 reference times
+  retro_nowcasts <- estimate_and_apply_delays(retro_rts, n = 10)
 
   disp_params <- estimate_uncertainty(
     point_nowcast_matrices = retro_nowcasts,

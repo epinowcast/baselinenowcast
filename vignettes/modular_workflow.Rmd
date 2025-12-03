@@ -141,14 +141,8 @@ n_history_delay <- tv$n_history_delay
 n_retrospective_nowcasts <- tv$n_retrospective_nowcasts
 ```
 
-Alternatively, if you just wanted to specify the `n_history_delay` and `n_retrospective nowcasts` directly, you could do this.
+Alternatively, if you wanted to directly specify the `n_history_delay` and `n_retrospective nowcasts` directly, you could do this.
 This might be useful if say you run your nowcast each week, but your data is daily, and you want to ensure that the number of weeks used for delay and uncertainty estimation is an integer number of weeks.
-Here we will use 7 weeks, or 49 days, of data for estimating delay and uncertainty.
-
-```{r}
-n_history_delay <- 49
-n_retrospective_nowcasts <- 49
-```
 
 # Estimate delay
 

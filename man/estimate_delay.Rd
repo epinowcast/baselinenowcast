@@ -7,7 +7,6 @@
 estimate_delay(
   reporting_triangle,
   n = nrow(reporting_triangle),
-  preprocess = preprocess_negative_values,
   validate = TRUE
 )
 }
@@ -22,15 +21,6 @@ reported for the same row (e.g., weekly reporting of daily data).}
 be used in the estimate of the reporting delay, always starting from the
 most recent reporting delay. The default is to use the whole reporting
 triangle, so \code{nrow(reporting_triangle)}.}
-
-\item{preprocess}{Function to apply to the truncated triangle before
-estimation, or NULL to skip preprocessing. Default is
-\code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
-redistributing them to earlier delays. Set to NULL if you want to preserve
-negative PMF entries (e.g., when working with downward corrections where
-negative probabilities reflect systematic adjustments). Custom preprocess
-functions must accept a \code{validate} parameter (defaults to TRUE) to enable
-validation optimisation in internal function chains.}
 
 \item{validate}{Logical. If TRUE (default), validates the object. Set to
 FALSE only when called from functions that already validated.}
@@ -53,23 +43,18 @@ German Hospitalization Nowcasting Hub.
 Modified from: https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55 #nolint
 }
 \examples{
-# Example 1: Standard usage with default preprocessing
+# Example 1: Standard usage
 delay_pmf <- estimate_delay(
   reporting_triangle = example_reporting_triangle
 )
 delay_pmf
 
-# Example 2: Using data with downward corrections without preprocessing
-# This preserves negative PMF entries reflecting systematic corrections
-triangle_ex2 <- example_downward_corr_rt
-delay_pmf_negative <- estimate_delay(
-  reporting_triangle = triangle_ex2,
-  n = 5,
-  preprocess = NULL
+# Example 2: Estimate delay using fewer observations
+delay_pmf_ex2 <- estimate_delay(
+  reporting_triangle = example_reporting_triangle,
+  n = 5
 )
-delay_pmf_negative
-# Note: PMF may contain negative values and not sum to 1
-sum(delay_pmf_negative)
+delay_pmf_ex2
 }
 \seealso{
 Delay distribution estimation functions

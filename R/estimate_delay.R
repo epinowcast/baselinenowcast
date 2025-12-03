@@ -19,14 +19,6 @@
 #'   be used in the estimate of the reporting delay, always starting from the
 #'   most recent reporting delay. The default is to use the whole reporting
 #'   triangle, so `nrow(reporting_triangle)`.
-#' @param preprocess Function to apply to the truncated triangle before
-#'   estimation, or NULL to skip preprocessing. Default is
-#'   [preprocess_negative_values()], which handles negative values by
-#'   redistributing them to earlier delays. Set to NULL if you want to preserve
-#'   negative PMF entries (e.g., when working with downward corrections where
-#'   negative probabilities reflect systematic adjustments). Custom preprocess
-#'   functions must accept a `validate` parameter (defaults to TRUE) to enable
-#'   validation optimisation in internal function chains.
 #' @inheritParams assert_reporting_triangle
 #' @returns Vector indexed at 0 of length `ncol(reporting_triangle)` with
 #'   columns indicating the point estimate of the empirical probability
@@ -35,27 +27,21 @@
 #' @family estimate_delay
 #' @export
 #' @examples
-#' # Example 1: Standard usage with default preprocessing
+#' # Example 1: Standard usage
 #' delay_pmf <- estimate_delay(
 #'   reporting_triangle = example_reporting_triangle
 #' )
 #' delay_pmf
 #'
-#' # Example 2: Using data with downward corrections without preprocessing
-#' # This preserves negative PMF entries reflecting systematic corrections
-#' triangle_ex2 <- example_downward_corr_rt
-#' delay_pmf_negative <- estimate_delay(
-#'   reporting_triangle = triangle_ex2,
-#'   n = 5,
-#'   preprocess = NULL
+#' # Example 2: Estimate delay using fewer observations
+#' delay_pmf_ex2 <- estimate_delay(
+#'   reporting_triangle = example_reporting_triangle,
+#'   n = 5
 #' )
-#' delay_pmf_negative
-#' # Note: PMF may contain negative values and not sum to 1
-#' sum(delay_pmf_negative)
+#' delay_pmf_ex2
 estimate_delay <- function(
     reporting_triangle,
     n = nrow(reporting_triangle),
-    preprocess = preprocess_negative_values,
     validate = TRUE) {
   assert_reporting_triangle(reporting_triangle, validate)
 
@@ -67,11 +53,6 @@ estimate_delay <- function(
 
   # Truncate to last n rows
   trunc_triangle <- tail(reporting_triangle, n = n)
-
-  # Apply preprocessing if provided
-  if (!is.null(preprocess)) {
-    trunc_triangle <- preprocess(trunc_triangle, validate = FALSE)
-  }
 
   # Convert to matrix for chainladder fill
   trunc_matrix <- as.matrix(trunc_triangle)

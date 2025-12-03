@@ -27,8 +27,7 @@ negative values at that specific delay.
 Use this example to understand:
 \itemize{
 \item How to work with negative corrections in delay distributions
-\item The difference between \code{preprocess = NULL} (preserves negatives) and
-\code{preprocess = preprocess_negative_values} (redistributes)
+\item The impact of preprocessing negative values on delay estimation
 \item How PMFs and CDFs behave with systematic downward corrections
 }
 }
@@ -37,10 +36,11 @@ Use this example to understand:
 example_downward_corr_rt
 
 # Estimate delay with and without preprocessing
-delay_raw <- estimate_delay(example_downward_corr_rt, n = 5,
-  preprocess = NULL)
-delay_processed <- estimate_delay(example_downward_corr_rt, n = 5,
-  preprocess = preprocess_negative_values)
+delay_raw <- estimate_delay(example_downward_corr_rt, n = 5)
+delay_processed <- estimate_delay(
+  preprocess_negative_values(example_downward_corr_rt),
+  n = 5
+)
 
 # Compare the resulting PMFs
 delay_raw
@@ -49,7 +49,6 @@ delay_processed
 \seealso{
 \itemize{
 \item \link{example_reporting_triangle} for a clean example without corrections
-\item \code{\link[=estimate_delay]{estimate_delay()}} with \code{preprocess} parameter
 \item \code{\link[=preprocess_negative_values]{preprocess_negative_values()}} to handle negative values
 }
 

@@ -53,7 +53,6 @@ estimate_uncertainty_retro <- function(
     n_retrospective_nowcasts,
     structure = get_reporting_structure(reporting_triangle),
     delay_pmf = NULL,
-    preprocess = preprocess_negative_values,
     validate = TRUE,
     ...) {
   assert_reporting_triangle(reporting_triangle, validate)
@@ -83,7 +82,6 @@ estimate_uncertainty_retro <- function(
     retro_reporting_triangles = reporting_triangle_list,
     n = n_history_delay,
     delay_pmf = delay_pmf,
-    preprocess = preprocess,
     validate = FALSE
   )
 

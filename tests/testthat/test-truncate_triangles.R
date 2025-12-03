@@ -101,7 +101,7 @@ test_that("truncate_triangles: default works well for ragged triangle", {
   complete_triangle_mat <- do.call(rbind, complete_triangle_mat)
   complete_triangle <- make_test_triangle(data = complete_triangle_mat)
 
-  ragged_triangle <- construct_triangle(
+  ragged_triangle <- apply_reporting_structure(
     complete_triangle,
     structure = 2
   )

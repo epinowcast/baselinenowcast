@@ -5,7 +5,7 @@ counts <- c(30, 40, 50, 60, 70, 50, 40, 50, 80, 40)
 complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
 complete_triangle <- do.call(rbind, complete_triangle)
 
-reporting_triangle <- construct_triangle(
+reporting_triangle <- apply_reporting_structure(
   make_test_triangle(data = complete_triangle)
 )
 
@@ -72,7 +72,7 @@ test_that(
     complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
     complete_triangle <- do.call(rbind, complete_triangle)
 
-    reporting_triangle <- construct_triangle(
+    reporting_triangle <- apply_reporting_structure(
       make_test_triangle(data = complete_triangle),
       structure = 2
     )
@@ -101,7 +101,7 @@ test_that(
     complete_triangle <- lapply(counts, function(x) x * sim_delay_pmf)
     complete_triangle <- do.call(rbind, complete_triangle)
 
-    reporting_triangle <- construct_triangle(
+    reporting_triangle <- apply_reporting_structure(
       make_test_triangle(data = complete_triangle),
       structure = 2
     )

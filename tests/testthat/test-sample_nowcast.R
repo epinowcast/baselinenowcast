@@ -10,7 +10,7 @@ test_that("sample_nowcast: returns a matrix of correct length", {
     byrow = TRUE
   )
   dispersion <- c(0.8, 12.4, 8)
-  reporting_triangle <- construct_triangle(
+  reporting_triangle <- apply_reporting_structure(
     make_test_triangle(data = point_nowcast_matrix)
   )
 

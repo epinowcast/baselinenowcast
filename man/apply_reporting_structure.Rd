@@ -2,7 +2,7 @@
 % Please edit documentation in R/apply_reporting_structure.R
 \name{apply_reporting_structure}
 \alias{apply_reporting_structure}
-\title{Generate a single retrospective reporting triangle}
+\title{Apply reporting structure to generate a single retrospective reporting triangle}
 \usage{
 apply_reporting_structure(
   truncated_reporting_triangle,
@@ -27,9 +27,10 @@ A single retrospective reporting triangle matrix with NAs in the
 appropriate positions.
 }
 \description{
-This function generates a single reporting triangle by removing the bottom
-right observations from a truncated reporting triangle matrix. It is the
-singular version of \code{apply_reporting_structures()}.
+This function applies a reporting structure to a truncated reporting triangle
+by setting observations to NA row by row from the bottom up based on the
+specified structure. It is the singular version of
+\code{apply_reporting_structures()}.
 }
 \examples{
 # Standard triangular structure (default)

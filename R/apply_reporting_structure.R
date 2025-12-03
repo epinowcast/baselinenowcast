@@ -1,10 +1,11 @@
-#' Generate retrospective reporting triangles
+#' Apply reporting structures to generate retrospective reporting triangles
 #'
-#' This function ingests a list of truncated reporting triangles and iteratively
-#'   generates the reporting triangle that would have been available as of the
-#'   maximum reference time. It operates on each element in the list in order
-#'   (from most recent retrospective nowcast time to oldest retrospective
-#'   nowcast time).
+#' This function applies a reporting structure to a list of truncated reporting
+#'   triangles by setting observations to NA row by row from the bottom up based
+#'   on the specified structure. This generates the reporting triangles that
+#'   would have been available at each retrospective time point. It operates on
+#'   each element in the list in order (from most recent retrospective nowcast
+#'   time to oldest retrospective nowcast time).
 #'
 #' @param truncated_reporting_triangles List of `n` truncated reporting triangle
 #'   matrices with as many rows as available given the truncation.
@@ -44,11 +45,12 @@ apply_reporting_structures <- function(truncated_reporting_triangles,
   return(reporting_triangles)
 }
 
-#' Generate a single retrospective reporting triangle
+#' Apply reporting structure to generate a single retrospective reporting triangle
 #'
-#' This function generates a single reporting triangle by removing the bottom
-#'   right observations from a truncated reporting triangle matrix. It is the
-#'   singular version of `apply_reporting_structures()`.
+#' This function applies a reporting structure to a truncated reporting triangle
+#'   by setting observations to NA row by row from the bottom up based on the
+#'   specified structure. It is the singular version of
+#'   `apply_reporting_structures()`.
 #'
 #' @param truncated_reporting_triangle A single truncated reporting_triangle
 #'   object. May or may not contain NAs.

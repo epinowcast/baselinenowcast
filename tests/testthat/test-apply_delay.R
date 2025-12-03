@@ -277,7 +277,7 @@ test_that("apply_delay works with PMF containing negative entries", {
     byrow = TRUE
   )
 
-  # Get PMF (may have negative entries from negative values in triangle)
+  # Get PMF with negative entries
   triangle_obj <- make_test_triangle(data = triangle)
   delay_pmf <- estimate_delay(
     reporting_triangle = triangle_obj,
@@ -318,7 +318,7 @@ test_that("apply_delay CDF can be not strictly increasing", {
     byrow = TRUE
   )
 
-  # Get PMF (may have negative entries from negative values in triangle)
+  # Get PMF with negative entries
   triangle_obj <- make_test_triangle(data = triangle)
   delay_pmf <- estimate_delay(
     reporting_triangle = triangle_obj,
@@ -359,7 +359,7 @@ test_that("apply_delay completes full workflow with negative PMF", {
     byrow = TRUE
   )
 
-  # Full workflow: estimate delay (may have negative PMF entries)
+  # Full workflow: estimate delay with negative values
   triangle_obj <- make_test_triangle(data = triangle)
   delay_pmf <- estimate_delay(
     reporting_triangle = triangle_obj,

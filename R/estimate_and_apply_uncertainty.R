@@ -14,7 +14,7 @@
 #' To obtain estimates of uncertainty parameters, use
 #'   [estimate_uncertainty_retro()]. For full control over individual steps
 #'   (e.g., custom matrix preparation, alternative aggregation), use the
-#'   low-level functions ([truncate_triangles()], [construct_triangles()],
+#'   low-level functions ([truncate_to_rows()], [construct_triangles()],
 #'   [fill_triangles()], [estimate_uncertainty()]) directly.
 #'
 #' @inheritParams estimate_delay

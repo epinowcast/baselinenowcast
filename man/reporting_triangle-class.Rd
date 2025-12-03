@@ -57,7 +57,7 @@ Reporting triangle objects provide:
 \item \code{\link[=fill_triangle]{fill_triangle()}}: Fill missing values with zeros
 \item \code{\link[=estimate_delay]{estimate_delay()}}: Extract delay distribution from triangle
 \item \code{\link[=apply_delay]{apply_delay()}}: Apply delay distribution for nowcasting
-\item \code{\link[=truncate_triangle]{truncate_triangle()}}: Remove most recent rows
+\item \code{\link[=truncate_to_row]{truncate_to_row()}}: Remove most recent rows
 \item \code{\link[=preprocess_negative_values]{preprocess_negative_values()}}: Handle reporting corrections
 }
 }

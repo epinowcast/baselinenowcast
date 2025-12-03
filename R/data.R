@@ -129,10 +129,14 @@
 #' example_downward_corr_rt
 #'
 #' # Estimate delay with and without preprocessing
-#' delay_raw <- estimate_delay(example_downward_corr_rt, n = 5,
-#'   preprocess = NULL)
-#' delay_processed <- estimate_delay(example_downward_corr_rt, n = 5,
-#'   preprocess = preprocess_negative_values)
+#' delay_raw <- estimate_delay(example_downward_corr_rt,
+#'   n = 5,
+#'   preprocess = NULL
+#' )
+#' delay_processed <- estimate_delay(example_downward_corr_rt,
+#'   n = 5,
+#'   preprocess = preprocess_negative_values
+#' )
 #'
 #' # Compare the resulting PMFs
 #' delay_raw

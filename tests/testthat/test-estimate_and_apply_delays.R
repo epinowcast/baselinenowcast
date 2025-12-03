@@ -28,38 +28,10 @@ test_triangle_2 <- make_test_triangle(data = matrix(
 retro_rts_list <- list(test_triangle_1, test_triangle_2)
 delay_pmf <- c(0.1, 0.1, 0.5, 0.3)
 
-test_that("fill_triangles is deprecated with warning", {
-  # Reset the lifecycle verbosity to ensure warning is shown
-  withr::local_options(lifecycle_verbosity = "warning")
-
-  expect_warning(
-    result <- fill_triangles(
-      retro_reporting_triangles = retro_rts_list
-    ),
-    regexp = "deprecated"
-  )
-  expect_warning(
-    fill_triangles(
-      retro_reporting_triangles = retro_rts_list
-    ),
-    regexp = "estimate_and_apply_delays"
-  )
-})
-
-test_that("fill_triangles still works with deprecation warning", {
-  result <- suppressWarnings(fill_triangles(
+test_that("estimate_and_apply_delays returns correctly structured output", {
+  result <- estimate_and_apply_delays(
     retro_reporting_triangles = retro_rts_list
-  ))
-
-  expect_length(result, 2)
-  expect_false(anyNA(result[[1]]))
-  expect_false(anyNA(result[[2]]))
-})
-
-test_that("fill_triangles returns correctly structured output", {
-  result <- suppressWarnings(fill_triangles(
-    retro_reporting_triangles = retro_rts_list
-  ))
+  )
 
   # Output has same number of elements as input
   expect_length(result, 2)
@@ -75,40 +47,40 @@ test_that("fill_triangles returns correctly structured output", {
   expect_false(anyNA(result[[2]]))
 })
 
-test_that("fill_triangles takes in delay_pmf as vector or list", {
-  result1 <- suppressWarnings(fill_triangles(
+test_that("estimate_and_apply_delays takes in delay_pmf as vector or list", {
+  result1 <- estimate_and_apply_delays(
     retro_reporting_triangles = retro_rts_list,
     delay_pmf = delay_pmf
-  ))
+  )
 
-  result2 <- suppressWarnings(fill_triangles(
+  result2 <- estimate_and_apply_delays(
     retro_reporting_triangles = retro_rts_list,
     delay_pmf = rep(list(delay_pmf), length(retro_rts_list))
-  ))
+  )
 
   expect_identical(result1, result2)
 
-  expect_error(suppressWarnings(fill_triangles(
+  expect_error(estimate_and_apply_delays(
     retro_reporting_triangles = retro_rts_list,
     delay_pmf = rep(list(delay_pmf), length(retro_rts_list) - 1)
-  )))
+  ))
 })
 
 test_that(
-  "fill_triangles default n_history_delay uses minimum rows",
+  "estimate_and_apply_delays default n_history_delay uses minimum rows",
   {
     # Input matrices have 7 and 7 rows → min = 6
-    result_default <- suppressWarnings(fill_triangles(
+    result_default <- estimate_and_apply_delays(
       retro_reporting_triangles = retro_rts_list
-    ))
-    result_custom_w_def <- suppressWarnings(fill_triangles(
+    )
+    result_custom_w_def <- estimate_and_apply_delays(
       retro_reporting_triangles = retro_rts_list,
       n = 6
-    ))
-    result_custom <- suppressWarnings(fill_triangles(
+    )
+    result_custom <- estimate_and_apply_delays(
       retro_reporting_triangles = retro_rts_list,
       n = 5
-    ))
+    )
 
     # Ensure default matches explicit use of min rows
     expect_identical(result_default, result_custom_w_def)
@@ -118,11 +90,11 @@ test_that(
   }
 )
 
-test_that("fill_triangles custom n_history_delay is respected", {
-  result <- suppressWarnings(fill_triangles(
+test_that("estimate_and_apply_delays custom n_history_delay is respected", {
+  result <- estimate_and_apply_delays(
     retro_reporting_triangles = retro_rts_list,
     n = 5
-  ))
+  )
   # Compare to estimate using n=5
   first_triangle <- result[[1]]
   delay_pmf <- estimate_delay(retro_rts_list[[1]],
@@ -133,40 +105,40 @@ test_that("fill_triangles custom n_history_delay is respected", {
 
   # Custom n_history_delay is too high
   expect_error(
-    suppressWarnings(fill_triangles(
+    estimate_and_apply_delays(
       retro_reporting_triangles = retro_rts_list,
       n = 8
-    ))
+    )
   ) # nolint
   # Custom n_history_delay is too low
   expect_error(
-    suppressWarnings(fill_triangles(
+    estimate_and_apply_delays(
       retro_reporting_triangles = retro_rts_list,
       n = 3
-    ))
+    )
   )
 })
 
-test_that("fill_triangles invalid inputs throw errors", {
+test_that("estimate_and_apply_delays invalid inputs throw errors", {
   # Non-list input
-  expect_error(suppressWarnings(fill_triangles(
+  expect_error(estimate_and_apply_delays(
     retro_reporting_triangles = "not_a_list"
-  )))
+  ))
 
   # Invalid n_history_delay values
-  expect_error(suppressWarnings(fill_triangles(retro_rts_list, n = -1)))
-  expect_error(suppressWarnings(fill_triangles(retro_rts_list, n = "two")))
+  expect_error(estimate_and_apply_delays(retro_rts_list, n = -1))
+  expect_error(estimate_and_apply_delays(retro_rts_list, n = "two"))
 })
 
-test_that("fill_triangles identical-sized matrices work", {
+test_that("estimate_and_apply_delays identical-sized matrices work", {
   same_size_list <- list(test_triangle_1[2:7, ], test_triangle_2)
-  result <- suppressWarnings(fill_triangles(same_size_list))
+  result <- estimate_and_apply_delays(same_size_list)
 
   # Number of rows of each matrix should be identical (6 and 6)
   expect_identical(sapply(result, nrow), c(6L, 6L))
 })
 
-test_that("fill_triangles handles a single triangle with 0s for first column appropriately", { # nolint
+test_that("estimate_and_apply_delays handles a single triangle with 0s for first column appropriately", { # nolint
 
   triangle3 <- matrix(
     c(
@@ -182,11 +154,11 @@ test_that("fill_triangles handles a single triangle with 0s for first column app
 
   retro_rts_list <- list(test_triangle_1, test_triangle_2, triangle3)
 
-  result <- expect_message(suppressWarnings(fill_triangles(retro_rts_list)))
+  result <- expect_message(estimate_and_apply_delays(retro_rts_list))
   expect_null(result[[3]])
 })
 
-test_that("fill_triangles errors if only contains triangles with first column 0", { # nolint
+test_that("estimate_and_apply_delays errors if only contains triangles with first column 0", { # nolint
   triangle1 <- matrix(
     c(
       0, 46, 21, 7,
@@ -227,10 +199,10 @@ test_that("fill_triangles errors if only contains triangles with first column 0"
 
   retro_rts_list <- list(triangle1, triangle2, triangle3)
 
-  expect_error(suppressWarnings(fill_triangles(retro_rts_list)))
+  expect_error(estimate_and_apply_delays(retro_rts_list))
 })
 
-test_that("fill_triangles uses full number of rows in n_history_delay", { # nolint
+test_that("estimate_and_apply_delays uses full number of rows in n_history_delay", { # nolint
   sim_delay_pmf <- c(0.4, 0.3, 0.2, 0.1)
 
   # Generate counts for each reference date
@@ -264,10 +236,10 @@ test_that("fill_triangles uses full number of rows in n_history_delay", { # noli
 
   # Now change n_history_delay to only use last 4 rows, we should never use
   # first row so both will be equal
-  retro_pt_nowcast_mat_list <- suppressWarnings(fill_triangles(
+  retro_pt_nowcast_mat_list <- estimate_and_apply_delays(
     retro_reporting_triangles = retro_rts,
     n = 4
-  ))
+  )
 
   pmf_list <- lapply(retro_pt_nowcast_mat_list, estimate_delay)
   # Both are returning the original pmf bc they dont use the modified one
@@ -275,7 +247,7 @@ test_that("fill_triangles uses full number of rows in n_history_delay", { # noli
   expect_equal(unname(pmf_list[[2]]), sim_delay_pmf, tol = 0.02)
 })
 
-test_that("fill_triangles uses correct rows", {
+test_that("estimate_and_apply_delays uses correct rows", {
   # repeat with smaller number
   sim_delay_pmf <- c(0.25, 0.25, 0.25, 0.25)
 
@@ -315,10 +287,10 @@ test_that("fill_triangles uses correct rows", {
   retro_rts[1:2]
   # These look the same but with NAs in bottom right
 
-  retro_pt_nowcast_mat_list <- suppressWarnings(fill_triangles(
+  retro_pt_nowcast_mat_list <- estimate_and_apply_delays(
     retro_reporting_triangles = retro_rts,
     n = 5
-  ))
+  )
   # Get the empirical pmfs in your two pt nowcast matrices with the first row
   # included
   pmf_list <- lapply(retro_pt_nowcast_mat_list, estimate_delay)

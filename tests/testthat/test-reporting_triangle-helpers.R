@@ -13,11 +13,12 @@ rep_tri <- as_reporting_triangle(
 test_that(
   "is_reporting_triangle returns TRUE for valid objects and FALSE otherwise",
   {
-  expect_true(is_reporting_triangle(rep_tri))
-  expect_false(is_reporting_triangle(matrix(1:10, 2, 5)))
-  expect_false(is_reporting_triangle(data.frame(a = 1:5)))
-  expect_false(is_reporting_triangle(list(a = 1:5)))
-})
+    expect_true(is_reporting_triangle(rep_tri))
+    expect_false(is_reporting_triangle(matrix(1:10, 2, 5)))
+    expect_false(is_reporting_triangle(data.frame(a = 1:5)))
+    expect_false(is_reporting_triangle(list(a = 1:5)))
+  }
+)
 
 test_that("get_reference_dates returns Date vector from rownames", {
   ref_dates <- get_reference_dates(rep_tri)
@@ -47,75 +48,77 @@ test_that("get_max_delay returns ncol-1 as integer", {
 test_that(
   "get_max_delay with non_zero=TRUE returns max delay with non-zero obs",
   {
-  # Create test triangle with trailing zeros
-  test_mat <- matrix(c(
-    100, 50, 20, 0, 0,
-    80, 40, 10, 0, 0,
-    90, 45, 15, 0, 0,
-    70, 35, NA, NA, NA
-  ), nrow = 4, byrow = TRUE)
+    # Create test triangle with trailing zeros
+    test_mat <- matrix(c(
+      100, 50, 20, 0, 0,
+      80, 40, 10, 0, 0,
+      90, 45, 15, 0, 0,
+      70, 35, NA, NA, NA
+    ), nrow = 4, byrow = TRUE)
 
-  ref_dates <- seq(as.Date("2025-01-01"), by = "day", length.out = 4)
-  test_tri <- as_reporting_triangle(
-    data = test_mat,
-    reference_dates = ref_dates
-  )
+    ref_dates <- seq(as.Date("2025-01-01"), by = "day", length.out = 4)
+    test_tri <- as_reporting_triangle(
+      data = test_mat,
+      reference_dates = ref_dates
+    )
 
-  expect_identical(get_max_delay(test_tri), 4L)
-  expect_identical(get_max_delay(test_tri, non_zero = TRUE), 2L)
+    expect_identical(get_max_delay(test_tri), 4L)
+    expect_identical(get_max_delay(test_tri, non_zero = TRUE), 2L)
 
-  # Test with all zeros
-  zero_mat <- matrix(0, nrow = 3, ncol = 5)
-  ref_dates_zero <- seq(as.Date("2025-01-01"), by = "day", length.out = 3)
-  zero_tri <- as_reporting_triangle(
-    data = zero_mat,
-    reference_dates = ref_dates_zero
-  )
-  expect_identical(get_max_delay(zero_tri, non_zero = TRUE), -1L)
-})
+    # Test with all zeros
+    zero_mat <- matrix(0, nrow = 3, ncol = 5)
+    ref_dates_zero <- seq(as.Date("2025-01-01"), by = "day", length.out = 3)
+    zero_tri <- as_reporting_triangle(
+      data = zero_mat,
+      reference_dates = ref_dates_zero
+    )
+    expect_identical(get_max_delay(zero_tri, non_zero = TRUE), -1L)
+  }
+)
 
 test_that(
   "get_mean_delay returns numeric vector length nrow with vals [0, max_delay]",
   {
-  mean_delays <- get_mean_delay(rep_tri)
-  expect_type(mean_delays, "double")
-  expect_length(mean_delays, nrow(rep_tri))
+    mean_delays <- get_mean_delay(rep_tri)
+    expect_type(mean_delays, "double")
+    expect_length(mean_delays, nrow(rep_tri))
 
-  # Check that values are in reasonable range
-  non_na_delays <- mean_delays[!is.na(mean_delays)]
-  expect_true(all(non_na_delays >= 0))
-  expect_true(all(non_na_delays <= get_max_delay(rep_tri)))
+    # Check that values are in reasonable range
+    non_na_delays <- mean_delays[!is.na(mean_delays)]
+    expect_true(all(non_na_delays >= 0))
+    expect_true(all(non_na_delays <= get_max_delay(rep_tri)))
 
-  # Test error with non-reporting_triangle
-  expect_error(
-    get_mean_delay(matrix(1:10)),
-    "must have class 'reporting_triangle'"
-  )
+    # Test error with non-reporting_triangle
+    expect_error(
+      get_mean_delay(matrix(1:10)),
+      "must have class 'reporting_triangle'"
+    )
 
-  # Test with known simple case
-  simple_mat <- matrix(c(
-    10, 5, 2,
-    8, 4, NA
-  ), nrow = 2, byrow = TRUE)
+    # Test with known simple case
+    simple_mat <- matrix(c(
+      10, 5, 2,
+      8, 4, NA
+    ), nrow = 2, byrow = TRUE)
 
-  ref_dates_simple <- seq(as.Date("2025-01-01"), by = "day", length.out = 2)
-  simple_tri <- as_reporting_triangle(
-    data = simple_mat,
-    reference_dates = ref_dates_simple
-  )
+    ref_dates_simple <- seq(as.Date("2025-01-01"), by = "day", length.out = 2)
+    simple_tri <- as_reporting_triangle(
+      data = simple_mat,
+      reference_dates = ref_dates_simple
+    )
 
-  mean_delays_simple <- get_mean_delay(simple_tri)
-  # Row 1: (10*0 + 5*1 + 2*2) / (10 + 5 + 2) = 9/17 ≈ 0.529
-  expect_equal(
-    unname(mean_delays_simple[1]),
-    (10 * 0 + 5 * 1 + 2 * 2) / 17,
-    tol = 1e-6
-  )
-  # Row 2: (8*0 + 4*1) / (8 + 4) = 4/12 = 0.333
-  # Note: weighted.mean returns NA when there are NA weights
-  # even with na.rm=TRUE
-  expect_true(is.na(mean_delays_simple[2]))
-})
+    mean_delays_simple <- get_mean_delay(simple_tri)
+    # Row 1: (10*0 + 5*1 + 2*2) / (10 + 5 + 2) = 9/17 ≈ 0.529
+    expect_equal(
+      unname(mean_delays_simple[1]),
+      (10 * 0 + 5 * 1 + 2 * 2) / 17,
+      tol = 1e-6
+    )
+    # Row 2: (8*0 + 4*1) / (8 + 4) = 4/12 = 0.333
+    # Note: weighted.mean returns NA when there are NA weights
+    # even with na.rm=TRUE
+    expect_true(is.na(mean_delays_simple[2]))
+  }
+)
 
 test_that("head.reporting_triangle preserves class", {
   h <- expect_no_warning(head(rep_tri, n = 5))
@@ -153,61 +156,64 @@ test_that("[.reporting_triangle preserves class and validates", {
 test_that(
   "[ operator preserves reporting_triangle class and attributes for rows",
   {
-  # Basic row subsetting
-  sub <- rep_tri[1:5, ]
-  expect_true(is_reporting_triangle(sub))
-  expect_identical(nrow(sub), 5L)
-  expect_identical(ncol(sub), ncol(rep_tri))
-  expect_identical(attr(sub, "delays_unit"), attr(rep_tri, "delays_unit"))
+    # Basic row subsetting
+    sub <- rep_tri[1:5, ]
+    expect_true(is_reporting_triangle(sub))
+    expect_identical(nrow(sub), 5L)
+    expect_identical(ncol(sub), ncol(rep_tri))
+    expect_identical(attr(sub, "delays_unit"), attr(rep_tri, "delays_unit"))
 
-  # Single row subsetting (should preserve as matrix with drop=FALSE)
-  single_row <- rep_tri[1, , drop = FALSE]
-  expect_true(is_reporting_triangle(single_row))
-  expect_identical(nrow(single_row), 1L)
+    # Single row subsetting (should preserve as matrix with drop=FALSE)
+    single_row <- rep_tri[1, , drop = FALSE]
+    expect_true(is_reporting_triangle(single_row))
+    expect_identical(nrow(single_row), 1L)
 
-  # Extract single row as vector (drop=TRUE, default)
-  single_row_vec <- rep_tri[1, ]
-  expect_false(is_reporting_triangle(single_row_vec))
-  expect_type(single_row_vec, "double")
-})
+    # Extract single row as vector (drop=TRUE, default)
+    single_row_vec <- rep_tri[1, ]
+    expect_false(is_reporting_triangle(single_row_vec))
+    expect_type(single_row_vec, "double")
+  }
+)
 
 test_that(
   "[ operator preserves reporting_triangle class and attributes for cols",
   {
-  # Basic column subsetting
-  sub <- rep_tri[, 1:3]
-  expect_true(is_reporting_triangle(sub))
-  expect_identical(ncol(sub), 3L)
-  expect_identical(nrow(sub), nrow(rep_tri))
-  expect_identical(attr(sub, "delays_unit"), attr(rep_tri, "delays_unit"))
+    # Basic column subsetting
+    sub <- rep_tri[, 1:3]
+    expect_true(is_reporting_triangle(sub))
+    expect_identical(ncol(sub), 3L)
+    expect_identical(nrow(sub), nrow(rep_tri))
+    expect_identical(attr(sub, "delays_unit"), attr(rep_tri, "delays_unit"))
 
-  # Single column subsetting (should preserve as matrix with drop=FALSE)
-  single_col <- rep_tri[, 1, drop = FALSE]
-  expect_true(is_reporting_triangle(single_col))
-  expect_identical(ncol(single_col), 1L)
+    # Single column subsetting (should preserve as matrix with drop=FALSE)
+    single_col <- rep_tri[, 1, drop = FALSE]
+    expect_true(is_reporting_triangle(single_col))
+    expect_identical(ncol(single_col), 1L)
 
-  # Extract single column as vector (drop=TRUE, default)
-  single_col_vec <- rep_tri[, 1]
-  expect_false(is_reporting_triangle(single_col_vec))
-  expect_type(single_col_vec, "double")
-})
+    # Extract single column as vector (drop=TRUE, default)
+    single_col_vec <- rep_tri[, 1]
+    expect_false(is_reporting_triangle(single_col_vec))
+    expect_type(single_col_vec, "double")
+  }
+)
 
 test_that(
   "[ operator preserves reporting_triangle class for combined subsetting",
   {
-  # Row and column subsetting
-  sub <- rep_tri[1:10, 1:3]
-  expect_true(is_reporting_triangle(sub))
-  expect_identical(nrow(sub), 10L)
-  expect_identical(ncol(sub), 3L)
-  expect_identical(attr(sub, "delays_unit"), attr(rep_tri, "delays_unit"))
+    # Row and column subsetting
+    sub <- rep_tri[1:10, 1:3]
+    expect_true(is_reporting_triangle(sub))
+    expect_identical(nrow(sub), 10L)
+    expect_identical(ncol(sub), 3L)
+    expect_identical(attr(sub, "delays_unit"), attr(rep_tri, "delays_unit"))
 
-  # Extract single element
-  element <- rep_tri[1, 1]
-  expect_false(is_reporting_triangle(element))
-  expect_type(element, "double")
-  expect_length(element, 1L)
-})
+    # Extract single element
+    element <- rep_tri[1, 1]
+    expect_false(is_reporting_triangle(element))
+    expect_type(element, "double")
+    expect_length(element, 1L)
+  }
+)
 
 test_that("[.reporting_triangle validates result structure", {
   # Create a triangle with valid structure
@@ -325,10 +331,13 @@ test_that("[<-.reporting_triangle validates result structure", {
   expect_no_error(validate_reporting_triangle(rt_valid))
 
   # Invalid modification: creating out-of-pattern NA should fail
-  expect_error({
-    rt_invalid <- rt
-    rt_invalid[2, 2] <- NA
-  }, "Invalid reporting triangle structure")
+  expect_error(
+    {
+      rt_invalid <- rt
+      rt_invalid[2, 2] <- NA
+    },
+    "Invalid reporting triangle structure"
+  )
 })
 
 test_that("[<-.reporting_triangle allows NA in valid positions", {
@@ -370,97 +379,99 @@ test_that("summary.reporting_triangle runs without error", {
 test_that(
   "get_quantile_delay returns integer vector with quantile delays for each row",
   {
-  quantile_delays <- get_quantile_delay(rep_tri, p = 0.99)
-  expect_type(quantile_delays, "integer")
-  expect_length(quantile_delays, nrow(rep_tri))
+    quantile_delays <- get_quantile_delay(rep_tri, p = 0.99)
+    expect_type(quantile_delays, "integer")
+    expect_length(quantile_delays, nrow(rep_tri))
 
-  # Check that values are in reasonable range
-  non_na_delays <- quantile_delays[!is.na(quantile_delays)]
-  expect_true(all(non_na_delays >= 0))
-  expect_true(all(non_na_delays <= get_max_delay(rep_tri)))
+    # Check that values are in reasonable range
+    non_na_delays <- quantile_delays[!is.na(quantile_delays)]
+    expect_true(all(non_na_delays >= 0))
+    expect_true(all(non_na_delays <= get_max_delay(rep_tri)))
 
-  # Test with known simple case
-  simple_mat <- matrix(c(
-    10, 5, 2, 1, 1,
-    8, 4, 2, NA, NA
-  ), nrow = 2, byrow = TRUE)
+    # Test with known simple case
+    simple_mat <- matrix(c(
+      10, 5, 2, 1, 1,
+      8, 4, 2, NA, NA
+    ), nrow = 2, byrow = TRUE)
 
-  ref_dates_simple <- seq(as.Date("2025-01-01"), by = "day", length.out = 2)
-  simple_tri <- as_reporting_triangle(
-    data = simple_mat,
-    reference_dates = ref_dates_simple
-  )
+    ref_dates_simple <- seq(as.Date("2025-01-01"), by = "day", length.out = 2)
+    simple_tri <- as_reporting_triangle(
+      data = simple_mat,
+      reference_dates = ref_dates_simple
+    )
 
-  q99_delays <- get_quantile_delay(simple_tri, p = 0.99)
-  # Row 1: cumsum = [10, 15, 17, 18, 19], total = 19, 99% = 18.81, so delay = 4
-  # (need all 19 cases to reach 99%)
-  expect_identical(q99_delays[1], 4L)
+    q99_delays <- get_quantile_delay(simple_tri, p = 0.99)
+    # Row 1: cumsum = [10, 15, 17, 18, 19], total = 19, 99% = 18.81, so delay = 4
+    # (need all 19 cases to reach 99%)
+    expect_identical(q99_delays[1], 4L)
 
-  # Test with different quantile
-  q50_delays <- get_quantile_delay(simple_tri, p = 0.50)
-  expect_type(q50_delays, "integer")
+    # Test with different quantile
+    q50_delays <- get_quantile_delay(simple_tri, p = 0.50)
+    expect_type(q50_delays, "integer")
 
-  # Test error with invalid p
-  expect_error(
-    get_quantile_delay(rep_tri, p = 1.5),
-    "Assertion on 'p' failed"
-  )
-  expect_error(
-    get_quantile_delay(rep_tri, p = -0.1),
-    "Assertion on 'p' failed"
-  )
+    # Test error with invalid p
+    expect_error(
+      get_quantile_delay(rep_tri, p = 1.5),
+      "Assertion on 'p' failed"
+    )
+    expect_error(
+      get_quantile_delay(rep_tri, p = -0.1),
+      "Assertion on 'p' failed"
+    )
 
-  # Test error with non-reporting_triangle
-  expect_error(
-    get_quantile_delay(matrix(1:10)),
-    "must have class 'reporting_triangle'"
-  )
-})
+    # Test error with non-reporting_triangle
+    expect_error(
+      get_quantile_delay(matrix(1:10)),
+      "must have class 'reporting_triangle'"
+    )
+  }
+)
 
 test_that(
   "as.data.frame returns long format with reference_date, delay, count columns",
   {
-  df <- as.data.frame(rep_tri)
+    df <- as.data.frame(rep_tri)
 
-  # Check structure
-  expect_s3_class(df, "data.frame")
-  expect_true(all(c("reference_date", "report_date", "delay", "count") %in%
-    names(df)))
-  expect_identical(ncol(df), 4L)
+    # Check structure
+    expect_s3_class(df, "data.frame")
+    expect_true(all(c("reference_date", "report_date", "delay", "count") %in%
+      names(df)))
+    expect_identical(ncol(df), 4L)
 
-  # Check that all reference dates are present
-  unique_ref_dates <- unique(df$reference_date)
-  expected_ref_dates <- get_reference_dates(rep_tri)
-  expect_true(all(expected_ref_dates %in% unique_ref_dates))
+    # Check that all reference dates are present
+    unique_ref_dates <- unique(df$reference_date)
+    expected_ref_dates <- get_reference_dates(rep_tri)
+    expect_true(all(expected_ref_dates %in% unique_ref_dates))
 
-  # Check that delays are in reasonable range
-  expect_true(all(df$delay >= 0))
-  expect_true(all(df$delay <= get_max_delay(rep_tri)))
+    # Check that delays are in reasonable range
+    expect_true(all(df$delay >= 0))
+    expect_true(all(df$delay <= get_max_delay(rep_tri)))
 
-  # Check that report_date = reference_date + delay
-  expect_true(all(
-    df$report_date == df$reference_date + df$delay
-  ))
+    # Check that report_date = reference_date + delay
+    expect_true(all(
+      df$report_date == df$reference_date + df$delay
+    ))
 
-  # Check that NAs from triangle are excluded
-  expect_false(anyNA(df$count))
+    # Check that NAs from triangle are excluded
+    expect_false(anyNA(df$count))
 
-  # Check that count values match
-  for (i in seq_len(nrow(df))) {
-    row_in_tri <- which(expected_ref_dates == df$reference_date[i])
-    col_in_tri <- df$delay[i] + 1
-    expect_identical(
-      df$count[i],
-      rep_tri[row_in_tri, col_in_tri]
+    # Check that count values match
+    for (i in seq_len(nrow(df))) {
+      row_in_tri <- which(expected_ref_dates == df$reference_date[i])
+      col_in_tri <- df$delay[i] + 1
+      expect_identical(
+        df$count[i],
+        rep_tri[row_in_tri, col_in_tri]
+      )
+    }
+
+    # Test error with non-reporting_triangle
+    expect_error(
+      as.data.frame.reporting_triangle(matrix(1:10)),
+      "must have class 'reporting_triangle'"
     )
   }
-
-  # Test error with non-reporting_triangle
-  expect_error(
-    as.data.frame.reporting_triangle(matrix(1:10)),
-    "must have class 'reporting_triangle'"
-  )
-})
+)
 
 test_that("truncate_to_quantile truncates columns beyond specified quantile", {
   # Create test triangle with known reporting pattern

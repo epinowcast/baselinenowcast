@@ -57,6 +57,7 @@ Depends:
 Imports:
   cli,
   checkmate,
+  lifecycle,
   stats,
   utils,
   rlang,

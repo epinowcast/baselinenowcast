@@ -10,28 +10,29 @@ expected_cols <- c("pred_count", "draw", "reference_date", "output_type")
 test_that(
   "baselinenowcast.reporting_triangle returns baselinenowcast_df with draws",
   {
-  nowcast_df <- baselinenowcast(rep_tri, draws = 100)
-  expect_blnc_structure(
-    nowcast_df,
-    expected_cols,
-    output_type = "samples"
-  )
-  pt_nowcast_df <- baselinenowcast(rep_tri,
-    output_type = "point"
-  )
-  expect_blnc_structure(
-    pt_nowcast_df,
-    expected_cols,
-    output_type = "point"
-  )
-  expect_identical(pt_nowcast_df$draw[1], 1)
+    nowcast_df <- baselinenowcast(rep_tri, draws = 100)
+    expect_blnc_structure(
+      nowcast_df,
+      expected_cols,
+      output_type = "samples"
+    )
+    pt_nowcast_df <- baselinenowcast(rep_tri,
+      output_type = "point"
+    )
+    expect_blnc_structure(
+      pt_nowcast_df,
+      expected_cols,
+      output_type = "point"
+    )
+    expect_identical(pt_nowcast_df$draw[1], 1)
 
-  # Expect draws are ordered
-  expect_identical(
-    nowcast_df$draw[nowcast_df$reference_date == "2026-04-01"],
-    1:100
-  )
-})
+    # Expect draws are ordered
+    expect_identical(
+      nowcast_df$draw[nowcast_df$reference_date == "2026-04-01"],
+      1:100
+    )
+  }
+)
 
 test_that("baselinenowcast.reporting_triangle() errors sensibly with inappropriate inputs", { # nolint
   expect_error(
@@ -89,25 +90,26 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
 test_that(
   "baselinenowcast output_type='point' returns single draw without uncertainty",
   {
-  skip_if_not_installed("dplyr")
-  pt_nowcast <- baselinenowcast(rep_tri,
-    output_type = "point"
-  )
-  expect_blnc_structure(pt_nowcast, expected_cols,
-    output_type = "point"
-  )
-  prob_nowcast <- baselinenowcast(rep_tri)
+    skip_if_not_installed("dplyr")
+    pt_nowcast <- baselinenowcast(rep_tri,
+      output_type = "point"
+    )
+    expect_blnc_structure(pt_nowcast, expected_cols,
+      output_type = "point"
+    )
+    prob_nowcast <- baselinenowcast(rep_tri)
 
-  summarised_prob_nowcast <- prob_nowcast |>
-    dplyr::group_by(reference_date) |>
-    dplyr::summarise(mean_nowcast = mean(pred_count))
+    summarised_prob_nowcast <- prob_nowcast |>
+      dplyr::group_by(reference_date) |>
+      dplyr::summarise(mean_nowcast = mean(pred_count))
 
-  expect_equal(summarised_prob_nowcast$mean_nowcast,
-    pt_nowcast$pred_count,
-    tol = 0.1
-  )
-  expect_identical(nrow(summarised_prob_nowcast), nrow(pt_nowcast))
-})
+    expect_equal(summarised_prob_nowcast$mean_nowcast,
+      pt_nowcast$pred_count,
+      tol = 0.1
+    )
+    expect_identical(nrow(summarised_prob_nowcast), nrow(pt_nowcast))
+  }
+)
 
 test_that("baselinenowcast passing in a separate delay/uncertainty parameters returns something different than using the triangle", { # nolint
   skip_if_not_installed("dplyr")

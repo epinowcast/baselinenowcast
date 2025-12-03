@@ -258,7 +258,7 @@ baselinenowcast.reporting_triangle <- function(
 #' min_ref_date <- max_ref_date - 74
 #' covid_data_to_nowcast <- germany_covid19_hosp[
 #'   germany_covid19_hosp$report_date < max_ref_date &
-#'   germany_covid19_hosp$reference_date >= min_ref_date,
+#'     germany_covid19_hosp$reference_date >= min_ref_date,
 #' ]
 #' nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
 #'   max_delay = 25,

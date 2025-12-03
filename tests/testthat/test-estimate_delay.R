@@ -39,7 +39,8 @@ test_that("estimate_delay works with truncated triangles", {
   result_full <- estimate_delay(reporting_triangle)
   expect_identical(as.integer(length(result_full)), 4L)
   expect_equal(
-    as.numeric(result_full), as.numeric(sim_delay_pmf), tolerance = 1e-6
+    as.numeric(result_full), as.numeric(sim_delay_pmf),
+    tolerance = 1e-6
   )
 
   # Test with truncated triangle (max_delay = 2)
@@ -61,10 +62,12 @@ test_that("estimate_delay handles custom n_history parameter", {
 
   # Both should return the correct PMF
   expect_equal(
-    as.numeric(result_full), as.numeric(sim_delay_pmf), tolerance = 1e-6
+    as.numeric(result_full), as.numeric(sim_delay_pmf),
+    tolerance = 1e-6
   )
   expect_equal(
-    as.numeric(result_partial), as.numeric(sim_delay_pmf), tolerance = 1e-6
+    as.numeric(result_partial), as.numeric(sim_delay_pmf),
+    tolerance = 1e-6
   )
 })
 
@@ -125,7 +128,8 @@ test_that("estimate_delay calculates correct PMF with complete matrix", {
   )
 
   expect_equal(
-    as.numeric(delay_pmf), as.numeric(complete_pmf), tolerance = 0.001
+    as.numeric(delay_pmf), as.numeric(complete_pmf),
+    tolerance = 0.001
   )
 })
 
@@ -149,7 +153,8 @@ test_that(
     )
     # Test that the function returns the expected PMF
     expect_equal(
-      as.numeric(delay_pmf), as.numeric(sim_delay_pmf), tolerance = 1e-6
+      as.numeric(delay_pmf), as.numeric(sim_delay_pmf),
+      tolerance = 1e-6
     )
   }
 )
@@ -178,7 +183,8 @@ test_that("estimate_delay handles diagonal reporting triangles", {
   expect_is(delay_pmf, "numeric")
   expect_equal(sum(delay_pmf), 1, tolerance = 1e-6)
   expect_equal(
-    as.numeric(delay_pmf), as.numeric(partial_pmf), tolerance = 1e-6
+    as.numeric(delay_pmf), as.numeric(partial_pmf),
+    tolerance = 1e-6
   )
 })
 

@@ -148,7 +148,8 @@ make_test_triangle <- function(nrow = 5, ncol = 4, data = NULL,
 
     if (construct) {
       result <- apply_reporting_structure(
-        result, structure = structure
+        result,
+        structure = structure
       )
     }
 

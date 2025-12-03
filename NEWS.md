@@ -1,5 +1,23 @@
 # baselinenowcast 0.0.0.1000
 
+## Breaking changes
+
+-   `fill_triangle()` is deprecated in favour of `estimate_and_apply_delay()` which now supports optional delay estimation via the `delay_pmf` parameter (#334).
+-   `fill_triangles()` is deprecated in favour of `estimate_and_apply_delays()` (#334).
+
+## New features
+
+-   `estimate_and_apply_delay()` now supports optional delay estimation.
+    You can provide a pre-computed `delay_pmf` to skip estimation, or let the function estimate it automatically.
+    Parameters `n` and `preprocess` are now explicit parameters rather than passed via `...` (#334).
+-   New function `estimate_and_apply_delays()` provides batch processing of multiple reporting triangles, replacing `fill_triangles()` with a more consistent naming scheme (#334).
+
+## Internal changes
+
+-   Consolidated duplicate functionality between `fill_triangle()` and `estimate_and_apply_delay()` to reduce maintenance burden (#334).
+
+## Other changes
+
 -   Add a vignette which walks through the low-level function interface on the same nowcasting problem as in the Getting Started vignette.
 -   Modify the Getting Started vignette to use the `baselinenowcast()` wrapper function.
 -   Use the `as_reporting_triangle` and `baselinenowcast` workflow in the vignette which walks through a nowcasting example applied to syndromic surveillance data in the U.S.

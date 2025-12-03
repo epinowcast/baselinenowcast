@@ -28,7 +28,7 @@ test_that("estimate_and_apply_uncertainty produces correct results", {
   # Test against manual workflow
   trunc_rep_tris <- truncate_triangles(triangle, n = n_retro_valid)
   retro_rep_tris <- apply_reporting_structures(trunc_rep_tris)
-  retro_pt_nowcasts <- fill_triangles(retro_rep_tris, n = n_delay_valid)
+  retro_pt_nowcasts <- estimate_and_apply_delays(retro_rep_tris, n = n_delay_valid)
   disp_params <- estimate_uncertainty(
     retro_pt_nowcasts,
     trunc_rep_tris,
@@ -65,12 +65,14 @@ test_that("estimate_and_apply_uncertainty errors when things are specified incor
     regexp = "Insufficient `n_retrospective_nowcasts`."
   )
 
-  triangle <- make_test_triangle(data = matrix(
-    data = sample.int(10, 6 * 5, replace = TRUE),
-    nrow = 6,
-    ncol = 5
-  ),
-  construct = TRUE)
+  triangle <- make_test_triangle(
+    data = matrix(
+      data = sample.int(10, 6 * 5, replace = TRUE),
+      nrow = 6,
+      ncol = 5
+    ),
+    construct = TRUE
+  )
   pt_nowcast_matrix <- estimate_and_apply_delay(
     reporting_triangle = triangle,
     n = 6

@@ -9,8 +9,9 @@
 #' This function chains the retrospective nowcasting workflow:
 #' \enumerate{
 #'   \item [truncate_triangles()] - Create retrospective snapshots
-#'   \item [apply_reporting_structures()] - Generate retrospective reporting triangles
-#'   \item [fill_triangles()] - Generate point nowcasts
+#'   \item [apply_reporting_structures()] - Generate retrospective
+#'     reporting triangles
+#'   \item [estimate_and_apply_delays()] - Generate point nowcasts
 #'   \item [estimate_uncertainty()] - Estimate uncertainty parameters
 #' }
 #'
@@ -79,7 +80,7 @@ estimate_uncertainty_retro <- function(
     validate = FALSE
   )
 
-  pt_nowcast_mat_list <- fill_triangles(
+  pt_nowcast_mat_list <- estimate_and_apply_delays(
     retro_reporting_triangles = reporting_triangle_list,
     n = n_history_delay,
     delay_pmf = delay_pmf,

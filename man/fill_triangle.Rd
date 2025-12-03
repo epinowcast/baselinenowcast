@@ -2,7 +2,7 @@
 % Please edit documentation in R/fill_triangles.R
 \name{fill_triangle}
 \alias{fill_triangle}
-\title{Generate point nowcast}
+\title{Generate point nowcast (deprecated)}
 \usage{
 fill_triangle(
   reporting_triangle,
@@ -47,11 +47,10 @@ columns as the \code{reporting_triangle} but with the missing values filled
 in as point estimates.
 }
 \description{
-This function ingests a reporting triangle matrix and optionally, a delay
-distribution, and returns a completed reporting square which represents
-the point nowcast. If a delay distribution is specified, this will be
-used to generate the nowcast, otherwise, a delay distribution will be
-estimated from the \code{reporting_triangle}.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+}
+\details{
+This function has been deprecated in favour of \code{\link[=estimate_and_apply_delay]{estimate_and_apply_delay()}}.
 }
 \examples{
 # Fill triangle using default delay estimation
@@ -60,9 +59,4 @@ point_nowcast_matrix <- fill_triangle(
 )
 point_nowcast_matrix
 }
-\seealso{
-Point nowcast generation functions
-\code{\link{apply_delay}()},
-\code{\link{fill_triangles}()}
-}
-\concept{generate_point_nowcasts}
+\keyword{internal}

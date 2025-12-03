@@ -28,8 +28,8 @@
 #' )
 #' retro_rts_custom
 apply_reporting_structures <- function(truncated_reporting_triangles,
-                                structure = 1,
-                                validate = TRUE) {
+                                       structure = 1,
+                                       validate = TRUE) {
   # Check that input is a list
   if (!is.list(truncated_reporting_triangles)) {
     cli_abort(message = "`truncated_reporting_triangles` must be a list")
@@ -76,8 +76,8 @@ apply_reporting_structures <- function(truncated_reporting_triangles,
 #' rep_custom <- apply_reporting_structure(example_reporting_triangle, c(1, 2))
 #' rep_custom
 apply_reporting_structure <- function(truncated_reporting_triangle,
-                               structure = 1,
-                               validate = TRUE) {
+                                      structure = 1,
+                                      validate = TRUE) {
   assert_reporting_triangle(truncated_reporting_triangle, validate)
 
   # Get matrix dimensions

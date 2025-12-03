@@ -4,7 +4,14 @@
 \alias{estimate_and_apply_delay}
 \title{Estimate and apply delay from a reporting triangle}
 \usage{
-estimate_and_apply_delay(reporting_triangle, validate = TRUE, ...)
+estimate_and_apply_delay(
+  reporting_triangle,
+  n = nrow(reporting_triangle),
+  delay_pmf = NULL,
+  preprocess = preprocess_negative_values,
+  validate = TRUE,
+  ...
+)
 }
 \arguments{
 \item{reporting_triangle}{A \link{reporting_triangle} object with rows
@@ -12,6 +19,25 @@ representing reference times and columns representing delays.
 Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row (e.g., weekly reporting of daily data).}
+
+\item{n}{Integer indicating the number of reference times (observations) to
+be used in the estimate of the reporting delay, always starting from the
+most recent reporting delay. The default is to use the whole reporting
+triangle, so \code{nrow(reporting_triangle)}.}
+
+\item{delay_pmf}{Vector of delays assumed to be indexed
+starting at the first delay column in \code{reporting_triangle}.
+Default is \code{NULL}, which will estimate a delay from the
+\code{reporting_triangle}.}
+
+\item{preprocess}{Function to apply to the truncated triangle before
+estimation, or NULL to skip preprocessing. Default is
+\code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
+redistributing them to earlier delays. Set to NULL if you want to preserve
+negative PMF entries (e.g., when working with downward corrections where
+negative probabilities reflect systematic adjustments). Custom preprocess
+functions must accept a \code{validate} parameter (defaults to TRUE) to enable
+validation optimisation in internal function chains.}
 
 \item{validate}{Logical. If TRUE (default), validates the object. Set to
 FALSE only when called from functions that already validated.}
@@ -23,17 +49,40 @@ FALSE only when called from functions that already validated.}
 with the same structure as the input
 }
 \description{
-Estimate and apply delay from a reporting triangle
+This function generates a point nowcast by estimating a delay distribution
+from the reporting triangle and applying it to complete the triangle. If a
+delay distribution is specified, this will be used to generate the
+nowcast, otherwise, a delay distribution will be estimated from the
+\code{reporting_triangle}.
 }
 \examples{
+# Estimate and apply delay using default parameters
 pt_nowcast_matrix <- estimate_and_apply_delay(
   reporting_triangle = example_reporting_triangle
+)
+pt_nowcast_matrix
+
+# Use downward correction example with specific rows for delay estimation
+pt_nowcast_matrix <- estimate_and_apply_delay(
+  reporting_triangle = example_downward_corr_rt,
+  n = 5
+)
+pt_nowcast_matrix
+
+# Provide a pre-computed delay PMF
+delay_pmf <- estimate_delay(
+  reporting_triangle = example_reporting_triangle
+)
+pt_nowcast_matrix <- estimate_and_apply_delay(
+  reporting_triangle = example_reporting_triangle,
+  delay_pmf = delay_pmf
 )
 pt_nowcast_matrix
 }
 \seealso{
 High-level workflow wrapper functions
 \code{\link{allocate_reference_times}()},
+\code{\link{estimate_and_apply_delays}()},
 \code{\link{estimate_and_apply_uncertainty}()},
 \code{\link{estimate_uncertainty_retro}()}
 }

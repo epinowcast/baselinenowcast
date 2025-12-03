@@ -1,29 +1,16 @@
-#' Generate retrospective nowcasts
+#' Generate retrospective nowcasts (deprecated)
 #'
-#' This function ingests a list of incomplete reporting triangles and
-#'   generates a list of point nowcast matrices, based on the delay estimated in
-#'   each triangle or the corresponding delay passed in. It uses the specified
-#'   `n` number of reference times to estimate the delay in each retrospective
-#'   reporting triangle.
+#' `r lifecycle::badge("deprecated")`
 #'
-#' @inheritParams estimate_uncertainty
-#' @inheritParams estimate_delay
-#' @inheritParams assert_reporting_triangle
-#' @param n Integer indicating the number of reference times
-#'    (number of rows) to use to estimate the delay distribution for each
-#'    reporting triangle. Default is the minimum of the number of rows of
-#'    all the matrices in the `list_of_rts`.
-#' @param delay_pmf Vector or list of vectors of delays assumed to be indexed
-#'    starting at the first delay column in each of the matrices in
-#'     `retro_reporting_triangles`. If a list, must of the same length as
-#'     `retro_reporting_triangles`, with elements aligning. Default is `NULL`
+#' This function has been deprecated in favour of [estimate_and_apply_delays()].
+#'
+#' @inheritParams estimate_and_apply_delays
 #'
 #' @returns `point_nowcast_matrices` List of the same number of elements as the
-#'    input `retro_reporting_triangles`but with each reporting triangle filled
+#'    input `retro_reporting_triangles` but with each reporting triangle filled
 #'    in based on the delay estimated in that reporting triangle.
-#' @family generate_point_nowcasts
+#' @keywords internal
 #' @export
-#' @importFrom cli cli_abort cli_alert_danger cli_alert_info
 #' @examples
 #' # Generate retrospective nowcasts using larger triangle
 #' data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
@@ -41,7 +28,75 @@ fill_triangles <- function(retro_reporting_triangles,
                            delay_pmf = NULL,
                            preprocess = preprocess_negative_values,
                            validate = TRUE) {
-  if (is.list(delay_pmf)) { # name as a list and check length of elements
+  lifecycle::deprecate_warn(
+    when = "0.0.0.1000",
+    what = "fill_triangles()",
+    with = "estimate_and_apply_delays()"
+  )
+
+  return(estimate_and_apply_delays(
+    retro_reporting_triangles = retro_reporting_triangles,
+    n = n,
+    delay_pmf = delay_pmf,
+    preprocess = preprocess,
+    validate = validate
+  ))
+}
+
+#' Estimate and apply delays to generate retrospective nowcasts
+#'
+#' This function ingests a list of incomplete reporting triangles and
+#'   generates a list of point nowcast matrices, based on the delay estimated
+#'   in each triangle or the corresponding delay passed in. It uses the
+#'   specified `n` number of reference times to estimate the delay in each
+#'   retrospective reporting triangle.
+#'
+#' @inheritParams estimate_delay
+#' @inheritParams assert_reporting_triangle
+#' @param retro_reporting_triangles List of reporting triangles to generate
+#'    nowcasts for. Typically created by [apply_reporting_structures()].
+#' @param n Integer indicating the number of reference times
+#'    (number of rows) to use to estimate the delay distribution for each
+#'    reporting triangle. Default is the minimum of the number of rows of
+#'    all the matrices in `retro_reporting_triangles`.
+#' @param delay_pmf Vector or list of vectors of delays assumed to be indexed
+#'    starting at the first delay column in each of the matrices in
+#'    `retro_reporting_triangles`. If a list, must be of the same length as
+#'    `retro_reporting_triangles`, with elements aligning. Default is `NULL`.
+#'
+#' @returns `point_nowcast_matrices` List of the same number of elements as
+#'    the input `retro_reporting_triangles` but with each reporting triangle
+#'    filled in based on the delay estimated in that reporting triangle.
+#' @family workflow_wrappers
+#' @export
+#' @importFrom cli cli_abort cli_alert_danger cli_alert_info
+#' @examples
+#' # Generate retrospective nowcasts using larger triangle
+#' data_as_of <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' rep_tri <- as_reporting_triangle(data_as_of) |>
+#'   truncate_to_delay(max_delay = 25) |>
+#'   tail(n = 50)
+#' trunc_rts <- truncate_triangles(rep_tri, n = 2)
+#' retro_rts <- apply_reporting_structures(trunc_rts)
+#' retro_pt_nowcast_mat_list <- estimate_and_apply_delays(retro_rts, n = 30)
+#' retro_pt_nowcast_mat_list[1:2]
+#'
+#' # Using a pre-computed delay PMF
+#' delay <- estimate_delay(rep_tri, n = 30)
+#' retro_pt_nowcast_mat_list <- estimate_and_apply_delays(
+#'   retro_rts,
+#'   n = 30,
+#'   delay_pmf = delay
+#' )
+#' retro_pt_nowcast_mat_list[1:2]
+estimate_and_apply_delays <- function(retro_reporting_triangles,
+                                      n = min(
+                                        sapply(retro_reporting_triangles, nrow)
+                                      ),
+                                      delay_pmf = NULL,
+                                      preprocess = preprocess_negative_values,
+                                      validate = TRUE) {
+  if (is.list(delay_pmf)) {
     delay_pmf_list <- delay_pmf
     if (length(delay_pmf_list) != length(retro_reporting_triangles)) {
       cli_abort(message = c(
@@ -49,20 +104,20 @@ fill_triangles <- function(retro_reporting_triangles,
         "`retro_reporting_triangles`."
       ))
     }
-  } else { # create a list with the same pmf
+  } else {
     delay_pmf_list <- rep(list(delay_pmf), length(retro_reporting_triangles))
   }
 
-  safe_fill_triangle <- .safelydoesit(fill_triangle)
+  safe_estimate_and_apply_delay <- .safelydoesit(estimate_and_apply_delay)
 
   # Use the safe version in mapply, iterating through each item in both
   # lists of reporting triangles and delay PMFs
   point_nowcast_matrices <- mapply(
     function(triangle, pmf, ind) {
-      result <- safe_fill_triangle(
+      result <- safe_estimate_and_apply_delay(
         reporting_triangle = triangle,
-        delay_pmf = pmf,
         n = n,
+        delay_pmf = pmf,
         preprocess = preprocess,
         validate = validate
       )
@@ -142,25 +197,19 @@ fill_triangles <- function(retro_reporting_triangles,
   )
 }
 
-#' Generate point nowcast
+#' Generate point nowcast (deprecated)
 #'
-#' This function ingests a reporting triangle matrix and optionally, a delay
-#'   distribution, and returns a completed reporting square which represents
-#'   the point nowcast. If a delay distribution is specified, this will be
-#'   used to generate the nowcast, otherwise, a delay distribution will be
-#'   estimated from the `reporting_triangle`.
-#' @param delay_pmf Vector of delays assumed to be indexed
-#'    starting at the first delay column in `reporting_triangle`.
-#'    Default is `NULL`, which will estimate a delay from the
-#'    `reporting_triangle`.
-#' @inheritParams estimate_delay
-#' @inheritParams assert_reporting_triangle
+#' `r lifecycle::badge("deprecated")`
+#'
+#' This function has been deprecated in favour of [estimate_and_apply_delay()].
+#'
+#' @inheritParams estimate_and_apply_delay
+#'
 #' @returns `point_nowcast_matrix` Matrix of the same number of rows and
 #'   columns as the `reporting_triangle` but with the missing values filled
 #'   in as point estimates.
-#' @family generate_point_nowcasts
+#' @keywords internal
 #' @export
-#'
 #' @examples
 #' # Fill triangle using default delay estimation
 #' point_nowcast_matrix <- fill_triangle(
@@ -172,7 +221,43 @@ fill_triangle <- function(reporting_triangle,
                           delay_pmf = NULL,
                           preprocess = preprocess_negative_values,
                           validate = TRUE) {
+  lifecycle::deprecate_warn(
+    when = "0.0.0.1000",
+    what = "fill_triangle()",
+    with = "estimate_and_apply_delay()"
+  )
 
+  return(estimate_and_apply_delay(
+    reporting_triangle = reporting_triangle,
+    n = n,
+    delay_pmf = delay_pmf,
+    preprocess = preprocess,
+    validate = validate
+  ))
+}
+
+#' Generate point nowcast (internal)
+#'
+#' Internal function that generates a point nowcast from a reporting triangle.
+#' This has been superseded by [estimate_and_apply_delay()].
+#'
+#' @inheritParams estimate_delay
+#' @inheritParams assert_reporting_triangle
+#' @param delay_pmf Vector of delays assumed to be indexed
+#'    starting at the first delay column in `reporting_triangle`.
+#'    Default is `NULL`, which will estimate a delay from the
+#'    `reporting_triangle`.
+#'
+#' @returns `point_nowcast_matrix` Matrix of the same number of rows and
+#'   columns as the `reporting_triangle` but with the missing values filled
+#'   in as point estimates.
+#' @keywords internal
+#' @noRd
+.fill_triangle <- function(reporting_triangle,
+                           n = nrow(reporting_triangle),
+                           delay_pmf = NULL,
+                           preprocess = preprocess_negative_values,
+                           validate = TRUE) {
   assert_reporting_triangle(reporting_triangle, validate)
 
   if (n > nrow(reporting_triangle)) {
@@ -207,6 +292,7 @@ fill_triangle <- function(reporting_triangle,
   }
 
   point_nowcast_matrix <- apply_delay(reporting_triangle, delay_pmf,
-                                      validate = FALSE)
+    validate = FALSE
+  )
   return(point_nowcast_matrix)
 }

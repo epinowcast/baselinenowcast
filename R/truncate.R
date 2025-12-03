@@ -86,7 +86,7 @@ truncate_to_quantile <- function(x, p = 0.99) {
 #' @examples
 #' # Truncate to delays 0-2
 #' rt_short <- truncate_to_delay(example_downward_corr_rt, max_delay = 2)
-#' get_max_delay(rt_short)  # Returns 2
+#' get_max_delay(rt_short) # Returns 2
 truncate_to_delay <- function(x, max_delay) {
   if (!is_reporting_triangle(x)) {
     cli_abort(message = "x must have class 'reporting_triangle'")

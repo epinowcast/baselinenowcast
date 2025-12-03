@@ -362,7 +362,6 @@ baselinenowcast.data.frame <- function(
         n_history_delay = tv$n_history_delay,
         n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
         uncertainty_model = uncertainty_model,
-        preprocess = preprocess,
         validate = FALSE
       )
     }

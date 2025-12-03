@@ -10,7 +10,6 @@ estimate_uncertainty_retro(
   n_retrospective_nowcasts,
   structure = get_reporting_structure(reporting_triangle),
   delay_pmf = NULL,
-  preprocess = preprocess_negative_values,
   validate = TRUE,
   ...
 )
@@ -39,15 +38,6 @@ starting at the first delay column in each of the matrices in
 \code{retro_reporting_triangles}. If a list, must be of the same length as
 \code{retro_reporting_triangles}, with elements aligning. Default is \code{NULL}.}
 
-\item{preprocess}{Function to apply to the truncated triangle before
-estimation, or NULL to skip preprocessing. Default is
-\code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
-redistributing them to earlier delays. Set to NULL if you want to preserve
-negative PMF entries (e.g., when working with downward corrections where
-negative probabilities reflect systematic adjustments). Custom preprocess
-functions must accept a \code{validate} parameter (defaults to TRUE) to enable
-validation optimisation in internal function chains.}
-
 \item{validate}{Logical. If TRUE (default), validates the object. Set to
 FALSE only when called from functions that already validated.}
 
@@ -68,8 +58,8 @@ on retrospective nowcast performance.
 This function chains the retrospective nowcasting workflow:
 \enumerate{
 \item \code{\link[=truncate_triangles]{truncate_triangles()}} - Create retrospective snapshots
-\item \code{\link[=apply_reporting_structures]{apply_reporting_structures()}} - Generate retrospective
-reporting triangles
+\item \code{\link[=apply_reporting_structures]{apply_reporting_structures()}} - Generate retrospective reporting
+triangles
 \item \code{\link[=estimate_and_apply_delays]{estimate_and_apply_delays()}} - Generate point nowcasts
 \item \code{\link[=estimate_uncertainty]{estimate_uncertainty()}} - Estimate uncertainty parameters
 }

@@ -29,7 +29,9 @@ test_that(
       nrow = 4,
       byrow = TRUE
     )
-    result <- apply_reporting_structure(make_test_triangle(data = square_matrix))
+    result <- apply_reporting_structure(
+      make_test_triangle(data = square_matrix)
+    )
     expect_valid_triangle(result, has_nas = TRUE)
     result_mat <- unclass(result)
     dimnames(result_mat) <- NULL
@@ -201,7 +203,9 @@ test_that("apply_reporting_structure handles ragged structure with integer", {
     nrow = 5,
     byrow = TRUE
   )
-  result_ragged <- apply_reporting_structure(make_test_triangle(data = test_matrix), 2)
+  result_ragged <- apply_reporting_structure(
+    make_test_triangle(data = test_matrix), 2
+  )
   result_mat <- unclass(result_ragged)
   dimnames(result_mat) <- NULL
   attributes(result_mat) <- list(dim = dim(result_mat))
@@ -243,37 +247,39 @@ test_that("apply_reporting_structure handles custom structure with vector", {
   expect_identical(result_mat, expected_custom)
 })
 
-test_that("apply_reporting_structure can generate something with all NAs at end", {
-  exp_result <- matrix(
-    c(
-      1, 3, 5, 7, 9,
-      4, 5, 9, 4, 3,
-      1, 6, 4, NA, NA,
-      3, NA, NA, NA, NA
-    ),
-    nrow = 4,
-    byrow = TRUE
-  )
+test_that(
+  "apply_reporting_structure can generate something with all NAs at end", {
+    exp_result <- matrix(
+      c(
+        1, 3, 5, 7, 9,
+        4, 5, 9, 4, 3,
+        1, 6, 4, NA, NA,
+        3, NA, NA, NA, NA
+      ),
+      nrow = 4,
+      byrow = TRUE
+    )
 
-  trunc_rt <- matrix(
-    c(
-      1, 3, 5, 7, 9,
-      4, 5, 9, 4, 3,
-      1, 6, 4, 4, 3,
-      3, 8, 4, 6, 1
-    ),
-    nrow = 4,
-    byrow = TRUE
-  )
-  actual_result <- apply_reporting_structure(
-    make_test_triangle(data = trunc_rt),
-    structure = c(1, 2)
-  )
-  result_mat <- unclass(actual_result)
-  dimnames(result_mat) <- NULL
-  attributes(result_mat) <- list(dim = dim(result_mat))
-  expect_identical(exp_result, result_mat)
-})
+    trunc_rt <- matrix(
+      c(
+        1, 3, 5, 7, 9,
+        4, 5, 9, 4, 3,
+        1, 6, 4, 4, 3,
+        3, 8, 4, 6, 1
+      ),
+      nrow = 4,
+      byrow = TRUE
+    )
+    actual_result <- apply_reporting_structure(
+      make_test_triangle(data = trunc_rt),
+      structure = c(1, 2)
+    )
+    result_mat <- unclass(actual_result)
+    dimnames(result_mat) <- NULL
+    attributes(result_mat) <- list(dim = dim(result_mat))
+    expect_identical(exp_result, result_mat)
+  }
+)
 
 test_that("apply_reporting_structure can handle case when first element is not 1", { # nolint
   exp_result <- matrix(
@@ -307,37 +313,39 @@ test_that("apply_reporting_structure can handle case when first element is not 1
   expect_identical(exp_result, result_mat)
 })
 
-test_that("apply_reporting_structure can handle a structure ending with 2 NAs", {
-  exp_result <- matrix(
-    c(
-      1, 3, 5, 7, 9, 7,
-      4, 5, 9, 4, NA, NA,
-      1, 6, NA, NA, NA, NA,
-      3, NA, NA, NA, NA, NA
-    ),
-    nrow = 4,
-    byrow = TRUE
-  )
+test_that(
+  "apply_reporting_structure can handle a structure ending with 2 NAs", {
+    exp_result <- matrix(
+      c(
+        1, 3, 5, 7, 9, 7,
+        4, 5, 9, 4, NA, NA,
+        1, 6, NA, NA, NA, NA,
+        3, NA, NA, NA, NA, NA
+      ),
+      nrow = 4,
+      byrow = TRUE
+    )
 
-  trunc_rt <- matrix(
-    c(
-      1, 3, 5, 7, 9, 7,
-      4, 5, 9, 4, 3, 3,
-      1, 6, 4, 4, 3, 2,
-      3, 8, 4, 6, 1, 6
-    ),
-    nrow = 4,
-    byrow = TRUE
-  )
-  actual_result <- apply_reporting_structure(
-    make_test_triangle(data = trunc_rt),
-    structure = c(1, 1, 2)
-  )
-  result_mat <- unclass(actual_result)
-  dimnames(result_mat) <- NULL
-  attributes(result_mat) <- list(dim = dim(result_mat))
-  expect_identical(exp_result, result_mat)
-})
+    trunc_rt <- matrix(
+      c(
+        1, 3, 5, 7, 9, 7,
+        4, 5, 9, 4, 3, 3,
+        1, 6, 4, 4, 3, 2,
+        3, 8, 4, 6, 1, 6
+      ),
+      nrow = 4,
+      byrow = TRUE
+    )
+    actual_result <- apply_reporting_structure(
+      make_test_triangle(data = trunc_rt),
+      structure = c(1, 1, 2)
+    )
+    result_mat <- unclass(actual_result)
+    dimnames(result_mat) <- NULL
+    attributes(result_mat) <- list(dim = dim(result_mat))
+    expect_identical(exp_result, result_mat)
+  }
+)
 
 test_that("apply_reporting_structure validates structure parameter", {
   test_matrix <- matrix(1:9, nrow = 3)

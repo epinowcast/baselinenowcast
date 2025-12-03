@@ -9,8 +9,8 @@
 #' This function chains the retrospective nowcasting workflow:
 #' \enumerate{
 #'   \item [truncate_triangles()] - Create retrospective snapshots
-#'   \item [apply_reporting_structures()] - Generate retrospective
-#'     reporting triangles
+#'   \item [apply_reporting_structures()] - Generate retrospective reporting
+#'     triangles
 #'   \item [estimate_and_apply_delays()] - Generate point nowcasts
 #'   \item [estimate_uncertainty()] - Estimate uncertainty parameters
 #' }

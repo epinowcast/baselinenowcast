@@ -90,9 +90,7 @@ get_delays_unit <- function(x) {
 .add_months <- function(dates, delays) {
   # Use seq.Date for proper month arithmetic
   result <- mapply(function(d, n) {
-    if (n == 0) {
-      return(d)
-    }
+    if (n == 0) return(d)
     return(seq(d, by = "month", length.out = n + 1)[n + 1])
   }, dates, delays, SIMPLIFY = FALSE)
   return(as.Date(unlist(result), origin = "1970-01-01"))
@@ -106,9 +104,7 @@ get_delays_unit <- function(x) {
 .add_years <- function(dates, delays) {
   # Use seq.Date for proper year arithmetic
   result <- mapply(function(d, n) {
-    if (n == 0) {
-      return(d)
-    }
+    if (n == 0) return(d)
     return(seq(d, by = "year", length.out = n + 1)[n + 1])
   }, dates, delays, SIMPLIFY = FALSE)
   return(as.Date(unlist(result), origin = "1970-01-01"))
@@ -180,9 +176,7 @@ get_report_dates <- function(reference_dates, delays, delays_unit) {
   reference <- as.Date(reference_date)
 
   result <- mapply(function(r, ref) {
-    if (r == ref) {
-      return(0)
-    }
+    if (r == ref) return(0)
 
     years_diff <- as.numeric(format(r, "%Y")) -
       as.numeric(format(ref, "%Y"))
@@ -262,9 +256,7 @@ get_mean_delay <- function(x) {
   delays <- 0:get_max_delay(x)
   x_mat <- as.matrix(x)
   mean_delays <- apply(x_mat, 1, function(row_counts) {
-    if (sum(row_counts, na.rm = TRUE) == 0) {
-      return(NA_real_)
-    }
+    if (sum(row_counts, na.rm = TRUE) == 0) return(NA_real_)
     return(weighted.mean(delays, row_counts, na.rm = TRUE))
   })
   return(mean_delays)
@@ -299,9 +291,7 @@ get_quantile_delay <- function(x, p = 0.99) {
   x_mat <- as.matrix(x)
   quantile_delays <- apply(x_mat, 1, function(row_counts) {
     total_counts <- sum(row_counts, na.rm = TRUE)
-    if (total_counts == 0) {
-      return(NA_integer_)
-    }
+    if (total_counts == 0) return(NA_integer_)
 
     # Calculate cumulative proportion and find first delay >= quantile
     cumulative_prop <- cumsum(row_counts) / total_counts
@@ -319,8 +309,8 @@ get_quantile_delay <- function(x, p = 0.99) {
 #'
 #' Returns an integer or vector specifying the reporting structure, which
 #' indicates how the reporting triangle is organized. This structure tells
-#' [apply_reporting_structure()] how to create new reporting triangles with the same
-#' reporting pattern.
+#' [apply_reporting_structure()] how to create new reporting triangles with
+#' the same reporting pattern.
 #'
 #' @inheritParams estimate_delay
 #'

@@ -1,6 +1,6 @@
 test_that(
-  "construct_triangles constructs retrospective triangles with structure 1",
-  {
+  "apply_reporting_structures constructs retrospective triangles with
+  structure 1", {
     # Setup
     triangle1 <- matrix(
       c(
@@ -35,14 +35,14 @@ test_that(
     )
 
     # Test 1: Check if the function returns a list
-    expect_type(construct_triangles(trunc_triangles), "list")
+    expect_type(apply_reporting_structures(trunc_triangles), "list")
 
     # Test 2: Check if the number of retrospective triangles is correct
-    expect_length(construct_triangles(trunc_triangles), 2)
+    expect_length(apply_reporting_structures(trunc_triangles), 2)
 
     # Test 3: Check that the dimensions of the returned triangles are as
     # expected
-    retro_triangles <- construct_triangles(trunc_triangles)
+    retro_triangles <- apply_reporting_structures(trunc_triangles)
     expect_identical(dim(retro_triangles[[1]]), c(7L, 4L))
     expect_identical(dim(retro_triangles[[2]]), c(6L, 4L))
 
@@ -50,7 +50,7 @@ test_that(
     # correct
     expect_identical(
       retro_triangles[[1]],
-      construct_triangle(make_test_triangle(data = triangle1))
+      apply_reporting_structure(make_test_triangle(data = triangle1))
     )
 
     # Test 5: Check if the content of the last retrospective triangle is correct
@@ -70,14 +70,14 @@ test_that(
 
 
     expect_error(
-      construct_triangles(data.frame(trunc_triangles[1])),
+      apply_reporting_structures(data.frame(trunc_triangles[1])),
       "data must be a matrix"
     )
   }
 )
 
 test_that(
-  "construct_triangles structure parameter is passed through correctly",
+  "apply_reporting_structures structure parameter is passed through correctly",
   {
     # Create test triangles
     triangle1 <- matrix(
@@ -112,7 +112,7 @@ test_that(
       make_test_triangle(data = triangle2)
     )
 
-    retro_triangles_custom <- construct_triangles(trunc_triangles,
+    retro_triangles_custom <- apply_reporting_structures(trunc_triangles,
       structure = 2
     )
 

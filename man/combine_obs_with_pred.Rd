@@ -43,7 +43,7 @@ nowcast for the final counts by reference time.
 }
 \examples{
 # Use example data
-reporting_triangle <- construct_triangle(example_reporting_triangle)
+reporting_triangle <- apply_reporting_structure(example_reporting_triangle)
 pred_counts <- c(10, 20, 30, 40)
 combine_obs_with_pred(pred_counts, reporting_triangle)
 

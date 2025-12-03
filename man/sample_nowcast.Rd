@@ -61,7 +61,7 @@ rep_tri <- as_reporting_triangle(data_as_of) |>
   truncate_to_delay(max_delay = 5) |>
   tail(n = 10)
 point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
-reporting_triangle <- construct_triangle(rep_tri)
+reporting_triangle <- apply_reporting_structure(rep_tri)
 uncertainty_params <- estimate_uncertainty_retro(
   rep_tri,
   n_history_delay = 8,

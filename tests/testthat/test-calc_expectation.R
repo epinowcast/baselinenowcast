@@ -2,7 +2,7 @@
 n_dates <- 10
 n_delays <- 5
 full_expectation <- matrix(1:50, nrow = n_dates, ncol = n_delays)
-expectation <- construct_triangle(
+expectation <- apply_reporting_structure(
   make_test_triangle(data = full_expectation)
 )
 delay_pmf <- c(0.5, 0.3, 0.1, 0.07, 0.03)

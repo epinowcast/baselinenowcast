@@ -11,7 +11,7 @@ test_that("combine_obs_with_pred: correctly combines observed and predicted", {
     nrow = 4,
     byrow = TRUE
   )
-  reporting_triangle <- construct_triangle(
+  reporting_triangle <- apply_reporting_structure(
     make_test_triangle(data = reporting_matrix)
   )
 
@@ -42,7 +42,7 @@ test_that("combine_obs_with_pred: handles aggregation function properly", {
     align = "right"
   )
   pred_counts <- c(0, 3, 9, 21)
-  reporting_triangle <- construct_triangle(
+  reporting_triangle <- apply_reporting_structure(
     make_test_triangle(data = reporting_matrix)
   )
   aggr_reporting_triangle <- zoo::rollsum(reporting_triangle,

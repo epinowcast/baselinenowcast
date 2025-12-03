@@ -49,7 +49,6 @@ estimate_and_apply_delays <- function(retro_reporting_triangles,
                                         sapply(retro_reporting_triangles, nrow)
                                       ),
                                       delay_pmf = NULL,
-                                      preprocess = preprocess_negative_values,
                                       validate = TRUE) {
   if (is.list(delay_pmf)) {
     delay_pmf_list <- delay_pmf
@@ -73,7 +72,6 @@ estimate_and_apply_delays <- function(retro_reporting_triangles,
         reporting_triangle = triangle,
         n = n,
         delay_pmf = pmf,
-        preprocess = preprocess,
         validate = validate
       )
       if (!is.null(result$error)) {

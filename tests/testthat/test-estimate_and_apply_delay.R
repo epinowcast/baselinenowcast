@@ -176,7 +176,8 @@ test_that("estimate_and_apply_delay errors when no complete rows", {
   )
 })
 
-test_that("estimate_and_apply_delay works with preprocess parameter", {
+test_that("estimate_and_apply_delay passes ... to estimate_delay", {
+  # Test that preprocess can be passed via ... to estimate_delay
   result_default <- estimate_and_apply_delay(
     reporting_triangle = reporting_triangle,
     n = 8

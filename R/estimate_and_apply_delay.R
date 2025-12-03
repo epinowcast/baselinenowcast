@@ -45,7 +45,6 @@
 estimate_and_apply_delay <- function(reporting_triangle,
                                      n = nrow(reporting_triangle),
                                      delay_pmf = NULL,
-                                     preprocess = preprocess_negative_values,
                                      validate = TRUE,
                                      ...) {
   assert_reporting_triangle(reporting_triangle, validate)
@@ -76,7 +75,6 @@ estimate_and_apply_delay <- function(reporting_triangle,
     delay_pmf <- estimate_delay(
       reporting_triangle = reporting_triangle,
       n = n,
-      preprocess = preprocess,
       validate = FALSE,
       ...
     )

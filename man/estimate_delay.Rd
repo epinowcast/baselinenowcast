@@ -49,12 +49,25 @@ delay_pmf <- estimate_delay(
 )
 delay_pmf
 
-# Example 2: Estimate delay using fewer observations
-delay_pmf_ex2 <- estimate_delay(
-  reporting_triangle = example_reporting_triangle,
+# Example 2: Using data with downward corrections (negatives preserved)
+# Low-level functions process triangles as-is without preprocessing
+delay_pmf_negative <- estimate_delay(
+  reporting_triangle = example_downward_corr_rt,
   n = 5
 )
-delay_pmf_ex2
+delay_pmf_negative
+# Note: PMF may contain negative values
+any(delay_pmf_negative < 0)
+
+# Example 3: Preprocess explicitly before estimation if needed
+preprocessed_triangle <- preprocess_negative_values(example_downward_corr_rt)
+delay_pmf_preprocessed <- estimate_delay(
+  reporting_triangle = preprocessed_triangle,
+  n = 5
+)
+delay_pmf_preprocessed
+# Now PMF has no negative values
+all(delay_pmf_preprocessed >= 0)
 }
 \seealso{
 Delay distribution estimation functions

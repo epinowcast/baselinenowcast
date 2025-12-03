@@ -245,17 +245,11 @@ baselinenowcast.reporting_triangle <- function(
 #'   `"none"` for no sharing (each `strata_cols` is fully independent),
 #'   `"delay"` for delay sharing and `"uncertainty"` for uncertainty sharing.
 #'   Both `"delay"` and `"uncertainty"` can be passed at the same time.
-#' @param preprocess Function to apply to the reporting triangle before
-#'   estimation, or NULL to skip preprocessing. Default is
-#'   [preprocess_negative_values()], which handles negative values by
-#'   redistributing them to earlier delays. Set to NULL if you want to preserve
-#'   negative values. Custom preprocess functions must accept a `validate`
-#'   parameter (defaults to TRUE) to enable validation optimisation in internal
-#'   function chains.
 #' @param ... Additional arguments passed to
 #'    [estimate_uncertainty()]
 #'    and [sample_nowcast()].
 #' @inheritParams baselinenowcast
+#' @inheritParams baselinenowcast.reporting_triangle
 #' @inheritParams as_reporting_triangle.data.frame
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast

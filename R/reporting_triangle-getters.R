@@ -309,7 +309,7 @@ get_quantile_delay <- function(x, p = 0.99) {
 #'
 #' Returns an integer or vector specifying the reporting structure, which
 #' indicates how the reporting triangle is organized. This structure tells
-#' [construct_triangle()] how to create new reporting triangles with the same
+#' [apply_reporting_structure()] how to create new reporting triangles with the same
 #' reporting pattern.
 #'
 #' @inheritParams estimate_delay

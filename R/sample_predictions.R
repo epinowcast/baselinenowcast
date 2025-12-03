@@ -29,7 +29,7 @@
 #'   truncate_to_delay(max_delay = 5) |>
 #'   tail(n = 10)
 #' point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
-#' reporting_triangle <- construct_triangle(rep_tri)
+#' reporting_triangle <- apply_reporting_structure(rep_tri)
 #' uncertainty_params <- estimate_uncertainty_retro(
 #'   rep_tri,
 #'   n_history_delay = 8,
@@ -174,7 +174,7 @@ sample_prediction <- function(
 #' @export
 #' @examples
 #' # Use example data
-#' reporting_triangle <- construct_triangle(example_reporting_triangle)
+#' reporting_triangle <- apply_reporting_structure(example_reporting_triangle)
 #' pred_counts <- c(10, 20, 30, 40)
 #' combine_obs_with_pred(pred_counts, reporting_triangle)
 #'
@@ -217,7 +217,7 @@ combine_obs_with_pred <- function(
 #'   truncate_to_delay(max_delay = 5) |>
 #'   tail(n = 10)
 #' point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
-#' reporting_triangle <- construct_triangle(rep_tri)
+#' reporting_triangle <- apply_reporting_structure(rep_tri)
 #' uncertainty_params <- estimate_uncertainty_retro(
 #'   rep_tri,
 #'   n_history_delay = 8,
@@ -294,7 +294,7 @@ sample_predictions <- function(
 #'   truncate_to_delay(max_delay = 5) |>
 #'   tail(n = 10)
 #' point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
-#' reporting_triangle <- construct_triangle(rep_tri)
+#' reporting_triangle <- apply_reporting_structure(rep_tri)
 #' uncertainty_params <- estimate_uncertainty_retro(
 #'   rep_tri,
 #'   n_history_delay = 8,
@@ -352,7 +352,7 @@ sample_nowcast <- function(
 #'   truncate_to_delay(max_delay = 5) |>
 #'   tail(n = 10)
 #' point_nowcast_matrix <- estimate_and_apply_delay(rep_tri, n = 10)
-#' reporting_triangle <- construct_triangle(rep_tri)
+#' reporting_triangle <- apply_reporting_structure(rep_tri)
 #' uncertainty_params <- estimate_uncertainty_retro(
 #'   rep_tri,
 #'   n_history_delay = 8,

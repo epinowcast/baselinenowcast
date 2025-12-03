@@ -47,7 +47,7 @@
 #'
 #' # Create retrospective nowcasts
 #' trunc_rts <- truncate_triangles(rep_tri, n = 2)
-#' retro_rts <- construct_triangles(trunc_rts)
+#' retro_rts <- apply_reporting_structures(trunc_rts)
 #' retro_nowcasts <- fill_triangles(retro_rts)
 #'
 #' # Estimate dispersion parameters using default negative binomial model

@@ -69,7 +69,7 @@ test_that("fill_triangle NA patterns are handled correctly", {
 
 test_that("fill_triangle: Output dimensions match input", {
   odd_dim_tri <- make_test_triangle(data = matrix(1:6, nrow = 3, ncol = 2)) |>
-    construct_triangle()
+    apply_reporting_structure()
   result <- fill_triangle(odd_dim_tri)
   expect_identical(dim(result), c(3L, 2L))
 })
@@ -110,7 +110,7 @@ test_that("fill_triangle generates the correct result on a ragged triangle", { #
   triangle_mat <- lapply(partial_counts, function(x) x * delay_pmf)
   triangle_mat <- do.call(rbind, triangle_mat)
   triangle <- make_test_triangle(data = triangle_mat)
-  triangle <- construct_triangle(triangle, structure = c(1, 2))
+  triangle <- apply_reporting_structure(triangle, structure = c(1, 2))
 
   result <- fill_triangle(
     triangle
@@ -128,7 +128,7 @@ test_that("fill_triangle generates the correct result on a ragged triangle with 
   triangle_mat <- lapply(partial_counts, function(x) x * delay_pmf)
   triangle_mat <- do.call(rbind, triangle_mat)
   triangle <- make_test_triangle(data = triangle_mat)
-  triangle <- construct_triangle(triangle, structure = c(1, 2))
+  triangle <- apply_reporting_structure(triangle, structure = c(1, 2))
 
   result <- fill_triangle(
     triangle
@@ -146,10 +146,10 @@ test_that("fill_triangle errors when there are insufficient observations", { # n
   triangle_mat <- lapply(partial_counts, function(x) x * delay_pmf)
   triangle_mat <- do.call(rbind, triangle_mat)
 
-  # construct_triangle creates all-NA columns which should fail validation
+  # apply_reporting_structure creates all-NA columns which should fail validation
   # when passed to fill_triangle
   triangle <- make_test_triangle(data = triangle_mat) |>
-    construct_triangle(structure = c(1, 2))
+    apply_reporting_structure(structure = c(1, 2))
 
   # fill_triangle should error because no rows have complete observations
   expect_error(

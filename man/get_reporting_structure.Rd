@@ -23,7 +23,7 @@ there are no NAs, will return 0.
 \description{
 Returns an integer or vector specifying the reporting structure, which
 indicates how the reporting triangle is organized. This structure tells
-\code{\link[=construct_triangle]{construct_triangle()}} how to create new reporting triangles with the same
+\code{\link[=apply_reporting_structure]{apply_reporting_structure()}} how to create new reporting triangles with the same
 reporting pattern.
 }
 \examples{

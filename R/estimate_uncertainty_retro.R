@@ -9,7 +9,7 @@
 #' This function chains the retrospective nowcasting workflow:
 #' \enumerate{
 #'   \item [truncate_triangles()] - Create retrospective snapshots
-#'   \item [construct_triangles()] - Generate retrospective reporting triangles
+#'   \item [apply_reporting_structures()] - Generate retrospective reporting triangles
 #'   \item [fill_triangles()] - Generate point nowcasts
 #'   \item [estimate_uncertainty()] - Estimate uncertainty parameters
 #' }
@@ -21,7 +21,7 @@
 #'   alternative aggregation), use the low-level functions directly.
 #'
 #' @inheritParams estimate_delay
-#' @inheritParams construct_triangles
+#' @inheritParams apply_reporting_structures
 #' @inheritParams estimate_and_apply_uncertainty
 #' @inheritParams fill_triangles
 #' @param ... Additional arguments passed to [estimate_uncertainty()].
@@ -73,7 +73,7 @@ estimate_uncertainty_retro <- function(
     validate = FALSE
   )
 
-  reporting_triangle_list <- construct_triangles(
+  reporting_triangle_list <- apply_reporting_structures(
     truncated_reporting_triangles = trunc_rep_tri_list,
     structure = structure,
     validate = FALSE

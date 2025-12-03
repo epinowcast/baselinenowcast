@@ -23,7 +23,7 @@ to limit the delay distribution used for estimation.
 \examples{
 # Truncate to delays 0-2
 rt_short <- truncate_to_delay(example_downward_corr_rt, max_delay = 2)
-get_max_delay(rt_short)  # Returns 2
+get_max_delay(rt_short) # Returns 2
 }
 \seealso{
 Reporting triangle construction and validation

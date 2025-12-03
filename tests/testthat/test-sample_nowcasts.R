@@ -186,7 +186,8 @@ test_that(
     # predictions
     first_date <- min(result$reference_date)
     sum_result <- sum(
-      result$pred_count[result$reference_date != first_date], na.rm = TRUE
+      result$pred_count[result$reference_date != first_date],
+      na.rm = TRUE
     )
     sum_result_rolling_sum <- sum(
       result_with_rolling_sum$pred_count[
@@ -228,7 +229,7 @@ test_that("sample_nowcasts: longer k aggregates correctly", {
   )
   triangle <- apply_reporting_structure(make_test_triangle(data = rep_mat))
 
-  pt_nowcast_mat <- fill_triangle(triangle)
+  pt_nowcast_mat <- estimate_and_apply_delay(triangle)
   dispersion <- c(10, 10, 10)
 
   expected_mean_mat <- zoo::rollsum(pt_nowcast_mat,

@@ -69,13 +69,14 @@ test_that("truncate_triangles can handle a range of ns", {
 test_that(
   "truncate_triangles replaces values with NA for retrospective snapshots",
   {
-  result <- truncate_triangles(test_triangle, n = 1)[[1]]
-  # Expect bottom 3 elemets of lower left triangle to be NAs
-  expect_true(all(
-    anyNA(result[5, 4]),
-    anyNA(result[6, 3:4])
-  ))
-})
+    result <- truncate_triangles(test_triangle, n = 1)[[1]]
+    # Expect bottom 3 elemets of lower left triangle to be NAs
+    expect_true(all(
+      anyNA(result[5, 4]),
+      anyNA(result[6, 3:4])
+    ))
+  }
+)
 
 test_that("truncate_triangles truncated matrices preserve original structure", {
   result <- truncate_triangles(test_triangle, n = 1)[[1]]

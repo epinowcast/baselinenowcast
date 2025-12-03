@@ -11,7 +11,7 @@
 #'   \item [truncate_triangles()] - Create retrospective snapshots
 #'   \item [apply_reporting_structures()] - Generate retrospective reporting
 #'     triangles
-#'   \item [fill_triangles()] - Generate point nowcasts
+#'   \item [estimate_and_apply_delays()] - Generate point nowcasts
 #'   \item [estimate_uncertainty()] - Estimate uncertainty parameters
 #' }
 #'
@@ -24,7 +24,7 @@
 #' @inheritParams estimate_delay
 #' @inheritParams apply_reporting_structures
 #' @inheritParams estimate_and_apply_uncertainty
-#' @inheritParams fill_triangles
+#' @inheritParams estimate_and_apply_delays
 #' @param ... Additional arguments passed to [estimate_uncertainty()].
 #'
 #' @returns A numeric vector of uncertainty parameters with length equal to
@@ -54,7 +54,6 @@ estimate_uncertainty_retro <- function(
     n_retrospective_nowcasts,
     structure = get_reporting_structure(reporting_triangle),
     delay_pmf = NULL,
-    preprocess = preprocess_negative_values,
     validate = TRUE,
     ...) {
   assert_reporting_triangle(reporting_triangle, validate)
@@ -80,11 +79,10 @@ estimate_uncertainty_retro <- function(
     validate = FALSE
   )
 
-  pt_nowcast_mat_list <- fill_triangles(
+  pt_nowcast_mat_list <- estimate_and_apply_delays(
     retro_reporting_triangles = reporting_triangle_list,
     n = n_history_delay,
     delay_pmf = delay_pmf,
-    preprocess = preprocess,
     validate = FALSE
   )
 

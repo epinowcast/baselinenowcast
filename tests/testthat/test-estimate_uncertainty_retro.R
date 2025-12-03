@@ -56,7 +56,7 @@ test_that("estimate_uncertainty_retro matches manual workflow", {
     structure = structure
   )
   n_history_delay <- min(sapply(reporting_triangle_list, nrow))
-  pt_nowcast_mat_list <- fill_triangles(
+  pt_nowcast_mat_list <- estimate_and_apply_delays(
     reporting_triangle_list,
     n = n_history_delay
   )

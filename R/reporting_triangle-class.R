@@ -42,7 +42,7 @@
 #' - Subsetting preserves class and attributes when result is a matrix
 #'
 #' **Package functions:**
-#' - [fill_triangle()]: Fill missing values with zeros
+#' - [estimate_and_apply_delay()]: Estimate delay and generate point nowcast
 #' - [estimate_delay()]: Extract delay distribution from triangle
 #' - [apply_delay()]: Apply delay distribution for nowcasting
 #' - [truncate_triangle()]: Remove most recent rows
@@ -54,7 +54,7 @@
 #' rep_tri <- as_reporting_triangle(data = data)
 #'
 #' # Use with low-level functions
-#' filled <- fill_triangle(rep_tri)
+#' filled <- estimate_and_apply_delay(rep_tri)
 #' delay_pmf <- estimate_delay(rep_tri)
 #' nowcast <- apply_delay(rep_tri, delay_pmf)
 #'

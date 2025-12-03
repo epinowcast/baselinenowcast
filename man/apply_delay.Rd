@@ -54,9 +54,4 @@ nowcast_with_corrections <- apply_delay(
 # correctly reflecting expected downward corrections
 print(nowcast_with_corrections)
 }
-\seealso{
-Point nowcast generation functions
-\code{\link{fill_triangle}()},
-\code{\link{fill_triangles}()}
-}
 \concept{generate_point_nowcasts}

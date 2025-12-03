@@ -33,15 +33,11 @@ test_that("fill_triangles is deprecated with warning", {
   withr::local_options(lifecycle_verbosity = "warning")
 
   expect_warning(
-    result <- fill_triangles(
-      retro_reporting_triangles = retro_rts_list
-    ),
+    fill_triangles(retro_reporting_triangles = retro_rts_list),
     regexp = "deprecated"
   )
   expect_warning(
-    fill_triangles(
-      retro_reporting_triangles = retro_rts_list
-    ),
+    fill_triangles(retro_reporting_triangles = retro_rts_list),
     regexp = "estimate_and_apply_delays"
   )
 })

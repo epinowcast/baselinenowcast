@@ -12,11 +12,12 @@ test_triangle <- make_test_triangle(data = matrix(
 ))
 
 test_that("fill_triangle is deprecated with warning", {
+
   # Reset the lifecycle verbosity to ensure warning is shown
   withr::local_options(lifecycle_verbosity = "warning")
 
   expect_warning(
-    result <- fill_triangle(test_triangle),
+    fill_triangle(test_triangle),
     regexp = "deprecated"
   )
   expect_warning(
@@ -36,7 +37,9 @@ test_that("fill_triangle basic functionality with default parameters", { # nolin
 
 test_that("fill_triangle custom delay PMF is used when provided", {
   custom_pmf <- c(0.4, 0.3, 0.2, 0.1)
-  result <- suppressWarnings(fill_triangle(test_triangle, delay_pmf = custom_pmf))
+  result <- suppressWarnings(
+    fill_triangle(test_triangle, delay_pmf = custom_pmf)
+  )
 
   # Verify structure remains consistent
   expect_identical(dim(result), dim(test_triangle))
@@ -160,8 +163,8 @@ test_that("fill_triangle errors when there are insufficient observations", { # n
   triangle_mat <- lapply(partial_counts, function(x) x * delay_pmf)
   triangle_mat <- do.call(rbind, triangle_mat)
 
-  # apply_reporting_structure creates all-NA columns which should fail validation
-  # when passed to fill_triangle
+  # apply_reporting_structure creates all-NA columns which should fail
+  # validation when passed to fill_triangle
   triangle <- make_test_triangle(data = triangle_mat) |>
     apply_reporting_structure(structure = c(1, 2))
 

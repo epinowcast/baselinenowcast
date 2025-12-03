@@ -41,7 +41,7 @@ Use this function when:
 increasing
 }
 
-Set \code{preprocess = NULL} in \code{\link[=estimate_delay]{estimate_delay()}} when:
+Do not use this function when:
 \itemize{
 \item Your data naturally has negative PMF entries (e.g., from differencing)
 \item You want to preserve the original structure including negatives

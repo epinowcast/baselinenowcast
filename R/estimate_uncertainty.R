@@ -431,7 +431,7 @@ fit_nb <- function(x, mu) {
     cli_abort(c(
       "Negative values detected in observations for uncertainty estimation",
       x = "fit_nb() requires non-negative integer observations",
-      i = "Consider using preprocess = preprocess_negative_values in estimate_delay() if appropriate" # nolint: line_length_linter
+      i = "Consider using preprocess_negative_values() on the reporting triangle if appropriate" # nolint: line_length_linter
     ))
   }
 

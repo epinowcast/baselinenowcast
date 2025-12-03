@@ -29,7 +29,7 @@
 #' - You need a delay distribution that sums to 1 or a CDF that is weakly
 #'   increasing
 #'
-#' Set `preprocess = NULL` in [estimate_delay()] when:
+#' Do not use this function when:
 #' - Your data naturally has negative PMF entries (e.g., from differencing)
 #' - You want to preserve the original structure including negatives
 #' - You are working with corrections that should be reflected as negative

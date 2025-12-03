@@ -65,14 +65,13 @@ horizon 1 to the maximum horizon. Default is \code{NULL}, which will result in
 computing the uncertainty parameters from the reporting triangle \code{data}.
 See \code{\link[=estimate_uncertainty]{estimate_uncertainty()}} for more details.}
 
-\item{preprocess}{Function to apply to the truncated triangle before
+\item{preprocess}{Function to apply to the reporting triangle before
 estimation, or NULL to skip preprocessing. Default is
 \code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
 redistributing them to earlier delays. Set to NULL if you want to preserve
-negative PMF entries (e.g., when working with downward corrections where
-negative probabilities reflect systematic adjustments). Custom preprocess
-functions must accept a \code{validate} parameter (defaults to TRUE) to enable
-validation optimisation in internal function chains.}
+negative values. Custom preprocess functions must accept a \code{validate}
+parameter (defaults to TRUE) to enable validation optimisation in internal
+function chains.}
 
 \item{validate}{Logical. If TRUE (default), validates the object. Set to
 FALSE only when called from functions that already validated.}

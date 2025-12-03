@@ -39,7 +39,6 @@ fill_triangles <- function(retro_reporting_triangles,
                              sapply(retro_reporting_triangles, nrow)
                            ),
                            delay_pmf = NULL,
-                           preprocess = preprocess_negative_values,
                            validate = TRUE) {
   if (is.list(delay_pmf)) { # name as a list and check length of elements
     delay_pmf_list <- delay_pmf
@@ -63,7 +62,6 @@ fill_triangles <- function(retro_reporting_triangles,
         reporting_triangle = triangle,
         delay_pmf = pmf,
         n = n,
-        preprocess = preprocess,
         validate = validate
       )
       if (!is.null(result$error)) {
@@ -170,9 +168,7 @@ fill_triangles <- function(retro_reporting_triangles,
 fill_triangle <- function(reporting_triangle,
                           n = nrow(reporting_triangle),
                           delay_pmf = NULL,
-                          preprocess = preprocess_negative_values,
                           validate = TRUE) {
-
   assert_reporting_triangle(reporting_triangle, validate)
 
   if (n > nrow(reporting_triangle)) {
@@ -201,12 +197,12 @@ fill_triangle <- function(reporting_triangle,
     delay_pmf <- estimate_delay(
       reporting_triangle = reporting_triangle,
       n = n,
-      preprocess = preprocess,
       validate = FALSE
     )
   }
 
   point_nowcast_matrix <- apply_delay(reporting_triangle, delay_pmf,
-                                      validate = FALSE)
+    validate = FALSE
+  )
   return(point_nowcast_matrix)
 }

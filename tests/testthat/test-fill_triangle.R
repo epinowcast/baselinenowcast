@@ -146,7 +146,8 @@ test_that("fill_triangle errors when there are insufficient observations", { # n
   triangle_mat <- lapply(partial_counts, function(x) x * delay_pmf)
   triangle_mat <- do.call(rbind, triangle_mat)
 
-  # apply_reporting_structure creates all-NA columns which should fail validation
+  # apply_reporting_structure creates all-NA columns which should fail
+  # validation
   # when passed to fill_triangle
   triangle <- make_test_triangle(data = triangle_mat) |>
     apply_reporting_structure(structure = c(1, 2))

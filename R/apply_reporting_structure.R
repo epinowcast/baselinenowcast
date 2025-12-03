@@ -45,7 +45,8 @@ apply_reporting_structures <- function(truncated_reporting_triangles,
   return(reporting_triangles)
 }
 
-#' Apply reporting structure to generate a single retrospective reporting triangle
+#' Apply reporting structure to generate a single retrospective reporting
+#'   triangle
 #'
 #' This function applies a reporting structure to a truncated reporting triangle
 #'   by setting observations to NA row by row from the bottom up based on the

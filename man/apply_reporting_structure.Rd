@@ -2,7 +2,8 @@
 % Please edit documentation in R/apply_reporting_structure.R
 \name{apply_reporting_structure}
 \alias{apply_reporting_structure}
-\title{Apply reporting structure to generate a single retrospective reporting triangle}
+\title{Apply reporting structure to generate a single retrospective reporting
+triangle}
 \usage{
 apply_reporting_structure(
   truncated_reporting_triangle,

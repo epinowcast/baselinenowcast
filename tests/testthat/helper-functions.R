@@ -103,10 +103,11 @@ make_simple_triangle <- function(reference_dates = NULL) {
 #' @param with_nas Logical; if TRUE, adds reporting triangle NA pattern
 #' @param as_reporting_triangle Logical; if TRUE, returns reporting_triangle
 #'   object (default), otherwise returns plain matrix
-#' @param construct Logical; if TRUE, calls apply_reporting_structure() on the result
+#' @param construct Logical; if TRUE, calls apply_reporting_structure() on
+#'   the result
 #'   (default FALSE)
-#' @param structure Structure parameter to pass to apply_reporting_structure() if
-#'   construct = TRUE
+#' @param structure Structure parameter to pass to
+#'   apply_reporting_structure() if construct = TRUE
 #' @param reference_dates Optional vector of reference dates. If NULL, uses
 #'   as_reporting_triangle() default (dummy dates).
 #' @return A reporting_triangle object (or matrix if as_reporting_triangle =

@@ -2,7 +2,7 @@
 
 Returns an integer or vector specifying the reporting structure, which
 indicates how the reporting triangle is organized. This structure tells
-[`construct_triangle()`](https://baselinenowcast.epinowcast.org/reference/construct_triangle.md)
+[`apply_reporting_structure()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structure.md)
 how to create new reporting triangles with the same reporting pattern.
 
 ## Usage

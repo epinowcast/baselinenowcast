@@ -40,8 +40,8 @@ dates.
 ## See also
 
 Retrospective data generation functions
-[`construct_triangle()`](https://baselinenowcast.epinowcast.org/reference/construct_triangle.md),
-[`construct_triangles()`](https://baselinenowcast.epinowcast.org/reference/construct_triangles.md),
+[`apply_reporting_structure()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structure.md),
+[`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md),
 [`truncate_triangles()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangles.md)
 
 ## Examples

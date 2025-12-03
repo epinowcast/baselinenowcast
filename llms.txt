@@ -331,10 +331,12 @@ Functions for creating retrospective reporting triangles by truncating
 and generating incomplete data structures for validation and uncertainty
 estimation.
 
-- [`construct_triangle()`](https://baselinenowcast.epinowcast.org/reference/construct_triangle.md)
-  : Generate a single retrospective reporting triangle
-- [`construct_triangles()`](https://baselinenowcast.epinowcast.org/reference/construct_triangles.md)
-  : Generate retrospective reporting triangles
+- [`apply_reporting_structure()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structure.md)
+  : Apply reporting structure to generate a single retrospective
+  reporting triangle
+- [`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md)
+  : Apply reporting structures to generate retrospective reporting
+  triangles
 - [`truncate_triangle()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangle.md)
   : Get a single truncated triangle
 - [`truncate_triangles()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangles.md)

@@ -463,7 +463,7 @@ trunc_rep_tri_list <- truncate_triangles(
 ```
 
 For each truncated triangle, we will use the
-[`construct_triangles()`](https://baselinenowcast.epinowcast.org/reference/construct_triangles.md)
+[`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md)
 function to generate what would have been available as of the latest
 reference time within each truncated triangle. We refer to these as
 retrospective reporting triangles.
@@ -471,7 +471,7 @@ retrospective reporting triangles.
 Code
 
 ``` r
-retro_rep_tri_list <- construct_triangles(trunc_rep_tri_list)
+retro_rep_tri_list <- apply_reporting_structures(trunc_rep_tri_list)
 ```
 
 Next we will pass this list of reporting triangles to the
@@ -694,7 +694,7 @@ Generating a point nowcast matrix 3.
 [`truncate_triangles()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangles.md) -
 Truncating triangles at iteratively earlier retrospective nowcast times
 4.
-[`construct_triangles()`](https://baselinenowcast.epinowcast.org/reference/construct_triangles.md) -
+[`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md) -
 Constructing retrospective reporting triangles based on what would have
 been available as of the nowcast date. 5.
 [`fill_triangles()`](https://baselinenowcast.epinowcast.org/reference/fill_triangles.md) -

@@ -142,7 +142,7 @@ dates in the input <code>point_nowcast_matrix</code> (or fewer if using
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using max_delay = 154 from data</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Truncating from max_delay = 154 to 5.</span>
 <span class="r-in"><span><span class="va">point_nowcast_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_and_apply_delay.html">estimate_and_apply_delay</a></span><span class="op">(</span><span class="va">rep_tri</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">reporting_triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="construct_triangle.html">construct_triangle</a></span><span class="op">(</span><span class="va">rep_tri</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">reporting_triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="apply_reporting_structure.html">apply_reporting_structure</a></span><span class="op">(</span><span class="va">rep_tri</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">uncertainty_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_uncertainty_retro.html">estimate_uncertainty_retro</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">rep_tri</span>,</span></span>
 <span class="r-in"><span>  n_history_delay <span class="op">=</span> <span class="fl">8</span>,</span></span>

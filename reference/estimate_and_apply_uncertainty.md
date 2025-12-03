@@ -16,7 +16,7 @@ To obtain estimates of uncertainty parameters, use
 For full control over individual steps (e.g., custom matrix preparation,
 alternative aggregation), use the low-level functions
 ([`truncate_triangles()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangles.md),
-[`construct_triangles()`](https://baselinenowcast.epinowcast.org/reference/construct_triangles.md),
+[`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md),
 [`fill_triangles()`](https://baselinenowcast.epinowcast.org/reference/fill_triangles.md),
 [`estimate_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md))
 directly.

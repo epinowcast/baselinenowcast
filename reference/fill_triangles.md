@@ -79,7 +79,7 @@ rep_tri <- as_reporting_triangle(data_as_of) |>
 #> ℹ Using max_delay = 154 from data
 #> ℹ Truncating from max_delay = 154 to 25.
 trunc_rts <- truncate_triangles(rep_tri, n = 2)
-retro_rts <- construct_triangles(trunc_rts)
+retro_rts <- apply_reporting_structures(trunc_rts)
 retro_pt_nowcast_mat_list <- fill_triangles(retro_rts, n = 30)
 retro_pt_nowcast_mat_list[1:2]
 #> [[1]]

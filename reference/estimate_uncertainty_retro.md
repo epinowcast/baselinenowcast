@@ -10,7 +10,7 @@ This function chains the retrospective nowcasting workflow:
 1.  [`truncate_triangles()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangles.md) -
     Create retrospective snapshots
 
-2.  [`construct_triangles()`](https://baselinenowcast.epinowcast.org/reference/construct_triangles.md) -
+2.  [`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md) -
     Generate retrospective reporting triangles
 
 3.  [`fill_triangles()`](https://baselinenowcast.epinowcast.org/reference/fill_triangles.md) -

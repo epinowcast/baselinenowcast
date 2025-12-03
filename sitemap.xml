@@ -13,6 +13,8 @@
 <url><loc>https://baselinenowcast.epinowcast.org/news/index.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/allocate_reference_times.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/apply_delay.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/apply_reporting_structure.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/as.data.frame.reporting_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/as.matrix.reporting_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/as_ChainLadder_triangle.html</loc></url>
@@ -28,8 +30,6 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/baselinenowcast.reporting_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/baselinenowcast_df-class.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/combine_obs_with_pred.html</loc></url>
-<url><loc>https://baselinenowcast.epinowcast.org/reference/construct_triangle.html</loc></url>
-<url><loc>https://baselinenowcast.epinowcast.org/reference/construct_triangles.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-add_days.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-add_months.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-add_weeks.html</loc></url>

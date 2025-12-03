@@ -2,8 +2,8 @@
 
 ## Breaking changes
 
--   `fill_triangle()` is deprecated in favour of `estimate_and_apply_delay()` which now supports optional delay estimation via the `delay_pmf` parameter (#334).
--   `fill_triangles()` is deprecated in favour of `estimate_and_apply_delays()` (#334).
+-   `fill_triangle()` has been removed. Use `estimate_and_apply_delay()` instead, which now supports optional delay estimation via the `delay_pmf` parameter (#334).
+-   `fill_triangles()` has been removed. Use `estimate_and_apply_delays()` instead (#334).
 
 ## New features
 

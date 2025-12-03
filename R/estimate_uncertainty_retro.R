@@ -24,7 +24,7 @@
 #' @inheritParams estimate_delay
 #' @inheritParams apply_reporting_structures
 #' @inheritParams estimate_and_apply_uncertainty
-#' @inheritParams fill_triangles
+#' @inheritParams estimate_and_apply_delays
 #' @param ... Additional arguments passed to [estimate_uncertainty()].
 #'
 #' @returns A numeric vector of uncertainty parameters with length equal to

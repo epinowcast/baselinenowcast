@@ -15,14 +15,14 @@
 #'   [estimate_uncertainty_retro()]. For full control over individual steps
 #'   (e.g., custom matrix preparation, alternative aggregation), use the
 #'   low-level functions ([truncate_triangles()], [apply_reporting_structures()],
-#'   [fill_triangles()], [estimate_uncertainty()]) directly.
+#'   [estimate_and_apply_delays()], [estimate_uncertainty()]) directly.
 #'
 #' @inheritParams estimate_delay
 #' @inheritParams apply_reporting_structure
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcasts
 #' @inheritParams sample_prediction
-#' @inheritParams fill_triangles
+#' @inheritParams estimate_and_apply_delays
 #' @param n_history_delay Integer indicating the number of reference times
 #'   (observations) to be used in the estimate of the reporting delay, always
 #'    starting from the most recent reporting delay.

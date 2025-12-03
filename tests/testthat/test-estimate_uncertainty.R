@@ -43,7 +43,7 @@ valid_trunc_rts <- list(
 )
 
 
-valid_rts <- construct_triangles(valid_trunc_rts)
+valid_rts <- apply_reporting_structures(valid_trunc_rts)
 
 test_that("estimate_uncertainty: Basic functionality with valid inputs", {
   result <- estimate_uncertainty(
@@ -217,7 +217,7 @@ test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
     fill_triangles(retro_rts_list)
   )
   truncated_reporting_triangles <- truncate_triangles(base_tri)
-  rt_list <- construct_triangles(truncated_reporting_triangles)
+  rt_list <- apply_reporting_structures(truncated_reporting_triangles)
   # Since only two point nowcasts are non-null, this will warn
   expect_warning(estimate_uncertainty(
     pt_nowcast_list,
@@ -242,11 +242,11 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
 
   # Create a reporting triangle with every other day reporting
   ragged_triangle <- make_test_triangle(data = complete_triangle) |>
-    construct_triangle(structure = 2)
+    apply_reporting_structure(structure = 2)
 
   # Create truncated triangles and retrospective triangles
   trunc_rts <- truncate_triangles(ragged_triangle)
-  retro_rts <- construct_triangles(trunc_rts, structure = 2)
+  retro_rts <- apply_reporting_structures(trunc_rts, structure = 2)
 
   # Generate nowcasts from the ragged triangles
   retro_nowcasts <- fill_triangles(retro_rts)
@@ -276,13 +276,13 @@ test_that(
   rep_mat_rows <- lapply(partial_counts, function(x) x * delay_pmf)
   rep_mat <- do.call(rbind, rep_mat_rows)
   triangle <- make_test_triangle(data = rep_mat) |>
-    construct_triangle()
+    apply_reporting_structure()
   reporting_triangle <- rbind(rep_mat, triangle)
   reporting_triangle <- make_test_triangle(data = reporting_triangle)
 
   pt_nowcast_mat <- fill_triangle(reporting_triangle)
   truncated_reporting_triangles <- truncate_triangles(reporting_triangle)
-  retro_reporting_triangles <- construct_triangles(truncated_reporting_triangles) # nolint
+  retro_reporting_triangles <- apply_reporting_structures(truncated_reporting_triangles) # nolint
 
   point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
 
@@ -307,7 +307,7 @@ test_that("estimate_uncertainty estimates positive dispersion for noisy predicti
   rep_mat_rows <- lapply(partial_counts, function(x) x * delay_pmf)
   rep_mat <- do.call(rbind, rep_mat_rows)
   triangle <- make_test_triangle(data = rep_mat) |>
-    construct_triangle()
+    apply_reporting_structure()
   reporting_triangle <- rbind(rep_mat, triangle)
   reporting_triangle <- make_test_triangle(data = reporting_triangle)
 
@@ -337,7 +337,7 @@ test_that("estimate_uncertainty estimates positive dispersion for noisy predicti
   }
 
   truncated_reporting_triangles <- truncate_triangles(rep_tri_new)
-  retro_reporting_triangles <- construct_triangles(truncated_reporting_triangles) # nolint
+  retro_reporting_triangles <- apply_reporting_structures(truncated_reporting_triangles) # nolint
 
   point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
 
@@ -387,7 +387,7 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
   rep_mat_rows <- lapply(partial_counts, function(x) x * delay_pmf)
   rep_mat <- do.call(rbind, rep_mat_rows)
   triangle <- make_test_triangle(data = rep_mat) |>
-    construct_triangle()
+    apply_reporting_structure()
   reporting_triangle <- rbind(rep_mat, rep_mat, rep_mat, rep_mat, triangle)
   reporting_triangle <- make_test_triangle(data = reporting_triangle)
 
@@ -404,7 +404,7 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
   for (i in 1:20) {
     trunc_rep_tri_orig <- reporting_triangle[1:(max_t - i), ]
     trunc_pt_nowcast_mat <- pt_nowcast_mat[1:(max_t - i), ]
-    retro_rep_tri <- construct_triangle(trunc_rep_tri_orig)
+    retro_rep_tri <- apply_reporting_structure(trunc_rep_tri_orig)
     # For the last 4 horizons, replace each row with negative binomial draws
     # with a mean of the point nowcast matrix
     # Work with the underlying matrix to avoid validation issues
@@ -426,7 +426,7 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
       data = trunc_rep_tri_mat,
       reference_dates = get_reference_dates(trunc_rep_tri_orig)
     )
-    trunc_rep_tri <- construct_triangle(trunc_rep_tri)
+    trunc_rep_tri <- apply_reporting_structure(trunc_rep_tri)
 
     truncated_reporting_triangles <- append(
       truncated_reporting_triangles,
@@ -493,7 +493,7 @@ test_that("estimate_uncertainty: can handle weekday filter with large ragged tri
 
   # Create truncated and retrospective reporting triangles
   trunc_rts <- truncate_triangles(short_ragged_triangle, n = 5)
-  retro_rts <- construct_triangles(trunc_rts,
+  retro_rts <- apply_reporting_structures(trunc_rts,
     structure = c(2, 7, 7, 7, 7, 7)
   )
 
@@ -528,11 +528,11 @@ test_that("estimate_uncertainty: can handle weekday filter with small ragged tri
 
   # Create a reporting triangle with every other day reporting
   ragged_triangle <- make_test_triangle(data = complete_triangle) |>
-    construct_triangle(structure = 2)
+    apply_reporting_structure(structure = 2)
 
   # Create truncated triangles and retrospective triangles
   trunc_rts <- truncate_triangles(ragged_triangle, n = 2)
-  retro_rts <- construct_triangles(trunc_rts, structure = 2)
+  retro_rts <- apply_reporting_structures(trunc_rts, structure = 2)
 
   # Generate nowcasts from the ragged triangles
   retro_nowcasts <- fill_triangles(retro_rts, n = 4)

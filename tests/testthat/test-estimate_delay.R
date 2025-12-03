@@ -10,7 +10,7 @@ complete_triangle <- do.call(rbind, complete_triangle)
 
 # Create a reporting triangle with NAs in the lower right
 reporting_triangle <- make_test_triangle(data = complete_triangle) |>
-  construct_triangle()
+  apply_reporting_structure()
 
 test_that("estimate_delay returns a valid probability mass function", {
   # Get delay estimate

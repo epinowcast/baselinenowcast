@@ -273,11 +273,11 @@ trunc_rep_tri_list <- truncate_triangles(
 )
 ```
 
-For each truncated triangle, we will use the `construct_triangles()` function to generate what would have been available as of the latest reference time within each truncated triangle.
+For each truncated triangle, we will use the `apply_reporting_structures()` function to generate what would have been available as of the latest reference time within each truncated triangle.
 We refer to these as retrospective reporting triangles.
 
 ```{r}
-retro_rep_tri_list <- construct_triangles(trunc_rep_tri_list)
+retro_rep_tri_list <- apply_reporting_structures(trunc_rep_tri_list)
 ```
 
 Next we will pass this list of reporting triangles to the `fill_triangles()` and specify `n`, the number of reference times to be used to estimate the delay for each nowcast, which we will set as the `n_history_delay` previous specified.
@@ -429,7 +429,7 @@ In this vignette we used the `baselinenowcast` low-level modular functions to co
 1. `estimate_delay()` - Estimating a delay
 2. `apply_delay()` - Generating a point nowcast matrix
 3. `truncate_triangles()` - Truncating triangles at iteratively earlier retrospective nowcast times
-4. `construct_triangles()` - Constructing retrospective reporting triangles based on what would have been available as of the nowcast date.
+4. `apply_reporting_structures()` - Constructing retrospective reporting triangles based on what would have been available as of the nowcast date.
 5. `fill_triangles()` - Generating point nowcasts from the retrospective reporting triangles
 6. `estimate_uncertainty()` - Estimating uncertainty from retrospective point nowcast matrices and eventual observations.
 7. `sample_nowcasts()` - Sampling from the observation model to generate probabilistic nowcasts

@@ -51,7 +51,7 @@ test_that("estimate_uncertainty_retro matches manual workflow", {
     triangle,
     n = n_retrospective_nowcasts
   )
-  reporting_triangle_list <- construct_triangles(
+  reporting_triangle_list <- apply_reporting_structures(
     trunc_rep_tri_list,
     structure = structure
   )

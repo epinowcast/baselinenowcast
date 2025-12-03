@@ -40,8 +40,6 @@
 #'   n = 5
 #' )
 #' delay_pmf_negative
-#' # Note: PMF may contain negative values
-#' any(delay_pmf_negative < 0)
 #'
 #' # Example 3: Preprocess explicitly before estimation if needed
 #' preprocessed_triangle <- preprocess_negative_values(example_downward_corr_rt)
@@ -50,8 +48,6 @@
 #'   n = 5
 #' )
 #' delay_pmf_preprocessed
-#' # Now PMF has no negative values
-#' all(delay_pmf_preprocessed >= 0)
 estimate_delay <- function(
     reporting_triangle,
     n = nrow(reporting_triangle),

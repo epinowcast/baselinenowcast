@@ -209,7 +209,7 @@ test_that("baselinenowcast.reporting_triangle errors if nothing to nowcast", {
 })
 
 test_that(
-  "baselinenowcast with preprocess = NULL produces point nowcast",
+  "baselinenowcast with preprocess = NULL produces point nowcast with downard corrections maintained", #nolint
   {
     # Use example reporting triangle with downward corrections
     triangle <- example_downward_corr_rt
@@ -247,3 +247,45 @@ test_that(
     expect_gt(nrow(result), 0)
   }
 )
+
+test_that("baselinenowcast returns the correct error message if trying to use nb on negative values", #nolint
+          {
+            # Use example reporting triangle with downward corrections
+            triangle <- example_downward_corr_rt
+            
+            # Test that baselinenowcast() errors with default negative binomial
+            result <- expect_error(
+              suppressWarnings(
+                baselinenowcast(
+                  data = triangle,
+                  preprocess = NULL
+              )
+              ),
+              regexp = "Negative values detected in observations for uncertainty estimation" #nolint
+            )
+})
+
+test_that("baselinenowcast can handle custom preprocessing",{
+  custom_preprocess <- function(triangle, validate = TRUE) {
+    return(triangle * 2)
+  }
+  
+  triangle <- rep_tri
+  
+  # Test that baselinenowcast() produces something when using custom 
+  # preprocessing
+  result <- baselinenowcast(
+        data = triangle,
+        preprocess = custom_preprocess,
+        output_type = "point"
+      )
+  
+  result_orig <- baselinenowcast(
+    data = triangle,
+    output_type = "point"
+  )
+  
+  # Expect the first to be double the original
+  expect_true(all(result$pred_count > result_orig$pred_count))
+  expect_equal(result$pred_count, result_orig$pred_count*2, tol = 0.01)
+})

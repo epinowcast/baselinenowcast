@@ -218,7 +218,7 @@ test_that("fill_triangles uses full number of rows in n_history_delay", { # noli
   check_pmf
 
   # Create a reporting triangle with NAs in the lower right
-  triangle <- construct_triangle(complete_triangle)
+  triangle <- apply_reporting_structure(complete_triangle)
   triangle
 
   slight_dif_triangle <- fill_triangle(triangle, n = 7)
@@ -231,7 +231,7 @@ test_that("fill_triangles uses full number of rows in n_history_delay", { # noli
   # These will always have the first row at the top. First one will be with
   # last row cut off, second will be with last 2 rows cut off
 
-  retro_rts <- construct_triangles(truncated_rts)
+  retro_rts <- apply_reporting_structures(truncated_rts)
 
 
   # Now change n_history_delay to only use last 4 rows, we should never use
@@ -264,7 +264,7 @@ test_that("fill_triangles uses correct rows", {
   check_pmf
 
   # Create a reporting triangle with NAs in the lower right
-  triangle <- construct_triangle(complete_triangle)
+  triangle <- apply_reporting_structure(complete_triangle)
   triangle
 
   slight_dif_triangle <- fill_triangle(triangle)
@@ -283,7 +283,7 @@ test_that("fill_triangles uses correct rows", {
   # These will always have the first row at the top. First one will be with
   # last row cut off, second will be with last 2 rows cut off
 
-  retro_rts <- construct_triangles(truncated_rts)
+  retro_rts <- apply_reporting_structures(truncated_rts)
   retro_rts[1:2]
   # These look the same but with NAs in bottom right
 

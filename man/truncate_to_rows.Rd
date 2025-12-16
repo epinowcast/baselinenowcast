@@ -46,8 +46,8 @@ truncated_rts[1:2]
 }
 \seealso{
 Retrospective data generation functions
-\code{\link{construct_triangle}()},
-\code{\link{construct_triangles}()},
+\code{\link{apply_reporting_structure}()},
+\code{\link{apply_reporting_structures}()},
 \code{\link{truncate_to_row}()}
 }
 \concept{generate_retrospective_data}

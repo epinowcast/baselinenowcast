@@ -251,7 +251,7 @@ test_that(
 )
 
 test_that(
-  "baselinenowcast returns the correct error message if trying to use nb on negative values",
+  "baselinenowcast returns the correct error message if trying to use nb on negative values", # nolint
   { # nolint
     # Use example reporting triangle with downward corrections
     triangle <- example_downward_corr_rt

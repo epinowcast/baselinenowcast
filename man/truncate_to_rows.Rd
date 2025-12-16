@@ -38,7 +38,7 @@ removing rows from the bottom of the original triangle.
 Each truncated triangle represents what would have been observed at an
 earlier reference time.
 This function truncates row(s) of the reporting triangle, removing the most
-recent observations (starting fromt he bottom of the reporting triangle).
+recent observations (starting from the bottom of the reporting triangle).
 }
 \examples{
 # Generate multiple truncated triangles

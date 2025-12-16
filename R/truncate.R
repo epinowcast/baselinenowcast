@@ -163,7 +163,7 @@ truncate_to_delay <- function(x, max_delay) {
 #' Each truncated triangle represents what would have been observed at an
 #'   earlier reference time.
 #' This function truncates row(s) of the reporting triangle, removing the most
-#' recent observations (starting fromt he bottom of the reporting triangle).
+#' recent observations (starting from the bottom of the reporting triangle).
 #'
 #' @param n Integer indicating the number of retrospective
 #'   truncated triangles to be generated, always starting from the most

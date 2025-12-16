@@ -216,13 +216,8 @@ test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
   pt_nowcast_list <- expect_message(
     fill_triangles(retro_rts_list)
   )
-<<<<<<< HEAD
   truncated_reporting_triangles <- truncate_to_rows(base_tri)
-  rt_list <- construct_triangles(truncated_reporting_triangles)
-=======
-  truncated_reporting_triangles <- truncate_triangles(base_tri)
   rt_list <- apply_reporting_structures(truncated_reporting_triangles)
->>>>>>> main
   # Since only two point nowcasts are non-null, this will warn
   expect_warning(estimate_uncertainty(
     pt_nowcast_list,
@@ -250,13 +245,8 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
     apply_reporting_structure(structure = 2)
 
   # Create truncated triangles and retrospective triangles
-<<<<<<< HEAD
   trunc_rts <- truncate_to_rows(ragged_triangle)
-  retro_rts <- construct_triangles(trunc_rts, structure = 2)
-=======
-  trunc_rts <- truncate_triangles(ragged_triangle)
   retro_rts <- apply_reporting_structures(trunc_rts, structure = 2)
->>>>>>> main
 
   # Generate nowcasts from the ragged triangles
   retro_nowcasts <- fill_triangles(retro_rts)
@@ -278,39 +268,36 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
 test_that(
   "estimate_uncertainty returns near-zero dispersion for perfect predictions",
   {
-  set.seed(123)
-  delay_pmf <- c(0.4, 0.3, 0.2, 0.05, 0.05)
-  partial_counts <- c(80, 100, 180, 80, 140)
+    set.seed(123)
+    delay_pmf <- c(0.4, 0.3, 0.2, 0.05, 0.05)
+    partial_counts <- c(80, 100, 180, 80, 140)
 
-  # Create a complete triangle based on the known delay PMF
-  rep_mat_rows <- lapply(partial_counts, function(x) x * delay_pmf)
-  rep_mat <- do.call(rbind, rep_mat_rows)
-  triangle <- make_test_triangle(data = rep_mat) |>
-    apply_reporting_structure()
-  reporting_triangle <- rbind(rep_mat, triangle)
-  reporting_triangle <- make_test_triangle(data = reporting_triangle)
+    # Create a complete triangle based on the known delay PMF
+    rep_mat_rows <- lapply(partial_counts, function(x) x * delay_pmf)
+    rep_mat <- do.call(rbind, rep_mat_rows)
+    triangle <- make_test_triangle(data = rep_mat) |>
+      apply_reporting_structure()
+    reporting_triangle <- rbind(rep_mat, triangle)
+    reporting_triangle <- make_test_triangle(data = reporting_triangle)
 
-  pt_nowcast_mat <- fill_triangle(reporting_triangle)
-<<<<<<< HEAD
-  truncated_reporting_triangles <- truncate_to_rows(reporting_triangle)
-  retro_reporting_triangles <- construct_triangles(truncated_reporting_triangles) # nolint
-=======
-  truncated_reporting_triangles <- truncate_triangles(reporting_triangle)
-  retro_reporting_triangles <- apply_reporting_structures(truncated_reporting_triangles) # nolint
->>>>>>> main
+    pt_nowcast_mat <- fill_triangle(reporting_triangle)
 
-  point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
+    truncated_reporting_triangles <- truncate_to_rows(reporting_triangle)
+    retro_reporting_triangles <- apply_reporting_structures(truncated_reporting_triangles) # nolint
 
-  dispersion <- estimate_uncertainty(
-    point_nowcast_matrices,
-    truncated_reporting_triangles,
-    retro_reporting_triangles
-  )
+    point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
 
-  expect_equal(dispersion[1], 999, tol = 1)
-  expect_equal(dispersion[2], 999, tol = 1)
-  expect_equal(dispersion[3], 999, tol = 1)
-})
+    dispersion <- estimate_uncertainty(
+      point_nowcast_matrices,
+      truncated_reporting_triangles,
+      retro_reporting_triangles
+    )
+
+    expect_equal(dispersion[1], 999, tol = 1)
+    expect_equal(dispersion[2], 999, tol = 1)
+    expect_equal(dispersion[3], 999, tol = 1)
+  }
+)
 
 test_that("estimate_uncertainty estimates positive dispersion for noisy predictions", { # nolint
   skip_if_not_installed("zoo")
@@ -351,13 +338,8 @@ test_that("estimate_uncertainty estimates positive dispersion for noisy predicti
     )
   }
 
-<<<<<<< HEAD
   truncated_reporting_triangles <- truncate_to_rows(rep_tri_new)
-  retro_reporting_triangles <- construct_triangles(truncated_reporting_triangles) # nolint
-=======
-  truncated_reporting_triangles <- truncate_triangles(rep_tri_new)
   retro_reporting_triangles <- apply_reporting_structures(truncated_reporting_triangles) # nolint
->>>>>>> main
 
   point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
 

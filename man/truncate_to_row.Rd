@@ -2,7 +2,7 @@
 % Please edit documentation in R/truncate.R
 \name{truncate_to_row}
 \alias{truncate_to_row}
-\title{Truncate reporting triangle to a specific row}
+\title{Truncate reporting triangle by removing a specified number of the last rows}
 \usage{
 truncate_to_row(reporting_triangle, t, validate = TRUE)
 }

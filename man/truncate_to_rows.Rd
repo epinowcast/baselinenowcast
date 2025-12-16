@@ -37,7 +37,8 @@ Generates a list of retrospective reporting triangles by successively
 removing rows from the bottom of the original triangle.
 Each truncated triangle represents what would have been observed at an
 earlier reference time.
-This function truncates by row count, removing the most recent observations.
+This function truncates row(s) of the reporting triangle, removing the most
+recent observations (starting fromt he bottom of the reporting triangle).
 }
 \examples{
 # Generate multiple truncated triangles

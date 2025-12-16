@@ -86,7 +86,7 @@ truncate_to_quantile <- function(x, p = 0.99) {
 #' @examples
 #' # Truncate to delays 0-2
 #' rt_short <- truncate_to_delay(example_downward_corr_rt, max_delay = 2)
-#' get_max_delay(rt_short)  # Returns 2
+#' get_max_delay(rt_short) # Returns 2
 truncate_to_delay <- function(x, max_delay) {
   if (!is_reporting_triangle(x)) {
     cli_abort(message = "x must have class 'reporting_triangle'")
@@ -162,7 +162,8 @@ truncate_to_delay <- function(x, max_delay) {
 #'   removing rows from the bottom of the original triangle.
 #' Each truncated triangle represents what would have been observed at an
 #'   earlier reference time.
-#' This function truncates by row count, removing the most recent observations.
+#' This function truncates row(s) of the reporting triangle, removing the most
+#' recent observations (starting fromt he bottom of the reporting triangle).
 #'
 #' @param n Integer indicating the number of retrospective
 #'   truncated triangles to be generated, always starting from the most
@@ -183,9 +184,9 @@ truncate_to_delay <- function(x, max_delay) {
 #' truncated_rts <- truncate_to_rows(example_reporting_triangle, n = 2)
 #' truncated_rts[1:2]
 truncate_to_rows <- function(reporting_triangle,
-                               n = nrow(reporting_triangle) -
-                                 sum(is.na(rowSums(reporting_triangle))) - 1,
-                               validate = TRUE) {
+                             n = nrow(reporting_triangle) -
+                               sum(is.na(rowSums(reporting_triangle))) - 1,
+                             validate = TRUE) {
   assert_reporting_triangle(reporting_triangle, validate)
   assert_integerish(n, lower = 0)
   trunc_rep_tri_list <- lapply(
@@ -196,7 +197,7 @@ truncate_to_rows <- function(reporting_triangle,
   return(trunc_rep_tri_list)
 }
 
-#' Truncate reporting triangle to a specific row
+#' Truncate reporting triangle by removing a specified number of the last rows
 #'
 #' Removes the last `t` rows from a reporting triangle to simulate what would
 #'   have been observed at an earlier reference time.
@@ -216,8 +217,8 @@ truncate_to_rows <- function(reporting_triangle,
 #' trunc_rep_tri <- truncate_to_row(example_reporting_triangle, t = 1)
 #' trunc_rep_tri
 truncate_to_row <- function(reporting_triangle,
-                              t,
-                              validate = TRUE) {
+                            t,
+                            validate = TRUE) {
   # Full validation for standalone use
   assert_reporting_triangle(reporting_triangle, validate)
   assert_integerish(t, lower = 0)

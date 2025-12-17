@@ -73,11 +73,17 @@ baselinenowcast <- function(data,
 #'   horizon 1 to the maximum horizon. Default is `NULL`, which will result in
 #'   computing the uncertainty parameters from the reporting triangle `data`.
 #'   See [estimate_uncertainty()] for more details.
+#' @param preprocess Function to apply to the reporting triangle before
+#'   estimation, or NULL to skip preprocessing. Default is
+#'   [preprocess_negative_values()], which handles negative values by
+#'   redistributing them to earlier delays. Set to NULL if you want to preserve
+#'   negative values. Custom preprocess functions must accept a `validate`
+#'   parameter (defaults to TRUE) to enable validation optimisation in internal
+#'   function chains.
 #' @param ... Additional arguments passed to
 #'    [estimate_uncertainty()]
 #'    and [sample_nowcast()].
 #' @inheritParams baselinenowcast
-#' @inheritParams estimate_delay
 #' @inheritParams estimate_uncertainty
 #' @inheritParams sample_nowcast
 #' @inheritParams allocate_reference_times
@@ -120,16 +126,21 @@ baselinenowcast.reporting_triangle <- function(
     validate = FALSE
   )
 
+  # Apply preprocessing if provided
+  processed_data <- data
+  if (!is.null(preprocess)) {
+    processed_data <- preprocess(data, validate = FALSE)
+  }
+
   if (is.null(delay_pmf)) {
     delay_pmf <- estimate_delay(
-      reporting_triangle = data,
+      reporting_triangle = processed_data,
       n = tv$n_history_delay,
-      preprocess = preprocess,
       validate = FALSE
     )
   }
 
-  pt_nowcast <- apply_delay(data, delay_pmf, validate = FALSE)
+  pt_nowcast <- apply_delay(processed_data, delay_pmf, validate = FALSE)
 
   if (output_type == "point") {
     nowcast_df <- data.frame(
@@ -146,7 +157,7 @@ baselinenowcast.reporting_triangle <- function(
 
   if (is.null(uncertainty_params)) {
     uncertainty_params <- estimate_uncertainty_retro(
-      reporting_triangle = data,
+      reporting_triangle = processed_data,
       n_history_delay = tv$n_history_delay,
       n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
       uncertainty_model = uncertainty_model
@@ -155,7 +166,7 @@ baselinenowcast.reporting_triangle <- function(
 
   nowcast_df <- sample_nowcasts(
     point_nowcast_matrix = pt_nowcast,
-    reporting_triangle = data,
+    reporting_triangle = processed_data,
     uncertainty_params = uncertainty_params,
     draws = draws,
     uncertainty_sampler = uncertainty_sampler,
@@ -238,9 +249,9 @@ baselinenowcast.reporting_triangle <- function(
 #'    [estimate_uncertainty()]
 #'    and [sample_nowcast()].
 #' @inheritParams baselinenowcast
+#' @inheritParams baselinenowcast.reporting_triangle
 #' @inheritParams as_reporting_triangle.data.frame
 #' @inheritParams estimate_uncertainty
-#' @inheritParams estimate_delay
 #' @inheritParams sample_nowcast
 #' @inheritParams allocate_reference_times
 #' @importFrom purrr set_names map_dfr
@@ -258,7 +269,7 @@ baselinenowcast.reporting_triangle <- function(
 #' min_ref_date <- max_ref_date - 74
 #' covid_data_to_nowcast <- germany_covid19_hosp[
 #'   germany_covid19_hosp$report_date < max_ref_date &
-#'   germany_covid19_hosp$reference_date >= min_ref_date,
+#'     germany_covid19_hosp$reference_date >= min_ref_date,
 #' ]
 #' nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
 #'   max_delay = 25,
@@ -339,9 +350,16 @@ baselinenowcast.data.frame <- function(
       strata_cols = strata_cols
     )
     pooled_triangle <- as_reporting_triangle(pooled_df)
+
+    # Apply preprocessing if provided
+    processed_pooled_triangle <- pooled_triangle
+    if (!is.null(preprocess)) {
+      processed_pooled_triangle <- preprocess(pooled_triangle, validate = FALSE)
+    }
+
     # Get the training volume for all reporting triangles
     tv <- allocate_reference_times(
-      reporting_triangle = pooled_triangle,
+      reporting_triangle = processed_pooled_triangle,
       scale_factor = scale_factor,
       prop_delay = prop_delay,
       validate = FALSE
@@ -349,20 +367,18 @@ baselinenowcast.data.frame <- function(
     if ("delay" %in% strata_sharing) {
       # Estimate delay once on pooled data
       shared_delay_pmf <- estimate_delay(
-        reporting_triangle = pooled_triangle,
+        reporting_triangle = processed_pooled_triangle,
         n = tv$n_history_delay,
-        preprocess = preprocess,
         validate = FALSE
       )
     }
     if ("uncertainty" %in% strata_sharing) {
       # Estimate uncertainty once on pooled data
       shared_uncertainty_params <- estimate_uncertainty_retro(
-        reporting_triangle = pooled_triangle,
+        reporting_triangle = processed_pooled_triangle,
         n_history_delay = tv$n_history_delay,
         n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
         uncertainty_model = uncertainty_model,
-        preprocess = preprocess,
         validate = FALSE
       )
     }

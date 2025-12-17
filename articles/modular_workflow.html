@@ -243,7 +243,8 @@ See <code><a href="../reference/allocate_reference_times.html">?allocate_referen
 <span><span class="op">)</span></span>
 <span><span class="va">n_history_delay</span> <span class="op">&lt;-</span> <span class="va">tv</span><span class="op">$</span><span class="va">n_history_delay</span></span>
 <span><span class="va">n_retrospective_nowcasts</span> <span class="op">&lt;-</span> <span class="va">tv</span><span class="op">$</span><span class="va">n_retrospective_nowcasts</span></span></code></pre></div>
-</details>
+</details><p>Alternatively, if you wanted to directly specify the <code>n_history_delay</code> and <code>n_retrospective_nowcasts</code> directly, you could do this.
+This might be useful if say you run your nowcast each week, but your data is daily, and you want to ensure that the number of weeks used for delay and uncertainty estimation is an integer number of weeks.</p>
 </div>
 <div class="section level2">
 <h2 id="estimate-delay">Estimate delay<a class="anchor" aria-label="anchor" href="#estimate-delay"></a>

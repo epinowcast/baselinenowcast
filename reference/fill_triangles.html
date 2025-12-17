@@ -75,7 +75,6 @@ reporting triangle.</p>
 <span>  <span class="va">retro_reporting_triangles</span>,</span>
 <span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">retro_reporting_triangles</span>, <span class="va">nrow</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  delay_pmf <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  preprocess <span class="op">=</span> <span class="va">preprocess_negative_values</span>,</span>
 <span>  validate <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -101,17 +100,6 @@ all the matrices in the <code>list_of_rts</code>.</p></dd>
 starting at the first delay column in each of the matrices in
 <code>retro_reporting_triangles</code>. If a list, must of the same length as
 <code>retro_reporting_triangles</code>, with elements aligning. Default is <code>NULL</code></p></dd>
-
-
-<dt id="arg-preprocess">preprocess<a class="anchor" aria-label="anchor" href="#arg-preprocess"></a></dt>
-<dd><p>Function to apply to the truncated triangle before
-estimation, or NULL to skip preprocessing. Default is
-<code><a href="preprocess_negative_values.html">preprocess_negative_values()</a></code>, which handles negative values by
-redistributing them to earlier delays. Set to NULL if you want to preserve
-negative PMF entries (e.g., when working with downward corrections where
-negative probabilities reflect systematic adjustments). Custom preprocess
-functions must accept a <code>validate</code> parameter (defaults to TRUE) to enable
-validation optimisation in internal function chains.</p></dd>
 
 
 <dt id="arg-validate">validate<a class="anchor" aria-label="anchor" href="#arg-validate"></a></dt>

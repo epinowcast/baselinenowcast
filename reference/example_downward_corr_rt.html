@@ -91,16 +91,15 @@ delay 2</p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Use this example to understand:</p><ul><li><p>How to work with negative corrections in delay distributions</p></li>
-<li><p>The difference between <code>preprocess = NULL</code> (preserves negatives) and
-<code>preprocess = preprocess_negative_values</code> (redistributes)</p></li>
+<li><p>The impact of preprocessing negative values on delay estimation</p></li>
 <li><p>How PMFs and CDFs behave with systematic downward corrections</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index">
 <ul><li><p><a href="example_reporting_triangle.html">example_reporting_triangle</a> for a clean example without corrections</p></li>
-<li><p><code><a href="estimate_delay.html">estimate_delay()</a></code> with <code>preprocess</code> parameter</p></li>
-<li><p><code><a href="preprocess_negative_values.html">preprocess_negative_values()</a></code> to handle negative values</p></li>
+<li><p><code><a href="baselinenowcast.reporting_triangle.html">baselinenowcast.reporting_triangle()</a></code> specifically the <code>preprocess</code>
+argument for a description of how to remove negative values if desired.</p></li>
 </ul><p>Example datasets
 <code><a href="example_reporting_triangle.html">example_reporting_triangle</a></code>,
 <code><a href="germany_covid19_hosp.html">germany_covid19_hosp</a></code>,
@@ -129,10 +128,11 @@ delay 2</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2024-01-08  95 NA  NA NA</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Estimate delay with and without preprocessing</span></span></span>
-<span class="r-in"><span><span class="va">delay_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_delay.html">estimate_delay</a></span><span class="op">(</span><span class="va">example_downward_corr_rt</span>, n <span class="op">=</span> <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>  preprocess <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">delay_processed</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_delay.html">estimate_delay</a></span><span class="op">(</span><span class="va">example_downward_corr_rt</span>, n <span class="op">=</span> <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>  preprocess <span class="op">=</span> <span class="va">preprocess_negative_values</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">delay_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_delay.html">estimate_delay</a></span><span class="op">(</span><span class="va">example_downward_corr_rt</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">delay_processed</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_delay.html">estimate_delay</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="preprocess_negative_values.html">preprocess_negative_values</a></span><span class="op">(</span><span class="va">example_downward_corr_rt</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  n <span class="op">=</span> <span class="fl">5</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative values detected in reporting triangle and will be corrected</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Compare the resulting PMFs</span></span></span>

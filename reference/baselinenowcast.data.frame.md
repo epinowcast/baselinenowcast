@@ -153,15 +153,13 @@ baselinenowcast(
 
 - preprocess:
 
-  Function to apply to the truncated triangle before estimation, or NULL
+  Function to apply to the reporting triangle before estimation, or NULL
   to skip preprocessing. Default is
   [`preprocess_negative_values()`](https://baselinenowcast.epinowcast.org/reference/preprocess_negative_values.md),
   which handles negative values by redistributing them to earlier
-  delays. Set to NULL if you want to preserve negative PMF entries
-  (e.g., when working with downward corrections where negative
-  probabilities reflect systematic adjustments). Custom preprocess
-  functions must accept a `validate` parameter (defaults to TRUE) to
-  enable validation optimisation in internal function chains.
+  delays. Set to NULL if you want to preserve negative values. Custom
+  preprocess functions must accept a `validate` parameter (defaults to
+  TRUE) to enable validation optimisation in internal function chains.
 
 - ...:
 
@@ -193,7 +191,7 @@ max_ref_date <- max(germany_covid19_hosp$reference_date)
 min_ref_date <- max_ref_date - 74
 covid_data_to_nowcast <- germany_covid19_hosp[
   germany_covid19_hosp$report_date < max_ref_date &
-  germany_covid19_hosp$reference_date >= min_ref_date,
+    germany_covid19_hosp$reference_date >= min_ref_date,
 ]
 nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
   max_delay = 25,

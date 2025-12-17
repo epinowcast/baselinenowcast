@@ -119,7 +119,7 @@ redistribution to earlier delays.</p>
 <li><p>You want to preserve the total count while handling negatives</p></li>
 <li><p>You need a delay distribution that sums to 1 or a CDF that is weakly
 increasing</p></li>
-</ul><p>Set <code>preprocess = NULL</code> in <code><a href="estimate_delay.html">estimate_delay()</a></code> when:</p><ul><li><p>Your data naturally has negative PMF entries (e.g., from differencing)</p></li>
+</ul><p>Do not use this function when:</p><ul><li><p>Your data naturally has negative PMF entries (e.g., from differencing)</p></li>
 <li><p>You want to preserve the original structure including negatives</p></li>
 <li><p>You are working with corrections that should be reflected as negative
 probabilities</p></li>

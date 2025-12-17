@@ -125,15 +125,13 @@ baselinenowcast(
 
 - preprocess:
 
-  Function to apply to the truncated triangle before estimation, or NULL
+  Function to apply to the reporting triangle before estimation, or NULL
   to skip preprocessing. Default is
   [`preprocess_negative_values()`](https://baselinenowcast.epinowcast.org/reference/preprocess_negative_values.md),
   which handles negative values by redistributing them to earlier
-  delays. Set to NULL if you want to preserve negative PMF entries
-  (e.g., when working with downward corrections where negative
-  probabilities reflect systematic adjustments). Custom preprocess
-  functions must accept a `validate` parameter (defaults to TRUE) to
-  enable validation optimisation in internal function chains.
+  delays. Set to NULL if you want to preserve negative values. Custom
+  preprocess functions must accept a `validate` parameter (defaults to
+  TRUE) to enable validation optimisation in internal function chains.
 
 - validate:
 

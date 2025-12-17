@@ -19,7 +19,6 @@ https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab2907
 estimate_delay(
   reporting_triangle,
   n = nrow(reporting_triangle),
-  preprocess = preprocess_negative_values,
   validate = TRUE
 )
 ```
@@ -42,18 +41,6 @@ estimate_delay(
   most recent reporting delay. The default is to use the whole reporting
   triangle, so `nrow(reporting_triangle)`.
 
-- preprocess:
-
-  Function to apply to the truncated triangle before estimation, or NULL
-  to skip preprocessing. Default is
-  [`preprocess_negative_values()`](https://baselinenowcast.epinowcast.org/reference/preprocess_negative_values.md),
-  which handles negative values by redistributing them to earlier
-  delays. Set to NULL if you want to preserve negative PMF entries
-  (e.g., when working with downward corrections where negative
-  probabilities reflect systematic adjustments). Custom preprocess
-  functions must accept a `validate` parameter (defaults to TRUE) to
-  enable validation optimisation in internal function chains.
-
 - validate:
 
   Logical. If TRUE (default), validates the object. Set to FALSE only
@@ -73,7 +60,7 @@ Delay distribution estimation functions
 ## Examples
 
 ``` r
-# Example 1: Standard usage with default preprocessing
+# Example 1: Standard usage
 delay_pmf <- estimate_delay(
   reporting_triangle = example_reporting_triangle
 )
@@ -81,18 +68,24 @@ delay_pmf
 #>          0          1          2          3 
 #> 0.52654815 0.28277586 0.13006993 0.06060606 
 
-# Example 2: Using data with downward corrections without preprocessing
-# This preserves negative PMF entries reflecting systematic corrections
-triangle_ex2 <- example_downward_corr_rt
+# Example 2: Using data with downward corrections (negatives preserved)
+# Low-level functions process triangles as-is without preprocessing
 delay_pmf_negative <- estimate_delay(
-  reporting_triangle = triangle_ex2,
-  n = 5,
-  preprocess = NULL
+  reporting_triangle = example_downward_corr_rt,
+  n = 5
 )
 delay_pmf_negative
 #>           0           1           2           3 
 #>  0.66544955  0.38806216 -0.14046823  0.08695652 
-# Note: PMF may contain negative values and not sum to 1
-sum(delay_pmf_negative)
-#> [1] 1
+
+# Example 3: Preprocess explicitly before estimation if needed
+preprocessed_triangle <- preprocess_negative_values(example_downward_corr_rt)
+#> ℹ Negative values detected in reporting triangle and will be corrected
+delay_pmf_preprocessed <- estimate_delay(
+  reporting_triangle = preprocessed_triangle,
+  n = 5
+)
+delay_pmf_preprocessed
+#>          0          1          2          3 
+#> 0.64346536 0.26957812 0.00000000 0.08695652 
 ```

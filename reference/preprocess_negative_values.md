@@ -54,9 +54,7 @@ Use this function when:
 - You need a delay distribution that sums to 1 or a CDF that is weakly
   increasing
 
-Set `preprocess = NULL` in
-[`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md)
-when:
+Do not use this function when:
 
 - Your data naturally has negative PMF entries (e.g., from differencing)
 

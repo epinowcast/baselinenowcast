@@ -37,8 +37,7 @@ Use this example to understand:
 
 - How to work with negative corrections in delay distributions
 
-- The difference between `preprocess = NULL` (preserves negatives) and
-  `preprocess = preprocess_negative_values` (redistributes)
+- The impact of preprocessing negative values on delay estimation
 
 - How PMFs and CDFs behave with systematic downward corrections
 
@@ -47,11 +46,9 @@ Use this example to understand:
 - [example_reporting_triangle](https://baselinenowcast.epinowcast.org/reference/example_reporting_triangle.md)
   for a clean example without corrections
 
-- [`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md)
-  with `preprocess` parameter
-
-- [`preprocess_negative_values()`](https://baselinenowcast.epinowcast.org/reference/preprocess_negative_values.md)
-  to handle negative values
+- [`baselinenowcast.reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.reporting_triangle.md)
+  specifically the `preprocess` argument for a description of how to
+  remove negative values if desired.
 
 Example datasets
 [`example_reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/example_reporting_triangle.md),
@@ -81,10 +78,11 @@ example_downward_corr_rt
 #> 2024-01-08  95 NA  NA NA
 
 # Estimate delay with and without preprocessing
-delay_raw <- estimate_delay(example_downward_corr_rt, n = 5,
-  preprocess = NULL)
-delay_processed <- estimate_delay(example_downward_corr_rt, n = 5,
-  preprocess = preprocess_negative_values)
+delay_raw <- estimate_delay(example_downward_corr_rt, n = 5)
+delay_processed <- estimate_delay(
+  preprocess_negative_values(example_downward_corr_rt),
+  n = 5
+)
 #> ℹ Negative values detected in reporting triangle and will be corrected
 
 # Compare the resulting PMFs

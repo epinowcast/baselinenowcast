@@ -13,7 +13,6 @@ fill_triangle(
   reporting_triangle,
   n = nrow(reporting_triangle),
   delay_pmf = NULL,
-  preprocess = preprocess_negative_values,
   validate = TRUE
 )
 ```
@@ -41,18 +40,6 @@ fill_triangle(
   Vector of delays assumed to be indexed starting at the first delay
   column in `reporting_triangle`. Default is `NULL`, which will estimate
   a delay from the `reporting_triangle`.
-
-- preprocess:
-
-  Function to apply to the truncated triangle before estimation, or NULL
-  to skip preprocessing. Default is
-  [`preprocess_negative_values()`](https://baselinenowcast.epinowcast.org/reference/preprocess_negative_values.md),
-  which handles negative values by redistributing them to earlier
-  delays. Set to NULL if you want to preserve negative PMF entries
-  (e.g., when working with downward corrections where negative
-  probabilities reflect systematic adjustments). Custom preprocess
-  functions must accept a `validate` parameter (defaults to TRUE) to
-  enable validation optimisation in internal function chains.
 
 - validate:
 

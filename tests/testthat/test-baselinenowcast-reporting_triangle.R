@@ -296,7 +296,7 @@ test_that("baselinenowcast can handle custom preprocessing", {
 
 test_that("baselinenowcast can produce point nowcast from minimum required reference times", { # nolint
 
-  min_rep_tri <- example_reporting_triangle |> tail(5)
+  min_rep_tri <- tail(example_reporting_triangle, 5)
   result <- expect_no_error(
     suppressWarnings(
       baselinenowcast(min_rep_tri,

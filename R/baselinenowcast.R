@@ -124,6 +124,8 @@ baselinenowcast.reporting_triangle <- function(
   # of retrospective nowcast times for uncertainty estimation
   if (output_type == "point") {
     n_min_retro_nowcasts <- 0
+  } else {
+    n_min_retro_nowcasts <- 2
   }
   tv <- allocate_reference_times(data,
     scale_factor = scale_factor,

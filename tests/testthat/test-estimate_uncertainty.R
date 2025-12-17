@@ -612,7 +612,7 @@ test_that("fit_nb rejects negative observed values with clear error", {
   # Error message should mention preprocessing option
   expect_error(
     fit_nb(x_negative, mu),
-    regexp = "preprocess = preprocess_negative_values"
+    regexp = "preprocess_negative_values\\(\\)"
   )
 })
 

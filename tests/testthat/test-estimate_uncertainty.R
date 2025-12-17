@@ -279,9 +279,7 @@ test_that(
       apply_reporting_structure()
     reporting_triangle <- rbind(rep_mat, triangle)
     reporting_triangle <- make_test_triangle(data = reporting_triangle)
-
     pt_nowcast_mat <- fill_triangle(reporting_triangle)
-
     truncated_reporting_triangles <- truncate_to_rows(reporting_triangle)
     retro_reporting_triangles <- apply_reporting_structures(truncated_reporting_triangles) # nolint
 

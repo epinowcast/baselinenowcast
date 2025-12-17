@@ -1,7 +1,6 @@
 test_that(
-  "apply_reporting_structures constructs retrospective triangles with
-  structure 1",
-  {
+  "apply_reporting_structures constructs retrospective triangles with structure 1",
+  { # nolint
     # Setup
     triangle1 <- matrix(
       c(

@@ -49,7 +49,8 @@ delay_processed
 \seealso{
 \itemize{
 \item \link{example_reporting_triangle} for a clean example without corrections
-\item \code{\link[=preprocess_negative_values]{preprocess_negative_values()}} to handle negative values
+\item \code{\link[=baselinenowcast.reporting_triangle]{baselinenowcast.reporting_triangle()}} specifically the \code{preprocess}
+argument for a description of how to remove negative values if desired.
 }
 
 Example datasets

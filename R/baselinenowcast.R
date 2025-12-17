@@ -140,7 +140,7 @@ baselinenowcast.reporting_triangle <- function(
     )
   }
 
-  pt_nowcast <- apply_delay(data, delay_pmf, validate = FALSE)
+  pt_nowcast <- apply_delay(processed_data, delay_pmf, validate = FALSE)
 
   if (output_type == "point") {
     nowcast_df <- data.frame(
@@ -166,7 +166,7 @@ baselinenowcast.reporting_triangle <- function(
 
   nowcast_df <- sample_nowcasts(
     point_nowcast_matrix = pt_nowcast,
-    reporting_triangle = data,
+    reporting_triangle = processed_data,
     uncertainty_params = uncertainty_params,
     draws = draws,
     uncertainty_sampler = uncertainty_sampler,

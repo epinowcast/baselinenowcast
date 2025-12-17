@@ -119,7 +119,8 @@
 #'
 #' @seealso
 #' - [example_reporting_triangle] for a clean example without corrections
-#' - [preprocess_negative_values()] to handle negative values
+#' - [baselinenowcast.reporting_triangle()] specifically the `preprocess`
+#'   argument for a description of how to remove negative values if desired.
 #'
 #' @family example_data
 #' @examples

@@ -304,9 +304,16 @@ test_that("baselinenowcast can produce point nowcast from minimum required refer
       )
     )
   )
-  # Verify nowcast values exist
   expect_false(anyNA(result$pred_count))
+  expect_gt(nrow(result), 0)
+})
 
-  # Verify output has rows
+test_that("baselinenowcast works on example reporting triangle", {
+  result <- expect_no_error(
+    suppressWarnings(
+      baselinenowcast(example_reporting_triangle)
+    )
+  )
+  expect_false(anyNA(result$pred_count))
   expect_gt(nrow(result), 0)
 })

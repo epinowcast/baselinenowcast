@@ -120,23 +120,17 @@ baselinenowcast.reporting_triangle <- function(
 
   reference_dates <- get_reference_dates(data)
 
-  if (output_type == "samples") {
-    tv <- allocate_reference_times(data,
-      scale_factor = scale_factor,
-      prop_delay = prop_delay,
-      validate = FALSE
-    )
-    # If producing a point nowcast, no minimum requirement for number
-    # of retrospective nowcast times for uncertainty estimation
-  } else {
-    tv <- allocate_reference_times(data,
-      scale_factor = scale_factor,
-      prop_delay = prop_delay,
-      n_min_retro_nowcasts = 0,
-      validate = FALSE
-    )
+  # If producing a point nowcast, no minimum requirement for number
+  # of retrospective nowcast times for uncertainty estimation
+  if (output_type == "point") {
+    n_min_retro_nowcasts <- 0
   }
-
+  tv <- allocate_reference_times(data,
+    scale_factor = scale_factor,
+    prop_delay = prop_delay,
+    validate = FALSE,
+    n_min_retro_nowcasts = n_min_retro_nowcasts
+  )
 
   # Apply preprocessing if provided
   processed_data <- data

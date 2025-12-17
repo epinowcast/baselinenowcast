@@ -351,9 +351,9 @@ Here we can see that our point nowcast (blue) slightly underestimates what was e
 We would like to generate probabilistic nowcasts.</p>
 <p>We’ll do so by estimating uncertainty using past nowcast errors.</p>
 <p>We repeat this process for <code>n_retrospective_nowcasts</code> reference times in the current reporting triangle, starting from the latest reference time and working backwards, ultimately using all <code>n_retrospective_nowcasts</code> and <code>n_history_delay</code> reference times.</p>
-<p>We’ll start by creating a list of truncated triangles using the <code><a href="../reference/truncate_triangles.html">truncate_triangles()</a></code> function which successively removes an addition additional reference time from the original reporting triangle <code>n</code> times.</p>
+<p>We’ll start by creating a list of truncated triangles using the <code><a href="../reference/truncate_to_rows.html">truncate_to_rows()</a></code> function which successively removes an addition additional reference time from the original reporting triangle <code>n</code> times.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trunc_rep_tri_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/truncate_triangles.html">truncate_triangles</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">trunc_rep_tri_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/truncate_to_rows.html">truncate_to_rows</a></span><span class="op">(</span></span>
 <span>  <span class="va">rep_tri</span>,</span>
 <span>  n <span class="op">=</span> <span class="va">n_retrospective_nowcasts</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -509,7 +509,7 @@ Black lines show the “final” data from October 1, 2021.</p>
 <p>In this vignette we used the <code>baselinenowcast</code> low-level modular functions to convert a dataframe with incident cases indexed by reference date and report date to a <code>reporting_triangle</code> object using the <code>as_reporting_triangle</code> function, and then walked through the <code>baselinenowcast</code> workflow step by step. This involved:
 1. <code><a href="../reference/estimate_delay.html">estimate_delay()</a></code> - Estimating a delay
 2. <code><a href="../reference/apply_delay.html">apply_delay()</a></code> - Generating a point nowcast matrix
-3. <code><a href="../reference/truncate_triangles.html">truncate_triangles()</a></code> - Truncating triangles at iteratively earlier retrospective nowcast times
+3. <code><a href="../reference/truncate_to_rows.html">truncate_to_rows()</a></code> - Truncating triangles at iteratively earlier retrospective nowcast times
 4. <code><a href="../reference/apply_reporting_structures.html">apply_reporting_structures()</a></code> - Constructing retrospective reporting triangles based on what would have been available as of the nowcast date.
 5. <code><a href="../reference/fill_triangles.html">fill_triangles()</a></code> - Generating point nowcasts from the retrospective reporting triangles
 6. <code><a href="../reference/estimate_uncertainty.html">estimate_uncertainty()</a></code> - Estimating uncertainty from retrospective point nowcast matrices and eventual observations.

@@ -159,7 +159,7 @@ model.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using max_delay = 154 from data</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Create retrospective nowcasts</span></span></span>
-<span class="r-in"><span><span class="va">trunc_rts</span> <span class="op">&lt;-</span> <span class="fu"><a href="truncate_triangles.html">truncate_triangles</a></span><span class="op">(</span><span class="va">rep_tri</span>, n <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">trunc_rts</span> <span class="op">&lt;-</span> <span class="fu"><a href="truncate_to_rows.html">truncate_to_rows</a></span><span class="op">(</span><span class="va">rep_tri</span>, n <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">retro_rts</span> <span class="op">&lt;-</span> <span class="fu"><a href="apply_reporting_structures.html">apply_reporting_structures</a></span><span class="op">(</span><span class="va">trunc_rts</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">retro_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="fill_triangles.html">fill_triangles</a></span><span class="op">(</span><span class="va">retro_rts</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>

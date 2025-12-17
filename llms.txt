@@ -337,10 +337,11 @@ estimation.
 - [`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md)
   : Apply reporting structures to generate retrospective reporting
   triangles
-- [`truncate_triangle()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangle.md)
-  : Get a single truncated triangle
-- [`truncate_triangles()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangles.md)
-  : Generate truncated reporting triangles
+- [`truncate_to_row()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_row.md)
+  : Truncate reporting triangle by removing a specified number of the
+  last rows
+- [`truncate_to_rows()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_rows.md)
+  : Truncate reporting triangle by removing bottom rows
 
 ### Generate point nowcasts
 

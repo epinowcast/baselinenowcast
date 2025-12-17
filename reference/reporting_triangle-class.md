@@ -72,7 +72,7 @@ Reporting triangle objects provide:
 - [`apply_delay()`](https://baselinenowcast.epinowcast.org/reference/apply_delay.md):
   Apply delay distribution for nowcasting
 
-- [`truncate_triangle()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangle.md):
+- [`truncate_to_row()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_row.md):
   Remove most recent rows
 
 - [`preprocess_negative_values()`](https://baselinenowcast.epinowcast.org/reference/preprocess_negative_values.md):

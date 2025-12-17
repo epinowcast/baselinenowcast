@@ -7,7 +7,7 @@ parameters based on retrospective nowcast performance.
 
 This function chains the retrospective nowcasting workflow:
 
-1.  [`truncate_triangles()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangles.md) -
+1.  [`truncate_to_rows()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_rows.md) -
     Create retrospective snapshots
 
 2.  [`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md) -

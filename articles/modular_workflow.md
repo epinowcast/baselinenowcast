@@ -455,14 +455,14 @@ and working backwards, ultimately using all `n_retrospective_nowcasts`
 and `n_history_delay` reference times.
 
 We’ll start by creating a list of truncated triangles using the
-[`truncate_triangles()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangles.md)
+[`truncate_to_rows()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_rows.md)
 function which successively removes an addition additional reference
 time from the original reporting triangle `n` times.
 
 Code
 
 ``` r
-trunc_rep_tri_list <- truncate_triangles(
+trunc_rep_tri_list <- truncate_to_rows(
   rep_tri,
   n = n_retrospective_nowcasts
 )
@@ -697,7 +697,7 @@ the `as_reporting_triangle` function, and then walked through the
 Estimating a delay 2.
 [`apply_delay()`](https://baselinenowcast.epinowcast.org/reference/apply_delay.md) -
 Generating a point nowcast matrix 3.
-[`truncate_triangles()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangles.md) -
+[`truncate_to_rows()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_rows.md) -
 Truncating triangles at iteratively earlier retrospective nowcast times
 4.
 [`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md) -

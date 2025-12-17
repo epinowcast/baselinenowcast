@@ -223,9 +223,9 @@ left to the top right. The same pre-processing step as in Section
 each vintage reporting triangle.
 
 This can be achieved in a stepwise manner using the functions
-[`truncate_triangles()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangles.md)
+[`truncate_to_rows()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_rows.md)
 and
-[`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md)
+[`apply_reporting_structure()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structure.md)
 which return a list of `n` retrospective reporting triangles in order
 from most recent to oldest.
 

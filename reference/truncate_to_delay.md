@@ -66,6 +66,6 @@ Reporting triangle construction and validation
 # Truncate to delays 0-2
 rt_short <- truncate_to_delay(example_downward_corr_rt, max_delay = 2)
 #> ℹ Truncating from max_delay = 3 to 2.
-get_max_delay(rt_short)  # Returns 2
+get_max_delay(rt_short) # Returns 2
 #> [1] 2
 ```

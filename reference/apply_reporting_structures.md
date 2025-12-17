@@ -46,14 +46,14 @@ reporting triangle matrices.
 
 Retrospective data generation functions
 [`apply_reporting_structure()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structure.md),
-[`truncate_triangle()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangle.md),
-[`truncate_triangles()`](https://baselinenowcast.epinowcast.org/reference/truncate_triangles.md)
+[`truncate_to_row()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_row.md),
+[`truncate_to_rows()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_rows.md)
 
 ## Examples
 
 ``` r
 # Generate retrospective triangles from truncated triangles
-trunc_rts <- truncate_triangles(example_reporting_triangle, n = 2)
+trunc_rts <- truncate_to_rows(example_reporting_triangle, n = 2)
 retro_rts <- apply_reporting_structures(trunc_rts)
 
 # With custom structure

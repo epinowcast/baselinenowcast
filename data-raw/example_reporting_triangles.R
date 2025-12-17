@@ -4,16 +4,18 @@
 example_reporting_triangle <- as_reporting_triangle(
   data = matrix(
     c(
+      100, 55, 30, 12,
+      70, 40, 24, 8,
       80, 50, 25, 10,
       100, 50, 20, NA,
       90, 45, NA, NA,
       110, NA, NA, NA,
       95, NA, NA, NA
     ),
-    nrow = 5,
+    nrow = 7,
     byrow = TRUE
   ),
-  reference_dates = seq(as.Date("2024-01-01"), by = "day", length.out = 5),
+  reference_dates = seq(as.Date("2024-01-01"), by = "day", length.out = 7),
   delays_unit = "days"
 )
 

@@ -186,7 +186,8 @@ test_that(
     # predictions
     first_date <- min(result$reference_date)
     sum_result <- sum(
-      result$pred_count[result$reference_date != first_date], na.rm = TRUE
+      result$pred_count[result$reference_date != first_date],
+      na.rm = TRUE
     )
     sum_result_rolling_sum <- sum(
       result_with_rolling_sum$pred_count[

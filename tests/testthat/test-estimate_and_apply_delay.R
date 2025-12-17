@@ -12,34 +12,35 @@ reporting_triangle <- apply_reporting_structure(
 test_that(
   "estimate_and_apply_delay returns filled triangle with estimated delay",
   {
-  point_nowcast_matrix <- estimate_and_apply_delay(
-    reporting_triangle = reporting_triangle
-  )
-  # Test that the function returns the expected point nowcast
-  expect_equal(
-    complete_triangle,
-    matrix(point_nowcast_matrix, nrow = nrow(point_nowcast_matrix)),
-    tol = 0.2
-  )
+    point_nowcast_matrix <- estimate_and_apply_delay(
+      reporting_triangle = reporting_triangle
+    )
+    # Test that the function returns the expected point nowcast
+    expect_equal(
+      complete_triangle,
+      matrix(point_nowcast_matrix, nrow = nrow(point_nowcast_matrix)),
+      tol = 0.2
+    )
 
-  # Test that output is the same as when run individually with defaults
-  delay_pmf <- estimate_delay(reporting_triangle)
-  pt_nowcast_matrix_2 <- apply_delay(reporting_triangle, delay_pmf)
-  expect_equal(point_nowcast_matrix, pt_nowcast_matrix_2, tol = 0.2)
+    # Test that output is the same as when run individually with defaults
+    delay_pmf <- estimate_delay(reporting_triangle)
+    pt_nowcast_matrix_2 <- apply_delay(reporting_triangle, delay_pmf)
+    expect_equal(point_nowcast_matrix, pt_nowcast_matrix_2, tol = 0.2)
 
-  # And with specified n
-  pt_nowcast_matrix_joint <- estimate_and_apply_delay(
-    reporting_triangle = reporting_triangle,
-    n = 8
-  )
+    # And with specified n
+    pt_nowcast_matrix_joint <- estimate_and_apply_delay(
+      reporting_triangle = reporting_triangle,
+      n = 8
+    )
 
-  delay_pmf <- estimate_delay(reporting_triangle, n = 8)
-  pt_nowcast_matrix_2 <- apply_delay(
-    reporting_triangle,
-    delay_pmf
-  )
-  expect_equal(pt_nowcast_matrix_joint, pt_nowcast_matrix_2, tol = 0.2)
-})
+    delay_pmf <- estimate_delay(reporting_triangle, n = 8)
+    pt_nowcast_matrix_2 <- apply_delay(
+      reporting_triangle,
+      delay_pmf
+    )
+    expect_equal(pt_nowcast_matrix_joint, pt_nowcast_matrix_2, tol = 0.2)
+  }
+)
 
 test_that(
   "estimate_and_apply_delay errors when n_history_delay is misspecified",

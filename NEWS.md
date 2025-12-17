@@ -1,5 +1,7 @@
 # baselinenowcast 0.0.0.1000
 
+-   Rename `truncate_triangle()` to `truncate_to_row()` and `truncate_triangles()` to `truncate_to_rows()` to clarify that these functions truncate by row count and distinguish them from other truncation utilities such as `truncate_to_quantile()` and `truncate_to_delay()` (#336).
+
 -   Add a vignette which walks through the low-level function interface on the same nowcasting problem as in the Getting Started vignette.
 -   Modify the Getting Started vignette to use the `baselinenowcast()` wrapper function.
 -   Use the `as_reporting_triangle` and `baselinenowcast` workflow in the vignette which walks through a nowcasting example applied to syndromic surveillance data in the U.S.

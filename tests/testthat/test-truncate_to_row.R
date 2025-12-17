@@ -11,9 +11,9 @@ rep_tri <- make_test_triangle(data = matrix(
 ))
 
 # Test 1: Basic functionality
-test_that("truncate_triangle works with positive t", {
+test_that("truncate_to_row works with positive t", {
   t <- 1
-  result <- truncate_triangle(rep_tri, t)
+  result <- truncate_to_row(rep_tri, t)
   expected_mat <- matrix(
     c(
       10, 20, 30,
@@ -35,37 +35,37 @@ test_that("truncate_triangle works with positive t", {
 })
 
 # Test 2: Edge case with t equal to nrow(rep_tri) fails
-test_that("truncate_triangle throws an error when t is too large", {
+test_that("truncate_to_row throws an error when t is too large", {
   t <- nrow(rep_tri)
   expect_error(
-    truncate_triangle(rep_tri, t),
+    truncate_to_row(rep_tri, t),
     "The as of time point is greater than or equal to the number of"
   )
 })
 
 # Test 3: Negative t
-test_that("truncate_triangle throws an error for a negative t", {
+test_that("truncate_to_row throws an error for a negative t", {
   t <- -1
   expect_error(
-    truncate_triangle(rep_tri, t)
+    truncate_to_row(rep_tri, t)
   )
 })
 
 # Test 4: Non-integer t
-test_that("truncate_triangle throws an error for a non-integer t", {
+test_that("truncate_to_row throws an error for a non-integer t", {
   t <- 1.5
-  expect_error(truncate_triangle(rep_tri, t))
+  expect_error(truncate_to_row(rep_tri, t))
 })
 
 # Test 5: Zero t
-test_that("truncate_triangle handles zero t", {
+test_that("truncate_to_row handles zero t", {
   t <- 0L
-  result <- truncate_triangle(rep_tri, t)
+  result <- truncate_to_row(rep_tri, t)
   expect_identical(result, rep_tri)
 })
 
 # Test 6: Empty matrix input throws an error
-test_that("truncate_triangle handles empty matrix input", {
+test_that("truncate_to_row handles empty matrix input", {
   expect_error(
     make_test_triangle(data = matrix(nrow = 0, ncol = 0)),
     "Must have length >= 1"
@@ -73,7 +73,7 @@ test_that("truncate_triangle handles empty matrix input", {
 })
 
 # Test 7: Preserves reporting_triangle class
-test_that("truncate_triangle preserves reporting_triangle class", {
+test_that("truncate_to_row preserves reporting_triangle class", {
   rep_tri_mat <- matrix(
     c(
       100, 50, 25, 10,
@@ -91,7 +91,7 @@ test_that("truncate_triangle preserves reporting_triangle class", {
   )
 
   # Truncate by 1 row
-  result <- truncate_triangle(t = 1, reporting_triangle = rep_tri_obj)
+  result <- truncate_to_row(t = 1, reporting_triangle = rep_tri_obj)
 
   # Check class is preserved
   expect_true(is_reporting_triangle(result))
@@ -116,10 +116,10 @@ test_that("truncate_triangle preserves reporting_triangle class", {
 })
 
 # Test 8: Plain matrix input errors
-test_that("truncate_triangle errors with plain matrix input", {
+test_that("truncate_to_row errors with plain matrix input", {
   plain_mat <- matrix(1:12, nrow = 3, ncol = 4)
   expect_error(
-    truncate_triangle(t = 1, reporting_triangle = plain_mat),
+    truncate_to_row(t = 1, reporting_triangle = plain_mat),
     "data must have class 'reporting_triangle'"
   )
 })

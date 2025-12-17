@@ -248,7 +248,8 @@ test_that("apply_reporting_structure handles custom structure with vector", {
 })
 
 test_that(
-  "apply_reporting_structure can generate something with all NAs at end", {
+  "apply_reporting_structure can generate something with all NAs at end",
+  {
     exp_result <- matrix(
       c(
         1, 3, 5, 7, 9,
@@ -314,7 +315,8 @@ test_that("apply_reporting_structure can handle case when first element is not 1
 })
 
 test_that(
-  "apply_reporting_structure can handle a structure ending with 2 NAs", {
+  "apply_reporting_structure can handle a structure ending with 2 NAs",
+  {
     exp_result <- matrix(
       c(
         1, 3, 5, 7, 9, 7,

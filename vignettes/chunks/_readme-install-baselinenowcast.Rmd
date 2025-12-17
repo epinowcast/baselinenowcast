@@ -1,5 +1,10 @@
+You can install the latest released version from CRAN using the standard `install.packages` function:
 
-To install the development version from GitHub (warning! this version may contain breaking changes and/or bugs), use the [`pak` package](https://pak.r-lib.org/):
+```{r, eval = FALSE}
+install.packages("baselinenowcast")
+```
+
+Alternatively, to install the development version from GitHub (warning! this version may contain breaking changes and/or bugs), use the [`pak` package](https://pak.r-lib.org/):
 
 ```{r, eval = FALSE}
 pak::pak(file.path("epinowcast", "baselinenowcast"))

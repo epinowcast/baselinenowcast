@@ -50,7 +50,7 @@ Description: Nowcasting right-truncated epidemiological data is critical
   to case studies of COVID-19 and norovirus, see our recent paper at
   <https://wellcomeopenresearch.org/articles/10-614/v1>.
 License: MIT + file LICENSE
-URL: https://baselinenowcast.epinowcast.org, https://github.com/epinowcast/baselinenowcast/
+URL: https://baselinenowcast.epinowcast.org, https://github.com/epinowcast/baselinenowcast/, https://github.com/epinowcast/baselinenowcast
 BugReports: https://github.com/epinowcast/baselinenowcast/issues
 Depends:
     R (>= 4.1.0)

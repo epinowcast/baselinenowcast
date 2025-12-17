@@ -9,7 +9,7 @@ point_nowcast_matrix <- matrix(
   byrow = TRUE
 )
 dispersion <- c(0.8, 12.4, 9.1)
-reporting_triangle <- construct_triangle(
+reporting_triangle <- apply_reporting_structure(
   make_test_triangle(data = point_nowcast_matrix)
 )
 test_that(
@@ -50,7 +50,7 @@ test_that("sample_predictions: draws are distinct and properly indexed", {
     byrow = TRUE
   )
   dispersion <- c(0.8, 12.4)
-  reporting_triangle <- construct_triangle(
+  reporting_triangle <- apply_reporting_structure(
     make_test_triangle(data = point_nowcast_matrix),
     structure = 2
   )
@@ -108,7 +108,7 @@ test_that("sample_predictions: time index is correctly assigned", {
     byrow = TRUE
   )
   dispersion <- c(0.8, 12.4)
-  reporting_triangle <- construct_triangle(
+  reporting_triangle <- apply_reporting_structure(
     make_test_triangle(data = point_nowcast_matrix),
     structure = 2
   )
@@ -146,7 +146,7 @@ test_that("sample_predictions works with different number of draws", {
     byrow = TRUE
   )
   dispersion <- c(0.8, 0.2)
-  reporting_triangle <- construct_triangle(
+  reporting_triangle <- apply_reporting_structure(
     make_test_triangle(data = point_nowcast_matrix),
     structure = 2
   )

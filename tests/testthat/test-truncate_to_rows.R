@@ -69,13 +69,14 @@ test_that("truncate_to_rows can handle a range of ns", {
 test_that(
   "truncate_to_rows replaces values with NA for retrospective snapshots",
   {
-  result <- truncate_to_rows(test_triangle, n = 1)[[1]]
-  # Expect bottom 3 elemets of lower left triangle to be NAs
-  expect_true(all(
-    anyNA(result[5, 4]),
-    anyNA(result[6, 3:4])
-  ))
-})
+    result <- truncate_to_rows(test_triangle, n = 1)[[1]]
+    # Expect bottom 3 elemets of lower left triangle to be NAs
+    expect_true(all(
+      anyNA(result[5, 4]),
+      anyNA(result[6, 3:4])
+    ))
+  }
+)
 
 test_that("truncate_to_rows truncated matrices preserve original structure", {
   result <- truncate_to_rows(test_triangle, n = 1)[[1]]
@@ -101,7 +102,7 @@ test_that("truncate_to_rows: default works well for ragged triangle", {
   complete_triangle_mat <- do.call(rbind, complete_triangle_mat)
   complete_triangle <- make_test_triangle(data = complete_triangle_mat)
 
-  ragged_triangle <- construct_triangle(
+  ragged_triangle <- apply_reporting_structure(
     complete_triangle,
     structure = 2
   )

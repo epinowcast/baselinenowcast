@@ -1,6 +1,6 @@
 test_that("allocate_reference_times returns correct n_history_delay and n_retrospective_nowcasts", { # nolint
   rep_tri <- make_test_triangle(nrow = 12, ncol = 5) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv <- allocate_reference_times(
     reporting_triangle = rep_tri,
     scale_factor = 3,
@@ -11,7 +11,7 @@ test_that("allocate_reference_times returns correct n_history_delay and n_retros
 
   # Example where not using all of them
   rep_tri2 <- make_test_triangle(nrow = 14, ncol = 5) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv2 <- allocate_reference_times(
     reporting_triangle = rep_tri2,
     scale_factor = 3,
@@ -23,7 +23,7 @@ test_that("allocate_reference_times returns correct n_history_delay and n_retros
   # Scale factor is higher than number of rows, but otherwise prop_delay still
   # works
   rep_tri3 <- make_test_triangle(nrow = 10, ncol = 5) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv3 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri3,
@@ -38,7 +38,7 @@ test_that("allocate_reference_times returns correct n_history_delay and n_retros
 
 test_that("allocate_reference_times properly scales delay and total training amount", { # nolint
   rep_tri <- make_test_triangle(nrow = 20, ncol = 5) |>
-    construct_triangle()
+    apply_reporting_structure()
 
   tv <- expect_message(allocate_reference_times(
     rep_tri,
@@ -85,7 +85,7 @@ test_that("allocate_reference_times properly scales delay and total training amo
 
 test_that("allocate_reference_times handles rounding with a warning", {
   rep_tri <- make_test_triangle(nrow = 20, ncol = 6) |>
-    construct_triangle()
+    apply_reporting_structure()
 
   tv <- expect_message(allocate_reference_times(
     rep_tri,
@@ -96,7 +96,7 @@ test_that("allocate_reference_times handles rounding with a warning", {
   expect_identical(tv$n_retrospective_nowcasts, 8)
 
   rep_tri2 <- make_test_triangle(nrow = 100, ncol = 31) |>
-    construct_triangle()
+    apply_reporting_structure()
 
   # Don't warn when prop delay is basically equivalent
   tv2 <- expect_no_warning(allocate_reference_times(
@@ -112,7 +112,7 @@ test_that("allocate_reference_times warns when user or defaults don't meet minim
 
   # Test the default works when their is less than 3* max delay of data
   rep_tri5 <- make_test_triangle(nrow = 10, ncol = 5) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv5 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri5
@@ -124,7 +124,7 @@ test_that("allocate_reference_times warns when user or defaults don't meet minim
 
   # Enough to run but not enough for prop delay or scale factor defaults
   rep_tri6 <- make_test_triangle(nrow = 8, ncol = 5) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv6 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri6
@@ -136,7 +136,7 @@ test_that("allocate_reference_times warns when user or defaults don't meet minim
 
   # Reallocate to ensure we have enough for n_retrospective_nowcasts
   rep_tri7 <- make_test_triangle(nrow = 7, ncol = 5) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv7 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri7,
@@ -149,7 +149,7 @@ test_that("allocate_reference_times warns when user or defaults don't meet minim
 
   # Prop delay is too low
   rep_tri8 <- make_test_triangle(nrow = 7, ncol = 5) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv8 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri8,
@@ -165,7 +165,7 @@ test_that("allocate_reference_times errors when data is insufficient. ", { # nol
   # Reporting triangle is sufficient but the scale factor makes it insufficient
   # Q: Do we want this to error or to just use all the reference times and warn?
   rep_tri1 <- make_test_triangle(nrow = 10, ncol = 5) |>
-    construct_triangle()
+    apply_reporting_structure()
   expect_error(
     allocate_reference_times(
       reporting_triangle = rep_tri1,
@@ -177,7 +177,7 @@ test_that("allocate_reference_times errors when data is insufficient. ", { # nol
 
   # Reporting triangle isn't big enough for both, this should error
   rep_tri2 <- make_test_triangle(nrow = 6, ncol = 5) |>
-    construct_triangle()
+    apply_reporting_structure()
   expect_error(
     allocate_reference_times(
       reporting_triangle = rep_tri2,
@@ -190,7 +190,7 @@ test_that("allocate_reference_times errors when data is insufficient. ", { # nol
 
 test_that("allocate_reference_times allocates properly with no user specifications (using defaults)", { # nolint
   rep_tri3 <- make_test_triangle(nrow = 12, ncol = 5) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv <- allocate_reference_times(
     reporting_triangle = rep_tri3
   )
@@ -199,7 +199,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
 
   # Odd numbered and more than enough ref times
   rep_tri2 <- make_test_triangle(nrow = 13, ncol = 5) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv2 <- allocate_reference_times(
     reporting_triangle = rep_tri2
   )
@@ -208,7 +208,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
 
   # Enough reference times to hit prop_delay -- > split by prop delay
   rep_tri3 <- make_test_triangle(nrow = 10, ncol = 5) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv3 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri3
@@ -221,7 +221,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
   # Not enough reference times to hit prop delay -->  hit minimum for delay,
   # rest go to uncertainty
   rep_tri4 <- make_test_triangle(nrow = 8, ncol = 5) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv4 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri4
@@ -233,7 +233,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
 
   # Same idea as above
   rep_tri5 <- make_test_triangle(nrow = 9, ncol = 6) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv5 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri5
@@ -245,7 +245,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
 
   # Handle larger numbers
   rep_tri6 <- make_test_triangle(nrow = 60, ncol = 40) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv6 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri6
@@ -258,7 +258,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
 
   # Handle larger less clean numbers
   rep_tri7 <- make_test_triangle(nrow = 55, ncol = 39) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv7 <- expect_warning(
     allocate_reference_times(
       reporting_triangle = rep_tri7
@@ -270,7 +270,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
 
   # Handle even larger numbers even splot
   rep_tri8 <- make_test_triangle(nrow = 120, ncol = 41) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv8 <- allocate_reference_times(
     reporting_triangle = rep_tri8
   )
@@ -279,7 +279,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
 
   # Same but inc training volume
   rep_tri9 <- make_test_triangle(nrow = 140, ncol = 41) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv9 <- allocate_reference_times(
     reporting_triangle = rep_tri9
   )
@@ -290,7 +290,7 @@ test_that("allocate_reference_times allocates properly with no user specificatio
 test_that("allocate_reference_times warns and reallocates appropriately when sufficient ref times but not enough retro nowcasts", { # nolint
   # Handle larger numbers
   rep_tri <- make_test_triangle(nrow = 14, ncol = 4) |>
-    construct_triangle()
+    apply_reporting_structure()
   tv <- expect_message(
     allocate_reference_times(
       reporting_triangle = rep_tri,
@@ -302,7 +302,7 @@ test_that("allocate_reference_times warns and reallocates appropriately when suf
 
 test_that("allocate_reference_times errors when inputs are invalid", {
   rep_tri <- make_test_triangle(nrow = 14, ncol = 4) |>
-    construct_triangle()
+    apply_reporting_structure()
 
   expect_error(
     allocate_reference_times(

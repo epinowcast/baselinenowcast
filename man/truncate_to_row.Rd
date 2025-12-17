@@ -2,7 +2,7 @@
 % Please edit documentation in R/truncate.R
 \name{truncate_to_row}
 \alias{truncate_to_row}
-\title{Truncate reporting triangle to a specific row}
+\title{Truncate reporting triangle by removing a specified number of the last rows}
 \usage{
 truncate_to_row(reporting_triangle, t, validate = TRUE)
 }
@@ -35,8 +35,8 @@ trunc_rep_tri
 }
 \seealso{
 Retrospective data generation functions
-\code{\link{construct_triangle}()},
-\code{\link{construct_triangles}()},
+\code{\link{apply_reporting_structure}()},
+\code{\link{apply_reporting_structures}()},
 \code{\link{truncate_to_rows}()}
 }
 \concept{generate_retrospective_data}

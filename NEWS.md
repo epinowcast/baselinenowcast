@@ -48,7 +48,7 @@
 * Properly attributed code adapted from KIT RESPINOW project (MIT license)
 * Support for sharing delay distributions and uncertainty across strata
 
-### Acknowledgments
+### Acknowledgements
 
 This package implements methods based on the baseline nowcasting approach used in the German COVID-19 hospitalization nowcasting collaborative challenge (Wolffram et al., 2023).
 Code for delay estimation and negative value handling was adapted from the Karlsruhe Institute of Technology RESPINOW project under MIT license.

@@ -216,7 +216,7 @@ test_that("estimate_uncertainty accepts output of estimate_and_apply_delays ", {
   pt_nowcast_list <- expect_message(
     estimate_and_apply_delays(retro_rts_list)
   )
-  truncated_reporting_triangles <- truncate_triangles(base_tri)
+  truncated_reporting_triangles <- truncate_to_rows(base_tri)
   rt_list <- apply_reporting_structures(truncated_reporting_triangles)
   # Since only two point nowcasts are non-null, this will warn
   expect_warning(estimate_uncertainty(
@@ -245,7 +245,7 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
     apply_reporting_structure(structure = 2)
 
   # Create truncated triangles and retrospective triangles
-  trunc_rts <- truncate_triangles(ragged_triangle)
+  trunc_rts <- truncate_to_rows(ragged_triangle)
   retro_rts <- apply_reporting_structures(trunc_rts, structure = 2)
 
   # Generate nowcasts from the ragged triangles
@@ -279,6 +279,7 @@ test_that(
       apply_reporting_structure()
     reporting_triangle <- rbind(rep_mat, triangle)
     reporting_triangle <- make_test_triangle(data = reporting_triangle)
+<<<<<<< HEAD
 
     pt_nowcast_mat <- estimate_and_apply_delay(reporting_triangle)
     truncated_reporting_triangles <- truncate_triangles(reporting_triangle)
@@ -294,6 +295,20 @@ test_that(
       retro_reporting_triangles
     )
 
+=======
+    pt_nowcast_mat <- fill_triangle(reporting_triangle)
+    truncated_reporting_triangles <- truncate_to_rows(reporting_triangle)
+    retro_reporting_triangles <- apply_reporting_structures(truncated_reporting_triangles) # nolint
+
+    point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
+
+    dispersion <- estimate_uncertainty(
+      point_nowcast_matrices,
+      truncated_reporting_triangles,
+      retro_reporting_triangles
+    )
+
+>>>>>>> main
     expect_equal(dispersion[1], 999, tol = 1)
     expect_equal(dispersion[2], 999, tol = 1)
     expect_equal(dispersion[3], 999, tol = 1)
@@ -339,7 +354,7 @@ test_that("estimate_uncertainty estimates positive dispersion for noisy predicti
     )
   }
 
-  truncated_reporting_triangles <- truncate_triangles(rep_tri_new)
+  truncated_reporting_triangles <- truncate_to_rows(rep_tri_new)
   retro_reporting_triangles <- apply_reporting_structures(truncated_reporting_triangles) # nolint
 
   point_nowcast_matrices <- estimate_and_apply_delays(retro_reporting_triangles)
@@ -495,7 +510,7 @@ test_that("estimate_uncertainty: can handle weekday filter with large ragged tri
   short_ragged_triangle <- make_test_triangle(data = short_ragged_triangle)
 
   # Create truncated and retrospective reporting triangles
-  trunc_rts <- truncate_triangles(short_ragged_triangle, n = 5)
+  trunc_rts <- truncate_to_rows(short_ragged_triangle, n = 5)
   retro_rts <- apply_reporting_structures(trunc_rts,
     structure = c(2, 7, 7, 7, 7, 7)
   )
@@ -535,7 +550,7 @@ test_that("estimate_uncertainty: can handle weekday filter with small ragged tri
     apply_reporting_structure(structure = 2)
 
   # Create truncated triangles and retrospective triangles
-  trunc_rts <- truncate_triangles(ragged_triangle, n = 2)
+  trunc_rts <- truncate_to_rows(ragged_triangle, n = 2)
   retro_rts <- apply_reporting_structures(trunc_rts, structure = 2)
 
   # Generate nowcasts from the ragged triangles
@@ -616,7 +631,7 @@ test_that("fit_nb rejects negative observed values with clear error", {
   # Error message should mention preprocessing option
   expect_error(
     fit_nb(x_negative, mu),
-    regexp = "preprocess = preprocess_negative_values"
+    regexp = "preprocess_negative_values\\(\\)"
   )
 })
 

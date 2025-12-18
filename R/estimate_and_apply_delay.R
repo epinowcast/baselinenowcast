@@ -12,7 +12,6 @@
 #'    starting at the first delay column in `reporting_triangle`.
 #'    Default is `NULL`, which will estimate a delay from the
 #'    `reporting_triangle`.
-#' @param ... Additional arguments passed to the `estimate_delay` function
 #'
 #' @returns `pt_nowcast_matrix` A `reporting_triangle` object of point nowcasts
 #'   with the same structure as the input
@@ -45,8 +44,7 @@
 estimate_and_apply_delay <- function(reporting_triangle,
                                      n = nrow(reporting_triangle),
                                      delay_pmf = NULL,
-                                     validate = TRUE,
-                                     ...) {
+                                     validate = TRUE) {
   assert_reporting_triangle(reporting_triangle, validate)
 
   if (n > nrow(reporting_triangle)) {
@@ -75,8 +73,7 @@ estimate_and_apply_delay <- function(reporting_triangle,
     delay_pmf <- estimate_delay(
       reporting_triangle = reporting_triangle,
       n = n,
-      validate = FALSE,
-      ...
+      validate = FALSE
     )
   }
 

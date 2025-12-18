@@ -47,7 +47,7 @@ test_that("estimate_uncertainty_retro matches manual workflow", {
   max_delay <- ncol(triangle) - 1
   structure <- 1
 
-  trunc_rep_tri_list <- truncate_triangles(
+  trunc_rep_tri_list <- truncate_to_rows(
     triangle,
     n = n_retrospective_nowcasts
   )

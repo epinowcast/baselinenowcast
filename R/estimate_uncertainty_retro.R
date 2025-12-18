@@ -8,7 +8,7 @@
 #'
 #' This function chains the retrospective nowcasting workflow:
 #' \enumerate{
-#'   \item [truncate_triangles()] - Create retrospective snapshots
+#'   \item [truncate_to_rows()] - Create retrospective snapshots
 #'   \item [apply_reporting_structures()] - Generate retrospective reporting
 #'     triangles
 #'   \item [estimate_and_apply_delays()] - Generate point nowcasts
@@ -67,7 +67,7 @@ estimate_uncertainty_retro <- function(
     n_retrospective_nowcasts = n_retrospective_nowcasts
   )
 
-  trunc_rep_tri_list <- truncate_triangles(
+  trunc_rep_tri_list <- truncate_to_rows(
     reporting_triangle = reporting_triangle,
     n = n_retrospective_nowcasts,
     validate = FALSE

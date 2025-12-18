@@ -46,7 +46,7 @@
 #' rep_tri <- as_reporting_triangle(data = data_as_of_df)
 #'
 #' # Create retrospective nowcasts
-#' trunc_rts <- truncate_triangles(rep_tri, n = 2)
+#' trunc_rts <- truncate_to_rows(rep_tri, n = 2)
 #' retro_rts <- apply_reporting_structures(trunc_rts)
 #' retro_nowcasts <- estimate_and_apply_delays(retro_rts)
 #'
@@ -431,7 +431,7 @@ fit_nb <- function(x, mu) {
     cli_abort(c(
       "Negative values detected in observations for uncertainty estimation",
       x = "fit_nb() requires non-negative integer observations",
-      i = "Consider using preprocess = preprocess_negative_values in estimate_delay() if appropriate" # nolint: line_length_linter
+      i = "Consider using preprocess_negative_values() on the reporting triangle if appropriate" # nolint: line_length_linter
     ))
   }
 

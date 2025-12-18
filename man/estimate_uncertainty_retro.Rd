@@ -57,7 +57,7 @@ on retrospective nowcast performance.
 
 This function chains the retrospective nowcasting workflow:
 \enumerate{
-\item \code{\link[=truncate_triangles]{truncate_triangles()}} - Create retrospective snapshots
+\item \code{\link[=truncate_to_rows]{truncate_to_rows()}} - Create retrospective snapshots
 \item \code{\link[=apply_reporting_structures]{apply_reporting_structures()}} - Generate retrospective reporting
 triangles
 \item \code{\link[=estimate_and_apply_delays]{estimate_and_apply_delays()}} - Generate point nowcasts

@@ -45,7 +45,7 @@
 #' - [estimate_and_apply_delay()]: Estimate delay and generate point nowcast
 #' - [estimate_delay()]: Extract delay distribution from triangle
 #' - [apply_delay()]: Apply delay distribution for nowcasting
-#' - [truncate_triangle()]: Remove most recent rows
+#' - [truncate_to_row()]: Remove most recent rows
 #' - [preprocess_negative_values()]: Handle reporting corrections
 #'
 #' @examples

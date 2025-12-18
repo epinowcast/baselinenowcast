@@ -8,8 +8,7 @@ estimate_and_apply_delay(
   reporting_triangle,
   n = nrow(reporting_triangle),
   delay_pmf = NULL,
-  validate = TRUE,
-  ...
+  validate = TRUE
 )
 }
 \arguments{
@@ -31,8 +30,6 @@ Default is \code{NULL}, which will estimate a delay from the
 
 \item{validate}{Logical. If TRUE (default), validates the object. Set to
 FALSE only when called from functions that already validated.}
-
-\item{...}{Additional arguments passed to the \code{estimate_delay} function}
 }
 \value{
 \code{pt_nowcast_matrix} A \code{reporting_triangle} object of point nowcasts

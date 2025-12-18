@@ -37,7 +37,7 @@ time to oldest retrospective nowcast time).
 }
 \examples{
 # Generate retrospective triangles from truncated triangles
-trunc_rts <- truncate_triangles(example_reporting_triangle, n = 2)
+trunc_rts <- truncate_to_rows(example_reporting_triangle, n = 2)
 retro_rts <- apply_reporting_structures(trunc_rts)
 
 # With custom structure
@@ -50,7 +50,7 @@ retro_rts_custom
 \seealso{
 Retrospective data generation functions
 \code{\link{apply_reporting_structure}()},
-\code{\link{truncate_triangle}()},
-\code{\link{truncate_triangles}()}
+\code{\link{truncate_to_row}()},
+\code{\link{truncate_to_rows}()}
 }
 \concept{generate_retrospective_data}

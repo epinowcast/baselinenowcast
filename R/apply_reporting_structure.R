@@ -18,7 +18,7 @@
 #' @export
 #' @examples
 #' # Generate retrospective triangles from truncated triangles
-#' trunc_rts <- truncate_triangles(example_reporting_triangle, n = 2)
+#' trunc_rts <- truncate_to_rows(example_reporting_triangle, n = 2)
 #' retro_rts <- apply_reporting_structures(trunc_rts)
 #'
 #' # With custom structure
@@ -28,8 +28,8 @@
 #' )
 #' retro_rts_custom
 apply_reporting_structures <- function(truncated_reporting_triangles,
-                                structure = 1,
-                                validate = TRUE) {
+                                       structure = 1,
+                                       validate = TRUE) {
   # Check that input is a list
   if (!is.list(truncated_reporting_triangles)) {
     cli_abort(message = "`truncated_reporting_triangles` must be a list")
@@ -77,8 +77,8 @@ apply_reporting_structures <- function(truncated_reporting_triangles,
 #' rep_custom <- apply_reporting_structure(example_reporting_triangle, c(1, 2))
 #' rep_custom
 apply_reporting_structure <- function(truncated_reporting_triangle,
-                               structure = 1,
-                               validate = TRUE) {
+                                      structure = 1,
+                                      validate = TRUE) {
   assert_reporting_triangle(truncated_reporting_triangle, validate)
 
   # Get matrix dimensions

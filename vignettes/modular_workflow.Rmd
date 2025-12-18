@@ -141,6 +141,9 @@ n_history_delay <- tv$n_history_delay
 n_retrospective_nowcasts <- tv$n_retrospective_nowcasts
 ```
 
+Alternatively, if you wanted to directly specify the `n_history_delay` and `n_retrospective_nowcasts` directly, you could do this.
+This might be useful if say you run your nowcast each week, but your data is daily, and you want to ensure that the number of weeks used for delay and uncertainty estimation is an integer number of weeks.
+
 # Estimate delay
 
 Now that we have the reporting triangle, we are now ready to estimate the delay distribution.
@@ -255,10 +258,10 @@ We'll do so by estimating uncertainty using past nowcast errors.
 
 We repeat this process for `n_retrospective_nowcasts` reference times in the current reporting triangle, starting from the latest reference time and working backwards, ultimately using all `n_retrospective_nowcasts` and `n_history_delay` reference times.
 
-We'll start by creating a list of truncated triangles using the `truncate_triangles()` function which successively removes an addition additional reference time from the original reporting triangle `n` times.
+We'll start by creating a list of truncated triangles using the `truncate_to_rows()` function which successively removes an addition additional reference time from the original reporting triangle `n` times.
 
 ```{r}
-trunc_rep_tri_list <- truncate_triangles(
+trunc_rep_tri_list <- truncate_to_rows(
   rep_tri,
   n = n_retrospective_nowcasts
 )
@@ -419,7 +422,7 @@ Black lines show the "final" data from October 1, 2021.
 In this vignette we used the `baselinenowcast` low-level modular functions to convert a dataframe with incident cases indexed by reference date and report date to a `reporting_triangle` object using the `as_reporting_triangle` function, and then walked through the `baselinenowcast` workflow step by step. This involved:
 1. `estimate_delay()` - Estimating a delay
 2. `apply_delay()` - Generating a point nowcast matrix
-3. `truncate_triangles()` - Truncating triangles at iteratively earlier retrospective nowcast times
+3. `truncate_to_rows()` - Truncating triangles at iteratively earlier retrospective nowcast times
 4. `apply_reporting_structures()` - Constructing retrospective reporting triangles based on what would have been available as of the nowcast date.
 5. `estimate_and_apply_delays()` - Generating point nowcasts from the retrospective reporting triangles
 6. `estimate_uncertainty()` - Estimating uncertainty from retrospective point nowcast matrices and eventual observations.

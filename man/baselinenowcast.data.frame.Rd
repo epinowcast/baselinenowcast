@@ -92,14 +92,13 @@ estimates should be shared for different nowcasting steps. Options are
 \code{"delay"} for delay sharing and \code{"uncertainty"} for uncertainty sharing.
 Both \code{"delay"} and \code{"uncertainty"} can be passed at the same time.}
 
-\item{preprocess}{Function to apply to the truncated triangle before
+\item{preprocess}{Function to apply to the reporting triangle before
 estimation, or NULL to skip preprocessing. Default is
 \code{\link[=preprocess_negative_values]{preprocess_negative_values()}}, which handles negative values by
 redistributing them to earlier delays. Set to NULL if you want to preserve
-negative PMF entries (e.g., when working with downward corrections where
-negative probabilities reflect systematic adjustments). Custom preprocess
-functions must accept a \code{validate} parameter (defaults to TRUE) to enable
-validation optimisation in internal function chains.}
+negative values. Custom preprocess functions must accept a \code{validate}
+parameter (defaults to TRUE) to enable validation optimisation in internal
+function chains.}
 
 \item{...}{Additional arguments passed to
 \code{\link[=estimate_uncertainty]{estimate_uncertainty()}}

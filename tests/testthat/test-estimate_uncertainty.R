@@ -279,10 +279,9 @@ test_that(
       apply_reporting_structure()
     reporting_triangle <- rbind(rep_mat, triangle)
     reporting_triangle <- make_test_triangle(data = reporting_triangle)
-<<<<<<< HEAD
 
     pt_nowcast_mat <- estimate_and_apply_delay(reporting_triangle)
-    truncated_reporting_triangles <- truncate_triangles(reporting_triangle)
+    truncated_reporting_triangles <- truncate_to_rows(reporting_triangle)
     retro_reporting_triangles <- apply_reporting_structures(truncated_reporting_triangles) # nolint
 
     point_nowcast_matrices <- estimate_and_apply_delays(
@@ -295,20 +294,6 @@ test_that(
       retro_reporting_triangles
     )
 
-=======
-    pt_nowcast_mat <- fill_triangle(reporting_triangle)
-    truncated_reporting_triangles <- truncate_to_rows(reporting_triangle)
-    retro_reporting_triangles <- apply_reporting_structures(truncated_reporting_triangles) # nolint
-
-    point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
-
-    dispersion <- estimate_uncertainty(
-      point_nowcast_matrices,
-      truncated_reporting_triangles,
-      retro_reporting_triangles
-    )
-
->>>>>>> main
     expect_equal(dispersion[1], 999, tol = 1)
     expect_equal(dispersion[2], 999, tol = 1)
     expect_equal(dispersion[3], 999, tol = 1)

@@ -1,7 +1,63 @@
-# baselinenowcast 0.0.0.1000
+# baselinenowcast 0.1.0
+
+`baselinenowcast` provides simple, baseline nowcasting methods for epidemiological surveillance data affected by reporting delays.
+
+### Key Features
+
+#### Core Functionality
+
+* **Delay estimation**: Empirical delay distribution estimation from reporting triangles using an iterative multiplicative algorithm
+* **Point nowcasting**: Generate point estimates by applying estimated delay distributions to incomplete data
+* **Uncertainty quantification**: Estimate forecast uncertainty using retrospective validation with negative binomial observation models
+* **Probabilistic nowcasts**: Generate full predictive distributions combining point estimates with uncertainty
+
+#### Flexible Data Structures
+
+* **Multiple input formats**: Support for data frames (with reference and report dates), reporting triangles (matrices), and `epinowcast` objects
+* **Ragged triangles**: Handle mixed reporting schedules (e.g., daily-weekly, weekly-daily)
+* **Custom structures**: Support for flexible reporting patterns via structure vectors
+
+#### Modular Interface
+
+* **Low-level functions**: `estimate_delay()`, `apply_delay()`, `estimate_uncertainty()`, `sample_nowcast()` for custom workflows
+* **High-level wrappers**: `baselinenowcast()` for quick, opinionated nowcasting
+* **Flexible aggregation**: Support for rolling sums and other aggregation functions via `fun_to_aggregate` and `k` parameters
+
+#### Data Preprocessing
+
+* **Negative value handling**: Automatic redistribution of negative counts across delays
+* **Reporting structure detection**: Automatic inference of reporting patterns
+* **Reference time allocation**: Tools for allocating cases to appropriate reference dates
+
+#### S3 Object System
+
+* **`reporting_triangle` class**: With print, summary, subset, and conversion methods
+* **`baselinenowcast_df` class**: Structured output format with summary statistics
+* **Interoperability**: Conversion to/from ChainLadder package format
+
+#### Documentation and Examples
+
+* **Comprehensive vignettes**: Getting started guide and mathematical methods documentation
+* **Real data examples**: Germany COVID-19 hospitalization data from the RESPINOW hub and US NSSP data
+* **Synthetic data**: Example datasets for testing and exploration
+
+### Implementation Details
+
+* Base R implementation with minimal dependencies (cli, checkmate, stats, zoo)
+* Comprehensive test suite with >95% code coverage
+* Properly attributed code adapted from KIT RESPINOW project (MIT license)
+* Support for sharing delay distributions and uncertainty across strata
+
+### Acknowledgments
+
+This package implements methods based on the baseline nowcasting approach used in the German COVID-19 hospitalization nowcasting collaborative challenge (Wolffram et al., 2023).
+Code for delay estimation and negative value handling was adapted from the Karlsruhe Institute of Technology RESPINOW project under MIT license.
+
+# Development History (pre-CRAN):
+
+## baselinenowcast 0.0.0.1.000
 
 -   Rename `truncate_triangle()` to `truncate_to_row()` and `truncate_triangles()` to `truncate_to_rows()` to clarify that these functions truncate by row count and distinguish them from other truncation utilities such as `truncate_to_quantile()` and `truncate_to_delay()` (#336).
-
 -   Add a vignette which walks through the low-level function interface on the same nowcasting problem as in the Getting Started vignette.
 -   Modify the Getting Started vignette to use the `baselinenowcast()` wrapper function.
 -   Use the `as_reporting_triangle` and `baselinenowcast` workflow in the vignette which walks through a nowcasting example applied to syndromic surveillance data in the U.S.

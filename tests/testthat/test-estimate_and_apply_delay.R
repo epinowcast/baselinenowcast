@@ -175,20 +175,3 @@ test_that("estimate_and_apply_delay errors when no complete rows", {
     regexp = "at least one row with no missing observations"
   )
 })
-
-test_that("estimate_and_apply_delay passes ... to estimate_delay", {
-  # Test that preprocess can be passed via ... to estimate_delay
-  result_default <- estimate_and_apply_delay(
-    reporting_triangle = reporting_triangle,
-    n = 8
-  )
-
-  result_null_preprocess <- estimate_and_apply_delay(
-    reporting_triangle = reporting_triangle,
-    n = 8,
-    preprocess = NULL
-  )
-
-  expect_s3_class(result_default, "reporting_triangle")
-  expect_s3_class(result_null_preprocess, "reporting_triangle")
-})

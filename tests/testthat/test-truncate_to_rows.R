@@ -69,11 +69,7 @@ test_that("truncate_to_rows can handle a range of ns", {
 test_that(
   "truncate_to_rows replaces values with NA for retrospective snapshots",
   {
-<<<<<<< HEAD:tests/testthat/test-truncate_triangles.R
-    result <- truncate_triangles(test_triangle, n = 1)[[1]]
-=======
     result <- truncate_to_rows(test_triangle, n = 1)[[1]]
->>>>>>> main:tests/testthat/test-truncate_to_rows.R
     # Expect bottom 3 elemets of lower left triangle to be NAs
     expect_true(all(
       anyNA(result[5, 4]),

@@ -146,7 +146,7 @@ test_that("estimate_uncertainty returns an error if passing in only NULLs", {
   expect_error(estimate_uncertainty(list(NULL), valid_trunc_rts, valid_rts))
 })
 
-test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
+test_that("estimate_uncertainty accepts output of estimate_and_apply_delays ", { # nolint
   base_tri <- make_test_triangle(data = matrix(
     c(
       89, 54, 10, 5,
@@ -214,7 +214,7 @@ test_that("estimate_uncertainty accepts output of fill_triangles ", { # nolint
   retro_rts_list <- list(test_triangle_1, test_triangle_2, triangle3)
 
   pt_nowcast_list <- expect_message(
-    fill_triangles(retro_rts_list)
+    estimate_and_apply_delays(retro_rts_list)
   )
   truncated_reporting_triangles <- truncate_to_rows(base_tri)
   rt_list <- apply_reporting_structures(truncated_reporting_triangles)
@@ -249,7 +249,7 @@ test_that("estimate_uncertainty: Works with ragged reporting triangles", {
   retro_rts <- apply_reporting_structures(trunc_rts, structure = 2)
 
   # Generate nowcasts from the ragged triangles
-  retro_nowcasts <- fill_triangles(retro_rts)
+  retro_nowcasts <- estimate_and_apply_delays(retro_rts)
 
   # Estimate dispersion parameters
   disp_params <- estimate_uncertainty(
@@ -279,11 +279,14 @@ test_that(
       apply_reporting_structure()
     reporting_triangle <- rbind(rep_mat, triangle)
     reporting_triangle <- make_test_triangle(data = reporting_triangle)
-    pt_nowcast_mat <- fill_triangle(reporting_triangle)
+
+    pt_nowcast_mat <- estimate_and_apply_delay(reporting_triangle)
     truncated_reporting_triangles <- truncate_to_rows(reporting_triangle)
     retro_reporting_triangles <- apply_reporting_structures(truncated_reporting_triangles) # nolint
 
-    point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
+    point_nowcast_matrices <- estimate_and_apply_delays(
+      retro_reporting_triangles
+    )
 
     dispersion <- estimate_uncertainty(
       point_nowcast_matrices,
@@ -312,7 +315,7 @@ test_that("estimate_uncertainty estimates positive dispersion for noisy predicti
   reporting_triangle <- make_test_triangle(data = reporting_triangle)
 
 
-  pt_nowcast_mat <- fill_triangle(reporting_triangle)
+  pt_nowcast_mat <- estimate_and_apply_delay(reporting_triangle)
 
 
   # in order from horizon 1 to 4, set as a high value to approximate Poisson
@@ -339,7 +342,7 @@ test_that("estimate_uncertainty estimates positive dispersion for noisy predicti
   truncated_reporting_triangles <- truncate_to_rows(rep_tri_new)
   retro_reporting_triangles <- apply_reporting_structures(truncated_reporting_triangles) # nolint
 
-  point_nowcast_matrices <- fill_triangles(retro_reporting_triangles)
+  point_nowcast_matrices <- estimate_and_apply_delays(retro_reporting_triangles)
 
   dispersion <- estimate_uncertainty(
     point_nowcast_matrices,
@@ -392,7 +395,7 @@ test_that("estimate_uncertainty: returns known dispersion parameters", { # nolin
   reporting_triangle <- make_test_triangle(data = reporting_triangle)
 
 
-  pt_nowcast_mat <- fill_triangle(reporting_triangle)
+  pt_nowcast_mat <- estimate_and_apply_delay(reporting_triangle)
 
   # Create truncated reporting triangles by sampling elements of triangle
   # from Poisson distribution
@@ -497,7 +500,8 @@ test_that("estimate_uncertainty: can handle weekday filter with large ragged tri
     structure = c(2, 7, 7, 7, 7, 7)
   )
 
-  retro_nowcasts <- fill_triangles(retro_rts, n = 10) # Use 10 reference times
+  # Use 10 reference times
+  retro_nowcasts <- estimate_and_apply_delays(retro_rts, n = 10)
 
   disp_params <- estimate_uncertainty(
     point_nowcast_matrices = retro_nowcasts,
@@ -535,7 +539,7 @@ test_that("estimate_uncertainty: can handle weekday filter with small ragged tri
   retro_rts <- apply_reporting_structures(trunc_rts, structure = 2)
 
   # Generate nowcasts from the ragged triangles
-  retro_nowcasts <- fill_triangles(retro_rts, n = 4)
+  retro_nowcasts <- estimate_and_apply_delays(retro_rts, n = 4)
 
   # No longer errors due to ncol > nrow
   disp_params <- estimate_uncertainty(

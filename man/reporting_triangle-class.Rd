@@ -54,7 +54,7 @@ Reporting triangle objects provide:
 
 \strong{Package functions:}
 \itemize{
-\item \code{\link[=fill_triangle]{fill_triangle()}}: Fill missing values with zeros
+\item \code{\link[=estimate_and_apply_delay]{estimate_and_apply_delay()}}: Estimate delay and generate point nowcast
 \item \code{\link[=estimate_delay]{estimate_delay()}}: Extract delay distribution from triangle
 \item \code{\link[=apply_delay]{apply_delay()}}: Apply delay distribution for nowcasting
 \item \code{\link[=truncate_to_row]{truncate_to_row()}}: Remove most recent rows
@@ -68,7 +68,7 @@ data <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 rep_tri <- as_reporting_triangle(data = data)
 
 # Use with low-level functions
-filled <- fill_triangle(rep_tri)
+filled <- estimate_and_apply_delay(rep_tri)
 delay_pmf <- estimate_delay(rep_tri)
 nowcast <- apply_delay(rep_tri, delay_pmf)
 

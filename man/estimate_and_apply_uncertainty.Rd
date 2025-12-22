@@ -46,8 +46,8 @@ nowcast vector to generate. Default is \code{1000}.}
 
 \item{delay_pmf}{Vector or list of vectors of delays assumed to be indexed
 starting at the first delay column in each of the matrices in
-\code{retro_reporting_triangles}. If a list, must of the same length as
-\code{retro_reporting_triangles}, with elements aligning. Default is \code{NULL}}
+\code{retro_reporting_triangles}. If a list, must be of the same length as
+\code{retro_reporting_triangles}, with elements aligning. Default is \code{NULL}.}
 
 \item{uncertainty_model}{Function that ingests a matrix of observations and a
 matrix of predictions and returns a vector that can be used to
@@ -90,8 +90,8 @@ To obtain estimates of uncertainty parameters, use
 \code{\link[=estimate_uncertainty_retro]{estimate_uncertainty_retro()}}. For full control over individual steps
 (e.g., custom matrix preparation, alternative aggregation), use the
 low-level functions (\code{\link[=truncate_to_rows]{truncate_to_rows()}},
-\code{\link[=apply_reporting_structure]{apply_reporting_structure()}},
-\code{\link[=fill_triangles]{fill_triangles()}}, \code{\link[=estimate_uncertainty]{estimate_uncertainty()}}) directly.
+\code{\link[=apply_reporting_structures]{apply_reporting_structures()}}, \code{\link[=estimate_and_apply_delays]{estimate_and_apply_delays()}},
+\code{\link[=estimate_uncertainty]{estimate_uncertainty()}}) directly.
 }
 \examples{
 # Use package data truncated to appropriate size
@@ -117,6 +117,7 @@ head(nowcast_draws_df)
 High-level workflow wrapper functions
 \code{\link{allocate_reference_times}()},
 \code{\link{estimate_and_apply_delay}()},
+\code{\link{estimate_and_apply_delays}()},
 \code{\link{estimate_uncertainty_retro}()}
 }
 \concept{workflow_wrappers}

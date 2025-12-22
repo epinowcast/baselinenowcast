@@ -119,8 +119,8 @@ expect_warning_partial_overlap <- function(object) {
 #' @return Invisibly returns object for piping
 #' @keywords internal
 expect_blnc_structure <- function(object,
-                                             expected_cols,
-                                             output_type = "samples") {
+                                  expected_cols,
+                                  output_type = "samples") {
   testthat::expect_s3_class(object, "data.frame")
   testthat::expect_s3_class(object, "baselinenowcast_df")
   testthat::expect_true(all(expected_cols %in% colnames(object)))

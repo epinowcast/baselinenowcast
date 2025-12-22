@@ -2,7 +2,22 @@
 data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
 
 # Single stratum reporting_triangle_df
-rt_df <- as_reporting_triangle_df(data_as_of_df)
+rt_df <- as_reporting_triangle_df(data_as_of_df) |>
+  truncate_to_delay(50)
+
+# Create multi-stratum data
+data_as_of_df_mod <- data_as_of_df
+data_as_of_df_mod$count <- data_as_of_df$count + 1
+multi_strata_df <- bind_rows(data_as_of_df, data_as_of_df)
+multi_strata_df$age_group <- c(
+  rep("0-17", times = nrow(data_as_of_df)),
+  rep("18+", times = nrow(data_as_of_df))
+)
+
+rt_df_strata <- as_reporting_triangle_df(
+  multi_strata_df,
+  by = "age_group"
+) |> truncate_to_delay(50)
 
 test_that("baselinenowcast.reporting_triangle_df works for single stratum", {
   # Point estimate - use all available data
@@ -28,15 +43,6 @@ test_that("baselinenowcast.reporting_triangle_df works for single stratum", {
 })
 
 test_that("baselinenowcast.reporting_triangle_df works for multiple strata", {
-  # Create multi-stratum data
-  multi_strata_df <- data_as_of_df
-  multi_strata_df$age_group <- rep(c("0-17", "18+"), length.out = nrow(multi_strata_df))
-
-  rt_df_strata <- as_reporting_triangle_df(
-    multi_strata_df,
-    by = "age_group"
-  )
-
   nowcast_multi <- baselinenowcast(
     rt_df_strata,
     output_type = "samples",
@@ -49,12 +55,30 @@ test_that("baselinenowcast.reporting_triangle_df works for multiple strata", {
 })
 
 test_that("baselinenowcast.reporting_triangle_df supports strata_sharing", {
-  skip("Strata sharing requires overlapping reference/report dates across all strata")
+  rt_df_strata <- as_reporting_triangle_df(
+    multi_strata_df,
+    by = "age_group"
+  )
 
-  # This test is skipped because creating test data that satisfies the
-  # requirements for strata sharing (overlapping reference and report dates)
-  # is complex. The functionality is tested implicitly through the
-  # baselinenowcast.data.frame method which uses the same underlying code.
+  # With strata sharing
+  set.seed(123)
+  nowcast_shared <- baselinenowcast(
+    rt_df_strata,
+    output_type = "samples",
+    strata_sharing = c("delay", "uncertainty"),
+    draws = 5
+  )
+
+  # Without strata sharing
+  set.seed(123)
+  nowcast_multi <- baselinenowcast(
+    rt_df_strata,
+    output_type = "samples",
+    draws = 5
+  )
+
+  # Ensure they are not the same
+  expect_false(all(nowcast_multi$pred_count == nowcast_shared$pred_count))
 })
 
 test_that("baselinenowcast.default provides helpful error message", {

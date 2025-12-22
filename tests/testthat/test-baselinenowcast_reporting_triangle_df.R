@@ -53,11 +53,6 @@ test_that("baselinenowcast.reporting_triangle_df works for multiple strata", {
 })
 
 test_that("baselinenowcast.reporting_triangle_df supports strata_sharing", {
-  rt_df_strata <- as_reporting_triangle_df(
-    multi_strata_df,
-    by = "age_group"
-  )
-
   # With strata sharing
   set.seed(123)
   nowcast_shared <- baselinenowcast(
@@ -77,6 +72,10 @@ test_that("baselinenowcast.reporting_triangle_df supports strata_sharing", {
 
   # Ensure they are not the same
   expect_false(all(nowcast_multi$pred_count == nowcast_shared$pred_count))
+
+  expect_s3_class(nowcast_shared, "baselinenowcast_df")
+  expect_true("age_group" %in% names(nowcast_shared))
+  expect_true(all(c("0-17", "18+") %in% unique(nowcast_shared$age_group)))
 })
 
 test_that("baselinenowcast.default provides helpful error message", {

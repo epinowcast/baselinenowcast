@@ -16,7 +16,7 @@ FALSE only when called from functions that already validated.}
 Assert validity of \code{reporting_triangle_df} objects
 }
 \seealso{
-Other reporting_triangle_df:
+Other reporting_triangle_df: 
 \code{\link{[.reporting_triangle_df}()},
 \code{\link{as.data.frame.reporting_triangle_df}()},
 \code{\link{as_reporting_triangle_df}()},

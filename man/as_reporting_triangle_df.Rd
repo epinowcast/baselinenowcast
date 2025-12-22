@@ -22,7 +22,7 @@ A \link{reporting_triangle_df} object
 Create a \code{reporting_triangle_df} object
 }
 \seealso{
-Other reporting_triangle_df:
+Other reporting_triangle_df: 
 \code{\link{[.reporting_triangle_df}()},
 \code{\link{as.data.frame.reporting_triangle_df}()},
 \code{\link{as_reporting_triangle_df.data.frame}()},

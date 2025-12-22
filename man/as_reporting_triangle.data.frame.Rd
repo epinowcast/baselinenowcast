@@ -57,7 +57,7 @@ input options.
 # Filter to reasonable max_delay for faster example
 data_as_of_df <- syn_nssp_df[
   syn_nssp_df$report_date <= "2026-04-01" &
-  (syn_nssp_df$report_date - syn_nssp_df$reference_date) <= 25,
+    (syn_nssp_df$report_date - syn_nssp_df$reference_date) <= 25,
 ]
 as_reporting_triangle(data = data_as_of_df)
 }

@@ -16,7 +16,7 @@ Logical indicating whether the object is a reporting_triangle_df.
 Check if an object is a reporting_triangle_df
 }
 \seealso{
-Other reporting_triangle_df:
+Other reporting_triangle_df: 
 \code{\link{[.reporting_triangle_df}()},
 \code{\link{as.data.frame.reporting_triangle_df}()},
 \code{\link{as_reporting_triangle_df}()},

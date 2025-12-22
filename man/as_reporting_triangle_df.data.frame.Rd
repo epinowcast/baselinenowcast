@@ -69,7 +69,7 @@ rt_df_strata <- as_reporting_triangle_df(
 )
 }
 \seealso{
-Other reporting_triangle_df:
+Other reporting_triangle_df: 
 \code{\link{[.reporting_triangle_df}()},
 \code{\link{as.data.frame.reporting_triangle_df}()},
 \code{\link{as_reporting_triangle_df}()},

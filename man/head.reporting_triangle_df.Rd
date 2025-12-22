@@ -25,7 +25,7 @@ rt_df <- as_reporting_triangle_df(syn_nssp_df[syn_nssp_df$report_date <= "2026-0
 head(rt_df, n = 3)
 }
 \seealso{
-Other reporting_triangle_df:
+Other reporting_triangle_df: 
 \code{\link{[.reporting_triangle_df}()},
 \code{\link{as.data.frame.reporting_triangle_df}()},
 \code{\link{as_reporting_triangle_df}()},

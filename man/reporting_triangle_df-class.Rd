@@ -57,7 +57,7 @@ rt_df_strata <- as_reporting_triangle_df(
 rt_list <- as_reporting_triangles(rt_df_strata)
 }
 \seealso{
-Other reporting_triangle_df:
+Other reporting_triangle_df: 
 \code{\link{[.reporting_triangle_df}()},
 \code{\link{as.data.frame.reporting_triangle_df}()},
 \code{\link{as_reporting_triangle_df}()},

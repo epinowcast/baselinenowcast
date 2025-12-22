@@ -22,7 +22,7 @@ An object of class \link{reporting_triangle_df}
 Creates a new reporting_triangle_df object from a data.frame.
 }
 \seealso{
-Other reporting_triangle_df:
+Other reporting_triangle_df: 
 \code{\link{[.reporting_triangle_df}()},
 \code{\link{as.data.frame.reporting_triangle_df}()},
 \code{\link{as_reporting_triangle_df}()},

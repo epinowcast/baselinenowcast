@@ -28,7 +28,7 @@ rt <- as_reporting_triangle(syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01",
 rt_df <- as_reporting_triangle_df(rt)
 }
 \seealso{
-Other reporting_triangle_df:
+Other reporting_triangle_df: 
 \code{\link{[.reporting_triangle_df}()},
 \code{\link{as.data.frame.reporting_triangle_df}()},
 \code{\link{as_reporting_triangle_df}()},

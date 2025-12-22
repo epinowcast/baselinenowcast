@@ -30,7 +30,7 @@ plain_df <- as.data.frame(rt_df)
 class(plain_df) # "data.frame"
 }
 \seealso{
-Other reporting_triangle_df:
+Other reporting_triangle_df: 
 \code{\link{[.reporting_triangle_df}()},
 \code{\link{as_reporting_triangle_df}()},
 \code{\link{as_reporting_triangle_df.data.frame}()},

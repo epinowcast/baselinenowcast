@@ -130,8 +130,7 @@ baselinenowcast.reporting_triangle <- function(
   tv <- allocate_reference_times(data,
     scale_factor = scale_factor,
     prop_delay = prop_delay,
-    validate = FALSE,
-    n_min_retro_nowcasts = n_min_retro_nowcasts
+    validate = FALSE
   )
 
   # Apply preprocessing if provided

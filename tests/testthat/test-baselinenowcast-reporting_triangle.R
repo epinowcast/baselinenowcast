@@ -294,20 +294,6 @@ test_that("baselinenowcast can handle custom preprocessing", {
   expect_equal(result$pred_count, result_orig$pred_count * 2, tol = 0.01)
 })
 
-test_that("baselinenowcast can produce point nowcast from minimum required reference times", { # nolint
-
-  min_rep_tri <- tail(example_reporting_triangle, 5)
-  result <- expect_no_error(
-    suppressWarnings(
-      baselinenowcast(min_rep_tri,
-        output_type = "point"
-      )
-    )
-  )
-  expect_false(anyNA(result$pred_count))
-  expect_gt(nrow(result), 0)
-})
-
 test_that("baselinenowcast works on example reporting triangle", {
   result <- expect_no_error(
     suppressWarnings(

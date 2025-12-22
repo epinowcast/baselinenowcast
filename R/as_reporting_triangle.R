@@ -56,7 +56,7 @@ as_reporting_triangle <- function(data,
 #' # Filter to reasonable max_delay for faster example
 #' data_as_of_df <- syn_nssp_df[
 #'   syn_nssp_df$report_date <= "2026-04-01" &
-#'   (syn_nssp_df$report_date - syn_nssp_df$reference_date) <= 25,
+#'     (syn_nssp_df$report_date - syn_nssp_df$reference_date) <= 25,
 #' ]
 #' as_reporting_triangle(data = data_as_of_df)
 as_reporting_triangle.data.frame <- function(
@@ -216,6 +216,70 @@ as_reporting_triangle.matrix <- function(data,
   assert_reporting_triangle(reporting_triangle_obj)
 
   return(reporting_triangle_obj)
+}
+
+#' Create a `reporting_triangle` from a reporting_triangle_df
+#'
+#' This method converts a [reporting_triangle_df] object to a
+#' [reporting_triangle] object. Errors if multiple strata are detected.
+#'
+#' @param data A [reporting_triangle_df] object. Must contain only a single
+#'   stratum (no strata columns or filtered to one stratum).
+#' @inheritParams as_reporting_triangle
+#' @param ... Additional arguments not used.
+#'
+#' @export
+#' @return A [reporting_triangle] object
+#' @method as_reporting_triangle reporting_triangle_df
+#' @family reporting_triangle
+#' @examples
+#' # Single stratum works
+#' rt_df <- as_reporting_triangle_df(syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ])
+#' rt <- as_reporting_triangle(rt_df)
+#'
+#' # Multiple strata errors with helpful message
+#' # rt_df_strata <- as_reporting_triangle_df(
+#' #   germany_covid19_hosp,
+#' #   by = c("age_group", "location")
+#' # )
+#' # as_reporting_triangle(rt_df_strata) # Error!
+as_reporting_triangle.reporting_triangle_df <- function(
+    data,
+    delays_unit = NULL,
+    ...) {
+  # Get attributes
+  strata <- get_strata(data)
+
+  # Error if multiple strata detected
+  if (!is.null(strata)) {
+    # Check if there are actually multiple strata combinations
+    strata_combos <- unique(data[, strata, drop = FALSE])
+    if (nrow(strata_combos) > 1) {
+      cli_abort(
+        message = c(
+          "Multiple strata detected.",
+          "i" = "Use as_reporting_triangles() to get a list of reporting_triangles,",
+          "i" = "or filter to a single stratum first."
+        )
+      )
+    }
+  }
+
+  # Get delays_unit
+  if (is.null(delays_unit)) {
+    delays_unit <- attr(data, "delays_unit")
+  }
+
+  # Remove strata columns for conversion
+  df_to_convert <- data[, c("reference_date", "report_date", "count"), drop = FALSE]
+
+  # Convert using data.frame method
+  result <- as_reporting_triangle.data.frame(
+    data = df_to_convert,
+    delays_unit = delays_unit
+  )
+
+  return(result)
 }
 
 #' Rename required columns

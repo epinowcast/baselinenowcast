@@ -532,7 +532,7 @@ test_that("truncate_to_quantile truncates columns beyond specified quantile", {
   # Test error with non-reporting_triangle
   expect_error(
     truncate_to_quantile(matrix(1:10)),
-    "must have class 'reporting_triangle'"
+    "no applicable method for 'truncate_to_quantile' applied to an object of class" # nolint
   )
 })
 

@@ -190,7 +190,7 @@ This will generate a point estimate of complete the reporting matrix.
 In this case, we will be applying the delay to the same reporting triangle we used to generate the estimate, but this doesn't always have to be the case.
 See the documentation for `apply_delay()` for a full description of the input requirements.
 
-It is worth noting that we could also have estimated the delay and applied it in one single step by calling `fill_triangle()`.
+It is worth noting that we could also have estimated the delay and applied it in one single step by calling `estimate_and_apply_delay()`.
 
 ```{r}
 point_nowcast_matrix <- apply_delay(
@@ -274,10 +274,10 @@ We refer to these as retrospective reporting triangles.
 retro_rep_tri_list <- apply_reporting_structures(trunc_rep_tri_list)
 ```
 
-Next we will pass this list of reporting triangles to the `fill_triangles()` and specify `n`, the number of reference times to be used to estimate the delay for each nowcast, which we will set as the `n_history_delay` previous specified.
+Next we will pass this list of reporting triangles to the `estimate_and_apply_delays()` and specify `n`, the number of reference times to be used to estimate the delay for each nowcast, which we will set as the `n_history_delay` previous specified.
 
 ```{r}
-retro_pt_nowcast_mat_list <- fill_triangles(
+retro_pt_nowcast_mat_list <- estimate_and_apply_delays(
   retro_reporting_triangles = retro_rep_tri_list,
   n = n_history_delay
 )
@@ -298,7 +298,7 @@ disp_params <- estimate_uncertainty(
 T
 his function uses a negative binomial observation model by default, and independently estimates the dispersion in the negative binomial at each forecast horizon.
 
-Note that the estimation of uncertainty from a reporting triangle can be done in a single step using the `estimate_uncertainty_retro()` function, which chains together the truncation of triangles, construction of retrospective reporting triangles, the generation of point nowcasts via filling the triangles, and the estimation of the uncertainty from the estimates compared to the observations.
+Note that the estimation of uncertainty from a reporting triangle can be done in a single step using the `estimate_uncertainty_retro()` function, which chains together the truncation of triangles, construction of retrospective reporting triangles, the generation of point nowcasts via `estimate_and_apply_delays()`, and the estimation of the uncertainty from the estimates compared to the observations.
 
 # Generate probabilistic nowcast
 
@@ -424,7 +424,7 @@ In this vignette we used the `baselinenowcast` low-level modular functions to co
 2. `apply_delay()` - Generating a point nowcast matrix
 3. `truncate_to_rows()` - Truncating triangles at iteratively earlier retrospective nowcast times
 4. `apply_reporting_structures()` - Constructing retrospective reporting triangles based on what would have been available as of the nowcast date.
-5. `fill_triangles()` - Generating point nowcasts from the retrospective reporting triangles
+5. `estimate_and_apply_delays()` - Generating point nowcasts from the retrospective reporting triangles
 6. `estimate_uncertainty()` - Estimating uncertainty from retrospective point nowcast matrices and eventual observations.
 7. `sample_nowcasts()` - Sampling from the observation model to generate probabilistic nowcasts
 

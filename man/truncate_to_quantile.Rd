@@ -2,19 +2,27 @@
 % Please edit documentation in R/truncate.R
 \name{truncate_to_quantile}
 \alias{truncate_to_quantile}
-\title{Truncate reporting_triangle to quantile-based maximum delay}
+\alias{truncate_to_quantile.reporting_triangle}
+\alias{truncate_to_quantile.reporting_triangle_df}
+\title{Truncate reporting data to quantile-based maximum delay}
 \usage{
-truncate_to_quantile(x, p = 0.99)
+truncate_to_quantile(x, p = 0.99, ...)
+
+\method{truncate_to_quantile}{reporting_triangle}(x, p = 0.99, ...)
+
+\method{truncate_to_quantile}{reporting_triangle_df}(x, p = 0.99, ...)
 }
 \arguments{
-\item{x}{A reporting_triangle object}
+\item{x}{A \link{reporting_triangle} or \link{reporting_triangle_df} object}
 
 \item{p}{Numeric value between 0 and 1 indicating the quantile cutoff.
 For example, p = 0.99 truncates to the delay at which 99\% of cases have
 been reported. Default is 0.99.}
+
+\item{...}{Additional arguments passed to methods.}
 }
 \value{
-A reporting_triangle object truncated to the maximum quantile delay,
+Object of the same class truncated to the maximum quantile delay,
 or the original object if no truncation is needed
 }
 \description{
@@ -69,5 +77,25 @@ Reporting triangle construction and validation
 \code{\link{tail.reporting_triangle}()},
 \code{\link{truncate_to_delay}()},
 \code{\link{validate_reporting_triangle}()}
+
+Other reporting_triangle_df: 
+\code{\link{[.reporting_triangle_df}()},
+\code{\link{as.data.frame.reporting_triangle_df}()},
+\code{\link{as_reporting_triangle_df}()},
+\code{\link{as_reporting_triangle_df.data.frame}()},
+\code{\link{as_reporting_triangle_df.reporting_triangle}()},
+\code{\link{as_reporting_triangles}()},
+\code{\link{assert_reporting_triangle_df}()},
+\code{\link{get_strata}()},
+\code{\link{head.reporting_triangle_df}()},
+\code{\link{is_reporting_triangle_df}()},
+\code{\link{new_reporting_triangle_df}()},
+\code{\link{print.reporting_triangle_df}()},
+\code{\link{reporting_triangle_df-class}},
+\code{\link{summary.reporting_triangle_df}()},
+\code{\link{tail.reporting_triangle_df}()},
+\code{\link{truncate_to_delay}()},
+\code{\link{validate_reporting_triangle_df}()}
 }
 \concept{reporting_triangle}
+\concept{reporting_triangle_df}

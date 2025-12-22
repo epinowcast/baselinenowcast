@@ -31,6 +31,8 @@ Other reporting_triangle_df:
 \code{\link{reporting_triangle_df-class}},
 \code{\link{summary.reporting_triangle_df}()},
 \code{\link{tail.reporting_triangle_df}()},
+\code{\link{truncate_to_delay}()},
+\code{\link{truncate_to_quantile}()},
 \code{\link{validate_reporting_triangle_df}()}
 }
 \concept{reporting_triangle_df}

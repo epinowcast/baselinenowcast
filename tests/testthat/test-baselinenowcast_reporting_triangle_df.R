@@ -6,9 +6,7 @@ rt_df <- as_reporting_triangle_df(data_as_of_df) |>
   truncate_to_delay(50)
 
 # Create multi-stratum data
-data_as_of_df_mod <- data_as_of_df
-data_as_of_df_mod$count <- data_as_of_df$count + 1
-multi_strata_df <- bind_rows(data_as_of_df, data_as_of_df)
+multi_strata_df <- rbind(data_as_of_df, data_as_of_df)
 multi_strata_df$age_group <- c(
   rep("0-17", times = nrow(data_as_of_df)),
   rep("18+", times = nrow(data_as_of_df))

@@ -77,7 +77,7 @@
 #' @examples
 #' # Convert reporting_triangle to plain matrix
 #' plain_mat <- as.matrix(example_downward_corr_rt)
-#' class(plain_mat)  # "matrix" "array"
+#' class(plain_mat) # "matrix" "array"
 as.matrix.reporting_triangle <- function(x, ...) {
   # Store row and column names
   rn <- rownames(x)

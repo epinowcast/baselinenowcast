@@ -35,8 +35,8 @@ number of columns. Default is 1 (standard triangular structure).}
 
 \item{delay_pmf}{Vector or list of vectors of delays assumed to be indexed
 starting at the first delay column in each of the matrices in
-\code{retro_reporting_triangles}. If a list, must of the same length as
-\code{retro_reporting_triangles}, with elements aligning. Default is \code{NULL}}
+\code{retro_reporting_triangles}. If a list, must be of the same length as
+\code{retro_reporting_triangles}, with elements aligning. Default is \code{NULL}.}
 
 \item{validate}{Logical. If TRUE (default), validates the object. Set to
 FALSE only when called from functions that already validated.}
@@ -60,7 +60,7 @@ This function chains the retrospective nowcasting workflow:
 \item \code{\link[=truncate_to_rows]{truncate_to_rows()}} - Create retrospective snapshots
 \item \code{\link[=apply_reporting_structures]{apply_reporting_structures()}} - Generate retrospective reporting
 triangles
-\item \code{\link[=fill_triangles]{fill_triangles()}} - Generate point nowcasts
+\item \code{\link[=estimate_and_apply_delays]{estimate_and_apply_delays()}} - Generate point nowcasts
 \item \code{\link[=estimate_uncertainty]{estimate_uncertainty()}} - Estimate uncertainty parameters
 }
 
@@ -87,6 +87,7 @@ uncertainty_params
 High-level workflow wrapper functions
 \code{\link{allocate_reference_times}()},
 \code{\link{estimate_and_apply_delay}()},
+\code{\link{estimate_and_apply_delays}()},
 \code{\link{estimate_and_apply_uncertainty}()}
 }
 \concept{workflow_wrappers}

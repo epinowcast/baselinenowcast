@@ -80,6 +80,12 @@ baselinenowcast <- function(data,
 #'   negative values. Custom preprocess functions must accept a `validate`
 #'   parameter (defaults to TRUE) to enable validation optimisation in internal
 #'   function chains.
+#' @param n_min_retro_nowcasts Integer indicating the minimum number of
+#'     reference times needed for uncertainty estimation.
+#'     If `output_type = "samples"`, the default is `2` so that there are
+#'     sufficient reference times for uncertainty estimation, otherwise if
+#'     `output_type = "point"`, the default is `0` because no additional
+#'     reference times are needed for uncertainty estimation.
 #' @param ... Additional arguments passed to
 #'    [estimate_uncertainty()]
 #'    and [sample_nowcast()].
@@ -112,6 +118,7 @@ baselinenowcast.reporting_triangle <- function(
     delay_pmf = NULL,
     uncertainty_params = NULL,
     preprocess = preprocess_negative_values,
+    n_min_retro_nowcasts = ifelse(output_type == "samples", 2, 0),
     validate = TRUE,
     ...) {
   assert_reporting_triangle(data, validate)

@@ -318,7 +318,8 @@ Figure 2: Visual description of the generation of a point nowcast matrix from a 
 <div class="section level4">
 <h4 id="generation-of-retrospective-point-nowcast-matrices">Generation of retrospective point nowcast matrices<a class="anchor" aria-label="anchor" href="#generation-of-retrospective-point-nowcast-matrices"></a>
 </h4>
-<p>For each of the <span class="math inline">\(M\)</span> vintage reporting triangles, i.e., <span class="math inline">\(s^* = t^*-1,, ..., t^*-M\)</span>, we apply the method described above to estimate a delay distribution and generate a point nowcast matrix using the function <code><a href="../reference/fill_triangles.html">fill_triangles()</a></code>. To indicate the data version on which it is based, its entries are denoted by:</p>
+<p>For each of the <span class="math inline">\(M\)</span> vintage reporting triangles, i.e., <span class="math inline">\(s^* = t^*-1,, ..., t^*-M\)</span>, we apply the method described above to estimate a delay distribution and generate a point nowcast matrix using the function <code><a href="../reference/estimate_and_apply_delays.html">estimate_and_apply_delays()</a></code>.
+To indicate the data version on which it is based, its entries are denoted by:</p>
 <p><span class="math display">\[
 \hat{x}_{t, d}(s^*)
 \]</span></p>

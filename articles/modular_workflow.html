@@ -290,7 +290,7 @@ Click to expand code to create the plot of the delay distribution
 This will generate a point estimate of complete the reporting matrix.
 In this case, we will be applying the delay to the same reporting triangle we used to generate the estimate, but this doesn’t always have to be the case.
 See the documentation for <code><a href="../reference/apply_delay.html">apply_delay()</a></code> for a full description of the input requirements.</p>
-<p>It is worth noting that we could also have estimated the delay and applied it in one single step by calling <code><a href="../reference/fill_triangle.html">fill_triangle()</a></code>.</p>
+<p>It is worth noting that we could also have estimated the delay and applied it in one single step by calling <code><a href="../reference/estimate_and_apply_delay.html">estimate_and_apply_delay()</a></code>.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">point_nowcast_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apply_delay.html">apply_delay</a></span><span class="op">(</span></span>
 <span>  reporting_triangle <span class="op">=</span> <span class="va">rep_tri</span>,</span>
@@ -361,9 +361,9 @@ We would like to generate probabilistic nowcasts.</p>
 We refer to these as retrospective reporting triangles.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">retro_rep_tri_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apply_reporting_structures.html">apply_reporting_structures</a></span><span class="op">(</span><span class="va">trunc_rep_tri_list</span><span class="op">)</span></span></code></pre></div>
-</details><p>Next we will pass this list of reporting triangles to the <code><a href="../reference/fill_triangles.html">fill_triangles()</a></code> and specify <code>n</code>, the number of reference times to be used to estimate the delay for each nowcast, which we will set as the <code>n_history_delay</code> previous specified.</p>
+</details><p>Next we will pass this list of reporting triangles to the <code><a href="../reference/estimate_and_apply_delays.html">estimate_and_apply_delays()</a></code> and specify <code>n</code>, the number of reference times to be used to estimate the delay for each nowcast, which we will set as the <code>n_history_delay</code> previous specified.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">retro_pt_nowcast_mat_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fill_triangles.html">fill_triangles</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">retro_pt_nowcast_mat_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_and_apply_delays.html">estimate_and_apply_delays</a></span><span class="op">(</span></span>
 <span>  retro_reporting_triangles <span class="op">=</span> <span class="va">retro_rep_tri_list</span>,</span>
 <span>  n <span class="op">=</span> <span class="va">n_history_delay</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -378,7 +378,7 @@ We refer to these as retrospective reporting triangles.</p>
 <span><span class="op">)</span></span></code></pre></div>
 </details><p>T
 his function uses a negative binomial observation model by default, and independently estimates the dispersion in the negative binomial at each forecast horizon.</p>
-<p>Note that the estimation of uncertainty from a reporting triangle can be done in a single step using the <code><a href="../reference/estimate_uncertainty_retro.html">estimate_uncertainty_retro()</a></code> function, which chains together the truncation of triangles, construction of retrospective reporting triangles, the generation of point nowcasts via filling the triangles, and the estimation of the uncertainty from the estimates compared to the observations.</p>
+<p>Note that the estimation of uncertainty from a reporting triangle can be done in a single step using the <code><a href="../reference/estimate_uncertainty_retro.html">estimate_uncertainty_retro()</a></code> function, which chains together the truncation of triangles, construction of retrospective reporting triangles, the generation of point nowcasts via <code><a href="../reference/estimate_and_apply_delays.html">estimate_and_apply_delays()</a></code>, and the estimation of the uncertainty from the estimates compared to the observations.</p>
 </div>
 <div class="section level2">
 <h2 id="generate-probabilistic-nowcast">Generate probabilistic nowcast<a class="anchor" aria-label="anchor" href="#generate-probabilistic-nowcast"></a>
@@ -511,7 +511,7 @@ Black lines show the “final” data from October 1, 2021.</p>
 2. <code><a href="../reference/apply_delay.html">apply_delay()</a></code> - Generating a point nowcast matrix
 3. <code><a href="../reference/truncate_to_rows.html">truncate_to_rows()</a></code> - Truncating triangles at iteratively earlier retrospective nowcast times
 4. <code><a href="../reference/apply_reporting_structures.html">apply_reporting_structures()</a></code> - Constructing retrospective reporting triangles based on what would have been available as of the nowcast date.
-5. <code><a href="../reference/fill_triangles.html">fill_triangles()</a></code> - Generating point nowcasts from the retrospective reporting triangles
+5. <code><a href="../reference/estimate_and_apply_delays.html">estimate_and_apply_delays()</a></code> - Generating point nowcasts from the retrospective reporting triangles
 6. <code><a href="../reference/estimate_uncertainty.html">estimate_uncertainty()</a></code> - Estimating uncertainty from retrospective point nowcast matrices and eventual observations.
 7. <code><a href="../reference/sample_nowcasts.html">sample_nowcasts()</a></code> - Sampling from the observation model to generate probabilistic nowcasts</p>
 <p>This modular workflow allows for maximum flexibility and the ability to interrogate intermediate steps.

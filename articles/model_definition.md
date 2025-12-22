@@ -235,7 +235,7 @@ For each of the \\M\\ vintage reporting triangles, i.e., \\s^\* =
 t^\*-1,, ..., t^\*-M\\, we apply the method described above to estimate
 a delay distribution and generate a point nowcast matrix using the
 function
-[`fill_triangles()`](https://baselinenowcast.epinowcast.org/reference/fill_triangles.md).
+[`estimate_and_apply_delays()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delays.md).
 To indicate the data version on which it is based, its entries are
 denoted by:
 

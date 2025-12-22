@@ -43,12 +43,6 @@ apply_delay(reporting_triangle, delay_pmf, validate = TRUE)
 the `rep_mat_to_nowcast` but with the missing values filled in as point
 estimates
 
-## See also
-
-Point nowcast generation functions
-[`fill_triangle()`](https://baselinenowcast.epinowcast.org/reference/fill_triangle.md),
-[`fill_triangles()`](https://baselinenowcast.epinowcast.org/reference/fill_triangles.md)
-
 ## Examples
 
 ``` r

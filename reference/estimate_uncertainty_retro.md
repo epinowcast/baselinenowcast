@@ -13,7 +13,7 @@ This function chains the retrospective nowcasting workflow:
 2.  [`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md) -
     Generate retrospective reporting triangles
 
-3.  [`fill_triangles()`](https://baselinenowcast.epinowcast.org/reference/fill_triangles.md) -
+3.  [`estimate_and_apply_delays()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delays.md) -
     Generate point nowcasts
 
 4.  [`estimate_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md) -
@@ -72,8 +72,9 @@ estimate_uncertainty_retro(
 
   Vector or list of vectors of delays assumed to be indexed starting at
   the first delay column in each of the matrices in
-  `retro_reporting_triangles`. If a list, must of the same length as
-  `retro_reporting_triangles`, with elements aligning. Default is `NULL`
+  `retro_reporting_triangles`. If a list, must be of the same length as
+  `retro_reporting_triangles`, with elements aligning. Default is
+  `NULL`.
 
 - validate:
 
@@ -97,6 +98,7 @@ Returns NULL if insufficient data is available for estimation.
 High-level workflow wrapper functions
 [`allocate_reference_times()`](https://baselinenowcast.epinowcast.org/reference/allocate_reference_times.md),
 [`estimate_and_apply_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delay.md),
+[`estimate_and_apply_delays()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delays.md),
 [`estimate_and_apply_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_uncertainty.md)
 
 ## Examples

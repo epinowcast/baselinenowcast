@@ -305,6 +305,8 @@ nowcasting workflows.
   estimation.
 - [`estimate_and_apply_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delay.md)
   : Estimate and apply delay from a reporting triangle
+- [`estimate_and_apply_delays()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delays.md)
+  : Estimate and apply delays to generate retrospective nowcasts
 - [`estimate_and_apply_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_uncertainty.md)
   : Estimate and apply uncertainty to a point nowcast matrix
 - [`estimate_uncertainty_retro()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty_retro.md)
@@ -350,10 +352,6 @@ to generate point nowcast estimates.
 
 - [`apply_delay()`](https://baselinenowcast.epinowcast.org/reference/apply_delay.md)
   : Apply the delay to generate a point nowcast
-- [`fill_triangle()`](https://baselinenowcast.epinowcast.org/reference/fill_triangle.md)
-  : Generate point nowcast
-- [`fill_triangles()`](https://baselinenowcast.epinowcast.org/reference/fill_triangles.md)
-  : Generate retrospective nowcasts
 
 ### Estimate observation error
 

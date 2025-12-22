@@ -16,8 +16,8 @@ To obtain estimates of uncertainty parameters, use
 For full control over individual steps (e.g., custom matrix preparation,
 alternative aggregation), use the low-level functions
 ([`truncate_to_rows()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_rows.md),
-[`apply_reporting_structure()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structure.md),
-[`fill_triangles()`](https://baselinenowcast.epinowcast.org/reference/fill_triangles.md),
+[`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md),
+[`estimate_and_apply_delays()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delays.md),
 [`estimate_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md))
 directly.
 
@@ -82,8 +82,9 @@ estimate_and_apply_uncertainty(
 
   Vector or list of vectors of delays assumed to be indexed starting at
   the first delay column in each of the matrices in
-  `retro_reporting_triangles`. If a list, must of the same length as
-  `retro_reporting_triangles`, with elements aligning. Default is `NULL`
+  `retro_reporting_triangles`. If a list, must be of the same length as
+  `retro_reporting_triangles`, with elements aligning. Default is
+  `NULL`.
 
 - uncertainty_model:
 
@@ -126,6 +127,7 @@ and probabilistic predictions at each reference time.
 High-level workflow wrapper functions
 [`allocate_reference_times()`](https://baselinenowcast.epinowcast.org/reference/allocate_reference_times.md),
 [`estimate_and_apply_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delay.md),
+[`estimate_and_apply_delays()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delays.md),
 [`estimate_uncertainty_retro()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty_retro.md)
 
 ## Examples

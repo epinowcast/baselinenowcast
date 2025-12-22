@@ -13,7 +13,7 @@ This function chains the retrospective nowcasting workflow:
 truncate_to_rows() - Create retrospective snapshots
 apply_reporting_structures() - Generate retrospective reporting
 triangles
-fill_triangles() - Generate point nowcasts
+estimate_and_apply_delays() - Generate point nowcasts
 estimate_uncertainty() - Estimate uncertainty parameters
 
 
@@ -28,7 +28,7 @@ This function chains the retrospective nowcasting workflow:
 truncate_to_rows() - Create retrospective snapshots
 apply_reporting_structures() - Generate retrospective reporting
 triangles
-fill_triangles() - Generate point nowcasts
+estimate_and_apply_delays() - Generate point nowcasts
 estimate_uncertainty() - Estimate uncertainty parameters
 
 
@@ -91,7 +91,7 @@ on retrospective nowcast performance.</p>
 <p>This function chains the retrospective nowcasting workflow:</p><ol><li><p><code><a href="truncate_to_rows.html">truncate_to_rows()</a></code> - Create retrospective snapshots</p></li>
 <li><p><code><a href="apply_reporting_structures.html">apply_reporting_structures()</a></code> - Generate retrospective reporting
 triangles</p></li>
-<li><p><code><a href="fill_triangles.html">fill_triangles()</a></code> - Generate point nowcasts</p></li>
+<li><p><code><a href="estimate_and_apply_delays.html">estimate_and_apply_delays()</a></code> - Generate point nowcasts</p></li>
 <li><p><code><a href="estimate_uncertainty.html">estimate_uncertainty()</a></code> - Estimate uncertainty parameters</p></li>
 </ol><p>For full probabilistic nowcasts (uncertainty estimation + sampling), use
 <code><a href="estimate_and_apply_uncertainty.html">estimate_and_apply_uncertainty()</a></code>.</p>
@@ -145,8 +145,8 @@ number of columns. Default is 1 (standard triangular structure).</p></dd>
 <dt id="arg-delay-pmf">delay_pmf<a class="anchor" aria-label="anchor" href="#arg-delay-pmf"></a></dt>
 <dd><p>Vector or list of vectors of delays assumed to be indexed
 starting at the first delay column in each of the matrices in
-<code>retro_reporting_triangles</code>. If a list, must of the same length as
-<code>retro_reporting_triangles</code>, with elements aligning. Default is <code>NULL</code></p></dd>
+<code>retro_reporting_triangles</code>. If a list, must be of the same length as
+<code>retro_reporting_triangles</code>, with elements aligning. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-validate">validate<a class="anchor" aria-label="anchor" href="#arg-validate"></a></dt>
@@ -170,6 +170,7 @@ horizon. Returns NULL if insufficient data is available for estimation.</p>
     <div class="dont-index"><p>High-level workflow wrapper functions
 <code><a href="allocate_reference_times.html">allocate_reference_times()</a></code>,
 <code><a href="estimate_and_apply_delay.html">estimate_and_apply_delay()</a></code>,
+<code><a href="estimate_and_apply_delays.html">estimate_and_apply_delays()</a></code>,
 <code><a href="estimate_and_apply_uncertainty.html">estimate_and_apply_uncertainty()</a></code></p></div>
     </div>
 

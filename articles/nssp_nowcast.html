@@ -438,10 +438,10 @@ Click to expand code to create plots of the delay distributions
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </details><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdf_delay</span></span></code></pre></div>
-<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-18-1.png" width="672"></p>
+<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-18-1.png" alt="" width="672"></p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">delay_t</span></span></code></pre></div>
-<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-18-2.png" width="672"></p>
+<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-18-2.png" alt="" width="672"></p>
 <p>Based on this figure, we can set the maximum delay to be 25 days as this is where 95% of the cases appear to have been reported.
 In general, we want to choose a maximum delay that will incorporate the vast majority of all observed reporting delays so that the estimates of the final counts account for all eventual cases reported.
 However, a longer maximum delay will mean that you will require more historical data for training the model, which must be considered if the amount of historical data is limited say in a novel outbreak situation.
@@ -482,7 +482,7 @@ Click to expand code to create the plot of the initially reported cases
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Date of ED visit"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_inits</span></span></code></pre></div>
-<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-23-1.png" width="672"></p>
+<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-23-1.png" alt="" width="672"></p>
 <p>We can see that without nowcasting, the cases appear to be sharply declining at the most recent dates.
 We can’t tell from this data alone if the true trend in cases is really declining rapidly or if it is plateauing or increasing, which is why we need to use nowcasting to make an estimate of the eventually reported cases at each visit date.</p>
 <p>From here, we have the case counts by reference and report date up until the nowcast date.
@@ -742,7 +742,7 @@ Click to expand code to create the plot of the probabilistic nowcast
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Comparison of cases of BAR as of the nowcast date, later observed,\n and generated as a probabilistic nowcast"</span><span class="op">)</span> <span class="co"># nolint</span></span></code></pre></div>
 </details><div class="sourceCode" id="cb90"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_prob_nowcast</span></span></code></pre></div>
-<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-35-1.png" width="672"></p>
+<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-35-1.png" alt="" width="672"></p>
 </div>
 </div>
 <div class="section level2" number="6">

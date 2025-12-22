@@ -54,50 +54,54 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.0.1000" id="baselinenowcast-0001000">baselinenowcast 0.0.0.1000<a class="anchor" aria-label="anchor" href="#baselinenowcast-0001000"></a></h2>
-<ul><li><p>Rename <code>truncate_triangle()</code> to <code><a href="../reference/truncate_to_row.html">truncate_to_row()</a></code> and <code>truncate_triangles()</code> to <code><a href="../reference/truncate_to_rows.html">truncate_to_rows()</a></code> to clarify that these functions truncate by row count and distinguish them from other truncation utilities such as <code><a href="../reference/truncate_to_quantile.html">truncate_to_quantile()</a></code> and <code><a href="../reference/truncate_to_delay.html">truncate_to_delay()</a></code> (<a href="https://github.com/epinowcast/baselinenowcast/issues/336" class="external-link">#336</a>).</p></li>
-<li><p>Add a vignette which walks through the low-level function interface on the same nowcasting problem as in the Getting Started vignette.</p></li>
-<li><p>Modify the Getting Started vignette to use the <code><a href="../reference/baselinenowcast.html">baselinenowcast()</a></code> wrapper function.</p></li>
-<li><p>Use the <code>as_reporting_triangle</code> and <code>baselinenowcast</code> workflow in the vignette which walks through a nowcasting example applied to syndromic surveillance data in the U.S.</p></li>
-<li><p>Add <code>preprocess</code> parameter to <code><a href="../reference/estimate_delay.html">estimate_delay()</a></code> to control handling of negative values in reporting triangles. Set to <code>preprocess_negative_values</code> by default to redistribute negative values to earlier delays, or set to <code>NULL</code> to preserve negative PMF entries. This allows the method to work with reporting corrections that result in net downward adjustments at specific delays (<a href="https://github.com/epinowcast/baselinenowcast/issues/278" class="external-link">#278</a>).</p></li>
-<li><p>Export <code><a href="../reference/preprocess_negative_values.html">preprocess_negative_values()</a></code> function to allow users to manually handle negative values in reporting triangles by redistributing them to earlier delays (<a href="https://github.com/epinowcast/baselinenowcast/issues/278" class="external-link">#278</a>).</p></li>
-<li><p>Improve PMF validation message to be more informative when the delay PMF does not sum to approximately 1. The message now shows the actual sum and clarifies that this may be expected when working with downward corrections or incomplete data (<a href="https://github.com/epinowcast/baselinenowcast/issues/148" class="external-link">#148</a>, <a href="https://github.com/epinowcast/baselinenowcast/issues/278" class="external-link">#278</a>).</p></li>
-<li><p>Add <code>example_downward_corr_mat</code> data demonstrating a scenario with systematic downward corrections at a specific delay, producing a PMF with negative entries when estimated with <code>preprocess = NULL</code> (<a href="https://github.com/epinowcast/baselinenowcast/issues/278" class="external-link">#278</a>).</p></li>
-<li><p>Add a <code><a href="../reference/baselinenowcast.data.frame.html">baselinenowcast.data.frame()</a></code> method which ingests a data.frame with one or more strata to nowcast and returns a <code>baselinenowcast_df</code> object.</p></li>
-<li><p>Add converters between <code>reporting_triangle</code> and ChainLadder triangle formats via <code><a href="../reference/as_ChainLadder_triangle.html">as_ChainLadder_triangle()</a></code> and <code><a href="../reference/as_reporting_triangle.triangle.html">as_reporting_triangle.triangle()</a></code>, enabling use of ChainLadder’s mature claims reserving methods alongside baselinenowcast’s nowcasting functionality.</p></li>
-<li><p>Add a <code><a href="../reference/baselinenowcast.reporting_triangle.html">baselinenowcast.reporting_triangle()</a></code> method which ingests a <code>reporting_triangle</code> object and produces a <code>baselinenowcast_df</code> object which is a data.frame with nowcasts and associated metadata.</p></li>
-<li><p>Include the pre-print as well as the package in the citation.</p></li>
-<li><p>Add a <code><a href="../reference/as_reporting_triangle.html">as_reporting_triangle()</a></code> S3 method which ingests a data.frame or matrix and returns a <code>reporting_triangle</code> object, which will be used as an input to the eventual <code><a href="../reference/baselinenowcast.html">baselinenowcast()</a></code> function.</p></li>
-<li><p>Add a vignette which demonstrates how to pre-process for nowcasting syndromic surveillance system data using the U.S. National Syndromic Surveillance Program (NSSP) data as a case study, and then use <code>baselinenowcast</code> to nowcast cases of a specific syndromic surveillance definition.</p></li>
-<li><p>Add intermediate-level grouping functions to generate a point nowcast from a reporting triangle and to take a point nowcast and estimate and apply uncertainty.</p></li>
-<li><p>Refactor <code>estimate_uncertainty</code> to take in an error model function, an aggregator function for aggregating across reference times, and an aggregator function for aggregating across delays.</p></li>
-<li><p>Fix internal checks that ensure there is sufficient data for the specified target choice, using the number of NA rows rather than the number of columns as a proxy for the number of horizons.</p></li>
-<li><p>Replace argument names with more complete versions where possible.</p></li>
-<li><p>Replace most function names with action-oriented function naming.</p></li>
-<li><p>Add new logo.</p></li>
-<li><p>Add a check to ensure that there are sufficient non-zero values in the reporting triangle.</p></li>
-<li><p>Add a check to ensure that sufficient <code>n</code> are specified for the delay estimate.</p></li>
-<li><p>Change the requirement so that the number of rows used for delay estimation need not be greater than or equal to the number of columns, but instead that at least one row contains a full set of observations.</p></li>
-<li><p>Bug fix to change the requirement so that the sum of the elements in the <code>structure</code> vector must not be greater than the number of columns.</p></li>
-<li><p>Add support for passing in a restricted set of functions to the <code>estimate_dispersion()</code> function to transform the “target” dataset across reference dates.</p></li>
-<li><p>Implements a safe iterator in the step where retrospective point nowcasts are generated from a list of retrospective reporting triangles, ensuring that the iterations continue even if not all retrospective point nowcasts can be generated.</p></li>
-<li><p>Modify vignette to be consistent with the decided upon defaults for the number of reference times used for delay estimation and uncertainty.</p></li>
-<li><p>Replace function named <code>replace_lower_right_with_NA()</code> with <code>generate_triangle()</code>.</p></li>
-<li><p>Removes requirement that all elements of the reporting triangle are integers.</p></li>
-<li><p>Modify the method used to estimate dispersion. Instead of estimating dispersion on individual elements of the nowcast matrix, we now estimate dispersion on the predicted nowcasts summed across reporting dates as a function of forecast horizon.</p></li>
-<li><p>Standardises naming of objects that are matrices vs vectors and objects that contain observations, point estimates, and probabilistic draws.</p></li>
-<li><p>Modifies functions that estimate a delay and generate a point nowcast to ensure that they throw an error/warning if the first element of the delay PMF is 0.</p></li>
-<li><p>Adjusts function to estimate delay distribution to be able to handle complete and partially complete reporting triangles.</p></li>
-<li><p>Add function to convert a list of expected observed reporting squares to a long tidy dataframe indexed by reference time, delay, and a sample index.</p></li>
-<li><p>Implement zero-handling in the bottom left of the reporting triangle when applying the delay to generate a point nowcast.</p></li>
-<li><p>Add function to generate a list of expected observed reporting squares.</p></li>
-<li><p>Add function to generate an expected observed reporting square from a point nowcast and a vector of dispersion parameters.</p></li>
-<li><p>Add function to estimate dispersion parameters from a match list of nowcasts and observed reporting triangles.</p></li>
-<li><p>Add functions to generate retrospective nowcasts from a single reporting triangle.</p></li>
-<li><p>Refactor uncertainty estimation to use a user-facing function to generate retrospective reporting triangles.</p></li>
-<li><p>Methods write-up as a separate vignette.</p></li>
-<li><p>Introduced function to estimate the uncertainty from a triangle to be nowcasted and a delay distribution.</p></li>
-<li><p>Introduced functions to get the delay estimate and apply the delay, and used these in the Getting Started vignette.</p></li>
-<li><p>Added package skeleton.</p></li>
+<ul><li>
+<code>fill_triangle()</code> has been removed. Use <code><a href="../reference/estimate_and_apply_delay.html">estimate_and_apply_delay()</a></code> instead, which now supports optional delay estimation via the <code>delay_pmf</code> parameter (<a href="https://github.com/epinowcast/baselinenowcast/issues/334" class="external-link">#334</a>).</li>
+<li>
+<code>fill_triangles()</code> has been removed. Use <code><a href="../reference/estimate_and_apply_delays.html">estimate_and_apply_delays()</a></code> instead (<a href="https://github.com/epinowcast/baselinenowcast/issues/334" class="external-link">#334</a>).</li>
+<li>Rename <code>truncate_triangle()</code> to <code><a href="../reference/truncate_to_row.html">truncate_to_row()</a></code> and <code>truncate_triangles()</code> to <code><a href="../reference/truncate_to_rows.html">truncate_to_rows()</a></code> to clarify that these functions truncate by row count and distinguish them from other truncation utilities such as <code><a href="../reference/truncate_to_quantile.html">truncate_to_quantile()</a></code> and <code><a href="../reference/truncate_to_delay.html">truncate_to_delay()</a></code> (<a href="https://github.com/epinowcast/baselinenowcast/issues/336" class="external-link">#336</a>).</li>
+<li>Add a vignette which walks through the low-level function interface on the same nowcasting problem as in the Getting Started vignette.</li>
+<li>Modify the Getting Started vignette to use the <code><a href="../reference/baselinenowcast.html">baselinenowcast()</a></code> wrapper function.</li>
+<li>Use the <code>as_reporting_triangle</code> and <code>baselinenowcast</code> workflow in the vignette which walks through a nowcasting example applied to syndromic surveillance data in the U.S.</li>
+<li>Add <code>preprocess</code> parameter to <code><a href="../reference/estimate_delay.html">estimate_delay()</a></code> to control handling of negative values in reporting triangles. Set to <code>preprocess_negative_values</code> by default to redistribute negative values to earlier delays, or set to <code>NULL</code> to preserve negative PMF entries. This allows the method to work with reporting corrections that result in net downward adjustments at specific delays (<a href="https://github.com/epinowcast/baselinenowcast/issues/278" class="external-link">#278</a>).</li>
+<li>Export <code><a href="../reference/preprocess_negative_values.html">preprocess_negative_values()</a></code> function to allow users to manually handle negative values in reporting triangles by redistributing them to earlier delays (<a href="https://github.com/epinowcast/baselinenowcast/issues/278" class="external-link">#278</a>).</li>
+<li>Improve PMF validation message to be more informative when the delay PMF does not sum to approximately 1. The message now shows the actual sum and clarifies that this may be expected when working with downward corrections or incomplete data (<a href="https://github.com/epinowcast/baselinenowcast/issues/148" class="external-link">#148</a>, <a href="https://github.com/epinowcast/baselinenowcast/issues/278" class="external-link">#278</a>).</li>
+<li>Add <code>example_downward_corr_mat</code> data demonstrating a scenario with systematic downward corrections at a specific delay, producing a PMF with negative entries when estimated with <code>preprocess = NULL</code> (<a href="https://github.com/epinowcast/baselinenowcast/issues/278" class="external-link">#278</a>).</li>
+<li>Add a <code><a href="../reference/baselinenowcast.data.frame.html">baselinenowcast.data.frame()</a></code> method which ingests a data.frame with one or more strata to nowcast and returns a <code>baselinenowcast_df</code> object.</li>
+<li>Add converters between <code>reporting_triangle</code> and ChainLadder triangle formats via <code><a href="../reference/as_ChainLadder_triangle.html">as_ChainLadder_triangle()</a></code> and <code><a href="../reference/as_reporting_triangle.triangle.html">as_reporting_triangle.triangle()</a></code>, enabling use of ChainLadder’s mature claims reserving methods alongside baselinenowcast’s nowcasting functionality.</li>
+<li>Add a <code><a href="../reference/baselinenowcast.reporting_triangle.html">baselinenowcast.reporting_triangle()</a></code> method which ingests a <code>reporting_triangle</code> object and produces a <code>baselinenowcast_df</code> object which is a data.frame with nowcasts and associated metadata.</li>
+<li>Include the pre-print as well as the package in the citation.</li>
+<li>Add a <code><a href="../reference/as_reporting_triangle.html">as_reporting_triangle()</a></code> S3 method which ingests a data.frame or matrix and returns a <code>reporting_triangle</code> object, which will be used as an input to the eventual <code><a href="../reference/baselinenowcast.html">baselinenowcast()</a></code> function.</li>
+<li>Add a vignette which demonstrates how to pre-process for nowcasting syndromic surveillance system data using the U.S. National Syndromic Surveillance Program (NSSP) data as a case study, and then use <code>baselinenowcast</code> to nowcast cases of a specific syndromic surveillance definition.</li>
+<li>Add intermediate-level grouping functions to generate a point nowcast from a reporting triangle and to take a point nowcast and estimate and apply uncertainty.</li>
+<li>Refactor <code>estimate_uncertainty</code> to take in an error model function, an aggregator function for aggregating across reference times, and an aggregator function for aggregating across delays.</li>
+<li>Fix internal checks that ensure there is sufficient data for the specified target choice, using the number of NA rows rather than the number of columns as a proxy for the number of horizons.</li>
+<li>Replace argument names with more complete versions where possible.</li>
+<li>Replace most function names with action-oriented function naming.</li>
+<li>Add new logo.</li>
+<li>Add a check to ensure that there are sufficient non-zero values in the reporting triangle.</li>
+<li>Add a check to ensure that sufficient <code>n</code> are specified for the delay estimate.</li>
+<li>Change the requirement so that the number of rows used for delay estimation need not be greater than or equal to the number of columns, but instead that at least one row contains a full set of observations.</li>
+<li>Bug fix to change the requirement so that the sum of the elements in the <code>structure</code> vector must not be greater than the number of columns.</li>
+<li>Add support for passing in a restricted set of functions to the <code>estimate_dispersion()</code> function to transform the “target” dataset across reference dates.</li>
+<li>Implements a safe iterator in the step where retrospective point nowcasts are generated from a list of retrospective reporting triangles, ensuring that the iterations continue even if not all retrospective point nowcasts can be generated.</li>
+<li>Modify vignette to be consistent with the decided upon defaults for the number of reference times used for delay estimation and uncertainty.</li>
+<li>Replace function named <code>replace_lower_right_with_NA()</code> with <code>generate_triangle()</code>.</li>
+<li>Removes requirement that all elements of the reporting triangle are integers.</li>
+<li>Modify the method used to estimate dispersion. Instead of estimating dispersion on individual elements of the nowcast matrix, we now estimate dispersion on the predicted nowcasts summed across reporting dates as a function of forecast horizon.</li>
+<li>Standardises naming of objects that are matrices vs vectors and objects that contain observations, point estimates, and probabilistic draws.</li>
+<li>Modifies functions that estimate a delay and generate a point nowcast to ensure that they throw an error/warning if the first element of the delay PMF is 0.</li>
+<li>Adjusts function to estimate delay distribution to be able to handle complete and partially complete reporting triangles.</li>
+<li>Add function to convert a list of expected observed reporting squares to a long tidy dataframe indexed by reference time, delay, and a sample index.</li>
+<li>Implement zero-handling in the bottom left of the reporting triangle when applying the delay to generate a point nowcast.</li>
+<li>Add function to generate a list of expected observed reporting squares.</li>
+<li>Add function to generate an expected observed reporting square from a point nowcast and a vector of dispersion parameters.</li>
+<li>Add function to estimate dispersion parameters from a match list of nowcasts and observed reporting triangles.</li>
+<li>Add functions to generate retrospective nowcasts from a single reporting triangle.</li>
+<li>Refactor uncertainty estimation to use a user-facing function to generate retrospective reporting triangles.</li>
+<li>Methods write-up as a separate vignette.</li>
+<li>Introduced function to estimate the uncertainty from a triangle to be nowcasted and a delay distribution.</li>
+<li>Introduced functions to get the delay estimate and apply the delay, and used these in the Getting Started vignette.</li>
+<li>Added package skeleton.</li>
 </ul></div>
   </main></div>
 

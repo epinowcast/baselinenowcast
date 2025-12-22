@@ -368,7 +368,7 @@ for a full description of the input requirements.
 
 It is worth noting that we could also have estimated the delay and
 applied it in one single step by calling
-[`fill_triangle()`](https://baselinenowcast.epinowcast.org/reference/fill_triangle.md).
+[`estimate_and_apply_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delay.md).
 
 Code
 
@@ -481,7 +481,7 @@ retro_rep_tri_list <- apply_reporting_structures(trunc_rep_tri_list)
 ```
 
 Next we will pass this list of reporting triangles to the
-[`fill_triangles()`](https://baselinenowcast.epinowcast.org/reference/fill_triangles.md)
+[`estimate_and_apply_delays()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delays.md)
 and specify `n`, the number of reference times to be used to estimate
 the delay for each nowcast, which we will set as the `n_history_delay`
 previous specified.
@@ -489,7 +489,7 @@ previous specified.
 Code
 
 ``` r
-retro_pt_nowcast_mat_list <- fill_triangles(
+retro_pt_nowcast_mat_list <- estimate_and_apply_delays(
   retro_reporting_triangles = retro_rep_tri_list,
   n = n_history_delay
 )
@@ -524,8 +524,10 @@ done in a single step using the
 [`estimate_uncertainty_retro()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty_retro.md)
 function, which chains together the truncation of triangles,
 construction of retrospective reporting triangles, the generation of
-point nowcasts via filling the triangles, and the estimation of the
-uncertainty from the estimates compared to the observations.
+point nowcasts via
+[`estimate_and_apply_delays()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delays.md),
+and the estimation of the uncertainty from the estimates compared to the
+observations.
 
 ## Generate probabilistic nowcast
 
@@ -703,7 +705,7 @@ Truncating triangles at iteratively earlier retrospective nowcast times
 [`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md) -
 Constructing retrospective reporting triangles based on what would have
 been available as of the nowcast date. 5.
-[`fill_triangles()`](https://baselinenowcast.epinowcast.org/reference/fill_triangles.md) -
+[`estimate_and_apply_delays()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delays.md) -
 Generating point nowcasts from the retrospective reporting triangles 6.
 [`estimate_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md) -
 Estimating uncertainty from retrospective point nowcast matrices and

@@ -41,5 +41,5 @@ sampled_preds <- sample_nb(pred,
   uncertainty_params = c(50, 100)
 )
 sampled_preds
-#> [1] 3 2
+#> [1] 1 1
 ```

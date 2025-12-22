@@ -91,7 +91,7 @@ for more details on the required input formats to generate the object.</p>
 <li><p>Standard matrix operations: <code><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums()</a></code>, <code><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums()</a></code></p></li>
 </ul><p><strong>Subsetting and modification:</strong></p><ul><li><p><code>[</code> and <code>[&lt;-</code>: Extract or assign values with automatic validation</p></li>
 <li><p>Subsetting preserves class and attributes when result is a matrix</p></li>
-</ul><p><strong>Package functions:</strong></p><ul><li><p><code><a href="fill_triangle.html">fill_triangle()</a></code>: Fill missing values with zeros</p></li>
+</ul><p><strong>Package functions:</strong></p><ul><li><p><code><a href="estimate_and_apply_delay.html">estimate_and_apply_delay()</a></code>: Estimate delay and generate point nowcast</p></li>
 <li><p><code><a href="estimate_delay.html">estimate_delay()</a></code>: Extract delay distribution from triangle</p></li>
 <li><p><code><a href="apply_delay.html">apply_delay()</a></code>: Apply delay distribution for nowcasting</p></li>
 <li><p><code><a href="truncate_to_row.html">truncate_to_row()</a></code>: Remove most recent rows</p></li>
@@ -137,7 +137,7 @@ for more details on the required input formats to generate the object.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using max_delay = 154 from data</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use with low-level functions</span></span></span>
-<span class="r-in"><span><span class="va">filled</span> <span class="op">&lt;-</span> <span class="fu"><a href="fill_triangle.html">fill_triangle</a></span><span class="op">(</span><span class="va">rep_tri</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">filled</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_and_apply_delay.html">estimate_and_apply_delay</a></span><span class="op">(</span><span class="va">rep_tri</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">delay_pmf</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_delay.html">estimate_delay</a></span><span class="op">(</span><span class="va">rep_tri</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="apply_delay.html">apply_delay</a></span><span class="op">(</span><span class="va">rep_tri</span>, <span class="va">delay_pmf</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>

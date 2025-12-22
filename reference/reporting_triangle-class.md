@@ -63,8 +63,8 @@ Reporting triangle objects provide:
 
 **Package functions:**
 
-- [`fill_triangle()`](https://baselinenowcast.epinowcast.org/reference/fill_triangle.md):
-  Fill missing values with zeros
+- [`estimate_and_apply_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delay.md):
+  Estimate delay and generate point nowcast
 
 - [`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md):
   Extract delay distribution from triangle
@@ -118,7 +118,7 @@ rep_tri <- as_reporting_triangle(data = data)
 #> ℹ Using max_delay = 154 from data
 
 # Use with low-level functions
-filled <- fill_triangle(rep_tri)
+filled <- estimate_and_apply_delay(rep_tri)
 delay_pmf <- estimate_delay(rep_tri)
 nowcast <- apply_delay(rep_tri, delay_pmf)
 

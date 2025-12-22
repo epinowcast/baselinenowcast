@@ -82,9 +82,6 @@ as_reporting_triangle_df.data.frame <- function(
   # Rename columns to standard names
   data <- .rename_cols(data, old_names = c(reference_date, report_date, count))
 
-  # Validate strata columns
-  .validate_strata_cols(by, data)
-
   # Select only required columns
   if (!is.null(by)) {
     cols_to_keep <- c("reference_date", "report_date", "count", by)
@@ -93,9 +90,6 @@ as_reporting_triangle_df.data.frame <- function(
   }
 
   data <- data[, cols_to_keep, drop = FALSE]
-
-  # Validate the data.frame
-  .validate_rep_tri_df(data, delays_unit)
 
   # Convert dates if needed
   assert_date(data$reference_date)

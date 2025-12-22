@@ -293,3 +293,13 @@ test_that("baselinenowcast can handle custom preprocessing", {
   expect_true(all(result$pred_count > result_orig$pred_count))
   expect_equal(result$pred_count, result_orig$pred_count * 2, tol = 0.01)
 })
+
+test_that("baselinenowcast works on example reporting triangle", {
+  result <- expect_no_error(
+    suppressWarnings(
+      baselinenowcast(example_reporting_triangle)
+    )
+  )
+  expect_false(anyNA(result$pred_count))
+  expect_gt(nrow(result), 0)
+})

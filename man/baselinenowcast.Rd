@@ -65,7 +65,9 @@ input requirements.
 Main nowcasting interface functions
 \code{\link{assert_baselinenowcast_df}()},
 \code{\link{baselinenowcast.data.frame}()},
+\code{\link{baselinenowcast.default}()},
 \code{\link{baselinenowcast.reporting_triangle}()},
+\code{\link{baselinenowcast.reporting_triangle_df}()},
 \code{\link{baselinenowcast_df-class}},
 \code{\link{new_baselinenowcast_df}()}
 }

@@ -14,7 +14,12 @@
 
 # Partial Functions --------------------------------------------------------
 
-#' baselinenowcast with test defaults
+#' baselinenowcast with test defaults (DEPRECATED - uses data.frame method)
+#'
+#' @description
+#' **DEPRECATED:** This function uses the deprecated baselinenowcast.data.frame()
+#' method. Use baselinenowcast_rt_df_test() instead, which uses the recommended
+#' reporting_triangle_df workflow.
 #'
 #' Wrapper around baselinenowcast with sensible defaults for testing.
 #' Reduces boilerplate in tests while allowing easy override of parameters.
@@ -22,18 +27,63 @@
 #' @param data Input data
 #' @param max_delay Maximum delay (default: 40)
 #' @param draws Number of draws (default: 100)
-#' @param ... Additional arguments passed to baselinenowcast
+#' @param ... Additional arguments passed to baselinenowcast (including
+#'   strata_cols for the deprecated method)
 #' @return baselinenowcast output
 #' @keywords internal
 baselinenowcast_test <- function(data, max_delay = 40, draws = 100, ...) {
   # nolint start: object_usage_linter
-  return(baselinenowcast(
-    data = data,
-    max_delay = max_delay,
-    draws = draws,
-    ...
-  ))
+  # Suppress only deprecation warnings, not other warnings
+  withCallingHandlers(
+    {
+      return(baselinenowcast(
+        data = data,
+        max_delay = max_delay,
+        draws = draws,
+        ...
+      ))
+    },
+    warning = function(w) {
+      if (grepl("baselinenowcast\\.data\\.frame\\(\\) is deprecated", w$message)) {
+        invokeRestart("muffleWarning")
+      }
+    }
+  )
   # nolint end
+}
+
+#' baselinenowcast with test defaults using reporting_triangle_df
+#'
+#' Wrapper around as_reporting_triangle_df() |> baselinenowcast() with
+#' sensible defaults for testing. This is the recommended replacement for
+#' baselinenowcast_test().
+#'
+#' @param data Input data.frame
+#' @param by Strata column names (replaces strata_cols from deprecated method)
+#' @param max_delay Maximum delay to truncate to (default: 40). Set to NULL
+#'   to skip truncation.
+#' @param draws Number of draws (default: 100)
+#' @param delays_unit Delays unit (default: "days")
+#' @param ... Additional arguments passed to baselinenowcast (e.g.,
+#'   strata_sharing, scale_factor)
+#' @return baselinenowcast output
+#' @keywords internal
+baselinenowcast_rt_df_test <- function(data, by = NULL, max_delay = 40,
+                                       draws = 100, delays_unit = "days", ...) {
+  # Create reporting_triangle_df
+  rt_df <- as_reporting_triangle_df(
+    data,
+    by = by,
+    delays_unit = delays_unit
+  )
+
+  # Truncate if max_delay specified
+  if (!is.null(max_delay)) {
+    rt_df <- truncate_to_delay(rt_df, max_delay = max_delay)
+  }
+
+  # Run baselinenowcast
+  return(baselinenowcast(rt_df, draws = draws, ...))
 }
 
 # Data Manipulation Helpers ------------------------------------------------

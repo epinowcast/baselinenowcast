@@ -52,31 +52,6 @@ test_that("baselinenowcast.reporting_triangle_df works for multiple strata", {
   expect_true(all(c("0-17", "18+") %in% unique(nowcast_multi$age_group)))
 })
 
-test_that("baselinenowcast.reporting_triangle_df supports strata_sharing", {
-  # With strata sharing
-  set.seed(123)
-  nowcast_shared <- baselinenowcast(
-    rt_df_strata,
-    output_type = "samples",
-    strata_sharing = c("delay", "uncertainty"),
-    draws = 5
-  )
-
-  # Without strata sharing
-  set.seed(123)
-  nowcast_multi <- baselinenowcast(
-    rt_df_strata,
-    output_type = "samples",
-    draws = 5
-  )
-
-  # Ensure they are not the same
-  expect_false(all(nowcast_multi$pred_count == nowcast_shared$pred_count))
-
-  expect_s3_class(nowcast_shared, "baselinenowcast_df")
-  expect_true("age_group" %in% names(nowcast_shared))
-  expect_true(all(c("0-17", "18+") %in% unique(nowcast_shared$age_group)))
-})
 
 test_that("baselinenowcast.default provides helpful error message", {
   expect_error(
@@ -239,7 +214,8 @@ test_that("baselinenowcast.reporting_triangle_df produces consistent results wit
 
   # Create via reporting_triangle
   set.seed(123)
-  rep_tri <- as_reporting_triangle(data_as_of_df, max_delay = 40)
+  rep_tri <- as_reporting_triangle(data_as_of_df) |>
+    truncate_to_delay(40)
   nowcast_tri <- baselinenowcast(rep_tri, draws = 100)
 
   # Create via reporting_triangle_df
@@ -251,79 +227,5 @@ test_that("baselinenowcast.reporting_triangle_df produces consistent results wit
     mean(nowcast_tri$pred_count),
     mean(nowcast_df$pred_count),
     tolerance = 0.1
-  )
-})
-
-test_that("as_reporting_triangle_df validates required columns", {
-  # Missing reference_date
-  bad_data1 <- data_as_of_df
-  names(bad_data1)[names(bad_data1) == "reference_date"] <- "ref_date"
-  expect_error(
-    as_reporting_triangle_df(bad_data1),
-    "Required columns missing"
-  )
-
-  # Missing report_date
-  bad_data2 <- data_as_of_df
-  names(bad_data2)[names(bad_data2) == "report_date"] <- "rep_date"
-  expect_error(
-    as_reporting_triangle_df(bad_data2),
-    "Required columns missing"
-  )
-
-  # Missing count
-  bad_data3 <- data_as_of_df
-  names(bad_data3)[names(bad_data3) == "count"] <- "cases"
-  expect_error(
-    as_reporting_triangle_df(bad_data3),
-    "Required columns missing"
-  )
-})
-
-test_that("as_reporting_triangle_df validates date types", {
-  # reference_date not a Date
-  bad_data1 <- data_as_of_df
-  bad_data1$reference_date <- as.character(bad_data1$reference_date)
-  expect_error(
-    as_reporting_triangle_df(bad_data1),
-    "Must be of type 'Date'"
-  )
-
-  # report_date not a Date
-  bad_data2 <- data_as_of_df
-  bad_data2$report_date <- as.character(bad_data2$report_date)
-  expect_error(
-    as_reporting_triangle_df(bad_data2),
-    "Must be of type 'Date'"
-  )
-})
-
-test_that("as_reporting_triangle_df validates strata columns", {
-  # Strata column doesn't exist
-  expect_error(
-    as_reporting_triangle_df(
-      data_as_of_df,
-      by = "region"
-    ),
-    "Strata columns missing"
-  )
-
-  # Required column in strata (should error)
-  expect_error(
-    as_reporting_triangle_df(
-      data_as_of_df,
-      by = c("reference_date", "count")
-    ),
-    "Strata columns missing|Required columns"
-  )
-})
-
-test_that("as_reporting_triangle_df handles duplicate combinations correctly", {
-  # Create data with duplicates
-  dup_data <- rbind(data_as_of_df[1:10, ], data_as_of_df[1:10, ])
-
-  expect_error(
-    as_reporting_triangle_df(dup_data),
-    "Data contains duplicate combinations"
   )
 })

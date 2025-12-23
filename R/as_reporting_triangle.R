@@ -75,6 +75,8 @@ as_reporting_triangle.data.frame <- function(
   .validate_rep_tri_df(data, delays_unit)
   assert_date(data$reference_date)
   assert_date(data$report_date)
+  .validate_one_rep_tri_df(data, delays_unit)
+
 
   # Compute delay using unit-aware function
   data$delay <- get_delays_from_dates(

@@ -78,9 +78,14 @@ as_reporting_triangle_df.data.frame <- function(
   if (!is.null(by)) {
     assert_character(by, min.len = 1)
   }
+  .validate_rep_tri_df(data, delays_unit)
+
 
   # Rename columns to standard names
   data <- .rename_cols(data, old_names = c(reference_date, report_date, count))
+  if (any(c("reference_date", "report_date", "count") %in% by)) {
+    cli_abort("`by` columns cannot be among the required columns.")
+  }
 
   # Select only required columns
   if (!is.null(by)) {

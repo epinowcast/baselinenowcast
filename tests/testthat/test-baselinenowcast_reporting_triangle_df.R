@@ -1,21 +1,39 @@
-# Setup test data - use enough data for nowcasting
-data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+# Setup test data
 
-# Single stratum reporting_triangle_df
-rt_df <- as_reporting_triangle_df(data_as_of_df) |>
-  truncate_to_delay(50)
-
-# Create multi-stratum data
-multi_strata_df <- rbind(data_as_of_df, data_as_of_df)
-multi_strata_df$age_group <- c(
-  rep("0-17", times = nrow(data_as_of_df)),
-  rep("18+", times = nrow(data_as_of_df))
+covid_data_single_strata_wday <- covid_data[covid_data$age_group == "00+", ]
+covid_data_age_groups_wday <- covid_data[covid_data$age_group != "00+", ]
+expected_cols <- c("pred_count", "draw", "reference_date", "output_type")
+expected_cols_ag <- c(
+  "pred_count", "draw", "reference_date", "output_type", "age_group"
+)
+expected_cols_ag_loc <- c(
+  "pred_count", "draw", "reference_date", "output_type",
+  "location", "age_group"
+)
+expected_cols_wday <- c(
+  "pred_count", "draw", "reference_date", "output_type",
+  "weekday_ref_date"
 )
 
-rt_df_strata <- as_reporting_triangle_df(
-  multi_strata_df,
+# Single stratum reporting_triangle_df
+rt_df <- as_reporting_triangle_df(covid_data_single_strata_wday) |>
+  truncate_to_delay(40)
+
+rt_df_ag <- as_reporting_triangle_df(
+  covid_data_age_groups_wday,
   by = "age_group"
-) |> truncate_to_delay(50)
+) |> truncate_to_delay(40)
+
+rt_df_ag_loc <- as_reporting_triangle_df(
+  covid_data_age_groups_wday,
+  by = c("age_group", "location")
+) |> truncate_to_delay(40)
+
+rt_df_wday <- as_reporting_triangle_df(
+  covid_data_single_strata_wday,
+  by = c("weekday_ref_date")
+) |> truncate_to_delay(40)
+
 
 test_that("baselinenowcast.reporting_triangle_df works for single stratum", {
   # Point estimate - use all available data
@@ -42,14 +60,28 @@ test_that("baselinenowcast.reporting_triangle_df works for single stratum", {
 
 test_that("baselinenowcast.reporting_triangle_df works for multiple strata", {
   nowcast_multi <- baselinenowcast(
-    rt_df_strata,
+    rt_df_ag,
+    output_type = "samples",
+    draws = 5
+  )
+
+  nowcast_multi2 <- baselinenowcast(
+    rt_df_ag_loc,
     output_type = "samples",
     draws = 5
   )
 
   expect_s3_class(nowcast_multi, "baselinenowcast_df")
   expect_true("age_group" %in% names(nowcast_multi))
-  expect_true(all(c("0-17", "18+") %in% unique(nowcast_multi$age_group)))
+  expect_true(all(c("00-04", "60-79", "80+") %in%
+    unique(nowcast_multi$age_group)))
+  expect_s3_class(nowcast_multi2, "baselinenowcast_df")
+  expect_true("age_group" %in% names(nowcast_multi2))
+  expect_true("location" %in% names(nowcast_multi2))
+  expect_true(all(c("00-04", "60-79", "80+") %in%
+    unique(nowcast_multi2$age_group)))
+  expect_true(all(c("DE") %in%
+    unique(nowcast_multi2$location)))
 })
 
 
@@ -68,7 +100,7 @@ test_that("baselinenowcast.default provides helpful error message", {
 test_that("baselinenowcast.data.frame shows deprecation warning", {
   expect_warning(
     baselinenowcast(
-      data_as_of_df,
+      covid_data_single_strata_wday,
       output_type = "point"
     ),
     "baselinenowcast.data.frame\\(\\) is deprecated"
@@ -78,28 +110,23 @@ test_that("baselinenowcast.data.frame shows deprecation warning", {
 # Comprehensive Functional Tests -------------------------------------------
 
 test_that("baselinenowcast.reporting_triangle_df returns expected structure with strata", {
-  expected_cols <- c("pred_count", "draw", "reference_date", "output_type")
-  expected_cols_strata <- c(
-    "pred_count", "draw", "reference_date", "output_type", "age_group"
-  )
-
   # Single stratum
   nowcasts_single <- baselinenowcast_rt_df_test(
-    data_as_of_df,
+    covid_data_single_strata_wday,
     by = NULL
   )
   expect_s3_class(nowcasts_single, "baselinenowcast_df")
-  expect_setequal(names(nowcasts_single), expected_cols)
   expect_true(all(nowcasts_single$output_type == "samples"))
+  expect_blnc_structure(nowcasts_single, expected_cols)
 
   # Multiple strata
   nowcasts_multi <- baselinenowcast_rt_df_test(
-    multi_strata_df,
+    covid_data_age_groups_wday,
     by = "age_group"
   )
   expect_s3_class(nowcasts_multi, "baselinenowcast_df")
   expect_setequal(names(nowcasts_multi), expected_cols_strata)
-  expect_true(all(c("0-17", "18+") %in% unique(nowcasts_multi$age_group)))
+  expect_true(all(c("00-04", "60-79", "80+") %in% unique(nowcasts_multi$age_group)))
 })
 
 test_that("baselinenowcast.reporting_triangle_df supports different strata_sharing modes", {

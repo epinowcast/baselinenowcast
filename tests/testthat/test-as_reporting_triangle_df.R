@@ -50,7 +50,7 @@ test_that("as_reporting_triangle_df validates strata columns", {
       data_as_of_df,
       by = "region"
     ),
-    "Column `region` doesn't exist"
+    "`by` columns must be in `data`"
   )
 
   # Required column in strata (should error)

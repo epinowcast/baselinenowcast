@@ -77,6 +77,9 @@ as_reporting_triangle_df.data.frame <- function(
 
   if (!is.null(by)) {
     assert_character(by, min.len = 1)
+    if (!all(by %in% colnames(data))) {
+      cli_abort("`by` columns must be in `data`")
+    }
   }
   .validate_rep_tri_df(data, delays_unit)
 

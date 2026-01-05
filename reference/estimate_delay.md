@@ -66,7 +66,7 @@ delay_pmf <- estimate_delay(
 )
 delay_pmf
 #>          0          1          2          3 
-#> 0.52654815 0.28277586 0.13006993 0.06060606 
+#> 0.51499404 0.28090584 0.14457631 0.05952381 
 
 # Example 2: Using data with downward corrections (negatives preserved)
 # Low-level functions process triangles as-is without preprocessing

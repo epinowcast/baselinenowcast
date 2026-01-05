@@ -51,13 +51,15 @@ trunc_rep_tri <- truncate_to_row(example_reporting_triangle, t = 1)
 trunc_rep_tri
 #> Reporting Triangle
 #> Delays unit: days
-#> Reference dates: 2024-01-01 to 2024-01-04
+#> Reference dates: 2024-01-01 to 2024-01-06
 #> Max delay: 3
 #> Structure: 1
 #> 
 #>              0  1  2  3
-#> 2024-01-01  80 50 25 10
-#> 2024-01-02 100 50 20 NA
-#> 2024-01-03  90 45 NA NA
-#> 2024-01-04 110 NA NA NA
+#> 2024-01-01 100 55 30 12
+#> 2024-01-02  70 40 24  8
+#> 2024-01-03  80 50 25 10
+#> 2024-01-04 100 50 20 NA
+#> 2024-01-05  90 45 NA NA
+#> 2024-01-06 110 NA NA NA
 ```

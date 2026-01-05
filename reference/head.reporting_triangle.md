@@ -66,13 +66,14 @@ Reporting triangle construction and validation
 # Get first 3 rows
 head(example_reporting_triangle, n = 3)
 #> Reporting Triangle
+#> ℹ The reporting triangle does not contain any missing values.
 #> Delays unit: days
 #> Reference dates: 2024-01-01 to 2024-01-03
 #> Max delay: 3
-#> Structure: 2
+#> Structure: 0
 #> 
 #>              0  1  2  3
-#> 2024-01-01  80 50 25 10
-#> 2024-01-02 100 50 20 NA
-#> 2024-01-03  90 45 NA NA
+#> 2024-01-01 100 55 30 12
+#> 2024-01-02  70 40 24  8
+#> 2024-01-03  80 50 25 10
 ```

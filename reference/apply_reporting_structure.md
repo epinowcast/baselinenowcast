@@ -54,46 +54,52 @@ rep_tri <- apply_reporting_structure(example_reporting_triangle)
 rep_tri
 #> Reporting Triangle
 #> Delays unit: days
-#> Reference dates: 2024-01-01 to 2024-01-05
+#> Reference dates: 2024-01-01 to 2024-01-07
 #> Max delay: 3
 #> Structure: 1, 0, 1, 1
 #> 
 #>              0  1  2  3
-#> 2024-01-01  80 50 25 10
-#> 2024-01-02 100 50 20 NA
-#> 2024-01-03  90 45 NA NA
-#> 2024-01-04 110 NA NA NA
-#> 2024-01-05  95 NA NA NA
+#> 2024-01-01 100 55 30 12
+#> 2024-01-02  70 40 24  8
+#> 2024-01-03  80 50 25 10
+#> 2024-01-04 100 50 20 NA
+#> 2024-01-05  90 45 NA NA
+#> 2024-01-06 110 NA NA NA
+#> 2024-01-07  95 NA NA NA
 
 # Ragged structure with 2 columns per delay period
 rep_ragged <- apply_reporting_structure(example_reporting_triangle, 2)
 rep_ragged
 #> Reporting Triangle
 #> Delays unit: days
-#> Reference dates: 2024-01-01 to 2024-01-05
+#> Reference dates: 2024-01-01 to 2024-01-07
 #> Max delay: 3
 #> Structure: 1, 0, 1, 1
 #> 
 #>              0  1  2  3
-#> 2024-01-01  80 50 25 10
-#> 2024-01-02 100 50 20 NA
-#> 2024-01-03  90 45 NA NA
-#> 2024-01-04 110 NA NA NA
-#> 2024-01-05  95 NA NA NA
+#> 2024-01-01 100 55 30 12
+#> 2024-01-02  70 40 24  8
+#> 2024-01-03  80 50 25 10
+#> 2024-01-04 100 50 20 NA
+#> 2024-01-05  90 45 NA NA
+#> 2024-01-06 110 NA NA NA
+#> 2024-01-07  95 NA NA NA
 
 # Custom structure with explicit column counts
 rep_custom <- apply_reporting_structure(example_reporting_triangle, c(1, 2))
 rep_custom
 #> Reporting Triangle
 #> Delays unit: days
-#> Reference dates: 2024-01-01 to 2024-01-05
+#> Reference dates: 2024-01-01 to 2024-01-07
 #> Max delay: 3
 #> Structure: 1, 0, 1, 1
 #> 
 #>              0  1  2  3
-#> 2024-01-01  80 50 25 10
-#> 2024-01-02 100 50 20 NA
-#> 2024-01-03  90 45 NA NA
-#> 2024-01-04 110 NA NA NA
-#> 2024-01-05  95 NA NA NA
+#> 2024-01-01 100 55 30 12
+#> 2024-01-02  70 40 24  8
+#> 2024-01-03  80 50 25 10
+#> 2024-01-04 100 50 20 NA
+#> 2024-01-05  90 45 NA NA
+#> 2024-01-06 110 NA NA NA
+#> 2024-01-07  95 NA NA NA
 ```

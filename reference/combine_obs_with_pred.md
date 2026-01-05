@@ -68,8 +68,10 @@ reporting_triangle <- apply_reporting_structure(example_reporting_triangle)
 pred_counts <- c(10, 20, 30, 40)
 combine_obs_with_pred(pred_counts, reporting_triangle)
 #> Warning: longer object length is not a multiple of shorter object length
-#> 2024-01-01 2024-01-02 2024-01-03 2024-01-04 2024-01-05 
-#>        175        190        165        150        105 
+#> 2024-01-01 2024-01-02 2024-01-03 2024-01-04 2024-01-05 2024-01-06 
+#>        207        162        195        210        145        130 
+#> 2024-01-07 
+#>        125 
 
 # Example with rolling sum
 if (requireNamespace("zoo", quietly = TRUE)) {
@@ -78,5 +80,6 @@ if (requireNamespace("zoo", quietly = TRUE)) {
     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
   )
 }
-#> [1] 335 305 230 245
+#> Warning: longer object length is not a multiple of shorter object length
+#> [1] 349 327 355 325 210 225
 ```

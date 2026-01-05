@@ -62,10 +62,10 @@ Reporting triangle construction and validation
 # Get 99th percentile delay for each reference date
 quantile_delays_99 <- get_quantile_delay(example_reporting_triangle)
 quantile_delays_99
-#> [1] 3 2 1 0 0
+#> [1] 3 3 3 2 1 0 0
 
 # Get median delay
 median_delays <- get_quantile_delay(example_reporting_triangle, p = 0.5)
 median_delays
-#> [1] 1 0 0 0 0
+#> [1] 0 1 1 0 0 0 0
 ```

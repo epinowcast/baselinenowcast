@@ -62,12 +62,12 @@ Reporting triangle construction and validation
 # Display summary statistics
 summary(example_reporting_triangle)
 #> Reporting Triangle Summary
-#> Dimensions: 5 x 4
-#> Reference period: 2024-01-01 to 2024-01-05
+#> Dimensions: 7 x 4
+#> Reference period: 2024-01-01 to 2024-01-07
 #> Max delay: 3 days
 #> Structure: 1, 0, 1, 1
-#> Most recent complete date: 2024-01-01 (165 cases)
-#> Dates requiring nowcast: 4 (complete: 1)
+#> Most recent complete date: 2024-01-03 (165 cases)
+#> Dates requiring nowcast: 4 (complete: 3)
 #> Rows with negatives: 0
 #> Zeros: 0 (0% of non-NA values)
 #> Zeros per row summary:
@@ -76,7 +76,7 @@ summary(example_reporting_triangle)
 #> 
 #> Mean delay summary (complete rows):
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>  0.7879  0.7879  0.7879  0.7879  0.7879  0.7879 
+#>  0.7665  0.7772  0.7879  0.7810  0.7883  0.7887 
 #> 
 #> 99% quantile delay (complete rows):
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 

@@ -54,6 +54,8 @@ Reporting triangle construction and validation
 ``` r
 mean_delays <- get_mean_delay(example_reporting_triangle)
 mean_delays
-#> 2024-01-01 2024-01-02 2024-01-03 2024-01-04 2024-01-05 
-#>  0.7878788         NA         NA         NA         NA 
+#> 2024-01-01 2024-01-02 2024-01-03 2024-01-04 2024-01-05 2024-01-06 
+#>  0.7664975  0.7887324  0.7878788         NA         NA         NA 
+#> 2024-01-07 
+#>         NA 
 ```

@@ -356,7 +356,9 @@ baselinenowcast.data.frame <- function(
       data = data_clean,
       strata_cols = strata_cols
     )
-    pooled_triangle <- as_reporting_triangle(pooled_df)
+    pooled_triangle <- as_reporting_triangle(pooled_df,
+      delays_unit = delays_unit
+    )
 
     # Apply preprocessing if provided
     processed_pooled_triangle <- pooled_triangle

@@ -90,7 +90,11 @@ part of the \code{strata_cols} will be removed.}
 estimates should be shared for different nowcasting steps. Options are
 \code{"none"} for no sharing (each \code{strata_cols} is fully independent),
 \code{"delay"} for delay sharing and \code{"uncertainty"} for uncertainty sharing.
-Both \code{"delay"} and \code{"uncertainty"} can be passed at the same time.}
+Both \code{"delay"} and \code{"uncertainty"} can be passed at the same time.
+If the the pooled reporting triangle has a shorter maximum delay than the
+reporting triangle of the strata being nowcasted, the strata being
+nowcasted will be nowcasted for the shorter maximum delay to ensure
+compatibility.}
 
 \item{preprocess}{Function to apply to the reporting triangle before
 estimation, or NULL to skip preprocessing. Default is

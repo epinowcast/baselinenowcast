@@ -245,6 +245,10 @@ baselinenowcast.reporting_triangle <- function(
 #'   `"none"` for no sharing (each `strata_cols` is fully independent),
 #'   `"delay"` for delay sharing and `"uncertainty"` for uncertainty sharing.
 #'   Both `"delay"` and `"uncertainty"` can be passed at the same time.
+#'   If the the pooled reporting triangle has a shorter maximum delay than the
+#'   reporting triangle of the strata being nowcasted, the strata being
+#'   nowcasted will be nowcasted for the shorter maximum delay to ensure
+#'   compatibility.
 #' @param ... Additional arguments passed to
 #'    [estimate_uncertainty()]
 #'    and [sample_nowcast()].
@@ -387,8 +391,16 @@ baselinenowcast.data.frame <- function(
   }
 
   # Nowcast on each reporting triangle and bind into a long data.frame
-  combined_result <- map_dfr(
+  list_of_rep_tris_compatible <- lapply(
     list_of_rep_tris,
+    function(x) {
+      truncate_to_delay(x,
+        max_delay = ncol(pooled_triangle) - 1
+      )
+    }
+  )
+  combined_result <- map_dfr(
+    list_of_rep_tris_compatible,
     # nolint start: brace_linter, unnecessary_nesting_linter
     \(rep_tri){
       baselinenowcast(

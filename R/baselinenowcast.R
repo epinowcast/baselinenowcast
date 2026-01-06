@@ -351,6 +351,7 @@ baselinenowcast.data.frame <- function(
   if (all(strata_sharing != "none")) {
     pooled_df <- .combine_triangle_dfs(
       data = data_clean,
+      delays_unit = delays_unit,
       strata_cols = strata_cols
     )
     pooled_triangle <- as_reporting_triangle(pooled_df,
@@ -390,7 +391,7 @@ baselinenowcast.data.frame <- function(
     }
   }
 
-  # Nowcast on each reporting triangle and bind into a long data.frame
+  # Truncate reporting triangle to the max delay of the pooled triangle
   list_of_rep_tris_compatible <- lapply(
     list_of_rep_tris,
     function(x) {
@@ -399,6 +400,7 @@ baselinenowcast.data.frame <- function(
       )
     }
   )
+  # Nowcast on each reporting triangle and bind into a long data.frame
   combined_result <- map_dfr(
     list_of_rep_tris_compatible,
     # nolint start: brace_linter, unnecessary_nesting_linter

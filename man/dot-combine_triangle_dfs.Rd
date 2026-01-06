@@ -4,11 +4,15 @@
 \alias{.combine_triangle_dfs}
 \title{Combine triangle data.frames}
 \usage{
-.combine_triangle_dfs(data, strata_cols = NULL)
+.combine_triangle_dfs(data, delays_unit = "days", strata_cols = NULL)
 }
 \arguments{
 \item{data}{Data.frame containing the incident count of cases by reference
 date and report date for one or more strata.}
+
+\item{delays_unit}{Character string specifying the temporal granularity of
+the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
+Default is \code{"days"}.}
 
 \item{strata_cols}{Vector of character strings indicating the names of the
 columns in \code{data} that determine how to stratify the data for nowcasting.
@@ -27,8 +31,9 @@ the original data.
 \description{
 This function ingests a dataframe with case counts indexed by
 reference dates and report dates for one or more strata and sums all the case
-counts across the shared set of reference and report dates. Note that this
-may be a subset of the unique set of reference and report date combinations
-in the original data.
+counts across the shared set of reference and report dates, after grid
+expansions. Note that if there are different maximum delays across strata,
+the grid will be expanded to use the minimum value of the maximum delay
+across strata.
 }
 \keyword{internal}

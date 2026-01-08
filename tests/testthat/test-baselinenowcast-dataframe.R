@@ -550,7 +550,7 @@ test_that(paste0(
       geom_line(aes(
         x = reference_date, y = pred_count, group = group_var,
         color = type
-      ), size = 0.1, alpha = 0.5) +
+      ), linewidth = 0.1, alpha = 0.5) +
       geom_point(aes(x = reference_date, y = cases)) +
       facet_wrap(~age_group, nrow = 3, scales = "free_y") +
       theme_bw()

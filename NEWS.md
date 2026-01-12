@@ -1,4 +1,4 @@
-# baselinenowcast 0.1.0
+# baselinenowcast 0.2.0
 
 `baselinenowcast` provides simple, baseline nowcasting methods for epidemiological surveillance data affected by reporting delays.
 

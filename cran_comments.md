@@ -1,4 +1,4 @@
-## Resubmission
+## Submission
 This is a new submission.
 
 ## Test environments

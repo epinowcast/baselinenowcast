@@ -39,7 +39,15 @@ Also see the [model definition](model_definition.html) vignette for more details
 As well as the `baselinenowcast` package this vignette also uses `ggplot2`, `tidyr`, and `dplyr`.
 For `baselinenowcast`, see the [installation instructions](https://github.com/epinowcast/baselinenowcast#installation).
 
-```{r setup2, message = FALSE, warning = FALSE, results = 'hide'}
+
+```{r setup2, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE,
+  results = "hide"
+)
 library(baselinenowcast)
 library(ggplot2)
 library(dplyr)

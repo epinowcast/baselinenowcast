@@ -42,7 +42,14 @@ More details on the mathematical methods are provided in the [mathematical model
 As well as the `baselinenowcast` package this vignette also uses `epinowcast`, `ggplot2`, `tidyr`, and `dplyr`.
 For `baselinenowcast`, see the [installation instructions](https://github.com/epinowcast/baselinenowcast#installation).
 
-```{r setup2, message = FALSE, warning = FALSE, results = 'hide'}
+```{r setup2, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE,
+  results = "hide"
+)
 library(baselinenowcast)
 library(ggplot2)
 library(dplyr)
@@ -182,8 +189,8 @@ summary(rep_tri_full)
 ```
 
 We can see the maximum delay is set to the maximum observed delay, which in some cases will be a lot larger than the delays we want to model.
-We strongly recommend using the `truncate_to_delay()` or `truncate_to_quantile()` functions to set the maximum delay in your nowcasting problem. 
-Choosing too large a maximum delay will mean that there is less data, or potentially insufficient data, available for estimating uncertainty from retrospective nowcast errors. 
+We strongly recommend using the `truncate_to_delay()` or `truncate_to_quantile()` functions to set the maximum delay in your nowcasting problem.
+Choosing too large a maximum delay will mean that there is less data, or potentially insufficient data, available for estimating uncertainty from retrospective nowcast errors.
 For this analysis, we want to limit our reporting triangle to a maximum delay of 30 days using `truncate_to_delay()`:
 
 ```{r}

@@ -42,13 +42,10 @@ More details on the mathematical methods are provided in the [mathematical model
 As well as the `baselinenowcast` package this vignette also uses `epinowcast`, `ggplot2`, `tidyr`, and `dplyr`.
 For `baselinenowcast`, see the [installation instructions](https://github.com/epinowcast/baselinenowcast#installation).
 
-```{r setup2, include = FALSE}
+```{r setup2, message = FALSE, warning = FALSE, results = 'hide'}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  message = FALSE,
-  warning = FALSE,
-  results = "hide"
+  comment = "#>"
 )
 library(baselinenowcast)
 library(ggplot2)

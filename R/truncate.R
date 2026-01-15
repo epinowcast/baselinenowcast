@@ -1,17 +1,19 @@
-#' Truncate reporting_triangle to quantile-based maximum delay
+#' Truncate reporting data to quantile-based maximum delay
 #'
 #' Automatically determines an appropriate maximum delay based on when a
 #' specified proportion of cases have been reported (CDF cutoff). This is useful
 #' for reducing computational burden when most cases are reported within a
 #' shorter delay window.
 #'
-#' @param x A reporting_triangle object
+#' @param x A [reporting_triangle] or [reporting_triangle_df] object
 #' @param p Numeric value between 0 and 1 indicating the quantile cutoff.
 #'   For example, p = 0.99 truncates to the delay at which 99% of cases have
 #'   been reported. Default is 0.99.
-#' @return A reporting_triangle object truncated to the maximum quantile delay,
+#' @param ... Additional arguments passed to methods.
+#' @return Object of the same class truncated to the maximum quantile delay,
 #'   or the original object if no truncation is needed
 #' @family reporting_triangle
+#' @family reporting_triangle_df
 #' @export
 #' @importFrom checkmate assert_numeric
 #' @importFrom cli cli_alert_info
@@ -30,10 +32,14 @@
 #' # More aggressive truncation
 #' rep_tri_trunc90 <- truncate_to_quantile(rep_tri, p = 0.90)
 #' ncol(rep_tri_trunc90)
-truncate_to_quantile <- function(x, p = 0.99) {
-  if (!is_reporting_triangle(x)) {
-    cli_abort(message = "x must have class 'reporting_triangle'")
-  }
+truncate_to_quantile <- function(x, p = 0.99, ...) {
+  UseMethod("truncate_to_quantile")
+}
+
+#' @rdname truncate_to_quantile
+#' @export
+#' @method truncate_to_quantile reporting_triangle
+truncate_to_quantile.reporting_triangle <- function(x, p = 0.99, ...) {
   assert_numeric(p, lower = 0, upper = 1, len = 1)
 
   # Get quantile delays for each reference date
@@ -71,27 +77,84 @@ truncate_to_quantile <- function(x, p = 0.99) {
   }
 }
 
-#' Truncate reporting triangle to a specific maximum delay
+#' @rdname truncate_to_quantile
+#' @export
+#' @method truncate_to_quantile reporting_triangle_df
+truncate_to_quantile.reporting_triangle_df <- function(x, p = 0.99, ...) {
+  assert_numeric(p, lower = 0, upper = 1, len = 1)
+  assert_reporting_triangle_df(x)
+
+  # Get delays_unit from the object
+  delays_unit <- attr(x, "delays_unit")
+
+  # Compute delays for all rows
+  delays <- get_delays_from_dates(
+    x$report_date,
+    x$reference_date,
+    delays_unit
+  )
+
+  # Find the quantile delay
+  max_delay_needed <- as.integer(quantile(delays, probs = p, na.rm = TRUE))
+
+  # If max_delay_needed is invalid, return original
+  if (is.na(max_delay_needed) || max_delay_needed < 0) {
+    cli_alert_info(
+      text = "Could not determine quantile delay, returning original data."
+    )
+    return(x)
+  }
+
+  # Ensure max_delay is at least 1
+  max_delay_needed <- max(1L, max_delay_needed)
+
+  current_max_delay <- max(delays, na.rm = TRUE)
+
+  # Only truncate if we can reduce the max_delay
+  if (max_delay_needed < current_max_delay) {
+    cli_alert_info(
+      text = "Truncating to {max_delay_needed} based on {p * 100}% quantile."
+    )
+    return(truncate_to_delay(x, max_delay = max_delay_needed))
+  } else {
+    cli_alert_info(
+      text = "No truncation needed: {p * 100}% of cases reported within existing max_delay = {current_max_delay}." # nolint
+    )
+    return(x)
+  }
+}
+
+#' Truncate reporting data to a specific maximum delay
 #'
-#' Creates a new reporting_triangle with columns filtered to include only
+#' Creates a new object with data filtered to include only
 #' delays from 0 to the specified maximum delay. This is useful when you want
 #' to limit the delay distribution used for estimation.
 #'
-#' @param x A [reporting_triangle] object.
+#' @param x A [reporting_triangle] or [reporting_triangle_df] object.
 #' @param max_delay Integer specifying the maximum delay to retain. Must be
-#'   between 0 and the current maximum delay of the triangle.
-#' @return A new [reporting_triangle] object with delays 0 through max_delay.
+#'   between 0 and the current maximum delay.
+#' @param ... Additional arguments passed to methods.
+#' @return A new object of the same class with delays 0 through max_delay.
 #' @family reporting_triangle
+#' @family reporting_triangle_df
 #' @export
 #' @examples
-#' # Truncate to delays 0-2
+#' # Truncate reporting_triangle to delays 0-2
 #' rt_short <- truncate_to_delay(example_downward_corr_rt, max_delay = 2)
 #' get_max_delay(rt_short) # Returns 2
-truncate_to_delay <- function(x, max_delay) {
-  if (!is_reporting_triangle(x)) {
-    cli_abort(message = "x must have class 'reporting_triangle'")
-  }
+#'
+#' # Truncate reporting_triangle_df
+#' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' rt_df <- as_reporting_triangle_df(data_as_of_df)
+#' rt_df_short <- truncate_to_delay(rt_df, max_delay = 10)
+truncate_to_delay <- function(x, max_delay, ...) {
+  UseMethod("truncate_to_delay")
+}
 
+#' @rdname truncate_to_delay
+#' @export
+#' @method truncate_to_delay reporting_triangle
+truncate_to_delay.reporting_triangle <- function(x, max_delay, ...) {
   current_max_delay <- get_max_delay(x)
 
   # Validate max_delay
@@ -128,6 +191,68 @@ truncate_to_delay <- function(x, max_delay) {
 
     # Update with new matrix
     return(.update_triangle_matrix(x, trunc_mat))
+  }
+
+  return(x)
+}
+
+#' @rdname truncate_to_delay
+#' @export
+#' @method truncate_to_delay reporting_triangle_df
+truncate_to_delay.reporting_triangle_df <- function(x, max_delay, ...) {
+  # Validate max_delay
+  if (!is.numeric(max_delay) || length(max_delay) != 1) {
+    cli_abort(message = "`max_delay` must be a single numeric value")
+  }
+
+  if (max_delay < 0) {
+    cli_abort(message = "`max_delay` must be non-negative")
+  }
+
+  # Get delays_unit from the object
+  delays_unit <- attr(x, "delays_unit")
+
+  # Compute delays
+  delays <- get_delays_from_dates(
+    x$report_date,
+    x$reference_date,
+    delays_unit
+  )
+
+  # Check current max delay
+  current_max_delay <- max(delays, na.rm = TRUE)
+
+  if (max_delay > current_max_delay) {
+    cli_abort(
+      message = c(
+        "`max_delay` cannot be greater than current maximum delay",
+        i = "Current max_delay is {current_max_delay}, requested {max_delay}"
+      )
+    )
+  }
+
+  # If max_delay unchanged, return original
+  if (max_delay == current_max_delay) {
+    return(x)
+  }
+
+  # Filter rows where delay <= max_delay
+  if (max_delay < current_max_delay) {
+    cli_alert_info(
+      text = "Truncating from max_delay = {current_max_delay} to {max_delay}."
+    )
+
+    filtered_data <- x[delays <= max_delay, , drop = FALSE]
+
+    # Preserve class and attributes
+    class(filtered_data) <- class(x)
+    attr(filtered_data, "delays_unit") <- delays_unit
+    attr(filtered_data, "strata") <- attr(x, "strata")
+
+    # Validate the result
+    assert_reporting_triangle_df(filtered_data)
+
+    return(filtered_data)
   }
 
   return(x)

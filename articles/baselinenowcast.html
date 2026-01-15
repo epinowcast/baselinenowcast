@@ -110,7 +110,11 @@ More details on the mathematical methods are provided in the <a href="model_defi
 <p>As well as the <code>baselinenowcast</code> package this vignette also uses <code>epinowcast</code>, <code>ggplot2</code>, <code>tidyr</code>, and <code>dplyr</code>.
 For <code>baselinenowcast</code>, see the <a href="https://github.com/epinowcast/baselinenowcast#installation" class="external-link">installation instructions</a>.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://baselinenowcast.epinowcast.org">baselinenowcast</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/knitr/man/opts_chunk.html" class="external-link">opts_chunk</a></span><span class="op">$</span><span class="fu">set</span><span class="op">(</span></span>
+<span>  collapse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  comment <span class="op">=</span> <span class="st">"#&gt;"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://baselinenowcast.epinowcast.org">baselinenowcast</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span></code></pre></div>
@@ -152,25 +156,25 @@ Let’s first take the sum of the cases at each reference date from the complete
 <span>  <span class="va">report_date</span> <span class="op">&lt;=</span> <span class="va">nowcast_date</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">observed_data</span><span class="op">)</span></span></code></pre></div>
-</details><pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
-<span><span class="co">##   reference_date location age_group delay count report_date</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 2021-04-06     DE       00+           0   149 2021-04-06 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 2021-04-06     DE       00+           1   140 2021-04-07 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 2021-04-06     DE       00+           2    61 2021-04-08 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> 2021-04-06     DE       00+           3    52 2021-04-09 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> 2021-04-06     DE       00+           4    36 2021-04-10 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> 2021-04-06     DE       00+           5     8 2021-04-11</span></span></code></pre>
-<p>We refer to the “initial reports” as the sum of the cases at each reference date as they were available as of the nowcast date.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">observed_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
+<span><span class="co">#&gt;   reference_date location age_group delay count report_date</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2021-04-06     DE       00+           0   149 2021-04-06 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2021-04-06     DE       00+           1   140 2021-04-07 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2021-04-06     DE       00+           2    61 2021-04-08 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2021-04-06     DE       00+           3    52 2021-04-09 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2021-04-06     DE       00+           4    36 2021-04-10 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2021-04-06     DE       00+           5     8 2021-04-11</span></span></code></pre></div>
+</details><p>We refer to the “initial reports” as the sum of the cases at each reference date as they were available as of the nowcast date.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">initial_reports</span> <span class="op">&lt;-</span> <span class="va">observed_data</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>initial_count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </details><p>We will make a plot comparing the initial reports to the later observed final number of confirmed cases at each reference date.</p>
 <details><summary>
 Click to expand code to create the plot of the latest data
-</summary><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+</summary><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="va">initial_reports</span>,</span>
@@ -185,7 +189,7 @@ Click to expand code to create the plot of the latest data
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Confirmed admissions"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>trans <span class="op">=</span> <span class="st">"log10"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Comparing initially reported and later observed cases"</span><span class="op">)</span></span></code></pre></div>
-</details></details><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+</details></details><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_data</span></span></code></pre></div>
 </details><p><img src="baselinenowcast_files/figure-html/unnamed-chunk-6-1.png"><!-- --></p>
 <p>The red line shows the total number of confirmed admissions on each reference date, across all delays, using the data available as of August 1, 2021.
@@ -206,103 +210,103 @@ The reporting triangle will be used to estimate the delay distribution, or the p
 See the <a href="nssp_nowcast.html">NSSP nowcast</a> for an example of an exploratory data analysis used to identify the maximum delay.
 Here we will set the maximum delay to 30 days.</p>
 <p>Empirical data outside this delay window will not be used for training.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">max_delay</span> <span class="op">&lt;-</span> <span class="fl">30</span></span></code></pre></div>
 </details><p>Next, we will specify the amount of training volume used to fit the model as a function of the maximum delay, and the proportion of the total training volume used for delay estimation (with the remainder being used for uncertainty estimation).
 Internally within <code><a href="../reference/baselinenowcast.html">baselinenowcast()</a></code> we will call, <code><a href="../reference/allocate_reference_times.html">allocate_reference_times()</a></code> with these arguments.
 We’ll us the default settings for this function here, which uses 3 times the maximum delay for the total training volume with 50% used for delay estimation.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">scale_factor</span> <span class="op">&lt;-</span> <span class="fl">3</span></span>
 <span><span class="va">prop_delay</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span></code></pre></div>
 </details><p>Next we obtain a <code>reporting_triangle</code> using the <code><a href="../reference/as_reporting_triangle.html">as_reporting_triangle()</a></code> function, which expects a data.frame with case counts indexed by reference date and report date.
 This function computes the delay between the reference and report date and pivots the data from long to wide, so that the rows are reference times and the columns indicate the delay between the reference and report date, and the entries indicate the incident case counts.
 This also validates that the data is in the correct format and runs pre-processing to fill in any missing dates, see <code><a href="../reference/as_reporting_triangle.data.frame.html">?as_reporting_triangle.data.frame</a></code> and <code><a href="../reference/reporting_triangle-class.html">?reporting_triangle</a></code> for more details on required inputs and the format of the <code>reporting_triangle</code> object.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rep_tri_full</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_reporting_triangle.html">as_reporting_triangle</a></span><span class="op">(</span><span class="va">observed_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Using max_delay = 40 from data</span></span></code></pre></div>
+</details><p>Let’s look at the reporting triangle object we’ve created:</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">rep_tri_full</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_reporting_triangle.html">as_reporting_triangle</a></span><span class="op">(</span><span class="va">observed_data</span><span class="op">)</span></span></code></pre></div>
-</details><pre><code><span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Using max_delay = 40 from data</span></span></code></pre>
-<p>Let’s look at the reporting triangle object we’ve created:</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">rep_tri_full</span></span></code></pre></div>
-</details><pre><code><span><span class="co">## <span style="font-weight: bold;">Reporting Triangle</span></span></span></code></pre>
-<pre><code><span><span class="co">## Delays unit: days</span></span></code></pre>
-<pre><code><span><span class="co">## Reference dates: 2021-04-06 to 2021-08-01</span></span></code></pre>
-<pre><code><span><span class="co">## Max delay: 40</span></span></code></pre>
-<pre><code><span><span class="co">## Structure: 1</span></span></code></pre>
-<pre><code><span><span class="co">## </span></span></code></pre>
-<pre><code><span><span class="co">## Showing last 10 of 118 rows</span></span></code></pre>
-<pre><code><span><span class="co">## Showing first 10 of 41 columns</span></span></code></pre>
-<pre><code><span><span class="co">## </span></span></code></pre>
-<pre><code><span><span class="co">##             0  1  2  3  4  5  6  7  8  9</span></span>
-<span><span class="co">## 2021-07-23 30 12  4  1 10  6  0  2  2  1</span></span>
-<span><span class="co">## 2021-07-24 31  8  4  9  8  2  5  2  1 NA</span></span>
-<span><span class="co">## 2021-07-25  8  4 14  8  6  5  1  3 NA NA</span></span>
-<span><span class="co">## 2021-07-26  9  6  2  3  0  0  0 NA NA NA</span></span>
-<span><span class="co">## 2021-07-27 35 11  6  4  4  1 NA NA NA NA</span></span>
-<span><span class="co">## 2021-07-28 51 28 25  3  5 NA NA NA NA NA</span></span>
-<span><span class="co">## 2021-07-29 47 37  9  2 NA NA NA NA NA NA</span></span>
-<span><span class="co">## 2021-07-30 36 20  2 NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## 2021-07-31 38 16 NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## 2021-08-01  7 NA NA NA NA NA NA NA NA NA</span></span></code></pre>
-<pre><code><span><span class="co">## </span></span></code></pre>
-<pre><code><span><span class="co">## Use print(x, n_rows = NULL, n_cols = NULL) to see all data</span></span></code></pre>
-<p>And we can get a summary of it:</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">rep_tri_full</span><span class="op">)</span></span></code></pre></div>
-</details><pre><code><span><span class="co">## <span style="font-weight: bold;">Reporting Triangle Summary</span></span></span></code></pre>
-<pre><code><span><span class="co">## Dimensions: 118 x 41</span></span></code></pre>
-<pre><code><span><span class="co">## Reference period: 2021-04-06 to 2021-08-01</span></span></code></pre>
-<pre><code><span><span class="co">## Max delay: 40 days</span></span></code></pre>
-<pre><code><span><span class="co">## Structure: 1</span></span></code></pre>
-<pre><code><span><span class="co">## Most recent complete date: 2021-06-22 (67 cases)</span></span></code></pre>
-<pre><code><span><span class="co">## Dates requiring nowcast: 40 (complete: 78)</span></span></code></pre>
-<pre><code><span><span class="co">## Rows with negatives: 0</span></span></code></pre>
-<pre><code><span><span class="co">## Zeros: 1278 (31.8% of non-NA values)</span></span></code></pre>
-<pre><code><span><span class="co">## Zeros per row summary:</span></span></code></pre>
-<pre><code><span><span class="co">##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
-<span><span class="co">##    0.00    4.00    8.00   10.83   19.00   33.00</span></span></code></pre>
-<pre><code><span><span class="co">## </span></span></code></pre>
-<pre><code><span><span class="co">## <span style="font-weight: bold;">Mean delay summary (complete rows):</span></span></span></code></pre>
-<pre><code><span><span class="co">##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
-<span><span class="co">##   2.525   4.857   5.650   5.469   6.174   7.678</span></span></code></pre>
-<pre><code><span><span class="co">## </span></span></code></pre>
-<pre><code><span><span class="co">## <span style="font-weight: bold;">99% quantile delay (complete rows):</span></span></span></code></pre>
-<pre><code><span><span class="co">##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
-<span><span class="co">##   17.00   33.00   35.00   34.31   37.00   40.00</span></span></code></pre>
-<p>We can see the maximum delay is set to the maximum observed delay, which in some cases will be a lot larger than the delays we want to model.
+<code class="sourceCode R"><span><span class="va">rep_tri_full</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Reporting Triangle</span></span></span>
+<span><span class="co">#&gt; Delays unit: days</span></span>
+<span><span class="co">#&gt; Reference dates: 2021-04-06 to 2021-08-01</span></span>
+<span><span class="co">#&gt; Max delay: 40</span></span>
+<span><span class="co">#&gt; Structure: 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Showing last 10 of 118 rows</span></span>
+<span><span class="co">#&gt; Showing first 10 of 41 columns</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;             0  1  2  3  4  5  6  7  8  9</span></span>
+<span><span class="co">#&gt; 2021-07-23 30 12  4  1 10  6  0  2  2  1</span></span>
+<span><span class="co">#&gt; 2021-07-24 31  8  4  9  8  2  5  2  1 NA</span></span>
+<span><span class="co">#&gt; 2021-07-25  8  4 14  8  6  5  1  3 NA NA</span></span>
+<span><span class="co">#&gt; 2021-07-26  9  6  2  3  0  0  0 NA NA NA</span></span>
+<span><span class="co">#&gt; 2021-07-27 35 11  6  4  4  1 NA NA NA NA</span></span>
+<span><span class="co">#&gt; 2021-07-28 51 28 25  3  5 NA NA NA NA NA</span></span>
+<span><span class="co">#&gt; 2021-07-29 47 37  9  2 NA NA NA NA NA NA</span></span>
+<span><span class="co">#&gt; 2021-07-30 36 20  2 NA NA NA NA NA NA NA</span></span>
+<span><span class="co">#&gt; 2021-07-31 38 16 NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">#&gt; 2021-08-01  7 NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Use print(x, n_rows = NULL, n_cols = NULL) to see all data</span></span></code></pre></div>
+</details><p>And we can get a summary of it:</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">rep_tri_full</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Reporting Triangle Summary</span></span></span>
+<span><span class="co">#&gt; Dimensions: 118 x 41</span></span>
+<span><span class="co">#&gt; Reference period: 2021-04-06 to 2021-08-01</span></span>
+<span><span class="co">#&gt; Max delay: 40 days</span></span>
+<span><span class="co">#&gt; Structure: 1</span></span>
+<span><span class="co">#&gt; Most recent complete date: 2021-06-22 (67 cases)</span></span>
+<span><span class="co">#&gt; Dates requiring nowcast: 40 (complete: 78)</span></span>
+<span><span class="co">#&gt; Rows with negatives: 0</span></span>
+<span><span class="co">#&gt; Zeros: 1278 (31.8% of non-NA values)</span></span>
+<span><span class="co">#&gt; Zeros per row summary:</span></span>
+<span><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
+<span><span class="co">#&gt;    0.00    4.00    8.00   10.83   19.00   33.00</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Mean delay summary (complete rows):</span></span></span>
+<span><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
+<span><span class="co">#&gt;   2.525   4.857   5.650   5.469   6.174   7.678</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">99% quantile delay (complete rows):</span></span></span>
+<span><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
+<span><span class="co">#&gt;   17.00   33.00   35.00   34.31   37.00   40.00</span></span></code></pre></div>
+</details><p>We can see the maximum delay is set to the maximum observed delay, which in some cases will be a lot larger than the delays we want to model.
 We strongly recommend using the <code><a href="../reference/truncate_to_delay.html">truncate_to_delay()</a></code> or <code><a href="../reference/truncate_to_quantile.html">truncate_to_quantile()</a></code> functions to set the maximum delay in your nowcasting problem.
 Choosing too large a maximum delay will mean that there is less data, or potentially insufficient data, available for estimating uncertainty from retrospective nowcast errors.
 For this analysis, we want to limit our reporting triangle to a maximum delay of 30 days using <code><a href="../reference/truncate_to_delay.html">truncate_to_delay()</a></code>:</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">rep_tri</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/truncate_to_delay.html">truncate_to_delay</a></span><span class="op">(</span><span class="va">rep_tri_full</span>, max_delay <span class="op">=</span> <span class="va">max_delay</span><span class="op">)</span></span></code></pre></div>
-</details><pre><code><span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Truncating from max_delay = 40 to 30.</span></span></code></pre>
-<p>Let’s check the truncated triangle:</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">rep_tri</span></span></code></pre></div>
-</details><pre><code><span><span class="co">## <span style="font-weight: bold;">Reporting Triangle</span></span></span></code></pre>
-<pre><code><span><span class="co">## Delays unit: days</span></span></code></pre>
-<pre><code><span><span class="co">## Reference dates: 2021-04-06 to 2021-08-01</span></span></code></pre>
-<pre><code><span><span class="co">## Max delay: 30</span></span></code></pre>
-<pre><code><span><span class="co">## Structure: 1</span></span></code></pre>
-<pre><code><span><span class="co">## </span></span></code></pre>
-<pre><code><span><span class="co">## Showing last 10 of 118 rows</span></span></code></pre>
-<pre><code><span><span class="co">## Showing first 10 of 31 columns</span></span></code></pre>
-<pre><code><span><span class="co">## </span></span></code></pre>
-<pre><code><span><span class="co">##             0  1  2  3  4  5  6  7  8  9</span></span>
-<span><span class="co">## 2021-07-23 30 12  4  1 10  6  0  2  2  1</span></span>
-<span><span class="co">## 2021-07-24 31  8  4  9  8  2  5  2  1 NA</span></span>
-<span><span class="co">## 2021-07-25  8  4 14  8  6  5  1  3 NA NA</span></span>
-<span><span class="co">## 2021-07-26  9  6  2  3  0  0  0 NA NA NA</span></span>
-<span><span class="co">## 2021-07-27 35 11  6  4  4  1 NA NA NA NA</span></span>
-<span><span class="co">## 2021-07-28 51 28 25  3  5 NA NA NA NA NA</span></span>
-<span><span class="co">## 2021-07-29 47 37  9  2 NA NA NA NA NA NA</span></span>
-<span><span class="co">## 2021-07-30 36 20  2 NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## 2021-07-31 38 16 NA NA NA NA NA NA NA NA</span></span>
-<span><span class="co">## 2021-08-01  7 NA NA NA NA NA NA NA NA NA</span></span></code></pre>
-<pre><code><span><span class="co">## </span></span></code></pre>
-<pre><code><span><span class="co">## Use print(x, n_rows = NULL, n_cols = NULL) to see all data</span></span></code></pre>
-<details><summary>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rep_tri</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/truncate_to_delay.html">truncate_to_delay</a></span><span class="op">(</span><span class="va">rep_tri_full</span>, max_delay <span class="op">=</span> <span class="va">max_delay</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Truncating from max_delay = 40 to 30.</span></span></code></pre></div>
+</details><p>Let’s check the truncated triangle:</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rep_tri</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Reporting Triangle</span></span></span>
+<span><span class="co">#&gt; Delays unit: days</span></span>
+<span><span class="co">#&gt; Reference dates: 2021-04-06 to 2021-08-01</span></span>
+<span><span class="co">#&gt; Max delay: 30</span></span>
+<span><span class="co">#&gt; Structure: 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Showing last 10 of 118 rows</span></span>
+<span><span class="co">#&gt; Showing first 10 of 31 columns</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;             0  1  2  3  4  5  6  7  8  9</span></span>
+<span><span class="co">#&gt; 2021-07-23 30 12  4  1 10  6  0  2  2  1</span></span>
+<span><span class="co">#&gt; 2021-07-24 31  8  4  9  8  2  5  2  1 NA</span></span>
+<span><span class="co">#&gt; 2021-07-25  8  4 14  8  6  5  1  3 NA NA</span></span>
+<span><span class="co">#&gt; 2021-07-26  9  6  2  3  0  0  0 NA NA NA</span></span>
+<span><span class="co">#&gt; 2021-07-27 35 11  6  4  4  1 NA NA NA NA</span></span>
+<span><span class="co">#&gt; 2021-07-28 51 28 25  3  5 NA NA NA NA NA</span></span>
+<span><span class="co">#&gt; 2021-07-29 47 37  9  2 NA NA NA NA NA NA</span></span>
+<span><span class="co">#&gt; 2021-07-30 36 20  2 NA NA NA NA NA NA NA</span></span>
+<span><span class="co">#&gt; 2021-07-31 38 16 NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">#&gt; 2021-08-01  7 NA NA NA NA NA NA NA NA NA</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Use print(x, n_rows = NULL, n_cols = NULL) to see all data</span></span></code></pre></div>
+</details><details><summary>
 Click to expand code to create the plot of the reporting triangle
-</summary><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
+</summary><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">triangle_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">rep_tri</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -315,7 +319,7 @@ Click to expand code to create the plot of the reporting triangle
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Reporting triangle"</span>, x <span class="op">=</span> <span class="st">"Delay"</span>, y <span class="op">=</span> <span class="st">"Time"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</details></details><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+</details></details><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_triangle</span></span></code></pre></div>
 </details><p><img src="baselinenowcast_files/figure-html/unnamed-chunk-15-1.png"><!-- -->
 Here, the grey indicates matrix elements that are <code>NA</code>, which we would expect to be the case in the bottom right portion of the reporting triangle where the counts have yet to be observed.</p>
@@ -333,7 +337,7 @@ This function chains together the following nowcasting steps:
 <p>See the documentation for each of these functions for more details on the specific workflow step, and the documentation for <code><a href="../reference/baselinenowcast.reporting_triangle.html">?baselinenowcast.reporting_triangle</a></code> for input options.
 In this example, we will demonstrate how to specify the reference time allocation and the number of probabilistic draws to include, and will otherwise use the default specifications.
 A point nowcast can be returned by specifying <code>output_type = "point"</code>.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast_draws_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baselinenowcast.html">baselinenowcast</a></span><span class="op">(</span></span>
 <span>  <span class="va">rep_tri</span>,</span>
 <span>  scale_factor <span class="op">=</span> <span class="va">scale_factor</span>,</span>
@@ -349,21 +353,21 @@ It contains probabilistic draws of estimate of the final number of cases on each
 <p>We’ll want to compare the nowcasts to both the initial reports and the eventually observed case counts.
 We can join both datasets to the probabilistic nowcasts by the reference date.
 Join the nowcasts, data as of the nowcast date, and the final data.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obs_with_nowcast_draws_df</span> <span class="op">&lt;-</span> <span class="va">nowcast_draws_df</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">latest_data</span>, by <span class="op">=</span> <span class="st">"reference_date"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">initial_reports</span>, by <span class="op">=</span> <span class="st">"reference_date"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs_with_nowcast_draws_df</span><span class="op">)</span></span></code></pre></div>
-</details><pre><code><span><span class="co">##   pred_count reference_date draw output_type final_count initial_count</span></span>
-<span><span class="co">## 1        609     2021-04-06    1     samples         615           615</span></span>
-<span><span class="co">## 2        609     2021-04-06    2     samples         615           615</span></span>
-<span><span class="co">## 3        609     2021-04-06    3     samples         615           615</span></span>
-<span><span class="co">## 4        609     2021-04-06    4     samples         615           615</span></span>
-<span><span class="co">## 5        609     2021-04-06    5     samples         615           615</span></span>
-<span><span class="co">## 6        609     2021-04-06    6     samples         615           615</span></span></code></pre>
-<details><summary>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs_with_nowcast_draws_df</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   pred_count reference_date draw output_type final_count initial_count</span></span>
+<span><span class="co">#&gt; 1        609     2021-04-06    1     samples         615           615</span></span>
+<span><span class="co">#&gt; 2        609     2021-04-06    2     samples         615           615</span></span>
+<span><span class="co">#&gt; 3        609     2021-04-06    3     samples         615           615</span></span>
+<span><span class="co">#&gt; 4        609     2021-04-06    4     samples         615           615</span></span>
+<span><span class="co">#&gt; 5        609     2021-04-06    5     samples         615           615</span></span>
+<span><span class="co">#&gt; 6        609     2021-04-06    6     samples         615           615</span></span></code></pre></div>
+</details><details><summary>
 Click to expand code to create the plot of the probabilistic nowcast
-</summary><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
+</summary><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">combined_data</span> <span class="op">&lt;-</span> <span class="va">obs_with_nowcast_draws_df</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">reference_date</span>, <span class="va">initial_count</span>, <span class="va">final_count</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -419,7 +423,7 @@ Click to expand code to create the plot of the probabilistic nowcast
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Hospital admissions"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Comparison of admissions as of the nowcast date, later observed counts, \n and probabilistic nowcasted counts"</span><span class="op">)</span> <span class="co"># nolint</span></span></code></pre></div>
-</details></details><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
+</details></details><details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_prob_nowcast</span></span></code></pre></div>
 </details><p><img src="baselinenowcast_files/figure-html/unnamed-chunk-19-1.png"><!-- -->
 Gray lines indicate the probabilistic nowcast draws, which are a combination of the already observed data at each reference date and the predicted nowcast draws at each reference date.

@@ -58,6 +58,10 @@ for mapping diagnoses codes to text fields in the data. For
 instructions](https://github.com/epinowcast/baselinenowcast#installation).
 
 ``` r
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 # Load packages
 library(baselinenowcast)
 library(dplyr)
@@ -87,25 +91,24 @@ This typically will be pulled using an API, but here we provide the
 
 ``` r
 syn_nssp_line_list
+#> # A tibble: 25 × 8
+#>    C_Processed_BioSense_ID        CCDDParsed              DischargeDiagnosisMD…¹
+#>    <chr>                          <chr>                   <chr>                 
+#>  1 2024.02.03.23961E_2353110519   COUGH SENT BY UC | ;U0… {1};2024-02-03 13:45:…
+#>  2 2024.02.04.23970E_8016495577   COUGH COVID | ;U071;    {1};2024-02-04 10:29:…
+#>  3 2024.02.09.6146E_MM20716469698 VOMITING NAUSEA | ;U07… {1};2024-02-09 01:50:…
+#>  4 2024.02.08.23960I_3453027660   DIVERTICULITIS | ;R197… {1};2024-02-08 19:05:…
+#>  5 2024.02.02.6170E_HF221066059   PREGNANT COLD SYMPTOMS… {1};2024-02-02 01:15:…
+#>  6 2024.02.09.6148I_230936904054  NAUSEU WEAK BACK PAIN … {1};2024-02-09 16:01:…
+#>  7 2024.02.04.6139I_107268480     SHORTNESS OF BREATH | … {1};2024-02-04 09:17:…
+#>  8 2024.02.09.6131E_MP009028546   FLU LIKE SYMPTOMS | ;U… {1};2024-02-09 13:30:…
+#>  9 2024.02.03.30901E_15694614     SHORTNESS OF BREATH | … {1};2024-02-03 06:57:…
+#> 10 2024.02.05.23956E_315489587    FOOT PAIN FOOT INJURY … {1};2024-02-05 05:49:…
+#> # ℹ 15 more rows
+#> # ℹ abbreviated name: ¹​DischargeDiagnosisMDTUpdates
+#> # ℹ 5 more variables: DischargeDiagnosisUpdates <chr>, HasBeenAdmitted <dbl>,
+#> #   C_Visit_Date_Time <dttm>, c_race <chr>, sex <chr>
 ```
-
-    ## # A tibble: 25 × 8
-    ##    C_Processed_BioSense_ID        CCDDParsed              DischargeDiagnosisMD…¹
-    ##    <chr>                          <chr>                   <chr>                 
-    ##  1 2024.02.03.23961E_2353110519   COUGH SENT BY UC | ;U0… {1};2024-02-03 13:45:…
-    ##  2 2024.02.04.23970E_8016495577   COUGH COVID | ;U071;    {1};2024-02-04 10:29:…
-    ##  3 2024.02.09.6146E_MM20716469698 VOMITING NAUSEA | ;U07… {1};2024-02-09 01:50:…
-    ##  4 2024.02.08.23960I_3453027660   DIVERTICULITIS | ;R197… {1};2024-02-08 19:05:…
-    ##  5 2024.02.02.6170E_HF221066059   PREGNANT COLD SYMPTOMS… {1};2024-02-02 01:15:…
-    ##  6 2024.02.09.6148I_230936904054  NAUSEU WEAK BACK PAIN … {1};2024-02-09 16:01:…
-    ##  7 2024.02.04.6139I_107268480     SHORTNESS OF BREATH | … {1};2024-02-04 09:17:…
-    ##  8 2024.02.09.6131E_MP009028546   FLU LIKE SYMPTOMS | ;U… {1};2024-02-09 13:30:…
-    ##  9 2024.02.03.30901E_15694614     SHORTNESS OF BREATH | … {1};2024-02-03 06:57:…
-    ## 10 2024.02.05.23956E_315489587    FOOT PAIN FOOT INJURY … {1};2024-02-05 05:49:…
-    ## # ℹ 15 more rows
-    ## # ℹ abbreviated name: ¹​DischargeDiagnosisMDTUpdates
-    ## # ℹ 5 more variables: DischargeDiagnosisUpdates <chr>, HasBeenAdmitted <dbl>,
-    ## #   C_Visit_Date_Time <dttm>, c_race <chr>, sex <chr>
 
 **Note:** This dataset does not represent data from real patients, it is
 entirely synthetic and designed to mirror the NSSP update fields, which
@@ -341,21 +344,20 @@ clean_line_list <- first_bar_diagnosis |>
   ) |>
   ungroup()
 head(clean_line_list)
+#> # A tibble: 6 × 13
+#>   event_id C_Processed_BioSense…¹ CCDDParsed HasBeenAdmitted C_Visit_Date_Time  
+#>   <chr>    <chr>                  <chr>                <dbl> <dttm>             
+#> 1 2024.02… 2024.02.01.23959I_204… ABNORMAL …               1 2024-02-01 13:30:00
+#> 2 2024.02… 2024.02.01.23965V_656… DIFFICULT…               1 2024-02-01 09:26:00
+#> 3 2024.02… 2024.02.01.24119E_H10… COUGH FEV…               1 2024-02-01 13:25:00
+#> 4 2024.02… 2024.02.01.24167I_065… LETHARGY …               1 2024-02-01 11:15:00
+#> 5 2024.02… 2024.02.01.6132E_2260… COVID LAS…               0 2024-02-01 13:36:00
+#> 6 2024.02… 2024.02.01.6133I_2490… HIGH BLLO…               1 2024-02-01 11:04:00
+#> # ℹ abbreviated name: ¹​C_Processed_BioSense_ID
+#> # ℹ 8 more variables: c_race <chr>, sex <chr>, column_name <chr>,
+#> #   time_stamp <dttm>, diagnoses_codes <chr>, arrival_to_update_delay <dbl>,
+#> #   reference_date <date>, report_date <date>
 ```
-
-    ## # A tibble: 6 × 13
-    ##   event_id C_Processed_BioSense…¹ CCDDParsed HasBeenAdmitted C_Visit_Date_Time  
-    ##   <chr>    <chr>                  <chr>                <dbl> <dttm>             
-    ## 1 2024.02… 2024.02.01.23959I_204… ABNORMAL …               1 2024-02-01 13:30:00
-    ## 2 2024.02… 2024.02.01.23965V_656… DIFFICULT…               1 2024-02-01 09:26:00
-    ## 3 2024.02… 2024.02.01.24119E_H10… COUGH FEV…               1 2024-02-01 13:25:00
-    ## 4 2024.02… 2024.02.01.24167I_065… LETHARGY …               1 2024-02-01 11:15:00
-    ## 5 2024.02… 2024.02.01.6132E_2260… COVID LAS…               0 2024-02-01 13:36:00
-    ## 6 2024.02… 2024.02.01.6133I_2490… HIGH BLLO…               1 2024-02-01 11:04:00
-    ## # ℹ abbreviated name: ¹​C_Processed_BioSense_ID
-    ## # ℹ 8 more variables: c_race <chr>, sex <chr>, column_name <chr>,
-    ## #   time_stamp <dttm>, diagnoses_codes <chr>, arrival_to_update_delay <dbl>,
-    ## #   reference_date <date>, report_date <date>
 
 ### 2.4 Obtain counts of cases by reference date (visit date) and report date (time of first diagnosis)
 
@@ -368,10 +370,9 @@ count_df_raw <- clean_line_list |>
   group_by(reference_date, report_date) |>
   summarise(count = n()) |>
   mutate(delay = as.integer(report_date - reference_date))
+#> `summarise()` has grouped output by 'reference_date'. You can override using
+#> the `.groups` argument.
 ```
-
-    ## `summarise()` has grouped output by 'reference_date'. You can override using
-    ## the `.groups` argument.
 
 Looking at this data, we can see that there is one case where there is a
 negative delay, which indicates that the time stamp of the diagnosis
@@ -389,18 +390,17 @@ this choice.
 ``` r
 count_df <- filter(count_df_raw, delay >= 0)
 head(count_df)
+#> # A tibble: 6 × 4
+#> # Groups:   reference_date [3]
+#>   reference_date report_date count delay
+#>   <date>         <date>      <int> <int>
+#> 1 2024-02-01     2024-02-01      4     0
+#> 2 2024-02-01     2024-02-02      1     1
+#> 3 2024-02-01     2024-02-20      1    19
+#> 4 2024-02-02     2024-02-05      1     3
+#> 5 2024-02-02     2024-02-10      1     8
+#> 6 2024-02-03     2024-02-03      1     0
 ```
-
-    ## # A tibble: 6 × 4
-    ## # Groups:   reference_date [3]
-    ##   reference_date report_date count delay
-    ##   <date>         <date>      <int> <int>
-    ## 1 2024-02-01     2024-02-01      4     0
-    ## 2 2024-02-01     2024-02-02      1     1
-    ## 3 2024-02-01     2024-02-20      1    19
-    ## 4 2024-02-02     2024-02-05      1     3
-    ## 5 2024-02-02     2024-02-10      1     8
-    ## 6 2024-02-03     2024-02-03      1     0
 
 We have now generated data in the format that we need to use the
 `baselinenowcast` package, which requires a [long tidy
@@ -423,22 +423,21 @@ which is also provided as package data.
 
 ``` r
 syn_nssp_df
+#> # A tibble: 3,795 × 3
+#>    reference_date report_date count
+#>    <date>         <date>      <dbl>
+#>  1 2025-10-25     2025-10-25    194
+#>  2 2025-10-25     2025-10-26     54
+#>  3 2025-10-25     2025-10-27     26
+#>  4 2025-10-25     2025-10-28     13
+#>  5 2025-10-25     2025-10-29     12
+#>  6 2025-10-25     2025-10-30     13
+#>  7 2025-10-25     2025-10-31      5
+#>  8 2025-10-25     2025-11-04     14
+#>  9 2025-10-25     2025-11-05      9
+#> 10 2025-10-25     2025-11-06     14
+#> # ℹ 3,785 more rows
 ```
-
-    ## # A tibble: 3,795 × 3
-    ##    reference_date report_date count
-    ##    <date>         <date>      <dbl>
-    ##  1 2025-10-25     2025-10-25    194
-    ##  2 2025-10-25     2025-10-26     54
-    ##  3 2025-10-25     2025-10-27     26
-    ##  4 2025-10-25     2025-10-28     13
-    ##  5 2025-10-25     2025-10-29     12
-    ##  6 2025-10-25     2025-10-30     13
-    ##  7 2025-10-25     2025-10-31      5
-    ##  8 2025-10-25     2025-11-04     14
-    ##  9 2025-10-25     2025-11-05      9
-    ## 10 2025-10-25     2025-11-06     14
-    ## # ℹ 3,785 more rows
 
 **Note:** This dataset represents synthetic data on the number of
 incident cases indexed by reference date and report date. It was
@@ -602,92 +601,62 @@ used for nowcasting.
 
 ``` r
 rep_tri_full <- as_reporting_triangle(training_df)
+#> ℹ Using max_delay = 154 from data
 ```
-
-    ## ℹ Using max_delay = 154 from data
 
 Let’s look at the reporting triangle object we’ve created:
 
 ``` r
 rep_tri_full
+#> Reporting Triangle
+#> Delays unit: days
+#> Reference dates: 2025-10-25 to 2026-04-01
+#> Max delay: 154
+#> Structure: 1
+#> 
+#> Showing last 10 of 159 rows
+#> Showing first 10 of 155 columns
+#> 
+#>              0   1  2  3  4  5  6  7  8  9
+#> 2026-03-23 210 131 34 50 35 12  1 25 20  6
+#> 2026-03-24 221  96 22 10 13  6  0  5  9 NA
+#> 2026-03-25 291 129 17 26 42 29 23 25 NA NA
+#> 2026-03-26 179  96 22 50  9  8 18 NA NA NA
+#> 2026-03-27 284  40 41 54 28 12 NA NA NA NA
+#> 2026-03-28 217  78 46 14 39 NA NA NA NA NA
+#> 2026-03-29 336 161 62 13 NA NA NA NA NA NA
+#> 2026-03-30 296  53 55 NA NA NA NA NA NA NA
+#> 2026-03-31 210 108 NA NA NA NA NA NA NA NA
+#> 2026-04-01 236  NA NA NA NA NA NA NA NA NA
+#> 
+#> Use print(x, n_rows = NULL, n_cols = NULL) to see all data
 ```
-
-    ## Reporting Triangle
-
-    ## Delays unit: days
-
-    ## Reference dates: 2025-10-25 to 2026-04-01
-
-    ## Max delay: 154
-
-    ## Structure: 1
-
-    ## 
-
-    ## Showing last 10 of 159 rows
-
-    ## Showing first 10 of 155 columns
-
-    ## 
-
-    ##              0   1  2  3  4  5  6  7  8  9
-    ## 2026-03-23 210 131 34 50 35 12  1 25 20  6
-    ## 2026-03-24 221  96 22 10 13  6  0  5  9 NA
-    ## 2026-03-25 291 129 17 26 42 29 23 25 NA NA
-    ## 2026-03-26 179  96 22 50  9  8 18 NA NA NA
-    ## 2026-03-27 284  40 41 54 28 12 NA NA NA NA
-    ## 2026-03-28 217  78 46 14 39 NA NA NA NA NA
-    ## 2026-03-29 336 161 62 13 NA NA NA NA NA NA
-    ## 2026-03-30 296  53 55 NA NA NA NA NA NA NA
-    ## 2026-03-31 210 108 NA NA NA NA NA NA NA NA
-    ## 2026-04-01 236  NA NA NA NA NA NA NA NA NA
-
-    ## 
-
-    ## Use print(x, n_rows = NULL, n_cols = NULL) to see all data
 
 And we can get a summary of it:
 
 ``` r
 summary(rep_tri_full)
+#> Reporting Triangle Summary
+#> Dimensions: 159 x 155
+#> Reference period: 2025-10-25 to 2026-04-01
+#> Max delay: 154 days
+#> Structure: 1
+#> Most recent complete date: 2025-10-29 (442 cases)
+#> Dates requiring nowcast: 154 (complete: 5)
+#> Rows with negatives: 0
+#> Zeros: 9905 (77.9% of non-NA values)
+#> Zeros per row summary:
+#>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#>     0.0    18.5    63.0    62.3   100.5   145.0
+#> 
+#> Mean delay summary (complete rows):
+#>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#>   3.615   4.298   4.416   4.414   4.679   5.059
+#> 
+#> 99% quantile delay (complete rows):
+#>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#>    22.0    31.0    31.0    33.4    34.0    49.0
 ```
-
-    ## Reporting Triangle Summary
-
-    ## Dimensions: 159 x 155
-
-    ## Reference period: 2025-10-25 to 2026-04-01
-
-    ## Max delay: 154 days
-
-    ## Structure: 1
-
-    ## Most recent complete date: 2025-10-29 (442 cases)
-
-    ## Dates requiring nowcast: 154 (complete: 5)
-
-    ## Rows with negatives: 0
-
-    ## Zeros: 9905 (77.9% of non-NA values)
-
-    ## Zeros per row summary:
-
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##     0.0    18.5    63.0    62.3   100.5   145.0
-
-    ## 
-
-    ## Mean delay summary (complete rows):
-
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   3.615   4.298   4.416   4.414   4.679   5.059
-
-    ## 
-
-    ## 99% quantile delay (complete rows):
-
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##    22.0    31.0    31.0    33.4    34.0    49.0
 
 We can see the maximum delay inferred from the data. For this analysis,
 we want to limit our reporting triangle to a maximum delay of 25 days
@@ -696,49 +665,36 @@ using
 
 ``` r
 rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
+#> ℹ Truncating from max_delay = 154 to 25.
 ```
-
-    ## ℹ Truncating from max_delay = 154 to 25.
 
 Let’s check the truncated triangle:
 
 ``` r
 rep_tri
+#> Reporting Triangle
+#> Delays unit: days
+#> Reference dates: 2025-10-25 to 2026-04-01
+#> Max delay: 25
+#> Structure: 1
+#> 
+#> Showing last 10 of 159 rows
+#> Showing first 10 of 26 columns
+#> 
+#>              0   1  2  3  4  5  6  7  8  9
+#> 2026-03-23 210 131 34 50 35 12  1 25 20  6
+#> 2026-03-24 221  96 22 10 13  6  0  5  9 NA
+#> 2026-03-25 291 129 17 26 42 29 23 25 NA NA
+#> 2026-03-26 179  96 22 50  9  8 18 NA NA NA
+#> 2026-03-27 284  40 41 54 28 12 NA NA NA NA
+#> 2026-03-28 217  78 46 14 39 NA NA NA NA NA
+#> 2026-03-29 336 161 62 13 NA NA NA NA NA NA
+#> 2026-03-30 296  53 55 NA NA NA NA NA NA NA
+#> 2026-03-31 210 108 NA NA NA NA NA NA NA NA
+#> 2026-04-01 236  NA NA NA NA NA NA NA NA NA
+#> 
+#> Use print(x, n_rows = NULL, n_cols = NULL) to see all data
 ```
-
-    ## Reporting Triangle
-
-    ## Delays unit: days
-
-    ## Reference dates: 2025-10-25 to 2026-04-01
-
-    ## Max delay: 25
-
-    ## Structure: 1
-
-    ## 
-
-    ## Showing last 10 of 159 rows
-
-    ## Showing first 10 of 26 columns
-
-    ## 
-
-    ##              0   1  2  3  4  5  6  7  8  9
-    ## 2026-03-23 210 131 34 50 35 12  1 25 20  6
-    ## 2026-03-24 221  96 22 10 13  6  0  5  9 NA
-    ## 2026-03-25 291 129 17 26 42 29 23 25 NA NA
-    ## 2026-03-26 179  96 22 50  9  8 18 NA NA NA
-    ## 2026-03-27 284  40 41 54 28 12 NA NA NA NA
-    ## 2026-03-28 217  78 46 14 39 NA NA NA NA NA
-    ## 2026-03-29 336 161 62 13 NA NA NA NA NA NA
-    ## 2026-03-30 296  53 55 NA NA NA NA NA NA NA
-    ## 2026-03-31 210 108 NA NA NA NA NA NA NA NA
-    ## 2026-04-01 236  NA NA NA NA NA NA NA NA NA
-
-    ## 
-
-    ## Use print(x, n_rows = NULL, n_cols = NULL) to see all data
 
 ### 3.3 Specify the `baselinenowcast` model
 
@@ -811,23 +767,18 @@ nowcast_draws_df <- baselinenowcast(rep_tri,
   prop_delay = prop_delay,
   draws = 1000
 )
-```
+#> ℹ 0.5 reference times were specified for delay estimation but 0.493 of reference times used for delay estimation.
+#> ℹ `prop_delay` not identical to the proportion of reference times used for delay estimation due to rounding.
 
-    ## ℹ 0.5 reference times were specified for delay estimation but 0.493 of reference times used for delay estimation.
-
-    ## ℹ `prop_delay` not identical to the proportion of reference times used for delay estimation due to rounding.
-
-``` r
 head(nowcast_draws_df)
+#>     pred_count reference_date draw output_type
+#> 1          382     2025-10-25    1     samples
+#> 160        382     2025-10-25    2     samples
+#> 319        382     2025-10-25    3     samples
+#> 478        382     2025-10-25    4     samples
+#> 637        382     2025-10-25    5     samples
+#> 796        382     2025-10-25    6     samples
 ```
-
-    ##     pred_count reference_date draw output_type
-    ## 1          382     2025-10-25    1     samples
-    ## 160        382     2025-10-25    2     samples
-    ## 319        382     2025-10-25    3     samples
-    ## 478        382     2025-10-25    4     samples
-    ## 637        382     2025-10-25    5     samples
-    ## 796        382     2025-10-25    6     samples
 
 Because we specified training volumes that did not result in integer
 reference times, we’ll get a message letting us know that 37/75, or
@@ -883,18 +834,17 @@ nowcast_w_data <- nowcast_summary_df |>
     by = "reference_date"
   )
 head(nowcast_w_data)
+#> # A tibble: 6 × 8
+#>   reference_date median q50th_lb q50th_ub q95th_lb q95th_ub initial_count
+#>   <date>          <dbl>    <dbl>    <dbl>    <dbl>    <dbl>         <dbl>
+#> 1 2025-10-25        382      382      382      382      382           402
+#> 2 2025-10-26        432      432      432      432      432           439
+#> 3 2025-10-27        351      351      351      351      351           363
+#> 4 2025-10-28        361      361      361      361      361           364
+#> 5 2025-10-29        426      426      426      426      426           442
+#> 6 2025-10-30        362      362      362      362      362           367
+#> # ℹ 1 more variable: final_count <dbl>
 ```
-
-    ## # A tibble: 6 × 8
-    ##   reference_date median q50th_lb q50th_ub q95th_lb q95th_ub initial_count
-    ##   <date>          <dbl>    <dbl>    <dbl>    <dbl>    <dbl>         <dbl>
-    ## 1 2025-10-25        382      382      382      382      382           402
-    ## 2 2025-10-26        432      432      432      432      432           439
-    ## 3 2025-10-27        351      351      351      351      351           363
-    ## 4 2025-10-28        361      361      361      361      361           364
-    ## 5 2025-10-29        426      426      426      426      426           442
-    ## 6 2025-10-30        362      362      362      362      362           367
-    ## # ℹ 1 more variable: final_count <dbl>
 
 ### 5.1 Plot nowcast against later observed “final” data
 

@@ -53,6 +53,10 @@ instructions](https://github.com/epinowcast/baselinenowcast#installation).
 Code
 
 ``` r
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 library(baselinenowcast)
 library(ggplot2)
 library(dplyr)
@@ -107,17 +111,16 @@ observed_data <- filter(
   report_date <= nowcast_date
 )
 head(observed_data)
+#> # A tibble: 6 × 6
+#>   reference_date location age_group delay count report_date
+#>   <date>         <chr>    <chr>     <int> <dbl> <date>     
+#> 1 2021-04-06     DE       00+           0   149 2021-04-06 
+#> 2 2021-04-06     DE       00+           1   140 2021-04-07 
+#> 3 2021-04-06     DE       00+           2    61 2021-04-08 
+#> 4 2021-04-06     DE       00+           3    52 2021-04-09 
+#> 5 2021-04-06     DE       00+           4    36 2021-04-10 
+#> 6 2021-04-06     DE       00+           5     8 2021-04-11
 ```
-
-    ## # A tibble: 6 × 6
-    ##   reference_date location age_group delay count report_date
-    ##   <date>         <chr>    <chr>     <int> <dbl> <date>     
-    ## 1 2021-04-06     DE       00+           0   149 2021-04-06 
-    ## 2 2021-04-06     DE       00+           1   140 2021-04-07 
-    ## 3 2021-04-06     DE       00+           2    61 2021-04-08 
-    ## 4 2021-04-06     DE       00+           3    52 2021-04-09 
-    ## 5 2021-04-06     DE       00+           4    36 2021-04-10 
-    ## 6 2021-04-06     DE       00+           5     8 2021-04-11
 
 We refer to the “initial reports” as the sum of the cases at each
 reference date as they were available as of the nowcast date.
@@ -157,9 +160,8 @@ Code
 
 ``` r
 rep_tri_full <- as_reporting_triangle(observed_data)
+#> ℹ Using max_delay = 40 from data
 ```
-
-    ## ℹ Using max_delay = 40 from data
 
 Let’s look at the reporting triangle we’ve created:
 
@@ -167,41 +169,29 @@ Code
 
 ``` r
 rep_tri_full
+#> Reporting Triangle
+#> Delays unit: days
+#> Reference dates: 2021-04-06 to 2021-08-01
+#> Max delay: 40
+#> Structure: 1
+#> 
+#> Showing last 10 of 118 rows
+#> Showing first 10 of 41 columns
+#> 
+#>             0  1  2  3  4  5  6  7  8  9
+#> 2021-07-23 30 12  4  1 10  6  0  2  2  1
+#> 2021-07-24 31  8  4  9  8  2  5  2  1 NA
+#> 2021-07-25  8  4 14  8  6  5  1  3 NA NA
+#> 2021-07-26  9  6  2  3  0  0  0 NA NA NA
+#> 2021-07-27 35 11  6  4  4  1 NA NA NA NA
+#> 2021-07-28 51 28 25  3  5 NA NA NA NA NA
+#> 2021-07-29 47 37  9  2 NA NA NA NA NA NA
+#> 2021-07-30 36 20  2 NA NA NA NA NA NA NA
+#> 2021-07-31 38 16 NA NA NA NA NA NA NA NA
+#> 2021-08-01  7 NA NA NA NA NA NA NA NA NA
+#> 
+#> Use print(x, n_rows = NULL, n_cols = NULL) to see all data
 ```
-
-    ## Reporting Triangle
-
-    ## Delays unit: days
-
-    ## Reference dates: 2021-04-06 to 2021-08-01
-
-    ## Max delay: 40
-
-    ## Structure: 1
-
-    ## 
-
-    ## Showing last 10 of 118 rows
-
-    ## Showing first 10 of 41 columns
-
-    ## 
-
-    ##             0  1  2  3  4  5  6  7  8  9
-    ## 2021-07-23 30 12  4  1 10  6  0  2  2  1
-    ## 2021-07-24 31  8  4  9  8  2  5  2  1 NA
-    ## 2021-07-25  8  4 14  8  6  5  1  3 NA NA
-    ## 2021-07-26  9  6  2  3  0  0  0 NA NA NA
-    ## 2021-07-27 35 11  6  4  4  1 NA NA NA NA
-    ## 2021-07-28 51 28 25  3  5 NA NA NA NA NA
-    ## 2021-07-29 47 37  9  2 NA NA NA NA NA NA
-    ## 2021-07-30 36 20  2 NA NA NA NA NA NA NA
-    ## 2021-07-31 38 16 NA NA NA NA NA NA NA NA
-    ## 2021-08-01  7 NA NA NA NA NA NA NA NA NA
-
-    ## 
-
-    ## Use print(x, n_rows = NULL, n_cols = NULL) to see all data
 
 We can see the maximum delay inferred from the data. For this analysis,
 we want to limit our reporting triangle to a maximum delay of 30 days:
@@ -210,49 +200,31 @@ Code
 
 ``` r
 rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
-```
-
-    ## ℹ Truncating from max_delay = 40 to 30.
-
-Code
-
-``` r
+#> ℹ Truncating from max_delay = 40 to 30.
 rep_tri
+#> Reporting Triangle
+#> Delays unit: days
+#> Reference dates: 2021-04-06 to 2021-08-01
+#> Max delay: 30
+#> Structure: 1
+#> 
+#> Showing last 10 of 118 rows
+#> Showing first 10 of 31 columns
+#> 
+#>             0  1  2  3  4  5  6  7  8  9
+#> 2021-07-23 30 12  4  1 10  6  0  2  2  1
+#> 2021-07-24 31  8  4  9  8  2  5  2  1 NA
+#> 2021-07-25  8  4 14  8  6  5  1  3 NA NA
+#> 2021-07-26  9  6  2  3  0  0  0 NA NA NA
+#> 2021-07-27 35 11  6  4  4  1 NA NA NA NA
+#> 2021-07-28 51 28 25  3  5 NA NA NA NA NA
+#> 2021-07-29 47 37  9  2 NA NA NA NA NA NA
+#> 2021-07-30 36 20  2 NA NA NA NA NA NA NA
+#> 2021-07-31 38 16 NA NA NA NA NA NA NA NA
+#> 2021-08-01  7 NA NA NA NA NA NA NA NA NA
+#> 
+#> Use print(x, n_rows = NULL, n_cols = NULL) to see all data
 ```
-
-    ## Reporting Triangle
-
-    ## Delays unit: days
-
-    ## Reference dates: 2021-04-06 to 2021-08-01
-
-    ## Max delay: 30
-
-    ## Structure: 1
-
-    ## 
-
-    ## Showing last 10 of 118 rows
-
-    ## Showing first 10 of 31 columns
-
-    ## 
-
-    ##             0  1  2  3  4  5  6  7  8  9
-    ## 2021-07-23 30 12  4  1 10  6  0  2  2  1
-    ## 2021-07-24 31  8  4  9  8  2  5  2  1 NA
-    ## 2021-07-25  8  4 14  8  6  5  1  3 NA NA
-    ## 2021-07-26  9  6  2  3  0  0  0 NA NA NA
-    ## 2021-07-27 35 11  6  4  4  1 NA NA NA NA
-    ## 2021-07-28 51 28 25  3  5 NA NA NA NA NA
-    ## 2021-07-29 47 37  9  2 NA NA NA NA NA NA
-    ## 2021-07-30 36 20  2 NA NA NA NA NA NA NA
-    ## 2021-07-31 38 16 NA NA NA NA NA NA NA NA
-    ## 2021-08-01  7 NA NA NA NA NA NA NA NA NA
-
-    ## 
-
-    ## Use print(x, n_rows = NULL, n_cols = NULL) to see all data
 
 We will use this `reporting_triangle` class object, `rep_tri`, for the
 remaining workflow steps.
@@ -557,15 +529,14 @@ nowcast_draws_df <- sample_nowcasts(
 )
 
 head(nowcast_draws_df)
+#>   pred_count reference_date draw
+#> 1        609     2021-04-06    1
+#> 2       1024     2021-04-07    1
+#> 3       1352     2021-04-08    1
+#> 4       1195     2021-04-09    1
+#> 5       1113     2021-04-10    1
+#> 6        773     2021-04-11    1
 ```
-
-    ##   pred_count reference_date draw
-    ## 1        609     2021-04-06    1
-    ## 2       1024     2021-04-07    1
-    ## 3       1352     2021-04-08    1
-    ## 4       1195     2021-04-09    1
-    ## 5       1113     2021-04-10    1
-    ## 6        773     2021-04-11    1
 
 See documentation for
 [`sample_nowcasts()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcasts.md)for
@@ -584,15 +555,14 @@ obs_with_nowcast_draws_df <- nowcast_draws_df |>
   left_join(latest_data, by = "reference_date") |>
   left_join(initial_reports, by = "reference_date")
 head(obs_with_nowcast_draws_df)
+#>   pred_count reference_date draw final_count initial_count
+#> 1        609     2021-04-06    1         615           615
+#> 2       1024     2021-04-07    1        1036          1036
+#> 3       1352     2021-04-08    1        1384          1384
+#> 4       1195     2021-04-09    1        1232          1232
+#> 5       1113     2021-04-10    1        1137          1137
+#> 6        773     2021-04-11    1         794           794
 ```
-
-    ##   pred_count reference_date draw final_count initial_count
-    ## 1        609     2021-04-06    1         615           615
-    ## 2       1024     2021-04-07    1        1036          1036
-    ## 3       1352     2021-04-08    1        1384          1384
-    ## 4       1195     2021-04-09    1        1232          1232
-    ## 5       1113     2021-04-10    1        1137          1137
-    ## 6        773     2021-04-11    1         794           794
 
 Create a separate dataframe for only the observed and final data, to
 make plotting easier.

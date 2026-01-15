@@ -45,6 +45,10 @@ instructions](https://github.com/epinowcast/baselinenowcast#installation).
 Code
 
 ``` r
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 library(baselinenowcast)
 library(ggplot2)
 library(dplyr)
@@ -120,17 +124,16 @@ observed_data <- filter(
 )
 
 head(observed_data)
+#> # A tibble: 6 × 6
+#>   reference_date location age_group delay count report_date
+#>   <date>         <chr>    <chr>     <int> <dbl> <date>     
+#> 1 2021-04-06     DE       00+           0   149 2021-04-06 
+#> 2 2021-04-06     DE       00+           1   140 2021-04-07 
+#> 3 2021-04-06     DE       00+           2    61 2021-04-08 
+#> 4 2021-04-06     DE       00+           3    52 2021-04-09 
+#> 5 2021-04-06     DE       00+           4    36 2021-04-10 
+#> 6 2021-04-06     DE       00+           5     8 2021-04-11
 ```
-
-    ## # A tibble: 6 × 6
-    ##   reference_date location age_group delay count report_date
-    ##   <date>         <chr>    <chr>     <int> <dbl> <date>     
-    ## 1 2021-04-06     DE       00+           0   149 2021-04-06 
-    ## 2 2021-04-06     DE       00+           1   140 2021-04-07 
-    ## 3 2021-04-06     DE       00+           2    61 2021-04-08 
-    ## 4 2021-04-06     DE       00+           3    52 2021-04-09 
-    ## 5 2021-04-06     DE       00+           4    36 2021-04-10 
-    ## 6 2021-04-06     DE       00+           5     8 2021-04-11
 
 We refer to the “initial reports” as the sum of the cases at each
 reference date as they were available as of the nowcast date.
@@ -259,9 +262,8 @@ Code
 
 ``` r
 rep_tri_full <- as_reporting_triangle(observed_data)
+#> ℹ Using max_delay = 40 from data
 ```
-
-    ## ℹ Using max_delay = 40 from data
 
 Let’s look at the reporting triangle object we’ve created:
 
@@ -269,41 +271,29 @@ Code
 
 ``` r
 rep_tri_full
+#> Reporting Triangle
+#> Delays unit: days
+#> Reference dates: 2021-04-06 to 2021-08-01
+#> Max delay: 40
+#> Structure: 1
+#> 
+#> Showing last 10 of 118 rows
+#> Showing first 10 of 41 columns
+#> 
+#>             0  1  2  3  4  5  6  7  8  9
+#> 2021-07-23 30 12  4  1 10  6  0  2  2  1
+#> 2021-07-24 31  8  4  9  8  2  5  2  1 NA
+#> 2021-07-25  8  4 14  8  6  5  1  3 NA NA
+#> 2021-07-26  9  6  2  3  0  0  0 NA NA NA
+#> 2021-07-27 35 11  6  4  4  1 NA NA NA NA
+#> 2021-07-28 51 28 25  3  5 NA NA NA NA NA
+#> 2021-07-29 47 37  9  2 NA NA NA NA NA NA
+#> 2021-07-30 36 20  2 NA NA NA NA NA NA NA
+#> 2021-07-31 38 16 NA NA NA NA NA NA NA NA
+#> 2021-08-01  7 NA NA NA NA NA NA NA NA NA
+#> 
+#> Use print(x, n_rows = NULL, n_cols = NULL) to see all data
 ```
-
-    ## Reporting Triangle
-
-    ## Delays unit: days
-
-    ## Reference dates: 2021-04-06 to 2021-08-01
-
-    ## Max delay: 40
-
-    ## Structure: 1
-
-    ## 
-
-    ## Showing last 10 of 118 rows
-
-    ## Showing first 10 of 41 columns
-
-    ## 
-
-    ##             0  1  2  3  4  5  6  7  8  9
-    ## 2021-07-23 30 12  4  1 10  6  0  2  2  1
-    ## 2021-07-24 31  8  4  9  8  2  5  2  1 NA
-    ## 2021-07-25  8  4 14  8  6  5  1  3 NA NA
-    ## 2021-07-26  9  6  2  3  0  0  0 NA NA NA
-    ## 2021-07-27 35 11  6  4  4  1 NA NA NA NA
-    ## 2021-07-28 51 28 25  3  5 NA NA NA NA NA
-    ## 2021-07-29 47 37  9  2 NA NA NA NA NA NA
-    ## 2021-07-30 36 20  2 NA NA NA NA NA NA NA
-    ## 2021-07-31 38 16 NA NA NA NA NA NA NA NA
-    ## 2021-08-01  7 NA NA NA NA NA NA NA NA NA
-
-    ## 
-
-    ## Use print(x, n_rows = NULL, n_cols = NULL) to see all data
 
 And we can get a summary of it:
 
@@ -311,44 +301,27 @@ Code
 
 ``` r
 summary(rep_tri_full)
+#> Reporting Triangle Summary
+#> Dimensions: 118 x 41
+#> Reference period: 2021-04-06 to 2021-08-01
+#> Max delay: 40 days
+#> Structure: 1
+#> Most recent complete date: 2021-06-22 (67 cases)
+#> Dates requiring nowcast: 40 (complete: 78)
+#> Rows with negatives: 0
+#> Zeros: 1278 (31.8% of non-NA values)
+#> Zeros per row summary:
+#>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#>    0.00    4.00    8.00   10.83   19.00   33.00
+#> 
+#> Mean delay summary (complete rows):
+#>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#>   2.525   4.857   5.650   5.469   6.174   7.678
+#> 
+#> 99% quantile delay (complete rows):
+#>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#>   17.00   33.00   35.00   34.31   37.00   40.00
 ```
-
-    ## Reporting Triangle Summary
-
-    ## Dimensions: 118 x 41
-
-    ## Reference period: 2021-04-06 to 2021-08-01
-
-    ## Max delay: 40 days
-
-    ## Structure: 1
-
-    ## Most recent complete date: 2021-06-22 (67 cases)
-
-    ## Dates requiring nowcast: 40 (complete: 78)
-
-    ## Rows with negatives: 0
-
-    ## Zeros: 1278 (31.8% of non-NA values)
-
-    ## Zeros per row summary:
-
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##    0.00    4.00    8.00   10.83   19.00   33.00
-
-    ## 
-
-    ## Mean delay summary (complete rows):
-
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   2.525   4.857   5.650   5.469   6.174   7.678
-
-    ## 
-
-    ## 99% quantile delay (complete rows):
-
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   17.00   33.00   35.00   34.31   37.00   40.00
 
 We can see the maximum delay is set to the maximum observed delay, which
 in some cases will be a lot larger than the delays we want to model. We
@@ -367,9 +340,8 @@ Code
 
 ``` r
 rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
+#> ℹ Truncating from max_delay = 40 to 30.
 ```
-
-    ## ℹ Truncating from max_delay = 40 to 30.
 
 Let’s check the truncated triangle:
 
@@ -377,41 +349,29 @@ Code
 
 ``` r
 rep_tri
+#> Reporting Triangle
+#> Delays unit: days
+#> Reference dates: 2021-04-06 to 2021-08-01
+#> Max delay: 30
+#> Structure: 1
+#> 
+#> Showing last 10 of 118 rows
+#> Showing first 10 of 31 columns
+#> 
+#>             0  1  2  3  4  5  6  7  8  9
+#> 2021-07-23 30 12  4  1 10  6  0  2  2  1
+#> 2021-07-24 31  8  4  9  8  2  5  2  1 NA
+#> 2021-07-25  8  4 14  8  6  5  1  3 NA NA
+#> 2021-07-26  9  6  2  3  0  0  0 NA NA NA
+#> 2021-07-27 35 11  6  4  4  1 NA NA NA NA
+#> 2021-07-28 51 28 25  3  5 NA NA NA NA NA
+#> 2021-07-29 47 37  9  2 NA NA NA NA NA NA
+#> 2021-07-30 36 20  2 NA NA NA NA NA NA NA
+#> 2021-07-31 38 16 NA NA NA NA NA NA NA NA
+#> 2021-08-01  7 NA NA NA NA NA NA NA NA NA
+#> 
+#> Use print(x, n_rows = NULL, n_cols = NULL) to see all data
 ```
-
-    ## Reporting Triangle
-
-    ## Delays unit: days
-
-    ## Reference dates: 2021-04-06 to 2021-08-01
-
-    ## Max delay: 30
-
-    ## Structure: 1
-
-    ## 
-
-    ## Showing last 10 of 118 rows
-
-    ## Showing first 10 of 31 columns
-
-    ## 
-
-    ##             0  1  2  3  4  5  6  7  8  9
-    ## 2021-07-23 30 12  4  1 10  6  0  2  2  1
-    ## 2021-07-24 31  8  4  9  8  2  5  2  1 NA
-    ## 2021-07-25  8  4 14  8  6  5  1  3 NA NA
-    ## 2021-07-26  9  6  2  3  0  0  0 NA NA NA
-    ## 2021-07-27 35 11  6  4  4  1 NA NA NA NA
-    ## 2021-07-28 51 28 25  3  5 NA NA NA NA NA
-    ## 2021-07-29 47 37  9  2 NA NA NA NA NA NA
-    ## 2021-07-30 36 20  2 NA NA NA NA NA NA NA
-    ## 2021-07-31 38 16 NA NA NA NA NA NA NA NA
-    ## 2021-08-01  7 NA NA NA NA NA NA NA NA NA
-
-    ## 
-
-    ## Use print(x, n_rows = NULL, n_cols = NULL) to see all data
 
 Click to expand code to create the plot of the reporting triangle
 
@@ -504,15 +464,14 @@ obs_with_nowcast_draws_df <- nowcast_draws_df |>
   left_join(latest_data, by = "reference_date") |>
   left_join(initial_reports, by = "reference_date")
 head(obs_with_nowcast_draws_df)
+#>   pred_count reference_date draw output_type final_count initial_count
+#> 1        609     2021-04-06    1     samples         615           615
+#> 2        609     2021-04-06    2     samples         615           615
+#> 3        609     2021-04-06    3     samples         615           615
+#> 4        609     2021-04-06    4     samples         615           615
+#> 5        609     2021-04-06    5     samples         615           615
+#> 6        609     2021-04-06    6     samples         615           615
 ```
-
-    ##   pred_count reference_date draw output_type final_count initial_count
-    ## 1        609     2021-04-06    1     samples         615           615
-    ## 2        609     2021-04-06    2     samples         615           615
-    ## 3        609     2021-04-06    3     samples         615           615
-    ## 4        609     2021-04-06    4     samples         615           615
-    ## 5        609     2021-04-06    5     samples         615           615
-    ## 6        609     2021-04-06    6     samples         615           615
 
 Click to expand code to create the plot of the probabilistic nowcast
 

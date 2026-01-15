@@ -143,8 +143,8 @@ specification. Contributions of any kind are welcome!
 
 [kaitejohnson](https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson),
 [seabbs](https://github.com/epinowcast/baselinenowcast/commits?author=seabbs),
-[jamesmbaazam](https://github.com/epinowcast/baselinenowcast/commits?author=jamesmbaazam),
 [TimTaylor](https://github.com/epinowcast/baselinenowcast/commits?author=TimTaylor),
+[jamesmbaazam](https://github.com/epinowcast/baselinenowcast/commits?author=jamesmbaazam),
 [sbfnk](https://github.com/epinowcast/baselinenowcast/commits?author=sbfnk)
 
 ### Issue Authors
@@ -156,7 +156,8 @@ specification. Contributions of any kind are welcome!
 
 ### Issue Contributors
 
-[jbracher](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher)
+[jbracher](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher),
+[SamuelBrand1](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3ASamuelBrand1)
 
 # Package index
 

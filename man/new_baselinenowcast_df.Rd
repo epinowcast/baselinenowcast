@@ -15,7 +15,7 @@ draws with columns for the reference time (\code{time}), the predicted counts
 reference times in the \code{baselinenowcast_df}.}
 
 \item{output_type}{Character string indicating whether the output should be
-samples (\code{"samples"})from the estimate with full uncertainty or whether to
+samples (\code{"samples"}) from the estimate with full uncertainty or whether to
 return the point estimate (\code{"point"}). Default is \code{"samples"}.}
 }
 \value{

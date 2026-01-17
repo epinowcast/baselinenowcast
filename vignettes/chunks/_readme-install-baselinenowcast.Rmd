@@ -1,4 +1,4 @@
-You can install the latest released version from CRAN using the standard `install.packages` function:
+You can install the latest released version using:
 
 ```{r, eval = FALSE}
 install.packages("baselinenowcast")

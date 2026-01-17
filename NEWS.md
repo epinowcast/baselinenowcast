@@ -1,5 +1,6 @@
-# baselinenowcast 0.0.0.1000
+# baselinenowcast 0.2.0
 
+-   A paper validating and evaluating the performance of the methods is available at  <https://wellcomeopenresearch.org/articles/10-614/v1>.
 -   `fill_triangle()` has been removed. Use `estimate_and_apply_delay()` instead, which now supports optional delay estimation via the `delay_pmf` parameter (#334).
 -   `fill_triangles()` has been removed. Use `estimate_and_apply_delays()` instead (#334).
 -   Rename `truncate_triangle()` to `truncate_to_row()` and `truncate_triangles()` to `truncate_to_rows()` to clarify that these functions truncate by row count and distinguish them from other truncation utilities such as `truncate_to_quantile()` and `truncate_to_delay()` (#336).
@@ -18,6 +19,8 @@
 -   Add a vignette which demonstrates how to pre-process for nowcasting syndromic surveillance system data using the U.S. National Syndromic Surveillance Program (NSSP) data as a case study, and then use `baselinenowcast` to nowcast cases of a specific syndromic surveillance definition.
 -   Add intermediate-level grouping functions to generate a point nowcast from a reporting triangle and to take a point nowcast and estimate and apply uncertainty.
 -   Refactor `estimate_uncertainty` to take in an error model function, an aggregator function for aggregating across reference times, and an aggregator function for aggregating across delays.
+
+## baselinenowcast 0.0.0.1.000
 -   Fix internal checks that ensure there is sufficient data for the specified target choice, using the number of NA rows rather than the number of columns as a proxy for the number of horizons.
 -   Replace argument names with more complete versions where possible.
 -   Replace most function names with action-oriented function naming.

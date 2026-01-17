@@ -12,7 +12,7 @@
 #' @inheritParams sample_nowcast
 #' @inheritParams allocate_reference_times
 #' @param output_type Character string indicating whether the output should be
-#'   samples (`"samples"`)from the estimate with full uncertainty or whether to
+#'   samples (`"samples"`) from the estimate with full uncertainty or whether to
 #'   return the point estimate (`"point"`). Default is `"samples"`.
 #' @param draws Integer indicating the number of probabilistic draws to include
 #'    if `output_type` is `"samples"`. Default is 1000.
@@ -80,12 +80,6 @@ baselinenowcast <- function(data,
 #'   negative values. Custom preprocess functions must accept a `validate`
 #'   parameter (defaults to TRUE) to enable validation optimisation in internal
 #'   function chains.
-#' @param n_min_retro_nowcasts Integer indicating the minimum number of
-#'     reference times needed for uncertainty estimation.
-#'     If `output_type = "samples"`, the default is `2` so that there are
-#'     sufficient reference times for uncertainty estimation, otherwise if
-#'     `output_type = "point"`, the default is `0` because no additional
-#'     reference times are needed for uncertainty estimation.
 #' @param ... Additional arguments passed to
 #'    [estimate_uncertainty()]
 #'    and [sample_nowcast()].
@@ -118,7 +112,6 @@ baselinenowcast.reporting_triangle <- function(
     delay_pmf = NULL,
     uncertainty_params = NULL,
     preprocess = preprocess_negative_values,
-    n_min_retro_nowcasts = ifelse(output_type == "samples", 2, 0),
     validate = TRUE,
     ...) {
   assert_reporting_triangle(data, validate)
@@ -127,10 +120,15 @@ baselinenowcast.reporting_triangle <- function(
 
   reference_dates <- get_reference_dates(data)
 
+  # Adjust minimum number of reference times for point estimate (0)
+  # or "samples" (2) bc this requires estimating uncertainty
+  n_req_uq_ref_times <- ifelse(output_type == "samples", 2, 0)
+
   tv <- allocate_reference_times(data,
     scale_factor = scale_factor,
     prop_delay = prop_delay,
-    validate = FALSE
+    validate = FALSE,
+    n_min_retro_nowcasts = n_req_uq_ref_times
   )
 
   # Apply preprocessing if provided

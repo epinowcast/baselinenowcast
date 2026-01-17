@@ -15,7 +15,6 @@
   delay_pmf = NULL,
   uncertainty_params = NULL,
   preprocess = preprocess_negative_values,
-  n_min_retro_nowcasts = ifelse(output_type == "samples", 2, 0),
   validate = TRUE,
   ...
 )
@@ -34,7 +33,7 @@ reference times in the reporting triangle to be used for delay
 estimation. Default is \code{0.5}.}
 
 \item{output_type}{Character string indicating whether the output should be
-samples (\code{"samples"})from the estimate with full uncertainty or whether to
+samples (\code{"samples"}) from the estimate with full uncertainty or whether to
 return the point estimate (\code{"point"}). Default is \code{"samples"}.}
 
 \item{draws}{Integer indicating the number of probabilistic draws to include
@@ -73,13 +72,6 @@ redistributing them to earlier delays. Set to NULL if you want to preserve
 negative values. Custom preprocess functions must accept a \code{validate}
 parameter (defaults to TRUE) to enable validation optimisation in internal
 function chains.}
-
-\item{n_min_retro_nowcasts}{Integer indicating the minimum number of
-reference times needed for uncertainty estimation.
-If \code{output_type = "samples"}, the default is \code{2} so that there are
-sufficient reference times for uncertainty estimation, otherwise if
-\code{output_type = "point"}, the default is \code{0} because no additional
-reference times are needed for uncertainty estimation.}
 
 \item{validate}{Logical. If TRUE (default), validates the object. Set to
 FALSE only when called from functions that already validated.}

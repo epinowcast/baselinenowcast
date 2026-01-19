@@ -7,7 +7,7 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-yellow.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-CMD-check](https://github.com/epinowcast/baselinenowcast/workflows/R-CMD-check/badge.svg?branch=main)](https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml/badge.svg?branch=main)](https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/epinowcast/baselinenowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epinowcast/baselinenowcast)
 [![MIT

@@ -1,6 +1,11 @@
 # baselinenowcast 0.2.0
 
--   A paper validating and evaluating the performance of the methods is available at  <https://wellcomeopenresearch.org/articles/10-614/v1>.
+This is the first stable release providing core functionality for producing probabilistic or point nowcasts from a dataframe with incident case counts indexed by reference dates and report dates.
+It supports doing so across multiple strata, either through creating `reporting_triangle` objects for each strata and nowcasting independently, or nowcasting directly from a dataframe containing multiple strata.
+The `reporting_triangle` object allows users to specify the unit of the delay, and provides helpful `print` and `summary` S3 methods, as well as functionality to truncate to a specific delay or a percentile of the observed delays.
+A paper validating and evaluating the performance of the methods is available at  <https://wellcomeopenresearch.org/articles/10-614/v1>.
+
+Detailed changelog:
 -   `fill_triangle()` has been removed. Use `estimate_and_apply_delay()` instead, which now supports optional delay estimation via the `delay_pmf` parameter (#334).
 -   `fill_triangles()` has been removed. Use `estimate_and_apply_delays()` instead (#334).
 -   Rename `truncate_triangle()` to `truncate_to_row()` and `truncate_triangles()` to `truncate_to_rows()` to clarify that these functions truncate by row count and distinguish them from other truncation utilities such as `truncate_to_quantile()` and `truncate_to_delay()` (#336).

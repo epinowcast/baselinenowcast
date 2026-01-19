@@ -64,6 +64,7 @@ Imports:
 Suggests:
     bookdown,
     ChainLadder,
+    data.table,
     dplyr,
     tidyr,
     stringr,

@@ -50,7 +50,6 @@ Description: Nowcasting right-truncated epidemiological data is critical
   reporting (daily-weekly, weekly-daily). It also supports sharing delay
   distributions and uncertainty estimates between strata,
   as well as custom uncertainty models and delay estimation methods.
-
 License: MIT + file LICENSE
 URL: https://github.com/epinowcast/baselinenowcast, https://baselinenowcast.epinowcast.org
 BugReports: https://github.com/epinowcast/baselinenowcast/issues

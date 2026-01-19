@@ -13,7 +13,11 @@
 #' @inheritParams allocate_reference_times
 #' @param output_type Character string indicating whether the output should be
 #'   samples (`"samples"`) from the estimate with full uncertainty or whether to
-#'   return the point estimate (`"point"`). Default is `"samples"`.
+#'   return the point estimate (`"point"`). Default is `"samples"`. If
+#'   `"point"`estimates are specified, the minimum number of reference times
+#'   needed is the number needed for delay estimation, otherwise, if
+#'   `"samples"` are specified, at least 2 additional reference times are
+#'   required for uncertainty estimation.
 #' @param draws Integer indicating the number of probabilistic draws to include
 #'    if `output_type` is `"samples"`. Default is 1000.
 #' @param ... Additional arguments passed to methods.
@@ -120,9 +124,10 @@ baselinenowcast.reporting_triangle <- function(
 
   reference_dates <- get_reference_dates(data)
 
-  # Adjust minimum number of reference times for point estimate (0)
-  # or "samples" (2) bc this requires estimating uncertainty
-  n_req_uq_ref_times <- ifelse(output_type == "samples", 2, 0)
+  n_req_uq_ref_times <- switch(output_type,
+    "samples" = 2,
+    "point" = 0
+  )
 
   tv <- allocate_reference_times(data,
     scale_factor = scale_factor,

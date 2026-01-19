@@ -15,8 +15,12 @@ draws with columns for the reference time (\code{time}), the predicted counts
 reference times in the \code{baselinenowcast_df}.}
 
 \item{output_type}{Character string indicating whether the output should be
-samples (\code{"samples"})from the estimate with full uncertainty or whether to
-return the point estimate (\code{"point"}). Default is \code{"samples"}.}
+samples (\code{"samples"}) from the estimate with full uncertainty or whether to
+return the point estimate (\code{"point"}). Default is \code{"samples"}. If
+\code{"point"}estimates are specified, the minimum number of reference times
+needed is the number needed for delay estimation, otherwise, if
+\code{"samples"} are specified, at least 2 additional reference times are
+required for uncertainty estimation.}
 }
 \value{
 An object of class \code{\link{baselinenowcast_df}}

@@ -158,7 +158,7 @@
 #'    YYYY-MM-DD.}
 #' }
 #' @source This data comes directly from the preprocessed data in the
-#'   German COVID-19 Nowcast Hub from \url{https://github.com/KITmetricslab/hospitalization-nowcast-hub/blob/main/data-truth/COVID-19/COVID-19_hospitalizations_preprocessed.csv}.
+#'   German COVID-19 Nowcast Hub from \url{https://github.com/KITmetricslab/hospitalization-nowcast-hub/blob/main/data-truth/COVID-19/COVID-19_hospitalizations_preprocessed.csv}. #nolint
 # nolint
 #'   It contains incident case counts by age group in Germany.
 #' @family example_data

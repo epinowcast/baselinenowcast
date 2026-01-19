@@ -303,3 +303,19 @@ test_that("baselinenowcast works on example reporting triangle", {
   expect_false(anyNA(result$pred_count))
   expect_gt(nrow(result), 0)
 })
+
+test_that("baselinenowcast point estimate works with just enough reference times", { # nolint
+  rep_tri_min <- tail(
+    example_reporting_triangle,
+    ncol(example_reporting_triangle) + 1
+  )
+  result <- expect_no_error(
+    suppressWarnings(
+      baselinenowcast(rep_tri_min,
+        output_type = "point"
+      )
+    )
+  )
+  expect_false(anyNA(result$pred_count))
+  expect_gt(nrow(result), 0)
+})

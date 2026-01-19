@@ -33,8 +33,12 @@ reference times in the reporting triangle to be used for delay
 estimation. Default is \code{0.5}.}
 
 \item{output_type}{Character string indicating whether the output should be
-samples (\code{"samples"})from the estimate with full uncertainty or whether to
-return the point estimate (\code{"point"}). Default is \code{"samples"}.}
+samples (\code{"samples"}) from the estimate with full uncertainty or whether to
+return the point estimate (\code{"point"}). Default is \code{"samples"}. If
+\code{"point"}estimates are specified, the minimum number of reference times
+needed is the number needed for delay estimation, otherwise, if
+\code{"samples"} are specified, at least 2 additional reference times are
+required for uncertainty estimation.}
 
 \item{draws}{Integer indicating the number of probabilistic draws to include
 if \code{output_type} is \code{"samples"}. Default is 1000.}

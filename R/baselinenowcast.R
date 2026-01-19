@@ -125,8 +125,8 @@ baselinenowcast.reporting_triangle <- function(
   reference_dates <- get_reference_dates(data)
 
   n_req_uq_ref_times <- switch(output_type,
-    "samples" = 2,
-    "point" = 0
+    "samples" = 2, # nolint
+    "point" = 0 # nolint
   )
 
   tv <- allocate_reference_times(data,

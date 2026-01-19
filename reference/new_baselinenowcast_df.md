@@ -26,8 +26,12 @@ new_baselinenowcast_df(baselinenowcast_df, reference_dates, output_type)
 - output_type:
 
   Character string indicating whether the output should be samples
-  (`"samples"`)from the estimate with full uncertainty or whether to
-  return the point estimate (`"point"`). Default is `"samples"`.
+  (`"samples"`) from the estimate with full uncertainty or whether to
+  return the point estimate (`"point"`). Default is `"samples"`. If
+  `"point"`estimates are specified, the minimum number of reference
+  times needed is the number needed for delay estimation, otherwise, if
+  `"samples"` are specified, at least 2 additional reference times are
+  required for uncertainty estimation.
 
 ## Value
 

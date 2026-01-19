@@ -105,8 +105,12 @@ estimation. Default is <code>0.5</code>.</p></dd>
 
 <dt id="arg-output-type">output_type<a class="anchor" aria-label="anchor" href="#arg-output-type"></a></dt>
 <dd><p>Character string indicating whether the output should be
-samples (<code>"samples"</code>)from the estimate with full uncertainty or whether to
-return the point estimate (<code>"point"</code>). Default is <code>"samples"</code>.</p></dd>
+samples (<code>"samples"</code>) from the estimate with full uncertainty or whether to
+return the point estimate (<code>"point"</code>). Default is <code>"samples"</code>. If
+<code>"point"</code>estimates are specified, the minimum number of reference times
+needed is the number needed for delay estimation, otherwise, if
+<code>"samples"</code> are specified, at least 2 additional reference times are
+required for uncertainty estimation.</p></dd>
 
 
 <dt id="arg-draws">draws<a class="anchor" aria-label="anchor" href="#arg-draws"></a></dt>

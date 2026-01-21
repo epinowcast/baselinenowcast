@@ -43,7 +43,7 @@ Description: Nowcasting right-truncated epidemiological data is critical
   <https://wellcomeopenresearch.org/articles/10-614/v1>. The package supports
   standard data frame inputs with reference date, report date, and
   count columns, as well as the direct use of reporting triangles, which
-  makes it compatible with 'epinowcast' objects. Alongside
+compatible with 'epinowcast' objects. Alongside
   an opinionated default workflow, it has a low-level pipe-friendly modular
   interface, allowing context-specific workflows. It can accommodate a wide
   spectrum of reporting schedules, including mixed patterns of reference and

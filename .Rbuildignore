@@ -25,7 +25,7 @@
 ^touchstone$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
-^*.html$
+^\.html$
 ^\.claude$
 ^\.profiling$
 ^profile_original\.html$

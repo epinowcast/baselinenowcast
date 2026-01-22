@@ -27,3 +27,4 @@
 ^CRAN-SUBMISSION$
 ^\.claude$
 ^\.profiling$
+^profile_original\.html$

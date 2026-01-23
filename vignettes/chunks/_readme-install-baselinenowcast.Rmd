@@ -1,11 +1,22 @@
+You can install the latest released version using:
 
-To install the development version from GitHub (warning! this version may contain breaking changes and/or bugs), use the [`pak` package](https://pak.r-lib.org/):
+```{r, eval = FALSE}
+install.packages("baselinenowcast")
+```
+
+Alternatively, you can install the latest GitHub release from our r-universe repository:
+
+```{r, eval = FALSE}
+install.packages("baselinenowcast", repos = "https://epinowcast.r-universe.dev")
+```
+
+To install the development version from GitHub, use the [`pak` package](https://pak.r-lib.org/):
 
 ```{r, eval = FALSE}
 pak::pak(file.path("epinowcast", "baselinenowcast"))
 ```
 
-Another option for installation is using the [`remotes` package](https://cran.r-project.org/web/packages/remotes/index.html):
+Another option for installation is using the [`remotes` package](https://CRAN.R-project.org/package=remotes):
 
 ```{r, eval = FALSE}
 remotes::install_github(file.path("epinowcast", "baselinenowcast"))

@@ -13,7 +13,7 @@ negative value is fully absorbed or the first delay is reached.
 This code was adapted from code written (under an MIT license) by the
 Karlsruhe Institute of Technology RESPINOW German Hospitalization
 Nowcasting Hub. Modified from
-https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R
+<https://github.com/KITmetricslab/RESPINOW-Hub/blob/main/code/baseline/functions.R>
 \#nolint
 
 ## Usage

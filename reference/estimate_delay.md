@@ -10,7 +10,7 @@ if you want to limit the maximum delay before estimation. This code was
 adapted from code written (under an MIT license) by the Karlsruhe
 Institute of Technology RESPINOW German Hospitalization Nowcasting Hub.
 Modified from:
-https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55
+<https://github.com/KITmetricslab/RESPINOW-Hub/blob/7cce3ae2728116e8c8cc0e4ab29074462c24650e/code/baseline/functions.R#L55>
 \#nolint
 
 ## Usage

@@ -1,6 +1,21 @@
 # Changelog
 
-## baselinenowcast 0.0.0.1000
+## baselinenowcast 0.2.0
+
+This is the first stable release providing core functionality for
+producing probabilistic or point nowcasts from a dataframe with incident
+case counts indexed by reference dates and report dates. It supports
+doing so across multiple strata, either through creating
+`reporting_triangle` objects for each strata and nowcasting
+independently, or nowcasting directly from a dataframe containing
+multiple strata. The `reporting_triangle` object allows users to specify
+the unit of the delay, and provides helpful `print` and `summary` S3
+methods, as well as functionality to truncate to a specific delay or a
+percentile of the observed delays. A paper validating and evaluating the
+performance of the methods is available at
+<https://wellcomeopenresearch.org/articles/10-614/v1>.
+
+### Package
 
 - `fill_triangle()` has been removed. Use
   [`estimate_and_apply_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delay.md)
@@ -21,11 +36,6 @@
   and
   [`truncate_to_delay()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_delay.md)
   ([\#336](https://github.com/epinowcast/baselinenowcast/issues/336)).
-- Add a vignette which walks through the low-level function interface on
-  the same nowcasting problem as in the Getting Started vignette.
-- Modify the Getting Started vignette to use the
-  [`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md)
-  wrapper function.
 - Use the `as_reporting_triangle` and `baselinenowcast` workflow in the
   vignette which walks through a nowcasting example applied to syndromic
   surveillance data in the U.S.
@@ -41,16 +51,6 @@
   [`preprocess_negative_values()`](https://baselinenowcast.epinowcast.org/reference/preprocess_negative_values.md)
   function to allow users to manually handle negative values in
   reporting triangles by redistributing them to earlier delays
-  ([\#278](https://github.com/epinowcast/baselinenowcast/issues/278)).
-- Improve PMF validation message to be more informative when the delay
-  PMF does not sum to approximately 1. The message now shows the actual
-  sum and clarifies that this may be expected when working with downward
-  corrections or incomplete data
-  ([\#148](https://github.com/epinowcast/baselinenowcast/issues/148),
-  [\#278](https://github.com/epinowcast/baselinenowcast/issues/278)).
-- Add `example_downward_corr_mat` data demonstrating a scenario with
-  systematic downward corrections at a specific delay, producing a PMF
-  with negative entries when estimated with `preprocess = NULL`
   ([\#278](https://github.com/epinowcast/baselinenowcast/issues/278)).
 - Add a
   [`baselinenowcast.data.frame()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.data.frame.md)
@@ -68,7 +68,6 @@
   method which ingests a `reporting_triangle` object and produces a
   `baselinenowcast_df` object which is a data.frame with nowcasts and
   associated metadata.
-- Include the pre-print as well as the package in the citation.
 - Add a
   [`as_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.md)
   S3 method which ingests a data.frame or matrix and returns a
@@ -87,12 +86,28 @@
 - Refactor `estimate_uncertainty` to take in an error model function, an
   aggregator function for aggregating across reference times, and an
   aggregator function for aggregating across delays.
-- Fix internal checks that ensure there is sufficient data for the
-  specified target choice, using the number of NA rows rather than the
-  number of columns as a proxy for the number of horizons.
+
+### Documentation
+
+- Add a vignette which walks through the low-level function interface on
+  the same nowcasting problem as in the Getting Started vignette.
+- Modify the Getting Started vignette to use the
+  [`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md)
+  wrapper function.
+- Improve PMF validation message to be more informative when the delay
+  PMF does not sum to approximately 1. The message now shows the actual
+  sum and clarifies that this may be expected when working with downward
+  corrections or incomplete data
+  ([\#148](https://github.com/epinowcast/baselinenowcast/issues/148),
+  [\#278](https://github.com/epinowcast/baselinenowcast/issues/278)).
+- Include the pre-print as well as the package in the citation.
+
+## baselinenowcast 0.0.0.1.000
+
+### Package
+
 - Replace argument names with more complete versions where possible.
 - Replace most function names with action-oriented function naming.
-- Add new logo.
 - Add a check to ensure that there are sufficient non-zero values in the
   reporting triangle.
 - Add a check to ensure that sufficient `n` are specified for the delay
@@ -100,8 +115,6 @@
 - Change the requirement so that the number of rows used for delay
   estimation need not be greater than or equal to the number of columns,
   but instead that at least one row contains a full set of observations.
-- Bug fix to change the requirement so that the sum of the elements in
-  the `structure` vector must not be greater than the number of columns.
 - Add support for passing in a restricted set of functions to the
   `estimate_dispersion()` function to transform the “target” dataset
   across reference dates.
@@ -109,9 +122,6 @@
   nowcasts are generated from a list of retrospective reporting
   triangles, ensuring that the iterations continue even if not all
   retrospective point nowcasts can be generated.
-- Modify vignette to be consistent with the decided upon defaults for
-  the number of reference times used for delay estimation and
-  uncertainty.
 - Replace function named `replace_lower_right_with_NA()` with
   `generate_triangle()`.
 - Removes requirement that all elements of the reporting triangle are
@@ -143,7 +153,27 @@
   reporting triangle.
 - Refactor uncertainty estimation to use a user-facing function to
   generate retrospective reporting triangles.
+- Introduced function to estimate the uncertainty from a triangle to be
+  nowcasted and a delay distribution.
+- Introduced functions to get the delay estimate and apply the delay,
+  and used these in the Getting Started vignette.
+- Added package skeleton.
+
+### Documentation
+
+- Modify vignette to be consistent with the decided upon defaults for
+  the number of reference times used for delay estimation and
+  uncertainty.
+- Add new logo.
 - Methods write-up as a separate vignette.
+
+### Bug fixes
+
+- Fix internal checks that ensure there is sufficient data for the
+  specified target choice, using the number of NA rows rather than the
+  number of columns as a proxy for the number of horizons.
+- Bug fix to change the requirement so that the sum of the elements in
+  the `structure` vector must not be greater than the number of columns.
 - Introduced function to estimate the uncertainty from a triangle to be
   nowcasted and a delay distribution.
 - Introduced functions to get the delay estimate and apply the delay,

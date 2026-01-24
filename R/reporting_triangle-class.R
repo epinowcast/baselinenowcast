@@ -290,8 +290,14 @@ validate_reporting_triangle <- function(data) {
 #' @param data A [reporting_triangle] object to check for validity.
 #' @param validate Logical. If TRUE (default), validates the object. Set to
 #'   FALSE only when called from functions that already validated.
-#' @return NULL
+#' @return Returns `NULL` invisibly. Throws an error if validation fails.
 #' @family reporting_triangle
+#' @examples
+#' # Validate an example reporting triangle
+#' assert_reporting_triangle(example_reporting_triangle)
+#'
+#' # Example of invalid object
+#' try(assert_reporting_triangle(data.frame(x = 1)))
 #' @export
 assert_reporting_triangle <- function(data, validate = TRUE) {
   if (isTRUE(validate)) {

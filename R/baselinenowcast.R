@@ -23,6 +23,20 @@
 #' @param ... Additional arguments passed to methods.
 #' @returns Data.frame of class [baselinenowcast_df]
 #' @family baselinenowcast_df
+#' @examples
+#' # Generate a point nowcast from a reporting triangle
+#' nowcast <- baselinenowcast(
+#'   example_reporting_triangle,
+#'   output_type = "point"
+#' )
+#' nowcast
+#'
+#' # Generate probabilistic nowcast with samples
+#' try(baselinenowcast(
+#'   example_reporting_triangle,
+#'   output_type = "samples",
+#'   draws = 100
+#' ))
 #' @export
 baselinenowcast <- function(data,
                             scale_factor = 3,

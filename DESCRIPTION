@@ -1,5 +1,5 @@
 Package: baselinenowcast
-Title: Methods for Baseline Nowcasting Right-Truncated Epidemiological Data
+Title: Baseline Nowcasting for Right-Truncated Epidemiological Data
 Version: 0.2.0
 Authors@R:
   c(person(given = "Kaitlyn",

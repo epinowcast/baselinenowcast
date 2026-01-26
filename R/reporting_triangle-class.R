@@ -296,8 +296,6 @@ validate_reporting_triangle <- function(data) {
 #' # Validate an example reporting triangle
 #' assert_reporting_triangle(example_reporting_triangle)
 #'
-#' # Example of invalid object
-#' assert_reporting_triangle(data.frame(x = 1))
 #' @export
 assert_reporting_triangle <- function(data, validate = TRUE) {
   if (isTRUE(validate)) {

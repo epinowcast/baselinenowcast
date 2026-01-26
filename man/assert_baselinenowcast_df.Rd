@@ -27,9 +27,6 @@ class(valid_df) <- c("baselinenowcast_df", "data.frame")
 
 # Validate the object
 assert_baselinenowcast_df(valid_df)
-
-# Example of invalid object (missing required column)
-assert_baselinenowcast_df(data.frame(x = 1))
 }
 \seealso{
 Main nowcasting interface functions

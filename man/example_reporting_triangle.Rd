@@ -36,7 +36,7 @@ Use \link{example_downward_corr_rt} for examples with data quality corrections.
 example_reporting_triangle
 
 # Use in nowcasting - requires complete rows for delay estimation
-estimate_delay(example_reporting_triangle, n = 2)
+estimate_delay(example_reporting_triangle, n = 6)
 }
 \seealso{
 \itemize{

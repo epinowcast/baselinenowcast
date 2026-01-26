@@ -22,8 +22,6 @@ Assert validity of \code{reporting_triangle} objects
 # Validate an example reporting triangle
 assert_reporting_triangle(example_reporting_triangle)
 
-# Example of invalid object
-assert_reporting_triangle(data.frame(x = 1))
 }
 \seealso{
 Reporting triangle construction and validation

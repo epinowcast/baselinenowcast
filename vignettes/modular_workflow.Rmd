@@ -300,8 +300,7 @@ disp_params <- estimate_uncertainty(
   n = n_retrospective_nowcasts
 )
 ```
-T
-his function uses a negative binomial observation model by default, and independently estimates the dispersion in the negative binomial at each forecast horizon.
+This function uses a negative binomial observation model by default, and independently estimates the dispersion in the negative binomial at each forecast horizon.
 
 Note that the estimation of uncertainty from a reporting triangle can be done in a single step using the `estimate_uncertainty_retro()` function, which chains together the truncation of triangles, construction of retrospective reporting triangles, the generation of point nowcasts via `estimate_and_apply_delays()`, and the estimation of the uncertainty from the estimates compared to the observations.
 

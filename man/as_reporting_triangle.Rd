@@ -21,6 +21,15 @@ A \link{reporting_triangle} object
 \description{
 Create a \code{reporting_triangle} object
 }
+\examples{
+# Create a reporting triangle from a data.frame
+data_as_of_df <- syn_nssp_df[
+  syn_nssp_df$report_date <= "2026-04-01" &
+    (syn_nssp_df$report_date - syn_nssp_df$reference_date) <= 25,
+]
+rt <- as_reporting_triangle(data = data_as_of_df)
+rt
+}
 \seealso{
 Reporting triangle construction and validation
 \code{\link{[.reporting_triangle}()},

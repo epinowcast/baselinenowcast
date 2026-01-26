@@ -65,6 +65,21 @@ estimate of the final case counts at each reference date in the \code{data}.
 See \code{\link[=baselinenowcast.reporting_triangle]{baselinenowcast.reporting_triangle()}} for details on the
 input requirements.
 }
+\examples{
+# Generate a point nowcast from a reporting triangle
+nowcast <- baselinenowcast(
+  example_reporting_triangle,
+  output_type = "point"
+)
+nowcast
+
+# Generate probabilistic nowcast with samples
+baselinenowcast(
+  example_reporting_triangle,
+  output_type = "samples",
+  draws = 100
+)
+}
 \seealso{
 Main nowcasting interface functions
 \code{\link{assert_baselinenowcast_df}()},

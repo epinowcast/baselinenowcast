@@ -12,8 +12,18 @@ assert_reporting_triangle(data, validate = TRUE)
 \item{validate}{Logical. If TRUE (default), validates the object. Set to
 FALSE only when called from functions that already validated.}
 }
+\value{
+Returns \code{NULL} invisibly. Throws an error if validation fails.
+}
 \description{
 Assert validity of \code{reporting_triangle} objects
+}
+\examples{
+# Validate an example reporting triangle
+assert_reporting_triangle(example_reporting_triangle)
+
+# Example of invalid object
+assert_reporting_triangle(data.frame(x = 1))
 }
 \seealso{
 Reporting triangle construction and validation

@@ -80,7 +80,7 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
 #' assert_baselinenowcast_df(valid_df)
 #'
 #' # Example of invalid object (missing required column)
-#' try(assert_baselinenowcast_df(data.frame(x = 1)))
+#' assert_baselinenowcast_df(data.frame(x = 1))
 #' @export
 assert_baselinenowcast_df <- function(data) {
   assert_data_frame(data)

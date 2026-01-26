@@ -32,11 +32,11 @@
 #' nowcast
 #'
 #' # Generate probabilistic nowcast with samples
-#' try(baselinenowcast(
+#' baselinenowcast(
 #'   example_reporting_triangle,
 #'   output_type = "samples",
 #'   draws = 100
-#' ))
+#' )
 #' @export
 baselinenowcast <- function(data,
                             scale_factor = 3,

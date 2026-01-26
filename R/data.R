@@ -90,7 +90,7 @@
 #' example_reporting_triangle
 #'
 #' # Use in nowcasting - requires complete rows for delay estimation
-#' try(estimate_delay(example_reporting_triangle, n = 2))
+#' estimate_delay(example_reporting_triangle, n = 2)
 "example_reporting_triangle"
 
 #' Example reporting triangle with downward corrections

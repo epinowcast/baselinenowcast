@@ -89,10 +89,8 @@
 #' # View the example triangle
 #' example_reporting_triangle
 #'
-#' \dontrun{
 #' # Use in nowcasting - requires complete rows for delay estimation
-#' estimate_delay(example_reporting_triangle, n = 2)
-#' }
+#' estimate_delay(example_reporting_triangle, n = 6)
 "example_reporting_triangle"
 
 #' Example reporting triangle with downward corrections

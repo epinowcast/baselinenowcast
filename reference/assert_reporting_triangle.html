@@ -76,6 +76,10 @@ FALSE only when called from functions that already validated.</p></dd>
 
 </dl></div>
     <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>Returns <code>NULL</code> invisibly. Throws an error if validation fails.</p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Reporting triangle construction and validation
 <code><a href="sub-.reporting_triangle.html">[.reporting_triangle()</a></code>,
@@ -107,6 +111,14 @@ FALSE only when called from functions that already validated.</p></dd>
 <code><a href="validate_reporting_triangle.html">validate_reporting_triangle()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Validate an example reporting triangle</span></span></span>
+<span class="r-in"><span><span class="fu">assert_reporting_triangle</span><span class="op">(</span><span class="va">example_reporting_triangle</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

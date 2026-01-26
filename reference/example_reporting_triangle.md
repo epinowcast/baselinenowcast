@@ -79,8 +79,8 @@ example_reporting_triangle
 #> 2024-01-06 110 NA NA NA
 #> 2024-01-07  95 NA NA NA
 
-if (FALSE) { # \dontrun{
 # Use in nowcasting - requires complete rows for delay estimation
-estimate_delay(example_reporting_triangle, n = 2)
-} # }
+estimate_delay(example_reporting_triangle, n = 6)
+#>          0          1          2          3 
+#> 0.51800148 0.28185375 0.14151285 0.05863192 
 ```

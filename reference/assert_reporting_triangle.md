@@ -21,6 +21,10 @@ assert_reporting_triangle(data, validate = TRUE)
   Logical. If TRUE (default), validates the object. Set to FALSE only
   when called from functions that already validated.
 
+## Value
+
+Returns `NULL` invisibly. Throws an error if validation fails.
+
 ## See also
 
 Reporting triangle construction and validation
@@ -51,3 +55,11 @@ Reporting triangle construction and validation
 [`truncate_to_delay()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_delay.md),
 [`truncate_to_quantile()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_quantile.md),
 [`validate_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/validate_reporting_triangle.md)
+
+## Examples
+
+``` r
+# Validate an example reporting triangle
+assert_reporting_triangle(example_reporting_triangle)
+#> NULL
+```

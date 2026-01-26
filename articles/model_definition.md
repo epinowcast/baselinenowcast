@@ -454,20 +454,28 @@ their target data being a rolling 7 day sum).
 
 ## References
 
-1\. Wolffram, D., Abbott, S., Heiden, M. an der, Funk, S., Günther, F.,
+1\.
+
+Wolffram, D., Abbott, S., Heiden, M. an der, Funk, S., Günther, F.,
 Hailer, D., Heyder, S., Hotz, T., Kassteele, J. van de, Küchenhoff, H.,
 Müller-Hansen, S., Syliqi, D., Ullrich, A., Weigert, M., Schienle, M., &
 Bracher, J. (2023). Collaborative nowcasting of COVID-19 hospitalization
 incidences in germany. *PLOS Computational Biology*, *19*(8), 1–25.
 <https://doi.org/10.1371/journal.pcbi.1011394>
 
-2\. Friedland, J. (2010). Estimating unpaid claims using basic
-techniques. In *Casualty Actuarial Society*. Casualty Actuarial Society,
+2\.
+
+Friedland, J. (2010). Estimating unpaid claims using basic techniques.
+In *Casualty Actuarial Society*. Casualty Actuarial Society,
 <https://www.casact.org/sites/default/files/database/studynotes_friedland_estimating.pdf>.
 
-3\. Morgenstern, C., & Cori, A. (2025). Disentangling mechanistic and
+3\.
+
+Morgenstern, C., & Cori, A. (2025). Disentangling mechanistic and
 observational overdispersion effects to infer superspreading from
 aggregated epidemic incidence. In *In preparation*.
 
-4\. Inc., W. R. (n.d.). *Mathematica, Version 14.2*.
+4\.
+
+Inc., W. R. (n.d.). *Mathematica, Version 14.2*. Retrieved
 <https://www.wolfram.com/mathematica/>

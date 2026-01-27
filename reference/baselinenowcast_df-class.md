@@ -5,6 +5,12 @@ nowcasts alongside reference dates and any additional metadata, in tidy
 data format. Nowcasts are presented aggregated across delays, by
 reference date.
 
+## Value
+
+A `baselinenowcast_df` object. This is a data.frame subclass containing
+nowcast results. See the Structure section for details on the required
+columns.
+
 ## Structure
 
 A `baselinenowcast_df` is a data.frame with the following columns:

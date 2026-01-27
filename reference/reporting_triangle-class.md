@@ -3,6 +3,12 @@
 A `reporting_triangle` object contains the data and metadata needed for
 nowcasting.
 
+## Value
+
+A `reporting_triangle` object. This is a matrix subclass containing case
+counts indexed by reference date (rows) and delay (columns). See the
+Structure section for details on the object format.
+
 ## Structure
 
 A `reporting_triangle` is a matrix with class

@@ -4,6 +4,11 @@
 \alias{baselinenowcast_df-class}
 \alias{baselinenowcast_df}
 \title{Nowcast Data.frame Object}
+\value{
+A \code{baselinenowcast_df} object. This is a data.frame subclass
+containing nowcast results. See the Structure section for details on
+the required columns.
+}
 \description{
 A \code{baselinenowcast_df} object which contains point or probabilistic nowcasts
 alongside reference dates and any additional metadata, in tidy data format.

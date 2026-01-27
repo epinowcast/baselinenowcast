@@ -4,6 +4,11 @@
 \alias{reporting_triangle-class}
 \alias{reporting_triangle}
 \title{Reporting Triangle Object}
+\value{
+A \code{reporting_triangle} object. This is a matrix subclass containing
+case counts indexed by reference date (rows) and delay (columns). See the
+Structure section for details on the object format.
+}
 \description{
 A \code{reporting_triangle} object contains the data and metadata needed for
 nowcasting.
@@ -79,6 +84,7 @@ total_by_delay <- colSums(rep_tri, na.rm = TRUE)
 # Subsetting and inspection
 recent <- tail(rep_tri, n = 10)
 summary(rep_tri)
+
 }
 \seealso{
 Reporting triangle construction and validation

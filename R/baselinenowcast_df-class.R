@@ -25,6 +25,10 @@
 #' See the corresponding [reporting_triangle] and
 #' [baselinenowcast()] function
 #' for more details on the required inputs to generate the object.
+#'
+#' @return A `baselinenowcast_df` object. This is a data.frame subclass
+#'   containing nowcast results. See the Structure section for details on
+#'   the required columns.
 NULL
 
 #' Combine data from a nowcast dataframe, strata, and reference dates

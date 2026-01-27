@@ -65,6 +65,10 @@
 #' # Subsetting and inspection
 #' recent <- tail(rep_tri, n = 10)
 #' summary(rep_tri)
+#'
+#' @return A `reporting_triangle` object. This is a matrix subclass containing
+#'   case counts indexed by reference date (rows) and delay (columns). See the
+#'   Structure section for details on the object format.
 NULL
 
 #' Validate reporting_triangle constructor arguments

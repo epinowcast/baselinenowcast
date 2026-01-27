@@ -333,7 +333,7 @@
   return(NULL)
 }
 
-#' Validate the reporting triangle data.frame
+#' Validate a single reporting triangle data.frame
 #' @description Checks for duplicate reference date report dates, missing
 #'    columns, report dates beyond the final reference date, and missing
 #'    combinations of delays and reports.
@@ -345,25 +345,8 @@
 #' @importFrom checkmate assert_data_frame
 #' @returns NULL, invisibly
 #' @keywords internal
-.validate_rep_tri_df <- function(data,
-                                 delays_unit) {
-  assert_data_frame(data)
-  # Validate inputs
-  required_cols <- c(
-    "reference_date",
-    "report_date",
-    "count"
-  )
-  missing_cols <- setdiff(required_cols, names(data))
-  if (length(missing_cols) > 0) {
-    cli_abort(
-      message = c(
-        "Required columns missing from data",
-        "x" = "Missing: {.val {missing_cols}}" # nolint
-      )
-    )
-  }
-
+.validate_one_rep_tri_df <- function(data,
+                                     delays_unit) {
   # Check for distinct pairs of reference dates and report dates
   dup_pairs <- duplicated(data[, c("reference_date", "report_date")])
 
@@ -397,6 +380,40 @@
   }
   return(NULL)
 }
+
+#' Validate the reporting triangle data.frame
+#' @description Checks for duplicate reference date report dates, missing
+#'    columns, report dates beyond the final reference date, and missing
+#'    combinations of delays and reports.
+#'
+#' @param data Data.frame in long tidy form with reference dates, report dates,
+#'   and case counts, used to create a `reporting_triangle` object.
+#' @inheritParams as_reporting_triangle.data.frame
+#'
+#' @importFrom checkmate assert_data_frame
+#' @returns NULL, invisibly
+#' @keywords internal
+.validate_rep_tri_df <- function(data,
+                                 delays_unit) {
+  assert_data_frame(data)
+  # Validate inputs
+  required_cols <- c(
+    "reference_date",
+    "report_date",
+    "count"
+  )
+  missing_cols <- setdiff(required_cols, names(data))
+  if (length(missing_cols) > 0) {
+    cli_abort(
+      message = c(
+        "Required columns missing from data",
+        "x" = "Missing: {.val {missing_cols}}" # nolint
+      )
+    )
+  }
+  return(NULL)
+}
+
 
 #' Validate the uncertainty parameters if they are passed in
 #'

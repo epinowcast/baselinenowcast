@@ -379,8 +379,7 @@ We refer to these as retrospective reporting triangles.</p>
 <span>  retro_reporting_triangles <span class="op">=</span> <span class="va">retro_rep_tri_list</span>,</span>
 <span>  n <span class="op">=</span> <span class="va">n_retrospective_nowcasts</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</details><p>T
-his function uses a negative binomial observation model by default, and independently estimates the dispersion in the negative binomial at each forecast horizon.</p>
+</details><p>This function uses a negative binomial observation model by default, and independently estimates the dispersion in the negative binomial at each forecast horizon.</p>
 <p>Note that the estimation of uncertainty from a reporting triangle can be done in a single step using the <code><a href="../reference/estimate_uncertainty_retro.html">estimate_uncertainty_retro()</a></code> function, which chains together the truncation of triangles, construction of retrospective reporting triangles, the generation of point nowcasts via <code><a href="../reference/estimate_and_apply_delays.html">estimate_and_apply_delays()</a></code>, and the estimation of the uncertainty from the estimates compared to the observations.</p>
 </div>
 <div class="section level2">

@@ -487,9 +487,9 @@ disp_params <- estimate_uncertainty(
 )
 ```
 
-T his function uses a negative binomial observation model by default,
-and independently estimates the dispersion in the negative binomial at
-each forecast horizon.
+This function uses a negative binomial observation model by default, and
+independently estimates the dispersion in the negative binomial at each
+forecast horizon.
 
 Note that the estimation of uncertainty from a reporting triangle can be
 done in a single step using the

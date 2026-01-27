@@ -5,29 +5,40 @@
 Nowcasting right-truncated epidemiological data is critical for timely
 public health decision-making, as reporting delays can create misleading
 impressions of declining trends in recent data. This package provides
-simple nowcasting methods for practical use based on using empirical
-delay distributions and uncertainty from past performance. It is also
-designed to be used as a baseline method for developers of new
-nowcasting methods. It supports standard data frame inputs with
-reference date, report date, and count columns, is compatible with
-‘epinowcast’ objects, and also supports direct use of reporting
-triangles. Alongside an opinionated default workflow, it has a low-level
-pipe-friendly modular interface, allowing context-specific workflows. It
-can accommodate a wide spectrum of reporting schedules, including mixed
-patterns of reference and reporting (daily-weekly, weekly-daily). It
-also supports sharing delay distributions and uncertainty estimates
-between strata, as well as custom uncertainty models and delay
-estimation methods. For more details on the performance of the method(s)
-in this package applied to case studies of COVID-19 and norovirus, see
-our recent paper at
-<https://wellcomeopenresearch.org/articles/10-614/v1>.
+nowcasting methods based on using empirical delay distributions and
+uncertainty from past performance. It is also designed to be used as a
+baseline method for developers of new nowcasting methods. For more
+details on the performance of the method(s) in this package applied to
+case studies of COVID-19 and norovirus, see our recent paper at
+<https://wellcomeopenresearch.org/articles/10-614/v1>. The package
+supports standard data frame inputs with reference date, report date,
+and count columns, as well as the direct use of reporting triangles, and
+is compatible with ‘epinowcast’ objects. Alongside an opinionated
+default workflow, it has a low-level pipe-friendly modular interface,
+allowing context-specific workflows. It can accommodate a wide spectrum
+of reporting schedules, including mixed patterns of reference and
+reporting (daily-weekly, weekly-daily). It also supports sharing delay
+distributions and uncertainty estimates between strata, as well as
+custom uncertainty models and delay estimation methods.
 
 ## Installation
 
 Installing the package
 
-To install the development version from GitHub (warning! this version
-may contain breaking changes and/or bugs), use the [`pak`
+You can install the latest released version using:
+
+``` r
+install.packages("baselinenowcast")
+```
+
+Alternatively, you can install the latest GitHub release from our
+r-universe repository:
+
+``` r
+install.packages("baselinenowcast", repos = "https://epinowcast.r-universe.dev")
+```
+
+To install the development version from GitHub, use the [`pak`
 package](https://pak.r-lib.org/):
 
 ``` r
@@ -35,7 +46,7 @@ pak::pak(file.path("epinowcast", "baselinenowcast"))
 ```
 
 Another option for installation is using the [`remotes`
-package](https://cran.r-project.org/web/packages/remotes/index.html):
+package](https://CRAN.R-project.org/package=remotes):
 
 ``` r
 remotes::install_github(file.path("epinowcast", "baselinenowcast"))

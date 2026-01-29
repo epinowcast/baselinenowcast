@@ -26,14 +26,14 @@ uncertainty from past performance. It is also designed to be used as a
 baseline method for developers of new nowcasting methods. For more
 details on the performance of the method(s) in this package applied to
 case studies of COVID-19 and norovirus, see our recent paper at
-<https://wellcomeopenresearch.org/articles/10-614/v1>. The package
-supports standard data frame inputs with reference date, report date,
-and count columns, as well as the direct use of reporting triangles, and
-is compatible with ‘epinowcast’ objects. Alongside an opinionated
-default workflow, it has a low-level pipe-friendly modular interface,
-allowing context-specific workflows. It can accommodate a wide spectrum
-of reporting schedules, including mixed patterns of reference and
-reporting (daily-weekly, weekly-daily). It also supports sharing delay
+<https://wellcomeopenresearch.org/articles/10-614>. The package supports
+standard data frame inputs with reference date, report date, and count
+columns, as well as the direct use of reporting triangles, and is
+compatible with ‘epinowcast’ objects. Alongside an opinionated default
+workflow, it has a low-level pipe-friendly modular interface, allowing
+context-specific workflows. It can accommodate a wide spectrum of
+reporting schedules, including mixed patterns of reference and reporting
+(daily-weekly, weekly-daily). It also supports sharing delay
 distributions and uncertainty estimates between strata, as well as
 custom uncertainty models and delay estimation methods.
 
@@ -143,7 +143,7 @@ with `citation("baselinenowcast")` (or
       nowcasting methods for handling delays in epidemiological data."
       _Wellcome Open Research_. doi:10.12688/wellcomeopenres.25027.1
       <https://doi.org/10.12688/wellcomeopenres.25027.1>,
-      <https://wellcomeopenresearch.org/articles/10-614/v1>.
+      <https://wellcomeopenresearch.org/articles/10-614>.
 
     A BibTeX entry for LaTeX users is
 
@@ -153,7 +153,7 @@ with `citation("baselinenowcast")` (or
         year = {2025},
         journal = {Wellcome Open Research},
         doi = {10.12688/wellcomeopenres.25027.1},
-        url = {https://wellcomeopenresearch.org/articles/10-614/v1},
+        url = {https://wellcomeopenresearch.org/articles/10-614},
       }
 
       Johnson KE, Tyszka E, Bracher J, Funk S, Abbott S (2025).

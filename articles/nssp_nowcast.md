@@ -529,10 +529,9 @@ points. See the [Getting
 Started](https://baselinenowcast.epinowcast.org/articles/baselinenowcast.md)
 vignette for another example of evaluating our nowcast, and for a full
 quantitative evaluation of the method applied to different case studies,
-see our
-[pre-print](https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2)
-where we evaluate the method on COVID-19 cases in Germany and norovirus
-cases in England.
+see our [paper](https://wellcomeopenresearch.org/articles/10-614) where
+we evaluate the method on COVID-19 cases in Germany and norovirus cases
+in England.
 
 ``` r
 max_delay <- 25

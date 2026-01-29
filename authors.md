@@ -27,7 +27,7 @@ Funk S, Mellor J, Bracher J, Abbott S (2025). “Baseline nowcasting
 methods for handling delays in epidemiological data.” *Wellcome Open
 Research*.
 [doi:10.12688/wellcomeopenres.25027.1](https://doi.org/10.12688/wellcomeopenres.25027.1),
-<https://wellcomeopenresearch.org/articles/10-614/v1>.
+<https://wellcomeopenresearch.org/articles/10-614>.
 
     @Article{,
       title = {Baseline nowcasting methods for handling delays in epidemiological data},
@@ -35,7 +35,7 @@ Research*.
       year = {2025},
       journal = {Wellcome Open Research},
       doi = {10.12688/wellcomeopenres.25027.1},
-      url = {https://wellcomeopenresearch.org/articles/10-614/v1},
+      url = {https://wellcomeopenresearch.org/articles/10-614},
     }
 
 Johnson KE, Tyszka E, Bracher J, Funk S, Abbott S (2025).

@@ -336,7 +336,7 @@ In general, we want to choose a maximum delay that will incorporate the vast maj
 However, a longer maximum delay will mean that you will require more historical data for training the model, which must be considered if the amount of historical data is limited say in a novel outbreak situation.
 In order to produce a nowcast that we can evaluate against later observed data for this example, we will pretend that we are making a nowcast 30 days before the last reference date in the dataset, May 5th, 2026.
 In real-time, we would just use the latest reference date as our nowcast date, however, for evaluating the performance of the method we want to look back at the nowcast we would have made with the data we would have had at past time points.
-See the [Getting Started](baselinenowcast.html) vignette for another example of evaluating our nowcast, and for a full quantitative evaluation of the method applied to different case studies, see our [pre-print](https://www.medrxiv.org/content/10.1101/2025.08.14.25333653v2) where we evaluate the method on COVID-19 cases in Germany and norovirus cases in England.
+See the [Getting Started](baselinenowcast.html) vignette for another example of evaluating our nowcast, and for a full quantitative evaluation of the method applied to different case studies, see our [paper](https://wellcomeopenresearch.org/articles/10-614) where we evaluate the method on COVID-19 cases in Germany and norovirus cases in England.
 ```{r}
 max_delay <- 25
 nowcast_date <- max(long_df$reference_date) - days(30)

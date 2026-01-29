@@ -949,7 +949,7 @@ ran the `baselinenowcast` workflow using the
 function to generate probabilistic nowcasts. This function chains
 together multiple steps, and we describe the modular workflow option in
 the [Getting
-Started](https://baselinenowcast.epinowcast.org/articles/baselinenowcst.md)
+Started](https://baselinenowcast.epinowcast.org/articles/baselinenowcast.md)
 vignette. As a final step, we compared our nowcasts of the eventual
 final observed case counts to what we later observed and the
 right-truncated initial reports.
@@ -959,16 +959,15 @@ scoring rules such as the weighted interval score (WIS) or the
 continuous ranked probability score (CRPS) and computing metrics such as
 the interval coverage to assess how well the observed data falls within
 our uncertainty bands. See the [`scoringutils` R
-package](https://baselinenowcast.epinowcast.org/articles/epiforecasts.io/scoringutils/)
-for resources on scoring predictions. In this vignette we used the
-package’s default settings to specify the model, but the optimal
-settings will be dependent on the context and its important to tune the
-model for your dataset and needs. The user has a number of choices in
-how to specify the model, such as the amount of training data to use for
-delay or uncertainty estimation, the choice of observation model,
-whether to separately estimate delays by weekday, or whether to borrow
-estimates from across different strata such as age groups or locations.
-See the [Getting
+package](https://epiforecasts.io/scoringutils/) for resources on scoring
+predictions. In this vignette we used the package’s default settings to
+specify the model, but the optimal settings will be dependent on the
+context and its important to tune the model for your dataset and needs.
+The user has a number of choices in how to specify the model, such as
+the amount of training data to use for delay or uncertainty estimation,
+the choice of observation model, whether to separately estimate delays
+by weekday, or whether to borrow estimates from across different strata
+such as age groups or locations. See the [Getting
 Started](https://baselinenowcast.epinowcast.org/articles/baselinenowcast.md)
 vignette and [model
 definition](https://baselinenowcast.epinowcast.org/articles/model_definition.md)

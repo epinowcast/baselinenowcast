@@ -2,6 +2,8 @@
 
 ## baselinenowcast 0.2.0
 
+CRAN release: 2026-02-03
+
 This is the first stable release providing core functionality for
 producing probabilistic or point nowcasts from a dataframe with incident
 case counts indexed by reference dates and report dates. It supports

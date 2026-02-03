@@ -206,9 +206,17 @@ baselinenowcast.reporting_triangle <- function(
 }
 
 #' @title Create a dataframe of nowcast results from a dataframe of cases
-#'   indexed by reference date and report date
+#'   indexed by reference date and report date (DEPRECATED)
 #'
-#' @description This function ingests a data.frame with the number of incident
+#' @description
+#' \lifecycle{deprecated}
+#'
+#' **This method is deprecated.** Please use [as_reporting_triangle_df()] to
+#' create a [reporting_triangle_df] object first, then pass it to
+#' [baselinenowcast()]. The new [baselinenowcast.reporting_triangle_df()]
+#' method provides the same functionality with a cleaner interface.
+#'
+#' This function ingests a data.frame with the number of incident
 #'  cases indexed by reference date and report date for one or multiple
 #'  strata, which define the unit of a single nowcast (e.g. age groups or
 #'  locations). It returns a data.frame containing nowcasts by reference
@@ -315,6 +323,17 @@ baselinenowcast.data.frame <- function(
     strata_sharing = "none",
     preprocess = preprocess_negative_values,
     ...) {
+  # Deprecation warning
+  cli_warn(
+    message = c(
+      "!" = "baselinenowcast.data.frame() is deprecated.",
+      "i" = "Please use as_reporting_triangle_df() to create a reporting_triangle_df first:",
+      " " = "  rt_df <- as_reporting_triangle_df(data, by = strata_cols)",
+      " " = "  baselinenowcast(rt_df, strata_sharing = strata_sharing)",
+      "i" = "See ?as_reporting_triangle_df and ?baselinenowcast.reporting_triangle_df for details."
+    )
+  )
+
   output_type <- arg_match(output_type)
   assert_names(colnames(data),
     must.include = c("reference_date", "report_date", "count")
@@ -442,6 +461,216 @@ baselinenowcast.data.frame <- function(
   }
   combined_result$name <- NULL
   return(combined_result)
+}
+
+#' @title Create a dataframe of nowcast results from a reporting_triangle_df
+#'
+#' @description This function ingests a [reporting_triangle_df] object and
+#'  generates nowcasts in the form of a [baselinenowcast_df] object.
+#'  This is the recommended entry point for nowcasting with
+#'  `baselinenowcast`.
+#'
+#'  This function implements the full nowcasting workflow on single or multiple
+#'  reporting triangles, generating estimates of the delay and uncertainty
+#'  parameters for all strata using estimates from across strata if specified.
+#'  The strata are determined from the `reporting_triangle_df` object's
+#'  `strata` attribute.
+#'
+#'  \enumerate{
+#'      \item [estimate_delay()] - Estimate a delay PMF across strata if
+#'      `strata_sharing` contains `"delay"`
+#'      \item [estimate_uncertainty_retro()] - Estimates uncertainty parameters
+#'      across strata if `strata_sharing` contains `"uncertainty"`
+#'      \item [as_reporting_triangles()] - Generates a list of reporting
+#'      triangle objects from the reporting_triangle_df
+#'      \item [baselinenowcast.reporting_triangle()] - Generates point or
+#'      probabilistic nowcasts depending on `output_type` for each strata.
+#' }
+#'
+#' @param data A [reporting_triangle_df] object to be nowcasted.
+#' @param strata_sharing Vector of character strings. Indicates if and what
+#'   estimates should be shared for different nowcasting steps. Options are
+#'   `"none"` for no sharing (each stratum is fully independent),
+#'   `"delay"` for delay sharing and `"uncertainty"` for uncertainty sharing.
+#'   Both `"delay"` and `"uncertainty"` can be passed at the same time.
+#'   Default is `"none"`.
+#' @param ... Additional arguments passed to
+#'    [estimate_uncertainty()]
+#'    and [sample_nowcast()].
+#' @inheritParams baselinenowcast
+#' @inheritParams baselinenowcast.reporting_triangle
+#' @inheritParams estimate_uncertainty
+#' @inheritParams sample_nowcast
+#' @inheritParams allocate_reference_times
+#' @importFrom purrr set_names map_dfr
+#' @importFrom checkmate assert_subset assert_character
+#' @importFrom cli cli_inform
+#' @family baselinenowcast_df
+#' @export
+#' @method baselinenowcast reporting_triangle_df
+#' @returns Data.frame of class \code{\link{baselinenowcast_df}}
+#' @examples
+#' # Single stratum
+#' data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+#' rt_df <- as_reporting_triangle_df(data_as_of_df)
+#' nowcasts <- baselinenowcast(rt_df, draws = 100)
+#'
+#' # Multiple strata with shared delay estimation
+#' rt_df_strata <- as_reporting_triangle_df(
+#'   germany_covid19_hosp,
+#'   by = c("age_group", "location")
+#' )
+#' nowcasts_shared <- baselinenowcast(
+#'   rt_df_strata,
+#'   draws = 100,
+#'   strata_sharing = "delay"
+#' )
+baselinenowcast.reporting_triangle_df <- function(
+    data,
+    scale_factor = 3,
+    prop_delay = 0.5,
+    output_type = c("samples", "point"),
+    draws = 1000,
+    uncertainty_model = fit_by_horizon,
+    uncertainty_sampler = sample_nb,
+    strata_sharing = "none",
+    preprocess = preprocess_negative_values,
+    ...) {
+  assert_reporting_triangle_df(data)
+  output_type <- arg_match(output_type)
+  assert_character(strata_sharing)
+  assert_subset(strata_sharing,
+    choices = c("delay", "uncertainty", "none")
+  )
+  if (length(strata_sharing) == 2 && "none" %in% strata_sharing) {
+    cli_abort(
+      message = c("`strata_sharing` cannot be both 'none' and 'delay'/'uncertainty'") # nolint
+    )
+  }
+
+  # Get strata and delays_unit from the reporting_triangle_df
+  strata_cols <- get_strata(data)
+  delays_unit <- attr(data, "delays_unit")
+
+  # Convert to plain data.frame for processing
+  data_clean <- as.data.frame(data)
+
+  # Split dataframe into a list of dataframes for each strata
+  list_of_dfs <- .split_df_by_cols(
+    long_df = data_clean,
+    col_names = strata_cols
+  )
+
+  # Create a list of reporting triangles
+  list_of_rep_tris <- lapply(list_of_dfs,
+    as_reporting_triangle,
+    delays_unit = delays_unit
+  )
+
+  # Combine if needed for strata sharing
+  shared_delay_pmf <- NULL
+  shared_uncertainty_params <- NULL
+  if (all(strata_sharing != "none")) {
+    pooled_df <- .combine_triangle_dfs(
+      data = data_clean,
+      strata_cols = strata_cols
+    )
+    pooled_triangle <- as_reporting_triangle(pooled_df,
+      delays_unit = delays_unit
+    )
+
+    # Apply preprocessing if provided
+    processed_pooled_triangle <- pooled_triangle
+    if (!is.null(preprocess)) {
+      processed_pooled_triangle <- preprocess(pooled_triangle, validate = FALSE)
+    }
+
+    # Get the training volume for all reporting triangles
+    tv <- allocate_reference_times(
+      reporting_triangle = processed_pooled_triangle,
+      scale_factor = scale_factor,
+      prop_delay = prop_delay,
+      validate = FALSE
+    )
+    if ("delay" %in% strata_sharing) {
+      # Estimate delay once on pooled data
+      shared_delay_pmf <- estimate_delay(
+        reporting_triangle = processed_pooled_triangle,
+        n = tv$n_history_delay,
+        validate = FALSE
+      )
+    }
+    if ("uncertainty" %in% strata_sharing) {
+      # Estimate uncertainty once on pooled data
+      shared_uncertainty_params <- estimate_uncertainty_retro(
+        reporting_triangle = processed_pooled_triangle,
+        n_history_delay = tv$n_history_delay,
+        n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
+        uncertainty_model = uncertainty_model,
+        validate = FALSE
+      )
+    }
+  }
+
+  # Nowcast on each reporting triangle and bind into a long data.frame
+  combined_result <- map_dfr(
+    list_of_rep_tris,
+    # nolint start: brace_linter, unnecessary_nesting_linter
+    \(rep_tri){
+      baselinenowcast(
+        data = rep_tri,
+        scale_factor = scale_factor,
+        prop_delay = prop_delay,
+        output_type = output_type,
+        draws = draws,
+        uncertainty_model = uncertainty_model,
+        uncertainty_sampler = uncertainty_sampler,
+        delay_pmf = shared_delay_pmf,
+        uncertainty_params = shared_uncertainty_params,
+        preprocess = preprocess,
+        validate = FALSE
+      )
+    }, # nolint end
+    .id = "name"
+  )
+
+  # Split the `name` column and assign to columns by strata cols
+  if (!is.null(strata_cols)) {
+    split_data <- do.call(
+      rbind,
+      strsplit(combined_result$name, "___", fixed = TRUE)
+    )
+    for (i in seq_along(strata_cols)) {
+      combined_result[[strata_cols[i]]] <- split_data[, i]
+    }
+  }
+  combined_result$name <- NULL
+  return(combined_result)
+}
+
+#' @title Default method for baselinenowcast with helpful error messages
+#'
+#' @description Provides helpful error messages when an unsupported data type
+#'   is passed to [baselinenowcast()].
+#'
+#' @param data Data object of unsupported type.
+#' @param ... Additional arguments (not used).
+#'
+#' @export
+#' @method baselinenowcast default
+#' @family baselinenowcast_df
+baselinenowcast.default <- function(data, ...) {
+  data_class <- class(data)[1]
+  cli_abort(
+    message = c(
+      "No baselinenowcast method for class '{data_class}'",
+      "i" = "Supported types:",
+      "*" = "reporting_triangle: Use as_reporting_triangle() to create from matrix or data.frame",
+      "*" = "reporting_triangle_df: Use as_reporting_triangle_df() to create from data.frame",
+      "*" = "data.frame: Use as_reporting_triangle_df() to create a reporting_triangle_df first (recommended)",
+      "i" = "See ?baselinenowcast for more information"
+    )
+  )
 }
 
 #' Split dataframe into a list of dataframes by the entries in the specified

@@ -3,7 +3,7 @@
 \name{baselinenowcast.data.frame}
 \alias{baselinenowcast.data.frame}
 \title{Create a dataframe of nowcast results from a dataframe of cases
-indexed by reference date and report date}
+indexed by reference date and report date (DEPRECATED)}
 \usage{
 \method{baselinenowcast}{data.frame}(
   data,
@@ -112,6 +112,13 @@ and \code{\link[=sample_nowcast]{sample_nowcast()}}.}
 Data.frame of class \code{\link{baselinenowcast_df}}
 }
 \description{
+\lifecycle{deprecated}
+
+\strong{This method is deprecated.} Please use \code{\link[=as_reporting_triangle_df]{as_reporting_triangle_df()}} to
+create a \link{reporting_triangle_df} object first, then pass it to
+\code{\link[=baselinenowcast]{baselinenowcast()}}. The new \code{\link[=baselinenowcast.reporting_triangle_df]{baselinenowcast.reporting_triangle_df()}}
+method provides the same functionality with a cleaner interface.
+
 This function ingests a data.frame with the number of incident
 cases indexed by reference date and report date for one or multiple
 strata, which define the unit of a single nowcast (e.g. age groups or
@@ -164,7 +171,9 @@ nowcasts_df
 Main nowcasting interface functions
 \code{\link{assert_baselinenowcast_df}()},
 \code{\link{baselinenowcast}()},
+\code{\link{baselinenowcast.default}()},
 \code{\link{baselinenowcast.reporting_triangle}()},
+\code{\link{baselinenowcast.reporting_triangle_df}()},
 \code{\link{baselinenowcast_df-class}},
 \code{\link{new_baselinenowcast_df}()}
 }

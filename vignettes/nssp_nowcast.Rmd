@@ -52,7 +52,6 @@ library(tidyr)
 library(stringr)
 library(lubridate)
 library(ggplot2)
-library(purrr)
 ```
 
 # NSSP data pre-processing

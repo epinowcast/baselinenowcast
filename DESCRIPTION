@@ -60,8 +60,7 @@ Imports:
   checkmate,
   stats,
   utils,
-  rlang,
-  purrr
+  rlang
 Suggests:
     bookdown,
     ChainLadder,

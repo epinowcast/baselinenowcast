@@ -28,6 +28,26 @@ This document contains profiling results comparing the original NSSP preprocessi
 
 3. **Practical impact**: For a 2500-row dataset, preprocessing time drops from 7.1 seconds to 1.6 seconds - a savings of 5.5 seconds per run
 
+## Component-Level Performance Analysis
+
+To understand the contribution of each optimization, we conducted isolated benchmarks that measure each component separately:
+
+### Overall Combined Performance
+
+| Dataset | Rows  | Original | Optimized | Speedup |
+|---------|-------|----------|-----------|---------|
+| Medium  | 500   | 0.269s   | 0.060s    | 4.5x    |
+| Large   | 2500  | 7.110s   | 1.597s    | 4.5x    |
+
+### Isolated Diagnosis Filtering Performance
+
+| Dataset | Rows  | Row-by-Row | Vectorized | Speedup |
+|---------|-------|------------|------------|---------|
+| Medium  | 500   | 0.2024s    | 0.0026s    | 77.8x   |
+| Large   | 2500  | 5.2696s    | 0.0550s    | 95.8x   |
+
+**Key Finding:** The diagnosis vectorization alone provides 77-96x speedup on realistic datasets. This is the **dominant optimization**, accounting for most of the overall 4.5x improvement. The direct string parsing (avoiding wide pivot) contributes additional speedup by reducing memory allocation and data copying overhead.
+
 ## Bottleneck Analysis
 
 ### Bottleneck #1: Wide Pivot Anti-Pattern
@@ -59,7 +79,7 @@ parse_events_to_long <- function(...) {
 - No wide intermediate structure
 - Single pass through data
 - Complexity: O(n)
-- **Estimated contribution to speedup: 3-4x**
+- **Estimated contribution to speedup: 1.2-1.5x** (based on isolated diagnosis benchmark showing vectorization provides most of the 4.5x overall speedup)
 
 ### Bottleneck #2: Row-by-Row Diagnosis Matching
 
@@ -84,7 +104,17 @@ filter(str_detect(diagnoses_codes, diagnosis_pattern))
 - Single regex pattern combining all codes
 - Vectorized string detection
 - Complexity: O(n)
-- **Estimated contribution to speedup: 1.2-1.5x**
+- **Measured contribution to speedup: 2.0x (small), 77.8x (medium), 95.8x (large)**
+
+**Isolated Benchmark Results:**
+
+| Dataset | Rows  | Row-by-Row | Vectorized | Speedup | Time Saved |
+|---------|-------|------------|------------|---------|------------|
+| Small   | 25    | 0.0012s    | 0.0006s    | 2.0x    | 0.0006s    |
+| Medium  | 500   | 0.2024s    | 0.0026s    | 77.8x   | 0.1998s    |
+| Large   | 2500  | 5.2696s    | 0.0550s    | 95.8x   | 5.2146s    |
+
+**Key insight:** The diagnosis vectorization speedup is **dramatically larger than initially estimated**. On realistic datasets (500+ rows), vectorized filtering is 77-96x faster than row-by-row iteration. This accounts for the majority of the overall 4.5x speedup observed in the combined optimization.
 
 ## Recommendations
 

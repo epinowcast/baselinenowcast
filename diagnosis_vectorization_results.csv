@@ -1,0 +1,4 @@
+"dataset","n_rows","preprocessing_time","rowwise_filtering_time","vectorized_filtering_time","filtering_speedup","filtering_improvement_pct","filtering_time_saved"
+"small",25,0.0123333333333333,0.0012,6e-04,2,50,6e-04
+"medium",500,0.0553333333333333,0.2024,0.00260000000000007,77.8461538461518,98.7154150197628,0.1998
+"large",2500,1.54133333333333,5.2696,0.0549999999999997,95.8109090909096,98.95627751632,5.2146

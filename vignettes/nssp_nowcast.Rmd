@@ -169,35 +169,30 @@ syn_nssp_diagnoses_long <- wide_to_long(
 )
 ```
 
-Next, we will clean up the time stamps in the data so that the `time_stamp` column is formatted as `%Y-%m-%d %H:%M:%S`, format the visit time the same (`C_Visit_Date_Time`) and then we will filter out an events that are not present (updates are NAs).
+Next, we will clean up the time stamps in the data so that the `time_stamp` column is formatted as `%Y-%m-%d %H:%M:%S`, format the visit time the same (`C_Visit_Date_Time`) and then we will filter out any events that are not present (updates are NAs).
 ```{r}
 syn_nssp_time_stamps <-
   syn_nssp_time_stamps_long |>
   mutate(
     time_stamp = as.POSIXct(
-      str_remove_all(
-        str_remove(time_stamp, ".*\\}"),
-        "[|;]+"
-      ),
+      str_remove_all(time_stamp, "[;]+$"),
       format = "%Y-%m-%d %H:%M:%S",
       tz = "UTC"
     ),
     C_Visit_Date_Time = as.POSIXct(C_Visit_Date_Time)
   ) |>
-  drop_na(time_stamp)
+  filter(!is.na(time_stamp))
 ```
 
 Clean up the diagnoses codes and remove the empty updates from the diagnoses dataset.
-For these, we want to keep the semi-colons and just remove the numbers since
-this information is stored in the event ID.
+We will keep the diagnoses codes in their original format (semi-colon separated).
 We will only use the event ID and the diagnoses codes, as this will be merged
 back into the time stamped dataset.
 ```{r}
 syn_nssp_diagnoses <-
   syn_nssp_diagnoses_long |>
-  mutate(diagnoses_codes = str_remove(diagnoses_codes, ".*\\}")) |>
   filter(nzchar(diagnoses_codes)) |>
-  drop_na() |>
+  filter(!is.na(diagnoses_codes)) |>
   select(event_id, diagnoses_codes)
 ```
 
@@ -222,9 +217,12 @@ nssp_updates <- nssp_merged |>
 ```
 
 We next filter through the updates to find the first "hit" that corresponds to the diagnosis codes in the syndromic surveillance definition for BAR.
+We use a vectorized approach by combining all diagnosis codes into a single regex pattern, which is much faster than row-by-row iteration for large datasets.
 ```{r}
+diagnosis_pattern <- paste(diagnoses_codes_defn, collapse = "|")
+
 bar_updates <- nssp_updates |>
-  filter(map_lgl(diagnoses_codes, ~ any(str_detect(.x, diagnoses_codes_defn))))
+  filter(str_detect(diagnoses_codes, diagnosis_pattern))
 ```
 
 Next, we will order these by the delay from visit to the diagnoses, and for each patient keep only the first update containing the BAR diagnoses code(s).

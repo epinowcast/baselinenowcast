@@ -197,7 +197,7 @@ syn_nssp_diagnoses_wide <- expand_events(
 ```
 
 We will write a function that, for each of the diagnoses and time stamps
-datasets, find the name of the last update column, and uses that to
+datasets, finds the name of the last update column, and uses that to
 pivot the data from wide to long. This creates a long tidy dataframe
 where each row is now an event.
 
@@ -370,8 +370,12 @@ count_df_raw <- clean_line_list |>
   group_by(reference_date, report_date) |>
   summarise(count = n()) |>
   mutate(delay = as.integer(report_date - reference_date))
-#> `summarise()` has grouped output by 'reference_date'. You can override using
-#> the `.groups` argument.
+#> `summarise()` has regrouped the output.
+#> ℹ Summaries were computed grouped by reference_date and report_date.
+#> ℹ Output is grouped by reference_date.
+#> ℹ Use `summarise(.groups = "drop_last")` to silence this message.
+#> ℹ Use `summarise(.by = c(reference_date, report_date))` for per-operation
+#>   grouping (`?dplyr::dplyr_by`) instead.
 ```
 
 Looking at this data, we can see that there is one case where there is a
@@ -971,10 +975,10 @@ Started](https://baselinenowcast.epinowcast.org/articles/baselinenowcast.md)
 vignette and [model
 definition](https://baselinenowcast.epinowcast.org/articles/model_definition.md)
 for more details on the different model specifications. In our
-[publication](https://wellcomeopenresearch.org/articles/10-614/v1) we
-show examples using the various model specifications to produce and
-evaluate the performance of age-group specific nowcasts of COVID-19 in
-Germany and norovirus cases in England. Here’s a
+[publication](https://wellcomeopenresearch.org/articles/10-614) we show
+examples using the various model specifications to produce and evaluate
+the performance of age-group specific nowcasts of COVID-19 in Germany
+and norovirus cases in England. Here’s a
 [link](https://github.com/epinowcast/baselinenowcast-paper) to the code
 used to generate those nowcasts if interested in doing something similar
 for your own settings.

@@ -314,7 +314,7 @@ Click to expand code to create the plot of the point nowcast
 <span>    names_to <span class="op">=</span> <span class="st">"type"</span>,</span>
 <span>    values_to <span class="op">=</span> <span class="st">"count"</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>    <span class="va">type</span> <span class="op">==</span> <span class="st">"count"</span> <span class="op">~</span> <span class="st">"Final observed data"</span>,</span>
 <span>    <span class="va">type</span> <span class="op">==</span> <span class="st">"nowcast"</span> <span class="op">~</span> <span class="st">"Point nowcast"</span>,</span>
 <span>    <span class="cn">TRUE</span> <span class="op">~</span> <span class="va">type</span></span>
@@ -437,7 +437,7 @@ We first need to join our nowcast with the original data so we can see our nowca
 <span>    names_to <span class="op">=</span> <span class="st">"type"</span>,</span>
 <span>    values_to <span class="op">=</span> <span class="st">"count"</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>    <span class="va">type</span> <span class="op">==</span> <span class="st">"initial_count"</span> <span class="op">~</span> <span class="st">"Initial reports"</span>,</span>
 <span>    <span class="va">type</span> <span class="op">==</span> <span class="st">"final_count"</span> <span class="op">~</span> <span class="st">"Final observed data"</span></span>
 <span>  <span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -452,7 +452,7 @@ Click to expand code to create the plot of the probabilistic nowcast
 <span>    names_to <span class="op">=</span> <span class="st">"type"</span>,</span>
 <span>    values_to <span class="op">=</span> <span class="st">"count"</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>    <span class="va">type</span> <span class="op">==</span> <span class="st">"initial_count"</span> <span class="op">~</span> <span class="st">"Initial reports"</span>,</span>
 <span>    <span class="va">type</span> <span class="op">==</span> <span class="st">"final_count"</span> <span class="op">~</span> <span class="st">"Final observed data"</span></span>
 <span>  <span class="op">)</span><span class="op">)</span></span>

@@ -13,6 +13,8 @@ coverage](https://codecov.io/gh/epinowcast/baselinenowcast/branch/main/graph/bad
 [![Universe](https://epinowcast.r-universe.dev/badges/baselinenowcast)](https://epinowcast.r-universe.dev/baselinenowcast)
 [![MIT
 license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/epinowcast/baselinenowcast/blob/master/LICENSE.md/)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/baselinenowcast)](https://CRAN.R-project.org/package=baselinenowcast)
 [![GitHub
 contributors](https://img.shields.io/github/contributors/epinowcast/baselinenowcast)](https://github.com/epinowcast/baselinenowcast/graphs/contributors)
 <!-- badges: end -->

@@ -168,19 +168,25 @@ syn_nssp_diagnoses_long <- wide_to_long(
 )
 ```
 
-Next, we will clean up the time stamps in the data so that the `time_stamp` column is formatted as `%Y-%m-%d %H:%M:%S`, format the visit time the same (`C_Visit_Date_Time`) and then we will filter out any events that are not present (updates are NAs).
+Currently, the time stamps is formatted with `{event number};%Y-%m-%d %H:%M:%S;|`, we want to remove the `{event_number};` and the `;|` so that we can convert this to a date time using `as.POSIXct()`.
+We can do this using the `sub`/`gsub` function which takes arguments `(pattern, replacement, x)`.
+`".*?\\}"` looks for everything before the `}` and `"[|;]+"` looks for everythign before the `;|`.
+After removing these characters, the `time_stamp` column is formatted as `%Y-%m-%d %H:%M:%S` and converted to a date-time object, as is `C_Visit_Date_Time`. We will then filter out any events that are not present (updates are NAs).
 ```{r}
 syn_nssp_time_stamps <-
   syn_nssp_time_stamps_long |>
   mutate(
     time_stamp = as.POSIXct(
-      str_remove_all(time_stamp, "[;]+$"),
+      gsub(
+        "[|;]+", "",
+        sub(".*?\\}", "", time_stamp)
+      ),
       format = "%Y-%m-%d %H:%M:%S",
       tz = "UTC"
     ),
     C_Visit_Date_Time = as.POSIXct(C_Visit_Date_Time)
   ) |>
-  filter(!is.na(time_stamp))
+  drop_na(time_stamp)
 ```
 
 Clean up the diagnoses codes and remove the empty updates from the diagnoses dataset.
@@ -195,13 +201,13 @@ syn_nssp_diagnoses <-
   select(event_id, diagnoses_codes)
 ```
 
-Merge together the time stamps of events and the diagnoses codes.
+Joint the time stamps of events and the diagnoses codes.
 Filter to remove empty updates.
 ```{r}
-nssp_merged <- merge(syn_nssp_time_stamps,
-  syn_nssp_diagnoses,
-  by = "event_id"
-) |>
+nssp_merged <- syn_nssp_time_stamps |>
+  left_join(syn_nssp_diagnoses,
+    by = "event_id"
+  ) |>
   filter(diagnoses_codes != ";;|")
 ```
 
@@ -226,10 +232,10 @@ bar_updates <- nssp_updates |>
 
 Next, we will order these by the delay from visit to the diagnoses, and for each patient keep only the first update containing the BAR diagnoses code(s).
 ```{r}
-first_bar_diagnosis <- bar_updates |>
-  arrange(arrival_to_update_delay) |>
+first_bar_diagnosis2 <- bar_updates |>
   group_by(C_Processed_BioSense_ID) |>
-  slice(1)
+  filter(arrival_to_update_delay == min(arrival_to_update_delay)) |>
+  ungroup()
 ```
 
 Label the visit start date, `C_Visit_Date_Time`, as the reference date,`reference_date` and `time_stamp` as the report date, `report_date` and remove the other column names that are no longer needed, as each row now represents a case.
@@ -238,8 +244,7 @@ clean_line_list <- first_bar_diagnosis |>
   mutate(
     reference_date = as.Date(C_Visit_Date_Time),
     report_date = as.Date(time_stamp)
-  ) |>
-  ungroup()
+  )
 head(clean_line_list)
 ```
 

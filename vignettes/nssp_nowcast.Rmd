@@ -170,7 +170,7 @@ syn_nssp_diagnoses_long <- wide_to_long(
 
 Currently, the time stamps is formatted with `{event number};%Y-%m-%d %H:%M:%S;|`, we want to remove the `{event_number};` and the `;|` so that we can convert this to a date time using `as.POSIXct()`.
 We can do this using the `sub`/`gsub` function which takes arguments `(pattern, replacement, x)`.
-`".*?\\}"` looks for everything before the `}` and `"[|;]+"` looks for everythign before the `;|`.
+`".*?\\}"` looks for everything before the `}` and `"[|;]+"` looks for everything before the `;|`.
 After removing these characters, the `time_stamp` column is formatted as `%Y-%m-%d %H:%M:%S` and converted to a date-time object, as is `C_Visit_Date_Time`. We will then filter out any events that are not present (updates are NAs).
 ```{r}
 syn_nssp_time_stamps <-
@@ -210,7 +210,7 @@ nssp_merged <- syn_nssp_time_stamps |>
   left_join(syn_nssp_diagnoses,
     by = "event_id"
   ) |>
-  filter(diagnoses_codes != ";;|")
+  filter(!is.na(diagnoses_codes))
 ```
 
 Now we have a dataframe where each row is an event, with the patient's visit start date (`C_Visit_date_Time`), the patient ID (`C_Processed_BioSense_ID`), the diagnoses code at the event (`diagnoses_code`), and the time stamp of the event (`time_stamp`).

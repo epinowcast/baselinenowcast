@@ -13,6 +13,8 @@ coverage](https://codecov.io/gh/epinowcast/baselinenowcast/branch/main/graph/bad
 [![Universe](https://epinowcast.r-universe.dev/badges/baselinenowcast)](https://epinowcast.r-universe.dev/baselinenowcast)
 [![MIT
 license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/epinowcast/baselinenowcast/blob/master/LICENSE.md/)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/baselinenowcast)](https://CRAN.R-project.org/package=baselinenowcast)
 [![GitHub
 contributors](https://img.shields.io/github/contributors/epinowcast/baselinenowcast)](https://github.com/epinowcast/baselinenowcast/graphs/contributors)
 <!-- badges: end -->
@@ -26,8 +28,8 @@ nowcasting methods based on using empirical delay distributions and
 uncertainty from past performance. It is also designed to be used as a
 baseline method for developers of new nowcasting methods. For more
 details on the performance of the method(s) in this package applied to
-case studies of COVID-19 and norovirus, see our recent paper at
-<https://wellcomeopenresearch.org/articles/10-614>. The package supports
+case studies of COVID-19 and norovirus, see our recent paper Johnson
+(2025) <doi:10.12688/wellcomeopenres.25027.2>. The package supports
 standard data frame inputs with reference date, report date, and count
 columns, as well as the direct use of reporting triangles, and is
 compatible with ‘epinowcast’ objects. Alongside an opinionated default

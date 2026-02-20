@@ -195,7 +195,7 @@ We first filter out the `};;` so we just have the diagnoses codes assigned at ea
 syn_nssp_diagnoses <-
   syn_nssp_diagnoses_long |>
   mutate(
-    diagnoses_codes = gsub("^[0-9]+\\};;", "", diagnoses_codes),
+    diagnoses_codes = gsub("^[0-9]+\\};;", "", diagnoses_codes), # nolint
     diagnoses_codes = gsub("[|;]+$", "", diagnoses_codes)
   ) |>
   filter(nzchar(diagnoses_codes)) |>

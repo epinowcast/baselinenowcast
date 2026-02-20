@@ -190,18 +190,20 @@ syn_nssp_time_stamps <-
 ```
 
 Clean up the diagnoses codes and remove the empty updates from the diagnoses dataset.
-We will keep the diagnoses codes in their original format (semi-colon separated).
-We will only use the event ID and the diagnoses codes, as this will be merged
-back into the time stamped dataset.
+We first filter out the `};;` so we just have the diagnoses codes assigned at each event, which will remain semi-colon separated.
 ```{r}
 syn_nssp_diagnoses <-
   syn_nssp_diagnoses_long |>
+  mutate(
+    diagnoses_codes = gsub("^[0-9]+\\};;", "", diagnoses_codes),
+    diagnoses_codes = gsub("[|;]+$", "", diagnoses_codes)
+  ) |>
   filter(nzchar(diagnoses_codes)) |>
   filter(!is.na(diagnoses_codes)) |>
   select(event_id, diagnoses_codes)
 ```
 
-Joint the time stamps of events and the diagnoses codes.
+Join the time stamps of events and the diagnoses codes using the `event_id`.
 Filter to remove empty updates.
 ```{r}
 nssp_merged <- syn_nssp_time_stamps |>
@@ -232,7 +234,7 @@ bar_updates <- nssp_updates |>
 
 Next, we will order these by the delay from visit to the diagnoses, and for each patient keep only the first update containing the BAR diagnoses code(s).
 ```{r}
-first_bar_diagnosis2 <- bar_updates |>
+first_bar_diagnosis <- bar_updates |>
   group_by(C_Processed_BioSense_ID) |>
   filter(arrival_to_update_delay == min(arrival_to_update_delay)) |>
   ungroup()
@@ -253,8 +255,7 @@ head(clean_line_list)
 For nowcasting, we want to compute the number of incident cases indexed by reference and report date, so we can aggregate by reference and report date and compute the delay distribution.
 ```{r}
 count_df_raw <- clean_line_list |>
-  group_by(reference_date, report_date) |>
-  summarise(count = n()) |>
+  count(reference_date, report_date, name = "count") |>
   mutate(delay = as.integer(report_date - reference_date))
 ```
 

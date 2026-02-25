@@ -224,7 +224,6 @@ nssp_updates <- nssp_merged |>
 ```
 
 We next filter through the updates to find the first "hit" that corresponds to the diagnosis codes in the syndromic surveillance definition for BAR.
-We use a vectorized approach by combining all diagnosis codes into a single regular expression pattern, which is much faster than row-by-row iteration for large datasets.
 ```{r}
 diagnosis_pattern <- paste(diagnoses_codes_defn, collapse = "|")
 

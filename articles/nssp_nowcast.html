@@ -34,7 +34,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">baselinenowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -129,8 +129,7 @@ For <code>baselinenowcast</code>, see the <a href="https://github.com/epinowcast
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://stringr.tidyverse.org" class="external-link">stringr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2" number="2">
@@ -258,7 +257,8 @@ We will create a unique event ID using the event number and the patient ID (<cod
 <span>  names_to <span class="op">=</span> <span class="st">"column_name"</span>,</span>
 <span>  id_col_name <span class="op">=</span> <span class="st">"C_Processed_BioSense_ID"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Next, we will clean up the time stamps in the data so that the <code>time_stamp</code> column is formatted as <code>%Y-%m-%d %H:%M:%S</code>, format the visit time the same (<code>C_Visit_Date_Time</code>) and then we will filter out an events that are not present (updates are NAs).</p>
+<p>Currently, the time stamps is formatted with <code>{event number};%Y-%m-%d %H:%M:%S;|</code>, we want to remove the <code>{event_number};</code> and the <code>;|</code> so that we can convert this to a date time using <code><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct()</a></code>.
+After removing these characters, the <code>time_stamp</code> column is formatted as <code>%Y-%m-%d %H:%M:%S</code> and converted to a date-time object, as is <code>C_Visit_Date_Time</code>. We will then filter out any events that are not present (updates are NAs).</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">syn_nssp_time_stamps</span> <span class="op">&lt;-</span></span>
 <span>  <span class="va">syn_nssp_time_stamps_long</span> <span class="op">|&gt;</span></span>
@@ -275,25 +275,28 @@ We will create a unique event ID using the event number and the patient ID (<cod
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="va">time_stamp</span><span class="op">)</span></span></code></pre></div>
 <p>Clean up the diagnoses codes and remove the empty updates from the diagnoses dataset.
-For these, we want to keep the semi-colons and just remove the numbers since
-this information is stored in the event ID.
-We will only use the event ID and the diagnoses codes, as this will be merged
-back into the time stamped dataset.</p>
+For these, we want to keep the semi-colons and just remove the numbers and extra characters since this information is stored in the event ID.
+We will only use the event ID and the diagnoses codes, as this will be merged back into the time stamped dataset.
+We first filter out the <code>};;</code> so we just have the diagnoses codes assigned at each event, which will remain semi-colon separated.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">syn_nssp_diagnoses</span> <span class="op">&lt;-</span></span>
 <span>  <span class="va">syn_nssp_diagnoses_long</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>diagnoses_codes <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="va">diagnoses_codes</span>, <span class="st">".*\\}"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    diagnoses_codes <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="va">diagnoses_codes</span>, <span class="st">".*\\}"</span><span class="op">)</span>,</span>
+<span>    diagnoses_codes <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="va">diagnoses_codes</span>, <span class="st">"^[;|]+"</span><span class="op">)</span>,</span>
+<span>    diagnoses_codes <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="va">diagnoses_codes</span>, <span class="st">"[;|]+$"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="va">diagnoses_codes</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="va">diagnoses_codes</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">event_id</span>, <span class="va">diagnoses_codes</span><span class="op">)</span></span></code></pre></div>
-<p>Merge together the time stamps of events and the diagnoses codes.
+<p>Join the time stamps of events and the diagnoses codes using the <code>event_id</code>.
 Filter to remove empty updates.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nssp_merged</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">syn_nssp_time_stamps</span>,</span>
-<span>  <span class="va">syn_nssp_diagnoses</span>,</span>
-<span>  by <span class="op">=</span> <span class="st">"event_id"</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">diagnoses_codes</span> <span class="op">!=</span> <span class="st">";;|"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">nssp_merged</span> <span class="op">&lt;-</span> <span class="va">syn_nssp_time_stamps</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">syn_nssp_diagnoses</span>,</span>
+<span>    by <span class="op">=</span> <span class="st">"event_id"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="va">diagnoses_codes</span><span class="op">)</span></span></code></pre></div>
 <p>Now we have a dataframe where each row is an event, with the patient’s visit start date (<code>C_Visit_date_Time</code>), the patient ID (<code>C_Processed_BioSense_ID</code>), the diagnoses code at the event (<code>diagnoses_code</code>), and the time stamp of the event (<code>time_stamp</code>).
 Next we will add a column for the time from arrival to each updated diagnosis, in days.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -304,35 +307,35 @@ Next we will add a column for the time from arrival to each updated diagnosis, i
 <span>  <span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>We next filter through the updates to find the first “hit” that corresponds to the diagnosis codes in the syndromic surveillance definition for BAR.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bar_updates</span> <span class="op">&lt;-</span> <span class="va">nssp_updates</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_lgl</a></span><span class="op">(</span><span class="va">diagnoses_codes</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">.x</span>, <span class="va">diagnoses_codes_defn</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">diagnosis_pattern</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">diagnoses_codes_defn</span>, collapse <span class="op">=</span> <span class="st">"|"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bar_updates</span> <span class="op">&lt;-</span> <span class="va">nssp_updates</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">diagnoses_codes</span>, <span class="va">diagnosis_pattern</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Next, we will order these by the delay from visit to the diagnoses, and for each patient keep only the first update containing the BAR diagnoses code(s).</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">first_bar_diagnosis</span> <span class="op">&lt;-</span> <span class="va">bar_updates</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">arrival_to_update_delay</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">C_Processed_BioSense_ID</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">arrival_to_update_delay</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">arrival_to_update_delay</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Label the visit start date, <code>C_Visit_Date_Time</code>, as the reference date,<code>reference_date</code> and <code>time_stamp</code> as the report date, <code>report_date</code> and remove the other column names that are no longer needed, as each row now represents a case.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean_line_list</span> <span class="op">&lt;-</span> <span class="va">first_bar_diagnosis</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    reference_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">C_Visit_Date_Time</span><span class="op">)</span>,</span>
 <span>    report_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">time_stamp</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">clean_line_list</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 13</span></span></span>
-<span><span class="co">#&gt;   event_id C_Processed_BioSense…¹ CCDDParsed HasBeenAdmitted C_Visit_Date_Time  </span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2024.02… 2024.02.01.23959I_204… ABNORMAL …               1 2024-02-01 <span style="color: #949494;">13:30:00</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2024.02… 2024.02.01.23965V_656… DIFFICULT…               1 2024-02-01 <span style="color: #949494;">09:26:00</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2024.02… 2024.02.01.24119E_H10… COUGH FEV…               1 2024-02-01 <span style="color: #949494;">13:25:00</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2024.02… 2024.02.01.24167I_065… LETHARGY …               1 2024-02-01 <span style="color: #949494;">11:15:00</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2024.02… 2024.02.01.6132E_2260… COVID LAS…               0 2024-02-01 <span style="color: #949494;">13:36:00</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2024.02… 2024.02.01.6133I_2490… HIGH BLLO…               1 2024-02-01 <span style="color: #949494;">11:04:00</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ abbreviated name: ¹​C_Processed_BioSense_ID</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 8 more variables: c_race &lt;chr&gt;, sex &lt;chr&gt;, column_name &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   time_stamp &lt;dttm&gt;, diagnoses_codes &lt;chr&gt;, arrival_to_update_delay &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt;   C_Processed_BioSense_ID  CCDDParsed HasBeenAdmitted C_Visit_Date_Time   c_race</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2024.02.03.23961E_23531… COUGH SEN…               0 2024-02-03 <span style="color: #949494;">16:05:00</span> White </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2024.02.04.23970E_80164… COUGH COV…               1 2024-02-04 <span style="color: #949494;">11:36:00</span> White </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2024.02.09.6146E_MM2071… VOMITING …               0 2024-02-09 <span style="color: #949494;">01:49:00</span> Asian </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2024.02.08.23960I_34530… DIVERTICU…               1 2024-02-08 <span style="color: #949494;">20:00:00</span> White </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2024.02.02.6170E_HF2210… PREGNANT …               0 2024-02-02 <span style="color: #949494;">01:03:00</span> Other…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2024.02.09.6148I_230936… NAUSEU WE…               1 2024-02-09 <span style="color: #949494;">17:25:00</span> White </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 8 more variables: sex &lt;chr&gt;, column_name &lt;chr&gt;, time_stamp &lt;dttm&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   event_id &lt;chr&gt;, diagnoses_codes &lt;chr&gt;, arrival_to_update_delay &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   reference_date &lt;date&gt;, report_date &lt;date&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level3" number="2.4">
@@ -342,15 +345,8 @@ Next we will add a column for the time from arrival to each updated diagnosis, i
 <p>For nowcasting, we want to compute the number of incident cases indexed by reference and report date, so we can aggregate by reference and report date and compute the delay distribution.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">count_df_raw</span> <span class="op">&lt;-</span> <span class="va">clean_line_list</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">reference_date</span>, <span class="va">report_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>count <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">report_date</span> <span class="op">-</span> <span class="va">reference_date</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; `summarise()` has regrouped the output.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Summaries were computed grouped by <span style="color: #0000BB;">reference_date</span> and <span style="color: #0000BB;">report_date</span>.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Output is grouped by <span style="color: #0000BB;">reference_date</span>.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `summarise(.groups = "drop_last")` to silence this message.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `summarise(.by = c(reference_date, report_date))` for per-operation</span></span>
-<span><span class="co">#&gt;   grouping (`?dplyr::dplyr_by`) instead.</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">reference_date</span>, <span class="va">report_date</span>, name <span class="op">=</span> <span class="st">"count"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">report_date</span> <span class="op">-</span> <span class="va">reference_date</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Looking at this data, we can see that there is one case where there is a negative delay, which indicates that the time stamp of the diagnosis update was recorded before the start of the visit.
 Depending on the way that the data is generated, this could be a true negative value, for example if the patient had previously been tested elsewhere before arriving at the ED.
 In this case, patients interactions with the system always start in the ED, so this is likely due to a data entry error.
@@ -359,7 +355,6 @@ For this reason, we will will choose to exclude all the negative valued delays, 
 <code class="sourceCode R"><span><span class="va">count_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">count_df_raw</span>, <span class="va">delay</span> <span class="op">&gt;=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">count_df</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   reference_date [3]</span></span></span>
 <span><span class="co">#&gt;   reference_date report_date count delay</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2024-02-01     2024-02-01      4     0</span></span>

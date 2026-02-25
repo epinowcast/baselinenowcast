@@ -1,5 +1,12 @@
 # Changelog
 
+## baselinenowcast 0.2.1000
+
+### Documentation
+
+- Modified NSSP nowcast vignette to do vectorised string matching
+  instead of row-wise to speed-up performance.
+
 ## baselinenowcast 0.2.0
 
 CRAN release: 2026-02-03

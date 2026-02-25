@@ -69,7 +69,6 @@ library(tidyr)
 library(stringr)
 library(lubridate)
 library(ggplot2)
-library(purrr)
 ```
 
 ## 2 NSSP data pre-processing
@@ -248,10 +247,14 @@ syn_nssp_diagnoses_long <- wide_to_long(
 )
 ```
 
-Next, we will clean up the time stamps in the data so that the
-`time_stamp` column is formatted as `%Y-%m-%d %H:%M:%S`, format the
-visit time the same (`C_Visit_Date_Time`) and then we will filter out an
-events that are not present (updates are NAs).
+Currently, the time stamps is formatted with
+`{event number};%Y-%m-%d %H:%M:%S;|`, we want to remove the
+`{event_number};` and the `;|` so that we can convert this to a date
+time using [`as.POSIXct()`](https://rdrr.io/r/base/as.POSIXlt.html).
+After removing these characters, the `time_stamp` column is formatted as
+`%Y-%m-%d %H:%M:%S` and converted to a date-time object, as is
+`C_Visit_Date_Time`. We will then filter out any events that are not
+present (updates are NAs).
 
 ``` r
 syn_nssp_time_stamps <-
@@ -272,28 +275,34 @@ syn_nssp_time_stamps <-
 
 Clean up the diagnoses codes and remove the empty updates from the
 diagnoses dataset. For these, we want to keep the semi-colons and just
-remove the numbers since this information is stored in the event ID. We
-will only use the event ID and the diagnoses codes, as this will be
-merged back into the time stamped dataset.
+remove the numbers and extra characters since this information is stored
+in the event ID. We will only use the event ID and the diagnoses codes,
+as this will be merged back into the time stamped dataset. We first
+filter out the `};;` so we just have the diagnoses codes assigned at
+each event, which will remain semi-colon separated.
 
 ``` r
 syn_nssp_diagnoses <-
   syn_nssp_diagnoses_long |>
-  mutate(diagnoses_codes = str_remove(diagnoses_codes, ".*\\}")) |>
+  mutate(
+    diagnoses_codes = str_remove(diagnoses_codes, ".*\\}"),
+    diagnoses_codes = str_remove(diagnoses_codes, "^[;|]+"),
+    diagnoses_codes = str_remove(diagnoses_codes, "[;|]+$")
+  ) |>
   filter(nzchar(diagnoses_codes)) |>
-  drop_na() |>
+  drop_na(diagnoses_codes) |>
   select(event_id, diagnoses_codes)
 ```
 
-Merge together the time stamps of events and the diagnoses codes. Filter
-to remove empty updates.
+Join the time stamps of events and the diagnoses codes using the
+`event_id`. Filter to remove empty updates.
 
 ``` r
-nssp_merged <- merge(syn_nssp_time_stamps,
-  syn_nssp_diagnoses,
-  by = "event_id"
-) |>
-  filter(diagnoses_codes != ";;|")
+nssp_merged <- syn_nssp_time_stamps |>
+  left_join(syn_nssp_diagnoses,
+    by = "event_id"
+  ) |>
+  drop_na(diagnoses_codes)
 ```
 
 Now we have a dataframe where each row is an event, with the patient’s
@@ -316,8 +325,10 @@ corresponds to the diagnosis codes in the syndromic surveillance
 definition for BAR.
 
 ``` r
+diagnosis_pattern <- paste(diagnoses_codes_defn, collapse = "|")
+
 bar_updates <- nssp_updates |>
-  filter(map_lgl(diagnoses_codes, ~ any(str_detect(.x, diagnoses_codes_defn))))
+  filter(str_detect(diagnoses_codes, diagnosis_pattern))
 ```
 
 Next, we will order these by the delay from visit to the diagnoses, and
@@ -326,9 +337,9 @@ code(s).
 
 ``` r
 first_bar_diagnosis <- bar_updates |>
-  arrange(arrival_to_update_delay) |>
   group_by(C_Processed_BioSense_ID) |>
-  slice(1)
+  filter(arrival_to_update_delay == min(arrival_to_update_delay)) |>
+  ungroup()
 ```
 
 Label the visit start date, `C_Visit_Date_Time`, as the reference
@@ -341,21 +352,19 @@ clean_line_list <- first_bar_diagnosis |>
   mutate(
     reference_date = as.Date(C_Visit_Date_Time),
     report_date = as.Date(time_stamp)
-  ) |>
-  ungroup()
+  )
 head(clean_line_list)
 #> # A tibble: 6 × 13
-#>   event_id C_Processed_BioSense…¹ CCDDParsed HasBeenAdmitted C_Visit_Date_Time  
-#>   <chr>    <chr>                  <chr>                <dbl> <dttm>             
-#> 1 2024.02… 2024.02.01.23959I_204… ABNORMAL …               1 2024-02-01 13:30:00
-#> 2 2024.02… 2024.02.01.23965V_656… DIFFICULT…               1 2024-02-01 09:26:00
-#> 3 2024.02… 2024.02.01.24119E_H10… COUGH FEV…               1 2024-02-01 13:25:00
-#> 4 2024.02… 2024.02.01.24167I_065… LETHARGY …               1 2024-02-01 11:15:00
-#> 5 2024.02… 2024.02.01.6132E_2260… COVID LAS…               0 2024-02-01 13:36:00
-#> 6 2024.02… 2024.02.01.6133I_2490… HIGH BLLO…               1 2024-02-01 11:04:00
-#> # ℹ abbreviated name: ¹​C_Processed_BioSense_ID
-#> # ℹ 8 more variables: c_race <chr>, sex <chr>, column_name <chr>,
-#> #   time_stamp <dttm>, diagnoses_codes <chr>, arrival_to_update_delay <dbl>,
+#>   C_Processed_BioSense_ID  CCDDParsed HasBeenAdmitted C_Visit_Date_Time   c_race
+#>   <chr>                    <chr>                <dbl> <dttm>              <chr> 
+#> 1 2024.02.03.23961E_23531… COUGH SEN…               0 2024-02-03 16:05:00 White 
+#> 2 2024.02.04.23970E_80164… COUGH COV…               1 2024-02-04 11:36:00 White 
+#> 3 2024.02.09.6146E_MM2071… VOMITING …               0 2024-02-09 01:49:00 Asian 
+#> 4 2024.02.08.23960I_34530… DIVERTICU…               1 2024-02-08 20:00:00 White 
+#> 5 2024.02.02.6170E_HF2210… PREGNANT …               0 2024-02-02 01:03:00 Other…
+#> 6 2024.02.09.6148I_230936… NAUSEU WE…               1 2024-02-09 17:25:00 White 
+#> # ℹ 8 more variables: sex <chr>, column_name <chr>, time_stamp <dttm>,
+#> #   event_id <chr>, diagnoses_codes <chr>, arrival_to_update_delay <dbl>,
 #> #   reference_date <date>, report_date <date>
 ```
 
@@ -367,15 +376,8 @@ report date and compute the delay distribution.
 
 ``` r
 count_df_raw <- clean_line_list |>
-  group_by(reference_date, report_date) |>
-  summarise(count = n()) |>
+  count(reference_date, report_date, name = "count") |>
   mutate(delay = as.integer(report_date - reference_date))
-#> `summarise()` has regrouped the output.
-#> ℹ Summaries were computed grouped by reference_date and report_date.
-#> ℹ Output is grouped by reference_date.
-#> ℹ Use `summarise(.groups = "drop_last")` to silence this message.
-#> ℹ Use `summarise(.by = c(reference_date, report_date))` for per-operation
-#>   grouping (`?dplyr::dplyr_by`) instead.
 ```
 
 Looking at this data, we can see that there is one case where there is a
@@ -395,7 +397,6 @@ this choice.
 count_df <- filter(count_df_raw, delay >= 0)
 head(count_df)
 #> # A tibble: 6 × 4
-#> # Groups:   reference_date [3]
 #>   reference_date report_date count delay
 #>   <date>         <date>      <int> <int>
 #> 1 2024-02-01     2024-02-01      4     0

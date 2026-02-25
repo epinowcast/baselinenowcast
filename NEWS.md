@@ -1,3 +1,8 @@
+# baselinenowcast 0.2.1000
+
+## Documentation
+-  Modified NSSP nowcast vignette to do vectorised string matching instead of row-wise to speed-up performance.
+
 # baselinenowcast 0.2.0
 
 This is the first stable release providing core functionality for producing probabilistic or point nowcasts from a dataframe with incident case counts indexed by reference dates and report dates. It supports doing so across multiple strata, either through creating `reporting_triangle` objects for each strata and nowcasting independently, or nowcasting directly from a dataframe containing multiple strata. The `reporting_triangle` object allows users to specify the unit of the delay, and provides helpful `print` and `summary` S3 methods, as well as functionality to truncate to a specific delay or a percentile of the observed delays. A paper validating and evaluating the performance of the methods is available at <https://wellcomeopenresearch.org/articles/10-614/v1>.

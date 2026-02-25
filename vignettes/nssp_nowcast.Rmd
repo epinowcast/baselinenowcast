@@ -52,7 +52,6 @@ library(tidyr)
 library(stringr)
 library(lubridate)
 library(ggplot2)
-library(purrr)
 ```
 
 # NSSP data pre-processing
@@ -169,7 +168,8 @@ syn_nssp_diagnoses_long <- wide_to_long(
 )
 ```
 
-Next, we will clean up the time stamps in the data so that the `time_stamp` column is formatted as `%Y-%m-%d %H:%M:%S`, format the visit time the same (`C_Visit_Date_Time`) and then we will filter out an events that are not present (updates are NAs).
+Currently, the time stamps is formatted with `{event number};%Y-%m-%d %H:%M:%S;|`, we want to remove the `{event_number};` and the `;|` so that we can convert this to a date time using `as.POSIXct()`.
+After removing these characters, the `time_stamp` column is formatted as `%Y-%m-%d %H:%M:%S` and converted to a date-time object, as is `C_Visit_Date_Time`. We will then filter out any events that are not present (updates are NAs).
 ```{r}
 syn_nssp_time_stamps <-
   syn_nssp_time_stamps_long |>
@@ -188,27 +188,30 @@ syn_nssp_time_stamps <-
 ```
 
 Clean up the diagnoses codes and remove the empty updates from the diagnoses dataset.
-For these, we want to keep the semi-colons and just remove the numbers since
-this information is stored in the event ID.
-We will only use the event ID and the diagnoses codes, as this will be merged
-back into the time stamped dataset.
+For these, we want to keep the semi-colons and just remove the numbers and extra characters since this information is stored in the event ID.
+We will only use the event ID and the diagnoses codes, as this will be merged back into the time stamped dataset.
+We first filter out the `};;` so we just have the diagnoses codes assigned at each event, which will remain semi-colon separated.
 ```{r}
 syn_nssp_diagnoses <-
   syn_nssp_diagnoses_long |>
-  mutate(diagnoses_codes = str_remove(diagnoses_codes, ".*\\}")) |>
+  mutate(
+    diagnoses_codes = str_remove(diagnoses_codes, ".*\\}"),
+    diagnoses_codes = str_remove(diagnoses_codes, "^[;|]+"),
+    diagnoses_codes = str_remove(diagnoses_codes, "[;|]+$")
+  ) |>
   filter(nzchar(diagnoses_codes)) |>
-  drop_na() |>
+  drop_na(diagnoses_codes) |>
   select(event_id, diagnoses_codes)
 ```
 
-Merge together the time stamps of events and the diagnoses codes.
+Join the time stamps of events and the diagnoses codes using the `event_id`.
 Filter to remove empty updates.
 ```{r}
-nssp_merged <- merge(syn_nssp_time_stamps,
-  syn_nssp_diagnoses,
-  by = "event_id"
-) |>
-  filter(diagnoses_codes != ";;|")
+nssp_merged <- syn_nssp_time_stamps |>
+  left_join(syn_nssp_diagnoses,
+    by = "event_id"
+  ) |>
+  drop_na(diagnoses_codes)
 ```
 
 Now we have a dataframe where each row is an event, with the patient's visit start date (`C_Visit_date_Time`), the patient ID (`C_Processed_BioSense_ID`), the diagnoses code at the event (`diagnoses_code`), and the time stamp of the event (`time_stamp`).
@@ -223,16 +226,18 @@ nssp_updates <- nssp_merged |>
 
 We next filter through the updates to find the first "hit" that corresponds to the diagnosis codes in the syndromic surveillance definition for BAR.
 ```{r}
+diagnosis_pattern <- paste(diagnoses_codes_defn, collapse = "|")
+
 bar_updates <- nssp_updates |>
-  filter(map_lgl(diagnoses_codes, ~ any(str_detect(.x, diagnoses_codes_defn))))
+  filter(str_detect(diagnoses_codes, diagnosis_pattern))
 ```
 
 Next, we will order these by the delay from visit to the diagnoses, and for each patient keep only the first update containing the BAR diagnoses code(s).
 ```{r}
 first_bar_diagnosis <- bar_updates |>
-  arrange(arrival_to_update_delay) |>
   group_by(C_Processed_BioSense_ID) |>
-  slice(1)
+  filter(arrival_to_update_delay == min(arrival_to_update_delay)) |>
+  ungroup()
 ```
 
 Label the visit start date, `C_Visit_Date_Time`, as the reference date,`reference_date` and `time_stamp` as the report date, `report_date` and remove the other column names that are no longer needed, as each row now represents a case.
@@ -241,8 +246,7 @@ clean_line_list <- first_bar_diagnosis |>
   mutate(
     reference_date = as.Date(C_Visit_Date_Time),
     report_date = as.Date(time_stamp)
-  ) |>
-  ungroup()
+  )
 head(clean_line_list)
 ```
 
@@ -251,8 +255,7 @@ head(clean_line_list)
 For nowcasting, we want to compute the number of incident cases indexed by reference and report date, so we can aggregate by reference and report date and compute the delay distribution.
 ```{r}
 count_df_raw <- clean_line_list |>
-  group_by(reference_date, report_date) |>
-  summarise(count = n()) |>
+  count(reference_date, report_date, name = "count") |>
   mutate(delay = as.integer(report_date - reference_date))
 ```
 

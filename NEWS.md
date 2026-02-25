@@ -1,4 +1,4 @@
-# baselinenowcast 0.2.1
+# baselinenowcast 0.2.1000
 
 ## Documentation
 -  Modified NSSP nowcast vignette to do vectorised string matching instead of row-wise to speed-up performance.

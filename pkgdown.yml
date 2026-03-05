@@ -1,13 +1,13 @@
 pandoc: 3.1.11
 pkgdown: 2.2.0.9000
-pkgdown_sha: f3ec6e2bb122e10436eccda7b221e297ab9d395a
+pkgdown_sha: a6abe43ed48e58b1de42eba5e5541a5b6c46b46f
 articles:
   baselinenowcast: baselinenowcast.html
   model_definition: model_definition.html
   modular_workflow: modular_workflow.html
   nomenclature: nomenclature.html
   nssp_nowcast: nssp_nowcast.html
-last_built: 2026-02-25T14:27Z
+last_built: 2026-03-05T08:59Z
 urls:
   reference: https://baselinenowcast.epinowcast.org/reference
   article: https://baselinenowcast.epinowcast.org/articles

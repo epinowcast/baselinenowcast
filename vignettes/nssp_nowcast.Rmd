@@ -92,8 +92,8 @@ Note that all other columns remain, and so each row still contains the patient I
 ```{r}
 syn_nssp_long <- syn_nssp_line_list |>
   mutate(
-    time_stamp = str_split(DischargeDiagnosisMDTUpdates, "\\{"),
-    diagnoses_codes = str_split(DischargeDiagnosisUpdates, "\\{")
+    time_stamp = str_split(DischargeDiagnosisMDTUpdates, fixed("{")),
+    diagnoses_codes = str_split(DischargeDiagnosisUpdates, fixed("{"))
   ) |>
   select(-DischargeDiagnosisMDTUpdates, -DischargeDiagnosisUpdates) |>
   unnest(cols = c(time_stamp, diagnoses_codes))

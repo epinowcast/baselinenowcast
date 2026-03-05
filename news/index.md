@@ -5,7 +5,8 @@
 ### Documentation
 
 - Modified NSSP nowcast vignette to do vectorised string matching
-  instead of row-wise to speed-up performance.
+  instead of row-wise and to simplify the pre-processing to avoid a
+  pivot to a wide form dataframe to speed-up performance.
 
 ## baselinenowcast 0.2.0
 

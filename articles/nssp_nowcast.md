@@ -137,183 +137,68 @@ Respiratory case, one or more of these codes must be reported.
 diagnoses_codes_defn <- c("A22.1", "A221", "A37", "A48.1", "A481", "B25.0", "B250", "B34.2", "B34.9", "B342", "B349", "B44.0", "B44.9", "B440", "B449", "B44.81", "B4481", "B97.2", "B97.4", "B972", "B974", "J00", "J01", "J02", "J03", "J04", "J05", "J06", "J09", "J10", "J11", "J12", "J13", "J14", "J15", "J16", "J17", "J18", "J20", "J21", "J22", "J39.8", "J398", "J40", "J47.9", "J479", "J80", "J85.1", "J851", "J95.821", "J95821", "J96.0", "J96.00", "J9600", "J96.01", "J9601", "J96.02", "J9602", "J96.2", "J960", "J962", "J96.20", "J9620", "J96.21", "J9621", "J9622", "J96.22", "J96.91", "J9691", "J98.8", "J988", "R05", "R06.03", "R0603", "R09.02", "R0902", "R09.2", "R092", "R43.0", "R43.1", "R43.2", "R430", "R431", "R432", "U07.1", "U07.2", "U071", "U072", "022.1", "0221", "034.0", "0340", "041.5", "0415", "041.81", "04181", "079.1", "079.2", "079.3", "079.6", "0791", "0792", "0793", "0796", "079.82", "079.89", "07982", "07989", "079.99", "07999", "117.3", "1173", "460", "461", "462", "463", "464", "465", "466", "461.", "461", "461.", "464.", "465.", "466.", "461", "464", "465", "466", "478.9", "4789", "480.", "482.", "483.", "484.", "487.", "488.", "480", "481", "482", "483", "484", "485", "486", "487", "488", "490", "494.1", "4941", "517.1", "5171", "518.51", "518.53", "51851", "51853", "518.6", "5186", "518.81", "518.82", "518.84", "51881", "51882", "51884", "519.8", "5198", "073.0", "0730", "781.1", "7811", "786.2", "7862", "799.02", "79902", "799.1", "7991", "033", "033.", "033", "780.60", "78060") # nolint
 ```
 
-### 2.3 Expand the data so that each “event” has its own column
+### 2.3 Expand the diagnosis code and their corresponding time stamps into a long dataframe
 
-First we will pivot the line-list’s time stamp and diagnosis update
-columns into a long format with one row per update.
-
-We will create two datasets which parse the characters in the columns
-`DischargeDiagnosisMDTUpdates` and `DischargeDiagnosisUpdates` , which
-contain a string listing the time stamp and diagnosis codes
-(respectively) of each “event” in the clinical encounter, formatted as:
-
-- `{event number};YYYY-MM-DD HH:MM:SS;|{event number 2};YYYY-MM-DD HH:MM:SS;|`
-  for `DischargeDiagnosisMDTUpdates`
-
-- `{event number};{diagnoses codes};|{event number 2}{diagnoses codes};|`
-  for `DischargeDiagnosisUpdates`
-
-The timestamp records the timing of diagnosis code updates related to
-each clinical encounter, capturing the point in time when each new code
-became available within the NSSP system. Later, we will merge the two
-datasets back together by the unique patient ID and the event number, so
-that we can associate each set of diagnoses codes with a timestamp.
-
-We will use
-[`tidyr::separate_wider_delim()`](https://tidyr.tidyverse.org/reference/separate_wider_delim.html)
-to expand these entries, so that each “event” has its own column. Since
-patients experience a different number of patient update “events”, there
-will be missing values for patients not experiencing many events during
-their visit. The columns will be named by the original column name + the
-event number, e.g. `DischargeDiagnosisMDTUpdates1`. We’ll write a
-function to do this for both the time stamps and diagnoses codes.
+The line-list data contains a single row for each patient, and columns
+for the diagnosis code (`DischargeDiagnosisUpdates`) and a the time
+stamp of that encounter with the electronic health record
+(`DischargeDiagnosisMDTUpdates`). We will expand the data to make it
+into a longer dataframe where each encounter is a row corresponding to a
+diagnosis update and its time stamp. The `unnest` function from `tidyr`
+works well for this as it expands the two list-columns created by
+`str_split`, pairing each element of `time_stamp` with its corresponding
+element of `diagnosis_code`. Note that all other columns remain, and so
+each row still contains the patient ID, `C_Processed_BioSense_ID` and
+critically, the `C_Visit_Date_Time` which indicates the start of the
+patient’s visit.
 
 ``` r
-expand_events <- function(line_list, event_col_name) {
-  wide_line_list <- separate_wider_delim(line_list,
-    {{ event_col_name }},
-    delim = "{", names_sep = "", too_few = "align_start"
-  )
-  return(wide_line_list)
-}
+syn_nssp_long <- syn_nssp_line_list |>
+  mutate(
+    time_stamp = str_split(DischargeDiagnosisMDTUpdates, fixed("{")),
+    diagnoses_codes = str_split(DischargeDiagnosisUpdates, fixed("{"))
+  ) |>
+  select(-DischargeDiagnosisMDTUpdates, -DischargeDiagnosisUpdates) |>
+  unnest(cols = c(time_stamp, diagnoses_codes))
 ```
 
-Expand both the time stamps and diagnoses codes, and remove the column
-containing the information on the other.
+We now have an expanded dataframe, which contains time stamps and
+diagnosis codes formatted as:
+
+- `{event number}};YYYY-MM-DD HH:MM:SS;`
+
+- `{event number}};{diagnoses codes};`
+
+The event number is no longer needed as each event is its own row. We
+can go ahead and remove the extraneous characters, format the time stamp
+as a date-time, and as a final step remove any empty time stamps or
+diagnosis code events, as these events didn’t include any diagnosis code
+updates which is what we are interested in, and we already have the
+information we need on the patient’s visit start date
+(`C_Visit_Date_Time`).
 
 ``` r
-syn_nssp_time_stamps_wide <- expand_events(
-  line_list = syn_nssp_line_list,
-  event_col_name = "DischargeDiagnosisMDTUpdates"
-) |>
-  select(-DischargeDiagnosisUpdates)
-
-syn_nssp_diagnoses_wide <- expand_events(
-  line_list = syn_nssp_line_list,
-  event_col_name = "DischargeDiagnosisUpdates"
-) |>
-  select(-DischargeDiagnosisMDTUpdates)
-```
-
-We will write a function that, for each of the diagnoses and time stamps
-datasets, finds the name of the last update column, and uses that to
-pivot the data from wide to long. This creates a long tidy dataframe
-where each row is now an event.
-
-``` r
-wide_to_long <- function(wide_line_list,
-                         event_col_name,
-                         values_to,
-                         names_to,
-                         id_col_name) {
-  long_data <- wide_line_list |>
-    pivot_longer(
-      cols = starts_with({{ event_col_name }}),
-      names_to = {{ names_to }},
-      values_to = {{ values_to }},
-      values_drop_na = FALSE
-    ) |>
-    mutate(
-      event_id = paste(
-        .data[[id_col_name]],
-        as.numeric(str_extract(as.character(.data[[names_to]]), "[0-9.]+"))
-      )
-    )
-  return(long_data)
-}
-```
-
-Pivot both datasets from long to wide using the function above,
-specifying the name of the column which will hold the values (either
-time stamps or diagnoses). We will create a unique event ID using the
-event number and the patient ID (`id_col_name`) which in this case is
-the `C_Processed_BioSense_ID` column.
-
-``` r
-syn_nssp_time_stamps_long <- wide_to_long(
-  wide_line_list = syn_nssp_time_stamps_wide,
-  event_col_name = "DischargeDiagnosisMDTUpdates",
-  values_to = "time_stamp",
-  names_to = "column_name",
-  id_col_name = "C_Processed_BioSense_ID"
-)
-
-syn_nssp_diagnoses_long <- wide_to_long(
-  wide_line_list = syn_nssp_diagnoses_wide,
-  event_col_name = "DischargeDiagnosisUpdates",
-  values_to = "diagnoses_codes",
-  names_to = "column_name",
-  id_col_name = "C_Processed_BioSense_ID"
-)
-```
-
-Currently, the time stamps is formatted with
-`{event number};%Y-%m-%d %H:%M:%S;|`, we want to remove the
-`{event_number};` and the `;|` so that we can convert this to a date
-time using [`as.POSIXct()`](https://rdrr.io/r/base/as.POSIXlt.html).
-After removing these characters, the `time_stamp` column is formatted as
-`%Y-%m-%d %H:%M:%S` and converted to a date-time object, as is
-`C_Visit_Date_Time`. We will then filter out any events that are not
-present (updates are NAs).
-
-``` r
-syn_nssp_time_stamps <-
-  syn_nssp_time_stamps_long |>
+syn_nssp_clean <- syn_nssp_long |>
   mutate(
     time_stamp = as.POSIXct(
-      str_remove_all(
-        str_remove(time_stamp, ".*\\}"),
-        "[|;]+"
-      ),
+      str_remove_all(str_remove(time_stamp, ".*\\}"), "[|;]+"),
       format = "%Y-%m-%d %H:%M:%S",
       tz = "UTC"
     ),
-    C_Visit_Date_Time = as.POSIXct(C_Visit_Date_Time)
+    diagnoses_codes = str_remove(diagnoses_codes, ".*\\}")
   ) |>
-  drop_na(time_stamp)
-```
-
-Clean up the diagnoses codes and remove the empty updates from the
-diagnoses dataset. For these, we want to keep the semi-colons and just
-remove the numbers and extra characters since this information is stored
-in the event ID. We will only use the event ID and the diagnoses codes,
-as this will be merged back into the time stamped dataset. We first
-filter out the `};;` so we just have the diagnoses codes assigned at
-each event, which will remain semi-colon separated.
-
-``` r
-syn_nssp_diagnoses <-
-  syn_nssp_diagnoses_long |>
-  mutate(
-    diagnoses_codes = str_remove(diagnoses_codes, ".*\\}"),
-    diagnoses_codes = str_remove(diagnoses_codes, "^[;|]+"),
-    diagnoses_codes = str_remove(diagnoses_codes, "[;|]+$")
-  ) |>
-  filter(nzchar(diagnoses_codes)) |>
-  drop_na(diagnoses_codes) |>
-  select(event_id, diagnoses_codes)
-```
-
-Join the time stamps of events and the diagnoses codes using the
-`event_id`. Filter to remove empty updates.
-
-``` r
-nssp_merged <- syn_nssp_time_stamps |>
-  left_join(syn_nssp_diagnoses,
-    by = "event_id"
-  ) |>
-  drop_na(diagnoses_codes)
+  filter(!is.na(time_stamp), nzchar(diagnoses_codes), diagnoses_codes != ";;|")
 ```
 
 Now we have a dataframe where each row is an event, with the patient’s
 visit start date (`C_Visit_date_Time`), the patient ID
 (`C_Processed_BioSense_ID`), the diagnoses code at the event
-(`diagnoses_code`), and the time stamp of the event (`time_stamp`). Next
-we will add a column for the time from arrival to each updated
+(`diagnoses_codes`), and the time stamp of the event (`time_stamp`).
+Next we will add a column for the time from arrival to each updated
 diagnosis, in days.
 
 ``` r
-nssp_updates <- nssp_merged |>
+nssp_updates <- syn_nssp_clean |>
   mutate(arrival_to_update_delay = as.numeric(difftime(
     time_stamp, C_Visit_Date_Time,
     units = "days"
@@ -338,7 +223,7 @@ code(s).
 ``` r
 first_bar_diagnosis <- bar_updates |>
   group_by(C_Processed_BioSense_ID) |>
-  filter(arrival_to_update_delay == min(arrival_to_update_delay)) |>
+  slice_min(arrival_to_update_delay, n = 1, with_ties = FALSE) |>
   ungroup()
 ```
 
@@ -354,18 +239,17 @@ clean_line_list <- first_bar_diagnosis |>
     report_date = as.Date(time_stamp)
   )
 head(clean_line_list)
-#> # A tibble: 6 × 13
+#> # A tibble: 6 × 11
 #>   C_Processed_BioSense_ID  CCDDParsed HasBeenAdmitted C_Visit_Date_Time   c_race
 #>   <chr>                    <chr>                <dbl> <dttm>              <chr> 
-#> 1 2024.02.03.23961E_23531… COUGH SEN…               0 2024-02-03 16:05:00 White 
-#> 2 2024.02.04.23970E_80164… COUGH COV…               1 2024-02-04 11:36:00 White 
-#> 3 2024.02.09.6146E_MM2071… VOMITING …               0 2024-02-09 01:49:00 Asian 
-#> 4 2024.02.08.23960I_34530… DIVERTICU…               1 2024-02-08 20:00:00 White 
-#> 5 2024.02.02.6170E_HF2210… PREGNANT …               0 2024-02-02 01:03:00 Other…
-#> 6 2024.02.09.6148I_230936… NAUSEU WE…               1 2024-02-09 17:25:00 White 
-#> # ℹ 8 more variables: sex <chr>, column_name <chr>, time_stamp <dttm>,
-#> #   event_id <chr>, diagnoses_codes <chr>, arrival_to_update_delay <dbl>,
-#> #   reference_date <date>, report_date <date>
+#> 1 2024.02.01.23959I_20476… ABNORMAL …               1 2024-02-01 13:30:00 White 
+#> 2 2024.02.01.23965V_65654… DIFFICULT…               1 2024-02-01 09:26:00 Black…
+#> 3 2024.02.01.24119E_H1020… COUGH FEV…               1 2024-02-01 13:25:00 White 
+#> 4 2024.02.01.24167I_06536… LETHARGY …               1 2024-02-01 11:15:00 White 
+#> 5 2024.02.01.6132E_226022… COVID LAS…               0 2024-02-01 13:36:00 White 
+#> 6 2024.02.01.6133I_249090… HIGH BLLO…               1 2024-02-01 11:04:00 Black…
+#> # ℹ 6 more variables: sex <chr>, time_stamp <dttm>, diagnoses_codes <chr>,
+#> #   arrival_to_update_delay <dbl>, reference_date <date>, report_date <date>
 ```
 
 ### 2.4 Obtain counts of cases by reference date (visit date) and report date (time of first diagnosis)
@@ -508,13 +392,13 @@ cdf_delay <- ggplot(avg_delays) +
 cdf_delay
 ```
 
-![](nssp_nowcast_files/figure-html/unnamed-chunk-18-1.png)
+![](nssp_nowcast_files/figure-html/unnamed-chunk-13-1.png)
 
 ``` r
 delay_t
 ```
 
-![](nssp_nowcast_files/figure-html/unnamed-chunk-18-2.png)
+![](nssp_nowcast_files/figure-html/unnamed-chunk-13-2.png)
 
 Based on this figure, we can set the maximum delay to be 25 days as this
 is where 95% of the cases appear to have been reported. In general, we
@@ -583,7 +467,7 @@ plot_inits <- ggplot(init_data) +
 plot_inits
 ```
 
-![](nssp_nowcast_files/figure-html/unnamed-chunk-23-1.png)
+![](nssp_nowcast_files/figure-html/unnamed-chunk-18-1.png)
 
 We can see that without nowcasting, the cases appear to be sharply
 declining at the most recent dates. We can’t tell from this data alone
@@ -935,7 +819,7 @@ plot_prob_nowcast <- ggplot(nowcast_data_recent) +
 plot_prob_nowcast
 ```
 
-![](nssp_nowcast_files/figure-html/unnamed-chunk-35-1.png)
+![](nssp_nowcast_files/figure-html/unnamed-chunk-30-1.png)
 
 ## 6 Summary
 

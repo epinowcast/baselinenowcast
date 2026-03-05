@@ -180,170 +180,85 @@ To be considered a Broad Acute Respiratory case, one or more of these codes must
 <code class="sourceCode R"><span><span class="va">diagnoses_codes_defn</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A22.1"</span>, <span class="st">"A221"</span>, <span class="st">"A37"</span>, <span class="st">"A48.1"</span>, <span class="st">"A481"</span>, <span class="st">"B25.0"</span>, <span class="st">"B250"</span>, <span class="st">"B34.2"</span>, <span class="st">"B34.9"</span>, <span class="st">"B342"</span>, <span class="st">"B349"</span>, <span class="st">"B44.0"</span>, <span class="st">"B44.9"</span>, <span class="st">"B440"</span>, <span class="st">"B449"</span>, <span class="st">"B44.81"</span>, <span class="st">"B4481"</span>, <span class="st">"B97.2"</span>, <span class="st">"B97.4"</span>, <span class="st">"B972"</span>, <span class="st">"B974"</span>, <span class="st">"J00"</span>, <span class="st">"J01"</span>, <span class="st">"J02"</span>, <span class="st">"J03"</span>, <span class="st">"J04"</span>, <span class="st">"J05"</span>, <span class="st">"J06"</span>, <span class="st">"J09"</span>, <span class="st">"J10"</span>, <span class="st">"J11"</span>, <span class="st">"J12"</span>, <span class="st">"J13"</span>, <span class="st">"J14"</span>, <span class="st">"J15"</span>, <span class="st">"J16"</span>, <span class="st">"J17"</span>, <span class="st">"J18"</span>, <span class="st">"J20"</span>, <span class="st">"J21"</span>, <span class="st">"J22"</span>, <span class="st">"J39.8"</span>, <span class="st">"J398"</span>, <span class="st">"J40"</span>, <span class="st">"J47.9"</span>, <span class="st">"J479"</span>, <span class="st">"J80"</span>, <span class="st">"J85.1"</span>, <span class="st">"J851"</span>, <span class="st">"J95.821"</span>, <span class="st">"J95821"</span>, <span class="st">"J96.0"</span>, <span class="st">"J96.00"</span>, <span class="st">"J9600"</span>, <span class="st">"J96.01"</span>, <span class="st">"J9601"</span>, <span class="st">"J96.02"</span>, <span class="st">"J9602"</span>, <span class="st">"J96.2"</span>, <span class="st">"J960"</span>, <span class="st">"J962"</span>, <span class="st">"J96.20"</span>, <span class="st">"J9620"</span>, <span class="st">"J96.21"</span>, <span class="st">"J9621"</span>, <span class="st">"J9622"</span>, <span class="st">"J96.22"</span>, <span class="st">"J96.91"</span>, <span class="st">"J9691"</span>, <span class="st">"J98.8"</span>, <span class="st">"J988"</span>, <span class="st">"R05"</span>, <span class="st">"R06.03"</span>, <span class="st">"R0603"</span>, <span class="st">"R09.02"</span>, <span class="st">"R0902"</span>, <span class="st">"R09.2"</span>, <span class="st">"R092"</span>, <span class="st">"R43.0"</span>, <span class="st">"R43.1"</span>, <span class="st">"R43.2"</span>, <span class="st">"R430"</span>, <span class="st">"R431"</span>, <span class="st">"R432"</span>, <span class="st">"U07.1"</span>, <span class="st">"U07.2"</span>, <span class="st">"U071"</span>, <span class="st">"U072"</span>, <span class="st">"022.1"</span>, <span class="st">"0221"</span>, <span class="st">"034.0"</span>, <span class="st">"0340"</span>, <span class="st">"041.5"</span>, <span class="st">"0415"</span>, <span class="st">"041.81"</span>, <span class="st">"04181"</span>, <span class="st">"079.1"</span>, <span class="st">"079.2"</span>, <span class="st">"079.3"</span>, <span class="st">"079.6"</span>, <span class="st">"0791"</span>, <span class="st">"0792"</span>, <span class="st">"0793"</span>, <span class="st">"0796"</span>, <span class="st">"079.82"</span>, <span class="st">"079.89"</span>, <span class="st">"07982"</span>, <span class="st">"07989"</span>, <span class="st">"079.99"</span>, <span class="st">"07999"</span>, <span class="st">"117.3"</span>, <span class="st">"1173"</span>, <span class="st">"460"</span>, <span class="st">"461"</span>, <span class="st">"462"</span>, <span class="st">"463"</span>, <span class="st">"464"</span>, <span class="st">"465"</span>, <span class="st">"466"</span>, <span class="st">"461."</span>, <span class="st">"461"</span>, <span class="st">"461."</span>, <span class="st">"464."</span>, <span class="st">"465."</span>, <span class="st">"466."</span>, <span class="st">"461"</span>, <span class="st">"464"</span>, <span class="st">"465"</span>, <span class="st">"466"</span>, <span class="st">"478.9"</span>, <span class="st">"4789"</span>, <span class="st">"480."</span>, <span class="st">"482."</span>, <span class="st">"483."</span>, <span class="st">"484."</span>, <span class="st">"487."</span>, <span class="st">"488."</span>, <span class="st">"480"</span>, <span class="st">"481"</span>, <span class="st">"482"</span>, <span class="st">"483"</span>, <span class="st">"484"</span>, <span class="st">"485"</span>, <span class="st">"486"</span>, <span class="st">"487"</span>, <span class="st">"488"</span>, <span class="st">"490"</span>, <span class="st">"494.1"</span>, <span class="st">"4941"</span>, <span class="st">"517.1"</span>, <span class="st">"5171"</span>, <span class="st">"518.51"</span>, <span class="st">"518.53"</span>, <span class="st">"51851"</span>, <span class="st">"51853"</span>, <span class="st">"518.6"</span>, <span class="st">"5186"</span>, <span class="st">"518.81"</span>, <span class="st">"518.82"</span>, <span class="st">"518.84"</span>, <span class="st">"51881"</span>, <span class="st">"51882"</span>, <span class="st">"51884"</span>, <span class="st">"519.8"</span>, <span class="st">"5198"</span>, <span class="st">"073.0"</span>, <span class="st">"0730"</span>, <span class="st">"781.1"</span>, <span class="st">"7811"</span>, <span class="st">"786.2"</span>, <span class="st">"7862"</span>, <span class="st">"799.02"</span>, <span class="st">"79902"</span>, <span class="st">"799.1"</span>, <span class="st">"7991"</span>, <span class="st">"033"</span>, <span class="st">"033."</span>, <span class="st">"033"</span>, <span class="st">"780.60"</span>, <span class="st">"78060"</span><span class="op">)</span> <span class="co"># nolint</span></span></code></pre></div>
 </div>
 <div class="section level3" number="2.3">
-<h3 id="expand-the-data-so-that-each-event-has-its-own-column">
-<span class="header-section-number">2.3</span> Expand the data so that each “event” has its own column<a class="anchor" aria-label="anchor" href="#expand-the-data-so-that-each-event-has-its-own-column"></a>
+<h3 id="expand-the-diagnosis-code-and-their-corresponding-time-stamps-into-a-long-dataframe">
+<span class="header-section-number">2.3</span> Expand the diagnosis code and their corresponding time stamps into a long dataframe<a class="anchor" aria-label="anchor" href="#expand-the-diagnosis-code-and-their-corresponding-time-stamps-into-a-long-dataframe"></a>
 </h3>
-<p>First we will pivot the line-list’s time stamp and diagnosis update columns into a long format with one row per update.</p>
-<p>We will create two datasets which parse the characters in the columns <code>DischargeDiagnosisMDTUpdates</code> and <code>DischargeDiagnosisUpdates</code> , which contain a string listing the time stamp and diagnosis codes (respectively) of each “event” in the clinical encounter, formatted as:</p>
-<ul>
-<li><p><code>{event number};YYYY-MM-DD HH:MM:SS;|{event number 2};YYYY-MM-DD HH:MM:SS;|</code> for <code>DischargeDiagnosisMDTUpdates</code></p></li>
-<li><p><code>{event number};{diagnoses codes};|{event number 2}{diagnoses codes};|</code> for <code>DischargeDiagnosisUpdates</code></p></li>
-</ul>
-<p>The timestamp records the timing of diagnosis code updates related to each clinical encounter, capturing the point in time when each new code became available within the NSSP system.
-Later, we will merge the two datasets back together by the unique patient ID and the event number, so that we can associate each set of diagnoses codes with a timestamp.</p>
-<p>We will use <code><a href="https://tidyr.tidyverse.org/reference/separate_wider_delim.html" class="external-link">tidyr::separate_wider_delim()</a></code> to expand these entries, so that each “event” has its own column.
-Since patients experience a different number of patient update “events”, there will be missing values for patients not experiencing many events during their visit.
-The columns will be named by the original column name + the event number, e.g. <code>DischargeDiagnosisMDTUpdates1</code>.
-We’ll write a function to do this for both the time stamps and diagnoses codes.</p>
+<p>The line-list data contains a single row for each patient, and columns for the diagnosis code (<code>DischargeDiagnosisUpdates</code>) and a the time stamp of that encounter with the electronic health record (<code>DischargeDiagnosisMDTUpdates</code>).
+We will expand the data to make it into a longer dataframe where each encounter is a row corresponding to a diagnosis update and its time stamp.
+The <code>unnest</code> function from <code>tidyr</code> works well for this as it expands the two list-columns created by <code>str_split</code>, pairing each element of <code>time_stamp</code> with its corresponding element of <code>diagnosis_code</code>.
+Note that all other columns remain, and so each row still contains the patient ID, <code>C_Processed_BioSense_ID</code> and critically, the <code>C_Visit_Date_Time</code> which indicates the start of the patient’s visit.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">expand_events</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">line_list</span>, <span class="va">event_col_name</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">wide_line_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/separate_wider_delim.html" class="external-link">separate_wider_delim</a></span><span class="op">(</span><span class="va">line_list</span>,</span>
-<span>    <span class="op">{</span><span class="op">{</span> <span class="va">event_col_name</span> <span class="op">}</span><span class="op">}</span>,</span>
-<span>    delim <span class="op">=</span> <span class="st">"{"</span>, names_sep <span class="op">=</span> <span class="st">""</span>, too_few <span class="op">=</span> <span class="st">"align_start"</span></span>
-<span>  <span class="op">)</span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">wide_line_list</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p>Expand both the time stamps and diagnoses codes, and remove the column containing the information on the other.</p>
+<code class="sourceCode R"><span><span class="va">syn_nssp_long</span> <span class="op">&lt;-</span> <span class="va">syn_nssp_line_list</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    time_stamp <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_split.html" class="external-link">str_split</a></span><span class="op">(</span><span class="va">DischargeDiagnosisMDTUpdates</span>, <span class="fu"><a href="https://stringr.tidyverse.org/reference/modifiers.html" class="external-link">fixed</a></span><span class="op">(</span><span class="st">"{"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    diagnoses_codes <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_split.html" class="external-link">str_split</a></span><span class="op">(</span><span class="va">DischargeDiagnosisUpdates</span>, <span class="fu"><a href="https://stringr.tidyverse.org/reference/modifiers.html" class="external-link">fixed</a></span><span class="op">(</span><span class="st">"{"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">DischargeDiagnosisMDTUpdates</span>, <span class="op">-</span><span class="va">DischargeDiagnosisUpdates</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/unnest.html" class="external-link">unnest</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">time_stamp</span>, <span class="va">diagnoses_codes</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>We now have an expanded dataframe, which contains time stamps and diagnosis codes formatted as:</p>
+<ul>
+<li><p><code>{event number}};YYYY-MM-DD HH:MM:SS;</code></p></li>
+<li><p><code>{event number}};{diagnoses codes};</code></p></li>
+</ul>
+<p>The event number is no longer needed as each event is its own row.
+We can go ahead and remove the extraneous characters, format the time stamp as a date-time, and as a final step remove any empty time stamps or diagnosis code events, as these events didn’t include any diagnosis code updates which is what we are interested in, and we already have the information we need on the patient’s visit start date (<code>C_Visit_Date_Time</code>).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">syn_nssp_time_stamps_wide</span> <span class="op">&lt;-</span> <span class="fu">expand_events</span><span class="op">(</span></span>
-<span>  line_list <span class="op">=</span> <span class="va">syn_nssp_line_list</span>,</span>
-<span>  event_col_name <span class="op">=</span> <span class="st">"DischargeDiagnosisMDTUpdates"</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">DischargeDiagnosisUpdates</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">syn_nssp_diagnoses_wide</span> <span class="op">&lt;-</span> <span class="fu">expand_events</span><span class="op">(</span></span>
-<span>  line_list <span class="op">=</span> <span class="va">syn_nssp_line_list</span>,</span>
-<span>  event_col_name <span class="op">=</span> <span class="st">"DischargeDiagnosisUpdates"</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">DischargeDiagnosisMDTUpdates</span><span class="op">)</span></span></code></pre></div>
-<p>We will write a function that, for each of the diagnoses and time stamps datasets, finds the name of the last update column, and uses that to pivot the data from wide to long.
-This creates a long tidy dataframe where each row is now an event.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">wide_to_long</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">wide_line_list</span>,</span>
-<span>                         <span class="va">event_col_name</span>,</span>
-<span>                         <span class="va">values_to</span>,</span>
-<span>                         <span class="va">names_to</span>,</span>
-<span>                         <span class="va">id_col_name</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">long_data</span> <span class="op">&lt;-</span> <span class="va">wide_line_list</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span></span>
-<span>      cols <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="op">{</span><span class="op">{</span> <span class="va">event_col_name</span> <span class="op">}</span><span class="op">}</span><span class="op">)</span>,</span>
-<span>      names_to <span class="op">=</span> <span class="op">{</span><span class="op">{</span> <span class="va">names_to</span> <span class="op">}</span><span class="op">}</span>,</span>
-<span>      values_to <span class="op">=</span> <span class="op">{</span><span class="op">{</span> <span class="va">values_to</span> <span class="op">}</span><span class="op">}</span>,</span>
-<span>      values_drop_na <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>      event_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span></span>
-<span>        <span class="va">.data</span><span class="op">[[</span><span class="va">id_col_name</span><span class="op">]</span><span class="op">]</span>,</span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_extract.html" class="external-link">str_extract</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">.data</span><span class="op">[[</span><span class="va">names_to</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="st">"[0-9.]+"</span><span class="op">)</span><span class="op">)</span></span>
-<span>      <span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">long_data</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p>Pivot both datasets from long to wide using the function above, specifying the name of the column which will hold the values (either time stamps or diagnoses).
-We will create a unique event ID using the event number and the patient ID (<code>id_col_name</code>) which in this case is the <code>C_Processed_BioSense_ID</code> column.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">syn_nssp_time_stamps_long</span> <span class="op">&lt;-</span> <span class="fu">wide_to_long</span><span class="op">(</span></span>
-<span>  wide_line_list <span class="op">=</span> <span class="va">syn_nssp_time_stamps_wide</span>,</span>
-<span>  event_col_name <span class="op">=</span> <span class="st">"DischargeDiagnosisMDTUpdates"</span>,</span>
-<span>  values_to <span class="op">=</span> <span class="st">"time_stamp"</span>,</span>
-<span>  names_to <span class="op">=</span> <span class="st">"column_name"</span>,</span>
-<span>  id_col_name <span class="op">=</span> <span class="st">"C_Processed_BioSense_ID"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">syn_nssp_diagnoses_long</span> <span class="op">&lt;-</span> <span class="fu">wide_to_long</span><span class="op">(</span></span>
-<span>  wide_line_list <span class="op">=</span> <span class="va">syn_nssp_diagnoses_wide</span>,</span>
-<span>  event_col_name <span class="op">=</span> <span class="st">"DischargeDiagnosisUpdates"</span>,</span>
-<span>  values_to <span class="op">=</span> <span class="st">"diagnoses_codes"</span>,</span>
-<span>  names_to <span class="op">=</span> <span class="st">"column_name"</span>,</span>
-<span>  id_col_name <span class="op">=</span> <span class="st">"C_Processed_BioSense_ID"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Currently, the time stamps is formatted with <code>{event number};%Y-%m-%d %H:%M:%S;|</code>, we want to remove the <code>{event_number};</code> and the <code>;|</code> so that we can convert this to a date time using <code><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct()</a></code>.
-After removing these characters, the <code>time_stamp</code> column is formatted as <code>%Y-%m-%d %H:%M:%S</code> and converted to a date-time object, as is <code>C_Visit_Date_Time</code>. We will then filter out any events that are not present (updates are NAs).</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">syn_nssp_time_stamps</span> <span class="op">&lt;-</span></span>
-<span>  <span class="va">syn_nssp_time_stamps_long</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">syn_nssp_clean</span> <span class="op">&lt;-</span> <span class="va">syn_nssp_long</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    time_stamp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove_all</a></span><span class="op">(</span></span>
-<span>        <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="va">time_stamp</span>, <span class="st">".*\\}"</span><span class="op">)</span>,</span>
-<span>        <span class="st">"[|;]+"</span></span>
-<span>      <span class="op">)</span>,</span>
+<span>      <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove_all</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="va">time_stamp</span>, <span class="st">".*\\}"</span><span class="op">)</span>, <span class="st">"[|;]+"</span><span class="op">)</span>,</span>
 <span>      format <span class="op">=</span> <span class="st">"%Y-%m-%d %H:%M:%S"</span>,</span>
 <span>      tz <span class="op">=</span> <span class="st">"UTC"</span></span>
 <span>    <span class="op">)</span>,</span>
-<span>    C_Visit_Date_Time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="va">C_Visit_Date_Time</span><span class="op">)</span></span>
+<span>    diagnoses_codes <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="va">diagnoses_codes</span>, <span class="st">".*\\}"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="va">time_stamp</span><span class="op">)</span></span></code></pre></div>
-<p>Clean up the diagnoses codes and remove the empty updates from the diagnoses dataset.
-For these, we want to keep the semi-colons and just remove the numbers and extra characters since this information is stored in the event ID.
-We will only use the event ID and the diagnoses codes, as this will be merged back into the time stamped dataset.
-We first filter out the <code>};;</code> so we just have the diagnoses codes assigned at each event, which will remain semi-colon separated.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">syn_nssp_diagnoses</span> <span class="op">&lt;-</span></span>
-<span>  <span class="va">syn_nssp_diagnoses_long</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    diagnoses_codes <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="va">diagnoses_codes</span>, <span class="st">".*\\}"</span><span class="op">)</span>,</span>
-<span>    diagnoses_codes <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="va">diagnoses_codes</span>, <span class="st">"^[;|]+"</span><span class="op">)</span>,</span>
-<span>    diagnoses_codes <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="va">diagnoses_codes</span>, <span class="st">"[;|]+$"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="va">diagnoses_codes</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="va">diagnoses_codes</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">event_id</span>, <span class="va">diagnoses_codes</span><span class="op">)</span></span></code></pre></div>
-<p>Join the time stamps of events and the diagnoses codes using the <code>event_id</code>.
-Filter to remove empty updates.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nssp_merged</span> <span class="op">&lt;-</span> <span class="va">syn_nssp_time_stamps</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">syn_nssp_diagnoses</span>,</span>
-<span>    by <span class="op">=</span> <span class="st">"event_id"</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="va">diagnoses_codes</span><span class="op">)</span></span></code></pre></div>
-<p>Now we have a dataframe where each row is an event, with the patient’s visit start date (<code>C_Visit_date_Time</code>), the patient ID (<code>C_Processed_BioSense_ID</code>), the diagnoses code at the event (<code>diagnoses_code</code>), and the time stamp of the event (<code>time_stamp</code>).
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">time_stamp</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="va">diagnoses_codes</span><span class="op">)</span>, <span class="va">diagnoses_codes</span> <span class="op">!=</span> <span class="st">";;|"</span><span class="op">)</span></span></code></pre></div>
+<p>Now we have a dataframe where each row is an event, with the patient’s visit start date (<code>C_Visit_date_Time</code>), the patient ID (<code>C_Processed_BioSense_ID</code>), the diagnoses code at the event (<code>diagnoses_codes</code>), and the time stamp of the event (<code>time_stamp</code>).
 Next we will add a column for the time from arrival to each updated diagnosis, in days.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nssp_updates</span> <span class="op">&lt;-</span> <span class="va">nssp_merged</span> <span class="op">|&gt;</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nssp_updates</span> <span class="op">&lt;-</span> <span class="va">syn_nssp_clean</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>arrival_to_update_delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/difftime.html" class="external-link">difftime</a></span><span class="op">(</span></span>
 <span>    <span class="va">time_stamp</span>, <span class="va">C_Visit_Date_Time</span>,</span>
 <span>    units <span class="op">=</span> <span class="st">"days"</span></span>
 <span>  <span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>We next filter through the updates to find the first “hit” that corresponds to the diagnosis codes in the syndromic surveillance definition for BAR.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">diagnosis_pattern</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">diagnoses_codes_defn</span>, collapse <span class="op">=</span> <span class="st">"|"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">bar_updates</span> <span class="op">&lt;-</span> <span class="va">nssp_updates</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">diagnoses_codes</span>, <span class="va">diagnosis_pattern</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Next, we will order these by the delay from visit to the diagnoses, and for each patient keep only the first update containing the BAR diagnoses code(s).</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">first_bar_diagnosis</span> <span class="op">&lt;-</span> <span class="va">bar_updates</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">C_Processed_BioSense_ID</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">arrival_to_update_delay</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">arrival_to_update_delay</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_min</a></span><span class="op">(</span><span class="va">arrival_to_update_delay</span>, n <span class="op">=</span> <span class="fl">1</span>, with_ties <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Label the visit start date, <code>C_Visit_Date_Time</code>, as the reference date,<code>reference_date</code> and <code>time_stamp</code> as the report date, <code>report_date</code> and remove the other column names that are no longer needed, as each row now represents a case.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean_line_list</span> <span class="op">&lt;-</span> <span class="va">first_bar_diagnosis</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    reference_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">C_Visit_Date_Time</span><span class="op">)</span>,</span>
 <span>    report_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">time_stamp</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">clean_line_list</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 13</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 11</span></span></span>
 <span><span class="co">#&gt;   C_Processed_BioSense_ID  CCDDParsed HasBeenAdmitted C_Visit_Date_Time   c_race</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2024.02.03.23961E_23531… COUGH SEN…               0 2024-02-03 <span style="color: #949494;">16:05:00</span> White </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2024.02.04.23970E_80164… COUGH COV…               1 2024-02-04 <span style="color: #949494;">11:36:00</span> White </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2024.02.09.6146E_MM2071… VOMITING …               0 2024-02-09 <span style="color: #949494;">01:49:00</span> Asian </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2024.02.08.23960I_34530… DIVERTICU…               1 2024-02-08 <span style="color: #949494;">20:00:00</span> White </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2024.02.02.6170E_HF2210… PREGNANT …               0 2024-02-02 <span style="color: #949494;">01:03:00</span> Other…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2024.02.09.6148I_230936… NAUSEU WE…               1 2024-02-09 <span style="color: #949494;">17:25:00</span> White </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 8 more variables: sex &lt;chr&gt;, column_name &lt;chr&gt;, time_stamp &lt;dttm&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   event_id &lt;chr&gt;, diagnoses_codes &lt;chr&gt;, arrival_to_update_delay &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   reference_date &lt;date&gt;, report_date &lt;date&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2024.02.01.23959I_20476… ABNORMAL …               1 2024-02-01 <span style="color: #949494;">13:30:00</span> White </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2024.02.01.23965V_65654… DIFFICULT…               1 2024-02-01 <span style="color: #949494;">09:26:00</span> Black…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2024.02.01.24119E_H1020… COUGH FEV…               1 2024-02-01 <span style="color: #949494;">13:25:00</span> White </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2024.02.01.24167I_06536… LETHARGY …               1 2024-02-01 <span style="color: #949494;">11:15:00</span> White </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2024.02.01.6132E_226022… COVID LAS…               0 2024-02-01 <span style="color: #949494;">13:36:00</span> White </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2024.02.01.6133I_249090… HIGH BLLO…               1 2024-02-01 <span style="color: #949494;">11:04:00</span> Black…</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 6 more variables: sex &lt;chr&gt;, time_stamp &lt;dttm&gt;, diagnoses_codes &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   arrival_to_update_delay &lt;dbl&gt;, reference_date &lt;date&gt;, report_date &lt;date&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level3" number="2.4">
 <h3 id="obtain-counts-of-cases-by-reference-date-visit-date-and-report-date-time-of-first-diagnosis">
 <span class="header-section-number">2.4</span> Obtain counts of cases by reference date (visit date) and report date (time of first diagnosis)<a class="anchor" aria-label="anchor" href="#obtain-counts-of-cases-by-reference-date-visit-date-and-report-date-time-of-first-diagnosis"></a>
 </h3>
 <p>For nowcasting, we want to compute the number of incident cases indexed by reference and report date, so we can aggregate by reference and report date and compute the delay distribution.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">count_df_raw</span> <span class="op">&lt;-</span> <span class="va">clean_line_list</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">reference_date</span>, <span class="va">report_date</span>, name <span class="op">=</span> <span class="st">"count"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">report_date</span> <span class="op">-</span> <span class="va">reference_date</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -351,7 +266,7 @@ Next we will add a column for the time from arrival to each updated diagnosis, i
 Depending on the way that the data is generated, this could be a true negative value, for example if the patient had previously been tested elsewhere before arriving at the ED.
 In this case, patients interactions with the system always start in the ED, so this is likely due to a data entry error.
 For this reason, we will will choose to exclude all the negative valued delays, however, the choice of how to handle these should be guided be guided by the data experts and their understanding of the most likely reason for the observation to prevent introducing additional bias in this choice.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">count_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">count_df_raw</span>, <span class="va">delay</span> <span class="op">&gt;=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">count_df</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
@@ -374,7 +289,7 @@ In reality you would proceed straight from this dataset to the subsequent steps,
 <span class="header-section-number">3</span> Pre-processing of larger synthetic dataset<a class="anchor" aria-label="anchor" href="#pre-processing-of-larger-synthetic-dataset"></a>
 </h2>
 <p>We’ll start by loading in the synthetic reporting triangle dataframe, which is also provided as package data.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">syn_nssp_df</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3,795 × 3</span></span></span>
 <span><span class="co">#&gt;    reference_date report_date count</span></span>
@@ -402,7 +317,7 @@ To produce a nowcast with <code>baselinenowcast</code>, we will first want to pe
 This will help us choose a maximum delay and specify the number of reference times we want to use for delay and uncertainty estimation.
 <details><summary>
 Click to expand code to create plots of the delay distributions
-</summary><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+</summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">long_df</span> <span class="op">&lt;-</span> <span class="va">syn_nssp_df</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">report_date</span> <span class="op">-</span> <span class="va">reference_date</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -439,19 +354,19 @@ Click to expand code to create plots of the delay distributions
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">delay</span>, y <span class="op">=</span> <span class="va">cdf</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</details><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+</details><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdf_delay</span></span></code></pre></div>
-<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-18-1.png" alt="" width="672"></p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-13-1.png" alt="" width="672"></p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">delay_t</span></span></code></pre></div>
-<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-18-2.png" alt="" width="672"></p>
+<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-13-2.png" alt="" width="672"></p>
 <p>Based on this figure, we can set the maximum delay to be 25 days as this is where 95% of the cases appear to have been reported.
 In general, we want to choose a maximum delay that will incorporate the vast majority of all observed reporting delays so that the estimates of the final counts account for all eventual cases reported.
 However, a longer maximum delay will mean that you will require more historical data for training the model, which must be considered if the amount of historical data is limited say in a novel outbreak situation.
 In order to produce a nowcast that we can evaluate against later observed data for this example, we will pretend that we are making a nowcast 30 days before the last reference date in the dataset, May 5th, 2026.
 In real-time, we would just use the latest reference date as our nowcast date, however, for evaluating the performance of the method we want to look back at the nowcast we would have made with the data we would have had at past time points.
 See the <a href="baselinenowcast.html">Getting Started</a> vignette for another example of evaluating our nowcast, and for a full quantitative evaluation of the method applied to different case studies, see our <a href="https://wellcomeopenresearch.org/articles/10-614" class="external-link">paper</a> where we evaluate the method on COVID-19 cases in Germany and norovirus cases in England.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">max_delay</span> <span class="op">&lt;-</span> <span class="fl">25</span></span>
 <span><span class="va">nowcast_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">long_df</span><span class="op">$</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html" class="external-link">days</a></span><span class="op">(</span><span class="fl">30</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -460,21 +375,21 @@ See the <a href="baselinenowcast.html">Getting Started</a> vignette for another 
 <span class="header-section-number">3.2</span> Format for <code>baselinenowcast</code><a class="anchor" aria-label="anchor" href="#format-for-baselinenowcast"></a>
 </h3>
 <p>First, we’ll remove any reports after the nowcast date, as these wouldn’t have been available to us in real-time.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">training_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>  <span class="va">long_df</span>,</span>
 <span>  <span class="va">report_date</span> <span class="op">&lt;=</span> <span class="va">nowcast_date</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>What would happen if we looked at the trend in case counts without correcting for downward bias due to partial observations?
 We can summarise the cases by reference dates and plot.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">training_df_by_ref_date</span> <span class="op">&lt;-</span> <span class="va">training_df</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">report_date</span> <span class="op">&lt;=</span> <span class="va">nowcast_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>initial_count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <details><summary>
 Click to expand code to create the plot of the initially reported cases
-</summary><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+</summary><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">init_data</span> <span class="op">&lt;-</span> <span class="va">training_df_by_ref_date</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">reference_date</span> <span class="op">&gt;=</span> <span class="va">nowcast_date</span> <span class="op">-</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html" class="external-link">days</a></span><span class="op">(</span><span class="fl">60</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -483,20 +398,20 @@ Click to expand code to create the plot of the initially reported cases
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Initially reported BAR cases"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Date of ED visit"</span><span class="op">)</span></span></code></pre></div>
-</details><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+</details><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_inits</span></span></code></pre></div>
-<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-23-1.png" alt="" width="672"></p>
+<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-18-1.png" alt="" width="672"></p>
 <p>We can see that without nowcasting, the cases appear to be sharply declining at the most recent dates.
 We can’t tell from this data alone if the true trend in cases is really declining rapidly or if it is plateauing or increasing, which is why we need to use nowcasting to make an estimate of the eventually reported cases at each visit date.</p>
 <p>From here, we have the case counts by reference and report date up until the nowcast date.
 We will generate a reporting triangle (see the <a href="model_definition.html">mathematical model</a> vignette for more details), using the helper function <code><a href="../reference/as_reporting_triangle.html">as_reporting_triangle()</a></code>.
 This helper function fills in all combinations of reference dates and delays and pivots the data from long to wide to obtain a reporting triangle where rows are reference dates and columns are delays.
 This is returned as a <code>reporting_triangle</code> class object which is ready to be used for nowcasting.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rep_tri_full</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_reporting_triangle.html">as_reporting_triangle</a></span><span class="op">(</span><span class="va">training_df</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Using max_delay = 154 from data</span></span></code></pre></div>
 <p>Let’s look at the reporting triangle object we’ve created:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rep_tri_full</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Reporting Triangle</span></span></span>
 <span><span class="co">#&gt; Delays unit: days</span></span>
@@ -521,7 +436,7 @@ This is returned as a <code>reporting_triangle</code> class object which is read
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Use print(x, n_rows = NULL, n_cols = NULL) to see all data</span></span></code></pre></div>
 <p>And we can get a summary of it:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">rep_tri_full</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Reporting Triangle Summary</span></span></span>
 <span><span class="co">#&gt; Dimensions: 159 x 155</span></span>
@@ -545,11 +460,11 @@ This is returned as a <code>reporting_triangle</code> class object which is read
 <span><span class="co">#&gt;    22.0    31.0    31.0    33.4    34.0    49.0</span></span></code></pre></div>
 <p>We can see the maximum delay inferred from the data.
 For this analysis, we want to limit our reporting triangle to a maximum delay of 25 days using <code><a href="../reference/truncate_to_delay.html">truncate_to_delay()</a></code>:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rep_tri</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/truncate_to_delay.html">truncate_to_delay</a></span><span class="op">(</span><span class="va">rep_tri_full</span>, max_delay <span class="op">=</span> <span class="va">max_delay</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Truncating from max_delay = 154 to 25.</span></span></code></pre></div>
 <p>Let’s check the truncated triangle:</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rep_tri</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Reporting Triangle</span></span></span>
 <span><span class="co">#&gt; Delays unit: days</span></span>
@@ -582,7 +497,7 @@ For this analysis, we want to limit our reporting triangle to a maximum delay of
 We’ll also specify the proportion of reference times which will be used for delay estimation, with the remaining used for estimating uncertainty.
 We’ll set these as the default values, but in a real-world setting we recommend performing an evaluation analysis to identify the optimal amount of training data to be used for each of these tasks.
 See the documentation for <code><a href="../reference/allocate_reference_times.html">?allocate_reference_times</a></code> and the “Default Settings” section of the <a href="model_definition.html">mathematical model</a> vignette for more details.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">scale_factor</span> <span class="op">&lt;-</span> <span class="fl">3</span></span>
 <span><span class="va">prop_delay</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span></code></pre></div>
 <p>Internally, we will call <code><a href="../reference/allocate_reference_times.html">allocate_reference_times()</a></code> which uses the reporting triangle matrix and these specifications to allocate the number of reference times used for delay and uncertainty given the number of reference times available and the maximum delay.
@@ -602,7 +517,7 @@ See <code><a href="../reference/baselinenowcast.data.frame.html">?baselinenowcas
 <p>By default, the <code>output_type = "samples"</code> which means that it will estimate and apply uncertainty using past nowcast errors to generate probabilistic nowcast draws.
 Point nowcasts can also be generated by specifying <code>output_type = "point"</code>.
 It will by default produce 1000 draws, but this can be specified as more or less using the <code>draws</code> argument.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast_draws_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baselinenowcast.html">baselinenowcast</a></span><span class="op">(</span><span class="va">rep_tri</span>,</span>
 <span>  scale_factor <span class="op">=</span> <span class="va">scale_factor</span>,</span>
 <span>  prop_delay <span class="op">=</span> <span class="va">prop_delay</span>,</span>
@@ -628,7 +543,7 @@ It will by default produce 1000 draws, but this can be specified as more or less
 <p>We now have an estimate of the “final” number of cases of BAR by reference date with uncertainty.
 To summarise the uncertainty, we can compute prediction intervals.
 Here we will visualize the results using the 50th and 95th percent prediction intervals, though we suggest showing more prediction intervals if possible.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast_summary_df</span> <span class="op">&lt;-</span></span>
 <span>  <span class="va">nowcast_draws_df</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -642,7 +557,7 @@ Here we will visualize the results using the 50th and 95th percent prediction in
 <p>In order to compare our estimates to the data that was available as of the time of the nowcast and the “final” cases (which is what we were trying to estimate), we will join both the initially reported cases and the held out, true final cases to our probabilistic nowcasts.
 We already summarised the initial reports by reference date from the data used to train the nowcast model.
 Next summarise the final reports by reference date using all the data.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">eval_data</span> <span class="op">&lt;-</span> <span class="va">long_df</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>    <span class="va">delay</span> <span class="op">&lt;=</span> <span class="va">max_delay</span>,</span>
@@ -651,7 +566,7 @@ Next summarise the final reports by reference date using all the data.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>final_count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Lastly, join the initial and final reports to the probabilistic nowcast.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast_w_data</span> <span class="op">&lt;-</span> <span class="va">nowcast_summary_df</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">training_df_by_ref_date</span>,</span>
 <span>    by <span class="op">=</span> <span class="st">"reference_date"</span></span>
@@ -681,7 +596,7 @@ Compared to what we eventually observe (black), we can see that our nowcasts app
 For more quantitative evaluation, we recommend using proper scoring rules (e.g. using the <a href="https://epiforecasts.io/scoringutils/" class="external-link"><code>scoringutils</code> R package</a>) to evaluate nowcasts.</p>
 <details><summary>
 Click to expand code to create the plot of the probabilistic nowcast
-</summary><div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+</summary><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">combined_data</span> <span class="op">&lt;-</span> <span class="va">nowcast_w_data</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">reference_date</span>, <span class="va">initial_count</span>, <span class="va">final_count</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -743,9 +658,9 @@ Click to expand code to create the plot of the probabilistic nowcast
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Number of BAR cases"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Comparison of cases of BAR as of the nowcast date, later observed,\n and generated as a probabilistic nowcast"</span><span class="op">)</span> <span class="co"># nolint</span></span></code></pre></div>
-</details><div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+</details><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_prob_nowcast</span></span></code></pre></div>
-<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-35-1.png" alt="" width="672"></p>
+<p><img src="nssp_nowcast_files/figure-html/unnamed-chunk-30-1.png" alt="" width="672"></p>
 </div>
 </div>
 <div class="section level2" number="6">

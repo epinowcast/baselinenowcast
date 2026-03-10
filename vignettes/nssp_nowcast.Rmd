@@ -84,7 +84,7 @@ diagnoses_codes_defn <- c("A22.1", "A221", "A37", "A48.1", "A481", "B25.0", "B25
 
 ## Expand the diagnosis code and their corresponding time stamps into a long dataframe
 
-The line-list data contains a single row for each patient, and columns for the diagnosis code (`DischargeDiagnosisUpdates`) and a the time stamp of that encounter with the electronic health record (`DischargeDiagnosisMDTUpdates`).
+The line-list data contains a single row for each patient, and columns for the diagnosis code (`DischargeDiagnosisUpdates`) and the time stamp of that encounter within the electronic health record (`DischargeDiagnosisMDTUpdates`).
 We will expand the data to make it into a longer dataframe where each encounter is a row corresponding to a diagnosis update and its time stamp.
 The `unnest` function from `tidyr` works well for this as it expands the two list-columns created by `str_split`, pairing each element of `time_stamp` with its corresponding element of `diagnosis_code`.
 Note that all other columns remain, and so each row still contains the patient ID, `C_Processed_BioSense_ID` and critically, the `C_Visit_Date_Time` which indicates the start of the patient's visit.

@@ -72,6 +72,7 @@ Reporting triangle construction and validation
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.matrix}()},
+\code{\link{as_reporting_triangle.reporting_triangle_df}()},
 \code{\link{assert_reporting_triangle}()},
 \code{\link{get_delays_from_dates}()},
 \code{\link{get_delays_unit}()},

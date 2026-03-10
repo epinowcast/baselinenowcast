@@ -154,6 +154,7 @@ specification. Contributions of any kind are welcome!
 
 [kaitejohnson](https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson),
 [seabbs](https://github.com/epinowcast/baselinenowcast/commits?author=seabbs),
+[github-merge-queue\[bot\]](https://github.com/epinowcast/baselinenowcast/commits?author=github-merge-queue%5Bbot%5D),
 [TimTaylor](https://github.com/epinowcast/baselinenowcast/commits?author=TimTaylor),
 [jamesmbaazam](https://github.com/epinowcast/baselinenowcast/commits?author=jamesmbaazam),
 [sbfnk](https://github.com/epinowcast/baselinenowcast/commits?author=sbfnk)
@@ -163,9 +164,9 @@ specification. Contributions of any kind are welcome!
 [jonathonmellor](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Ajonathonmellor),
 [swo](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Aswo),
 [jcblemai](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Ajcblemai),
-[lauraajones2](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Alauraajones2)
+[lauraajones2](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Alauraajones2),
+[SamuelBrand1](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3ASamuelBrand1)
 
 ### Issue Contributors
 
-[jbracher](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher),
-[SamuelBrand1](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3ASamuelBrand1)
+[jbracher](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher)

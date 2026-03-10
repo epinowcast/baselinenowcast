@@ -28,8 +28,8 @@ nowcasting methods based on using empirical delay distributions and
 uncertainty from past performance. It is also designed to be used as a
 baseline method for developers of new nowcasting methods. For more
 details on the performance of the method(s) in this package applied to
-case studies of COVID-19 and norovirus, see our recent paper Johnson
-(2025) <doi:10.12688/wellcomeopenres.25027.2>. The package supports
+case studies of COVID-19 and norovirus, see our recent paper at
+<https://wellcomeopenresearch.org/articles/10-614>. The package supports
 standard data frame inputs with reference date, report date, and count
 columns, as well as the direct use of reporting triangles, and is
 compatible with ‘epinowcast’ objects. Alongside an opinionated default
@@ -43,7 +43,9 @@ custom uncertainty models and delay estimation methods.
 ## Installation
 
 <details>
+
 <summary>
+
 Installing the package
 </summary>
 
@@ -82,7 +84,9 @@ We provide a range of other documentation, case studies, and community
 spaces to ask (and answer!) questions:
 
 <details>
+
 <summary>
+
 Organisation Website
 </summary>
 
@@ -92,8 +96,11 @@ and [seminar schedule](https://www.epinowcast.org/seminars.html) for
 both upcoming and past recordings.
 
 </details>
+
 <details>
+
 <summary>
+
 Community Forum
 </summary>
 
@@ -177,7 +184,9 @@ with `citation("baselinenowcast")` (or
 ## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+
 <!-- prettier-ignore-start -->
+
 <!-- markdownlint-disable -->
 
 All contributions to this project are gratefully acknowledged using the
@@ -206,6 +215,9 @@ specification. Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3ASamuelBrand1">SamuelBrand1</a>
 
 <!-- markdownlint-enable -->
+
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
 <!-- will add this in later -->

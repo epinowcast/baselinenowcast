@@ -140,8 +140,8 @@ diagnoses_codes_defn <- c("A22.1", "A221", "A37", "A48.1", "A481", "B25.0", "B25
 ### 2.3 Expand the diagnosis code and their corresponding time stamps into a long dataframe
 
 The line-list data contains a single row for each patient, and columns
-for the diagnosis code (`DischargeDiagnosisUpdates`) and a the time
-stamp of that encounter with the electronic health record
+for the diagnosis code (`DischargeDiagnosisUpdates`) and the time stamp
+of that encounter within the electronic health record
 (`DischargeDiagnosisMDTUpdates`). We will expand the data to make it
 into a longer dataframe where each encounter is a row corresponding to a
 diagnosis update and its time stamp. The `unnest` function from `tidyr`

@@ -183,7 +183,7 @@ To be considered a Broad Acute Respiratory case, one or more of these codes must
 <h3 id="expand-the-diagnosis-code-and-their-corresponding-time-stamps-into-a-long-dataframe">
 <span class="header-section-number">2.3</span> Expand the diagnosis code and their corresponding time stamps into a long dataframe<a class="anchor" aria-label="anchor" href="#expand-the-diagnosis-code-and-their-corresponding-time-stamps-into-a-long-dataframe"></a>
 </h3>
-<p>The line-list data contains a single row for each patient, and columns for the diagnosis code (<code>DischargeDiagnosisUpdates</code>) and a the time stamp of that encounter with the electronic health record (<code>DischargeDiagnosisMDTUpdates</code>).
+<p>The line-list data contains a single row for each patient, and columns for the diagnosis code (<code>DischargeDiagnosisUpdates</code>) and the time stamp of that encounter within the electronic health record (<code>DischargeDiagnosisMDTUpdates</code>).
 We will expand the data to make it into a longer dataframe where each encounter is a row corresponding to a diagnosis update and its time stamp.
 The <code>unnest</code> function from <code>tidyr</code> works well for this as it expands the two list-columns created by <code>str_split</code>, pairing each element of <code>time_stamp</code> with its corresponding element of <code>diagnosis_code</code>.
 Note that all other columns remain, and so each row still contains the patient ID, <code>C_Processed_BioSense_ID</code> and critically, the <code>C_Visit_Date_Time</code> which indicates the start of the patient’s visit.</p>

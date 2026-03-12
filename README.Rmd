@@ -30,7 +30,10 @@ knitr::opts_chunk$set(
 ## Summary
 
 ```{r, results = "asis", echo=FALSE}
-cat(gsub("<doi:", "<https://doi.org/", gsub("\n[ ]+", " ", packageDescription("baselinenowcast")$Description)))
+desc_file <- read.dcf("DESCRIPTION")
+description <- gsub("\n[ ]+", " ", desc_file[1, "Description"])
+description <- gsub("<doi:([^>]+)>", "[doi:\\1](https://doi.org/\\1)", description)
+cat(description)
 ```
 
 ## Installation

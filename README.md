@@ -29,16 +29,17 @@ uncertainty from past performance. It is also designed to be used as a
 baseline method for developers of new nowcasting methods. For more
 details on the performance of the method(s) in this package applied to
 case studies of COVID-19 and norovirus, see our recent paper Johnson
-(2025) <doi:10.12688/wellcomeopenres.25027.2>. The package supports
-standard data frame inputs with reference date, report date, and count
-columns, as well as the direct use of reporting triangles, and is
-compatible with ‘epinowcast’ objects. Alongside an opinionated default
-workflow, it has a low-level pipe-friendly modular interface, allowing
-context-specific workflows. It can accommodate a wide spectrum of
-reporting schedules, including mixed patterns of reference and reporting
-(daily-weekly, weekly-daily). It also supports sharing delay
-distributions and uncertainty estimates between strata, as well as
-custom uncertainty models and delay estimation methods.
+(2025)
+[doi:10.12688/wellcomeopenres.25027.2](https://doi.org/10.12688/wellcomeopenres.25027.2).
+The package supports standard data frame inputs with reference date,
+report date, and count columns, as well as the direct use of reporting
+triangles, and is compatible with ‘epinowcast’ objects. Alongside an
+opinionated default workflow, it has a low-level pipe-friendly modular
+interface, allowing context-specific workflows. It can accommodate a
+wide spectrum of reporting schedules, including mixed patterns of
+reference and reporting (daily-weekly, weekly-daily). It also supports
+sharing delay distributions and uncertainty estimates between strata, as
+well as custom uncertainty models and delay estimation methods.
 
 ## Installation
 

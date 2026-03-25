@@ -165,10 +165,12 @@ count_df_raw <- clean_line_list |>
   mutate(delay = as.integer(report_date - reference_date))
 ```
 
-Looking at this data, we can see that there is one case where there is a negative delay, which indicates that the time stamp of the diagnosis update was recorded before the start of the visit.
-Depending on the way that the data is generated, this could be a true negative value, for example if the patient had previously been tested elsewhere before arriving at the ED.
-In this case, patients interactions with the system always start in the ED, so this is likely due to a data entry error.
-For this reason, we will will choose to exclude all the negative valued delays, however, the choice of how to handle these should be guided be guided by the data experts and their understanding of the most likely reason for the observation to prevent introducing additional bias in this choice.
+Looking at this data, we can see that there is one case where there is a negative delay of greater than a day, which indicates that the time stamp of the diagnosis update was recorded a day or more before the start of the visit.
+Depending on the way that the data is generated, this could be a true negative value, for example if the patient had previously been tested elsewhere before arriving at the ED, and this event is what we consider to be the primary event.
+In this case, patients interactions with the system always start in the ED, so negative values of more than a day are likely due to a data entry error.
+For this reason, we will will choose to exclude all the negative valued delays.
+However, because we discretise the time stamps to a day, negative valued delays that occur on the same date, e.g. within a few hours, will be included as they will be counted as 0-day delays.
+The choice of how to handle negative delays should be guided by the data experts and their understanding of the most likely reason for the observation to prevent introducing additional bias in this choice.
 ```{r}
 count_df <- filter(count_df_raw, delay >= 0)
 head(count_df)

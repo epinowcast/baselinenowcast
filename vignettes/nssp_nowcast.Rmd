@@ -178,8 +178,10 @@ The choice of how to handle negative delays should be guided by the data experts
 
 For nowcasting, we want to compute the number of incident cases indexed by reference and report date, so we can aggregate by reference and report date and compute the delay distribution.
 ```{r}
-count_df <- clean_line_list_filtered |>
-  count(reference_date, report_date, name = "count")
+count_df <- count(clean_line_list_filtered,
+  reference_date, report_date,
+  name = "count"
+)
 head(count_df)
 ```
 

@@ -155,24 +155,31 @@ clean_line_list <- first_bar_diagnosis |>
   )
 head(clean_line_list)
 ```
+## Remove cases where the diagnoses code was reported before the visit start date by more than 24 hours
+
+Based on our understanding of the data generating process for this particular dataset, we believe that negative delays (instances where th time stamp of the reporting of the diagnoses code comes before the time stamp of the visit start date), of less than 24 hours likely reflect a true 0-day delay in which both events did occur on the same day and were likely swapped.
+In this case, we will set the report date to be the same day as the reference date (a 0-day delay).
+Whereas negative delays of greater than 24 hours we believe to reflect data entry errors, therefore, for the purpose of nowcasting and estimating the delay distribution, we will exclude these cases.
+
+```{r}
+threshold_to_exclude <- -1
+clean_line_list_filtered <- clean_line_list |>
+  filter(arrival_to_update_delay >= threshold_to_exclude) |>
+  mutate(report_date = ifelse(arrival_to_update_delay < 0,
+    reference_date,
+    report_date
+  ))
+```
+
+In this synthetic dataset, this removed a case where the report date was reported to be greater than 7 days before the visit start date.
+The choice of how to handle negative delays should be guided by the data experts and their understanding of the most likely reason for the observation to prevent introducing additional bias in this choice.
 
 ## Obtain counts of cases by reference date (visit date) and report date (time of first diagnosis)
 
 For nowcasting, we want to compute the number of incident cases indexed by reference and report date, so we can aggregate by reference and report date and compute the delay distribution.
 ```{r}
-count_df_raw <- clean_line_list |>
-  count(reference_date, report_date, name = "count") |>
-  mutate(delay = as.integer(report_date - reference_date))
-```
-
-Looking at this data, we can see that there is one case where there is a negative delay of greater than a day, which indicates that the time stamp of the diagnosis update was recorded a day or more before the start of the visit.
-Depending on the way that the data is generated, this could be a true negative value, for example if the patient had previously been tested elsewhere before arriving at the ED, and this event is what we consider to be the primary event.
-In this case, patients interactions with the system always start in the ED, so negative values of more than a day are likely due to a data entry error.
-For this reason, we will will choose to exclude all the negative valued delays.
-However, because we discretise the time stamps to a day, negative valued delays that occur on the same date, e.g. within a few hours, will be included as they will be counted as 0-day delays.
-The choice of how to handle negative delays should be guided by the data experts and their understanding of the most likely reason for the observation to prevent introducing additional bias in this choice.
-```{r}
-count_df <- filter(count_df_raw, delay >= 0)
+count_df <- clean_line_list_filtered |>
+  count(reference_date, report_date, name = "count")
 head(count_df)
 ```
 

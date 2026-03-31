@@ -157,7 +157,7 @@ head(clean_line_list)
 ```
 ## Remove cases where the diagnoses code was reported before the visit start date by more than 24 hours
 
-Based on our understanding of the data generating process for this particular dataset, we believe that negative delays (instances where th time stamp of the reporting of the diagnoses code comes before the time stamp of the visit start date), of less than 24 hours likely reflect a true 0-day delay in which both events did occur on the same day and were likely swapped.
+Based on our understanding of the data generating process for this particular dataset, we believe that negative delays (instances where the time stamp of diagnosis-code reporting comes before the time stamp of the visit start date) with a magnitude of less than 24 hours likely reflects near synchronous recording and should be treated as a 0-day delay.
 In this case, we will set the report date to be the same day as the reference date (a 0-day delay).
 Whereas negative delays of greater than 24 hours we believe to reflect data entry errors, therefore, for the purpose of nowcasting and estimating the delay distribution, we will exclude these cases.
 
@@ -165,7 +165,7 @@ Whereas negative delays of greater than 24 hours we believe to reflect data entr
 threshold_to_exclude <- -1
 clean_line_list_filtered <- clean_line_list |>
   filter(arrival_to_update_delay >= threshold_to_exclude) |>
-  mutate(report_date = ifelse(arrival_to_update_delay < 0,
+  mutate(report_date = dplyr::ifelse(arrival_to_update_delay < 0,
     reference_date,
     report_date
   ))

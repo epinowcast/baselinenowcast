@@ -165,7 +165,7 @@ Whereas negative delays of greater than 24 hours we believe to reflect data entr
 threshold_to_exclude <- -1
 clean_line_list_filtered <- clean_line_list |>
   filter(arrival_to_update_delay >= threshold_to_exclude) |>
-  mutate(report_date = dplyr::ifelse(arrival_to_update_delay < 0,
+  mutate(report_date = ifelse(arrival_to_update_delay < 0,
     reference_date,
     report_date
   ))

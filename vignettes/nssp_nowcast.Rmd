@@ -157,9 +157,12 @@ head(clean_line_list)
 ```
 ## Remove cases where the diagnoses code was reported before the visit start date by more than 24 hours
 
-Based on our understanding of the data generating process for this particular dataset, we believe that negative delays (instances where the time stamp of diagnosis-code reporting comes before the time stamp of the visit start date) with a magnitude of less than 24 hours likely reflects near synchronous recording and should be treated as a 0-day delay.
-In this case, we will set the report date to be the same day as the reference date (a 0-day delay).
-Whereas negative delays of greater than 24 hours we believe to reflect data entry errors, therefore, for the purpose of nowcasting and estimating the delay distribution, we will exclude these cases.
+Looking at this data, we can see that there is one case where there is a negative delay, which indicates that the time stamp of the diagnosis update was recorded before the start of the visit.
+Depending on the way that the data is generated, this could be a true negative value, for example if the patient had previously been tested elsewhere before arriving at the ED.
+Based on our understanding of the data generating process, we believe that negative delays with a magnitude of less than 24 hours likely reflects near simultaneous recording and should be treated as a 0-day delay.
+The 24-hour threshold here is specific to this dataset and should be investigated and set by the user.
+For negative delays of less than 24 hours, we will set the report date to be the same day as the reference date (a 0-day delay).
+Negative delays of greater than 24 hours we believe to reflect data entry errors, since in this dataset patient interactions always start in the ED, therefore, for the purpose of nowcasting and estimating the delay distribution, we will exclude these cases.
 
 ```{r}
 threshold_to_exclude <- -1
@@ -169,10 +172,17 @@ clean_line_list_filtered <- clean_line_list |>
     reference_date,
     report_date
   ))
+n_removed <- nrow(clean_line_list) - nrow(clean_line_list_filtered)
+n_rewritten <- nrow(clean_line_list_filtered |> filter(arrival_to_update_delay < 0))
+message("Number excluded due to negative delay greater than threshold: ", n_removed)
+message("Number rewritten to assume a 0-day delay: ", n_rewritten)
 ```
 
 In this synthetic dataset, this removed a case where the report date was reported to be greater than 7 days before the visit start date.
+There were no delays within 24 hours but on two different dates, so no delays were rewritten to have a 0-day delay.
+
 The choice of how to handle negative delays should be guided by the data experts and their understanding of the most likely reason for the observation to prevent introducing additional bias in this choice.
+Other ways of handling negative delays that might be plausible depending on the dataset include removing all negatives or setting all negative delays to 0-day delays, or using a different threshold for exclusion.
 
 ## Obtain counts of cases by reference date (visit date) and report date (time of first diagnosis)
 

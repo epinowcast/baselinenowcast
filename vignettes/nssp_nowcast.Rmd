@@ -173,8 +173,14 @@ clean_line_list_filtered <- clean_line_list |>
     report_date
   ))
 n_removed <- nrow(clean_line_list) - nrow(clean_line_list_filtered)
-n_rewritten <- nrow(clean_line_list_filtered |> filter(arrival_to_update_delay < 0))
-message("Number excluded due to negative delay greater than threshold: ", n_removed)
+n_rewritten <- nrow(filter(
+  clean_line_list_filtered,
+  arrival_to_update_delay < 0
+))
+message(
+  "Number excluded due to negative delay greater than threshold: ",
+  n_removed
+)
 message("Number rewritten to assume a 0-day delay: ", n_rewritten)
 ```
 

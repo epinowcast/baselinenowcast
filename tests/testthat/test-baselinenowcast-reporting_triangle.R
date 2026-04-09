@@ -57,11 +57,33 @@ test_that("baselinenowcast.reporting_triangle() handles separate delay and uncer
     ),
     regexp = "Length of the delay PMF is not the same as the number of delays"
   )
-  test_df <- expect_no_error(baselinenowcast(rep_tri,
+  set.seed(123)
+  df_uniform <- expect_no_error(baselinenowcast(rep_tri,
     delay_pmf = rep(1 / 26, 26),
     draws = 100
   ))
-  expect_blnc_structure(test_df, expected_cols)
+  expect_blnc_structure(df_uniform, expected_cols)
+
+  # Create two different delay PMFs and test to ensure they produce different nowcasts #nolint
+  n_cols <- ncol(rep_tri)
+  front_loaded_pmf <- c(0.8, rep(0.2 / (n_cols - 1), n_cols - 1))
+  df_front_loaded <- baselinenowcast(rep_tri,
+    delay_pmf = front_loaded_pmf,
+    draws = 100
+  )
+  df_from_rep_tri <- baselinenowcast(rep_tri,
+    draws = 100
+  )
+
+  expect_false(identical(df_uniform$pred_count, df_front_loaded$pred_count))
+  expect_false(identical(
+    df_from_rep_tri$pred_count,
+    df_front_loaded$pred_count
+  ))
+  expect_false(identical(
+    df_uniform$pred_count,
+    df_from_rep_tri$pred_count
+  ))
 
   # Note: subsetting warnings are expected during internal operations
   result <- suppressWarnings(

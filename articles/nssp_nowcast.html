@@ -254,30 +254,57 @@ Next we will add a column for the time from arrival to each updated diagnosis, i
 <span><span class="co">#&gt; <span style="color: #949494;">#   arrival_to_update_delay &lt;dbl&gt;, reference_date &lt;date&gt;, report_date &lt;date&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level3" number="2.4">
-<h3 id="obtain-counts-of-cases-by-reference-date-visit-date-and-report-date-time-of-first-diagnosis">
-<span class="header-section-number">2.4</span> Obtain counts of cases by reference date (visit date) and report date (time of first diagnosis)<a class="anchor" aria-label="anchor" href="#obtain-counts-of-cases-by-reference-date-visit-date-and-report-date-time-of-first-diagnosis"></a>
+<h3 id="remove-cases-where-the-diagnoses-code-was-reported-before-the-visit-start-date-by-more-than-24-hours">
+<span class="header-section-number">2.4</span> Remove cases where the diagnoses code was reported before the visit start date by more than 24 hours<a class="anchor" aria-label="anchor" href="#remove-cases-where-the-diagnoses-code-was-reported-before-the-visit-start-date-by-more-than-24-hours"></a>
 </h3>
-<p>For nowcasting, we want to compute the number of incident cases indexed by reference and report date, so we can aggregate by reference and report date and compute the delay distribution.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">count_df_raw</span> <span class="op">&lt;-</span> <span class="va">clean_line_list</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">reference_date</span>, <span class="va">report_date</span>, name <span class="op">=</span> <span class="st">"count"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">report_date</span> <span class="op">-</span> <span class="va">reference_date</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Looking at this data, we can see that there is one case where there is a negative delay, which indicates that the time stamp of the diagnosis update was recorded before the start of the visit.
 Depending on the way that the data is generated, this could be a true negative value, for example if the patient had previously been tested elsewhere before arriving at the ED.
-In this case, patients interactions with the system always start in the ED, so this is likely due to a data entry error.
-For this reason, we will will choose to exclude all the negative valued delays, however, the choice of how to handle these should be guided be guided by the data experts and their understanding of the most likely reason for the observation to prevent introducing additional bias in this choice.</p>
+Based on our understanding of the data generating process, we believe that negative delays with a magnitude of less than 24 hours likely reflects near simultaneous recording and should be treated as a 0-day delay.
+The 24-hour threshold here is specific to this dataset and should be investigated and set by the user.
+For negative delays of less than 24 hours, we will set the report date to be the same day as the reference date (a 0-day delay).
+Negative delays of greater than 24 hours we believe to reflect data entry errors, since in this dataset patient interactions always start in the ED, therefore, for the purpose of nowcasting and estimating the delay distribution, we will exclude these cases.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">threshold_to_exclude</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">1</span></span>
+<span><span class="va">clean_line_list_filtered</span> <span class="op">&lt;-</span> <span class="va">clean_line_list</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">arrival_to_update_delay</span> <span class="op">&gt;=</span> <span class="va">threshold_to_exclude</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>report_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">arrival_to_update_delay</span> <span class="op">&lt;</span> <span class="fl">0</span>,</span>
+<span>    <span class="va">reference_date</span>,</span>
+<span>    <span class="va">report_date</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">n_removed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">clean_line_list</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">clean_line_list_filtered</span><span class="op">)</span></span>
+<span><span class="va">n_rewritten</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">clean_line_list_filtered</span><span class="op">$</span><span class="va">arrival_to_update_delay</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Number excluded due to negative delay greater than threshold: "</span>,</span>
+<span>  <span class="va">n_removed</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Number excluded due to negative delay greater than threshold: 1</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"Number rewritten to assume a 0-day delay: "</span>, <span class="va">n_rewritten</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Number rewritten to assume a 0-day delay: 0</span></span></code></pre></div>
+<p>In this synthetic dataset, this removed a case where the report date was reported to be greater than 7 days before the visit start date.
+There were no delays within 24 hours but on two different dates, so no delays were rewritten to have a 0-day delay.</p>
+<p>The choice of how to handle negative delays should be guided by the data experts and their understanding of the most likely reason for the observation to prevent introducing additional bias in this choice.
+Other ways of handling negative delays that might be plausible depending on the dataset include removing all negatives or setting all negative delays to 0-day delays, or using a different threshold for exclusion.</p>
+</div>
+<div class="section level3" number="2.5">
+<h3 id="obtain-counts-of-cases-by-reference-date-visit-date-and-report-date-time-of-first-diagnosis">
+<span class="header-section-number">2.5</span> Obtain counts of cases by reference date (visit date) and report date (time of first diagnosis)<a class="anchor" aria-label="anchor" href="#obtain-counts-of-cases-by-reference-date-visit-date-and-report-date-time-of-first-diagnosis"></a>
+</h3>
+<p>For nowcasting, we want to compute the number of incident cases indexed by reference and report date, so we can aggregate by reference and report date and compute the delay distribution.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">count_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">count_df_raw</span>, <span class="va">delay</span> <span class="op">&gt;=</span> <span class="fl">0</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">count_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">clean_line_list_filtered</span>,</span>
+<span>  <span class="va">reference_date</span>, <span class="va">report_date</span>,</span>
+<span>  name <span class="op">=</span> <span class="st">"count"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">count_df</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
-<span><span class="co">#&gt;   reference_date report_date count delay</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2024-02-01     2024-02-01      4     0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2024-02-01     2024-02-02      1     1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2024-02-01     2024-02-20      1    19</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2024-02-02     2024-02-05      1     3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2024-02-02     2024-02-10      1     8</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2024-02-03     2024-02-03      1     0</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
+<span><span class="co">#&gt;   reference_date report_date count</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2024-02-01           <span style="text-decoration: underline;">19</span>754     4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2024-02-01           <span style="text-decoration: underline;">19</span>755     1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2024-02-01           <span style="text-decoration: underline;">19</span>773     1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2024-02-02           <span style="text-decoration: underline;">19</span>758     1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2024-02-02           <span style="text-decoration: underline;">19</span>763     1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2024-02-03           <span style="text-decoration: underline;">19</span>756     1</span></span></code></pre></div>
 <p>We have now generated data in the format that we need to use the <code>baselinenowcast</code> package, which requires a <a href="https://r4ds.had.co.nz/tidy-data.html" class="external-link">long tidy dataframe</a> with incident case counts indexed by reference date and report date.
 See the <a href="baselinenowcast.html">Getting Started</a> and <a href="model_definition.html">model definition</a> vignettes for more details on the data format we need for nowcasting.
 For demonstration purposes, we will now swap out the data from the simulated NSSP line-list data with a larger synthetic dataset.

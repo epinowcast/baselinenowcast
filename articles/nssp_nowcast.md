@@ -252,43 +252,77 @@ head(clean_line_list)
 #> #   arrival_to_update_delay <dbl>, reference_date <date>, report_date <date>
 ```
 
-### 2.4 Obtain counts of cases by reference date (visit date) and report date (time of first diagnosis)
-
-For nowcasting, we want to compute the number of incident cases indexed
-by reference and report date, so we can aggregate by reference and
-report date and compute the delay distribution.
-
-``` r
-count_df_raw <- clean_line_list |>
-  count(reference_date, report_date, name = "count") |>
-  mutate(delay = as.integer(report_date - reference_date))
-```
+### 2.4 Remove cases where the diagnoses code was reported before the visit start date by more than 24 hours
 
 Looking at this data, we can see that there is one case where there is a
 negative delay, which indicates that the time stamp of the diagnosis
 update was recorded before the start of the visit. Depending on the way
 that the data is generated, this could be a true negative value, for
 example if the patient had previously been tested elsewhere before
-arriving at the ED. In this case, patients interactions with the system
-always start in the ED, so this is likely due to a data entry error. For
-this reason, we will will choose to exclude all the negative valued
-delays, however, the choice of how to handle these should be guided be
-guided by the data experts and their understanding of the most likely
-reason for the observation to prevent introducing additional bias in
-this choice.
+arriving at the ED. Based on our understanding of the data generating
+process, we believe that negative delays with a magnitude of less than
+24 hours likely reflects near simultaneous recording and should be
+treated as a 0-day delay. The 24-hour threshold here is specific to this
+dataset and should be investigated and set by the user. For negative
+delays of less than 24 hours, we will set the report date to be the same
+day as the reference date (a 0-day delay). Negative delays of greater
+than 24 hours we believe to reflect data entry errors, since in this
+dataset patient interactions always start in the ED, therefore, for the
+purpose of nowcasting and estimating the delay distribution, we will
+exclude these cases.
 
 ``` r
-count_df <- filter(count_df_raw, delay >= 0)
+threshold_to_exclude <- -1
+clean_line_list_filtered <- clean_line_list |>
+  filter(arrival_to_update_delay >= threshold_to_exclude) |>
+  mutate(report_date = ifelse(arrival_to_update_delay < 0,
+    reference_date,
+    report_date
+  ))
+n_removed <- nrow(clean_line_list) - nrow(clean_line_list_filtered)
+n_rewritten <- sum(clean_line_list_filtered$arrival_to_update_delay < 0)
+message(
+  "Number excluded due to negative delay greater than threshold: ",
+  n_removed
+)
+#> Number excluded due to negative delay greater than threshold: 1
+message("Number rewritten to assume a 0-day delay: ", n_rewritten)
+#> Number rewritten to assume a 0-day delay: 0
+```
+
+In this synthetic dataset, this removed a case where the report date was
+reported to be greater than 7 days before the visit start date. There
+were no delays within 24 hours but on two different dates, so no delays
+were rewritten to have a 0-day delay.
+
+The choice of how to handle negative delays should be guided by the data
+experts and their understanding of the most likely reason for the
+observation to prevent introducing additional bias in this choice. Other
+ways of handling negative delays that might be plausible depending on
+the dataset include removing all negatives or setting all negative
+delays to 0-day delays, or using a different threshold for exclusion.
+
+### 2.5 Obtain counts of cases by reference date (visit date) and report date (time of first diagnosis)
+
+For nowcasting, we want to compute the number of incident cases indexed
+by reference and report date, so we can aggregate by reference and
+report date and compute the delay distribution.
+
+``` r
+count_df <- count(clean_line_list_filtered,
+  reference_date, report_date,
+  name = "count"
+)
 head(count_df)
-#> # A tibble: 6 × 4
-#>   reference_date report_date count delay
-#>   <date>         <date>      <int> <int>
-#> 1 2024-02-01     2024-02-01      4     0
-#> 2 2024-02-01     2024-02-02      1     1
-#> 3 2024-02-01     2024-02-20      1    19
-#> 4 2024-02-02     2024-02-05      1     3
-#> 5 2024-02-02     2024-02-10      1     8
-#> 6 2024-02-03     2024-02-03      1     0
+#> # A tibble: 6 × 3
+#>   reference_date report_date count
+#>   <date>               <dbl> <int>
+#> 1 2024-02-01           19754     4
+#> 2 2024-02-01           19755     1
+#> 3 2024-02-01           19773     1
+#> 4 2024-02-02           19758     1
+#> 5 2024-02-02           19763     1
+#> 6 2024-02-03           19756     1
 ```
 
 We have now generated data in the format that we need to use the

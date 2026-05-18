@@ -2,7 +2,8 @@
 #'
 #' This function converts a [baselinenowcast_df] object as returned by
 #' [baselinenowcast()] to a `forecast_sample` object which can be used
-#' for scoring using the `scoringutils` package.
+#' for scoring with the
+#' [scoringutils](https://epiforecasts.io/scoringutils/) package.
 #'
 #' The nowcast samples in `data` are merged with the latest available
 #' observations in `latest_obs` on `reference_date` and any other shared
@@ -27,6 +28,8 @@
 #' @return A `forecast_sample` object as returned by
 #'   [scoringutils::as_forecast_sample()].
 #' @exportS3Method scoringutils::as_forecast_sample
+#' @importFrom checkmate assert_class
+#' @importFrom rlang check_installed
 #' @family baselinenowcast_df
 #' @examplesIf interactive() && requireNamespace("scoringutils", quietly = TRUE)
 #' library(scoringutils)
@@ -44,16 +47,13 @@ as_forecast_sample.baselinenowcast_df <- function(data,
                                                   latest_obs,
                                                   observed = "count",
                                                   ...) {
-  rlang::check_installed(
+  check_installed(
     "scoringutils",
     reason = "to convert nowcasts to forecast_sample objects."
   )
-  assert_data_frame(data)
+  assert_class(data, "baselinenowcast_df")
   assert_data_frame(latest_obs)
   assert_character(observed, len = 1)
-  assert_names(colnames(data),
-    must.include = c("reference_date", "pred_count", "draw", "output_type")
-  )
   assert_names(colnames(latest_obs),
     must.include = c("reference_date", observed)
   )
@@ -75,6 +75,15 @@ as_forecast_sample.baselinenowcast_df <- function(data,
   merge_cols <- setdiff(merge_cols, c("pred_count", "draw", observed))
   if (!"reference_date" %in% merge_cols) {
     cli_abort("`latest_obs` must share a `reference_date` column with `data`.")
+  }
+
+  if (anyDuplicated(latest_obs[merge_cols])) {
+    cli_abort(
+      c(
+        "`latest_obs` has duplicated rows for the merge keys ({.val {merge_cols}}).", # nolint
+        "i" = "Provide one observed value per merge key combination." # nolint
+      )
+    )
   }
 
   merged <- merge(data, latest_obs, by = merge_cols)

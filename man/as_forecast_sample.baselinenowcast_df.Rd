@@ -30,7 +30,8 @@ A \code{forecast_sample} object as returned by
 \description{
 This function converts a \link{baselinenowcast_df} object as returned by
 \code{\link[=baselinenowcast]{baselinenowcast()}} to a \code{forecast_sample} object which can be used
-for scoring using the \code{scoringutils} package.
+for scoring with the
+\href{https://epiforecasts.io/scoringutils/}{scoringutils} package.
 }
 \details{
 The nowcast samples in \code{data} are merged with the latest available

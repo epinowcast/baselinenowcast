@@ -63,6 +63,26 @@ test_that("as_forecast_sample.baselinenowcast_df merges on strata columns", {
   )
 })
 
+test_that("as_forecast_sample.baselinenowcast_df errors on duplicated latest_obs merge keys", { # nolint
+  skip_on_cran()
+  skip_if_not_installed("scoringutils")
+
+  nowcast <- suppressWarnings(
+    baselinenowcast(example_reporting_triangle, draws = 10)
+  )
+  ref_dates <- get_reference_dates(example_reporting_triangle)
+  obs_counts <- rowSums(example_reporting_triangle, na.rm = TRUE)
+  dup_obs <- data.frame(
+    reference_date = c(ref_dates, ref_dates[1]),
+    count = c(obs_counts, obs_counts[1])
+  )
+
+  expect_error(
+    scoringutils::as_forecast_sample(nowcast, dup_obs),
+    regexp = "duplicated rows"
+  )
+})
+
 test_that("as_forecast_sample.baselinenowcast_df warns when latest_obs misses reference dates", { # nolint
   skip_on_cran()
   skip_if_not_installed("scoringutils")

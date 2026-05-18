@@ -72,11 +72,26 @@ test_that("estimate_delay handles custom n_history parameter", {
 })
 
 test_that("estimate_delay validates input parameters correctly", {
-  # Test invalid n
-  expect_error(estimate_delay(reporting_triangle, n = 0))
+  # A small ragged triangle where last n=2 rows have no complete row.
+  ragged_rt <- as_reporting_triangle(matrix(
+    c(10, 5, 2, 1, 8, 6, 3, NA, 12, 7, NA, NA, 15, NA, NA, NA),
+    nrow = 4, byrow = TRUE
+  ))
+  # Triangle whose last n=3 rows contain a complete row of zeros.
+  zeros_rt <- as_reporting_triangle(matrix(
+    c(10, 5, 2, 1, 0, 0, 0, 0, 0, 0, 0, NA, 0, 0, NA, NA),
+    nrow = 4, byrow = TRUE
+  ))
 
-  # Test n > nrow(reporting_triangle)
-  expect_error(estimate_delay(reporting_triangle, n = 10))
+  cases <- list(
+    list(args = list(reporting_triangle, n = 0), regex = "greater than or equal to 1"),
+    list(args = list(reporting_triangle, n = 10), regex = "Number of observations"),
+    list(args = list(ragged_rt, n = 2), regex = "at least one row with no missing"),
+    list(args = list(zeros_rt, n = 3), regex = "only contain 0s")
+  )
+  for (case in cases) {
+    expect_error(do.call(estimate_delay, case$args), regexp = case$regex)
+  }
 })
 
 test_that(

@@ -660,3 +660,63 @@ test_that("fit_nb handles zero values correctly", {
   expect_type(result, "double")
   expect_gt(result, 0)
 })
+
+test_that("fit_nb returns NA for zero-length input", {
+  expect_identical(fit_nb(numeric(0), numeric(0)), NA)
+})
+
+test_that("estimate_uncertainty rejects malformed inputs", {
+  nowcasts_with_na <- valid_nowcasts
+  nowcasts_with_na[[1]][1, 1] <- NA
+
+  mismatched_nowcasts <- list(
+    nowcast1[, 1:2],
+    nowcast2[, 1:2]
+  )
+
+  cases <- list(
+    list(
+      args = list(point_nowcast_matrices = "not a list"),
+      regex = "must be a list"
+    ),
+    list(
+      args = list(
+        point_nowcast_matrices = list(nowcast1),
+        n = 5
+      ),
+      regex = "Insufficient elements"
+    ),
+    list(
+      args = list(point_nowcast_matrices = nowcasts_with_na),
+      regex = "contains NAs"
+    ),
+    list(
+      args = list(point_nowcast_matrices = mismatched_nowcasts),
+      regex = "Dimensions of the first"
+    ),
+    list(
+      args = list(ref_time_aggregator = function(x) {
+        matrix(as.character(x), nrow = nrow(x))
+      }),
+      regex = "must return a numeric matrix"
+    ),
+    list(
+      args = list(delay_aggregator = function(x) {
+        rep("a", nrow(x))
+      }),
+      regex = "must return a numeric vector"
+    )
+  )
+
+  base_args <- list(
+    point_nowcast_matrices = valid_nowcasts,
+    truncated_reporting_triangles = valid_trunc_rts,
+    retro_reporting_triangles = valid_rts
+  )
+
+  for (case in cases) {
+    args <- base_args
+    for (k in names(case$args)) args[[k]] <- case$args[[k]]
+    expect_error(do.call(estimate_uncertainty, args), regexp = case$regex)
+  }
+})

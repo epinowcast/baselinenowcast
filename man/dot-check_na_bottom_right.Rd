@@ -15,7 +15,7 @@ bottom right (TRUE if only in bottom right, FALSE if elsewhere).
 }
 \description{
 Alternative pure-matrix implementation of the same NA-pattern check as
-\code{\link[=.check_na_pattern]{.check_na_pattern()}}. Kept for its tests, which exercise this algorithm
+\code{.check_na_pattern()}. Kept for its tests, which exercise this algorithm
 directly.
 }
 \keyword{internal}

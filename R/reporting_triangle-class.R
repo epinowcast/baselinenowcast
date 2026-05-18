@@ -256,7 +256,7 @@ assert_delays_unit <- function(delays_unit) {
 #' Check if matrix has valid NA pattern
 #'
 #' Alternative pure-matrix implementation of the same NA-pattern check as
-#' [.check_na_pattern()]. Kept for its tests, which exercise this algorithm
+#' `.check_na_pattern()`. Kept for its tests, which exercise this algorithm
 #' directly.
 #'
 #' @param mat Matrix

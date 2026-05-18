@@ -90,6 +90,7 @@ test_that(
     expected_with_na <- as_reporting_triangle(expected_with_na_mat)
 
     result <- preprocess_negative_values(triangle_with_na)
+    expect_true(is_reporting_triangle(result))
     result_mat <- as.matrix(result)
     expected_mat <- as.matrix(expected_with_na)
     attributes(result_mat) <- list(dim = dim(result_mat))

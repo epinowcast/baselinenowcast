@@ -87,12 +87,17 @@ as_reviser_vintages <- function(x, ...) {
 #'
 #' @param data A reviser vintages object in wide format (class `tbl_pubdate`),
 #'   with a `time` column and one column per publication date.
-#' @inheritParams as_reporting_triangle
 #' @param ... Additional arguments passed to
 #'   [as_reporting_triangle.data.frame()].
 #'
 #' @return A [reporting_triangle] object.
 #'   See [reporting_triangle-class] for details on the structure.
+#'
+#' @param delays_unit Character string specifying the temporal granularity of
+#'   the delays, one of `"days"`, `"weeks"`, `"months"`, or `"years"`. If
+#'   `NULL` (default), the unit is inferred from the constant spacing of the
+#'   `time` column in `data`. Pass it explicitly to override or when
+#'   inference is not possible.
 #'
 #' @details
 #' Reviser vintages store cumulative reported values at each publication date.
@@ -101,12 +106,12 @@ as_reviser_vintages <- function(x, ...) {
 #' `pub_date - time` (in `delays_unit`) to build the reporting triangle.
 #'
 #' A `tbl_pubdate` carries no record of which delay unit was used when the
-#' vintages were created.
-#' If you produced the vintages from a non-daily [reporting_triangle] via
-#' [as_reviser_vintages()] (for example a weekly triangle), pass the
-#' matching `delays_unit` here to recover an equivalent triangle.
-#' The default (`"days"`) will silently produce a daily triangle with
-#' anomalous date spacings if the original triangle was not daily.
+#' vintages were created. By default this function infers `delays_unit` from
+#' the spacing of the `time` values (1 day -> `"days"`, 7 days -> `"weeks"`)
+#' and errors if the spacing is not constant or does not match a supported
+#' unit. Pass `delays_unit` explicitly to override the inference, for example
+#' when round-tripping a triangle whose unit cannot be inferred from a single
+#' row of `time` values.
 #'
 #' The reviser package must be installed to use this function.
 #'
@@ -126,16 +131,12 @@ as_reviser_vintages <- function(x, ...) {
 #' # Convert to reviser vintages
 #' vintages <- as_reviser_vintages(rep_tri)
 #'
-#' # Convert back to reporting_triangle (round-trip).
-#' # Pass `delays_unit` explicitly to match the original triangle,
-#' # since the vintages object does not record this.
-#' rep_tri_2 <- as_reporting_triangle(
-#'   data = vintages,
-#'   delays_unit = attr(rep_tri, "delays_unit")
-#' )
+#' # Convert back to reporting_triangle; `delays_unit` is inferred from the
+#' # spacing of the `time` column.
+#' rep_tri_2 <- as_reporting_triangle(data = vintages)
 #' print(rep_tri_2)
 as_reporting_triangle.tbl_pubdate <- function(data,
-                                              delays_unit = "days",
+                                              delays_unit = NULL,
                                               ...) {
   if (!requireNamespace("reviser", quietly = TRUE)) { # nolint: missing_package_linter
     cli::cli_abort(
@@ -146,6 +147,11 @@ as_reporting_triangle.tbl_pubdate <- function(data,
       )
     )
   }
+
+  if (is.null(delays_unit)) {
+    delays_unit <- .infer_delays_unit(data$time)
+  }
+  assert_delays_unit(delays_unit)
 
   long_df <- reviser::vintages_long(data, keep_na = FALSE) # nolint: namespace_linter
   long_df <- as.data.frame(long_df)
@@ -170,4 +176,45 @@ as_reporting_triangle.tbl_pubdate <- function(data,
     report_date = "pub_date",
     ...
   ))
+}
+
+#' Infer `delays_unit` from the spacing of `time` values
+#'
+#' @param times Vector of dates (or coercible to dates).
+#' @returns A character string, one of `"days"` or `"weeks"`.
+#' @keywords internal
+.infer_delays_unit <- function(times) {
+  times <- sort(unique(as.Date(times)))
+  if (length(times) < 2L) {
+    cli::cli_abort(
+      c(
+        "Cannot infer {.arg delays_unit} from fewer than 2 unique `time` values.", # nolint
+        "i" = "Pass {.arg delays_unit} explicitly." # nolint
+      )
+    )
+  }
+  diffs <- as.integer(diff(times))
+  if (length(unique(diffs)) != 1L) {
+    cli::cli_abort(
+      c(
+        "Cannot infer {.arg delays_unit}: spacing between `time` values is not constant.", # nolint
+        "i" = "Found spacings (days): {.val {sort(unique(diffs))}}.", # nolint
+        "i" = "Pass {.arg delays_unit} explicitly." # nolint
+      )
+    )
+  }
+  unit <- switch(as.character(unique(diffs)),
+    "1" = "days",
+    "7" = "weeks",
+    NULL
+  )
+  if (is.null(unit)) {
+    cli::cli_abort(
+      c(
+        "Cannot infer {.arg delays_unit} from a constant spacing of {unique(diffs)} day{?s}.", # nolint
+        "i" = "Pass {.arg delays_unit} explicitly (one of 'days', 'weeks', 'months', 'years')." # nolint
+      )
+    )
+  }
+  return(unit)
 }

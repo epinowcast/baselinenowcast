@@ -4,15 +4,17 @@
 \alias{as_reporting_triangle.tbl_pubdate}
 \title{Convert reviser vintages to reporting_triangle format}
 \usage{
-\method{as_reporting_triangle}{tbl_pubdate}(data, delays_unit = "days", ...)
+\method{as_reporting_triangle}{tbl_pubdate}(data, delays_unit = NULL, ...)
 }
 \arguments{
 \item{data}{A reviser vintages object in wide format (class \code{tbl_pubdate}),
 with a \code{time} column and one column per publication date.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
-the delays. Options are \code{"days"}, \code{"weeks"}, \code{"months"}, \code{"years"}.
-Default is \code{"days"}.}
+the delays, one of \code{"days"}, \code{"weeks"}, \code{"months"}, or \code{"years"}. If
+\code{NULL} (default), the unit is inferred from the constant spacing of the
+\code{time} column in \code{data}. Pass it explicitly to override or when
+inference is not possible.}
 
 \item{...}{Additional arguments passed to
 \code{\link[=as_reporting_triangle.data.frame]{as_reporting_triangle.data.frame()}}.}
@@ -33,12 +35,12 @@ time point to recover incremental counts, and uses the delay implied by
 \code{pub_date - time} (in \code{delays_unit}) to build the reporting triangle.
 
 A \code{tbl_pubdate} carries no record of which delay unit was used when the
-vintages were created.
-If you produced the vintages from a non-daily \link{reporting_triangle} via
-\code{\link[=as_reviser_vintages]{as_reviser_vintages()}} (for example a weekly triangle), pass the
-matching \code{delays_unit} here to recover an equivalent triangle.
-The default (\code{"days"}) will silently produce a daily triangle with
-anomalous date spacings if the original triangle was not daily.
+vintages were created. By default this function infers \code{delays_unit} from
+the spacing of the \code{time} values (1 day -> \code{"days"}, 7 days -> \code{"weeks"})
+and errors if the spacing is not constant or does not match a supported
+unit. Pass \code{delays_unit} explicitly to override the inference, for example
+when round-tripping a triangle whose unit cannot be inferred from a single
+row of \code{time} values.
 
 The reviser package must be installed to use this function.
 }
@@ -51,13 +53,9 @@ rep_tri <- as_reporting_triangle(data = data_as_of_df)
 # Convert to reviser vintages
 vintages <- as_reviser_vintages(rep_tri)
 
-# Convert back to reporting_triangle (round-trip).
-# Pass `delays_unit` explicitly to match the original triangle,
-# since the vintages object does not record this.
-rep_tri_2 <- as_reporting_triangle(
-  data = vintages,
-  delays_unit = attr(rep_tri, "delays_unit")
-)
+# Convert back to reporting_triangle; `delays_unit` is inferred from the
+# spacing of the `time` column.
+rep_tri_2 <- as_reporting_triangle(data = vintages)
 print(rep_tri_2)
 \dontshow{\}) # examplesIf}
 }

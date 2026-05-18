@@ -57,10 +57,7 @@ test_that(
     expect_true(anyNA(rep_tri))
 
     vintages <- as_reviser_vintages(rep_tri)
-    rep_tri_back <- as_reporting_triangle(
-      data = vintages,
-      delays_unit = attr(rep_tri, "delays_unit")
-    )
+    rep_tri_back <- as_reporting_triangle(data = vintages)
 
     expect_s3_class(rep_tri_back, "reporting_triangle")
     expect_no_error(assert_reporting_triangle(rep_tri_back))
@@ -106,10 +103,8 @@ test_that(
     )
 
     vintages <- as_reviser_vintages(rep_tri)
-    rep_tri_back <- as_reporting_triangle(
-      data = vintages,
-      delays_unit = "weeks"
-    )
+    # Inferred from the 7-day spacing of `time` values
+    rep_tri_back <- as_reporting_triangle(data = vintages)
 
     expect_identical(attr(rep_tri_back, "delays_unit"), "weeks")
     mat_in <- rep_tri
@@ -117,6 +112,34 @@ test_that(
     mat_back <- rep_tri_back
     dimnames(mat_back) <- NULL
     expect_identical(mat_back, mat_in)
+  }
+)
+
+test_that(
+  "as_reporting_triangle.tbl_pubdate() errors on non-constant time spacing",
+  {
+    skip_if_not_installed("reviser")
+
+    rep_tri <- as_reporting_triangle(data_as_of_df)
+    vintages <- as_reviser_vintages(rep_tri)
+    # Drop a middle row to create non-constant spacing in `time`
+    irregular <- vintages[-2, , drop = FALSE]
+    expect_error(
+      as_reporting_triangle(data = irregular),
+      regexp = "Cannot infer"
+    )
+  }
+)
+
+test_that(
+  "as_reporting_triangle.tbl_pubdate() honours an explicit delays_unit",
+  {
+    skip_if_not_installed("reviser")
+
+    rep_tri <- as_reporting_triangle(data_as_of_df)
+    vintages <- as_reviser_vintages(rep_tri)
+    rep_tri_back <- as_reporting_triangle(data = vintages, delays_unit = "days")
+    expect_identical(attr(rep_tri_back, "delays_unit"), "days")
   }
 )
 

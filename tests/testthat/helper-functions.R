@@ -11,6 +11,20 @@
 # By centralizing these patterns, we reduce boilerplate and make test
 # intent clearer.
 
+# Matrix Helpers ----------------------------------------------------------
+
+#' Strip a reporting_triangle (or matrix) to a plain matrix
+#'
+#' Returns a matrix with `dim` only, no `dimnames`, no class beyond
+#' `c("matrix", "array")`. Used in tests that compare against a hand-built
+#' expected matrix.
+#' @keywords internal
+as_plain_matrix <- function(x) {
+  m <- as.matrix(x)
+  dimnames(m) <- NULL
+  return(m)
+}
+
 # Partial Functions --------------------------------------------------------
 
 #' baselinenowcast with test defaults

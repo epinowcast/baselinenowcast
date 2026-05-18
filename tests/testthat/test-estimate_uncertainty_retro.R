@@ -1,6 +1,3 @@
-## A 7x4 reporting triangle reused across the tests below. The bottom
-## three rows are incomplete, so the default-structure call returns one
-## uncertainty parameter per incomplete reference time.
 make_retro_test_triangle <- function() {
   return(make_test_triangle(data = matrix(
     c(
@@ -17,8 +14,6 @@ make_retro_test_triangle <- function() {
   )))
 }
 
-## Number of horizons returned by estimate_uncertainty_retro under the
-## default reporting structure equals the number of NA-containing rows.
 n_incomplete_rows <- function(triangle) {
   return(sum(is.na(rowSums(triangle))))
 }
@@ -130,8 +125,6 @@ test_that(
         }
       )
 
-      ## Length under aggregation is not the raw incomplete-row count, so
-      ## omit the length check.
       expect_valid_retro_uncertainty(result)
     } else {
       skip("zoo package not available")
@@ -151,8 +144,6 @@ test_that(
       structure = 2
     )
 
-    ## Reporting structure 2 collapses delay columns so the horizon count
-    ## is smaller than the incomplete-row count.
     expect_valid_retro_uncertainty(result)
   }
 )
@@ -214,7 +205,6 @@ test_that(
       uncertainty_model = fit_by_horizon
     )
 
-    ## Structure = 2 changes the horizon count; just check validity.
     expect_valid_retro_uncertainty(result)
   }
 )

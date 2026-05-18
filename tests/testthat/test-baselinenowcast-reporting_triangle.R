@@ -98,9 +98,6 @@ test_that(
       output_type = "point"
     )
 
-    # Fix the seed so the mean-of-draws check uses a deterministic sample.
-    # With the default 1000 draws the standard error per reference date is
-    # comfortably below the tightened tolerance of 0.02.
     set.seed(2026)
     prob_nowcast <- baselinenowcast(rep_tri)
 

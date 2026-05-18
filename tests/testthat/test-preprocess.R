@@ -20,9 +20,9 @@ test_that(
   {
     result <- preprocess_negative_values(triangle_with_neg)
     result_mat <- as.matrix(result)
-    expected_mat <- as.matrix(expected_fixed)
-    attributes(result_mat) <- list(dim = dim(result_mat))
-    attributes(expected_mat) <- list(dim = dim(expected_mat))
+    result_mat <- as_plain_matrix(result)
+
+    expected_mat <- as_plain_matrix(expected_fixed)
     expect_identical(result_mat, expected_mat)
   }
 )
@@ -38,8 +38,7 @@ test_that(
     triangle_no_neg <- as_reporting_triangle(triangle_no_neg_mat)
 
     result <- preprocess_negative_values(triangle_no_neg)
-    result_mat <- as.matrix(result)
-    attributes(result_mat) <- list(dim = dim(result_mat))
+    result_mat <- as_plain_matrix(result)
     expect_identical(result_mat, triangle_no_neg_mat)
   }
 )
@@ -63,9 +62,9 @@ test_that(
 
     result <- preprocess_negative_values(triangle_neg_at_end)
     result_mat <- as.matrix(result)
-    expected_mat <- as.matrix(expected_neg_at_end)
-    attributes(result_mat) <- list(dim = dim(result_mat))
-    attributes(expected_mat) <- list(dim = dim(expected_mat))
+    result_mat <- as_plain_matrix(result)
+
+    expected_mat <- as_plain_matrix(expected_neg_at_end)
     expect_identical(result_mat, expected_mat)
   }
 )
@@ -92,9 +91,9 @@ test_that(
     result <- preprocess_negative_values(triangle_with_na)
     expect_true(is_reporting_triangle(result))
     result_mat <- as.matrix(result)
-    expected_mat <- as.matrix(expected_with_na)
-    attributes(result_mat) <- list(dim = dim(result_mat))
-    attributes(expected_mat) <- list(dim = dim(expected_mat))
+    result_mat <- as_plain_matrix(result)
+
+    expected_mat <- as_plain_matrix(expected_with_na)
     expect_identical(result_mat, expected_mat)
   }
 )

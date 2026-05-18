@@ -1,5 +1,3 @@
-# Test cases per delays_unit. Cross-month and cross-year boundaries are
-# included to catch arithmetic mistakes.
 delay_cases <- list(
   days = list(
     reference_dates = as.Date("2024-12-28"),

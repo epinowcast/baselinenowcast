@@ -180,7 +180,6 @@ test_that("as_reporting_triangle.data.frame() successfully creates reporting tri
 })
 
 
-
 test_that("as_reporting_triangle.matrix() can handle specification of each arg", { # nolint
   rep_tri_mat <- matrix(
     c(
@@ -205,8 +204,7 @@ test_that("as_reporting_triangle.matrix() can handle specification of each arg",
     reference_dates = reference_dates
   )
   # Check matrix values match (ignoring dimnames and other attributes)
-  mat_compare <- unclass(rep_tri)
-  attributes(mat_compare) <- list(dim = dim(mat_compare))
+  mat_compare <- as_plain_matrix(rep_tri)
   expect_identical(mat_compare, rep_tri_mat)
   expect_equal(get_reference_dates(rep_tri), reference_dates) # nolint: expect_identical_linter
 })

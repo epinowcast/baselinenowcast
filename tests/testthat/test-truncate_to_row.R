@@ -24,8 +24,7 @@ test_that("truncate_to_row works with positive t", {
     byrow = TRUE
   )
   # Compare matrix values (strip attributes)
-  result_mat <- unclass(result)
-  attributes(result_mat) <- list(dim = dim(result_mat))
+  result_mat <- as_plain_matrix(result)
   expect_identical(result_mat, expected_mat)
   # Check it's a reporting_triangle
   expect_true(is_reporting_triangle(result))

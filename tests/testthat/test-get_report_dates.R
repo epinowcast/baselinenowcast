@@ -1,6 +1,3 @@
-# Test cases per delays_unit. Each entry has a reference date, delays, and
-# the expected report dates. Cross-month and cross-year boundaries are
-# included to catch arithmetic mistakes.
 report_date_cases <- list(
   days = list(
     reference_dates = as.Date("2024-12-28"),

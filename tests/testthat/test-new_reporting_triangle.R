@@ -1,4 +1,3 @@
-# Helper used only in this file
 make_valid_matrix <- function(nrow = 3, ncol = 4) {
   return(matrix(seq_len(nrow * ncol), nrow = nrow, ncol = ncol))
 }
@@ -20,7 +19,6 @@ test_that("new_reporting_triangle() builds a valid reporting_triangle", {
   expect_identical(get_reference_dates(rt), ref_dates)
   expect_identical(colnames(rt), as.character(0:3))
   expect_identical(rownames(rt), as.character(ref_dates))
-  # Underlying values round-trip
   expect_identical(as.numeric(rt), as.numeric(mat))
 })
 

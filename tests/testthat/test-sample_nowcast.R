@@ -42,7 +42,6 @@ test_that(
     means <- rowMeans(draws)
     expected <- rowSums(point_nowcast_matrix)
 
-    # With 1000 draws the standard error per row is comfortably below 5.
     expect_equal(means, expected, tolerance = 5)
   }
 )

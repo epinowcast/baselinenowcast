@@ -126,8 +126,6 @@ test_that("estimate_uncertainty: Matrix dimension validation works", {
 
 test_that("estimate_uncertainty returns an estimate if passing in a NULL for a nowcast", { # nolint
   nowcasts_with_null <- list(nowcast1, NULL)
-  # This should work, using only the first nowcast and first valid_trunc_rts
-  # Will warn that only the first one is being used
   result1 <- expect_warning(estimate_uncertainty(
     nowcasts_with_null,
     valid_trunc_rts,

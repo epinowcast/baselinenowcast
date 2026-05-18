@@ -364,17 +364,70 @@ test_that("[<-.reporting_triangle allows NA in valid positions", {
   expect_true(is.na(rt[4, 3]))
 })
 
-test_that("print.reporting_triangle runs without error", {
-  # Just check it doesn't error
-  expect_no_error(print(rep_tri))
+test_that("print.reporting_triangle shows key metadata in output", {
   expect_invisible(print(rep_tri))
+
+  # cli output goes via messages, so combine both streams for inspection.
+  msgs <- paste(testthat::capture_messages(print(rep_tri)), collapse = "")
+  body <- testthat::capture_output(print(rep_tri))
+  out <- paste(msgs, body, collapse = "\n")
+
+  expect_match(out, "Reporting Triangle")
+  expect_match(out, "Delays unit: days")
+  # Reference date range comes from the data above (2025-10-25 to 2026-04-01).
+  expect_match(out, "2025-10-25 to 2026-04-01", fixed = TRUE)
+  expect_match(out, "Max delay: 10")
+  expect_match(
+    out,
+    paste0("Structure: ", get_reporting_structure(rep_tri))
+  )
 })
 
-test_that("summary.reporting_triangle runs without error", {
-  # Just check it doesn't error
-  expect_no_error(summary(rep_tri))
+test_that("summary.reporting_triangle reports structure, zeros and negatives", {
   expect_invisible(summary(rep_tri))
+
+  msgs <- paste(testthat::capture_messages(summary(rep_tri)), collapse = "")
+  body <- testthat::capture_output(summary(rep_tri))
+  out <- paste(msgs, body, collapse = "\n")
+
+  expect_match(out, "Reporting Triangle Summary")
+  expect_match(
+    out,
+    paste0("Dimensions: ", nrow(rep_tri), " x ", ncol(rep_tri))
+  )
+  expect_match(out, "2025-10-25 to 2026-04-01", fixed = TRUE)
+  expect_match(
+    out,
+    paste0("Structure: ", get_reporting_structure(rep_tri))
+  )
+
+  mat <- as.matrix(rep_tri)
+  num_zeros <- sum(mat == 0, na.rm = TRUE)
+  rows_neg <- sum(apply(mat, 1, function(x) any(x < 0, na.rm = TRUE)))
+  expect_match(out, paste0("Zeros: ", num_zeros))
+  expect_match(out, paste0("Rows with negatives: ", rows_neg))
 })
+
+test_that(
+  "as.matrix.reporting_triangle strips class and reporting_triangle attrs",
+  {
+    plain <- as.matrix(rep_tri)
+    # Exact-class check (not just inheritance) confirms reporting_triangle
+    # is stripped.
+    expect_identical(class(plain), c("matrix", "array")) # nolint: expect_s3_class_linter, line_length_linter
+    expect_false(is_reporting_triangle(plain))
+    expect_null(attr(plain, "delays_unit"))
+    # Reference dates are stored as rownames on the reporting_triangle;
+    # they should be stripped along with the class-specific attributes.
+    expect_null(attr(plain, "reference_dates"))
+    # Underlying values are preserved.
+    expect_identical(dim(plain), dim(rep_tri))
+    expect_identical(as.vector(plain), as.vector(unclass(rep_tri)))
+    # Rownames (reference dates) and colnames (delays) survive.
+    expect_identical(rownames(plain), rownames(rep_tri))
+    expect_identical(colnames(plain), colnames(rep_tri))
+  }
+)
 
 test_that(
   "get_quantile_delay returns integer vector with quantile delays for each row",

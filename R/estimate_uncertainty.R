@@ -254,59 +254,6 @@ estimate_uncertainty <- function(
   return(uncertainty_params)
 }
 
-#' Check that a list has the required length
-#'
-#' @param list_obj List object to check.
-#' @param name Character string giving the argument name (used in messages).
-#' @param required_length Integer minimum length.
-#' @param custom_msg Optional additional message to append on insufficient
-#'   elements.
-#' @param empty_check Logical. If TRUE (default), also error on empty lists.
-#'
-#' @returns NULL, invisibly
-#' @keywords internal
-.check_list_length <- function(list_obj, name, required_length,
-                               custom_msg = NULL, empty_check = TRUE) {
-  if (!is.list(list_obj)) {
-    cli_abort("`{name}` must be a list")
-  }
-
-  if (length(list_obj) < required_length) {
-    msg <- "Insufficient elements in `{name}` for the `n` desired."
-    if (!is.null(custom_msg)) {
-      msg <- c(msg, i = custom_msg)
-    }
-    cli_abort(msg)
-  }
-  if (empty_check && length(list_obj) < 1) {
-    cli_abort("`{name}` is an empty list")
-  }
-  return(invisible(NULL))
-}
-
-#' Check observations and predictions are compatible
-#'
-#' @param obs Matrix or vector of observations.
-#' @param pred Matrix or vector of predictions.
-#'
-#' @returns NULL, invisibly
-#' @keywords internal
-.check_obs_and_pred <- function(obs, pred) {
-  if (is.null(obs) || is.null(pred)) {
-    cli_abort("Missing `obs` and/or `pred`") # nolint
-  }
-  obs <- as.matrix(obs)
-  pred <- as.matrix(pred)
-  if (!is.numeric(obs) || !is.numeric(pred)) {
-    cli_abort("`obs` and `pred` must be numeric (after coercion to matrix).")
-  }
-
-  if (!identical(dim(obs), dim(pred))) {
-    cli_abort("`obs` and `pred` must have the same dimensions") # nolint
-  }
-  return(NULL)
-}
-
 #' Helper function that fits its each column of the matrix (horizon) to an
 #'    observation model.
 #'
@@ -431,6 +378,48 @@ fit_by_horizon <- function(obs,
     mat * indices_1 * indices_2
   )
   return(mat_masked)
+}
+
+.check_list_length <- function(list_obj, name, required_length,
+                               custom_msg = NULL, empty_check = TRUE) {
+  if (!is.list(list_obj)) {
+    cli_abort("`{name}` must be a list")
+  }
+
+  if (length(list_obj) < required_length) {
+    msg <- "Insufficient elements in `{name}` for the `n` desired."
+    if (!is.null(custom_msg)) {
+      msg <- c(msg, i = custom_msg)
+    }
+    cli_abort(msg)
+  }
+  if (empty_check && length(list_obj) < 1) {
+    cli_abort("`{name}` is an empty list")
+  }
+  return(invisible(NULL))
+}
+
+#' Check observations and predictions are compatible
+#'
+#' @param obs Matrix or vector of observations.
+#' @param pred Matrix or vector of predictions.
+#'
+#' @returns NULL, invisibly
+#' @keywords internal
+.check_obs_and_pred <- function(obs, pred) {
+  if (is.null(obs) || is.null(pred)) {
+    cli_abort("Missing `obs` and/or `pred`") # nolint
+  }
+  obs <- as.matrix(obs)
+  pred <- as.matrix(pred)
+  if (!is.numeric(obs) || !is.numeric(pred)) {
+    cli_abort("`obs` and `pred` must be numeric (after coercion to matrix).")
+  }
+
+  if (!identical(dim(obs), dim(pred))) {
+    cli_abort("`obs` and `pred` must have the same dimensions") # nolint
+  }
+  return(NULL)
 }
 
 #' Fit a negative binomial to a vector of observations and expectations

@@ -71,51 +71,6 @@
 #'   Structure section for details on the object format.
 NULL
 
-#' Class constructor for `reporting_triangle` objects
-#'
-#' Creates a new reporting_triangle object from a matrix.
-#'
-#' @param reporting_triangle_matrix Matrix of reporting triangle where rows
-#'   are reference times, columns are delays, and entries are incident counts.
-#' @param reference_dates Vector of Date objects indicating the reference dates
-#'   corresponding to each row of the matrix.
-#' @inheritParams as_reporting_triangle
-#'
-#' @returns An object of class [reporting_triangle]
-#' @family reporting_triangle
-#' @export
-new_reporting_triangle <- function(reporting_triangle_matrix,
-                                   reference_dates,
-                                   delays_unit) {
-  .validate_rep_tri_args(
-    reporting_triangle_matrix,
-    reference_dates,
-    delays_unit
-  )
-
-  max_delay <- ncol(reporting_triangle_matrix) - 1L
-  rownames(reporting_triangle_matrix) <- as.character(reference_dates)
-  colnames(reporting_triangle_matrix) <- as.character(0:max_delay)
-
-  result <- structure(
-    reporting_triangle_matrix,
-    class = c("reporting_triangle", "matrix"),
-    delays_unit = delays_unit
-  )
-
-  return(result)
-}
-
-#' Check if an object is a reporting_triangle
-#'
-#' @param x An object to check.
-#' @return Logical indicating whether the object is a reporting_triangle.
-#' @family reporting_triangle
-#' @export
-is_reporting_triangle <- function(x) {
-  return(inherits(x, "reporting_triangle"))
-}
-
 #' Validate reporting_triangle constructor arguments
 #'
 #' Internal helper to validate the arguments passed to new_reporting_triangle.
@@ -153,6 +108,41 @@ assert_delays_unit <- function(delays_unit) {
   return(invisible(NULL))
 }
 
+#' Class constructor for `reporting_triangle` objects
+#'
+#' Creates a new reporting_triangle object from a matrix.
+#'
+#' @param reporting_triangle_matrix Matrix of reporting triangle where rows
+#'   are reference times, columns are delays, and entries are incident counts.
+#' @param reference_dates Vector of Date objects indicating the reference dates
+#'   corresponding to each row of the matrix.
+#' @inheritParams as_reporting_triangle
+#'
+#' @returns An object of class [reporting_triangle]
+#' @family reporting_triangle
+#' @export
+new_reporting_triangle <- function(reporting_triangle_matrix,
+                                   reference_dates,
+                                   delays_unit) {
+  .validate_rep_tri_args(
+    reporting_triangle_matrix,
+    reference_dates,
+    delays_unit
+  )
+
+  max_delay <- ncol(reporting_triangle_matrix) - 1L
+  rownames(reporting_triangle_matrix) <- as.character(reference_dates)
+  colnames(reporting_triangle_matrix) <- as.character(0:max_delay)
+
+  result <- structure(
+    reporting_triangle_matrix,
+    class = c("reporting_triangle", "matrix"),
+    delays_unit = delays_unit
+  )
+
+  return(result)
+}
+
 #' Check NA pattern validity in reporting triangle
 #'
 #' Internal function that validates NA positions. Identifies NA values that
@@ -176,35 +166,6 @@ assert_delays_unit <- function(delays_unit) {
 #' Uses a vectorised cummax-based approach for efficient validation.
 #'
 #' @keywords internal
-#' @noRd
-.check_na_pattern <- function(x) {
-  mat <- if (inherits(x, "reporting_triangle")) {
-    as.matrix(x)
-  } else {
-    x
-  }
-
-  if (!anyNA(mat)) {
-    return(list(
-      valid = TRUE,
-      n_out_of_pattern = 0L
-    ))
-  }
-
-  out_of_pattern <- matrix(FALSE, nrow = nrow(mat), ncol = ncol(mat))
-  na_positions <- is.na(mat)
-
-  out_of_pattern <- .check_na_rows(na_positions, out_of_pattern)
-  out_of_pattern <- .check_na_cols(na_positions, out_of_pattern)
-
-  n_out_of_pattern <- sum(out_of_pattern)
-
-  return(list(
-    valid = n_out_of_pattern == 0L,
-    n_out_of_pattern = n_out_of_pattern
-  ))
-}
-
 #' Check rows for out-of-pattern NAs
 #' @noRd
 .check_na_rows <- function(na_positions, out_of_pattern) {
@@ -251,6 +212,38 @@ assert_delays_unit <- function(delays_unit) {
     }
   }
   return(out_of_pattern)
+}
+
+.check_na_pattern <- function(x) {
+  # Convert to matrix if needed
+  mat <- if (inherits(x, "reporting_triangle")) {
+    as.matrix(x)
+  } else {
+    x
+  }
+
+  # Early return if no NAs
+  if (!anyNA(mat)) {
+    return(list(
+      valid = TRUE,
+      n_out_of_pattern = 0L
+    ))
+  }
+
+  # Track which NA positions are out of pattern
+  out_of_pattern <- matrix(FALSE, nrow = nrow(mat), ncol = ncol(mat))
+  na_positions <- is.na(mat)
+
+  # Check rows and columns
+  out_of_pattern <- .check_na_rows(na_positions, out_of_pattern)
+  out_of_pattern <- .check_na_cols(na_positions, out_of_pattern)
+
+  n_out_of_pattern <- sum(out_of_pattern)
+
+  return(list(
+    valid = n_out_of_pattern == 0L,
+    n_out_of_pattern = n_out_of_pattern
+  ))
 }
 
 #' Check if matrix has valid NA pattern
@@ -314,10 +307,12 @@ validate_reporting_triangle <- function(data) {
     cli_abort(message = "data must have class 'reporting_triangle'")
   }
 
+  # Check matrix is not all NA
   if (all(is.na(data))) {
     cli_abort(message = "Matrix cannot be all NA")
   }
 
+  # Check NA pattern (IF NAs exist, THEN must be in bottom-right pattern)
   if (anyNA(data)) {
     na_check <- .check_na_pattern(data)
     if (!na_check$valid) {
@@ -389,6 +384,16 @@ assert_rep_tri_class <- function(data, arg_name = "data") {
     )
   }
   return(NULL)
+}
+
+#' Check if an object is a reporting_triangle
+#'
+#' @param x An object to check.
+#' @return Logical indicating whether the object is a reporting_triangle.
+#' @family reporting_triangle
+#' @export
+is_reporting_triangle <- function(x) {
+  return(inherits(x, "reporting_triangle"))
 }
 
 #' Update reporting_triangle with new matrix data

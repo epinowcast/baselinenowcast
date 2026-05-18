@@ -181,3 +181,26 @@ test_that(
     )
   }
 )
+
+test_that(".infer_delays_unit() infers days and weeks", {
+  infer <- getFromNamespace(".infer_delays_unit", "baselinenowcast")
+  expect_identical(infer(as.Date("2024-01-01") + 0:4), "days")
+  expect_identical(infer(as.Date("2024-01-01") + 7 * (0:3)), "weeks")
+})
+
+test_that(".infer_delays_unit() errors with fewer than 2 unique times", {
+  infer <- getFromNamespace(".infer_delays_unit", "baselinenowcast")
+  expect_error(infer(as.Date("2024-01-01")), regexp = "fewer than 2")
+  expect_error(
+    infer(rep(as.Date("2024-01-01"), 3)),
+    regexp = "fewer than 2"
+  )
+})
+
+test_that(".infer_delays_unit() errors on unsupported constant spacing", {
+  infer <- getFromNamespace(".infer_delays_unit", "baselinenowcast")
+  expect_error(
+    infer(as.Date("2024-01-01") + 14 * (0:2)),
+    regexp = "Cannot infer"
+  )
+})

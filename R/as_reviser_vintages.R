@@ -61,22 +61,19 @@ as_reviser_vintages <- function(x, ...) {
 
   assert_reporting_triangle(x)
 
-  ref_dates <- get_reference_dates(x)
-  delays_unit <- get_delays_unit(x)
-  max_delay <- get_max_delay(x)
-  delays <- seq.int(0L, max_delay)
-
-  x_mat <- unclass(as.matrix(x))
-  dimnames(x_mat) <- NULL
-  cum_mat <- t(apply(x_mat, 1, cumsum))
-
+  long_df <- as.data.frame(x)
+  long_df <- long_df[
+    order(long_df$reference_date, long_df$delay), ,
+    drop = FALSE
+  ]
+  long_df$value <- unlist(
+    by(long_df$count, long_df$reference_date, cumsum, simplify = FALSE),
+    use.names = FALSE
+  )
   long_df <- data.frame(
-    time = rep(ref_dates, times = length(delays)),
-    pub_date = as.Date(unlist(lapply(
-      delays,
-      function(d) get_report_dates(ref_dates, d, delays_unit)
-    )), origin = "1970-01-01"),
-    value = as.vector(cum_mat)
+    time = long_df$reference_date,
+    pub_date = long_df$report_date,
+    value = long_df$value
   )
 
   return(reviser::vintages_wide(long_df, ...)) # nolint: namespace_linter

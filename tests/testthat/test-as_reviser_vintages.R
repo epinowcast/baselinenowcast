@@ -158,3 +158,35 @@ test_that("as_reviser_vintages() validates input", { # nolint
   expect_error(as_reviser_vintages(matrix(1:9, nrow = 3)))
   expect_error(as_reviser_vintages(list(a = 1, b = 2)))
 })
+
+test_that(
+  "as_reviser_vintages() errors when reviser is not installed",
+  {
+    local_mocked_bindings(
+      requireNamespace = function(...) FALSE,
+      .package = "base"
+    )
+    expect_error(
+      as_reviser_vintages(structure(list(), class = "reporting_triangle")),
+      regexp = "reviser"
+    )
+  }
+)
+
+test_that(
+  "as_reporting_triangle.tbl_pubdate() errors when reviser is not installed",
+  {
+    local_mocked_bindings(
+      requireNamespace = function(...) FALSE,
+      .package = "base"
+    )
+    dummy <- structure(
+      data.frame(time = as.Date("2024-01-01")),
+      class = c("tbl_pubdate", "tbl_df", "tbl", "data.frame")
+    )
+    expect_error(
+      as_reporting_triangle.tbl_pubdate(dummy),
+      regexp = "reviser"
+    )
+  }
+)

@@ -78,6 +78,24 @@ allocate_reference_times <- function(reporting_triangle,
   return(ns)
 }
 
+#' Helper function to validate allocation parameters
+#'
+#' @inheritParams allocate_reference_times
+#' @importFrom checkmate assert_scalar assert_numeric assert_integerish
+#'
+#' @returns NULL invisibly
+#' @keywords internal
+.validate_inputs_allocation <- function(scale_factor,
+                                        prop_delay,
+                                        n_min_retro_nowcasts) {
+  assert_integerish(n_min_retro_nowcasts, lower = 0)
+  assert_scalar(prop_delay)
+  assert_numeric(prop_delay, lower = 0, upper = 1, finite = TRUE)
+  assert_scalar(scale_factor)
+  assert_numeric(scale_factor, lower = 0, finite = TRUE)
+  return(NULL)
+}
+
 #' Perform the allocation process
 #'
 #' @inheritParams allocate_reference_times
@@ -152,92 +170,6 @@ allocate_reference_times <- function(reporting_triangle,
     target = target
   )
   return(sizes)
-}
-
-#' Assign number of reference times to delay and uncertainty from the sizes
-#'
-#' @param n_used Integer indicating number reference times that will be used.
-#' @param n_target Integer indicating the target number of reference times.
-#' @param n_min_delay Integer indicating the number needed for delay
-#'    estimation.
-#' @param n_min_retro_nowcasts Integer indicating the number needed for
-#'    uncertainty estimation.
-#' @param n_required Integer indicating the number need for both delay and
-#'    uncertainty
-#' @param prop_delay Numeric value <1 indicating what proportion of all
-#'     reference times in the reporting triangle to be used for delay
-#'     estimation.
-#'
-#' @returns List of number of reference times to use for delay and uncertainty
-#' @keywords internal
-.assign_allocation_from_ns <- function(n_used,
-                                       n_target,
-                                       n_min_delay,
-                                       n_min_retro_nowcasts,
-                                       n_required,
-                                       prop_delay) {
-  # This is the "standard case", with checks to ensure that minimums are hit
-  flag_req_delay <- FALSE
-  flag_req_uncertainty <- FALSE
-  if (n_used >= n_target) {
-    n_history_delay <- max(c(floor(n_used * prop_delay), n_min_delay))
-    flag_req_delay <- which.max(c(floor(n_used * prop_delay), n_min_delay)) == 2
-    n_retrospective_nowcasts <- n_used - n_history_delay
-    # If the size used is less than the target size, we will assign the
-    # remainder after hitting the delay requirement according to prop_delay
-  } else if (n_used >= n_required & n_used < n_target) { # nolint
-    # Allocate to n_history_delay and then split the remainder ensuring n_retropsective nowcasts has enough #nolint
-    n_remaining_ref_times <- n_used - n_min_delay
-    n_retrospective_nowcasts <- ceiling(n_remaining_ref_times * (1 - prop_delay)) # nolint
-    n_history_delay <- n_used - n_retrospective_nowcasts
-  }
-
-  # Special case as a final check to make sure minimum
-  # requirements for uncertainty were hit
-  if (n_retrospective_nowcasts < n_min_retro_nowcasts) {
-    n_retrospective_nowcasts <- n_min_retro_nowcasts
-    flag_req_uncertainty <- TRUE
-    n_history_delay <- n_used - n_retrospective_nowcasts
-  }
-
-  prop_delay_used <- n_history_delay / n_used
-
-  if (round(prop_delay_used, 3) != round(prop_delay, 3)) {
-    cli_alert_info(
-      text =
-        "{prop_delay} reference times were specified for delay estimation but {round(prop_delay_used,3)} of reference times used for delay estimation." # nolint
-    )
-    if (flag_req_uncertainty) {
-      cli_alert_info("This is due to the minumim requirement for the number of retrospective nowcasts for uncertainty estimation ({n_min_retro_nowcasts}).") # nolint
-    } else if (flag_req_delay) {
-      cli_alert_info("This is due to the minumim requirement for the number of reference times needed for delay estimation ({n_min_delay}).") # nolint
-    } else {
-      cli_alert_info("`prop_delay` not identical to the proportion of reference times used for delay estimation due to rounding.") # nolint
-    }
-  }
-
-  return(list(
-    n_retrospective_nowcasts = n_retrospective_nowcasts,
-    n_history_delay = n_history_delay
-  ))
-}
-
-#' Helper function to validate allocation parameters
-#'
-#' @inheritParams allocate_reference_times
-#' @importFrom checkmate assert_scalar assert_numeric assert_integerish
-#'
-#' @returns NULL invisibly
-#' @keywords internal
-.validate_inputs_allocation <- function(scale_factor,
-                                        prop_delay,
-                                        n_min_retro_nowcasts) {
-  assert_integerish(n_min_retro_nowcasts, lower = 0)
-  assert_scalar(prop_delay)
-  assert_numeric(prop_delay, lower = 0, upper = 1, finite = TRUE)
-  assert_scalar(scale_factor)
-  assert_numeric(scale_factor, lower = 0, finite = TRUE)
-  return(NULL)
 }
 
 #' Check target size against number of reference times available and the number
@@ -325,4 +257,72 @@ allocate_reference_times <- function(reporting_triangle,
     "x" = "Probabilistic nowcasts cannot be generated." # nolint
   ))
   return(NULL)
+}
+
+#' Assign number of reference times to delay and uncertainty from the sizes
+#'
+#' @param n_used Integer indicating number reference times that will be used.
+#' @param n_target Integer indicating the target number of reference times.
+#' @param n_min_delay Integer indicating the number needed for delay
+#'    estimation.
+#' @param n_min_retro_nowcasts Integer indicating the number needed for
+#'    uncertainty estimation.
+#' @param n_required Integer indicating the number need for both delay and
+#'    uncertainty
+#' @param prop_delay Numeric value <1 indicating what proportion of all
+#'     reference times in the reporting triangle to be used for delay
+#'     estimation.
+#'
+#' @returns List of number of reference times to use for delay and uncertainty
+#' @keywords internal
+.assign_allocation_from_ns <- function(n_used,
+                                       n_target,
+                                       n_min_delay,
+                                       n_min_retro_nowcasts,
+                                       n_required,
+                                       prop_delay) {
+  # This is the "standard case", with checks to ensure that minimums are hit
+  flag_req_delay <- FALSE
+  flag_req_uncertainty <- FALSE
+  if (n_used >= n_target) {
+    n_history_delay <- max(c(floor(n_used * prop_delay), n_min_delay))
+    flag_req_delay <- which.max(c(floor(n_used * prop_delay), n_min_delay)) == 2
+    n_retrospective_nowcasts <- n_used - n_history_delay
+    # If the size used is less than the target size, we will assign the
+    # remainder after hitting the delay requirement according to prop_delay
+  } else if (n_used >= n_required & n_used < n_target) { # nolint
+    # Allocate to n_history_delay and then split the remainder ensuring n_retropsective nowcasts has enough #nolint
+    n_remaining_ref_times <- n_used - n_min_delay
+    n_retrospective_nowcasts <- ceiling(n_remaining_ref_times * (1 - prop_delay)) # nolint
+    n_history_delay <- n_used - n_retrospective_nowcasts
+  }
+
+  # Special case as a final check to make sure minimum
+  # requirements for uncertainty were hit
+  if (n_retrospective_nowcasts < n_min_retro_nowcasts) {
+    n_retrospective_nowcasts <- n_min_retro_nowcasts
+    flag_req_uncertainty <- TRUE
+    n_history_delay <- n_used - n_retrospective_nowcasts
+  }
+
+  prop_delay_used <- n_history_delay / n_used
+
+  if (round(prop_delay_used, 3) != round(prop_delay, 3)) {
+    cli_alert_info(
+      text =
+        "{prop_delay} reference times were specified for delay estimation but {round(prop_delay_used,3)} of reference times used for delay estimation." # nolint
+    )
+    if (flag_req_uncertainty) {
+      cli_alert_info("This is due to the minumim requirement for the number of retrospective nowcasts for uncertainty estimation ({n_min_retro_nowcasts}).") # nolint
+    } else if (flag_req_delay) {
+      cli_alert_info("This is due to the minumim requirement for the number of reference times needed for delay estimation ({n_min_delay}).") # nolint
+    } else {
+      cli_alert_info("`prop_delay` not identical to the proportion of reference times used for delay estimation due to rounding.") # nolint
+    }
+  }
+
+  return(list(
+    n_retrospective_nowcasts = n_retrospective_nowcasts,
+    n_history_delay = n_history_delay
+  ))
 }

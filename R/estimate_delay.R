@@ -76,6 +76,111 @@ estimate_delay <- function(
   return(pmf)
 }
 
+#' Validate reporting_triangle for delay estimation
+#'
+#' Domain-specific checks to ensure the reporting triangle is suitable for
+#'   delay estimation in [estimate_delay()].
+#' @importFrom checkmate assert_integerish
+#' @importFrom cli cli_abort
+#' @inheritParams .validate_delay_and_triangle
+#' @inheritParams estimate_delay
+#' @returns NULL, invisibly
+#' @keywords internal
+.validate_for_delay_estimation <- function(triangle, n = nrow(triangle)) {
+  if (is.null(triangle)) {
+    triangle_name <- deparse(substitute(triangle)) # nolint
+    cli_abort(message = "`{triangle_name}` argument is missing.") # nolint
+  }
+
+  assert_integerish(n)
+
+  triangle_mat <- as.matrix(triangle)
+
+  if (any(colSums(!is.na(triangle_mat)) == 0)) {
+    cli_abort(
+      message = c(
+        "Invalid reporting triangle structure. Each column must have",
+        "at least one non-NA value."
+      )
+    )
+  }
+
+  if (nrow(triangle) < n) {
+    cli_abort(
+      message = c(
+        "Number of observations in input reporting triangle is insufficient",
+        "for the user specified number of historical observations to use",
+        "for delay estimaton."
+      )
+    )
+  }
+
+  if (n < 1) {
+    cli_abort(
+      message = "Insufficient `n`, must be greater than or equal to 1."
+    )
+  }
+
+  n_rows <- nrow(triangle_mat)
+  has_complete_row <- any(
+    rowSums(is.na(triangle_mat[(n_rows - n + 1):n_rows, ])) == 0
+  )
+  if (isFALSE(has_complete_row)) {
+    cli_abort(
+      message = c(
+        "The rows used for delay estimation in the reporting triangle must ",
+        "contain at least one row with no missing observations. Consider ",
+        "increasing `n` to ensure a complete row of the reporting triangle is ",
+        "being used for delay estimation."
+      )
+    )
+  }
+
+  if (isFALSE(.check_lhs_not_only_zeros(triangle_mat[(n_rows - n + 1):n_rows, ]))) { # nolint
+    cli_abort(
+      message = c(
+        "The values for the recent reference times and delays only contain 0s,",
+        "which means the method to iteratively complete the reporting triangle",
+        "and estimate a delay PMF will be invalid. Consider increasing `n` to ",
+        "capture reference times that contain observations for early delays",
+        "or truncating to an earlier reference time to ensure a nowcast, ",
+        "not a forecast, is being produced. "
+      )
+    )
+  }
+  first_na <- which(is.na(triangle_mat[nrow(triangle_mat), ]))[1]
+  if (!is.na(first_na) && first_na == 1) {
+    cli_abort(
+      message = c(
+        "The last row of the reporting triangle contains an NA in the first",
+        "column. There must be at least an entry for the first delay at the",
+        "latest reference time."
+      )
+    )
+  }
+
+  return(NULL)
+}
+
+#' Check if there are non-zero-values on the LHS of NAs
+#'
+#' @param mat Matrix to check
+#'
+#' @returns Boolean indicating whether or not there are non-zero values on the
+#'    LHS of the first NA (TRUE = has non-zeros, FALSE = only zeros)
+#' @keywords internal
+.check_lhs_not_only_zeros <- function(mat) {
+  first_na <- which(is.na(mat[nrow(mat), ]))[1]
+  if (is.na(first_na)) {
+    has_non_zeros <- TRUE
+  } else if (first_na == 1) {
+    has_non_zeros <- TRUE
+  } else {
+    mat_LHS <- mat[, 1:(first_na) - 1]
+    has_non_zeros <- !all(mat_LHS == 0)
+  }
+  return(has_non_zeros)
+}
 
 #' Fill in missing values in the reporting triangle using the iterative
 #'    "chainladder" method
@@ -182,110 +287,4 @@ estimate_delay <- function(
 #' @noRd
 .calculate_pmf <- function(expectation) {
   return(colSums(expectation) / sum(expectation))
-}
-
-#' Validate reporting_triangle for delay estimation
-#'
-#' Domain-specific checks to ensure the reporting triangle is suitable for
-#'   delay estimation in [estimate_delay()].
-#' @importFrom checkmate assert_integerish
-#' @importFrom cli cli_abort
-#' @inheritParams .validate_delay_and_triangle
-#' @inheritParams estimate_delay
-#' @returns NULL, invisibly
-#' @keywords internal
-.validate_for_delay_estimation <- function(triangle, n = nrow(triangle)) {
-  if (is.null(triangle)) {
-    triangle_name <- deparse(substitute(triangle)) # nolint
-    cli_abort(message = "`{triangle_name}` argument is missing.") # nolint
-  }
-
-  assert_integerish(n)
-
-  triangle_mat <- as.matrix(triangle)
-
-  if (any(colSums(!is.na(triangle_mat)) == 0)) {
-    cli_abort(
-      message = c(
-        "Invalid reporting triangle structure. Each column must have",
-        "at least one non-NA value."
-      )
-    )
-  }
-
-  if (nrow(triangle) < n) {
-    cli_abort(
-      message = c(
-        "Number of observations in input reporting triangle is insufficient",
-        "for the user specified number of historical observations to use",
-        "for delay estimaton."
-      )
-    )
-  }
-
-  if (n < 1) {
-    cli_abort(
-      message = "Insufficient `n`, must be greater than or equal to 1."
-    )
-  }
-
-  n_rows <- nrow(triangle_mat)
-  has_complete_row <- any(
-    rowSums(is.na(triangle_mat[(n_rows - n + 1):n_rows, ])) == 0
-  )
-  if (isFALSE(has_complete_row)) {
-    cli_abort(
-      message = c(
-        "The rows used for delay estimation in the reporting triangle must ",
-        "contain at least one row with no missing observations. Consider ",
-        "increasing `n` to ensure a complete row of the reporting triangle is ",
-        "being used for delay estimation."
-      )
-    )
-  }
-
-  if (isFALSE(.check_lhs_not_only_zeros(triangle_mat[(n_rows - n + 1):n_rows, ]))) { # nolint
-    cli_abort(
-      message = c(
-        "The values for the recent reference times and delays only contain 0s,",
-        "which means the method to iteratively complete the reporting triangle",
-        "and estimate a delay PMF will be invalid. Consider increasing `n` to ",
-        "capture reference times that contain observations for early delays",
-        "or truncating to an earlier reference time to ensure a nowcast, ",
-        "not a forecast, is being produced. "
-      )
-    )
-  }
-  first_na <- which(is.na(triangle_mat[nrow(triangle_mat), ]))[1]
-  if (!is.na(first_na) && first_na == 1) {
-    cli_abort(
-      message = c(
-        "The last row of the reporting triangle contains an NA in the first",
-        "column. There must be at least an entry for the first delay at the",
-        "latest reference time."
-      )
-    )
-  }
-
-  return(NULL)
-}
-
-#' Check if there are non-zero-values on the LHS of NAs
-#'
-#' @param mat Matrix to check
-#'
-#' @returns Boolean indicating whether or not there are non-zero values on the
-#'    LHS of the first NA (TRUE = has non-zeros, FALSE = only zeros)
-#' @keywords internal
-.check_lhs_not_only_zeros <- function(mat) {
-  first_na <- which(is.na(mat[nrow(mat), ]))[1]
-  if (is.na(first_na)) {
-    has_non_zeros <- TRUE
-  } else if (first_na == 1) {
-    has_non_zeros <- TRUE
-  } else {
-    mat_LHS <- mat[, 1:(first_na) - 1]
-    has_non_zeros <- !all(mat_LHS == 0)
-  }
-  return(has_non_zeros)
 }

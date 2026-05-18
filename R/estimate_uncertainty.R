@@ -487,6 +487,3 @@ fit_nb <- function(x, mu) {
   opt <- suppressWarnings(optimize(nllik, c(0.1, 1000)))
   return(opt$minimum)
 }
-
-#' Check that a list has the required length
-#'

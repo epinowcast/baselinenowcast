@@ -63,9 +63,33 @@ nowcast_dates <- seq(
 
 We'll start by evaluating a single `baselinenowcast` specification.
 We will set the maximum delay to 25 days, and then specify the total number of reference dates used for training the model as 3x the maximum delay using the `scale_factor` argument, and specify that half of the training data be used for delay estimation with the `prop_delay` argument.
-Note that the maximum delay should be specified based on both the delay distribution (e.g. you can use `truncate_to_quantile()` to truncate to a delay which captures a specified percentile of the reports) and your own knowledge of the data generating process (e.g. delays of more than a few weeks might be expected to be data entry errors).
+Note that t
 
 Later in this vignette, we will demonstrate how to use quantitative nowcast performance to evaluate the performance of different training volume specifications.
+
+#### Set the maximum delay
+
+The maximum delay should be specified based on both the delay distribution and your own knowledge of the data generating process (e.g. delays of more than a few weeks might be expected to be data entry errors).
+Here we will use a plot of the cumulative delay distribution to identify when the majority of our cases have been reported, noting that the lower our maximum delay is, the less historical data we will need to train the model.
+In our case, since we don't have many years of historical data, we might wish to choose to keep this relatively low.
+```{r}
+avg_delays <- syn_nssp_df |>
+  mutate(delay = as.integer(report_date - reference_date)) |>
+  group_by(delay) |>
+  summarise(pmf = sum(count) / sum(syn_nssp_df$count)) |>
+  mutate(cdf = cumsum(pmf))
+
+cdf_delay <- ggplot(avg_delays) +
+  geom_line(aes(x = delay, y = cdf)) +
+  geom_hline(aes(yintercept = 0.95), linetype = "dashed") +
+  theme_bw() +
+  xlab("Delay (days)") +
+  ylab("Cumulative Distribution")
+cdf_delay
+```
+
+We will set our maximum delay to 25 days, and `scale_factor` to 2.2 so that we use 2.2*25 = 55 reference dates for training/
+We will set `prop_delay` to 0.5 so that we use half of these for estimating the delay distribution.
 ```{r}
 max_delay <- 25
 scale_factor <- 2.2
@@ -164,4 +188,3 @@ mult_nowcast_quantiles_w_data <- mult_nowcast_quantiles |>
 mult_nowcast_draws_w_data <- mult_nowcast_draws |>
   left_join(eval_data, by = "reference_date")
 ```
-

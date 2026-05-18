@@ -404,22 +404,3 @@ sample_nowcasts <- function(
   draws_df <- Reduce(rbind, draws_df_list)
   return(draws_df)
 }
-
-#' Validate the uncertainty parameters if they are passed in
-#'
-#' @inheritParams .validate_delay_and_triangle
-#' @inheritParams sample_prediction
-#'
-#' @returns NULL invisibly
-#' @keywords internal
-#' @noRd
-.validate_uncertainty <- function(triangle, uncertainty_params) {
-  assert_numeric(uncertainty_params)
-  n_possible_horizons <- sum(is.na(rowSums(triangle)))
-  if (n_possible_horizons != length(uncertainty_params)) {
-    cli_abort(
-      message = c("`uncertainty_params` are not the same length as the number of horizons in the reporting triangle.") # nolint
-    )
-  }
-  return(NULL)
-}

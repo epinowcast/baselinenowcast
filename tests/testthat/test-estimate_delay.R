@@ -84,10 +84,22 @@ test_that("estimate_delay validates input parameters correctly", {
   ))
 
   cases <- list(
-    list(args = list(reporting_triangle, n = 0), regex = "greater than or equal to 1"),
-    list(args = list(reporting_triangle, n = 10), regex = "Number of observations"),
-    list(args = list(ragged_rt, n = 2), regex = "at least one row with no missing"),
-    list(args = list(zeros_rt, n = 3), regex = "only contain 0s")
+    list(
+      args = list(reporting_triangle, n = 0),
+      regex = "greater than or equal to 1"
+    ),
+    list(
+      args = list(reporting_triangle, n = 10),
+      regex = "Number of observations"
+    ),
+    list(
+      args = list(ragged_rt, n = 2),
+      regex = "at least one row with no missing"
+    ),
+    list(
+      args = list(zeros_rt, n = 3),
+      regex = "only contain 0s"
+    )
   )
   for (case in cases) {
     expect_error(do.call(estimate_delay, case$args), regexp = case$regex)

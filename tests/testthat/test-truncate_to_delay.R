@@ -36,7 +36,7 @@ test_that("truncate_to_delay rejects invalid inputs", {
   }
 })
 
-test_that("truncate_to_delay returns input unchanged when max_delay is current", {
+test_that("truncate_to_delay is a no-op when max_delay is current", {
   result <- truncate_to_delay(rt, max_delay = get_max_delay(rt))
   expect_identical(result, rt)
 })

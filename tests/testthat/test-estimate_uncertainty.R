@@ -695,13 +695,13 @@ test_that("estimate_uncertainty rejects malformed inputs", {
     ),
     list(
       args = list(ref_time_aggregator = function(x) {
-        matrix(as.character(x), nrow = nrow(x))
+        return(matrix(as.character(x), nrow = nrow(x)))
       }),
       regex = "must return a numeric matrix"
     ),
     list(
       args = list(delay_aggregator = function(x) {
-        rep("a", nrow(x))
+        return(rep("a", nrow(x)))
       }),
       regex = "must return a numeric vector"
     )

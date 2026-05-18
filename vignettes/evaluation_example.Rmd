@@ -479,3 +479,17 @@ scores_summary <- scores_quantiles |>
   knitr::kable(digits = 3)
 scores_summary
 ```
+
+## Choosing a model specification using quantitative performance evaluation
+
+So far, we have demonstrated how to visually and quantitatively evaluate a single nowcasting model, where we specified the training volume so that it was faily close to the package defaults.
+However, the decision of how to specify the model should not be done arbitrarily-- instead, we can use the retrospective nowcast performance to compare how well different specifications would have done, which can be used to inform our current specification.
+In this example, we will just focus on varying the training volume specification, but the same process could be applied to many of the other options for specifying `baselinenowcast`, including but not limited to: accounting for weekday effects via stratification by weekday, sharing estimates across strata (e.g. letting the delay from all age groups be used to nowcast each individual age groups case counts), and changing the observation model.
+
+Here, we will test out using larger proportions of the training data for delay estimation  (via the `prop_delay` argument to `baselinenowcast()`) and we will test out using more or less training volume (via the `scale_factor` argument to `baselinenowcast()`).
+
+In this example, we are somewhat limited because we don't have that much training data, but you can expand these to vary more in your use-case. See `allocate_reference_times()` for more details on the constraints of the training volume.
+```{r}
+prop_delay <- c(0.5, 0.7, 0.8)
+scale_factor <- c(2.2, 2.3)
+```

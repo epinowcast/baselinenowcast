@@ -48,79 +48,47 @@ test_that(
 )
 
 test_that(
-  "as_reporting_triangle.tbl_pubdate() converts vintages back",
+  "round-trip preserves matrix, dates, structure, and NA cells",
   {
     skip_if_not_installed("reviser")
 
+    # data_as_of_df is right-truncated, so the input triangle has NAs
     rep_tri <- as_reporting_triangle(data_as_of_df)
+    expect_true(anyNA(rep_tri))
+
     vintages <- as_reviser_vintages(rep_tri)
-    rep_tri_2 <- as_reporting_triangle(
+    rep_tri_back <- as_reporting_triangle(
       data = vintages,
       delays_unit = attr(rep_tri, "delays_unit")
     )
 
-    expect_s3_class(rep_tri_2, "reporting_triangle")
-    expect_no_error(assert_reporting_triangle(rep_tri_2))
+    expect_s3_class(rep_tri_back, "reporting_triangle")
+    expect_no_error(assert_reporting_triangle(rep_tri_back))
 
-    mat_1 <- rep_tri
-    dimnames(mat_1) <- NULL
-    mat_2 <- rep_tri_2
-    dimnames(mat_2) <- NULL
-    expect_identical(mat_2, mat_1)
+    mat_in <- rep_tri
+    dimnames(mat_in) <- NULL
+    mat_back <- rep_tri_back
+    dimnames(mat_back) <- NULL
+    expect_identical(mat_back, mat_in)
+    expect_identical(is.na(mat_back), is.na(mat_in))
     expect_identical(
-      get_reference_dates(rep_tri_2),
+      get_reference_dates(rep_tri_back),
       get_reference_dates(rep_tri)
     )
-    expect_identical(ncol(rep_tri_2), ncol(rep_tri))
+    expect_identical(ncol(rep_tri_back), ncol(rep_tri))
     expect_identical(
-      attr(rep_tri_2, "delays_unit"),
+      attr(rep_tri_back, "delays_unit"),
       attr(rep_tri, "delays_unit")
     )
     expect_identical(
-      get_reporting_structure(rep_tri_2),
+      get_reporting_structure(rep_tri_back),
       get_reporting_structure(rep_tri)
     )
   }
 )
 
 test_that(
-  "as_reviser_vintages() and as_reporting_triangle.tbl_pubdate() round-trip", # nolint
-  {
-    skip_if_not_installed("reviser")
-
-    rep_tri_original <- as_reporting_triangle(
-      data_as_of_df,
-      delays_unit = "days"
-    )
-
-    vintages <- as_reviser_vintages(rep_tri_original)
-    rep_tri_final <- as_reporting_triangle(
-      data = vintages,
-      delays_unit = "days"
-    )
-
-    mat_orig <- rep_tri_original
-    dimnames(mat_orig) <- NULL
-    mat_final <- rep_tri_final
-    dimnames(mat_final) <- NULL
-    expect_identical(mat_final, mat_orig)
-    expect_identical(
-      get_reference_dates(rep_tri_final),
-      get_reference_dates(rep_tri_original)
-    )
-    expect_identical(
-      attr(rep_tri_final, "delays_unit"),
-      attr(rep_tri_original, "delays_unit")
-    )
-    expect_identical(
-      get_reporting_structure(rep_tri_final),
-      get_reporting_structure(rep_tri_original)
-    )
-  }
-)
-
-test_that(
-  "reviser vintages works with weekly temporal units",
+  "round-trip works with weekly temporal units",
   {
     skip_if_not_installed("reviser")
     skip_if_not_installed("lubridate")
@@ -138,44 +106,17 @@ test_that(
     )
 
     vintages <- as_reviser_vintages(rep_tri)
-    rep_tri_2 <- as_reporting_triangle(
+    rep_tri_back <- as_reporting_triangle(
       data = vintages,
       delays_unit = "weeks"
     )
 
-    expect_identical(attr(rep_tri_2, "delays_unit"), "weeks")
-    mat_1 <- rep_tri
-    dimnames(mat_1) <- NULL
-    mat_2 <- rep_tri_2
-    dimnames(mat_2) <- NULL
-    expect_identical(mat_2, mat_1)
-  }
-)
-
-test_that(
-  "round-trip preserves NA cells in the triangle",
-  {
-    skip_if_not_installed("reviser")
-
-    # Construct a triangle with explicit NAs in the lower-right corner
-    rep_tri_input <- as_reporting_triangle(data_as_of_df)
-    n_row <- nrow(rep_tri_input)
-    n_col <- ncol(rep_tri_input)
-    expect_true(anyNA(rep_tri_input))
-
-    vintages <- as_reviser_vintages(rep_tri_input)
-    rep_tri_back <- as_reporting_triangle(
-      data = vintages,
-      delays_unit = "days"
-    )
-
-    mat_in <- rep_tri_input
+    expect_identical(attr(rep_tri_back, "delays_unit"), "weeks")
+    mat_in <- rep_tri
     dimnames(mat_in) <- NULL
     mat_back <- rep_tri_back
     dimnames(mat_back) <- NULL
     expect_identical(mat_back, mat_in)
-    expect_identical(is.na(mat_back), is.na(mat_in))
-    expect_identical(sum(is.na(mat_back)), sum(is.na(mat_in)))
   }
 )
 

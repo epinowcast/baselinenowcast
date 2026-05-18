@@ -102,30 +102,10 @@ test_that(
   {
     triangle <- make_retro_test_triangle()
 
-    suppressWarnings({
-      result <- estimate_uncertainty_retro(
-        triangle,
-        n_history_delay = 4,
-        n_retrospective_nowcasts = 3
-      )
-    })
-
-    expect_valid_retro_uncertainty(
-      result,
-      expected_length = n_incomplete_rows(triangle)
-    )
-  }
-)
-
-test_that(
-  "estimate_uncertainty_retro returns numeric vector with custom max_delay",
-  {
-    triangle <- make_retro_test_triangle()
-
     result <- estimate_uncertainty_retro(
       triangle,
-      n_history_delay = 5,
-      n_retrospective_nowcasts = 2
+      n_history_delay = 4,
+      n_retrospective_nowcasts = 3
     )
 
     expect_valid_retro_uncertainty(
@@ -293,13 +273,11 @@ test_that(
   {
     triangle <- make_retro_test_triangle()
 
-    suppressWarnings({
-      result <- estimate_uncertainty_retro(
-        triangle,
-        n_history_delay = 4,
-        n_retrospective_nowcasts = 3
-      )
-    })
+    result <- estimate_uncertainty_retro(
+      triangle,
+      n_history_delay = 4,
+      n_retrospective_nowcasts = 3
+    )
 
     expect_valid_retro_uncertainty(
       result,

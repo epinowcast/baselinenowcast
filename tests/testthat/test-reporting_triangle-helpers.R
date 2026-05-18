@@ -365,6 +365,9 @@ test_that("[<-.reporting_triangle allows NA in valid positions", {
 })
 
 test_that("print.reporting_triangle shows key metadata in output", {
+  ref_dates <- get_reference_dates(rep_tri)
+  expected_range <- paste0(min(ref_dates), " to ", max(ref_dates))
+
   expect_invisible(print(rep_tri))
 
   # cli output goes via messages, so combine both streams for inspection.
@@ -374,8 +377,7 @@ test_that("print.reporting_triangle shows key metadata in output", {
 
   expect_match(out, "Reporting Triangle")
   expect_match(out, "Delays unit: days")
-  # Reference date range comes from the data above (2025-10-25 to 2026-04-01).
-  expect_match(out, "2025-10-25 to 2026-04-01", fixed = TRUE)
+  expect_match(out, expected_range, fixed = TRUE)
   expect_match(out, "Max delay: 10")
   expect_match(
     out,
@@ -384,6 +386,9 @@ test_that("print.reporting_triangle shows key metadata in output", {
 })
 
 test_that("summary.reporting_triangle reports structure, zeros and negatives", {
+  ref_dates <- get_reference_dates(rep_tri)
+  expected_range <- paste0(min(ref_dates), " to ", max(ref_dates))
+
   expect_invisible(summary(rep_tri))
 
   msgs <- paste(testthat::capture_messages(summary(rep_tri)), collapse = "")
@@ -395,7 +400,7 @@ test_that("summary.reporting_triangle reports structure, zeros and negatives", {
     out,
     paste0("Dimensions: ", nrow(rep_tri), " x ", ncol(rep_tri))
   )
-  expect_match(out, "2025-10-25 to 2026-04-01", fixed = TRUE)
+  expect_match(out, expected_range, fixed = TRUE)
   expect_match(
     out,
     paste0("Structure: ", get_reporting_structure(rep_tri))

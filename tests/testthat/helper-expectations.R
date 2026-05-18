@@ -210,6 +210,7 @@ expect_triangle_output <- function(result, input_triangle, validate = FALSE) {
 #' @keywords internal
 expect_valid_retro_uncertainty <- function(result, expected_length = NULL) {
   testthat::expect_type(result, "double")
+  testthat::expect_null(dim(result))
   testthat::expect_true(all(is.finite(result)))
   testthat::expect_true(all(result >= 0))
   if (is.null(expected_length)) {

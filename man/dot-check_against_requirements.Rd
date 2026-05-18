@@ -33,6 +33,10 @@ uncertainty estimation.}
 \item{scale_factor}{Numeric value indicating the multiplicative factor on
 the maximum delay to be used for estimation of delay and uncertainty.
 Default is \code{3}.}
+
+\item{max_delay}{Integer indicating the maximum delay in the reporting
+triangle, used together with \code{scale_factor} to derive the target number
+of reference times.}
 }
 \value{
 \code{n_used} Integer indicating how many reference times will be

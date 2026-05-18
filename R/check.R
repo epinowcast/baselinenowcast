@@ -8,7 +8,7 @@
 #' - `.validate_*()`: internal validation of multiple inputs.
 #' - `.check_*()`: internal predicate or low-level inspection.
 #'
-#' @name check
+#' @name check_internal
 #' @keywords internal
 NULL
 
@@ -801,6 +801,9 @@ assert_delays_unit <- function(delays_unit) {
 #'
 #' @param n_ref_times Integer indicating the number of reference times
 #'    available
+#' @param max_delay Integer indicating the maximum delay in the reporting
+#'    triangle, used together with `scale_factor` to derive the target number
+#'    of reference times.
 #' @inheritParams .assign_allocation_from_ns
 #' @inheritParams allocate_reference_times
 #'
@@ -898,17 +901,18 @@ assert_delays_unit <- function(delays_unit) {
                                custom_msg = NULL, empty_check = TRUE) {
   # Validate input is a list
   if (!is.list(list_obj)) {
-    cli_abort(paste0("`", name, "` must be a list"))
+    cli_abort("`{name}` must be a list")
   }
 
   if (length(list_obj) < required_length) {
-    cli_abort(message = c(
-      "Insufficient elements in `", name, "` for the `n` desired ",
-      custom_msg
-    ))
+    msg <- "Insufficient elements in `{name}` for the `n` desired."
+    if (!is.null(custom_msg)) {
+      msg <- c(msg, i = custom_msg)
+    }
+    cli_abort(msg)
   }
   if (empty_check && length(list_obj) < 1) {
-    cli_abort(paste0("`", name, "` is an empty list"))
+    cli_abort("`{name}` is an empty list")
   }
   return(invisible(NULL))
 }

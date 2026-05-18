@@ -160,3 +160,41 @@ test_that("as_forecast_sample.baselinenowcast_df errors when latest_obs lacks re
     regexp = "count"
   )
 })
+
+test_that("as_forecast_point.baselinenowcast_df converts point to forecast_point", { # nolint
+  skip_on_cran()
+  skip_if_not_installed("scoringutils")
+
+  nowcast_pt <- suppressWarnings(
+    baselinenowcast(example_reporting_triangle, output_type = "point")
+  )
+  latest_obs <- data.frame(
+    reference_date = get_reference_dates(example_reporting_triangle),
+    count = rowSums(example_reporting_triangle, na.rm = TRUE)
+  )
+
+  fp <- suppressPackageStartupMessages(
+    scoringutils::as_forecast_point(nowcast_pt, latest_obs)
+  )
+
+  expect_s3_class(fp, "forecast_point")
+  expect_true(all(c("observed", "predicted") %in% names(fp)))
+})
+
+test_that("as_forecast_point.baselinenowcast_df errors on sample nowcasts", {
+  skip_on_cran()
+  skip_if_not_installed("scoringutils")
+
+  nowcast <- suppressWarnings(
+    baselinenowcast(example_reporting_triangle, draws = 10)
+  )
+  latest_obs <- data.frame(
+    reference_date = get_reference_dates(example_reporting_triangle),
+    count = rowSums(example_reporting_triangle, na.rm = TRUE)
+  )
+
+  expect_error(
+    scoringutils::as_forecast_point(nowcast, latest_obs),
+    regexp = "point"
+  )
+})

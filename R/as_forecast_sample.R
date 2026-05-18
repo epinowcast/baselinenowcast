@@ -47,22 +47,116 @@ as_forecast_sample.baselinenowcast_df <- function(data,
                                                   latest_obs,
                                                   observed = "count",
                                                   ...) {
+  merged <- .prepare_forecast_merge(
+    data = data,
+    latest_obs = latest_obs,
+    observed = observed,
+    required_output_type = "samples",
+    target = "scoringutils::as_forecast_sample"
+  )
+  forecast_data <- scoringutils::as_forecast_sample(
+    data = merged,
+    observed = observed,
+    predicted = "pred_count",
+    sample_id = "draw",
+    ...
+  )
+  return(forecast_data)
+}
+
+#' Convert a `baselinenowcast_df` object to a `forecast_point` object
+#'
+#' This function converts a point [baselinenowcast_df] object as returned by
+#' [baselinenowcast()] with `output_type = "point"` to a `forecast_point`
+#' object which can be used for scoring with the
+#' [scoringutils](https://epiforecasts.io/scoringutils/) package.
+#'
+#' The nowcast point estimates in `data` are merged with the latest
+#' observations in `latest_obs` on `reference_date` and any other shared
+#' columns and then passed to [scoringutils::as_forecast_point()], using
+#' `pred_count` as the predicted value and the column named by `observed` as
+#' the observed value.
+#'
+#' @inheritParams as_forecast_sample.baselinenowcast_df
+#' @param data A [baselinenowcast_df] object as returned by
+#'   [baselinenowcast()] with `output_type = "point"`.
+#' @param ... Additional arguments passed to
+#'   [scoringutils::as_forecast_point()].
+#'
+#' @return A `forecast_point` object as returned by
+#'   [scoringutils::as_forecast_point()].
+#' @exportS3Method scoringutils::as_forecast_point
+#' @family baselinenowcast_df
+#' @examplesIf interactive() && requireNamespace("scoringutils", quietly = TRUE)
+#' library(scoringutils)
+#'
+#' nowcast <- baselinenowcast(
+#'   example_reporting_triangle,
+#'   output_type = "point"
+#' )
+#' latest_obs <- data.frame(
+#'   reference_date = get_reference_dates(example_reporting_triangle),
+#'   count = rowSums(example_reporting_triangle, na.rm = TRUE)
+#' )
+#' as_forecast_point(nowcast, latest_obs)
+as_forecast_point.baselinenowcast_df <- function(data,
+                                                 latest_obs,
+                                                 observed = "count",
+                                                 ...) {
+  merged <- .prepare_forecast_merge(
+    data = data,
+    latest_obs = latest_obs,
+    observed = observed,
+    required_output_type = "point",
+    target = "scoringutils::as_forecast_point"
+  )
+  forecast_data <- scoringutils::as_forecast_point(
+    data = merged,
+    observed = observed,
+    predicted = "pred_count",
+    ...
+  )
+  return(forecast_data)
+}
+
+#' Shared validation and merge for forecast converters
+#'
+#' Validates a [baselinenowcast_df] object, joins it with observations on
+#' `reference_date` plus any shared strata columns, and warns or aborts on
+#' duplicate keys or missing coverage. Used by
+#' [as_forecast_sample.baselinenowcast_df()] and
+#' [as_forecast_point.baselinenowcast_df()].
+#'
+#' @inheritParams as_forecast_sample.baselinenowcast_df
+#' @param required_output_type Either `"samples"` or `"point"`.
+#' @param target Character label for the calling function used in error
+#'   messages.
+#' @returns A merged data.frame ready for the relevant `scoringutils`
+#'   converter.
+#' @keywords internal
+.prepare_forecast_merge <- function(data,
+                                    latest_obs,
+                                    observed,
+                                    required_output_type,
+                                    target) {
   check_installed(
     "scoringutils",
-    reason = "to convert nowcasts to forecast_sample objects."
+    reason = "to convert nowcasts to scoringutils forecast objects."
   )
   assert_class(data, "baselinenowcast_df")
+  assert_baselinenowcast_df(data)
   assert_data_frame(latest_obs)
   assert_character(observed, len = 1)
   assert_names(colnames(latest_obs),
     must.include = c("reference_date", observed)
   )
 
-  if (any(data$output_type != "samples")) {
+  if (any(data$output_type != required_output_type)) {
+    other <- if (required_output_type == "samples") "point" else "samples"
     cli_abort(
       c(
-        "`as_forecast_sample()` requires samples, not point estimates.",
-        "i" = "Re-run `baselinenowcast()` with `output_type = \"samples\"`." # nolint
+        "`{target}()` requires {required_output_type}, not {other} estimates.", # nolint
+        "i" = "Re-run `baselinenowcast()` with `output_type = \"{required_output_type}\"`." # nolint
       )
     )
   }
@@ -103,12 +197,5 @@ as_forecast_sample.baselinenowcast_df <- function(data,
     )
   }
 
-  forecast_data <- scoringutils::as_forecast_sample(
-    data = merged,
-    observed = observed,
-    predicted = "pred_count",
-    sample_id = "draw",
-    ...
-  )
-  return(forecast_data)
+  return(merged)
 }

@@ -30,6 +30,7 @@ assert_baselinenowcast_df(valid_df)
 }
 \seealso{
 Main nowcasting interface functions
+\code{\link{as_forecast_point.baselinenowcast_df}()},
 \code{\link{as_forecast_sample.baselinenowcast_df}()},
 \code{\link{baselinenowcast}()},
 \code{\link{baselinenowcast.data.frame}()},

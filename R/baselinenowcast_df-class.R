@@ -98,16 +98,20 @@ assert_baselinenowcast_df <- function(data) {
   }
 
   assert_date(data$reference_date)
-  # Check for duplicated reference dates
-  cols_to_check <- names(data)[names(data) %in% c("reference_date", "draw")]
-
-  dups <- duplicated(data[, c(cols_to_check)])
+  # Each (reference_date + draw + strata cols) combination should appear
+  # exactly once. Strata cols are anything other than pred_count, draw,
+  # output_type, reference_date.
+  cols_to_check <- setdiff(
+    names(data),
+    c("pred_count", "output_type")
+  )
+  dups <- duplicated(data[, cols_to_check, drop = FALSE])
   if (any(dups)) {
     cli_abort(
       message = c(
-        "Data contains multiple `reference_date`s", # nolint
-        "x" = "Found {sum(dups)} duplicate `reference_date`{?s}", # nolint
-        "i" = "`baselinenowcast_df` objects should only contain a single estimate for each reference date." # nolint
+        "Data contains multiple estimates for the same key combination", # nolint
+        "x" = "Found {sum(dups)} duplicate row{?s} across {.val {cols_to_check}}", # nolint
+        "i" = "`baselinenowcast_df` objects should only contain a single estimate per (reference_date, draw, strata) combination." # nolint
       )
     )
   }

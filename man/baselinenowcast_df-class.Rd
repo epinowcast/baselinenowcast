@@ -36,6 +36,7 @@ for more details on the required inputs to generate the object.
 
 \seealso{
 Main nowcasting interface functions
+\code{\link{as_forecast_point.baselinenowcast_df}()},
 \code{\link{as_forecast_sample.baselinenowcast_df}()},
 \code{\link{assert_baselinenowcast_df}()},
 \code{\link{baselinenowcast}()},

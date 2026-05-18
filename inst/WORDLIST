@@ -41,6 +41,7 @@ darkblue
 darkred
 df
 doi
+epiforecasts
 epinowcast
 epinowcast’
 eq
@@ -82,6 +83,7 @@ pmf
 pred
 prob
 sbfnk
+scoringutils
 seabbs
 sim
 swo

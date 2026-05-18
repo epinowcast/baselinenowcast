@@ -211,7 +211,6 @@ plot_triangle <- ggplot(
   geom_tile() +
   scale_fill_gradient(low = "white", high = "blue") +
   labs(title = "Reporting triangle", x = "Delay", y = "Time") +
-  theme_bw() +
   scale_y_reverse()
 ```
 </details>

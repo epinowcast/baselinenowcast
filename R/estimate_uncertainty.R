@@ -69,14 +69,15 @@
 #'   disp_params_agg
 #' }
 estimate_uncertainty <- function(
-    point_nowcast_matrices,
-    truncated_reporting_triangles,
-    retro_reporting_triangles,
-    n = length(point_nowcast_matrices),
-    uncertainty_model = fit_by_horizon,
-    ref_time_aggregator = identity,
-    delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
-    validate = TRUE) {
+  point_nowcast_matrices,
+  truncated_reporting_triangles,
+  retro_reporting_triangles,
+  n = length(point_nowcast_matrices),
+  uncertainty_model = fit_by_horizon,
+  ref_time_aggregator = identity,
+  delay_aggregator = function(x) rowSums(x, na.rm = TRUE),
+  validate = TRUE
+) {
   assert_integerish(n, lower = 0)
   .check_list_length(
     point_nowcast_matrices,
@@ -121,7 +122,6 @@ estimate_uncertainty <- function(
       )
     )
   }
-
 
 
   # Check that nowcasts has no NAs, trunc_rts has some NAs
@@ -178,7 +178,6 @@ estimate_uncertainty <- function(
   }
 
 
-
   # Each row is retrospective nowcast date, each column is a horizon (i.e
   # columns are not delays, but horizons, and each cell contains a total
   # value corresponding to that horizon -- the total expected value to add
@@ -187,7 +186,6 @@ estimate_uncertainty <- function(
       nrow = n_iters,
       ncol = n_possible_horizons
     )
-
 
 
   for (i in seq_len(n_iters)) {
@@ -239,7 +237,6 @@ estimate_uncertainty <- function(
     }
     to_add_already_observed[i, ] <- rev(aggr_obs)
   }
-
 
 
   # Ensure obs and pred have the same dimensions, are not NULL, etc.
@@ -321,9 +318,10 @@ fit_by_horizon <- function(obs,
 #'    aggregated to be used to generate a retrospective point nowcast.
 #' @keywords internal
 .calc_n_retro_nowcast_times <- function(
-    list_of_obs,
-    n_possible_horizons,
-    ref_time_aggregator = identity) {
+  list_of_obs,
+  n_possible_horizons,
+  ref_time_aggregator = identity
+) {
   if (length(list_of_obs) == 0) {
     return(0)
   }
@@ -380,25 +378,6 @@ fit_by_horizon <- function(obs,
     mat * indices_1 * indices_2
   )
   return(mat_masked)
-}
-
-.check_list_length <- function(list_obj, name, required_length,
-                               custom_msg = NULL, empty_check = TRUE) {
-  # Validate input is a list
-  if (!is.list(list_obj)) {
-    cli_abort(paste0("`", name, "` must be a list"))
-  }
-
-  if (length(list_obj) < required_length) {
-    cli_abort(message = c(
-      "Insufficient elements in `", name, "` for the `n` desired ",
-      custom_msg
-    ))
-  }
-  if (empty_check && length(list_obj) < 1) {
-    cli_abort(paste0("`", name, "` is an empty list"))
-  }
-  return(invisible(NULL))
 }
 
 #' Fit a negative binomial to a vector of observations and expectations

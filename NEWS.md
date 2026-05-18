@@ -1,5 +1,8 @@
 # baselinenowcast 0.2.1000
 
+## Package
+- Move all internal check, assert, and validate functions into a single `R/check.R` file and remove `R/validate.R`. Generalise `assert_rep_tri_class()` with an `arg_name` argument and use it to replace duplicated inline class checks in `truncate_to_quantile()`, `truncate_to_delay()`, and the reporting triangle getters and methods (#300).
+
 ## Documentation
 -  Modified NSSP nowcast vignette to do vectorised string matching instead of row-wise and to simplify the pre-processing to avoid a pivot to a wide form dataframe to speed-up performance.
 

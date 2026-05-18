@@ -153,25 +153,21 @@ as_reporting_triangle.tbl_pubdate <- function(data,
   long_df$time <- as.Date(long_df$time)
   long_df$pub_date <- as.Date(long_df$pub_date)
 
-  increments <- unlist(
+  long_df$count <- unlist(
     by(
-      long_df,
+      long_df$value,
       long_df$time,
-      function(g) c(g$value[1], diff(g$value)),
+      function(v) c(v[1], diff(v)),
       simplify = FALSE
     ),
     use.names = FALSE
   )
 
-  out_df <- data.frame(
-    reference_date = long_df$time,
-    report_date = long_df$pub_date,
-    count = increments
-  )
-
   return(as_reporting_triangle.data.frame(
-    data = out_df,
+    data = long_df,
     delays_unit = delays_unit,
+    reference_date = "time",
+    report_date = "pub_date",
     ...
   ))
 }

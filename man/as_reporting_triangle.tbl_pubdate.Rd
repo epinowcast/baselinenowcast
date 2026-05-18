@@ -32,6 +32,14 @@ The conversion takes differences between successive publication dates per
 time point to recover incremental counts, and uses the delay implied by
 \code{pub_date - time} (in \code{delays_unit}) to build the reporting triangle.
 
+A \code{tbl_pubdate} carries no record of which delay unit was used when the
+vintages were created.
+If you produced the vintages from a non-daily \link{reporting_triangle} via
+\code{\link[=as_reviser_vintages]{as_reviser_vintages()}} (for example a weekly triangle), pass the
+matching \code{delays_unit} here to recover an equivalent triangle.
+The default (\code{"days"}) will silently produce a daily triangle with
+anomalous date spacings if the original triangle was not daily.
+
 The reviser package must be installed to use this function.
 }
 \examples{
@@ -43,8 +51,13 @@ rep_tri <- as_reporting_triangle(data = data_as_of_df)
 # Convert to reviser vintages
 vintages <- as_reviser_vintages(rep_tri)
 
-# Convert back to reporting_triangle (round-trip)
-rep_tri_2 <- as_reporting_triangle(data = vintages)
+# Convert back to reporting_triangle (round-trip).
+# Pass `delays_unit` explicitly to match the original triangle,
+# since the vintages object does not record this.
+rep_tri_2 <- as_reporting_triangle(
+  data = vintages,
+  delays_unit = attr(rep_tri, "delays_unit")
+)
 print(rep_tri_2)
 \dontshow{\}) # examplesIf}
 }

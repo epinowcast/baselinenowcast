@@ -152,6 +152,33 @@ test_that(
   }
 )
 
+test_that(
+  "round-trip preserves NA cells in the triangle",
+  {
+    skip_if_not_installed("reviser")
+
+    # Construct a triangle with explicit NAs in the lower-right corner
+    rep_tri_input <- as_reporting_triangle(data_as_of_df)
+    n_row <- nrow(rep_tri_input)
+    n_col <- ncol(rep_tri_input)
+    expect_true(anyNA(rep_tri_input))
+
+    vintages <- as_reviser_vintages(rep_tri_input)
+    rep_tri_back <- as_reporting_triangle(
+      data = vintages,
+      delays_unit = "days"
+    )
+
+    mat_in <- rep_tri_input
+    dimnames(mat_in) <- NULL
+    mat_back <- rep_tri_back
+    dimnames(mat_back) <- NULL
+    expect_identical(mat_back, mat_in)
+    expect_identical(is.na(mat_back), is.na(mat_in))
+    expect_identical(sum(is.na(mat_back)), sum(is.na(mat_in)))
+  }
+)
+
 test_that("as_reviser_vintages() validates input", { # nolint
   skip_if_not_installed("reviser")
 

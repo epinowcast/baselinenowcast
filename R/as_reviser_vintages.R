@@ -103,6 +103,14 @@ as_reviser_vintages <- function(x, ...) {
 #' time point to recover incremental counts, and uses the delay implied by
 #' `pub_date - time` (in `delays_unit`) to build the reporting triangle.
 #'
+#' A `tbl_pubdate` carries no record of which delay unit was used when the
+#' vintages were created.
+#' If you produced the vintages from a non-daily [reporting_triangle] via
+#' [as_reviser_vintages()] (for example a weekly triangle), pass the
+#' matching `delays_unit` here to recover an equivalent triangle.
+#' The default (`"days"`) will silently produce a daily triangle with
+#' anomalous date spacings if the original triangle was not daily.
+#'
 #' The reviser package must be installed to use this function.
 #'
 #' @seealso
@@ -121,8 +129,13 @@ as_reviser_vintages <- function(x, ...) {
 #' # Convert to reviser vintages
 #' vintages <- as_reviser_vintages(rep_tri)
 #'
-#' # Convert back to reporting_triangle (round-trip)
-#' rep_tri_2 <- as_reporting_triangle(data = vintages)
+#' # Convert back to reporting_triangle (round-trip).
+#' # Pass `delays_unit` explicitly to match the original triangle,
+#' # since the vintages object does not record this.
+#' rep_tri_2 <- as_reporting_triangle(
+#'   data = vintages,
+#'   delays_unit = attr(rep_tri, "delays_unit")
+#' )
 #' print(rep_tri_2)
 as_reporting_triangle.tbl_pubdate <- function(data,
                                               delays_unit = "days",

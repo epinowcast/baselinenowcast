@@ -221,3 +221,108 @@ allocate_reference_times <- function(reporting_triangle,
     n_history_delay = n_history_delay
   ))
 }
+
+#' Helper function to validate allocation parameters
+#'
+#' @inheritParams allocate_reference_times
+#' @importFrom checkmate assert_scalar assert_numeric assert_integerish
+#'
+#' @returns NULL invisibly
+#' @keywords internal
+.validate_inputs_allocation <- function(scale_factor,
+                                        prop_delay,
+                                        n_min_retro_nowcasts) {
+  assert_integerish(n_min_retro_nowcasts, lower = 0)
+  assert_scalar(prop_delay)
+  assert_numeric(prop_delay, lower = 0, upper = 1, finite = TRUE)
+  assert_scalar(scale_factor)
+  assert_numeric(scale_factor, lower = 0, finite = TRUE)
+  return(NULL)
+}
+
+#' Check target size against number of reference times available and the number
+#'   required
+#'
+#' @param n_ref_times Integer indicating the number of reference times
+#'    available
+#' @param max_delay Integer indicating the maximum delay in the reporting
+#'    triangle, used together with `scale_factor` to derive the target number
+#'    of reference times.
+#' @inheritParams .assign_allocation_from_ns
+#' @inheritParams allocate_reference_times
+#'
+#' @returns `n_used` Integer indicating how many reference times will be
+#'    used
+#' @keywords internal
+.check_against_requirements <- function(n_ref_times,
+                                        n_required,
+                                        n_target,
+                                        n_min_delay,
+                                        n_min_retro_nowcasts,
+                                        scale_factor,
+                                        max_delay) {
+  if (n_target <= n_ref_times && n_target >= n_required) {
+    return(n_target)
+  }
+
+  if (n_target > n_ref_times) {
+    return(.handle_target_exceeds_avail(
+      n_ref_times, n_required, n_target,
+      n_min_delay, n_min_retro_nowcasts
+    ))
+  }
+
+  return(.handle_target_insufficient(
+    n_target, n_required, n_min_delay,
+    n_min_retro_nowcasts, scale_factor, max_delay
+  ))
+}
+
+#' Helper for when target exceeds available reference times
+#'
+#' @inheritParams .check_against_requirements
+#' @inheritParams .assign_allocation_from_ns
+#' @inheritParams allocate_reference_times
+#'
+#' @returns number of reference times to use or NULL, invisibly
+#' @keywords internal
+.handle_target_exceeds_avail <- function(n_ref_times,
+                                         n_required,
+                                         n_target,
+                                         n_min_delay,
+                                         n_min_retro_nowcasts) {
+  if (n_ref_times >= n_required) {
+    cli_warn(message = c(
+      "{n_ref_times} reference times available and {n_target} are specified.", # nolint
+      "i" = "All {n_ref_times} reference times will be used." # nolint
+    ))
+    return(n_ref_times)
+  }
+
+  cli_abort(message = c(
+    "{n_ref_times} reference times available and {n_required} are needed, {n_min_delay} for delay estimation and {n_min_retro_nowcasts} for uncertainty estimation.", # nolint
+    "x" = "Probabilistic nowcasts cannot be generated." # nolint
+  ))
+  return(NULL)
+}
+
+#' Helper for when the target is less than the required minimum
+#'
+#' @inheritParams .check_against_requirements
+#' @inheritParams .assign_allocation_from_ns
+#' @inheritParams allocate_reference_times
+#'
+#' @returns NULL invisibly
+#' @keywords internal
+.handle_target_insufficient <- function(n_target,
+                                        n_required,
+                                        n_min_delay,
+                                        n_min_retro_nowcasts,
+                                        scale_factor,
+                                        max_delay) {
+  cli_abort(message = c(
+    "{scale_factor*max_delay} reference times specified and {n_required} are needed, {n_min_delay} for delay estimation and {n_min_retro_nowcasts} for uncertainty estimation.", # nolint
+    "x" = "Probabilistic nowcasts cannot be generated." # nolint
+  ))
+  return(NULL)
+}

@@ -68,12 +68,13 @@ as_reporting_triangle <- function(data,
 #' ]
 #' as_reporting_triangle(data = data_as_of_df)
 as_reporting_triangle.data.frame <- function(
-    data,
-    delays_unit = "days",
-    reference_date = "reference_date",
-    report_date = "report_date",
-    count = "count",
-    ...) {
+  data,
+  delays_unit = "days",
+  reference_date = "reference_date",
+  report_date = "report_date",
+  count = "count",
+  ...
+) {
   assert_character(reference_date)
   assert_character(report_date)
   assert_character(count)
@@ -240,4 +241,66 @@ as_reporting_triangle.matrix <- function(data,
     names(data)[names(data) %in% old_names], old_names
   )]
   return(data)
+}
+
+#' Validate the reporting triangle data.frame
+#'
+#' @description Checks for duplicate reference date report dates, missing
+#'    columns, report dates beyond the final reference date, and missing
+#'    combinations of delays and reports.
+#'
+#' @param data Data.frame in long tidy form with reference dates, report dates,
+#'   and case counts, used to create a `reporting_triangle` object.
+#' @inheritParams as_reporting_triangle.data.frame
+#'
+#' @importFrom checkmate assert_data_frame
+#' @returns NULL, invisibly
+#' @keywords internal
+.validate_rep_tri_df <- function(data, delays_unit) {
+  assert_data_frame(data)
+  required_cols <- c(
+    "reference_date",
+    "report_date",
+    "count"
+  )
+  missing_cols <- setdiff(required_cols, names(data))
+  if (length(missing_cols) > 0) {
+    cli_abort(
+      message = c(
+        "Required columns missing from data",
+        "x" = "Missing: {.val {missing_cols}}" # nolint
+      )
+    )
+  }
+
+  dup_pairs <- duplicated(data[, c("reference_date", "report_date")])
+
+  if (any(dup_pairs)) {
+    cli_abort(
+      message = c(
+        "Data contains duplicate `reference_date` and `report_date` combinations", # nolint
+        "x" = "Found {sum(dup_pairs)} duplicate pair{?s}", # nolint
+        "i" = "Each reference_date and report_date combination should appear only once" # nolint
+      )
+    )
+  }
+
+  if (max(data$report_date) > max(data$reference_date)) {
+    cli_alert_info(
+      text = "The dataframe contains report dates beyond the final reference date." # nolint
+    )
+  }
+
+  all_dates_length <- length(seq(
+    from = min(data$reference_date),
+    to = max(data$reference_date),
+    by = {{ delays_unit }}
+  ))
+  if (all_dates_length != length(unique(data$reference_date))) {
+    cli_alert_info(
+      text =
+        "Data does not contain case counts for all possible reference dates."
+    )
+  }
+  return(NULL)
 }

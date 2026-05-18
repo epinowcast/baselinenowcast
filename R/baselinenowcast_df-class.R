@@ -64,3 +64,52 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
 
   return(result)
 }
+
+#' Assert validity of `baselinenowcast_df` objects
+#'
+#' @param data A [baselinenowcast_df] object to check for validity.
+#' @return Returns `NULL` invisibly. Throws an error if validation fails.
+#' @family baselinenowcast_df
+#' @examples
+#' # Create a valid baselinenowcast_df object
+#' valid_df <- data.frame(
+#'   reference_date = as.Date("2024-01-01") + 0:4,
+#'   pred_count = c(10, 15, 12, 18, 20),
+#'   draw = 1,
+#'   output_type = "point"
+#' )
+#' class(valid_df) <- c("baselinenowcast_df", "data.frame")
+#'
+#' # Validate the object
+#' assert_baselinenowcast_df(valid_df)
+#' @export
+assert_baselinenowcast_df <- function(data) {
+  assert_data_frame(data)
+
+  required_cols <- c("reference_date", "pred_count")
+  missing_cols <- setdiff(required_cols, names(data))
+  if (length(missing_cols) > 0) {
+    cli_abort(
+      message = c(
+        "Required columns missing from data",
+        "x" = "Missing: {.val {missing_cols}}" # nolint
+      )
+    )
+  }
+
+  assert_date(data$reference_date)
+  cols_to_check <- names(data)[names(data) %in% c("reference_date", "draw")]
+
+  dups <- duplicated(data[, c(cols_to_check)])
+  if (any(dups)) {
+    cli_abort(
+      message = c(
+        "Data contains multiple `reference_date`s", # nolint
+        "x" = "Found {sum(dups)} duplicate `reference_date`{?s}", # nolint
+        "i" = "`baselinenowcast_df` objects should only contain a single estimate for each reference date." # nolint
+      )
+    )
+  }
+
+  return(NULL)
+}

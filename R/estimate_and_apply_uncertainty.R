@@ -56,17 +56,18 @@
 #' )
 #' head(nowcast_draws_df)
 estimate_and_apply_uncertainty <- function(
-    point_nowcast_matrix,
-    reporting_triangle,
-    n_history_delay,
-    n_retrospective_nowcasts,
-    structure = get_reporting_structure(reporting_triangle),
-    draws = 1000,
-    delay_pmf = NULL,
-    uncertainty_model = fit_by_horizon,
-    uncertainty_sampler = sample_nb,
-    validate = TRUE,
-    ...) {
+  point_nowcast_matrix,
+  reporting_triangle,
+  n_history_delay,
+  n_retrospective_nowcasts,
+  structure = get_reporting_structure(reporting_triangle),
+  draws = 1000,
+  delay_pmf = NULL,
+  uncertainty_model = fit_by_horizon,
+  uncertainty_sampler = sample_nb,
+  validate = TRUE,
+  ...
+) {
   assert_reporting_triangle(point_nowcast_matrix, validate)
   assert_reporting_triangle(reporting_triangle, validate)
 
@@ -99,4 +100,28 @@ estimate_and_apply_uncertainty <- function(
     ...
   )
   return(nowcast_draws)
+}
+
+#' Validate the inputs to `estimate_and_apply_uncertainty()` to ensure that
+#'    the reporting triangle, point nowcast matrix, and specified maximum delay
+#'    are correct.
+#'
+#' @inheritParams estimate_and_apply_uncertainty
+#'
+#' @returns NULL, invisibly
+#' @keywords internal
+#' @noRd
+.validate_multiple_inputs <- function(point_nowcast_matrix,
+                                      reporting_triangle) {
+  max_delay_point <- get_max_delay(point_nowcast_matrix)
+  max_delay_rt <- get_max_delay(reporting_triangle)
+
+  if (max_delay_point != max_delay_rt) {
+    cli_abort(c(
+      "x" = "`point_nowcast_matrix` and `reporting_triangle` must have the same max_delay.", # nolint
+      "i" = "Got max_delay of {max_delay_point} and {max_delay_rt} respectively." # nolint
+    ))
+  }
+
+  return(NULL)
 }

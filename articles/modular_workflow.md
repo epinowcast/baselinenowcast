@@ -53,6 +53,7 @@ instructions](https://github.com/epinowcast/baselinenowcast#installation).
 Code
 
 ``` r
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -76,6 +77,7 @@ here.
 Code
 
 ``` r
+
 nowcast_date <- "2021-08-01"
 eval_date <- "2021-10-01"
 
@@ -94,6 +96,7 @@ reference date available as of October 1, 2021.
 Code
 
 ``` r
+
 latest_data <- target_data |>
   group_by(reference_date) |>
   summarise(final_count = sum(count))
@@ -106,6 +109,7 @@ nowcast date, August 1, 2021.
 Code
 
 ``` r
+
 observed_data <- filter(
   target_data,
   report_date <= nowcast_date
@@ -128,6 +132,7 @@ reference date as they were available as of the nowcast date.
 Code
 
 ``` r
+
 initial_reports <- observed_data |>
   group_by(reference_date) |>
   summarise(initial_count = sum(count))
@@ -147,6 +152,7 @@ for an example
 Code
 
 ``` r
+
 max_delay <- 30
 ```
 
@@ -159,6 +165,7 @@ and report date.
 Code
 
 ``` r
+
 rep_tri_full <- as_reporting_triangle(observed_data)
 #> ℹ Using max_delay = 40 from data
 ```
@@ -168,6 +175,7 @@ Let’s look at the reporting triangle we’ve created:
 Code
 
 ``` r
+
 rep_tri_full
 #> Reporting Triangle
 #> Delays unit: days
@@ -199,6 +207,7 @@ we want to limit our reporting triangle to a maximum delay of 30 days:
 Code
 
 ``` r
+
 rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
 #> ℹ Truncating from max_delay = 40 to 30.
 rep_tri
@@ -250,6 +259,7 @@ for more details.
 Code
 
 ``` r
+
 scale_factor <- 3
 prop_delay <- 0.5
 tv <- allocate_reference_times(
@@ -280,6 +290,7 @@ for a full description of the function inputs.
 Code
 
 ``` r
+
 delay_pmf <- estimate_delay(
   reporting_triangle = rep_tri,
   n = n_history_delay
@@ -291,6 +302,7 @@ Click to expand code to create the plot of the delay distribution
 Code
 
 ``` r
+
 delay_df <- data.frame(
   delay = 0:(length(delay_pmf) - 1),
   pmf = delay_pmf
@@ -314,6 +326,7 @@ delay_pmf_plot <- ggplot(delay_df) +
 Code
 
 ``` r
+
 delay_cdf_plot
 ```
 
@@ -322,6 +335,7 @@ delay_cdf_plot
 Code
 
 ``` r
+
 delay_pmf_plot
 ```
 
@@ -345,6 +359,7 @@ applied it in one single step by calling
 Code
 
 ``` r
+
 point_nowcast_matrix <- apply_delay(
   reporting_triangle = rep_tri,
   delay_pmf = delay_pmf
@@ -361,6 +376,7 @@ Click to expand code to create the plot of the point nowcast
 Code
 
 ``` r
+
 initial_reports_labeled <- initial_reports |>
   mutate(type = "Initial real-time") |>
   rename(count = initial_count)
@@ -405,6 +421,7 @@ plot_pt_nowcast <- ggplot(point_nowcast_df, aes(
 Code
 
 ``` r
+
 plot_pt_nowcast
 ```
 
@@ -434,6 +451,7 @@ time from the original reporting triangle `n` times.
 Code
 
 ``` r
+
 trunc_rep_tri_list <- truncate_to_rows(
   rep_tri,
   n = n_retrospective_nowcasts
@@ -449,6 +467,7 @@ retrospective reporting triangles.
 Code
 
 ``` r
+
 retro_rep_tri_list <- apply_reporting_structures(trunc_rep_tri_list)
 ```
 
@@ -461,6 +480,7 @@ previous specified.
 Code
 
 ``` r
+
 retro_pt_nowcast_mat_list <- estimate_and_apply_delays(
   retro_reporting_triangles = retro_rep_tri_list,
   n = n_history_delay
@@ -479,6 +499,7 @@ function.
 Code
 
 ``` r
+
 disp_params <- estimate_uncertainty(
   point_nowcast_matrices = retro_pt_nowcast_mat_list,
   truncated_reporting_triangles = trunc_rep_tri_list,
@@ -521,6 +542,7 @@ function.
 Code
 
 ``` r
+
 nowcast_draws_df <- sample_nowcasts(
   point_nowcast_matrix,
   rep_tri,
@@ -551,6 +573,7 @@ nowcast by reference date.
 Code
 
 ``` r
+
 obs_with_nowcast_draws_df <- nowcast_draws_df |>
   left_join(latest_data, by = "reference_date") |>
   left_join(initial_reports, by = "reference_date")
@@ -570,6 +593,7 @@ make plotting easier.
 Code
 
 ``` r
+
 combined_data <- obs_with_nowcast_draws_df |>
   select(reference_date, initial_count, final_count) |>
   distinct() |>
@@ -589,6 +613,7 @@ Click to expand code to create the plot of the probabilistic nowcast
 Code
 
 ``` r
+
 combined_data <- obs_with_nowcast_draws_df |>
   select(reference_date, initial_count, final_count) |>
   distinct() |>
@@ -649,6 +674,7 @@ plot_prob_nowcast <- ggplot() +
 Code
 
 ``` r
+
 plot_prob_nowcast
 ```
 

@@ -26,7 +26,7 @@ Johnson KE, Tang M, Tyszka E, Nemcova B, Wolffram D, Ergas R, Reich NG,
 Funk S, Mellor J, Bracher J, Abbott S (2025). “Baseline nowcasting
 methods for handling delays in epidemiological data.” *Wellcome Open
 Research*.
-[doi:10.12688/wellcomeopenres.25027.1](https://doi.org/10.12688/wellcomeopenres.25027.1),
+[doi:10.12688/wellcomeopenres.25027.1](https://doi.org/10.12688/wellcomeopenres.25027.1).
 <https://wellcomeopenresearch.org/articles/10-614>.
 
     @Article{,

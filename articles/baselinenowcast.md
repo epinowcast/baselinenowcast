@@ -45,6 +45,7 @@ instructions](https://github.com/epinowcast/baselinenowcast#installation).
 Code
 
 ``` r
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -84,6 +85,7 @@ we will use to evaluate our nowcast performance.
 Code
 
 ``` r
+
 nowcast_date <- "2021-08-01"
 eval_date <- "2021-10-01"
 
@@ -106,6 +108,7 @@ data available through October 1, 2021.
 Code
 
 ``` r
+
 latest_data <- target_data |>
   group_by(reference_date) |>
   summarise(final_count = sum(count))
@@ -118,6 +121,7 @@ nowcast date.
 Code
 
 ``` r
+
 observed_data <- filter(
   target_data,
   report_date <= nowcast_date
@@ -141,6 +145,7 @@ reference date as they were available as of the nowcast date.
 Code
 
 ``` r
+
 initial_reports <- observed_data |>
   group_by(reference_date) |>
   summarise(initial_count = sum(count))
@@ -154,6 +159,7 @@ Click to expand code to create the plot of the latest data
 Code
 
 ``` r
+
 plot_data <- ggplot() +
   geom_line(
     data = initial_reports,
@@ -173,6 +179,7 @@ plot_data <- ggplot() +
 Code
 
 ``` r
+
 plot_data
 ```
 
@@ -222,6 +229,7 @@ Empirical data outside this delay window will not be used for training.
 Code
 
 ``` r
+
 max_delay <- 30
 ```
 
@@ -239,6 +247,7 @@ with 50% used for delay estimation.
 Code
 
 ``` r
+
 scale_factor <- 3
 prop_delay <- 0.5
 ```
@@ -261,6 +270,7 @@ for more details on required inputs and the format of the
 Code
 
 ``` r
+
 rep_tri_full <- as_reporting_triangle(observed_data)
 #> ℹ Using max_delay = 40 from data
 ```
@@ -270,6 +280,7 @@ Let’s look at the reporting triangle object we’ve created:
 Code
 
 ``` r
+
 rep_tri_full
 #> Reporting Triangle
 #> Delays unit: days
@@ -300,6 +311,7 @@ And we can get a summary of it:
 Code
 
 ``` r
+
 summary(rep_tri_full)
 #> Reporting Triangle Summary
 #> Dimensions: 118 x 41
@@ -339,6 +351,7 @@ reporting triangle to a maximum delay of 30 days using
 Code
 
 ``` r
+
 rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
 #> ℹ Truncating from max_delay = 40 to 30.
 ```
@@ -348,6 +361,7 @@ Let’s check the truncated triangle:
 Code
 
 ``` r
+
 rep_tri
 #> Reporting Triangle
 #> Delays unit: days
@@ -378,6 +392,7 @@ Click to expand code to create the plot of the reporting triangle
 Code
 
 ``` r
+
 triangle_df <- as.data.frame(rep_tri) |>
   mutate(time = as.numeric(factor(reference_date)))
 
@@ -395,6 +410,7 @@ plot_triangle <- ggplot(
 Code
 
 ``` r
+
 plot_triangle
 ```
 
@@ -436,6 +452,7 @@ nowcast can be returned by specifying `output_type = "point"`.
 Code
 
 ``` r
+
 nowcast_draws_df <- baselinenowcast(
   rep_tri,
   scale_factor = scale_factor,
@@ -460,6 +477,7 @@ of the nowcast date, and the final data.
 Code
 
 ``` r
+
 obs_with_nowcast_draws_df <- nowcast_draws_df |>
   left_join(latest_data, by = "reference_date") |>
   left_join(initial_reports, by = "reference_date")
@@ -478,6 +496,7 @@ Click to expand code to create the plot of the probabilistic nowcast
 Code
 
 ``` r
+
 combined_data <- obs_with_nowcast_draws_df |>
   select(reference_date, initial_count, final_count) |>
   distinct() |>
@@ -538,6 +557,7 @@ plot_prob_nowcast <- ggplot() +
 Code
 
 ``` r
+
 plot_prob_nowcast
 ```
 

@@ -29,6 +29,7 @@ Installing the package
 You can install the latest released version using:
 
 ``` r
+
 install.packages("baselinenowcast")
 ```
 
@@ -36,6 +37,7 @@ Alternatively, you can install the latest GitHub release from our
 r-universe repository:
 
 ``` r
+
 install.packages("baselinenowcast", repos = "https://epinowcast.r-universe.dev")
 ```
 
@@ -43,6 +45,7 @@ To install the development version from GitHub, use the [`pak`
 package](https://pak.r-lib.org/):
 
 ``` r
+
 pak::pak(file.path("epinowcast", "baselinenowcast"))
 ```
 
@@ -50,6 +53,7 @@ Another option for installation is using the [`remotes`
 package](https://CRAN.R-project.org/package=remotes):
 
 ``` r
+
 remotes::install_github(file.path("epinowcast", "baselinenowcast"))
 ```
 

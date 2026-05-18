@@ -58,6 +58,7 @@ for mapping diagnoses codes to text fields in the data. For
 instructions](https://github.com/epinowcast/baselinenowcast#installation).
 
 ``` r
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -89,6 +90,7 @@ This typically will be pulled using an API, but here we provide the
 `syn_nssp_line_list` dataset as package data.
 
 ``` r
+
 syn_nssp_line_list
 #> # A tibble: 25 × 8
 #>    C_Processed_BioSense_ID        CCDDParsed              DischargeDiagnosisMD…¹
@@ -134,6 +136,7 @@ could be used interchangeably. To be considered a Broad Acute
 Respiratory case, one or more of these codes must be reported.
 
 ``` r
+
 diagnoses_codes_defn <- c("A22.1", "A221", "A37", "A48.1", "A481", "B25.0", "B250", "B34.2", "B34.9", "B342", "B349", "B44.0", "B44.9", "B440", "B449", "B44.81", "B4481", "B97.2", "B97.4", "B972", "B974", "J00", "J01", "J02", "J03", "J04", "J05", "J06", "J09", "J10", "J11", "J12", "J13", "J14", "J15", "J16", "J17", "J18", "J20", "J21", "J22", "J39.8", "J398", "J40", "J47.9", "J479", "J80", "J85.1", "J851", "J95.821", "J95821", "J96.0", "J96.00", "J9600", "J96.01", "J9601", "J96.02", "J9602", "J96.2", "J960", "J962", "J96.20", "J9620", "J96.21", "J9621", "J9622", "J96.22", "J96.91", "J9691", "J98.8", "J988", "R05", "R06.03", "R0603", "R09.02", "R0902", "R09.2", "R092", "R43.0", "R43.1", "R43.2", "R430", "R431", "R432", "U07.1", "U07.2", "U071", "U072", "022.1", "0221", "034.0", "0340", "041.5", "0415", "041.81", "04181", "079.1", "079.2", "079.3", "079.6", "0791", "0792", "0793", "0796", "079.82", "079.89", "07982", "07989", "079.99", "07999", "117.3", "1173", "460", "461", "462", "463", "464", "465", "466", "461.", "461", "461.", "464.", "465.", "466.", "461", "464", "465", "466", "478.9", "4789", "480.", "482.", "483.", "484.", "487.", "488.", "480", "481", "482", "483", "484", "485", "486", "487", "488", "490", "494.1", "4941", "517.1", "5171", "518.51", "518.53", "51851", "51853", "518.6", "5186", "518.81", "518.82", "518.84", "51881", "51882", "51884", "519.8", "5198", "073.0", "0730", "781.1", "7811", "786.2", "7862", "799.02", "79902", "799.1", "7991", "033", "033.", "033", "780.60", "78060") # nolint
 ```
 
@@ -153,6 +156,7 @@ critically, the `C_Visit_Date_Time` which indicates the start of the
 patient’s visit.
 
 ``` r
+
 syn_nssp_long <- syn_nssp_line_list |>
   mutate(
     time_stamp = str_split(DischargeDiagnosisMDTUpdates, fixed("{")),
@@ -178,6 +182,7 @@ information we need on the patient’s visit start date
 (`C_Visit_Date_Time`).
 
 ``` r
+
 syn_nssp_clean <- syn_nssp_long |>
   mutate(
     time_stamp = as.POSIXct(
@@ -198,6 +203,7 @@ Next we will add a column for the time from arrival to each updated
 diagnosis, in days.
 
 ``` r
+
 nssp_updates <- syn_nssp_clean |>
   mutate(arrival_to_update_delay = as.numeric(difftime(
     time_stamp, C_Visit_Date_Time,
@@ -210,6 +216,7 @@ corresponds to the diagnosis codes in the syndromic surveillance
 definition for BAR.
 
 ``` r
+
 diagnosis_pattern <- paste(diagnoses_codes_defn, collapse = "|")
 
 bar_updates <- nssp_updates |>
@@ -221,6 +228,7 @@ for each patient keep only the first update containing the BAR diagnoses
 code(s).
 
 ``` r
+
 first_bar_diagnosis <- bar_updates |>
   group_by(C_Processed_BioSense_ID) |>
   slice_min(arrival_to_update_delay, n = 1, with_ties = FALSE) |>
@@ -233,6 +241,7 @@ and remove the other column names that are no longer needed, as each row
 now represents a case.
 
 ``` r
+
 clean_line_list <- first_bar_diagnosis |>
   mutate(
     reference_date = as.Date(C_Visit_Date_Time),
@@ -272,6 +281,7 @@ purpose of nowcasting and estimating the delay distribution, we will
 exclude these cases.
 
 ``` r
+
 threshold_to_exclude <- -1
 clean_line_list_filtered <- clean_line_list |>
   filter(arrival_to_update_delay >= threshold_to_exclude) |>
@@ -309,6 +319,7 @@ by reference and report date, so we can aggregate by reference and
 report date and compute the delay distribution.
 
 ``` r
+
 count_df <- count(clean_line_list_filtered,
   reference_date, report_date,
   name = "count"
@@ -345,6 +356,7 @@ We’ll start by loading in the synthetic reporting triangle dataframe,
 which is also provided as package data.
 
 ``` r
+
 syn_nssp_df
 #> # A tibble: 3,795 × 3
 #>    reference_date report_date count
@@ -384,6 +396,7 @@ estimation.
 Click to expand code to create plots of the delay distributions
 
 ``` r
+
 long_df <- syn_nssp_df |>
   mutate(delay = as.integer(report_date - reference_date))
 
@@ -423,12 +436,14 @@ cdf_delay <- ggplot(avg_delays) +
 ```
 
 ``` r
+
 cdf_delay
 ```
 
 ![](nssp_nowcast_files/figure-html/unnamed-chunk-13-1.png)
 
 ``` r
+
 delay_t
 ```
 
@@ -457,6 +472,7 @@ we evaluate the method on COVID-19 cases in Germany and norovirus cases
 in England.
 
 ``` r
+
 max_delay <- 25
 nowcast_date <- max(long_df$reference_date) - days(30)
 ```
@@ -467,6 +483,7 @@ First, we’ll remove any reports after the nowcast date, as these
 wouldn’t have been available to us in real-time.
 
 ``` r
+
 training_df <- filter(
   long_df,
   report_date <= nowcast_date
@@ -478,6 +495,7 @@ correcting for downward bias due to partial observations? We can
 summarise the cases by reference dates and plot.
 
 ``` r
+
 training_df_by_ref_date <- training_df |>
   filter(report_date <= nowcast_date) |>
   group_by(reference_date) |>
@@ -487,6 +505,7 @@ training_df_by_ref_date <- training_df |>
 Click to expand code to create the plot of the initially reported cases
 
 ``` r
+
 init_data <- training_df_by_ref_date |>
   filter(reference_date >= nowcast_date - days(60))
 
@@ -498,6 +517,7 @@ plot_inits <- ggplot(init_data) +
 ```
 
 ``` r
+
 plot_inits
 ```
 
@@ -522,6 +542,7 @@ returned as a `reporting_triangle` class object which is ready to be
 used for nowcasting.
 
 ``` r
+
 rep_tri_full <- as_reporting_triangle(training_df)
 #> ℹ Using max_delay = 154 from data
 ```
@@ -529,6 +550,7 @@ rep_tri_full <- as_reporting_triangle(training_df)
 Let’s look at the reporting triangle object we’ve created:
 
 ``` r
+
 rep_tri_full
 #> Reporting Triangle
 #> Delays unit: days
@@ -557,6 +579,7 @@ rep_tri_full
 And we can get a summary of it:
 
 ``` r
+
 summary(rep_tri_full)
 #> Reporting Triangle Summary
 #> Dimensions: 159 x 155
@@ -586,6 +609,7 @@ using
 [`truncate_to_delay()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_delay.md):
 
 ``` r
+
 rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
 #> ℹ Truncating from max_delay = 154 to 25.
 ```
@@ -593,6 +617,7 @@ rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
 Let’s check the truncated triangle:
 
 ``` r
+
 rep_tri
 #> Reporting Triangle
 #> Delays unit: days
@@ -634,6 +659,7 @@ model](https://baselinenowcast.epinowcast.org/articles/model_definition.md)
 vignette for more details.
 
 ``` r
+
 scale_factor <- 3
 prop_delay <- 0.5
 ```
@@ -684,6 +710,7 @@ draws, but this can be specified as more or less using the `draws`
 argument.
 
 ``` r
+
 nowcast_draws_df <- baselinenowcast(rep_tri,
   scale_factor = scale_factor,
   prop_delay = prop_delay,
@@ -715,6 +742,7 @@ the 50th and 95th percent prediction intervals, though we suggest
 showing more prediction intervals if possible.
 
 ``` r
+
 nowcast_summary_df <-
   nowcast_draws_df |>
   group_by(reference_date) |>
@@ -736,6 +764,7 @@ train the nowcast model. Next summarise the final reports by reference
 date using all the data.
 
 ``` r
+
 eval_data <- long_df |>
   filter(
     delay <= max_delay,
@@ -748,6 +777,7 @@ eval_data <- long_df |>
 Lastly, join the initial and final reports to the probabilistic nowcast.
 
 ``` r
+
 nowcast_w_data <- nowcast_summary_df |>
   left_join(training_df_by_ref_date,
     by = "reference_date"
@@ -786,6 +816,7 @@ evaluate nowcasts.
 Click to expand code to create the plot of the probabilistic nowcast
 
 ``` r
+
 combined_data <- nowcast_w_data |>
   select(reference_date, initial_count, final_count) |>
   distinct() |>
@@ -850,6 +881,7 @@ plot_prob_nowcast <- ggplot(nowcast_data_recent) +
 ```
 
 ``` r
+
 plot_prob_nowcast
 ```
 

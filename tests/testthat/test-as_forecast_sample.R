@@ -2,7 +2,9 @@ test_that("as_forecast_sample.baselinenowcast_df converts samples to forecast_sa
   skip_on_cran()
   skip_if_not_installed("scoringutils")
 
-  nowcast <- baselinenowcast(example_reporting_triangle, draws = 10)
+  nowcast <- suppressWarnings(
+    baselinenowcast(example_reporting_triangle, draws = 10)
+  )
   latest_obs <- data.frame(
     reference_date = get_reference_dates(example_reporting_triangle),
     count = rowSums(example_reporting_triangle, na.rm = TRUE)
@@ -22,7 +24,9 @@ test_that("as_forecast_sample.baselinenowcast_df merges strata columns", {
   skip_on_cran()
   skip_if_not_installed("scoringutils")
 
-  nowcast <- baselinenowcast(example_reporting_triangle, draws = 10)
+  nowcast <- suppressWarnings(
+    baselinenowcast(example_reporting_triangle, draws = 10)
+  )
   latest_obs <- data.frame(
     reference_date = get_reference_dates(example_reporting_triangle),
     count = rowSums(example_reporting_triangle, na.rm = TRUE),
@@ -42,7 +46,9 @@ test_that("as_forecast_sample.baselinenowcast_df accepts a custom observed colum
   skip_on_cran()
   skip_if_not_installed("scoringutils")
 
-  nowcast <- baselinenowcast(example_reporting_triangle, draws = 10)
+  nowcast <- suppressWarnings(
+    baselinenowcast(example_reporting_triangle, draws = 10)
+  )
   latest_obs <- data.frame(
     reference_date = get_reference_dates(example_reporting_triangle),
     confirm = rowSums(example_reporting_triangle, na.rm = TRUE)
@@ -59,9 +65,11 @@ test_that("as_forecast_sample.baselinenowcast_df errors on point nowcasts", {
   skip_on_cran()
   skip_if_not_installed("scoringutils")
 
-  nowcast_pt <- baselinenowcast(
-    example_reporting_triangle,
-    output_type = "point"
+  nowcast_pt <- suppressWarnings(
+    baselinenowcast(
+      example_reporting_triangle,
+      output_type = "point"
+    )
   )
   latest_obs <- data.frame(
     reference_date = get_reference_dates(example_reporting_triangle),
@@ -78,7 +86,9 @@ test_that("as_forecast_sample.baselinenowcast_df errors when latest_obs lacks re
   skip_on_cran()
   skip_if_not_installed("scoringutils")
 
-  nowcast <- baselinenowcast(example_reporting_triangle, draws = 5)
+  nowcast <- suppressWarnings(
+    baselinenowcast(example_reporting_triangle, draws = 5)
+  )
 
   bad_obs <- data.frame(
     reference_date = get_reference_dates(example_reporting_triangle)

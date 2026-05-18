@@ -1,5 +1,9 @@
 # baselinenowcast 0.2.1000
 
+## Package
+
+- Add `as_forecast_sample()` S3 method for `baselinenowcast_df` objects, enabling direct conversion of probabilistic nowcasts to a `scoringutils` `forecast_sample` object for scoring against the latest observed counts (#418).
+
 ## Documentation
 -  Modified NSSP nowcast vignette to do vectorised string matching instead of row-wise and to simplify the pre-processing to avoid a pivot to a wide form dataframe to speed-up performance.
 

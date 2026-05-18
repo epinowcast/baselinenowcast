@@ -73,6 +73,7 @@ Suggests:
     ggplot2,
     spelling,
     rmarkdown,
+    scoringutils (>= 2.0.0),
     testthat (>= 3.1.9),
     usethis,
     withr,

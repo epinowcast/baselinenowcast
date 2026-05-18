@@ -32,6 +32,7 @@ dates corresponding to the time column in the \code{baselinenowcast_df}
 }
 \seealso{
 Main nowcasting interface functions
+\code{\link{as_forecast_sample.baselinenowcast_df}()},
 \code{\link{assert_baselinenowcast_df}()},
 \code{\link{baselinenowcast}()},
 \code{\link{baselinenowcast.data.frame}()},

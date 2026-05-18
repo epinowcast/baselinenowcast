@@ -97,6 +97,11 @@ test_that(
     expect_blnc_structure(pt_nowcast, expected_cols,
       output_type = "point"
     )
+
+    # Fix the seed so the mean-of-draws check uses a deterministic sample.
+    # With the default 1000 draws the standard error per reference date is
+    # comfortably below the tightened tolerance of 0.02.
+    set.seed(2026)
     prob_nowcast <- baselinenowcast(rep_tri)
 
     summarised_prob_nowcast <- prob_nowcast |>
@@ -105,7 +110,7 @@ test_that(
 
     expect_equal(summarised_prob_nowcast$mean_nowcast,
       pt_nowcast$pred_count,
-      tol = 0.1
+      tol = 0.02
     )
     expect_identical(nrow(summarised_prob_nowcast), nrow(pt_nowcast))
   }

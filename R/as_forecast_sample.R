@@ -48,21 +48,15 @@ as_forecast_sample.baselinenowcast_df <- function(data,
     "scoringutils",
     reason = "to convert nowcasts to forecast_sample objects."
   )
-  assert_baselinenowcast_df(data)
+  assert_data_frame(data)
   assert_data_frame(latest_obs)
   assert_character(observed, len = 1)
+  assert_names(colnames(data),
+    must.include = c("reference_date", "pred_count", "draw", "output_type")
+  )
   assert_names(colnames(latest_obs),
     must.include = c("reference_date", observed)
   )
-
-  if (!"draw" %in% colnames(data)) {
-    cli_abort(
-      c(
-        "`data` must contain a `draw` column with sample identifiers.",
-        "i" = "Use `baselinenowcast(..., output_type = \"samples\")` to produce samples." # nolint
-      )
-    )
-  }
 
   if (any(data$output_type != "samples")) {
     cli_abort(
@@ -84,6 +78,21 @@ as_forecast_sample.baselinenowcast_df <- function(data,
   }
 
   merged <- merge(data, latest_obs, by = merge_cols)
+
+  if (nrow(merged) == 0) {
+    cli_abort(
+      "No rows in `data` share the merge keys ({.val {merge_cols}}) with `latest_obs`." # nolint
+    )
+  }
+  if (nrow(merged) < nrow(data)) {
+    n_dropped <- nrow(data) - nrow(merged)
+    cli_warn(
+      c(
+        "Dropped {n_dropped} nowcast row{?s} with no matching observation in `latest_obs`.", # nolint
+        "i" = "Check that `latest_obs` covers every merge key combination ({.val {merge_cols}}) in `data`." # nolint
+      )
+    )
+  }
 
   forecast_data <- scoringutils::as_forecast_sample(
     data = merged,

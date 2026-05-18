@@ -5,8 +5,7 @@
 # - Data manipulation helpers (e.g., summarise_final_day_mean)
 # - Comparison helpers (e.g., expect_estimates_differ)
 # - Test data creation functions (e.g., make_simple_triangle,
-#   make_test_triangle, make_simple_delay_pmf, make_delay_pmf,
-#   make_test_data)
+#   make_test_triangle, make_simple_delay_pmf, make_delay_pmf)
 # - Validation helpers (e.g., expect_triangle_output)
 #
 # By centralizing these patterns, we reduce boilerplate and make test
@@ -190,50 +189,6 @@ make_delay_pmf <- function(length = 4, geometric = FALSE, prob = 0.3) {
   }
 }
 
-#' Create simple test data frame with reference/report dates
-#'
-#' @param n_dates Number of reference dates
-#' @param max_delay Maximum delay
-#' @param add_strata Whether to add strata columns
-#' @param seed Optional seed for reproducibility (uses rpois and sample)
-#' @return A data frame with reference_date, report_date, count columns
-#' @keywords internal
-make_test_data <- function(n_dates = 10, max_delay = 5, add_strata = FALSE,
-                           seed = NULL) {
-  if (!is.null(seed)) {
-    set.seed(seed)
-  }
-
-  reference_dates <- seq.Date(
-    from = as.Date("2024-01-01"),
-    by = "day",
-    length.out = n_dates
-  )
-
-  data_list <- lapply(reference_dates, function(ref_date) {
-    delays <- 0:max_delay
-    report_dates <- ref_date + delays
-    counts <- rpois(length(delays), lambda = 10)
-
-    return(data.frame(
-      reference_date = ref_date,
-      report_date = report_dates,
-      count = counts
-    ))
-  })
-
-  test_df <- do.call(rbind, data_list)
-
-  if (add_strata) {
-    test_df$location <- "Location1"
-    test_df$age_group <- sample(c("00-04", "05-17", "18+"), nrow(test_df),
-      replace = TRUE
-    )
-  }
-
-  return(test_df)
-}
-
 #' Create COVID test data
 #'
 #' Creates a standardized COVID-19 hospitalization test dataset from the
@@ -245,8 +200,9 @@ make_test_data <- function(n_dates = 10, max_delay = 5, add_strata = FALSE,
 #' @return Data frame with filtered COVID data
 #' @keywords internal
 create_covid_test_data <- function(
-    age_groups = c("00+", "00-04", "60-79", "80+"),
-    add_weekday = TRUE) {
+  age_groups = c("00+", "00-04", "60-79", "80+"),
+  add_weekday = TRUE
+) {
   # nolint start: object_usage_linter
   covid_data <- germany_covid19_hosp[
     germany_covid19_hosp$report_date <=
@@ -256,10 +212,12 @@ create_covid_test_data <- function(
   # nolint end
 
   if (add_weekday) {
+    # nolint start: namespace_linter
     covid_data$weekday_ref_date <- lubridate::wday(
       covid_data$reference_date,
       label = TRUE
     )
+    # nolint end
   }
 
   return(covid_data)

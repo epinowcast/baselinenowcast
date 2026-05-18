@@ -118,7 +118,7 @@ To cite baselinenowcast in publications please use the following.
   NG, Funk S, Mellor J, Bracher J, Abbott S (2025). "Baseline
   nowcasting methods for handling delays in epidemiological data."
   _Wellcome Open Research_. doi:10.12688/wellcomeopenres.25027.1
-  <https://doi.org/10.12688/wellcomeopenres.25027.1>,
+  <https://doi.org/10.12688/wellcomeopenres.25027.1>.
   <https://wellcomeopenresearch.org/articles/10-614>.
 
 A BibTeX entry for LaTeX users is

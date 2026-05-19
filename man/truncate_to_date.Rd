@@ -25,9 +25,9 @@ reference dates less than or equal to \code{reference_date}. The class and
 metadata are preserved.
 }
 \description{
-Drops rows where \code{reference_date > reference_date} (the cutoff), returning
-the reporting triangle as it would have looked if observed up to and
-including that date. This is a date-based wrapper around
+Drops rows whose reference date is later than the cutoff \code{reference_date},
+returning the reporting triangle as it would have looked if observed up
+to and including that date. This is a date-based wrapper around
 \code{\link[=truncate_to_row]{truncate_to_row()}} that removes the need to compute the number of rows
 to drop manually.
 }

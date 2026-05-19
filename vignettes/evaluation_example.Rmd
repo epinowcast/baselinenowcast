@@ -56,7 +56,7 @@ head(syn_nssp_df)
 ## Evaluating across a range of nowcast dates
 
 We'll start by specifying the range of nowcast dates that we want to produce retrospective nowcasts for.
-Since this data has no historical data before October 25th, 2025, we will start from December 10th, 2025 to April 1st, 2026, producing nowcasts each week on Wednesdays.
+Since this data has no historical data before October 25th, 2025, we will produce nowcasts each week on Wednesday from December 10th, 2025 to April 1st, 2026.
 ```{r}
 nowcast_dates <- seq(
   from = ymd("2025-12-10"),
@@ -197,7 +197,7 @@ mult_nowcast_quantiles_w_data <- mult_nowcast_quantiles |>
 
 ### Visual comparison of nowcasts
 
-We'll start by visualizing the nowcasts compared to both the initial data available without nowcasting and the final data available retrospectively, using the dataframe containing the nowcast quantiles.
+We'll start by visualising the nowcasts compared to both the initial data available without nowcasting and the final data available retrospectively, using the dataframe containing the nowcast quantiles.
 To make a static image, we will start by showing a probabilistic nowcast (gray) every 4 weeks alongside the final data (red) and the initial data (pink).
 
 ```{r}
@@ -657,9 +657,9 @@ When comparing model specifications, consider the following:
 **1. Weighted Interval Score (WIS)**: Lower is better. Look for meaningful differences (e.g., >10% reduction) rather than small variations that may be due to randomness. The WIS provides an overall measure of forecast accuracy that balances sharpness and calibration.
 
 **2. WIS Components**:
-   - High **underprediction** suggests the model is systematically too low, which could lead to underestimating disease burden
-   - High **overprediction** suggests the model is systematically too high, which could lead to unnecessary alarm
-   - High **dispersion** suggests prediction intervals are too wide, indicating the model is less certain than it could be
+   - High **underprediction** suggests the nowcasts are systematically too low, which could lead to underestimating disease burden
+   - High **overprediction** suggests the nowcasts are systematically too high, which could lead to overestimating disease burden
+   - High **dispersion** suggests prediction intervals are too wide
 
 **3. Interval Coverage**:
    - Should be close to nominal levels (50% and 90%)

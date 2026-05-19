@@ -365,7 +365,12 @@ p_anim <- ggplot(mult_nowcast_quantiles_w_data) +
     ),
     guide = guide_legend(
       override.aes = list(
-        color = c("red", "pink", "black"),
+         color = c(
+          "Final evaluation data" = "red",
+          "Data as of nowcast date" = "pink",
+          "Date of nowcast" = "black"
+        ),
+        linewidth = 1
         linewidth = 1
       )
     )

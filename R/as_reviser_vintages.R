@@ -155,6 +155,8 @@ as_reporting_triangle.tbl_pubdate <- function(data,
 
   if (is.null(delays_unit)) {
     delays_unit <- .infer_delays_unit(long_df$pub_date, long_df$time)
+    # pub_date is reviser's name for what the rest of the package calls
+    # report_date; they are the same thing here.
   }
   assert_delays_unit(delays_unit)
 
@@ -177,24 +179,25 @@ as_reporting_triangle.tbl_pubdate <- function(data,
   ))
 }
 
-#' Infer `delays_unit` from the spacing of `pub_date - time` gaps
+#' Infer `delays_unit` from `report_date - reference_date` gaps
 #'
-#' Looks at the within-row gaps between publication dates and reference times
-#' (i.e. the realised delays in days), and returns the smallest unit that
-#' divides every gap evenly. This correctly handles cases where reference
-#' dates are weekly but delays are daily (or vice versa).
+#' Looks at the realised delays (the gaps between each report date and its
+#' reference date, in days) and returns the smallest unit that divides every
+#' gap evenly. This correctly handles cases where reference dates are weekly
+#' but delays are daily (or vice versa).
 #'
-#' @param pub_dates Date vector of publication dates.
-#' @param times Date vector of reference times (same length as `pub_dates`).
+#' @param report_dates Date vector of report dates.
+#' @param reference_dates Date vector of reference dates (same length as
+#'   `report_dates`).
 #' @returns A character string, one of `"days"` or `"weeks"`.
 #' @keywords internal
-.infer_delays_unit <- function(pub_dates, times) {
-  gaps <- as.integer(as.Date(pub_dates) - as.Date(times))
+.infer_delays_unit <- function(report_dates, reference_dates) {
+  gaps <- as.integer(as.Date(report_dates) - as.Date(reference_dates))
   positive_gaps <- gaps[gaps > 0]
   if (length(positive_gaps) == 0L) {
     cli::cli_abort(
       c(
-        "Cannot infer {.arg delays_unit}: no positive `pub_date - time` gaps.",
+        "Cannot infer {.arg delays_unit}: no positive `report_date - reference_date` gaps.", # nolint
         "i" = "Pass {.arg delays_unit} explicitly." # nolint
       )
     )
@@ -203,7 +206,7 @@ as_reporting_triangle.tbl_pubdate <- function(data,
   if (any(positive_gaps %% min_gap != 0L)) {
     cli::cli_abort(
       c(
-        "Cannot infer {.arg delays_unit}: `pub_date - time` gaps are not multiples of the smallest gap.", # nolint
+        "Cannot infer {.arg delays_unit}: `report_date - reference_date` gaps are not multiples of the smallest gap.", # nolint
         "i" = "Smallest gap (days): {.val {min_gap}}.", # nolint
         "i" = "Pass {.arg delays_unit} explicitly." # nolint
       )

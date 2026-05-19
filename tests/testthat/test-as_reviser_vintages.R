@@ -228,6 +228,6 @@ test_that(".infer_delays_unit() errors on non-multiple gaps", {
   # Gaps 2 and 3: smallest is 2, but 3 is not a multiple of 2.
   expect_error(
     infer(t0 + c(2, 3), rep(t0, 2)),
-    regexp = "not multiples"
+    regexp = "multiples of the smallest gap"
   )
 })

@@ -2,22 +2,23 @@
 % Please edit documentation in R/as_reviser_vintages.R
 \name{.infer_delays_unit}
 \alias{.infer_delays_unit}
-\title{Infer \code{delays_unit} from the spacing of \code{pub_date - time} gaps}
+\title{Infer \code{delays_unit} from \code{report_date - reference_date} gaps}
 \usage{
-.infer_delays_unit(pub_dates, times)
+.infer_delays_unit(report_dates, reference_dates)
 }
 \arguments{
-\item{pub_dates}{Date vector of publication dates.}
+\item{report_dates}{Date vector of report dates.}
 
-\item{times}{Date vector of reference times (same length as \code{pub_dates}).}
+\item{reference_dates}{Date vector of reference dates (same length as
+\code{report_dates}).}
 }
 \value{
 A character string, one of \code{"days"} or \code{"weeks"}.
 }
 \description{
-Looks at the within-row gaps between publication dates and reference times
-(i.e. the realised delays in days), and returns the smallest unit that
-divides every gap evenly. This correctly handles cases where reference
-dates are weekly but delays are daily (or vice versa).
+Looks at the realised delays (the gaps between each report date and its
+reference date, in days) and returns the smallest unit that divides every
+gap evenly. This correctly handles cases where reference dates are weekly
+but delays are daily (or vice versa).
 }
 \keyword{internal}

@@ -40,6 +40,7 @@ library(dplyr)
 library(glue)
 library(scoringutils)
 library(gganimate)
+library(magick)
 ```
 
 ## Data
@@ -281,8 +282,7 @@ p
 
 Optionally, we can make this into an animated figure, or a "flipbook" using `gganimate`.
 This can be saved as a GIF with the command `anim_save()`.
-Note: This chunk is not evaluated by default to avoid rendering issues. Set `eval=TRUE` to create the animation.
-```{r, eval=FALSE}
+```{r}
 p_anim <- ggplot(mult_nowcast_quantiles_w_data) +
   # Final evaluation data — not grouped by nowcast_date so it stays fixed
   geom_line(
@@ -352,7 +352,8 @@ p_anim <- ggplot(mult_nowcast_quantiles_w_data) +
 
 animate(p_anim,
   nframes = n_distinct(mult_nowcast_quantiles_w_data$nowcast_date),
-  fps = 1.5, width = 800, height = 500
+  fps = 1.5, width = 800, height = 500,
+  renderer = magick_renderer()
 )
 
 anim_save("nowcast_flipbook.gif")

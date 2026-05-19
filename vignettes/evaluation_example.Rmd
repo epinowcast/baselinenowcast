@@ -359,78 +359,83 @@ anim_save("nowcast_flipbook.gif")
 
 To quantify nowcast performance, we can evaluate nowcasts using proper scoring rules from the `scoringutils` package.
 Before proceeding, we strongly recommend reading the package documentation for `scoringutils` and walking through the various vignettes, all of which contain examples of evaluating forecasts for similar epidemiological datasets.
-We will evaluate the nowcast draws using the continuous ranked probability score and the quantiles using the weighted interval score, both of which are proper scoring rules which approximate absolute error for probabilistic forecasts.
-Additionally, we will compute the interval coverage which tells us about how well the model is calibrated by calculating the proportion of all observations which fall within a certain prediction interval, with a perfectly well-calibrated forecast having the exact same coverage as the nominal coverage e.g. 90% of observations fall within the 90% prediction interval.
 
-We start by setting an evaluation window-- the days for which we want to evaluate.
+We will evaluate the quantiles using the weighted interval score (WIS), which is a proper scoring rule that approximates absolute error for probabilistic forecasts.
+Additionally, we will compute the interval coverage, which tells us how well the model is calibrated by calculating the proportion of observations that fall within each prediction interval.
+A perfectly well-calibrated forecast would have the exact same coverage as the nominal coverage (e.g., 90% of observations fall within the 90% prediction interval).
+
+Note: The `scoringutils` package also supports sample-based scoring using the continuous ranked probability score (CRPS) if you prefer to work with draws rather than quantiles.
+For this vignette, we focus on WIS as it provides interpretable decomposition into overprediction, underprediction, and dispersion components.
+
+We start by setting an evaluation window—the days for which we want to evaluate.
 Since all `max_delay` days are being nowcasted, we will evaluate all of them.
-However, we might only want to evaluate a subset of these (e.g. the last 2 weeks).
+However, you might only want to evaluate a subset of these (e.g., the last 2 weeks).
 
 ```{r}
 eval_window <- max_delay
-draws_to_score <- mult_nowcast_draws_w_data |>
-  filter(reference_date >= nowcast_date - days(eval_window))
-quantiles_to_score <- mult_nowcast_quantiles_w_data |>
-  filter(reference_date >= nowcast_date - days(eval_window))
 ```
 
-We start by converting both of our dataframes containing multiple nowcast comparisons into `scoringutils` forecast objects.
-For the probabilistic draws, we will convert to a forecast object using the `scoringutils` function `as_forecast_sample()`.
+Next, we'll create a helper function to prepare our nowcast data for scoring with `scoringutils`.
+This converts our quantile format into the format expected by `scoringutils`.
 
 ```{r}
-su_draws <- as_forecast_sample(
-  draws_to_score,
-  forecast_unit = c(
-    "nowcast_date",
-    "reference_date",
-    "scale_factor",
-    "prop_delay"
-  ),
-  observed = "final_count",
-  predicted = "pred_count",
-  sample_id = "draw"
+# Helper function to prepare nowcast data for scoring with scoringutils
+prepare_for_scoring <- function(quantiles_df, eval_window) {
+  # Filter to evaluation window
+  quantiles_to_score <- quantiles_df |>
+    filter(reference_date >= nowcast_date - days(eval_window))
+
+  # Convert quantiles from wide to long format
+  quantiles_long <- quantiles_to_score |>
+    pivot_longer(
+      cols = starts_with("q_"),
+      names_prefix = "q_",
+      names_to = "quantile_level",
+      values_to = "pred_count"
+    ) |>
+    mutate(quantile_level = as.numeric(quantile_level))
+
+  # Create scoringutils forecast object
+  su_quantiles <- as_forecast_quantile(
+    quantiles_long,
+    forecast_unit = c(
+      "nowcast_date",
+      "reference_date",
+      "scale_factor",
+      "prop_delay"
+    ),
+    observed = "final_count",
+    predicted = "pred_count",
+    quantile_level = "quantile_level"
+  )
+
+  return(su_quantiles)
+}
+```
+
+Now we'll use this helper function to prepare our data and compute scores.
+
+```{r}
+# Prepare data for scoring
+su_quantiles <- prepare_for_scoring(
+  quantiles_df = mult_nowcast_quantiles_w_data,
+  eval_window = eval_window
 )
-```
 
-For the quantile dataframe we used for plotting, we first need to pivot it from wide to long and then we can pass it to `scoringutils`'s function `as_forecast_quantile()`
-```{r}
-quantiles_to_score_long <- quantiles_to_score |>
-  pivot_longer(
-    cols = starts_with("q_"),
-    names_prefix = "q_",
-    names_to = "quantile_level",
-    values_to = "pred_count"
-  ) |>
-  mutate(quantile_level = as.numeric(quantile_level))
-
-su_quantiles <- as_forecast_quantile(
-  quantiles_to_score_long,
-  forecast_unit = c(
-    "nowcast_date",
-    "reference_date",
-    "scale_factor",
-    "prop_delay"
-  ),
-  observed = "final_count",
-  predicted = "pred_count",
-  quantile_level = "quantile_level"
-)
-```
-
-Next we will score both the samples and the quantiles using the `scoringutils` `score()` function.
-
-```{r}
+# Score the quantile-based forecasts
 scores_quantiles <- score(su_quantiles)
-scores_samples <- score(su_draws)
 
 head(scores_quantiles)
-head(scores_samples)
 ```
 
-We now have a table of scores for both the draws and quantiles, which contain scores at every nowcast date and reference date.
-To investigate these further, we might be interested in how nowcast performance varies across nowcast dates.
-We can visualize this by first summarizing the scores by nowcast date using the `summarise_scores()` function, and then plotting the result.
-We'll focus on the quantile-based scores, looking both at WIS and the 50th and 90th prediction intervals.
+We now have a table of scores containing WIS and its components at every nowcast date and reference date.
+The WIS can be decomposed into three components:
+- **Overprediction**: penalty for predicting too high
+- **Underprediction**: penalty for predicting too low
+- **Dispersion**: penalty for prediction interval width
+
+To investigate these further, we can look at how nowcast performance varies across nowcast dates.
+We'll visualize this by first summarizing the scores by nowcast date using the `summarise_scores()` function, looking both at WIS and the 50th and 90th prediction intervals.
 
 
 ```{r}
@@ -532,66 +537,20 @@ mult_nowcast_quantiles_w_data <- mult_nowcast_quantiles |>
   left_join(eval_data, by = "reference_date")
 ```
 
-Filter to evaluate only the portion that is being nowcasted.
+Convert to scoringutils format and score (same process as the single specification section).
 ```{r}
 eval_window <- max_delay
-draws_to_score <- mult_nowcast_draws_w_data |>
-  filter(reference_date >= nowcast_date - days(eval_window))
-quantiles_to_score <- mult_nowcast_quantiles_w_data |>
-  filter(reference_date >= nowcast_date - days(eval_window))
-```
 
-We start by converting both of our dataframes containing multiple nowcast comparisons into `scoringutils` forecast objects.
-For the probabilistic draws, we will convert to a forecast object using the `scoringutils` function `as_forecast_sample()`.
-
-```{r}
-su_draws <- as_forecast_sample(
-  draws_to_score,
-  forecast_unit = c(
-    "nowcast_date",
-    "reference_date",
-    "scale_factor",
-    "prop_delay"
-  ),
-  observed = "final_count",
-  predicted = "pred_count",
-  sample_id = "draw"
+# Prepare data for scoring using our helper function
+su_quantiles <- prepare_for_scoring(
+  quantiles_df = mult_nowcast_quantiles_w_data,
+  eval_window = eval_window
 )
-```
 
-For the quantile dataframe we used for plotting, we first need to pivot it from wide to long and then we can pass it to `scoringutils`'s function `as_forecast_quantile()`
-```{r}
-quantiles_to_score_long <- quantiles_to_score |>
-  pivot_longer(
-    cols = starts_with("q_"),
-    names_prefix = "q_",
-    names_to = "quantile_level",
-    values_to = "pred_count"
-  ) |>
-  mutate(quantile_level = as.numeric(quantile_level))
-
-su_quantiles <- as_forecast_quantile(
-  quantiles_to_score_long,
-  forecast_unit = c(
-    "nowcast_date",
-    "reference_date",
-    "scale_factor",
-    "prop_delay"
-  ),
-  observed = "final_count",
-  predicted = "pred_count",
-  quantile_level = "quantile_level"
-)
-```
-
-Next we will score both the samples and the quantiles using the `scoringutils` `score()` function.
-
-```{r}
+# Score the forecasts
 scores_quantiles <- score(su_quantiles)
-scores_samples <- score(su_draws)
 
 head(scores_quantiles)
-head(scores_samples)
 ```
 
 ###  Summarise performance by model specification

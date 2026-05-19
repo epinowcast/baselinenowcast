@@ -12,9 +12,9 @@ with a \code{time} column and one column per publication date.}
 
 \item{delays_unit}{Character string specifying the temporal granularity of
 the delays, one of \code{"days"}, \code{"weeks"}, \code{"months"}, or \code{"years"}. If
-\code{NULL} (default), the unit is inferred from the constant spacing of the
-\code{time} column in \code{data}. Pass it explicitly to override or when
-inference is not possible.}
+\code{NULL} (default), the unit is inferred from the smallest non-zero
+\code{pub_date - time} gap in \code{data} (1 day -> \code{"days"}, 7 days -> \code{"weeks"}).
+Pass it explicitly to override or for monthly/yearly triangles.}
 
 \item{...}{Additional arguments passed to
 \code{\link[=as_reporting_triangle.data.frame]{as_reporting_triangle.data.frame()}}.}
@@ -36,11 +36,10 @@ time point to recover incremental counts, and uses the delay implied by
 
 A \code{tbl_pubdate} carries no record of which delay unit was used when the
 vintages were created. By default this function infers \code{delays_unit} from
-the spacing of the \code{time} values (1 day -> \code{"days"}, 7 days -> \code{"weeks"})
-and errors if the spacing is not constant or does not match a supported
-unit. Pass \code{delays_unit} explicitly to override the inference, for example
-when round-tripping a triangle whose unit cannot be inferred from a single
-row of \code{time} values.
+the realised delays (the gaps between each \code{pub_date} and its \code{time}),
+which means weekly reference dates with daily delays are correctly
+inferred as \code{"days"} and vice versa. Pass \code{delays_unit} explicitly to
+override the inference or for monthly/yearly triangles.
 
 The reviser package must be installed to use this function.
 }

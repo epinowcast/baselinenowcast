@@ -95,9 +95,9 @@ as_reviser_vintages <- function(x, ...) {
 #'
 #' @param delays_unit Character string specifying the temporal granularity of
 #'   the delays, one of `"days"`, `"weeks"`, `"months"`, or `"years"`. If
-#'   `NULL` (default), the unit is inferred from the constant spacing of the
-#'   `time` column in `data`. Pass it explicitly to override or when
-#'   inference is not possible.
+#'   `NULL` (default), the unit is inferred from the smallest non-zero
+#'   `pub_date - time` gap in `data` (1 day -> `"days"`, 7 days -> `"weeks"`).
+#'   Pass it explicitly to override or for monthly/yearly triangles.
 #'
 #' @details
 #' Reviser vintages store cumulative reported values at each publication date.
@@ -107,11 +107,10 @@ as_reviser_vintages <- function(x, ...) {
 #'
 #' A `tbl_pubdate` carries no record of which delay unit was used when the
 #' vintages were created. By default this function infers `delays_unit` from
-#' the spacing of the `time` values (1 day -> `"days"`, 7 days -> `"weeks"`)
-#' and errors if the spacing is not constant or does not match a supported
-#' unit. Pass `delays_unit` explicitly to override the inference, for example
-#' when round-tripping a triangle whose unit cannot be inferred from a single
-#' row of `time` values.
+#' the realised delays (the gaps between each `pub_date` and its `time`),
+#' which means weekly reference dates with daily delays are correctly
+#' inferred as `"days"` and vice versa. Pass `delays_unit` explicitly to
+#' override the inference or for monthly/yearly triangles.
 #'
 #' The reviser package must be installed to use this function.
 #'
@@ -148,16 +147,16 @@ as_reporting_triangle.tbl_pubdate <- function(data,
     )
   }
 
-  if (is.null(delays_unit)) {
-    delays_unit <- .infer_delays_unit(data$time)
-  }
-  assert_delays_unit(delays_unit)
-
   long_df <- reviser::vintages_long(data, keep_na = FALSE) # nolint: namespace_linter
   long_df <- as.data.frame(long_df)
   long_df <- long_df[order(long_df$time, long_df$pub_date), , drop = FALSE]
   long_df$time <- as.Date(long_df$time)
   long_df$pub_date <- as.Date(long_df$pub_date)
+
+  if (is.null(delays_unit)) {
+    delays_unit <- .infer_delays_unit(long_df$pub_date, long_df$time)
+  }
+  assert_delays_unit(delays_unit)
 
   long_df$count <- unlist(
     by(
@@ -178,32 +177,39 @@ as_reporting_triangle.tbl_pubdate <- function(data,
   ))
 }
 
-#' Infer `delays_unit` from the spacing of `time` values
+#' Infer `delays_unit` from the spacing of `pub_date - time` gaps
 #'
-#' @param times Vector of dates (or coercible to dates).
+#' Looks at the within-row gaps between publication dates and reference times
+#' (i.e. the realised delays in days), and returns the smallest unit that
+#' divides every gap evenly. This correctly handles cases where reference
+#' dates are weekly but delays are daily (or vice versa).
+#'
+#' @param pub_dates Date vector of publication dates.
+#' @param times Date vector of reference times (same length as `pub_dates`).
 #' @returns A character string, one of `"days"` or `"weeks"`.
 #' @keywords internal
-.infer_delays_unit <- function(times) {
-  times <- sort(unique(as.Date(times)))
-  if (length(times) < 2L) {
+.infer_delays_unit <- function(pub_dates, times) {
+  gaps <- as.integer(as.Date(pub_dates) - as.Date(times))
+  positive_gaps <- gaps[gaps > 0]
+  if (length(positive_gaps) == 0L) {
     cli::cli_abort(
       c(
-        "Cannot infer {.arg delays_unit} from fewer than 2 unique `time` values.", # nolint
+        "Cannot infer {.arg delays_unit}: no positive `pub_date - time` gaps.",
         "i" = "Pass {.arg delays_unit} explicitly." # nolint
       )
     )
   }
-  diffs <- as.integer(diff(times))
-  if (length(unique(diffs)) != 1L) {
+  min_gap <- min(positive_gaps)
+  if (any(positive_gaps %% min_gap != 0L)) {
     cli::cli_abort(
       c(
-        "Cannot infer {.arg delays_unit}: spacing between `time` values is not constant.", # nolint
-        "i" = "Found spacings (days): {.val {sort(unique(diffs))}}.", # nolint
+        "Cannot infer {.arg delays_unit}: `pub_date - time` gaps are not multiples of the smallest gap.", # nolint
+        "i" = "Smallest gap (days): {.val {min_gap}}.", # nolint
         "i" = "Pass {.arg delays_unit} explicitly." # nolint
       )
     )
   }
-  unit <- switch(as.character(unique(diffs)),
+  unit <- switch(as.character(min_gap),
     "1" = "days",
     "7" = "weeks",
     NULL
@@ -211,7 +217,7 @@ as_reporting_triangle.tbl_pubdate <- function(data,
   if (is.null(unit)) {
     cli::cli_abort(
       c(
-        "Cannot infer {.arg delays_unit} from a constant spacing of {unique(diffs)} day{?s}.", # nolint
+        "Cannot infer {.arg delays_unit} from a smallest gap of {min_gap} day{?s}.", # nolint
         "i" = "Pass {.arg delays_unit} explicitly (one of 'days', 'weeks', 'months', 'years')." # nolint
       )
     )

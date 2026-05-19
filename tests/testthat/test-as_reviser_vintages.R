@@ -116,18 +116,29 @@ test_that(
 )
 
 test_that(
-  "as_reporting_triangle.tbl_pubdate() errors on non-constant time spacing",
+  "as_reporting_triangle.tbl_pubdate() infers daily unit even with weekly reference dates", # nolint
   {
     skip_if_not_installed("reviser")
+    skip_if_not_installed("lubridate")
+    skip_if_not_installed("dplyr")
 
-    rep_tri <- as_reporting_triangle(data_as_of_df)
+    # Weekly reference dates but daily report dates
+    mixed <- data_as_of_df |>
+      dplyr::filter( # nolint: namespace_linter
+        lubridate::wday(reference_date) == 1 # nolint: namespace_linter
+      )
+    rep_tri <- as_reporting_triangle(mixed, delays_unit = "days")
     vintages <- as_reviser_vintages(rep_tri)
-    # Drop a middle row to create non-constant spacing in `time`
-    irregular <- vintages[-2, , drop = FALSE]
-    expect_error(
-      as_reporting_triangle(data = irregular),
-      regexp = "Cannot infer"
-    )
+
+    # Inference uses pub_date - time gaps, not time spacing, so it picks
+    # "days" even though `time` values are 7 days apart.
+    rep_tri_back <- as_reporting_triangle(data = vintages)
+    expect_identical(attr(rep_tri_back, "delays_unit"), "days")
+    mat_in <- rep_tri
+    dimnames(mat_in) <- NULL
+    mat_back <- rep_tri_back
+    dimnames(mat_back) <- NULL
+    expect_identical(mat_back, mat_in)
   }
 )
 
@@ -182,25 +193,41 @@ test_that(
   }
 )
 
-test_that(".infer_delays_unit() infers days and weeks", {
+test_that(".infer_delays_unit() infers days and weeks from gaps", {
   infer <- getFromNamespace(".infer_delays_unit", "baselinenowcast")
-  expect_identical(infer(as.Date("2024-01-01") + 0:4), "days")
-  expect_identical(infer(as.Date("2024-01-01") + 7 * (0:3)), "weeks")
-})
-
-test_that(".infer_delays_unit() errors with fewer than 2 unique times", {
-  infer <- getFromNamespace(".infer_delays_unit", "baselinenowcast")
-  expect_error(infer(as.Date("2024-01-01")), regexp = "fewer than 2")
-  expect_error(
-    infer(rep(as.Date("2024-01-01"), 3)),
-    regexp = "fewer than 2"
+  t0 <- as.Date("2024-01-01")
+  # Same time, delays at 0, 1, 2 days -> "days"
+  expect_identical(infer(t0 + 0:2, rep(t0, 3)), "days")
+  # Same time, delays at 0, 7, 14 days -> "weeks"
+  expect_identical(infer(t0 + 7 * (0:2), rep(t0, 3)), "weeks")
+  # Weekly times with daily delays -> "days" (the case Kaitlyn raised)
+  expect_identical(
+    infer(c(t0, t0 + 1, t0 + 7, t0 + 8), c(t0, t0, t0 + 7, t0 + 7)),
+    "days"
   )
 })
 
-test_that(".infer_delays_unit() errors on unsupported constant spacing", {
+test_that(".infer_delays_unit() errors with no positive gaps", {
   infer <- getFromNamespace(".infer_delays_unit", "baselinenowcast")
+  t0 <- as.Date("2024-01-01")
+  expect_error(infer(rep(t0, 3), rep(t0, 3)), regexp = "no positive")
+})
+
+test_that(".infer_delays_unit() errors on unsupported gap size", {
+  infer <- getFromNamespace(".infer_delays_unit", "baselinenowcast")
+  t0 <- as.Date("2024-01-01")
   expect_error(
-    infer(as.Date("2024-01-01") + 14 * (0:2)),
+    infer(t0 + 14 * (1:2), rep(t0, 2)),
     regexp = "Cannot infer"
+  )
+})
+
+test_that(".infer_delays_unit() errors on non-multiple gaps", {
+  infer <- getFromNamespace(".infer_delays_unit", "baselinenowcast")
+  t0 <- as.Date("2024-01-01")
+  # Smallest gap is 1, but 3 is not a multiple... actually it is. Use 2 and 3.
+  expect_error(
+    infer(t0 + c(2, 3), rep(t0, 2)),
+    regexp = "not multiples"
   )
 })

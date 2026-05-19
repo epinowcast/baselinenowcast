@@ -649,3 +649,24 @@ scores_summary |>
   xlab("Model specification") +
   ylab("Interval coverage")
 ```
+
+### Interpreting the results
+
+When comparing model specifications, consider the following:
+
+**1. Weighted Interval Score (WIS)**: Lower is better. Look for meaningful differences (e.g., >10% reduction) rather than small variations that may be due to randomness. The WIS provides an overall measure of forecast accuracy that balances sharpness and calibration.
+
+**2. WIS Components**:
+   - High **underprediction** suggests the model is systematically too low, which could lead to underestimating disease burden
+   - High **overprediction** suggests the model is systematically too high, which could lead to unnecessary alarm
+   - High **dispersion** suggests prediction intervals are too wide, indicating the model is less certain than it could be
+
+**3. Interval Coverage**:
+   - Should be close to nominal levels (50% and 90%)
+   - Consistently low coverage (e.g., 40% for 50% intervals) suggests overconfidence—intervals are too narrow
+   - Consistently high coverage (e.g., 95% for 90% intervals) suggests underconfidence—intervals are too wide
+   - Well-calibrated forecasts build trust and support better decision-making
+
+**Selecting a model specification**: In this example, you would select the specification that minimizes WIS while maintaining well-calibrated interval coverage. If specifications have similar WIS, prefer the one with better calibration or simpler parameterization (lower `scale_factor` requires less training data, which may be beneficial when historical data is limited).
+
+The retrospective evaluation approach demonstrated here can be applied to other `baselinenowcast` specifications beyond training volume, including weekday stratification, cross-stratum sharing, and observation model choices.

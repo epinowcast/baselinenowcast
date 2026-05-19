@@ -281,7 +281,8 @@ p
 
 Optionally, we can make this into an animated figure, or a "flipbook" using `gganimate`.
 This can be saved as a GIF with the command `anim_save()`.
-```{r}
+Note: This chunk is not evaluated by default to avoid rendering issues. Set `eval=TRUE` to create the animation.
+```{r, eval=FALSE}
 p_anim <- ggplot(mult_nowcast_quantiles_w_data) +
   # Final evaluation data — not grouped by nowcast_date so it stays fixed
   geom_line(

@@ -16,9 +16,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-In this vignette we demonstrate how to evaluate the performance of your `baselinenowcast` nowcast across multiple nowcast dates using visual checks and out of sample scoring using proper scoring rules from the [`scoringutils`](https://epiforecasts.io/scoringutils/) package.
-We'll start by doing this for a single model specification, and then show how you can use the results from a quantitative evaluation to help choose a `baselinenowcast` model specification.
-Here we focus on optimising the training volume specification.
+In this vignette, we demonstrate how to evaluate the performance of your `baselinenowcast` nowcast across multiple nowcast dates.
+We'll use visual checks and out-of-sample scoring with proper scoring rules from the [`scoringutils`](https://epiforecasts.io/scoringutils/) package.
+We'll start by evaluating a single model specification, and then show how to compare multiple specifications to inform your modeling choices.
+Here we focus on optimizing the training volume specification.
 Before working through this vignette, we advise you to read both the Getting Started vignette and the NSSP nowcast vignette, both of which will demonstrate how to produce a nowcast for a single nowcast date.
 
 
@@ -89,7 +90,8 @@ Based on this plot, we will set our maximum delay to 25 days.
 ### Specify a single model
 
 We'll start by evaluating a single `baselinenowcast` specification.
-With the maximum delay set to 25 days, we will then specify the total number of reference dates used for training the model as 2.2x the maximum delay using the `scale_factor` argument, and specify that half of the training data be used for delay estimation with the `prop_delay` argument.
+With the maximum delay set to 25 days, we will specify the total number of reference dates used for training as 2.2 times the maximum delay using the `scale_factor` argument.
+We'll also specify that half of the training data be used for delay estimation with the `prop_delay` argument.
 
 Later in this vignette, we will demonstrate how to use quantitative nowcast performance to evaluate the performance of different training volume specifications.
 ```{r}
@@ -218,7 +220,8 @@ for (i in seq_along(nowcast_dates)) {
 }
 ```
 
-Next, we'll want to join the evaluation data to the nowcasts combined with the initial counts. For the purpose of evaluation, we will want to only evaluate against the reports that occurred on or before the maximum delay, otherwise, older nowcasts have a longer period of evaluation data than more recent nowcasts.
+Next, we'll join the evaluation data to our nowcasts.
+We'll only include reports that occurred within the maximum delay window to ensure fair comparison across all nowcast dates.
 
 ```{r}
 eval_data <- syn_nssp_df |>

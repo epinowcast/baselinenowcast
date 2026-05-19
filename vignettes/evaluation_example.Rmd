@@ -208,9 +208,10 @@ nowcast_dates_to_visualize <- seq(
   to = ymd("2026-04-01"), by = "4 weeks"
 )
 
-mult_nowcasts_filtered <- filter(mult_nowcast_quantiles_w_data, 
-                                 nowcast_date %in% nowcast_dates_to_visualize)
-
+mult_nowcasts_filtered <- filter(
+  mult_nowcast_quantiles_w_data,
+  nowcast_date %in% nowcast_dates_to_visualize
+)
 
 p <- ggplot(mult_nowcasts_filtered) +
   geom_line(
@@ -442,9 +443,9 @@ We'll visualize this by first summarizing the scores by nowcast date using the `
 
 
 ```{r}
-scores_by_nowcast_date <- summarise_scores(scores_quantiles, 
-                                           by = "nowcast_date")
-
+scores_by_nowcast_date <- summarise_scores(scores_quantiles,
+  by = "nowcast_date"
+)
 ggplot(scores_by_nowcast_date) +
   geom_line(aes(x = nowcast_date, y = wis)) +
   geom_point(aes(x = nowcast_date, y = wis)) +
@@ -487,13 +488,13 @@ scores_summary <- scores_quantiles |>
   mutate(model = "baselinenowcast") |>
   summarise_scores(by = "model") |>
   select(model, interval_coverage_50, interval_coverage_90) |>
-  #nolint start
+  # nolint start
   rename(
     "Model" = model,
     "50% coverage" = interval_coverage_50,
     "90% coverage" = interval_coverage_90
   ) |>
-  #nolint end
+  # nolint end
   knitr::kable(digits = 3)
 scores_summary
 ```
@@ -538,8 +539,10 @@ for (i in seq_along(nowcast_dates)) {
 
 Join the evaluation data (same as before).
 ```{r}
-mult_nowcast_quantiles_w_data <-left_join(mult_nowcast_quantiles, 
-                                          eval_data, by = "reference_date")
+mult_nowcast_quantiles_w_data <- left_join(mult_nowcast_quantiles,
+  eval_data,
+  by = "reference_date"
+)
 ```
 
 Convert to scoringutils format and score (same process as the single specification section).
@@ -570,7 +573,7 @@ scores_summary <- scores_quantiles |>
   )
 
 scores_summary_table <- scores_summary |>
-  #nolint start
+  # nolint start
   rename(
     "Model" = model,
     "Proportion for delay" = prop_delay,
@@ -579,7 +582,7 @@ scores_summary_table <- scores_summary |>
     "90% coverage" = interval_coverage_90,
     "WIS" = wis
   ) |>
-  #nolint end
+  # nolint end
   knitr::kable(digits = 3)
 scores_summary_table
 ```
@@ -588,12 +591,13 @@ Make a bar chart to visualize the scores, broken down by underprediction, overpr
 scores_summary |>
   pivot_longer(cols = c("overprediction", "underprediction", "dispersion")) |>
   mutate(
-    name = factor(name, levels = c(
-      "overprediction",
-      "dispersion",
-      "underprediction"
-    ),
-    model_name = glue("pd:{prop_delay} sf:{scale_factor}")
+    name = factor(name,
+      levels = c(
+        "overprediction",
+        "dispersion",
+        "underprediction"
+      ),
+      model_name = glue("pd:{prop_delay} sf:{scale_factor}")
     )
   ) |>
   ggplot() +

@@ -363,14 +363,18 @@ p_anim <- ggplot(mult_nowcast_quantiles_w_data) +
       "Data as of nowcast date" = "solid",
       "Date of nowcast" = "dashed"
     ),
+    breaks = c(
+      "Final evaluation data",
+      "Data as of nowcast date",
+      "Date of nowcast"
+    ),
     guide = guide_legend(
       override.aes = list(
-         color = c(
+        color = c(
           "Final evaluation data" = "red",
           "Data as of nowcast date" = "pink",
           "Date of nowcast" = "black"
         ),
-        linewidth = 1
         linewidth = 1
       )
     )
@@ -558,7 +562,7 @@ for (i in seq_along(nowcast_dates)) {
         nowcast_date = nowcast_dates[i],
         max_delay = max_delay,
         scale_factor = scale_factors[k],
-        prop_delay = prop_delay[j],
+        prop_delay = prop_delays[j],
         model_name = "baselinenowcast",
         output_type = "quantiles"
       )
@@ -653,15 +657,92 @@ scores_summary <- scores_quantiles |>
   mutate(model = "baselinenowcast") |>
   summarise_scores(by = c("model", "prop_delay", "scale_factor")) |>
   select(
-    model, wis, underprediction, overprediction, dispersion,
+    model, prop_delay, scale_factor, wis, underprediction, overprediction, dispersion,
     interval_coverage_50, interval_coverage_90
-  ) |>
+  )
+
+scores_summary_table <- scores_summary |>
   rename(
     "Model" = model,
+    "Proportion for delay" = prop_delay,
+    "Scale factor" = scale_factor,
     "50% coverage" = interval_coverage_50,
     "90% coverage" = interval_coverage_90,
     "WIS" = wis
   ) |>
   knitr::kable(digits = 3)
 scores_summary
+```
+Make a bar chart to visualise the scores, broken down by underprediction, overprediction, and dispersion.
+```{r}
+scores_summary |>
+  pivot_longer(cols = c("overprediction", "underprediction", "dispersion")) |>
+  mutate(
+    name = factor(name, levels = c(
+      "overprediction",
+      "dispersion",
+      "underprediction"
+    ))
+  ) |>
+  mutate(model_name = glue("pd:{prop_delay} sf:{scale_factor}")) |>
+  ggplot() +
+  geom_bar(aes(x = model_name, y = value, fill = name),
+    stat = "identity", position = "stack"
+  ) +
+  theme_bw() +
+  scale_fill_manual(
+    name = "WIS component",
+    values = c("maroon4", "blue4", "orange4")
+  ) +
+  theme(
+    axis.text.x = element_text(
+      vjust = 1,
+      hjust = 1,
+      angle = 45,
+      size = 11
+    )
+  ) +
+  xlab("Model specification") +
+  ylab("WIS")
+```
+Lastly, compare interval coverage for each specification.
+```{r}
+scores_summary |>
+  mutate(interval_coverage_90 = interval_coverage_90 - interval_coverage_50) |>
+  pivot_longer(cols = c("interval_coverage_90", "interval_coverage_50")) |>
+  mutate(
+    model_name = glue("pd:{prop_delay} sf:{scale_factor}"),
+    name = factor(name, levels = c(
+      "interval_coverage_90",
+      "interval_coverage_50"
+    ))
+  ) |>
+  ggplot() +
+  geom_bar(aes(x = model_name, y = value, alpha = name),
+    stat = "identity", position = "stack"
+  ) +
+  theme_bw() +
+  scale_alpha_manual(
+    name = "Interval coverage",
+    values = c(
+      interval_coverage_90 = 0.9,
+      interval_coverage_50 = 0.5
+    ),
+    labels = c(
+      interval_coverage_90 = "90%",
+      interval_coverage_50 = "50%"
+    )
+  ) +
+  geom_hline(aes(yintercept = 0.5), linetype = "dashed") +
+  geom_hline(aes(yintercept = 0.9), linetype = "dashed") +
+  theme(
+    axis.text.x = element_text(
+      vjust = 1,
+      hjust = 1,
+      angle = 45,
+      size = 11
+    )
+  ) +
+  xlab("Model specification") +
+  ylab("Interval coverage")
 ```

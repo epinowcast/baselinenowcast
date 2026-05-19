@@ -2,28 +2,41 @@
 % Please edit documentation in R/truncate.R
 \name{truncate_to_delay}
 \alias{truncate_to_delay}
-\title{Truncate reporting triangle to a specific maximum delay}
+\alias{truncate_to_delay.reporting_triangle}
+\alias{truncate_to_delay.reporting_triangle_df}
+\title{Truncate reporting data to a specific maximum delay}
 \usage{
-truncate_to_delay(x, max_delay)
+truncate_to_delay(x, max_delay, ...)
+
+\method{truncate_to_delay}{reporting_triangle}(x, max_delay, ...)
+
+\method{truncate_to_delay}{reporting_triangle_df}(x, max_delay, ...)
 }
 \arguments{
-\item{x}{A \link{reporting_triangle} object.}
+\item{x}{A \link{reporting_triangle} or \link{reporting_triangle_df} object.}
 
 \item{max_delay}{Integer specifying the maximum delay to retain. Must be
-between 0 and the current maximum delay of the triangle.}
+between 0 and the current maximum delay.}
+
+\item{...}{Additional arguments passed to methods.}
 }
 \value{
-A new \link{reporting_triangle} object with delays 0 through max_delay.
+A new object of the same class with delays 0 through max_delay.
 }
 \description{
-Creates a new reporting_triangle with columns filtered to include only
+Creates a new object with data filtered to include only
 delays from 0 to the specified maximum delay. This is useful when you want
 to limit the delay distribution used for estimation.
 }
 \examples{
-# Truncate to delays 0-2
+# Truncate reporting_triangle to delays 0-2
 rt_short <- truncate_to_delay(example_downward_corr_rt, max_delay = 2)
 get_max_delay(rt_short) # Returns 2
+
+# Truncate reporting_triangle_df
+data_as_of_df <- syn_nssp_df[syn_nssp_df$report_date <= "2026-04-01", ]
+rt_df <- as_reporting_triangle_df(data_as_of_df)
+rt_df_short <- truncate_to_delay(rt_df, max_delay = 10)
 }
 \seealso{
 Reporting triangle construction and validation
@@ -35,6 +48,7 @@ Reporting triangle construction and validation
 \code{\link{as_reporting_triangle}()},
 \code{\link{as_reporting_triangle.data.frame}()},
 \code{\link{as_reporting_triangle.matrix}()},
+\code{\link{as_reporting_triangle.reporting_triangle_df}()},
 \code{\link{as_reporting_triangle.triangle}()},
 \code{\link{assert_reporting_triangle}()},
 \code{\link{get_delays_from_dates}()},
@@ -54,5 +68,25 @@ Reporting triangle construction and validation
 \code{\link{tail.reporting_triangle}()},
 \code{\link{truncate_to_quantile}()},
 \code{\link{validate_reporting_triangle}()}
+
+Other reporting_triangle_df: 
+\code{\link{[.reporting_triangle_df}()},
+\code{\link{as.data.frame.reporting_triangle_df}()},
+\code{\link{as_reporting_triangle_df}()},
+\code{\link{as_reporting_triangle_df.data.frame}()},
+\code{\link{as_reporting_triangle_df.reporting_triangle}()},
+\code{\link{as_reporting_triangles}()},
+\code{\link{assert_reporting_triangle_df}()},
+\code{\link{get_strata}()},
+\code{\link{head.reporting_triangle_df}()},
+\code{\link{is_reporting_triangle_df}()},
+\code{\link{new_reporting_triangle_df}()},
+\code{\link{print.reporting_triangle_df}()},
+\code{\link{reporting_triangle_df-class}},
+\code{\link{summary.reporting_triangle_df}()},
+\code{\link{tail.reporting_triangle_df}()},
+\code{\link{truncate_to_quantile}()},
+\code{\link{validate_reporting_triangle_df}()}
 }
 \concept{reporting_triangle}
+\concept{reporting_triangle_df}

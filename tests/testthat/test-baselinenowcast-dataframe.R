@@ -1,3 +1,13 @@
+# DEPRECATED TESTS for baselinenowcast.data.frame()
+#
+# These tests use the deprecated baselinenowcast.data.frame() method.
+# They are kept for backwards compatibility testing but generate warnings.
+# For current tests using the recommended workflow, see:
+# - test-baselinenowcast_reporting_triangle_df.R
+#
+# The deprecated baselinenowcast_test() helper suppresses warnings to
+# keep test output clean.
+
 # Test-specific constants
 covid_data_single_strata_wday <- covid_data[covid_data$age_group == "00+", ]
 covid_data_age_groups_wday <- covid_data[covid_data$age_group != "00+", ]

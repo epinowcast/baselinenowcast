@@ -32,7 +32,9 @@ assert_baselinenowcast_df(valid_df)
 Main nowcasting interface functions
 \code{\link{baselinenowcast}()},
 \code{\link{baselinenowcast.data.frame}()},
+\code{\link{baselinenowcast.default}()},
 \code{\link{baselinenowcast.reporting_triangle}()},
+\code{\link{baselinenowcast.reporting_triangle_df}()},
 \code{\link{baselinenowcast_df-class}},
 \code{\link{new_baselinenowcast_df}()}
 }

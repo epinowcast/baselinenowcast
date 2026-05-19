@@ -65,6 +65,7 @@ Imports:
 Suggests:
     bookdown,
     gganimate,
+    gifksi,
     scoringutils,
     ChainLadder,
     dplyr,

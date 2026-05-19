@@ -55,7 +55,7 @@ head(syn_nssp_df)
 ## Evaluating across a range of nowcast dates
 
 We'll start by specifying the range of nowcast dates that we want to produce retrospective nowcasts for.
-Since this data has no historical data before October 25th, 2025, we will start from December 10th, 2025 to April 29th, 2026, producing nowcasts each week on Wednesdays.
+Since this data has no historical data before October 25th, 2025, we will start from December 10th, 2025 to April 1st, 2026, producing nowcasts each week on Wednesdays.
 ```{r}
 nowcast_dates <- seq(
   from = ymd("2025-12-10"),

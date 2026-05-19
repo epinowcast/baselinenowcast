@@ -240,7 +240,7 @@ mult_nowcast_draws_w_data <- mult_nowcast_draws |>
 
 ### Visual comparison of nowcasts
 
-We'll start by visualising the nowcasts compared to both the initial data available without nowcast and the final data available retrospectively, using the dataframe containing the quantiled nowcasts.
+We'll start by visualizing the nowcasts compared to both the initial data available without nowcasting and the final data available retrospectively, using the dataframe containing the nowcast quantiles.
 To make a static image, we will start by showing a probabilistic nowcast (gray) every 4 weeks alongside the final data (red) and the initial data (pink).
 
 ```{r}
@@ -472,7 +472,7 @@ head(scores_samples)
 
 We now have a table of scores for both the draws and quantiles, which contain scores at every nowcast date and reference date.
 To investigate these further, we might be interested in how nowcast performance varies across nowcast dates.
-We can visualise this by first summarising the scores by nowcast date using the `summarise_scores()` function, and then plotting the result.
+We can visualize this by first summarizing the scores by nowcast date using the `summarise_scores()` function, and then plotting the result.
 We'll focus on the quantile-based scores, looking both at WIS and the 50th and 90th prediction intervals.
 
 
@@ -676,7 +676,7 @@ scores_summary_table <- scores_summary |>
   knitr::kable(digits = 3)
 scores_summary
 ```
-Make a bar chart to visualise the scores, broken down by underprediction, overprediction, and dispersion.
+Make a bar chart to visualize the scores, broken down by underprediction, overprediction, and dispersion.
 ```{r}
 scores_summary |>
   pivot_longer(cols = c("overprediction", "underprediction", "dispersion")) |>

@@ -34,8 +34,14 @@ objects from matrices or data frames.
 
   Create a `reporting_triangle` from a matrix
 
+- [`as_reporting_triangle(`*`<tbl_pubdate>`*`)`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.tbl_pubdate.md)
+  : Convert reviser vintages to reporting_triangle format
+
 - [`as_reporting_triangle(`*`<triangle>`*`)`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.triangle.md)
   : Convert ChainLadder triangle to reporting_triangle format
+
+- [`as_reviser_vintages()`](https://baselinenowcast.epinowcast.org/reference/as_reviser_vintages.md)
+  : Convert reporting_triangle to reviser vintages format
 
 - [`assert_reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/assert_reporting_triangle.md)
   :

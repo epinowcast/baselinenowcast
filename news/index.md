@@ -2,6 +2,18 @@
 
 ## baselinenowcast 0.2.1000
 
+### Package
+
+- Add converters between `reporting_triangle` and
+  [reviser](https://CRAN.R-project.org/package=reviser) vintages formats
+  via
+  [`as_reviser_vintages()`](https://baselinenowcast.epinowcast.org/reference/as_reviser_vintages.md)
+  and
+  [`as_reporting_triangle.tbl_pubdate()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.tbl_pubdate.md),
+  enabling use of reviser’s vintage analysis and state space nowcasting
+  methods alongside baselinenowcast’s nowcasting functionality
+  ([\#429](https://github.com/epinowcast/baselinenowcast/issues/429)).
+
 ### Documentation
 
 - Modified NSSP nowcast vignette to do vectorised string matching

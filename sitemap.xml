@@ -21,7 +21,9 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.data.frame.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.matrix.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.tbl_pubdate.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.triangle.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/as_reviser_vintages.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/assert_baselinenowcast_df.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/assert_delays_unit.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/assert_reporting_triangle.html</loc></url>
@@ -59,6 +61,7 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-format_reference_date_range.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-get_triangle_info.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-handle_target_exceeds_avail.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-infer_delays_unit.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-perform_allocation_process.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-rename_cols.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-safelydoesit.html</loc></url>

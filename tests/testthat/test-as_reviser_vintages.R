@@ -225,7 +225,7 @@ test_that(".infer_delays_unit() errors on unsupported gap size", {
 test_that(".infer_delays_unit() errors on non-multiple gaps", {
   infer <- getFromNamespace(".infer_delays_unit", "baselinenowcast")
   t0 <- as.Date("2024-01-01")
-  # Smallest gap is 1, but 3 is not a multiple... actually it is. Use 2 and 3.
+  # Gaps 2 and 3: smallest is 2, but 3 is not a multiple of 2.
   expect_error(
     infer(t0 + c(2, 3), rep(t0, 2)),
     regexp = "not multiples"

@@ -109,11 +109,11 @@ fit_model <- function(raw_data,
                       scale_factor,
                       prop_delay) {
   # Remove all cases on/after the nowcast date
-  training_data <- raw_data |>
-    filter(
-      report_date < nowcast_date,
-      reference_date < nowcast_date
-    )
+  training_data <- filter(
+    raw_data,
+    report_date < nowcast_date,
+    reference_date < nowcast_date
+  )
 
   # Save the initial reports used for comparison
   initial_count_data <- training_data |>
@@ -133,13 +133,13 @@ fit_model <- function(raw_data,
   ) |>
     group_by(reference_date) |>
     summarise(
-      `q_.50` = median(pred_count),
-      `q_.25` = quantile(pred_count, 0.25),
-      `q_.75` = quantile(pred_count, 0.75),
-      `q_.05` = quantile(pred_count, 0.05),
-      `q_.95` = quantile(pred_count, 0.95),
-      `q_.025` = quantile(pred_count, 0.025),
-      `q_.975` = quantile(pred_count, 0.975),
+      q_.50 = median(pred_count),
+      q_.25 = quantile(pred_count, 0.25),
+      q_.75 = quantile(pred_count, 0.75),
+      q_.05 = quantile(pred_count, 0.05),
+      q_.95 = quantile(pred_count, 0.95),
+      q_.025 = quantile(pred_count, 0.025),
+      q_.975 = quantile(pred_count, 0.975),
       .groups = "drop"
     ) |>
     # Add metadata for this iteration of the loop
@@ -158,7 +158,7 @@ Next we will set up a for loop to retrospectively produce nowcasts using the dat
 Note, running this loop will print out a number of informational messages at each iteration, informing you that the reporting triangle has been truncated to the maximum delay and telling you exactly what proportion of the training volume was used for delay estimation.
 ```{r}
 # Create empty dataframe to store the nowcasts
-mult_nowcast_quantiles <- c()
+mult_nowcast_quantiles <- NULL
 
 for (i in seq_along(nowcast_dates)) {
   # Fit model and get quantile summaries
@@ -190,8 +190,11 @@ eval_data <- syn_nssp_df |>
   ungroup()
 
 # Left join the evaluation data to the nowcasts
-mult_nowcast_quantiles_w_data <- mult_nowcast_quantiles |>
-  left_join(eval_data, by = "reference_date")
+mult_nowcast_quantiles_w_data <- left_join(
+  mult_nowcast_quantiles,
+  eval_data,
+  by = "reference_date"
+)
 ```
 
 ### Visual comparison of nowcasts
@@ -506,7 +509,7 @@ prop_delays <- c(0.5, 0.7)
 scale_factors <- c(2.2, 2.3)
 
 # Create empty dataframe to store the nowcasts
-mult_nowcast_quantiles <- c()
+mult_nowcast_quantiles <- NULL
 
 for (i in seq_along(nowcast_dates)) {
   for (j in seq_along(prop_delays)) {

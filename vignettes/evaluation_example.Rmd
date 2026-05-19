@@ -102,15 +102,13 @@ prop_delay <- 0.5
 
 ### Looping over multiple nowcast dates
 
-First, we will write a function that runs the `baselinenowcast` workflow and saves the nowcasts along with the initial data and metadata about the model run (e.g. nowcast date and desired model specification variables).
+First, we will write a function that runs the `baselinenowcast` workflow and returns quantile summaries along with the initial data and metadata about the model run (e.g., nowcast date and model specification variables).
 ```{r}
 fit_model <- function(raw_data,
-                      nowcast_date = nowcast_dates[i],
-                      max_delay = max_delay,
-                      scale_factor = scale_factor,
-                      prop_delay = prop_delay,
-                      output_type = "draws",
-                      model_name = "baselinenowcast") {
+                      nowcast_date,
+                      max_delay,
+                      scale_factor,
+                      prop_delay) {
   # Remove all cases on/after the nowcast date
   training_data <- raw_data |>
     filter(
@@ -127,95 +125,56 @@ fit_model <- function(raw_data,
   # Generate the nowcast
   rep_tri_full <- as_reporting_triangle(training_data)
   rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
-  # Note, could also add another loop to iterate through different training
-  # volumes and history for delay estimation
-  nowcast_draws <- baselinenowcast(rep_tri,
+
+  # Generate draws and compute quantiles
+  nowcast_quantiles <- baselinenowcast(rep_tri,
     scale_factor = scale_factor,
     prop_delay = prop_delay,
     draws = 1000
   ) |>
+    group_by(reference_date) |>
+    summarise(
+      `q_.50` = median(pred_count),
+      `q_.25` = quantile(pred_count, 0.25),
+      `q_.75` = quantile(pred_count, 0.75),
+      `q_.05` = quantile(pred_count, 0.05),
+      `q_.95` = quantile(pred_count, 0.95),
+      `q_.025` = quantile(pred_count, 0.025),
+      `q_.975` = quantile(pred_count, 0.975),
+      .groups = "drop"
+    ) |>
+    # Add metadata for this iteration of the loop
     mutate(
       nowcast_date = nowcast_date,
       scale_factor = scale_factor,
-      prop_delay = prop_delay,
-      model_name = "baselinenowcast"
-    )
+      prop_delay = prop_delay
+    ) |>
+    left_join(initial_count_data, by = "reference_date")
 
-  if (output_type == "quantiles") {
-    nowcast_quantiles <-
-      nowcast_draws |>
-      group_by(reference_date) |>
-      summarise(
-        `q_.50` = median(pred_count),
-        `q_.25` = quantile(pred_count, 0.25),
-        `q_.75` = quantile(pred_count, 0.75),
-        `q_.05` = quantile(pred_count, 0.05),
-        `q_.95` = quantile(pred_count, 0.95),
-        `q_.025` = quantile(pred_count, 0.025),
-        `q_.975` = quantile(pred_count, 0.975)
-      ) |>
-      # Add metadata for this iteration of the loop
-      mutate(
-        nowcast_date = nowcast_date,
-        scale_factor = scale_factor,
-        prop_delay = prop_delay
-      )
-
-
-    nowcasts_w_data <- nowcast_quantiles |>
-      left_join(initial_count_data,
-        by = "reference_date"
-      )
-  } else if (output_type == "draws") {
-    nowcasts_w_data <- nowcast_draws |>
-      left_join(initial_count_data,
-        by = "reference_date"
-      )
-  }
-
-  return(nowcasts_w_data)
+  return(nowcast_quantiles)
 }
 ```
 
 Next we will set up a for loop to retrospectively produce nowcasts using the data that would have been available at each of the retrospective nowcast dates.
-Note, running this loop will print out a number of informational messages at each iteration, informing you that the reporting triangle has been truncated to the maximum delay and telling you exactly what proportion of the training volume was use for delay estimation.
+Note, running this loop will print out a number of informational messages at each iteration, informing you that the reporting triangle has been truncated to the maximum delay and telling you exactly what proportion of the training volume was used for delay estimation.
 ```{r}
-# Create the empty dataframes to store the nowcasts
+# Create empty dataframe to store the nowcasts
 mult_nowcast_quantiles <- c()
-mult_nowcast_draws <- c()
 
 for (i in seq_along(nowcast_dates)) {
-  # Filter to only use data that would have been available as of the nowcast
-  # date by removing all reports and reference dates
-  # on or after the date of the nowcast
-
-  draws_w_data <- fit_model(
-    raw_data = syn_nssp_df,
-    nowcast_date = nowcast_dates[i],
-    max_delay = max_delay,
-    scale_factor = scale_factor,
-    prop_delay = prop_delay,
-    model_name = "baselinenowcast",
-    output_type = "draws"
-  )
+  # Fit model and get quantile summaries
   quantiles_w_data <- fit_model(
     raw_data = syn_nssp_df,
     nowcast_date = nowcast_dates[i],
     max_delay = max_delay,
     scale_factor = scale_factor,
-    prop_delay = prop_delay,
-    model_name = "baselinenowcast",
-    output_type = "quantiles"
+    prop_delay = prop_delay
   )
 
   # Combine the nowcasts from each iteration
   mult_nowcast_quantiles <- bind_rows(
     mult_nowcast_quantiles,
     quantiles_w_data
-  )
-  mult_nowcast_draws <- bind_rows(
-    mult_nowcast_draws,
-    draws_w_data
   )
 }
 ```
@@ -231,10 +190,8 @@ eval_data <- syn_nssp_df |>
   summarise(final_count = sum(count)) |>
   ungroup()
 
-# Left join the evaluation data to each of the dataframes of multiple nowcasts
+# Left join the evaluation data to the nowcasts
 mult_nowcast_quantiles_w_data <- mult_nowcast_quantiles |>
-  left_join(eval_data, by = "reference_date")
-mult_nowcast_draws_w_data <- mult_nowcast_draws |>
   left_join(eval_data, by = "reference_date")
 ```
 
@@ -544,50 +501,34 @@ In this example, we are somewhat limited because we don't have that much trainin
 prop_delays <- c(0.5, 0.7)
 scale_factors <- c(2.2, 2.3)
 
-# Create the empty dataframes to store the nowcasts
+# Create empty dataframe to store the nowcasts
 mult_nowcast_quantiles <- c()
-mult_nowcast_draws <- c()
 
 for (i in seq_along(nowcast_dates)) {
   for (j in seq_along(prop_delays)) {
     for (k in seq_along(scale_factors)) {
-      draws_w_data <- fit_model(
-        raw_data = syn_nssp_df,
-        nowcast_date = nowcast_dates[i],
-        max_delay = max_delay,
-        scale_factor = scale_factors[k],
-        prop_delay = prop_delays[j],
-        model_name = "baselinenowcast",
-        output_type = "draws"
-      )
+      # Fit model and get quantile summaries
       quantiles_w_data <- fit_model(
         raw_data = syn_nssp_df,
         nowcast_date = nowcast_dates[i],
         max_delay = max_delay,
         scale_factor = scale_factors[k],
-        prop_delay = prop_delays[j],
-        model_name = "baselinenowcast",
-        output_type = "quantiles"
+        prop_delay = prop_delays[j]
       )
+
       # Combine the nowcasts from each iteration
       mult_nowcast_quantiles <- bind_rows(
         mult_nowcast_quantiles,
         quantiles_w_data
-      )
-      mult_nowcast_draws <- bind_rows(
-        mult_nowcast_draws,
-        draws_w_data
       )
     }
   }
 }
 ```
 
-Join the evaluation data (same as before)
+Join the evaluation data (same as before).
 ```{r}
 mult_nowcast_quantiles_w_data <- mult_nowcast_quantiles |>
-  left_join(eval_data, by = "reference_date")
-mult_nowcast_draws_w_data <- mult_nowcast_draws |>
   left_join(eval_data, by = "reference_date")
 ```
 

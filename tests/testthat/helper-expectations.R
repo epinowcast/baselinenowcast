@@ -198,6 +198,29 @@ expect_triangle_output <- function(result, input_triangle, validate = FALSE) {
   return(invisible(result))
 }
 
+#' Expect valid retrospective uncertainty estimate
+#'
+#' Validates the result of `estimate_uncertainty_retro()`: a finite,
+#' non-negative numeric vector. If `expected_length` is supplied, also
+#' checks the length matches.
+#'
+#' @param result Numeric vector returned by `estimate_uncertainty_retro()`.
+#' @param expected_length Optional expected length. If NULL, only checks
+#'   that length is positive.
+#' @keywords internal
+expect_valid_retro_uncertainty <- function(result, expected_length = NULL) {
+  testthat::expect_type(result, "double")
+  testthat::expect_null(dim(result))
+  testthat::expect_true(all(is.finite(result)))
+  testthat::expect_true(all(result >= 0))
+  if (is.null(expected_length)) {
+    testthat::expect_gt(length(result), 0)
+  } else {
+    testthat::expect_length(result, expected_length)
+  }
+  return(invisible(result))
+}
+
 #' Expect nowcast draws structure
 #' @keywords internal
 expect_nowcast_draws <- function(nowcast_df, n_draws, n_dates) {

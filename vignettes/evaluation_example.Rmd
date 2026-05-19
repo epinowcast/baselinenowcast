@@ -574,7 +574,7 @@ scores_summary_table <- scores_summary |>
     "WIS" = wis
   ) |>
   knitr::kable(digits = 3)
-scores_summary
+scores_summary_table
 ```
 Make a bar chart to visualize the scores, broken down by underprediction, overprediction, and dispersion.
 ```{r}

@@ -1,11 +1,11 @@
 #' Expect valid triangle (reporting_triangle with potential NAs in bottom-right)
 #' @keywords internal
 expect_valid_triangle <- function(object, has_nas = TRUE) {
-  testthat::expect_true(is_reporting_triangle(object))
+  expect_true(is_reporting_triangle(object))
   if (has_nas) {
-    testthat::expect_true(anyNA(object))
+    expect_true(anyNA(object))
   } else {
-    testthat::expect_false(anyNA(object))
+    expect_false(anyNA(object))
   }
   return(invisible(object))
 }
@@ -33,9 +33,7 @@ test_that(
       make_test_triangle(data = square_matrix)
     )
     expect_valid_triangle(result, has_nas = TRUE)
-    result_mat <- unclass(result)
-    dimnames(result_mat) <- NULL
-    attributes(result_mat) <- list(dim = dim(result_mat))
+    result_mat <- as_plain_matrix(result)
     expect_identical(result_mat, expected)
   }
 )
@@ -62,9 +60,7 @@ test_that(
     )
     result <- apply_reporting_structure(make_test_triangle(data = rect_matrix))
     expect_valid_triangle(result, has_nas = TRUE)
-    result_mat <- unclass(result)
-    dimnames(result_mat) <- NULL
-    attributes(result_mat) <- list(dim = dim(result_mat))
+    result_mat <- as_plain_matrix(result)
     expect_identical(result_mat, expected)
   }
 )
@@ -96,17 +92,20 @@ test_that(
     )
     result <- apply_reporting_structure(make_test_triangle(data = rect_matrix))
     expect_valid_triangle(result, has_nas = TRUE)
-    result_mat <- unclass(result)
-    dimnames(result_mat) <- NULL
-    attributes(result_mat) <- list(dim = dim(result_mat))
+    result_mat <- as_plain_matrix(result)
     expect_identical(result_mat, expected)
   }
 )
 
 test_that("apply_reporting_structure leaves 1x1 matrix unchanged", {
-  # For 1x1 matrix, we need at least 2 columns for a valid reporting triangle
-  # Skip this edge case as it's not a valid reporting triangle scenario
-  testthat::skip("1x1 matrices are not valid reporting triangles")
+  one_by_one <- matrix(5, nrow = 1, ncol = 1)
+  triangle <- make_test_triangle(data = one_by_one)
+  result <- apply_reporting_structure(triangle)
+  expect_true(is_reporting_triangle(result))
+  expect_identical(dim(result), c(1L, 1L))
+  expect_false(anyNA(result))
+  result_mat <- as_plain_matrix(result)
+  expect_identical(result_mat, one_by_one)
 })
 
 test_that("apply_reporting_structure handles 2x2 matrix", {
@@ -123,9 +122,7 @@ test_that("apply_reporting_structure handles 2x2 matrix", {
   )
   result <- apply_reporting_structure(make_test_triangle(data = two_by_two))
   expect_valid_triangle(result, has_nas = TRUE)
-  result_mat <- unclass(result)
-  dimnames(result_mat) <- NULL
-  attributes(result_mat) <- list(dim = dim(result_mat))
+  result_mat <- as_plain_matrix(result)
   expect_identical(result_mat, expected)
 })
 
@@ -152,21 +149,30 @@ test_that("apply_reporting_structure handles matrix with existing NAs", {
   )
   result <- apply_reporting_structure(make_test_triangle(data = na_matrix))
   expect_valid_triangle(result, has_nas = TRUE)
-  result_mat <- unclass(result)
-  dimnames(result_mat) <- NULL
-  attributes(result_mat) <- list(dim = dim(result_mat))
+  result_mat <- as_plain_matrix(result)
   expect_identical(result_mat, expected)
 })
 
 test_that("apply_reporting_structure handles one-row matrix", {
-  # 1-row matrices have validation issues with reporting triangles
-  # Skip this edge case as the validation fails on rowSums
-  testthat::skip("1-row matrices have validation issues")
+  one_row <- matrix(c(1, 2, 3), nrow = 1)
+  triangle <- make_test_triangle(data = one_row)
+  result <- apply_reporting_structure(triangle)
+  expect_true(is_reporting_triangle(result))
+  expect_identical(dim(result), c(1L, 3L))
+  result_mat <- as_plain_matrix(result)
+  expected <- matrix(c(1, NA, NA), nrow = 1)
+  expect_identical(result_mat, expected)
 })
 
 test_that("apply_reporting_structure handles one-column matrix", {
-  # 1-column matrices are not valid reporting triangles (need at least 2 cols)
-  testthat::skip("1-column matrices are not valid reporting triangles")
+  one_col <- matrix(c(1, 2, 3), ncol = 1)
+  triangle <- make_test_triangle(data = one_col)
+  result <- apply_reporting_structure(triangle)
+  expect_true(is_reporting_triangle(result))
+  expect_identical(dim(result), c(3L, 1L))
+  expect_false(anyNA(result))
+  result_mat <- as_plain_matrix(result)
+  expect_identical(result_mat, one_col)
 })
 
 test_that("apply_reporting_structure does not modify the original matrix", {
@@ -175,7 +181,7 @@ test_that("apply_reporting_structure does not modify the original matrix", {
   result <- apply_reporting_structure(make_test_triangle(data = original))
   expect_valid_triangle(result, has_nas = TRUE)
   expect_identical(original, original_copy)
-  testthat::expect_false(identical(result, original))
+  expect_false(identical(result, original))
 })
 
 test_that("apply_reporting_structure handles ragged structure with integer", {
@@ -206,9 +212,7 @@ test_that("apply_reporting_structure handles ragged structure with integer", {
   result_ragged <- apply_reporting_structure(
     make_test_triangle(data = test_matrix), 2
   )
-  result_mat <- unclass(result_ragged)
-  dimnames(result_mat) <- NULL
-  attributes(result_mat) <- list(dim = dim(result_mat))
+  result_mat <- as_plain_matrix(result_ragged)
   expect_identical(result_mat, expected_ragged)
 })
 
@@ -241,9 +245,7 @@ test_that("apply_reporting_structure handles custom structure with vector", {
     make_test_triangle(data = test_matrix),
     c(1, 2, 1)
   )
-  result_mat <- unclass(result_custom)
-  dimnames(result_mat) <- NULL
-  attributes(result_mat) <- list(dim = dim(result_mat))
+  result_mat <- as_plain_matrix(result_custom)
   expect_identical(result_mat, expected_custom)
 })
 
@@ -275,9 +277,7 @@ test_that(
       make_test_triangle(data = trunc_rt),
       structure = c(1, 2)
     )
-    result_mat <- unclass(actual_result)
-    dimnames(result_mat) <- NULL
-    attributes(result_mat) <- list(dim = dim(result_mat))
+    result_mat <- as_plain_matrix(actual_result)
     expect_identical(exp_result, result_mat)
   }
 )
@@ -308,9 +308,7 @@ test_that("apply_reporting_structure can handle case when first element is not 1
     make_test_triangle(data = trunc_rt),
     structure = c(2, 1, 1)
   )
-  result_mat <- unclass(actual_result)
-  dimnames(result_mat) <- NULL
-  attributes(result_mat) <- list(dim = dim(result_mat))
+  result_mat <- as_plain_matrix(actual_result)
   expect_identical(exp_result, result_mat)
 })
 
@@ -342,9 +340,7 @@ test_that(
       make_test_triangle(data = trunc_rt),
       structure = c(1, 1, 2)
     )
-    result_mat <- unclass(actual_result)
-    dimnames(result_mat) <- NULL
-    attributes(result_mat) <- list(dim = dim(result_mat))
+    result_mat <- as_plain_matrix(actual_result)
     expect_identical(exp_result, result_mat)
   }
 )

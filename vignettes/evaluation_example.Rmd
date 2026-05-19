@@ -40,7 +40,6 @@ library(dplyr)
 library(glue)
 library(scoringutils)
 library(gganimate)
-library(magick)
 ```
 
 ## Data
@@ -209,8 +208,8 @@ nowcast_dates_to_visualize <- seq(
   to = ymd("2026-04-01"), by = "4 weeks"
 )
 
-mult_nowcasts_filtered <- mult_nowcast_quantiles_w_data |>
-  filter(nowcast_date %in% nowcast_dates_to_visualize)
+mult_nowcasts_filtered <- filter(mult_nowcast_quantiles_w_data, 
+                                 nowcast_date %in% nowcast_dates_to_visualize)
 
 
 p <- ggplot(mult_nowcasts_filtered) +
@@ -443,8 +442,8 @@ We'll visualize this by first summarizing the scores by nowcast date using the `
 
 
 ```{r}
-scores_by_nowcast_date <- scores_quantiles |>
-  summarise_scores(by = "nowcast_date")
+scores_by_nowcast_date <- summarise_scores(scores_quantiles, 
+                                           by = "nowcast_date")
 
 ggplot(scores_by_nowcast_date) +
   geom_line(aes(x = nowcast_date, y = wis)) +
@@ -460,7 +459,7 @@ ggplot(scores_by_nowcast_date) +
   geom_point(aes(x = nowcast_date, y = interval_coverage_50),
     color = "darkblue"
   ) +
-  geom_hline(aes(yintercept = .50),
+  geom_hline(aes(yintercept = 0.50),
     linetype = "dashed",
     color = "darkblue"
   ) +
@@ -470,7 +469,7 @@ ggplot(scores_by_nowcast_date) +
   geom_point(aes(x = nowcast_date, y = interval_coverage_90),
     color = "maroon4"
   ) +
-  geom_hline(aes(yintercept = .90),
+  geom_hline(aes(yintercept = 0.90),
     linetype = "dashed",
     color = "maroon4"
   ) +
@@ -488,11 +487,13 @@ scores_summary <- scores_quantiles |>
   mutate(model = "baselinenowcast") |>
   summarise_scores(by = "model") |>
   select(model, interval_coverage_50, interval_coverage_90) |>
+  #nolint start
   rename(
     "Model" = model,
     "50% coverage" = interval_coverage_50,
     "90% coverage" = interval_coverage_90
   ) |>
+  #nolint end
   knitr::kable(digits = 3)
 scores_summary
 ```
@@ -537,8 +538,8 @@ for (i in seq_along(nowcast_dates)) {
 
 Join the evaluation data (same as before).
 ```{r}
-mult_nowcast_quantiles_w_data <- mult_nowcast_quantiles |>
-  left_join(eval_data, by = "reference_date")
+mult_nowcast_quantiles_w_data <-left_join(mult_nowcast_quantiles, 
+                                          eval_data, by = "reference_date")
 ```
 
 Convert to scoringutils format and score (same process as the single specification section).
@@ -564,11 +565,12 @@ scores_summary <- scores_quantiles |>
   mutate(model = "baselinenowcast") |>
   summarise_scores(by = c("model", "prop_delay", "scale_factor")) |>
   select(
-    model, prop_delay, scale_factor, wis, underprediction, overprediction, dispersion,
-    interval_coverage_50, interval_coverage_90
+    model, prop_delay, scale_factor, wis, underprediction, overprediction,
+    dispersion, interval_coverage_50, interval_coverage_90
   )
 
 scores_summary_table <- scores_summary |>
+  #nolint start
   rename(
     "Model" = model,
     "Proportion for delay" = prop_delay,
@@ -577,6 +579,7 @@ scores_summary_table <- scores_summary |>
     "90% coverage" = interval_coverage_90,
     "WIS" = wis
   ) |>
+  #nolint end
   knitr::kable(digits = 3)
 scores_summary_table
 ```
@@ -589,9 +592,10 @@ scores_summary |>
       "overprediction",
       "dispersion",
       "underprediction"
-    ))
+    ),
+    model_name = glue("pd:{prop_delay} sf:{scale_factor}")
+    )
   ) |>
-  mutate(model_name = glue("pd:{prop_delay} sf:{scale_factor}")) |>
   ggplot() +
   geom_bar(aes(x = model_name, y = value, fill = name),
     stat = "identity", position = "stack"
@@ -640,8 +644,8 @@ scores_summary |>
       interval_coverage_50 = "50%"
     )
   ) +
-  geom_hline(aes(yintercept = 0.5), linetype = "dashed") +
-  geom_hline(aes(yintercept = 0.9), linetype = "dashed") +
+  geom_hline(aes(yintercept = 0.50), linetype = "dashed") +
+  geom_hline(aes(yintercept = 0.90), linetype = "dashed") +
   theme(
     axis.text.x = element_text(
       vjust = 1,

@@ -19,12 +19,12 @@ vignette: >
 In this vignette we demonstrate how to evaluate the performance of your `baselinenowcast` nowcast across multiple nowcast dates using visual checks and out of sample scoring using proper scoring rules from the [`scoringutils`](https://epiforecasts.io/scoringutils/) package.
 We'll start by doing this for a single model specification, and then show how you can use the results from a quantitative evaluation to help choose a `baselinenowcast` model specification.
 Here we focus on optimising the training volume specification.
-Before working through this vignette, we advise you to read both the Getting Started vignette and the NSSP nowcast vignette, both of which will demostrate how to produce a nowcast for a single nowcast date.
+Before working through this vignette, we advise you to read both the Getting Started vignette and the NSSP nowcast vignette, both of which will demonstrate how to produce a nowcast for a single nowcast date.
 
 
 ## Packages
 
-We use the `baselinenowcast` package, `dplyr` for data-wrangling, `lubridate` for handling dates, and the `scoringutils` to evaluate out of sample nowcast performance.
+We use the `baselinenowcast` package, `dplyr` and `tidyr` for data-wrangling, `glue` for combining strings, `lubridate` for handling dates, and the `scoringutils` to evaluate out of sample nowcast performance.
 
 ```{r setup2, message = FALSE, warning = FALSE, results = 'hide'}
 knitr::opts_chunk$set(
@@ -34,7 +34,9 @@ knitr::opts_chunk$set(
 
 library(baselinenowcast)
 library(lubridate)
+library(tidyr)
 library(dplyr)
+library(glue)
 library(scoringutils)
 library(gganimate)
 library(gifski)
@@ -61,14 +63,6 @@ nowcast_dates <- seq(
 )
 ```
 
-### Specify a single model
-
-We'll start by evaluating a single `baselinenowcast` specification.
-We will set the maximum delay to 25 days, and then specify the total number of reference dates used for training the model as 3x the maximum delay using the `scale_factor` argument, and specify that half of the training data be used for delay estimation with the `prop_delay` argument.
-Note that t
-
-Later in this vignette, we will demonstrate how to use quantitative nowcast performance to evaluate the performance of different training volume specifications.
-
 #### Set the maximum delay
 
 The maximum delay should be specified based on both the delay distribution and your own knowledge of the data generating process (e.g. delays of more than a few weeks might be expected to be data entry errors).
@@ -90,8 +84,14 @@ cdf_delay <- ggplot(avg_delays) +
 cdf_delay
 ```
 
-We will set our maximum delay to 25 days, and `scale_factor` to 2.2 so that we use 2.2*25 = 55 reference dates for training/
-We will set `prop_delay` to 0.5 so that we use half of these for estimating the delay distribution.
+Based on this plot, we will set our maximum delay to 25 days.
+
+### Specify a single model
+
+We'll start by evaluating a single `baselinenowcast` specification.
+With the maximum delay set to 25 days, we will then specify the total number of reference dates used for training the model as 2.2x the maximum delay using the `scale_factor` argument, and specify that half of the training data be used for delay estimation with the `prop_delay` argument.
+
+Later in this vignette, we will demonstrate how to use quantitative nowcast performance to evaluate the performance of different training volume specifications.
 ```{r}
 max_delay <- 25
 scale_factor <- 2.2
@@ -403,7 +403,7 @@ We will evaluate the nowcast draws using the continuous ranked probability score
 Additionally, we will compute the interval coverage which tells us about how well the model is calibrated by calculating the proportion of all observations which fall within a certain prediction interval, with a perfectly well-calibrated forecast having the exact same coverage as the nominal coverage e.g. 90% of observations fall within the 90% prediction interval.
 
 We start by setting an evaluation window-- the days for which we want to evaluate.
-Since all `max_delay` days are being nowcasted, we will evalaute all of them.
+Since all `max_delay` days are being nowcasted, we will evaluate all of them.
 However, we might only want to evaluate a subset of these (e.g. the last 2 weeks).
 
 ```{r}
@@ -470,7 +470,7 @@ head(scores_samples)
 We now have a table of scores for both the draws and quantiles, which contain scores at every nowcast date and reference date.
 To investigate these further, we might be interested in how nowcast performance varies across nowcast dates.
 We can visualise this by first summarising the scores by nowcast date using the `summarise_scores()` function, and then plotting the result.
-We'll focus on the quantile-based scores, looking both at WIS and the 50th and 95th prediction intervals.
+We'll focus on the quantile-based scores, looking both at WIS and the 50th and 90th prediction intervals.
 
 
 ```{r}
@@ -530,7 +530,7 @@ scores_summary
 
 ## Choosing a model specification using quantitative performance evaluation
 
-So far, we have demonstrated how to visually and quantitatively evaluate a single nowcasting model, where we specified the training volume so that it was faily close to the package defaults.
+So far, we have demonstrated how to visually and quantitatively evaluate a single nowcasting model, where we specified the training volume so that it was fairly close to the package defaults.
 However, the decision of how to specify the model should not be done arbitrarily-- instead, we can use the retrospective nowcast performance to compare how well different specifications would have done, which can be used to inform our current specification.
 In this example, we will just focus on varying the training volume specification, but the same process could be applied to many of the other options for specifying `baselinenowcast`, including but not limited to: accounting for weekday effects via stratification by weekday, sharing estimates across strata (e.g. letting the delay from all age groups be used to nowcast each individual age groups case counts), and changing the observation model.
 

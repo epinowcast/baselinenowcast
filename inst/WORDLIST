@@ -39,6 +39,7 @@ cli
 color
 cumsum
 cutoff
+cynkra
 darkblue
 darkred
 df
@@ -98,6 +99,7 @@ thetad
 ub
 underconfidence
 underprediction
+tibble
 wellcomeopenres
 xlab
 yintercept

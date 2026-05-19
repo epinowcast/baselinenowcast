@@ -73,6 +73,7 @@ Suggests:
     stringr,
     lubridate,
     readr,
+    reviser,
     ggplot2,
     spelling,
     rmarkdown,

@@ -40,7 +40,6 @@ library(dplyr)
 library(glue)
 library(scoringutils)
 library(gganimate)
-library(gifski)
 ```
 
 ## Data
@@ -349,7 +348,7 @@ p_anim <- ggplot(mult_nowcast_quantiles_w_data) +
 
 animate(p_anim,
   nframes = n_distinct(mult_nowcast_quantiles_w_data$nowcast_date),
-  fps = 1.5, width = 800, height = 500, renderer = gifski_renderer()
+  fps = 1.5, width = 800, height = 500
 )
 
 anim_save("nowcast_flipbook.gif")

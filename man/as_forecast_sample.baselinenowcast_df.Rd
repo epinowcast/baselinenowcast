@@ -63,23 +63,25 @@ library(scoringutils)
 max_delay <- 25
 as_of <- as.Date("2026-04-01")
 
-# Build a reporting triangle from a snapshot of long-form data
-rep_tri <- as_reporting_triangle(
-  data = syn_nssp_df[syn_nssp_df$report_date <= as_of, ]
-) |>
-  truncate_to_delay(max_delay = max_delay) |>
+# Build the full reporting triangle once from the long-form data
+full_tri <- as_reporting_triangle(syn_nssp_df) |>
+  truncate_to_delay(max_delay = max_delay)
+
+# As-of view for the nowcast: drop rows past `as_of`, then apply the
+# diagonal reporting structure so cells reported after `as_of` become NA
+n_drop <- sum(as.Date(rownames(full_tri)) > as_of)
+rep_tri <- full_tri |>
+  truncate_to_row(t = n_drop) |>
+  apply_reporting_structure() |>
   tail(n = 40)
 
 # Run a probabilistic nowcast
 nowcast <- baselinenowcast(rep_tri, draws = 100)
 
-# Construct the truth from the full long-form data: build a triangle from
-# the eventual reports, truncate to the same `max_delay` horizon, and sum
-# across delays per reference date (rolling truth). The scoring vignette
+# Truth: total reports observed within `max_delay` of each reference date,
+# taken from the same `full_tri` (rolling truth). The scoring vignette
 # explains why we use a rolling rather than latest-vintage truth.
-truth_df <- as_reporting_triangle(syn_nssp_df) |>
-  truncate_to_delay(max_delay = max_delay) |>
-  as.data.frame()
+truth_df <- as.data.frame(full_tri)
 latest_obs <- aggregate(
   count ~ reference_date,
   data = truth_df[

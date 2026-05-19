@@ -62,18 +62,19 @@ library(scoringutils)
 max_delay <- 25
 as_of <- as.Date("2026-04-01")
 
-rep_tri <- as_reporting_triangle(
-  data = syn_nssp_df[syn_nssp_df$report_date <= as_of, ]
-) |>
-  truncate_to_delay(max_delay = max_delay) |>
+full_tri <- as_reporting_triangle(syn_nssp_df) |>
+  truncate_to_delay(max_delay = max_delay)
+
+n_drop <- sum(as.Date(rownames(full_tri)) > as_of)
+rep_tri <- full_tri |>
+  truncate_to_row(t = n_drop) |>
+  apply_reporting_structure() |>
   tail(n = 40)
 
 nowcast <- baselinenowcast(rep_tri, output_type = "point")
 
-# Rolling truth at the same max_delay horizon used for the nowcast
-truth_df <- as_reporting_triangle(syn_nssp_df) |>
-  truncate_to_delay(max_delay = max_delay) |>
-  as.data.frame()
+# Rolling truth from the same full triangle
+truth_df <- as.data.frame(full_tri)
 latest_obs <- aggregate(
   count ~ reference_date,
   data = truth_df[

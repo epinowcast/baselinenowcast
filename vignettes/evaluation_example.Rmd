@@ -600,9 +600,9 @@ scores_summary |>
         "overprediction",
         "dispersion",
         "underprediction"
-      ),
-      model_name = glue("pd:{prop_delay} sf:{scale_factor}")
-    )
+      )
+    ),
+    model_name = glue("pd:{prop_delay} sf:{scale_factor}")
   ) |>
   ggplot() +
   geom_bar(aes(x = model_name, y = value, fill = name),

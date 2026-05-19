@@ -14,14 +14,22 @@
 #'
 #' @param data A [baselinenowcast_df] object as returned by
 #'   [baselinenowcast()] with `output_type = "samples"`.
-#' @param latest_obs A data.frame containing the latest observed counts to
-#'   score against. Must contain a `reference_date` column and a column with
-#'   observed counts named according to `observed` (default `"count"`).
-#'   Additional columns shared with `data` (such as strata columns) are used
-#'   as merge keys.
+#' @param latest_obs A data.frame containing the truth to score against, with
+#'   one row per (reference_date, strata) combination. Must contain a
+#'   `reference_date` column and a column with observed counts named according
+#'   to `observed` (default `"count"`). Additional columns shared with `data`
+#'   (such as strata columns) are used as merge keys. `latest_obs` should hold
+#'   the reported total at each reference date evaluated at the same
+#'   `max_delay` horizon used for the nowcast (rolling truth), not the partial
+#'   total available when the nowcast was run.
 #' @param observed Character string giving the name of the column in
 #'   `latest_obs` that holds the observed value. Defaults to `"count"` to
 #'   match the input format of [baselinenowcast.data.frame()].
+#' @param model Character string used as the value of the `model` column on
+#'   the returned forecast object. Lets [scoringutils::summarise_scores()] run
+#'   with its default `by = "model"`. Defaults to `"baselinenowcast"`. Pass
+#'   `NULL` to omit the column (e.g. when `data` already carries its own
+#'   `model` column).
 #' @param ... Additional arguments passed to
 #'   [scoringutils::as_forecast_sample()].
 #'
@@ -34,23 +42,50 @@
 #' @examplesIf interactive() && requireNamespace("scoringutils", quietly = TRUE)
 #' library(scoringutils)
 #'
-#' nowcast <- baselinenowcast(example_reporting_triangle, draws = 100)
+#' max_delay <- 25
+#' as_of <- as.Date("2026-04-01")
 #'
-#' # Construct a small set of latest observations to score against
-#' latest_obs <- data.frame(
-#'   reference_date = get_reference_dates(example_reporting_triangle),
-#'   count = rowSums(example_reporting_triangle, na.rm = TRUE)
+#' # Build a reporting triangle from a snapshot of long-form data
+#' rep_tri <- as_reporting_triangle(
+#'   data = syn_nssp_df[syn_nssp_df$report_date <= as_of, ]
+#' ) |>
+#'   truncate_to_delay(max_delay = max_delay) |>
+#'   tail(n = 40)
+#'
+#' # Run a probabilistic nowcast
+#' nowcast <- baselinenowcast(rep_tri, draws = 100)
+#'
+#' # Construct the truth from the full long-form data: build a triangle from
+#' # the eventual reports, truncate to the same `max_delay` horizon, and sum
+#' # across delays per reference date (rolling truth). The scoring vignette
+#' # explains why we use a rolling rather than latest-vintage truth.
+#' truth_df <- as_reporting_triangle(syn_nssp_df) |>
+#'   truncate_to_delay(max_delay = max_delay) |>
+#'   as.data.frame()
+#' latest_obs <- aggregate(
+#'   count ~ reference_date,
+#'   data = truth_df[
+#'     truth_df$reference_date %in% unique(nowcast$reference_date),
+#'   ],
+#'   FUN = sum
 #' )
 #'
-#' as_forecast_sample(nowcast, latest_obs)
+#' # Convert and score
+#' fs <- as_forecast_sample(nowcast, latest_obs)
+#' fs
+#' scores <- score(fs)
+#' scores
+#' summarise_scores(scores)
 as_forecast_sample.baselinenowcast_df <- function(data,
                                                   latest_obs,
                                                   observed = "count",
+                                                  model = "baselinenowcast",
                                                   ...) {
   merged <- .prepare_forecast_merge(
     data = data,
     latest_obs = latest_obs,
     observed = observed,
+    model = model,
     required_output_type = "samples",
     target = "scoringutils::as_forecast_sample"
   )
@@ -90,23 +125,44 @@ as_forecast_sample.baselinenowcast_df <- function(data,
 #' @examplesIf interactive() && requireNamespace("scoringutils", quietly = TRUE)
 #' library(scoringutils)
 #'
-#' nowcast <- baselinenowcast(
-#'   example_reporting_triangle,
-#'   output_type = "point"
+#' max_delay <- 25
+#' as_of <- as.Date("2026-04-01")
+#'
+#' rep_tri <- as_reporting_triangle(
+#'   data = syn_nssp_df[syn_nssp_df$report_date <= as_of, ]
+#' ) |>
+#'   truncate_to_delay(max_delay = max_delay) |>
+#'   tail(n = 40)
+#'
+#' nowcast <- baselinenowcast(rep_tri, output_type = "point")
+#'
+#' # Rolling truth at the same max_delay horizon used for the nowcast
+#' truth_df <- as_reporting_triangle(syn_nssp_df) |>
+#'   truncate_to_delay(max_delay = max_delay) |>
+#'   as.data.frame()
+#' latest_obs <- aggregate(
+#'   count ~ reference_date,
+#'   data = truth_df[
+#'     truth_df$reference_date %in% unique(nowcast$reference_date),
+#'   ],
+#'   FUN = sum
 #' )
-#' latest_obs <- data.frame(
-#'   reference_date = get_reference_dates(example_reporting_triangle),
-#'   count = rowSums(example_reporting_triangle, na.rm = TRUE)
-#' )
-#' as_forecast_point(nowcast, latest_obs)
+#'
+#' fp <- as_forecast_point(nowcast, latest_obs)
+#' fp
+#' scores <- score(fp)
+#' scores
+#' summarise_scores(scores)
 as_forecast_point.baselinenowcast_df <- function(data,
                                                  latest_obs,
                                                  observed = "count",
+                                                 model = "baselinenowcast",
                                                  ...) {
   merged <- .prepare_forecast_merge(
     data = data,
     latest_obs = latest_obs,
     observed = observed,
+    model = model,
     required_output_type = "point",
     target = "scoringutils::as_forecast_point"
   )
@@ -137,6 +193,7 @@ as_forecast_point.baselinenowcast_df <- function(data,
 .prepare_forecast_merge <- function(data,
                                     latest_obs,
                                     observed,
+                                    model,
                                     required_output_type,
                                     target) {
   check_installed(
@@ -147,6 +204,7 @@ as_forecast_point.baselinenowcast_df <- function(data,
   assert_baselinenowcast_df(data)
   assert_data_frame(latest_obs)
   assert_character(observed, len = 1)
+  assert_character(model, len = 1, null.ok = TRUE)
   assert_names(colnames(latest_obs),
     must.include = c("reference_date", observed)
   )
@@ -195,6 +253,10 @@ as_forecast_point.baselinenowcast_df <- function(data,
         "i" = "Check that `latest_obs` covers every merge key combination ({.val {merge_cols}}) in `data`." # nolint
       )
     )
+  }
+
+  if (!is.null(model) && !"model" %in% colnames(merged)) {
+    merged$model <- model
   }
 
   return(merged)

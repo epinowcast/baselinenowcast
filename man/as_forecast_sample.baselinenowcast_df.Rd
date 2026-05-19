@@ -4,21 +4,36 @@
 \alias{as_forecast_sample.baselinenowcast_df}
 \title{Convert a \code{baselinenowcast_df} object to a \code{forecast_sample} object}
 \usage{
-\method{as_forecast_sample}{baselinenowcast_df}(data, latest_obs, observed = "count", ...)
+\method{as_forecast_sample}{baselinenowcast_df}(
+  data,
+  latest_obs,
+  observed = "count",
+  model = "baselinenowcast",
+  ...
+)
 }
 \arguments{
 \item{data}{A \link{baselinenowcast_df} object as returned by
 \code{\link[=baselinenowcast]{baselinenowcast()}} with \code{output_type = "samples"}.}
 
-\item{latest_obs}{A data.frame containing the latest observed counts to
-score against. Must contain a \code{reference_date} column and a column with
-observed counts named according to \code{observed} (default \code{"count"}).
-Additional columns shared with \code{data} (such as strata columns) are used
-as merge keys.}
+\item{latest_obs}{A data.frame containing the truth to score against, with
+one row per (reference_date, strata) combination. Must contain a
+\code{reference_date} column and a column with observed counts named according
+to \code{observed} (default \code{"count"}). Additional columns shared with \code{data}
+(such as strata columns) are used as merge keys. \code{latest_obs} should hold
+the reported total at each reference date evaluated at the same
+\code{max_delay} horizon used for the nowcast (rolling truth), not the partial
+total available when the nowcast was run.}
 
 \item{observed}{Character string giving the name of the column in
 \code{latest_obs} that holds the observed value. Defaults to \code{"count"} to
 match the input format of \code{\link[=baselinenowcast.data.frame]{baselinenowcast.data.frame()}}.}
+
+\item{model}{Character string used as the value of the \code{model} column on
+the returned forecast object. Lets \code{\link[scoringutils:summarise_scores]{scoringutils::summarise_scores()}} run
+with its default \code{by = "model"}. Defaults to \code{"baselinenowcast"}. Pass
+\code{NULL} to omit the column (e.g. when \code{data} already carries its own
+\code{model} column).}
 
 \item{...}{Additional arguments passed to
 \code{\link[scoringutils:as_forecast_sample]{scoringutils::as_forecast_sample()}}.}
@@ -45,15 +60,40 @@ identifier, and the column named by \code{observed} as the observed value.
 \dontshow{if (interactive() && requireNamespace("scoringutils", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 library(scoringutils)
 
-nowcast <- baselinenowcast(example_reporting_triangle, draws = 100)
+max_delay <- 25
+as_of <- as.Date("2026-04-01")
 
-# Construct a small set of latest observations to score against
-latest_obs <- data.frame(
-  reference_date = get_reference_dates(example_reporting_triangle),
-  count = rowSums(example_reporting_triangle, na.rm = TRUE)
+# Build a reporting triangle from a snapshot of long-form data
+rep_tri <- as_reporting_triangle(
+  data = syn_nssp_df[syn_nssp_df$report_date <= as_of, ]
+) |>
+  truncate_to_delay(max_delay = max_delay) |>
+  tail(n = 40)
+
+# Run a probabilistic nowcast
+nowcast <- baselinenowcast(rep_tri, draws = 100)
+
+# Construct the truth from the full long-form data: build a triangle from
+# the eventual reports, truncate to the same `max_delay` horizon, and sum
+# across delays per reference date (rolling truth). The scoring vignette
+# explains why we use a rolling rather than latest-vintage truth.
+truth_df <- as_reporting_triangle(syn_nssp_df) |>
+  truncate_to_delay(max_delay = max_delay) |>
+  as.data.frame()
+latest_obs <- aggregate(
+  count ~ reference_date,
+  data = truth_df[
+    truth_df$reference_date \%in\% unique(nowcast$reference_date),
+  ],
+  FUN = sum
 )
 
-as_forecast_sample(nowcast, latest_obs)
+# Convert and score
+fs <- as_forecast_sample(nowcast, latest_obs)
+fs
+scores <- score(fs)
+scores
+summarise_scores(scores)
 \dontshow{\}) # examplesIf}
 }
 \seealso{

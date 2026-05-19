@@ -181,6 +181,55 @@ test_that("as_forecast_point.baselinenowcast_df converts point to forecast_point
   expect_true(all(c("observed", "predicted") %in% names(fp)))
 })
 
+test_that("as_forecast_sample.baselinenowcast_df adds a default model column", {
+  skip_on_cran()
+  skip_if_not_installed("scoringutils")
+
+  nowcast <- suppressWarnings(
+    baselinenowcast(example_reporting_triangle, draws = 5)
+  )
+  latest_obs <- data.frame(
+    reference_date = get_reference_dates(example_reporting_triangle),
+    count = rowSums(example_reporting_triangle, na.rm = TRUE)
+  )
+
+  fs <- suppressPackageStartupMessages(
+    scoringutils::as_forecast_sample(nowcast, latest_obs)
+  )
+  expect_true("model" %in% names(fs))
+  expect_true(all(fs$model == "baselinenowcast"))
+
+  fs2 <- suppressPackageStartupMessages(
+    scoringutils::as_forecast_sample(nowcast, latest_obs, model = "custom")
+  )
+  expect_true(all(fs2$model == "custom"))
+
+  fs3 <- suppressPackageStartupMessages(
+    scoringutils::as_forecast_sample(nowcast, latest_obs, model = NULL)
+  )
+  expect_false("model" %in% names(fs3))
+})
+
+test_that("as_forecast_sample.baselinenowcast_df keeps existing model column", {
+  skip_on_cran()
+  skip_if_not_installed("scoringutils")
+
+  nowcast <- suppressWarnings(
+    baselinenowcast(example_reporting_triangle, draws = 5)
+  )
+  nowcast$model <- "pre-tagged"
+  latest_obs <- data.frame(
+    reference_date = get_reference_dates(example_reporting_triangle),
+    count = rowSums(example_reporting_triangle, na.rm = TRUE)
+  )
+
+  fs <- suppressPackageStartupMessages(
+    scoringutils::as_forecast_sample(nowcast, latest_obs, model = "ignored")
+  )
+  # Pre-existing column wins; the arg only fills in when absent
+  expect_true(all(fs$model == "pre-tagged"))
+})
+
 test_that("as_forecast_point.baselinenowcast_df errors on sample nowcasts", {
   skip_on_cran()
   skip_if_not_installed("scoringutils")

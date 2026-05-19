@@ -8,6 +8,7 @@
   data,
   latest_obs,
   observed,
+  model,
   required_output_type,
   target
 )
@@ -16,15 +17,24 @@
 \item{data}{A \link{baselinenowcast_df} object as returned by
 \code{\link[=baselinenowcast]{baselinenowcast()}} with \code{output_type = "samples"}.}
 
-\item{latest_obs}{A data.frame containing the latest observed counts to
-score against. Must contain a \code{reference_date} column and a column with
-observed counts named according to \code{observed} (default \code{"count"}).
-Additional columns shared with \code{data} (such as strata columns) are used
-as merge keys.}
+\item{latest_obs}{A data.frame containing the truth to score against, with
+one row per (reference_date, strata) combination. Must contain a
+\code{reference_date} column and a column with observed counts named according
+to \code{observed} (default \code{"count"}). Additional columns shared with \code{data}
+(such as strata columns) are used as merge keys. \code{latest_obs} should hold
+the reported total at each reference date evaluated at the same
+\code{max_delay} horizon used for the nowcast (rolling truth), not the partial
+total available when the nowcast was run.}
 
 \item{observed}{Character string giving the name of the column in
 \code{latest_obs} that holds the observed value. Defaults to \code{"count"} to
 match the input format of \code{\link[=baselinenowcast.data.frame]{baselinenowcast.data.frame()}}.}
+
+\item{model}{Character string used as the value of the \code{model} column on
+the returned forecast object. Lets \code{\link[scoringutils:summarise_scores]{scoringutils::summarise_scores()}} run
+with its default \code{by = "model"}. Defaults to \code{"baselinenowcast"}. Pass
+\code{NULL} to omit the column (e.g. when \code{data} already carries its own
+\code{model} column).}
 
 \item{required_output_type}{Either \code{"samples"} or \code{"point"}.}
 

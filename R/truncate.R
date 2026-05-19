@@ -221,3 +221,47 @@ truncate_to_row <- function(reporting_triangle,
 
   return(.truncate_triangle_impl(reporting_triangle, t))
 }
+
+#' Truncate reporting triangle to an as-of date
+#'
+#' Drops rows where `reference_date > reference_date` (the cutoff), returning
+#'   the reporting triangle as it would have looked if observed up to and
+#'   including that date. This is a date-based wrapper around
+#'   [truncate_to_row()] that removes the need to compute the number of rows
+#'   to drop manually.
+#'
+#' @inheritParams estimate_delay
+#' @param reference_date A `Date` of length 1 giving the as-of reference
+#'   cutoff. Rows with reference dates greater than this value are dropped.
+#' @returns A `reporting_triangle` object containing only rows with
+#'   reference dates less than or equal to `reference_date`. The class and
+#'   metadata are preserved.
+#' @importFrom checkmate assert_date
+#' @family generate_retrospective_data
+#' @export
+#' @examples
+#' ref_dates <- get_reference_dates(example_reporting_triangle)
+#' cutoff <- ref_dates[length(ref_dates) - 1]
+#' truncate_to_date(example_reporting_triangle, reference_date = cutoff)
+truncate_to_date <- function(reporting_triangle,
+                             reference_date,
+                             validate = TRUE) {
+  assert_reporting_triangle(reporting_triangle, validate)
+  assert_date(reference_date, len = 1, any.missing = FALSE)
+
+  ref_dates <- get_reference_dates(reporting_triangle)
+  if (reference_date < min(ref_dates)) {
+    cli_abort(
+      message = c(
+        "`reference_date` is before the earliest reference date.",
+        i = paste0(
+          "Earliest reference date is ", as.character(min(ref_dates)), "; ",
+          "`reference_date` is ", as.character(reference_date), "."
+        )
+      )
+    )
+  }
+
+  n_drop <- sum(ref_dates > reference_date)
+  return(.truncate_triangle_impl(reporting_triangle, n_drop))
+}

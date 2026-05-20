@@ -53,12 +53,13 @@
 #'   nowcast_pred_draw_agg
 #' }
 sample_prediction <- function(
-    point_nowcast_matrix,
-    reporting_triangle,
-    uncertainty_params,
-    uncertainty_sampler = sample_nb,
-    ref_time_aggregator = identity,
-    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
+  point_nowcast_matrix,
+  reporting_triangle,
+  uncertainty_params,
+  uncertainty_sampler = sample_nb,
+  ref_time_aggregator = identity,
+  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+) {
   if (length(uncertainty_params) > nrow(point_nowcast_matrix)) {
     cli_abort(
       message = c(
@@ -186,10 +187,11 @@ sample_prediction <- function(
 #'   )
 #' }
 combine_obs_with_pred <- function(
-    predicted_counts,
-    reporting_triangle,
-    ref_time_aggregator = identity,
-    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
+  predicted_counts,
+  reporting_triangle,
+  ref_time_aggregator = identity,
+  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+) {
   aggr_reporting_triangle <- ref_time_aggregator(reporting_triangle)
   obs_counts_agg <- delay_aggregator(aggr_reporting_triangle)
   return(obs_counts_agg + predicted_counts)
@@ -243,11 +245,12 @@ combine_obs_with_pred <- function(
 #'   nowcast_pred_draws_rolling_df
 #' }
 sample_predictions <- function(
-    point_nowcast_matrix,
-    reporting_triangle,
-    uncertainty_params,
-    draws = 1000,
-    ...) {
+  point_nowcast_matrix,
+  reporting_triangle,
+  uncertainty_params,
+  draws = 1000,
+  ...
+) {
   assert_integerish(draws, lower = 1)
   reference_dates <- get_reference_dates(reporting_triangle)
 
@@ -307,12 +310,13 @@ sample_predictions <- function(
 #' )
 #' nowcast_draw
 sample_nowcast <- function(
-    point_nowcast_matrix,
-    reporting_triangle,
-    uncertainty_params,
-    uncertainty_sampler = sample_nb,
-    ref_time_aggregator = identity,
-    delay_aggregator = function(x) rowSums(x, na.rm = TRUE)) {
+  point_nowcast_matrix,
+  reporting_triangle,
+  uncertainty_params,
+  uncertainty_sampler = sample_nb,
+  ref_time_aggregator = identity,
+  delay_aggregator = function(x) rowSums(x, na.rm = TRUE)
+) {
   # Generate a single draw of the predictions
   pred_counts <- sample_prediction(
     point_nowcast_matrix,
@@ -366,11 +370,12 @@ sample_nowcast <- function(
 #' )
 #' nowcast_draws
 sample_nowcasts <- function(
-    point_nowcast_matrix,
-    reporting_triangle,
-    uncertainty_params,
-    draws = 1000,
-    ...) {
+  point_nowcast_matrix,
+  reporting_triangle,
+  uncertainty_params,
+  draws = 1000,
+  ...
+) {
   reference_dates <- get_reference_dates(reporting_triangle)
 
   draws_df_list <- lapply(seq_len(draws), function(i) {

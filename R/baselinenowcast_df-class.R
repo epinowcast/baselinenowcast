@@ -98,7 +98,6 @@ assert_baselinenowcast_df <- function(data) {
   }
 
   assert_date(data$reference_date)
-  # Check for duplicated reference dates
   cols_to_check <- names(data)[names(data) %in% c("reference_date", "draw")]
 
   dups <- duplicated(data[, c(cols_to_check)])

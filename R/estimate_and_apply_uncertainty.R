@@ -56,17 +56,18 @@
 #' )
 #' head(nowcast_draws_df)
 estimate_and_apply_uncertainty <- function(
-    point_nowcast_matrix,
-    reporting_triangle,
-    n_history_delay,
-    n_retrospective_nowcasts,
-    structure = get_reporting_structure(reporting_triangle),
-    draws = 1000,
-    delay_pmf = NULL,
-    uncertainty_model = fit_by_horizon,
-    uncertainty_sampler = sample_nb,
-    validate = TRUE,
-    ...) {
+  point_nowcast_matrix,
+  reporting_triangle,
+  n_history_delay,
+  n_retrospective_nowcasts,
+  structure = get_reporting_structure(reporting_triangle),
+  draws = 1000,
+  delay_pmf = NULL,
+  uncertainty_model = fit_by_horizon,
+  uncertainty_sampler = sample_nb,
+  validate = TRUE,
+  ...
+) {
   assert_reporting_triangle(point_nowcast_matrix, validate)
   assert_reporting_triangle(reporting_triangle, validate)
 

@@ -1,8 +1,8 @@
 # baselinenowcast 0.2.1000
 
 ## Package
-
--   Add converters between `reporting_triangle` and [reviser](https://CRAN.R-project.org/package=reviser) vintages formats via `as_reviser_vintages()` and `as_reporting_triangle.tbl_pubdate()`, enabling use of reviser's vintage analysis and state space nowcasting methods alongside baselinenowcast's nowcasting functionality (#429).
+-  Place every internal check, assert, and validate function next to its consumer (class invariants in `R/reporting_triangle-class.R` and `R/baselinenowcast_df-class.R`; per-caller helpers in the file that calls them) and remove `R/validate.R`. Generalise `assert_rep_tri_class()` with an `arg_name` argument and use it to replace duplicated inline class checks in `truncate_to_quantile()`, `truncate_to_delay()`, and the reporting triangle getters and methods (#300).
+-  Add converters between `reporting_triangle` and [reviser](https://CRAN.R-project.org/package=reviser) vintages formats via `as_reviser_vintages()` and `as_reporting_triangle.tbl_pubdate()`, enabling use of reviser's vintage analysis and state space nowcasting methods alongside baselinenowcast's nowcasting functionality (#429).
 
 ## Documentation
 -  Modified NSSP nowcast vignette to do vectorised string matching instead of row-wise and to simplify the pre-processing to avoid a pivot to a wide form dataframe to speed-up performance.

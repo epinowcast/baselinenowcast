@@ -94,6 +94,59 @@ apply_delay <- function(reporting_triangle, delay_pmf, validate = TRUE) {
   return(point_nowcast_matrix)
 }
 
+#' Validate triangle to nowcast and delay PMF together
+#'
+#' Various checks to make sure that the reporting triangle  and the delay PMF
+#'   passed in to [apply_delay()] are formatted properly and compatible.
+#' @param triangle Matrix of values with rows indicating the time points and
+#'   columns indicating the delays.
+#' @param delay_pmf Vector of length of the number of delays indicating the
+#'   probability of a case being reported on a given delay.
+#' @importFrom checkmate assert_class assert_integerish assert_matrix
+#' @importFrom cli cli_abort
+#' @returns NULL, invisibly
+#' @keywords internal
+.validate_delay_and_triangle <- function(triangle, delay_pmf) {
+  assert_class(triangle, "matrix")
+  assert_class(delay_pmf, "numeric")
+  assert_matrix(triangle, all.missing = FALSE)
+
+  if ((ncol(triangle) != length(delay_pmf))) {
+    cli_abort(
+      message = c(
+        "Length of the delay PMF is not the same as the number of delays ",
+        "in the triangle to be nowcasted. Ensure that these are equivalent ",
+        "by generating the delay PMF using the same maximum delay as in the ",
+        "data you want to be nowcasted."
+      )
+    )
+  }
+
+  if (is.na(triangle[nrow(triangle), 2]) && delay_pmf[1] == 0) {
+    cli_abort(
+      message = c(
+        "Value of delay PMF at delay = 0 is 0, and the latest reference time ",
+        "in the reporting matrix only contains a value at delay = 0. There is",
+        "insufficient information to generate a point nowcast for the latest ",
+        "reference time. Consider truncating to an earlier reference time to ",
+        "ensure a nowcast, not a forecast, is being produced."
+      )
+    )
+  }
+
+  if (delay_pmf[1] < 0) {
+    cli_abort(
+      message = c(
+        "x" = "First entry of delay PMF (delay = 0) is negative ({delay_pmf[1]}).", # nolint
+        "i" = "Negative PMF entries are only valid for later delays where they represent systematic downward corrections.", # nolint
+        "i" = "The first delay must have a non-negative probability as it represents the baseline reporting pattern." # nolint
+      )
+    )
+  }
+
+  return(NULL)
+}
+
 #' Calculate the updated rows of the expected nowcasted triangle
 #'
 #' @param index Integer indicating the delay index
@@ -105,11 +158,12 @@ apply_delay <- function(reporting_triangle, delay_pmf, validate = TRUE) {
 #'   values for the specified rows and column
 #' @keywords internal
 .calc_expectation <- function(
-    index,
-    expectation,
-    delay_prob,
-    delay_cdf_prev,
-    n_rows) {
+  index,
+  expectation,
+  delay_prob,
+  delay_cdf_prev,
+  n_rows
+) {
   # Find rows with NA in this column that need to be filled
   na_rows <- .where_is_na_in_col(expectation, index)
 
@@ -146,4 +200,30 @@ apply_delay <- function(reporting_triangle, delay_pmf, validate = TRUE) {
 
 .calc_modified_expectation <- function(x, delay_cdf_prev) {
   return((x + 1 - delay_cdf_prev) / delay_cdf_prev)
+}
+
+#' Validate the delay PMF if it is passed in
+#'
+#' @inheritParams .validate_delay_and_triangle
+#' @inheritParams sample_prediction
+#'
+#' @returns NULL invisibly
+#' @importFrom checkmate check_numeric
+#' @keywords internal
+.validate_delay <- function(triangle, delay_pmf) {
+  pmf_sum <- sum(delay_pmf)
+  test <- check_numeric(pmf_sum, lower = 0.99, upper = 1.01, len = 1)
+  if (!isTRUE(test)) {
+    cli_alert_info(
+      "Delay PMF does not sum to approximately 1 (sum = {round(pmf_sum, 4)}). This may be expected when working with corrections or incomplete data, but could also indicate an error in the delay estimation." # nolint: line_length_linter
+    )
+  }
+
+  n_delays <- ncol(triangle)
+  if (n_delays != length(delay_pmf)) {
+    cli_abort(
+      message = c("`delay_pmf` is not the same length as the number of delays in the reporting triangle.") # nolint: line_length_linter
+    )
+  }
+  return(NULL)
 }

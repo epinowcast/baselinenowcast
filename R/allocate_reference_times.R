@@ -78,6 +78,24 @@ allocate_reference_times <- function(reporting_triangle,
   return(ns)
 }
 
+#' Helper function to validate allocation parameters
+#'
+#' @inheritParams allocate_reference_times
+#' @importFrom checkmate assert_scalar assert_numeric assert_integerish
+#'
+#' @returns NULL invisibly
+#' @keywords internal
+.validate_inputs_allocation <- function(scale_factor,
+                                        prop_delay,
+                                        n_min_retro_nowcasts) {
+  assert_integerish(n_min_retro_nowcasts, lower = 0)
+  assert_scalar(prop_delay)
+  assert_numeric(prop_delay, lower = 0, upper = 1, finite = TRUE)
+  assert_scalar(scale_factor)
+  assert_numeric(scale_factor, lower = 0, finite = TRUE)
+  return(NULL)
+}
+
 #' Perform the allocation process
 #'
 #' @inheritParams allocate_reference_times
@@ -159,6 +177,9 @@ allocate_reference_times <- function(reporting_triangle,
 #'
 #' @param n_ref_times Integer indicating the number of reference times
 #'    available
+#' @param max_delay Integer indicating the maximum delay in the reporting
+#'    triangle, used together with `scale_factor` to derive the target number
+#'    of reference times.
 #' @inheritParams .assign_allocation_from_ns
 #' @inheritParams allocate_reference_times
 #'
@@ -172,12 +193,10 @@ allocate_reference_times <- function(reporting_triangle,
                                         n_min_retro_nowcasts,
                                         scale_factor,
                                         max_delay) {
-  # Early return for simple case
   if (n_target <= n_ref_times && n_target >= n_required) {
     return(n_target)
   }
 
-  # Handle target exceeds available reference times
   if (n_target > n_ref_times) {
     return(.handle_target_exceeds_avail(
       n_ref_times, n_required, n_target,
@@ -185,7 +204,6 @@ allocate_reference_times <- function(reporting_triangle,
     ))
   }
 
-  # Handle target less than required
   return(.handle_target_insufficient(
     n_target, n_required, n_min_delay,
     n_min_retro_nowcasts, scale_factor, max_delay
@@ -220,12 +238,14 @@ allocate_reference_times <- function(reporting_triangle,
   return(NULL)
 }
 
+#' Helper for when the target is less than the required minimum
 #'
 #' @inheritParams .check_against_requirements
 #' @inheritParams .assign_allocation_from_ns
 #' @inheritParams allocate_reference_times
 #'
 #' @returns NULL invisibly
+#' @keywords internal
 .handle_target_insufficient <- function(n_target,
                                         n_required,
                                         n_min_delay,
@@ -233,7 +253,7 @@ allocate_reference_times <- function(reporting_triangle,
                                         scale_factor,
                                         max_delay) {
   cli_abort(message = c(
-    "{scale_factor*max_delay} reference times specified and {n_required} are needed, {n_min_delay} for delay estimation and {n_min_retro_nowcasts} for uncertainty estimation.", # nolint,
+    "{scale_factor*max_delay} reference times specified and {n_required} are needed, {n_min_delay} for delay estimation and {n_min_retro_nowcasts} for uncertainty estimation.", # nolint
     "x" = "Probabilistic nowcasts cannot be generated." # nolint
   ))
   return(NULL)

@@ -95,6 +95,19 @@ NULL
   return(NULL)
 }
 
+#' Assert delays_unit is valid
+#'
+#' @param delays_unit Character string specifying the temporal granularity
+#' @returns NULL, invisibly. Stops execution with error if validation fails.
+#' @keywords internal
+assert_delays_unit <- function(delays_unit) {
+  assert_character(delays_unit, len = 1)
+  assert_choice(delays_unit,
+    choices = c("days", "weeks", "months", "years")
+  )
+  return(invisible(NULL))
+}
+
 #' Class constructor for `reporting_triangle` objects
 #'
 #' Creates a new reporting_triangle object from a matrix.
@@ -233,6 +246,51 @@ new_reporting_triangle <- function(reporting_triangle_matrix,
   ))
 }
 
+#' Check if matrix has valid NA pattern
+#'
+#' Alternative pure-matrix implementation of the same NA-pattern check as
+#' `.check_na_pattern()`. Kept for its tests, which exercise this algorithm
+#' directly.
+#'
+#' @param mat Matrix
+#'
+#' @returns Boolean indicating whether the matrix only contains NAs in the
+#'    bottom right (TRUE if only in bottom right, FALSE if elsewhere).
+#' @keywords internal
+.check_na_bottom_right <- function(mat) {
+  n_rows <- nrow(mat)
+  n_cols <- ncol(mat)
+
+  for (i in 1:n_rows) {
+    row_data <- mat[i, ]
+    na_indices <- which(is.na(row_data))
+
+    if (length(na_indices) > 0) {
+      min_na_idx <- min(na_indices)
+      if (!all(is.na(row_data[min_na_idx:n_cols]))) {
+        return(FALSE)
+      }
+    }
+  }
+
+  for (j in 1:n_cols) {
+    col_data <- mat[, j]
+    na_indices <- which(is.na(col_data))
+
+    if (length(na_indices) > 0) {
+      min_na_idx <- min(na_indices)
+      if (!all(is.na(col_data[min_na_idx:n_rows]))) {
+        return(FALSE)
+      }
+      if (min_na_idx > 1 && anyNA(col_data[1:(min_na_idx - 1)])) {
+        return(FALSE)
+      }
+    }
+  }
+
+  return(TRUE)
+}
+
 #' Validate a reporting_triangle object
 #'
 #' @param data A [reporting_triangle] object to validate
@@ -314,13 +372,15 @@ assert_reporting_triangle <- function(data, validate = TRUE) {
 #' will occur through other operations (e.g., subsetting via `[`).
 #'
 #' @param data Object to check for reporting_triangle class.
+#' @param arg_name Character name to use in the error message (defaults to
+#'   "data").
 #' @return NULL
 #' @keywords internal
 #' @noRd
-assert_rep_tri_class <- function(data) {
+assert_rep_tri_class <- function(data, arg_name = "data") {
   if (!is_reporting_triangle(data)) {
     cli_abort(
-      message = "data must have class 'reporting_triangle'"
+      message = "{arg_name} must have class 'reporting_triangle'"
     )
   }
   return(NULL)

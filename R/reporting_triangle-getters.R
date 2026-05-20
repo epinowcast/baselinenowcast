@@ -8,9 +8,7 @@
 #' ref_dates <- get_reference_dates(example_reporting_triangle)
 #' head(ref_dates)
 get_reference_dates <- function(x) {
-  if (!is_reporting_triangle(x)) {
-    cli_abort(message = "x must have class 'reporting_triangle'")
-  }
+  assert_rep_tri_class(x, arg_name = "x")
   return(as.Date(rownames(x)))
 }
 
@@ -32,9 +30,7 @@ get_reference_dates <- function(x) {
 #' max_delay_nz <- get_max_delay(example_reporting_triangle, non_zero = TRUE)
 #' max_delay_nz
 get_max_delay <- function(x, non_zero = FALSE) {
-  if (!is_reporting_triangle(x)) {
-    cli_abort(message = "x must have class 'reporting_triangle'")
-  }
+  assert_rep_tri_class(x, arg_name = "x")
 
   if (non_zero) {
     col_sums <- colSums(x, na.rm = TRUE)
@@ -256,9 +252,7 @@ get_delays_from_dates <- function(report_dates, reference_dates,
 #' mean_delays <- get_mean_delay(example_reporting_triangle)
 #' mean_delays
 get_mean_delay <- function(x) {
-  if (!is_reporting_triangle(x)) {
-    cli_abort(message = "x must have class 'reporting_triangle'")
-  }
+  assert_rep_tri_class(x, arg_name = "x")
   delays <- 0:get_max_delay(x)
   x_mat <- as.matrix(x)
   mean_delays <- apply(x_mat, 1, function(row_counts) {
@@ -290,9 +284,7 @@ get_mean_delay <- function(x) {
 #' median_delays <- get_quantile_delay(example_reporting_triangle, p = 0.5)
 #' median_delays
 get_quantile_delay <- function(x, p = 0.99) {
-  if (!is_reporting_triangle(x)) {
-    cli_abort(message = "x must have class 'reporting_triangle'")
-  }
+  assert_rep_tri_class(x, arg_name = "x")
   assert_numeric(p, lower = 0, upper = 1, len = 1)
 
   delays <- 0:get_max_delay(x)

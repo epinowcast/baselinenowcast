@@ -31,9 +31,7 @@
 #' rep_tri_trunc90 <- truncate_to_quantile(rep_tri, p = 0.90)
 #' ncol(rep_tri_trunc90)
 truncate_to_quantile <- function(x, p = 0.99) {
-  if (!is_reporting_triangle(x)) {
-    cli_abort(message = "x must have class 'reporting_triangle'")
-  }
+  assert_rep_tri_class(x, arg_name = "x")
   assert_numeric(p, lower = 0, upper = 1, len = 1)
 
   # Get quantile delays for each reference date
@@ -88,9 +86,7 @@ truncate_to_quantile <- function(x, p = 0.99) {
 #' rt_short <- truncate_to_delay(example_downward_corr_rt, max_delay = 2)
 #' get_max_delay(rt_short) # Returns 2
 truncate_to_delay <- function(x, max_delay) {
-  if (!is_reporting_triangle(x)) {
-    cli_abort(message = "x must have class 'reporting_triangle'")
-  }
+  assert_rep_tri_class(x, arg_name = "x")
 
   current_max_delay <- get_max_delay(x)
 

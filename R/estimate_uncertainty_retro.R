@@ -49,13 +49,14 @@
 #' )
 #' uncertainty_params
 estimate_uncertainty_retro <- function(
-    reporting_triangle,
-    n_history_delay,
-    n_retrospective_nowcasts,
-    structure = get_reporting_structure(reporting_triangle),
-    delay_pmf = NULL,
-    validate = TRUE,
-    ...) {
+  reporting_triangle,
+  n_history_delay,
+  n_retrospective_nowcasts,
+  structure = get_reporting_structure(reporting_triangle),
+  delay_pmf = NULL,
+  validate = TRUE,
+  ...
+) {
   assert_reporting_triangle(reporting_triangle, validate)
 
   n_ref_times <- nrow(reporting_triangle)
@@ -107,4 +108,53 @@ estimate_uncertainty_retro <- function(
   )
 
   return(uncertainty_params)
+}
+
+#' Validate the specified number of reference times meets the minimum
+#'    requirements
+#'
+#' @param n_ref_times Integer indicating the number of reference times
+#'    available.
+#' @param n_min_delay Integer indicating minimum number of
+#'    reference times needed for delay estimation.
+#' @inheritParams estimate_and_apply_uncertainty
+#' @inheritParams allocate_reference_times
+#' @returns NULL, invisibly
+#' @keywords internal
+.validate_inputs_uncertainty <- function(n_ref_times,
+                                         n_min_delay,
+                                         n_history_delay,
+                                         n_retrospective_nowcasts,
+                                         n_min_retro_nowcasts = 2) {
+  assert_integerish(n_ref_times, lower = 0)
+  assert_integerish(n_min_delay, lower = 0)
+  assert_integerish(n_history_delay, lower = 0)
+  assert_integerish(n_retrospective_nowcasts, lower = 0)
+  assert_integerish(n_min_retro_nowcasts, lower = 0)
+
+  if (n_ref_times < n_history_delay + n_retrospective_nowcasts) {
+    cli_abort(message = c(
+      "Insufficient reference times in reporting triangle for specified `n_history_delay` and `n_retrospective_nowcasts`.", # nolint
+      "i" = "{n_history_delay + n_retrospective_nowcasts} reference times are specified for delay and uncertainty estimation.", # nolint
+      "x" = "Only {n_ref_times} reference times are available in the reporting triangle." # nolint
+    ))
+  }
+
+  if (n_history_delay < n_min_delay) {
+    cli_abort(message = c(
+      "Insufficient `n_history_delay`.", # nolint
+      "i" = "{n_min_delay} reference times needed for delay estimation.", # nolint
+      "x" = "{n_history_delay} reference times were specified." # nolint
+    ))
+  }
+
+  if (n_retrospective_nowcasts < n_min_retro_nowcasts) {
+    cli_abort(message = c(
+      "Insufficient `n_retrospective_nowcasts`.", # nolint
+      "i" = "{n_min_retro_nowcasts} reference times needed for uncertainty estimation.", # nolint
+      "x" = "{n_retrospective_nowcasts} reference times were specified." # nolint
+    ))
+  }
+
+  return(NULL)
 }

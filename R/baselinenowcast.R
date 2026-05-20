@@ -120,18 +120,19 @@ baselinenowcast <- function(data,
 #' nowcast_df <- baselinenowcast(rep_tri, draws = 100)
 #' nowcast_df
 baselinenowcast.reporting_triangle <- function(
-    data,
-    scale_factor = 3,
-    prop_delay = 0.5,
-    output_type = c("samples", "point"),
-    draws = 1000,
-    uncertainty_model = fit_by_horizon,
-    uncertainty_sampler = sample_nb,
-    delay_pmf = NULL,
-    uncertainty_params = NULL,
-    preprocess = preprocess_negative_values,
-    validate = TRUE,
-    ...) {
+  data,
+  scale_factor = 3,
+  prop_delay = 0.5,
+  output_type = c("samples", "point"),
+  draws = 1000,
+  uncertainty_model = fit_by_horizon,
+  uncertainty_sampler = sample_nb,
+  delay_pmf = NULL,
+  uncertainty_params = NULL,
+  preprocess = preprocess_negative_values,
+  validate = TRUE,
+  ...
+) {
   assert_reporting_triangle(data, validate)
   output_type <- arg_match(output_type)
   assert_integerish(draws, null.ok = TRUE)
@@ -302,19 +303,20 @@ baselinenowcast.reporting_triangle <- function(
 #' )
 #' nowcasts_df
 baselinenowcast.data.frame <- function(
-    data,
-    scale_factor = 3,
-    prop_delay = 0.5,
-    output_type = c("samples", "point"),
-    draws = 1000,
-    uncertainty_model = fit_by_horizon,
-    uncertainty_sampler = sample_nb,
-    max_delay = NULL,
-    delays_unit = "days",
-    strata_cols = NULL,
-    strata_sharing = "none",
-    preprocess = preprocess_negative_values,
-    ...) {
+  data,
+  scale_factor = 3,
+  prop_delay = 0.5,
+  output_type = c("samples", "point"),
+  draws = 1000,
+  uncertainty_model = fit_by_horizon,
+  uncertainty_sampler = sample_nb,
+  max_delay = NULL,
+  delays_unit = "days",
+  strata_cols = NULL,
+  strata_sharing = "none",
+  preprocess = preprocess_negative_values,
+  ...
+) {
   output_type <- arg_match(output_type)
   assert_names(colnames(data),
     must.include = c("reference_date", "report_date", "count")
@@ -465,4 +467,35 @@ baselinenowcast.data.frame <- function(
     list_of_dfs <- list(long_df)
   }
   return(list_of_dfs)
+}
+
+#' Validate each of the strata columns passed to baselinenowcast
+#'
+#' @inheritParams baselinenowcast.data.frame
+#' @keywords internal
+#' @returns NULL
+.validate_strata_cols <- function(strata_cols, data) {
+  conflicting_cols <- intersect(strata_cols, c(
+    "reference_date",
+    "report_date",
+    "count"
+  ))
+  if (length(conflicting_cols) > 0) {
+    cli_abort(
+      message = c(
+        "`strata_cols` cannot contain any of the required columns of: reference_date, report_date, count .", # nolint
+        "i" = "Found: {conflicting_cols} in `strata_cols`" # nolint
+      )
+    )
+  }
+
+  if (!all(strata_cols %in% colnames(data))) {
+    cli_abort(
+      message =
+        c("`strata_cols`, if specified, must be a column in `data`.",
+          "i" = "{strata_cols[!strata_cols %in% colnames(data)]} is not a column in `data`." # nolint
+        )
+    )
+  }
+  return(NULL)
 }

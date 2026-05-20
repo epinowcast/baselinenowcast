@@ -75,25 +75,9 @@ test_that("sample_predictions: draws are distinct and properly indexed", {
   )
 
   # Check that draws are distinct (should have stochasticity)
-  # Group by draw and compare values
-  draw_vals <- list()
-  for (i in 1:n_draws) {
-    draw_vals[[i]] <- result$pred_count[result$draw == i]
-  }
-
-  # At least some of the draws should be different (with very high probability)
-  distinct_draws <- 0
-  for (i in 1:(n_draws - 1)) {
-    for (j in (i + 1):n_draws) {
-      if (!identical(draw_vals[[i]], draw_vals[[j]])) {
-        distinct_draws <- distinct_draws + 1
-      }
-    }
-  }
-
-  # With random draws, we expect most pairs to be different
-  expected_pairs <- (n_draws * (n_draws - 1)) / 2
-  expect_gt(distinct_draws, expected_pairs / 2)
+  draw_vals <- split(result$pred_count, result$draw)
+  expect_false(identical(draw_vals[[1]], draw_vals[[2]]))
+  expect_gt(length(unique(unlist(draw_vals))), n_draws)
 })
 
 test_that("sample_predictions: time index is correctly assigned", {

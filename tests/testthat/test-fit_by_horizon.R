@@ -1,12 +1,3 @@
-# Mock fit_nb function for testing (since it's not defined in the snippet)
-mock_fit_nb <- function(x, mu) {
-  # Simple mock that returns the mean of the ratio
-  if (length(x) == 0 || any(mu <= 0)) {
-    return(NA_real_)
-  }
-  return(mean(x / mu, na.rm = TRUE))
-}
-
 # Simple test function that returns sum
 sum_fun <- function(x, mu) {
   return(sum(x, na.rm = TRUE))
@@ -39,9 +30,8 @@ pred_matrix <- matrix(
 )
 
 test_that("fit_by_horizon: basic functionality with default function", {
-  # Since fit_nb is not defined, we'll use a mock function
   result <- fit_by_horizon(
-    fit_model = mock_fit_nb,
+    fit_model = fit_nb,
     obs = obs_matrix,
     pred = pred_matrix
   )
@@ -50,6 +40,8 @@ test_that("fit_by_horizon: basic functionality with default function", {
   expect_type(result, "double")
   expect_length(result, ncol(obs_matrix))
   expect_length(result, 3L)
+  expect_true(all(is.finite(result)))
+  expect_true(all(result > 0))
 })
 
 test_that("fit_by_horizon: works with custom function", {
@@ -226,12 +218,10 @@ test_that("fit_by_horizon: errors if empty matrices", {
 })
 
 test_that("fit_by_horizon: default function parameter works", {
-  # This test assumes fit_nb is available in the environment
-  # If not available, we can skip or mock it
-  skip_if_not(exists("fit_nb"), "fit_nb function not available")
-
   result <- fit_by_horizon(obs = obs_matrix, pred = pred_matrix)
 
   expect_type(result, "double")
   expect_length(result, ncol(obs_matrix))
+  expect_true(all(is.finite(result)))
+  expect_true(all(result > 0))
 })

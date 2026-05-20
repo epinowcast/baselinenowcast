@@ -37,6 +37,7 @@ cli
 color
 cumsum
 cutoff
+cynkra
 darkblue
 darkred
 df
@@ -90,6 +91,7 @@ swo
 th
 thetad
 ub
+tibble
 wellcomeopenres
 xlab
 yintercept

@@ -1,7 +1,7 @@
-# Validate reporting_triangle for delay estimation Domain-specific checks to ensure the reporting triangle is suitable for delay estimation in [`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md).
+# Validate reporting_triangle for delay estimation
 
-Validate reporting_triangle for delay estimation Domain-specific checks
-to ensure the reporting triangle is suitable for delay estimation in
+Domain-specific checks to ensure the reporting triangle is suitable for
+delay estimation in
 [`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md).
 
 ## Usage

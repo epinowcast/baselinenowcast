@@ -1,7 +1,7 @@
-# Validate triangle to nowcast and delay PMF together Various checks to make sure that the reporting triangle and the delay PMF passed in to [`apply_delay()`](https://baselinenowcast.epinowcast.org/reference/apply_delay.md) are formatted properly and compatible.
+# Validate triangle to nowcast and delay PMF together
 
-Validate triangle to nowcast and delay PMF together Various checks to
-make sure that the reporting triangle and the delay PMF passed in to
+Various checks to make sure that the reporting triangle and the delay
+PMF passed in to
 [`apply_delay()`](https://baselinenowcast.epinowcast.org/reference/apply_delay.md)
 are formatted properly and compatible.
 

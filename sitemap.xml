@@ -61,6 +61,7 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-format_reference_date_range.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-get_triangle_info.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-handle_target_exceeds_avail.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-handle_target_insufficient.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-infer_delays_unit.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-perform_allocation_process.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-rename_cols.html</loc></url>
@@ -72,11 +73,9 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_for_delay_estimation.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_inputs_allocation.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_inputs_uncertainty.html</loc></url>
-<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_multiple_inputs.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_rep_tri_args.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_rep_tri_df.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_strata_cols.html</loc></url>
-<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-validate_uncertainty.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delay.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_delays.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/estimate_and_apply_uncertainty.html</loc></url>

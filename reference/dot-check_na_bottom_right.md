@@ -1,6 +1,8 @@
 # Check if matrix has valid NA pattern
 
-Check if matrix has valid NA pattern
+Alternative pure-matrix implementation of the same NA-pattern check as
+`.check_na_pattern()`. Kept for its tests, which exercise this algorithm
+directly.
 
 ## Usage
 

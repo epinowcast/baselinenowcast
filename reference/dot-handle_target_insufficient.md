@@ -1,15 +1,13 @@
-# Check target size against number of reference times available and the number required
+# Helper for when the target is less than the required minimum
 
-Check target size against number of reference times available and the
-number required
+Helper for when the target is less than the required minimum
 
 ## Usage
 
 ``` r
-.check_against_requirements(
-  n_ref_times,
-  n_required,
+.handle_target_insufficient(
   n_target,
+  n_required,
   n_min_delay,
   n_min_retro_nowcasts,
   scale_factor,
@@ -19,17 +17,13 @@ number required
 
 ## Arguments
 
-- n_ref_times:
+- n_target:
 
-  Integer indicating the number of reference times available
+  Integer indicating the target number of reference times.
 
 - n_required:
 
   Integer indicating the number need for both delay and uncertainty
-
-- n_target:
-
-  Integer indicating the target number of reference times.
 
 - n_min_delay:
 
@@ -53,4 +47,4 @@ number required
 
 ## Value
 
-`n_used` Integer indicating how many reference times will be used
+NULL invisibly

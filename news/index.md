@@ -4,6 +4,16 @@
 
 ### Package
 
+- Place every internal check, assert, and validate function next to its
+  consumer (class invariants in `R/reporting_triangle-class.R` and
+  `R/baselinenowcast_df-class.R`; per-caller helpers in the file that
+  calls them) and remove `R/validate.R`. Generalise
+  `assert_rep_tri_class()` with an `arg_name` argument and use it to
+  replace duplicated inline class checks in
+  [`truncate_to_quantile()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_quantile.md),
+  [`truncate_to_delay()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_delay.md),
+  and the reporting triangle getters and methods
+  ([\#300](https://github.com/epinowcast/baselinenowcast/issues/300)).
 - Add converters between `reporting_triangle` and
   [reviser](https://CRAN.R-project.org/package=reviser) vintages formats
   via

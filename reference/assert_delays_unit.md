@@ -1,4 +1,4 @@
-# Validate each item in the reporting triangle
+# Assert delays_unit is valid
 
 Assert delays_unit is valid
 

@@ -43,15 +43,15 @@
 #' library(scoringutils)
 #'
 #' max_delay <- 25
-#' as_of <- as.Date("2026-04-01")
+#' nowcast_date <- as.Date("2026-04-01")
 #'
 #' # Build the full reporting triangle once from the long-form data
 #' full_tri <- as_reporting_triangle(syn_nssp_df) |>
 #'   truncate_to_delay(max_delay = max_delay)
 #'
-#' # As-of view for the nowcast: drop rows past `as_of`, then apply the
-#' # diagonal reporting structure so cells reported after `as_of` become NA
-#' n_drop <- sum(as.Date(rownames(full_tri)) > as_of)
+#' # As-of view for the nowcast: drop rows past `nowcast_date`, then apply the
+#' # diagonal reporting structure so cells reported after it become NA
+#' n_drop <- sum(as.Date(rownames(full_tri)) > nowcast_date)
 #' rep_tri <- full_tri |>
 #'   truncate_to_row(t = n_drop) |>
 #'   apply_reporting_structure() |>
@@ -128,12 +128,12 @@ as_forecast_sample.baselinenowcast_df <- function(data,
 #' library(scoringutils)
 #'
 #' max_delay <- 25
-#' as_of <- as.Date("2026-04-01")
+#' nowcast_date <- as.Date("2026-04-01")
 #'
 #' full_tri <- as_reporting_triangle(syn_nssp_df) |>
 #'   truncate_to_delay(max_delay = max_delay)
 #'
-#' n_drop <- sum(as.Date(rownames(full_tri)) > as_of)
+#' n_drop <- sum(as.Date(rownames(full_tri)) > nowcast_date)
 #' rep_tri <- full_tri |>
 #'   truncate_to_row(t = n_drop) |>
 #'   apply_reporting_structure() |>

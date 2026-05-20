@@ -60,12 +60,12 @@ the observed value.
 library(scoringutils)
 
 max_delay <- 25
-as_of <- as.Date("2026-04-01")
+nowcast_date <- as.Date("2026-04-01")
 
 full_tri <- as_reporting_triangle(syn_nssp_df) |>
   truncate_to_delay(max_delay = max_delay)
 
-n_drop <- sum(as.Date(rownames(full_tri)) > as_of)
+n_drop <- sum(as.Date(rownames(full_tri)) > nowcast_date)
 rep_tri <- full_tri |>
   truncate_to_row(t = n_drop) |>
   apply_reporting_structure() |>

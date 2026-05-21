@@ -222,7 +222,7 @@ truncate_to_row <- function(reporting_triangle,
   return(.truncate_triangle_impl(reporting_triangle, t))
 }
 
-#' Truncate reporting triangle to an as-of date
+#' Truncate reporting triangle to a reference date
 #'
 #' Drops rows whose reference date is later than the cutoff `reference_date`,
 #'   returning the reporting triangle as it would have looked if observed up

@@ -231,7 +231,7 @@ truncate_to_row <- function(reporting_triangle,
 #'   to drop manually.
 #'
 #' @inheritParams estimate_delay
-#' @param reference_date A `Date` of length 1 giving the as-of reference
+#' @param reference_date A `Date` of length 1 giving the reference
 #'   cutoff. Rows with reference dates greater than this value are dropped.
 #'  Reports after this date are not removed.
 #' @returns A `reporting_triangle` object containing only rows with

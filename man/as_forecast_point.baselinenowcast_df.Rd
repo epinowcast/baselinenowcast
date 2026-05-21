@@ -73,15 +73,15 @@ rep_tri <- full_tri |>
 
 nowcast <- baselinenowcast(rep_tri, output_type = "point")
 
-# Rolling truth from the same full triangle
+# Score only the right-truncated reference dates that were actually nowcast
+nowcast <- nowcast[
+  nowcast$reference_date > max(nowcast$reference_date) - max_delay,
+]
+
+# Rolling truth from the same full triangle; the inner-join merge restricts
+# it to the filtered nowcast dates
 truth_df <- as.data.frame(full_tri)
-latest_obs <- aggregate(
-  count ~ reference_date,
-  data = truth_df[
-    truth_df$reference_date \%in\% unique(nowcast$reference_date),
-  ],
-  FUN = sum
-)
+latest_obs <- aggregate(count ~ reference_date, data = truth_df, FUN = sum)
 
 fp <- as_forecast_point(nowcast, latest_obs)
 fp

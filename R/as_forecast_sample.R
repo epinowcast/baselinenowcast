@@ -63,10 +63,9 @@
 #' # Truth: total reports observed within `max_delay` of each reference date,
 #' # taken from the same `full_tri` (rolling truth). `as_forecast_sample()`
 #' # scores only the right-truncated reference dates that were actually
-#' # nowcast (the most recent `max_delay` dates, carried on the nowcast as an
-#' # attribute); the inner-join merge then restricts the truth to those dates.
-#' # The scoring vignette explains why we use a rolling rather than
-#' # latest-vintage truth.
+#' # nowcast (the `nowcast` column of the nowcast); the inner-join merge then
+#' # restricts the truth to those dates. The scoring vignette explains why we
+#' # use a rolling rather than latest-vintage truth.
 #' truth_df <- as.data.frame(full_tri)
 #' latest_obs <- aggregate(count ~ reference_date, data = truth_df, FUN = sum)
 #'
@@ -140,7 +139,7 @@ as_forecast_sample.baselinenowcast_df <- function(data,
 #' nowcast <- baselinenowcast(rep_tri, output_type = "point")
 #'
 #' # Rolling truth from the same full triangle. `as_forecast_point()` scores
-#' # only the right-truncated nowcast dates (the most recent `max_delay`); the
+#' # only the right-truncated nowcast dates (the `nowcast` column); the
 #' # inner-join merge restricts the truth to those dates.
 #' truth_df <- as.data.frame(full_tri)
 #' latest_obs <- aggregate(count ~ reference_date, data = truth_df, FUN = sum)
@@ -216,20 +215,15 @@ as_forecast_point.baselinenowcast_df <- function(data,
     )
   }
 
-  # output_type is constant across rows; drop so it doesn't become a
-  # scoringutils forecast unit column
-  data$output_type <- NULL
+  # Score only the right-truncated reference dates that were actually nowcast.
+  # Earlier dates are fully observed, so scoring them just rewards the model
+  # for copying data. The `nowcast` flag is set by `baselinenowcast()`.
+  data <- data[data$nowcast, , drop = FALSE]
 
-  # Score only the right-truncated reference dates that were actually nowcast
-  # (the most recent `max_delay` dates). Earlier dates are fully observed, so
-  # scoring them just rewards the model for copying data. `max_delay` is
-  # carried as an attribute by `baselinenowcast()`; absent it (e.g. a
-  # hand-built object) we score every date.
-  max_delay <- attr(data, "max_delay")
-  if (!is.null(max_delay)) {
-    nowcast_dates <- tail(sort(unique(data$reference_date)), max_delay)
-    data <- data[data$reference_date %in% nowcast_dates, ]
-  }
+  # `output_type` and `nowcast` are bookkeeping columns; drop so they don't
+  # become scoringutils forecast unit columns
+  data$output_type <- NULL
+  data$nowcast <- NULL
 
   merge_cols <- intersect(colnames(data), colnames(latest_obs))
   merge_cols <- setdiff(merge_cols, c("pred_count", "draw", observed))

@@ -105,16 +105,17 @@ test_that("as_forecast_sample.baselinenowcast_df warns when latest_obs misses re
   )
 })
 
-test_that("as_forecast_sample.baselinenowcast_df scores only the most recent max_delay dates", { # nolint
+test_that("as_forecast_sample.baselinenowcast_df scores only the flagged nowcast dates", { # nolint
   skip_on_cran()
   skip_if_not_installed("scoringutils")
 
   nowcast <- suppressWarnings(
     baselinenowcast(example_reporting_triangle, draws = 10)
   )
-  max_delay <- get_max_delay(nowcast)
+  nowcast_dates <- unique(nowcast$reference_date[nowcast$nowcast])
   ref_dates <- get_reference_dates(example_reporting_triangle)
-  expect_lt(max_delay, length(ref_dates))
+  # Some dates are fully observed, so the scored set is a strict subset
+  expect_lt(length(nowcast_dates), length(ref_dates))
 
   latest_obs <- data.frame(
     reference_date = ref_dates,
@@ -125,10 +126,7 @@ test_that("as_forecast_sample.baselinenowcast_df scores only the most recent max
     scoringutils::as_forecast_sample(nowcast, latest_obs)
   )
 
-  expect_setequal(
-    unique(fs$reference_date),
-    tail(ref_dates, max_delay)
-  )
+  expect_setequal(unique(fs$reference_date), nowcast_dates)
 })
 
 test_that("as_forecast_sample.baselinenowcast_df accepts a custom observed column", { # nolint

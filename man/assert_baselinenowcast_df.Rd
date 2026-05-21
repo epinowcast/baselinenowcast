@@ -21,7 +21,8 @@ valid_df <- data.frame(
   reference_date = as.Date("2024-01-01") + 0:4,
   pred_count = c(10, 15, 12, 18, 20),
   draw = 1,
-  output_type = "point"
+  output_type = "point",
+  nowcast = c(FALSE, FALSE, TRUE, TRUE, TRUE)
 )
 class(valid_df) <- c("baselinenowcast_df", "data.frame")
 

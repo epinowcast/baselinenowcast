@@ -21,6 +21,9 @@
 #'   represents a probabilistic draw from the observation model indicated by
 #'   `"samples"` or whether the `pred_count` is a point estimate indicated by
 #'   `"point"`.}
+#'  \item{nowcast}{Logical indicating whether the reference date was
+#'   right-truncated and so actually nowcast (`TRUE`), as opposed to fully
+#'   observed (`FALSE`).}
 #' }
 #' See the corresponding [reporting_triangle] and
 #' [baselinenowcast()] function
@@ -41,10 +44,10 @@ NULL
 #'  (`pred_count`), and the draw number (`draw`).
 #' @param reference_dates Vector of reference dates corresponding to the
 #'    reference times in the `baselinenowcast_df`.
-#' @param max_delay Integer maximum delay of the reporting triangle the
-#'   nowcast was generated from, stored as an attribute and retrievable with
-#'   [get_max_delay()]. The most recent `max_delay` reference dates are the
-#'   right-truncated dates that were actually nowcast. Default `NULL`.
+#' @param nowcast_dates Vector of reference dates that were right-truncated and
+#'   so actually nowcast (as opposed to fully observed). Used to populate the
+#'   logical `nowcast` column. Defaults to `reference_dates` (every date
+#'   treated as a nowcast).
 #' @inheritParams baselinenowcast
 #'
 #' @returns An object of class \code{\link{baselinenowcast_df}}
@@ -53,10 +56,12 @@ NULL
 new_baselinenowcast_df <- function(baselinenowcast_df,
                                    reference_dates,
                                    output_type,
-                                   max_delay = NULL) {
+                                   nowcast_dates = reference_dates) {
   assert_choice(output_type, choices = c("samples", "point"))
 
   baselinenowcast_df$output_type <- output_type
+  baselinenowcast_df$nowcast <-
+    baselinenowcast_df$reference_date %in% nowcast_dates
   baselinenowcast_df_ordered <- baselinenowcast_df[order(
     baselinenowcast_df$reference_date,
     baselinenowcast_df$draw
@@ -64,8 +69,7 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
 
   result <- structure(
     data.frame(baselinenowcast_df_ordered),
-    class = c("baselinenowcast_df", class(baselinenowcast_df_ordered)),
-    max_delay = max_delay
+    class = c("baselinenowcast_df", class(baselinenowcast_df_ordered))
   )
 
   return(result)
@@ -76,13 +80,15 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
 #' @param data A [baselinenowcast_df] object to check for validity.
 #' @return Returns `NULL` invisibly. Throws an error if validation fails.
 #' @family baselinenowcast_df
+#' @importFrom checkmate assert_logical
 #' @examples
 #' # Create a valid baselinenowcast_df object
 #' valid_df <- data.frame(
 #'   reference_date = as.Date("2024-01-01") + 0:4,
 #'   pred_count = c(10, 15, 12, 18, 20),
 #'   draw = 1,
-#'   output_type = "point"
+#'   output_type = "point",
+#'   nowcast = c(FALSE, FALSE, TRUE, TRUE, TRUE)
 #' )
 #' class(valid_df) <- c("baselinenowcast_df", "data.frame")
 #'
@@ -92,7 +98,7 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
 assert_baselinenowcast_df <- function(data) {
   assert_data_frame(data)
 
-  required_cols <- c("reference_date", "pred_count")
+  required_cols <- c("reference_date", "pred_count", "nowcast")
   missing_cols <- setdiff(required_cols, names(data))
   if (length(missing_cols) > 0) {
     cli_abort(
@@ -104,12 +110,13 @@ assert_baselinenowcast_df <- function(data) {
   }
 
   assert_date(data$reference_date)
+  assert_logical(data$nowcast)
   # Each (reference_date + draw + strata cols) combination should appear
   # exactly once. Strata cols are anything other than pred_count, draw,
-  # output_type, reference_date.
+  # output_type, nowcast, reference_date.
   cols_to_check <- setdiff(
     names(data),
-    c("pred_count", "output_type")
+    c("pred_count", "output_type", "nowcast")
   )
   dups <- duplicated(data[, cols_to_check, drop = FALSE])
   if (any(dups)) {

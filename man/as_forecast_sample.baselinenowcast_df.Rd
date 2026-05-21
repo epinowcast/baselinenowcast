@@ -81,10 +81,9 @@ nowcast <- baselinenowcast(rep_tri, draws = 100)
 # Truth: total reports observed within `max_delay` of each reference date,
 # taken from the same `full_tri` (rolling truth). `as_forecast_sample()`
 # scores only the right-truncated reference dates that were actually
-# nowcast (the most recent `max_delay` dates, carried on the nowcast as an
-# attribute); the inner-join merge then restricts the truth to those dates.
-# The scoring vignette explains why we use a rolling rather than
-# latest-vintage truth.
+# nowcast (the `nowcast` column of the nowcast); the inner-join merge then
+# restricts the truth to those dates. The scoring vignette explains why we
+# use a rolling rather than latest-vintage truth.
 truth_df <- as.data.frame(full_tri)
 latest_obs <- aggregate(count ~ reference_date, data = truth_df, FUN = sum)
 

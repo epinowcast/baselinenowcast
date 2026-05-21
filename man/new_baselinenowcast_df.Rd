@@ -8,7 +8,7 @@ new_baselinenowcast_df(
   baselinenowcast_df,
   reference_dates,
   output_type,
-  max_delay = NULL
+  nowcast_dates = reference_dates
 )
 }
 \arguments{
@@ -27,10 +27,10 @@ needed is the number needed for delay estimation, otherwise, if
 \code{"samples"} are specified, at least 2 additional reference times are
 required for uncertainty estimation.}
 
-\item{max_delay}{Integer maximum delay of the reporting triangle the
-nowcast was generated from, stored as an attribute and retrievable with
-\code{\link[=get_max_delay]{get_max_delay()}}. The most recent \code{max_delay} reference dates are the
-right-truncated dates that were actually nowcast. Default \code{NULL}.}
+\item{nowcast_dates}{Vector of reference dates that were right-truncated and
+so actually nowcast (as opposed to fully observed). Used to populate the
+logical \code{nowcast} column. Defaults to \code{reference_dates} (every date
+treated as a nowcast).}
 }
 \value{
 An object of class \code{\link{baselinenowcast_df}}

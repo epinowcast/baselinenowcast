@@ -2,7 +2,7 @@
 % Please edit documentation in R/truncate.R
 \name{truncate_to_date}
 \alias{truncate_to_date}
-\title{Truncate reporting triangle to an as-of date}
+\title{Truncate reporting triangle to a reference date}
 \usage{
 truncate_to_date(reporting_triangle, reference_date, validate = TRUE)
 }
@@ -13,8 +13,9 @@ Can be a reporting matrix or incomplete reporting matrix.
 Can also be a ragged reporting triangle, where multiple columns are
 reported for the same row (e.g., weekly reporting of daily data).}
 
-\item{reference_date}{A \code{Date} of length 1 giving the as-of reference
-cutoff. Rows with reference dates greater than this value are dropped.}
+\item{reference_date}{A \code{Date} of length 1 giving the reference
+cutoff. Rows with reference dates greater than this value are dropped.
+Reports after this date are not removed.}
 
 \item{validate}{Logical. If TRUE (default), validates the object. Set to
 FALSE only when called from functions that already validated.}

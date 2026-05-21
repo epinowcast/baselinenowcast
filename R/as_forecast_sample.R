@@ -215,13 +215,9 @@ as_forecast_point.baselinenowcast_df <- function(data,
     )
   }
 
-  # Score only the right-truncated reference dates that were actually nowcast.
-  # Earlier dates are fully observed, so scoring them just rewards the model
-  # for copying data. The `nowcast` flag is set by `baselinenowcast()`.
+  # Score only the dates that were actually nowcast, then drop bookkeeping
+  # columns so they don't become scoringutils forecast unit columns
   data <- data[data$nowcast, , drop = FALSE]
-
-  # `output_type` and `nowcast` are bookkeeping columns; drop so they don't
-  # become scoringutils forecast unit columns
   data$output_type <- NULL
   data$nowcast <- NULL
 

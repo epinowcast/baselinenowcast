@@ -4,7 +4,12 @@
 \alias{new_baselinenowcast_df}
 \title{Combine data from a nowcast dataframe, strata, and reference dates}
 \usage{
-new_baselinenowcast_df(baselinenowcast_df, reference_dates, output_type)
+new_baselinenowcast_df(
+  baselinenowcast_df,
+  reference_dates,
+  output_type,
+  max_delay = NULL
+)
 }
 \arguments{
 \item{baselinenowcast_df}{Data.frame containing information for multiple
@@ -21,6 +26,11 @@ return the point estimate (\code{"point"}). Default is \code{"samples"}. If
 needed is the number needed for delay estimation, otherwise, if
 \code{"samples"} are specified, at least 2 additional reference times are
 required for uncertainty estimation.}
+
+\item{max_delay}{Integer maximum delay of the reporting triangle the
+nowcast was generated from, stored as an attribute and retrievable with
+\code{\link[=get_max_delay]{get_max_delay()}}. The most recent \code{max_delay} reference dates are the
+right-truncated dates that were actually nowcast. Default \code{NULL}.}
 }
 \value{
 An object of class \code{\link{baselinenowcast_df}}

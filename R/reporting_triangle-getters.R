@@ -12,13 +12,12 @@ get_reference_dates <- function(x) {
   return(as.Date(rownames(x)))
 }
 
-#' Get maximum delay from reporting_triangle
+#' Get maximum delay
 #'
-#' @param x A reporting_triangle object
-#' @param non_zero Logical. If TRUE, returns the maximum delay where at least
-#'   one observation is non-zero. Useful for identifying the actual extent of
-#'   the delay distribution. Default FALSE.
-#' @return Maximum delay (integer), or -1 if all zero when non_zero = TRUE
+#' @param x A [reporting_triangle] or [baselinenowcast_df] object.
+#' @param ... Additional arguments passed to methods.
+#' @return Maximum delay (integer), or -1 if all zero when `non_zero = TRUE`
+#'   (reporting triangle method only).
 #' @family reporting_triangle
 #' @export
 #' @examples
@@ -29,7 +28,16 @@ get_reference_dates <- function(x) {
 #' # Get maximum delay with non-zero observations
 #' max_delay_nz <- get_max_delay(example_reporting_triangle, non_zero = TRUE)
 #' max_delay_nz
-get_max_delay <- function(x, non_zero = FALSE) {
+get_max_delay <- function(x, ...) {
+  UseMethod("get_max_delay")
+}
+
+#' @rdname get_max_delay
+#' @param non_zero Logical. If TRUE, returns the maximum delay where at least
+#'   one observation is non-zero. Useful for identifying the actual extent of
+#'   the delay distribution. Default FALSE.
+#' @export
+get_max_delay.default <- function(x, non_zero = FALSE, ...) {
   assert_rep_tri_class(x, arg_name = "x")
 
   if (non_zero) {
@@ -42,6 +50,21 @@ get_max_delay <- function(x, non_zero = FALSE) {
   }
 
   return(ncol(x) - 1L)
+}
+
+#' @rdname get_max_delay
+#' @export
+get_max_delay.baselinenowcast_df <- function(x, ...) {
+  max_delay <- attr(x, "max_delay")
+  if (is.null(max_delay)) {
+    cli_abort(
+      c(
+        "`x` has no `max_delay` attribute.",
+        "i" = "It was likely constructed without one (e.g. by hand)." # nolint
+      )
+    )
+  }
+  return(max_delay)
 }
 
 #' Get delays unit from a reporting triangle

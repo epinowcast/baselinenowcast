@@ -91,9 +91,10 @@ test_that("as_forecast_sample.baselinenowcast_df warns when latest_obs misses re
     baselinenowcast(example_reporting_triangle, draws = 10)
   )
   ref_dates <- get_reference_dates(example_reporting_triangle)
+  # Drop the most recent date, which is within the scored nowcast window
   partial_obs <- data.frame(
-    reference_date = ref_dates[-1],
-    count = rowSums(example_reporting_triangle, na.rm = TRUE)[-1]
+    reference_date = head(ref_dates, -1),
+    count = head(rowSums(example_reporting_triangle, na.rm = TRUE), -1)
   )
 
   expect_warning(
@@ -101,6 +102,32 @@ test_that("as_forecast_sample.baselinenowcast_df warns when latest_obs misses re
       scoringutils::as_forecast_sample(nowcast, partial_obs)
     ),
     regexp = "no matching observation"
+  )
+})
+
+test_that("as_forecast_sample.baselinenowcast_df scores only the most recent max_delay dates", { # nolint
+  skip_on_cran()
+  skip_if_not_installed("scoringutils")
+
+  nowcast <- suppressWarnings(
+    baselinenowcast(example_reporting_triangle, draws = 10)
+  )
+  max_delay <- get_max_delay(nowcast)
+  ref_dates <- get_reference_dates(example_reporting_triangle)
+  expect_lt(max_delay, length(ref_dates))
+
+  latest_obs <- data.frame(
+    reference_date = ref_dates,
+    count = rowSums(example_reporting_triangle, na.rm = TRUE)
+  )
+
+  fs <- suppressPackageStartupMessages(
+    scoringutils::as_forecast_sample(nowcast, latest_obs)
+  )
+
+  expect_setequal(
+    unique(fs$reference_date),
+    tail(ref_dates, max_delay)
   )
 })
 

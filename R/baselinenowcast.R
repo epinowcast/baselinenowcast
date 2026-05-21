@@ -138,6 +138,7 @@ baselinenowcast.reporting_triangle <- function(
   assert_integerish(draws, null.ok = TRUE)
 
   reference_dates <- get_reference_dates(data)
+  max_delay <- get_max_delay(data)
 
   n_req_uq_ref_times <- switch(output_type,
     "samples" = 2, # nolint
@@ -175,7 +176,8 @@ baselinenowcast.reporting_triangle <- function(
     )
     result_df <- new_baselinenowcast_df(nowcast_df,
       reference_dates = reference_dates,
-      output_type = output_type
+      output_type = output_type,
+      max_delay = max_delay
     )
     return(result_df)
   }
@@ -200,7 +202,8 @@ baselinenowcast.reporting_triangle <- function(
 
   result_df <- new_baselinenowcast_df(nowcast_df,
     reference_dates = reference_dates,
-    output_type = output_type
+    output_type = output_type,
+    max_delay = max_delay
   )
 
   return(result_df)
@@ -443,6 +446,9 @@ baselinenowcast.data.frame <- function(
     combined_result[[strata_cols[i]]] <- split_data[, i]
   }
   combined_result$name <- NULL
+
+  # map_dfr drops attributes; re-attach max_delay (shared across strata)
+  attr(combined_result, "max_delay") <- get_max_delay(list_of_rep_tris[[1]])
   return(combined_result)
 }
 

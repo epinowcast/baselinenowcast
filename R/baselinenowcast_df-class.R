@@ -41,6 +41,10 @@ NULL
 #'  (`pred_count`), and the draw number (`draw`).
 #' @param reference_dates Vector of reference dates corresponding to the
 #'    reference times in the `baselinenowcast_df`.
+#' @param max_delay Integer maximum delay of the reporting triangle the
+#'   nowcast was generated from, stored as an attribute and retrievable with
+#'   [get_max_delay()]. The most recent `max_delay` reference dates are the
+#'   right-truncated dates that were actually nowcast. Default `NULL`.
 #' @inheritParams baselinenowcast
 #'
 #' @returns An object of class \code{\link{baselinenowcast_df}}
@@ -48,7 +52,8 @@ NULL
 #' @export
 new_baselinenowcast_df <- function(baselinenowcast_df,
                                    reference_dates,
-                                   output_type) {
+                                   output_type,
+                                   max_delay = NULL) {
   assert_choice(output_type, choices = c("samples", "point"))
 
   baselinenowcast_df$output_type <- output_type
@@ -59,7 +64,8 @@ new_baselinenowcast_df <- function(baselinenowcast_df,
 
   result <- structure(
     data.frame(baselinenowcast_df_ordered),
-    class = c("baselinenowcast_df", class(baselinenowcast_df_ordered))
+    class = c("baselinenowcast_df", class(baselinenowcast_df_ordered)),
+    max_delay = max_delay
   )
 
   return(result)

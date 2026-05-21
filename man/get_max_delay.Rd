@@ -2,22 +2,31 @@
 % Please edit documentation in R/reporting_triangle-getters.R
 \name{get_max_delay}
 \alias{get_max_delay}
-\title{Get maximum delay from reporting_triangle}
+\alias{get_max_delay.default}
+\alias{get_max_delay.baselinenowcast_df}
+\title{Get maximum delay}
 \usage{
-get_max_delay(x, non_zero = FALSE)
+get_max_delay(x, ...)
+
+\method{get_max_delay}{default}(x, non_zero = FALSE, ...)
+
+\method{get_max_delay}{baselinenowcast_df}(x, ...)
 }
 \arguments{
-\item{x}{A reporting_triangle object}
+\item{x}{A \link{reporting_triangle} or \link{baselinenowcast_df} object.}
+
+\item{...}{Additional arguments passed to methods.}
 
 \item{non_zero}{Logical. If TRUE, returns the maximum delay where at least
 one observation is non-zero. Useful for identifying the actual extent of
 the delay distribution. Default FALSE.}
 }
 \value{
-Maximum delay (integer), or -1 if all zero when non_zero = TRUE
+Maximum delay (integer), or -1 if all zero when \code{non_zero = TRUE}
+(reporting triangle method only).
 }
 \description{
-Get maximum delay from reporting_triangle
+Get maximum delay
 }
 \examples{
 # Get maximum delay from triangle structure

@@ -24,6 +24,25 @@ test_that("new_baselinenowcast_df() creates a dataframe from a set of dates and 
   expect_identical(sort(unique(new_df$reference_date)), ref_dates)
 })
 
+test_that("new_baselinenowcast_df stores max_delay as a retrievable attribute", { # nolint
+  new_df <- new_baselinenowcast_df(data_df,
+    reference_dates = ref_dates,
+    output_type = output_type,
+    max_delay = 4L
+  )
+  expect_identical(attr(new_df, "max_delay"), 4L)
+  expect_identical(get_max_delay(new_df), 4L)
+})
+
+test_that("get_max_delay errors on a baselinenowcast_df without the attribute", { # nolint
+  new_df <- new_baselinenowcast_df(data_df,
+    reference_dates = ref_dates,
+    output_type = output_type
+  )
+  expect_null(attr(new_df, "max_delay"))
+  expect_error(get_max_delay(new_df), regexp = "max_delay")
+})
+
 test_that("new_baselinenowcast_df correctly adds output_type column", {
   # Setup
   nowcast_df <- data.frame(

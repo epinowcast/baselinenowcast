@@ -138,6 +138,9 @@ baselinenowcast.reporting_triangle <- function(
   assert_integerish(draws, null.ok = TRUE)
 
   reference_dates <- get_reference_dates(data)
+  # Right-truncated reference dates (rows with unreported cells) are the ones
+  # actually nowcast, as opposed to the fully observed earlier dates.
+  nowcast_dates <- reference_dates[apply(is.na(unclass(data)), 1, any)]
 
   n_req_uq_ref_times <- switch(output_type,
     "samples" = 2, # nolint
@@ -174,8 +177,8 @@ baselinenowcast.reporting_triangle <- function(
       draw = 1
     )
     result_df <- new_baselinenowcast_df(nowcast_df,
-      reference_dates = reference_dates,
-      output_type = output_type
+      output_type = output_type,
+      nowcast_dates = nowcast_dates
     )
     return(result_df)
   }
@@ -199,8 +202,8 @@ baselinenowcast.reporting_triangle <- function(
   )
 
   result_df <- new_baselinenowcast_df(nowcast_df,
-    reference_dates = reference_dates,
-    output_type = output_type
+    output_type = output_type,
+    nowcast_dates = nowcast_dates
   )
 
   return(result_df)

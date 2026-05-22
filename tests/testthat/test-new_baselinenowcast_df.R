@@ -10,8 +10,8 @@ data_df <- data.frame(
 output_type <- "samples"
 test_that("new_baselinenowcast_df() creates a dataframe from a set of dates and named list of strata", { # nolint
   new_df <- new_baselinenowcast_df(data_df,
-    reference_dates = ref_dates,
-    output_type = output_type
+    output_type = output_type,
+    nowcast_dates = ref_dates
   )
 
   expected_cols <- c("draw", "pred_count", "reference_date", "output_type")
@@ -22,6 +22,29 @@ test_that("new_baselinenowcast_df() creates a dataframe from a set of dates and 
 
   # Check reference dates are preserved
   expect_identical(sort(unique(new_df$reference_date)), ref_dates)
+})
+
+test_that("new_baselinenowcast_df flags nowcast dates in the nowcast column", {
+  nowcast_dates <- ref_dates[6:10]
+  new_df <- new_baselinenowcast_df(data_df,
+    output_type = output_type,
+    nowcast_dates = nowcast_dates
+  )
+  expect_type(new_df$nowcast, "logical")
+  expect_setequal(unique(new_df$reference_date[new_df$nowcast]), nowcast_dates)
+  expect_setequal(
+    unique(new_df$reference_date[!new_df$nowcast]),
+    setdiff(ref_dates, nowcast_dates)
+  )
+})
+
+test_that("new_baselinenowcast_df requires nowcast_dates", {
+  expect_error(
+    new_baselinenowcast_df(data_df,
+      output_type = output_type
+    ),
+    regexp = "nowcast_dates"
+  )
 })
 
 test_that("new_baselinenowcast_df correctly adds output_type column", {
@@ -35,8 +58,8 @@ test_that("new_baselinenowcast_df correctly adds output_type column", {
 
   result <- new_baselinenowcast_df(
     nowcast_df,
-    reference_dates,
-    output_type
+    output_type,
+    nowcast_dates = reference_dates
   )
 
   expect_identical(result$reference_date, reference_dates)
@@ -52,7 +75,9 @@ test_that("new_baselinenowcast_df preserves reference_date column", {
     draw = c(1, 1, 1)
   )
   reference_dates <- as.Date(c("2024-01-01", "2024-01-02", "2024-01-03"))
-  result <- new_baselinenowcast_df(nowcast_df, reference_dates, output_type)
+  result <- new_baselinenowcast_df(nowcast_df, output_type,
+    nowcast_dates = reference_dates
+  )
 
   expect_true("reference_date" %in% names(result))
   expect_identical(result$reference_date, reference_dates)
@@ -67,7 +92,9 @@ test_that("new_baselinenowcast_df orders by reference_date and draw", {
   )
   reference_dates <- as.Date(c("2024-01-01", "2024-01-02", "2024-01-03"))
 
-  result <- new_baselinenowcast_df(nowcast_df, reference_dates, output_type)
+  result <- new_baselinenowcast_df(nowcast_df, output_type,
+    nowcast_dates = reference_dates
+  )
 
   expect_identical(nrow(result), 3L)
   expect_identical(
@@ -80,8 +107,8 @@ test_that("new_baselinenowcast_df orders by reference_date and draw", {
 test_that("new_baselinenowcast_df errors if incorrect `output_type`", {
   expect_error(
     new_baselinenowcast_df(data_df,
-      reference_dates = ref_dates,
-      output_type = "pt"
+      output_type = "pt",
+      nowcast_dates = ref_dates
     ),
     regexp = "Assertion on 'output_type' failed" # nolint
   )

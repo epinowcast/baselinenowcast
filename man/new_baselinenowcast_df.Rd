@@ -4,15 +4,12 @@
 \alias{new_baselinenowcast_df}
 \title{Combine data from a nowcast dataframe, strata, and reference dates}
 \usage{
-new_baselinenowcast_df(baselinenowcast_df, reference_dates, output_type)
+new_baselinenowcast_df(baselinenowcast_df, output_type, nowcast_dates)
 }
 \arguments{
 \item{baselinenowcast_df}{Data.frame containing information for multiple
 draws with columns for the reference time (\code{time}), the predicted counts
 (\code{pred_count}), and the draw number (\code{draw}).}
-
-\item{reference_dates}{Vector of reference dates corresponding to the
-reference times in the \code{baselinenowcast_df}.}
 
 \item{output_type}{Character string indicating whether the output should be
 samples (\code{"samples"}) from the estimate with full uncertainty or whether to
@@ -21,6 +18,10 @@ return the point estimate (\code{"point"}). Default is \code{"samples"}. If
 needed is the number needed for delay estimation, otherwise, if
 \code{"samples"} are specified, at least 2 additional reference times are
 required for uncertainty estimation.}
+
+\item{nowcast_dates}{Vector of reference dates that were right-truncated and
+so actually nowcast (as opposed to fully observed). Used to populate the
+logical \code{nowcast} column.}
 }
 \value{
 An object of class \code{\link{baselinenowcast_df}}
@@ -32,6 +33,8 @@ dates corresponding to the time column in the \code{baselinenowcast_df}
 }
 \seealso{
 Main nowcasting interface functions
+\code{\link{as_forecast_point.baselinenowcast_df}()},
+\code{\link{as_forecast_sample.baselinenowcast_df}()},
 \code{\link{assert_baselinenowcast_df}()},
 \code{\link{baselinenowcast}()},
 \code{\link{baselinenowcast.data.frame}()},

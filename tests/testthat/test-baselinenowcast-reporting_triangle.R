@@ -173,7 +173,7 @@ test_that("assert_baselinenowcast_df errors when appropriate", {
     assert_baselinenowcast_df(
       nowcast_df2
     ),
-    regexp = "Data contains multiple `reference_date`s"
+    regexp = "Data contains multiple estimates"
   )
 
   nowcast_df_dates <- nowcast_df

@@ -50,6 +50,7 @@ retro_rts_custom
 \seealso{
 Retrospective data generation functions
 \code{\link{apply_reporting_structure}()},
+\code{\link{truncate_to_date}()},
 \code{\link{truncate_to_row}()},
 \code{\link{truncate_to_rows}()}
 }

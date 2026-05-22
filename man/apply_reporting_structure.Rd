@@ -49,6 +49,7 @@ rep_custom
 \seealso{
 Retrospective data generation functions
 \code{\link{apply_reporting_structures}()},
+\code{\link{truncate_to_date}()},
 \code{\link{truncate_to_row}()},
 \code{\link{truncate_to_rows}()}
 }

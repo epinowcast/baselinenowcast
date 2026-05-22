@@ -185,6 +185,8 @@ estimation.
 - [`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md)
   : Apply reporting structures to generate retrospective reporting
   triangles
+- [`truncate_to_date()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_date.md)
+  : Truncate reporting triangle to a reference date
 - [`truncate_to_row()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_row.md)
   : Truncate reporting triangle by removing a specified number of the
   last rows

@@ -23,6 +23,12 @@
   enabling use of reviser’s vintage analysis and state space nowcasting
   methods alongside baselinenowcast’s nowcasting functionality
   ([\#429](https://github.com/epinowcast/baselinenowcast/issues/429)).
+- Add
+  [`truncate_to_date()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_date.md),
+  a date-based wrapper around
+  [`truncate_to_row()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_row.md)
+  that drops rows with reference dates after a given cutoff
+  ([\#447](https://github.com/epinowcast/baselinenowcast/issues/447)).
 
 ### Documentation
 

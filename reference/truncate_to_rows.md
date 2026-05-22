@@ -53,6 +53,7 @@ of columns as the input `reporting_triangle`.
 Retrospective data generation functions
 [`apply_reporting_structure()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structure.md),
 [`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md),
+[`truncate_to_date()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_date.md),
 [`truncate_to_row()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_row.md)
 
 ## Examples

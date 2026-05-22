@@ -1,12 +1,16 @@
-# Truncate reporting triangle by removing a specified number of the last rows
+# Truncate reporting triangle to a reference date
 
-Removes the last `t` rows from a reporting triangle to simulate what
-would have been observed at an earlier reference time.
+Drops rows whose reference date is later than the cutoff
+`reference_date`, returning the reporting triangle as it would have
+looked if observed up to and including that date. This is a date-based
+wrapper around
+[`truncate_to_row()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_row.md)
+that removes the need to compute the number of rows to drop manually.
 
 ## Usage
 
 ``` r
-truncate_to_row(reporting_triangle, t, validate = TRUE)
+truncate_to_date(reporting_triangle, reference_date, validate = TRUE)
 ```
 
 ## Arguments
@@ -20,10 +24,11 @@ truncate_to_row(reporting_triangle, t, validate = TRUE)
   also be a ragged reporting triangle, where multiple columns are
   reported for the same row (e.g., weekly reporting of daily data).
 
-- t:
+- reference_date:
 
-  Integer indicating the number of timepoints to truncate off the bottom
-  of the original reporting triangle.
+  A `Date` of length 1 giving the reference cutoff. Rows with reference
+  dates greater than this value are dropped. Reports after this date are
+  not removed.
 
 - validate:
 
@@ -32,24 +37,24 @@ truncate_to_row(reporting_triangle, t, validate = TRUE)
 
 ## Value
 
-`trunc_rep_tri` A `reporting_triangle` object with `t` fewer rows than
-the input. The class and metadata are preserved with updated reference
-dates.
+A `reporting_triangle` object containing only rows with reference dates
+less than or equal to `reference_date`. The class and metadata are
+preserved.
 
 ## See also
 
 Retrospective data generation functions
 [`apply_reporting_structure()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structure.md),
 [`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/reference/apply_reporting_structures.md),
-[`truncate_to_date()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_date.md),
+[`truncate_to_row()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_row.md),
 [`truncate_to_rows()`](https://baselinenowcast.epinowcast.org/reference/truncate_to_rows.md)
 
 ## Examples
 
 ``` r
-# Generate single truncated triangle
-trunc_rep_tri <- truncate_to_row(example_reporting_triangle, t = 1)
-trunc_rep_tri
+ref_dates <- get_reference_dates(example_reporting_triangle)
+cutoff <- ref_dates[length(ref_dates) - 1]
+truncate_to_date(example_reporting_triangle, reference_date = cutoff)
 #> Reporting Triangle
 #> Delays unit: days
 #> Reference dates: 2024-01-01 to 2024-01-06

@@ -42,21 +42,17 @@ NULL
 #' @param baselinenowcast_df Data.frame containing information for multiple
 #'  draws with columns for the reference time (`time`), the predicted counts
 #'  (`pred_count`), and the draw number (`draw`).
-#' @param reference_dates Vector of reference dates corresponding to the
-#'    reference times in the `baselinenowcast_df`.
 #' @param nowcast_dates Vector of reference dates that were right-truncated and
 #'   so actually nowcast (as opposed to fully observed). Used to populate the
-#'   logical `nowcast` column. Defaults to `reference_dates` (every date
-#'   treated as a nowcast).
+#'   logical `nowcast` column.
 #' @inheritParams baselinenowcast
 #'
 #' @returns An object of class \code{\link{baselinenowcast_df}}
 #' @family baselinenowcast_df
 #' @export
 new_baselinenowcast_df <- function(baselinenowcast_df,
-                                   reference_dates,
                                    output_type,
-                                   nowcast_dates = reference_dates) {
+                                   nowcast_dates) {
   assert_choice(output_type, choices = c("samples", "point"))
 
   baselinenowcast_df$output_type <- output_type

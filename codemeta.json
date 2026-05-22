@@ -220,6 +220,19 @@
     },
     {
       "@type": "SoftwareApplication",
+      "identifier": "scoringutils",
+      "name": "scoringutils",
+      "version": ">= 2.0.0",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=scoringutils"
+    },
+    {
+      "@type": "SoftwareApplication",
       "identifier": "testthat",
       "name": "testthat",
       "version": ">= 3.1.9",
@@ -359,7 +372,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "1446.182KB",
+  "fileSize": "1482.656KB",
   "citation": [
     {
       "@type": "ScholarlyArticle",
@@ -470,7 +483,6 @@
     }
   ],
   "releaseNotes": "https://github.com/epinowcast/baselinenowcast/blob/main/NEWS.md",
-  "readme": "https://github.com/epinowcast/baselinenowcast/blob/main/README.md",
   "contIntegration": ["https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/epinowcast/baselinenowcast"],
   "developmentStatus": "https://lifecycle.r-lib.org/articles/stages.html#stable"
 }

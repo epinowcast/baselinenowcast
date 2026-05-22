@@ -65,7 +65,7 @@ dates corresponding to the time column in the <code>baselinenowcast_df</code></p
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">new_baselinenowcast_df</span><span class="op">(</span><span class="va">baselinenowcast_df</span>, <span class="va">reference_dates</span>, <span class="va">output_type</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">new_baselinenowcast_df</span><span class="op">(</span><span class="va">baselinenowcast_df</span>, <span class="va">output_type</span>, <span class="va">nowcast_dates</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -78,11 +78,6 @@ draws with columns for the reference time (<code>time</code>), the predicted cou
 (<code>pred_count</code>), and the draw number (<code>draw</code>).</p></dd>
 
 
-<dt id="arg-reference-dates">reference_dates<a class="anchor" aria-label="anchor" href="#arg-reference-dates"></a></dt>
-<dd><p>Vector of reference dates corresponding to the
-reference times in the <code>baselinenowcast_df</code>.</p></dd>
-
-
 <dt id="arg-output-type">output_type<a class="anchor" aria-label="anchor" href="#arg-output-type"></a></dt>
 <dd><p>Character string indicating whether the output should be
 samples (<code>"samples"</code>) from the estimate with full uncertainty or whether to
@@ -92,6 +87,12 @@ needed is the number needed for delay estimation, otherwise, if
 <code>"samples"</code> are specified, at least 2 additional reference times are
 required for uncertainty estimation.</p></dd>
 
+
+<dt id="arg-nowcast-dates">nowcast_dates<a class="anchor" aria-label="anchor" href="#arg-nowcast-dates"></a></dt>
+<dd><p>Vector of reference dates that were right-truncated and
+so actually nowcast (as opposed to fully observed). Used to populate the
+logical <code>nowcast</code> column.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -100,6 +101,8 @@ required for uncertainty estimation.</p></dd>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Main nowcasting interface functions
+<code><a href="as_forecast_point.baselinenowcast_df.html">as_forecast_point.baselinenowcast_df()</a></code>,
+<code><a href="as_forecast_sample.baselinenowcast_df.html">as_forecast_sample.baselinenowcast_df()</a></code>,
 <code><a href="assert_baselinenowcast_df.html">assert_baselinenowcast_df()</a></code>,
 <code><a href="baselinenowcast.html">baselinenowcast()</a></code>,
 <code><a href="baselinenowcast.data.frame.html">baselinenowcast.data.frame()</a></code>,

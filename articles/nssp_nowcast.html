@@ -554,13 +554,13 @@ It will by default produce 1000 draws, but this can be specified as more or less
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> `prop_delay` not identical to the proportion of reference times used for delay estimation due to rounding.</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">nowcast_draws_df</span><span class="op">)</span></span>
-<span><span class="co">#&gt;     pred_count reference_date draw output_type</span></span>
-<span><span class="co">#&gt; 1          382     2025-10-25    1     samples</span></span>
-<span><span class="co">#&gt; 160        382     2025-10-25    2     samples</span></span>
-<span><span class="co">#&gt; 319        382     2025-10-25    3     samples</span></span>
-<span><span class="co">#&gt; 478        382     2025-10-25    4     samples</span></span>
-<span><span class="co">#&gt; 637        382     2025-10-25    5     samples</span></span>
-<span><span class="co">#&gt; 796        382     2025-10-25    6     samples</span></span></code></pre></div>
+<span><span class="co">#&gt;     pred_count reference_date draw output_type nowcast</span></span>
+<span><span class="co">#&gt; 1          382     2025-10-25    1     samples   FALSE</span></span>
+<span><span class="co">#&gt; 160        382     2025-10-25    2     samples   FALSE</span></span>
+<span><span class="co">#&gt; 319        382     2025-10-25    3     samples   FALSE</span></span>
+<span><span class="co">#&gt; 478        382     2025-10-25    4     samples   FALSE</span></span>
+<span><span class="co">#&gt; 637        382     2025-10-25    5     samples   FALSE</span></span>
+<span><span class="co">#&gt; 796        382     2025-10-25    6     samples   FALSE</span></span></code></pre></div>
 <p>Because we specified training volumes that did not result in integer reference times, we’ll get a message letting us know that 37/75, or 0.493 of the reference times are being used for delay estimation.</p>
 </div>
 <div class="section level2" number="5">

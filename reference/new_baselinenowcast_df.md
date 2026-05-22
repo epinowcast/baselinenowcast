@@ -7,7 +7,7 @@ corresponding to the time column in the `baselinenowcast_df`
 ## Usage
 
 ``` r
-new_baselinenowcast_df(baselinenowcast_df, reference_dates, output_type)
+new_baselinenowcast_df(baselinenowcast_df, output_type, nowcast_dates)
 ```
 
 ## Arguments
@@ -17,11 +17,6 @@ new_baselinenowcast_df(baselinenowcast_df, reference_dates, output_type)
   Data.frame containing information for multiple draws with columns for
   the reference time (`time`), the predicted counts (`pred_count`), and
   the draw number (`draw`).
-
-- reference_dates:
-
-  Vector of reference dates corresponding to the reference times in the
-  `baselinenowcast_df`.
 
 - output_type:
 
@@ -33,6 +28,12 @@ new_baselinenowcast_df(baselinenowcast_df, reference_dates, output_type)
   `"samples"` are specified, at least 2 additional reference times are
   required for uncertainty estimation.
 
+- nowcast_dates:
+
+  Vector of reference dates that were right-truncated and so actually
+  nowcast (as opposed to fully observed). Used to populate the logical
+  `nowcast` column.
+
 ## Value
 
 An object of class
@@ -41,6 +42,8 @@ An object of class
 ## See also
 
 Main nowcasting interface functions
+[`as_forecast_point.baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/as_forecast_point.baselinenowcast_df.md),
+[`as_forecast_sample.baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/as_forecast_sample.baselinenowcast_df.md),
 [`assert_baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/assert_baselinenowcast_df.md),
 [`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md),
 [`baselinenowcast.data.frame()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.data.frame.md),

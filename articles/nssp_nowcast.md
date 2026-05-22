@@ -720,13 +720,13 @@ nowcast_draws_df <- baselinenowcast(rep_tri,
 #> ℹ `prop_delay` not identical to the proportion of reference times used for delay estimation due to rounding.
 
 head(nowcast_draws_df)
-#>     pred_count reference_date draw output_type
-#> 1          382     2025-10-25    1     samples
-#> 160        382     2025-10-25    2     samples
-#> 319        382     2025-10-25    3     samples
-#> 478        382     2025-10-25    4     samples
-#> 637        382     2025-10-25    5     samples
-#> 796        382     2025-10-25    6     samples
+#>     pred_count reference_date draw output_type nowcast
+#> 1          382     2025-10-25    1     samples   FALSE
+#> 160        382     2025-10-25    2     samples   FALSE
+#> 319        382     2025-10-25    3     samples   FALSE
+#> 478        382     2025-10-25    4     samples   FALSE
+#> 637        382     2025-10-25    5     samples   FALSE
+#> 796        382     2025-10-25    6     samples   FALSE
 ```
 
 Because we specified training volumes that did not result in integer

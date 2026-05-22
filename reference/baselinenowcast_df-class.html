@@ -92,6 +92,11 @@ represents a probabilistic draw from the observation model indicated by
 <code>"samples"</code> or whether the <code>pred_count</code> is a point estimate indicated by
 <code>"point"</code>.</p></dd>
 
+<dt>nowcast</dt>
+<dd><p>Logical indicating whether the reference date was
+right-truncated and so actually nowcast (<code>TRUE</code>), as opposed to fully
+observed (<code>FALSE</code>).</p></dd>
+
 
 </dl><p>See the corresponding <a href="reporting_triangle-class.html">reporting_triangle</a> and
 <code><a href="baselinenowcast.html">baselinenowcast()</a></code> function
@@ -100,6 +105,8 @@ for more details on the required inputs to generate the object.</p>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Main nowcasting interface functions
+<code><a href="as_forecast_point.baselinenowcast_df.html">as_forecast_point.baselinenowcast_df()</a></code>,
+<code><a href="as_forecast_sample.baselinenowcast_df.html">as_forecast_sample.baselinenowcast_df()</a></code>,
 <code><a href="assert_baselinenowcast_df.html">assert_baselinenowcast_df()</a></code>,
 <code><a href="baselinenowcast.html">baselinenowcast()</a></code>,
 <code><a href="baselinenowcast.data.frame.html">baselinenowcast.data.frame()</a></code>,

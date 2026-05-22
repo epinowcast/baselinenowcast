@@ -4,6 +4,18 @@
 
 ### Package
 
+- Add
+  [`as_forecast_sample()`](https://epiforecasts.io/scoringutils/reference/as_forecast_sample.html)
+  and
+  [`as_forecast_point()`](https://epiforecasts.io/scoringutils/reference/as_forecast_point.html)
+  S3 methods for `baselinenowcast_df` objects, enabling direct
+  conversion of probabilistic or point nowcasts to `scoringutils`
+  forecast objects for scoring against the latest observed counts
+  ([\#418](https://github.com/epinowcast/baselinenowcast/issues/418)).
+  `baselinenowcast_df` objects now carry a logical `nowcast` column
+  flagging the right-truncated reference dates that were actually
+  nowcast (as opposed to fully observed), and the converters use it to
+  score only those dates.
 - Place every internal check, assert, and validate function next to its
   consumer (class invariants in `R/reporting_triangle-class.R` and
   `R/baselinenowcast_df-class.R`; per-caller helpers in the file that

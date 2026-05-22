@@ -23,6 +23,8 @@ Returns `NULL` invisibly. Throws an error if validation fails.
 ## See also
 
 Main nowcasting interface functions
+[`as_forecast_point.baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/as_forecast_point.baselinenowcast_df.md),
+[`as_forecast_sample.baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/as_forecast_sample.baselinenowcast_df.md),
 [`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md),
 [`baselinenowcast.data.frame()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.data.frame.md),
 [`baselinenowcast.reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.reporting_triangle.md),
@@ -37,7 +39,8 @@ valid_df <- data.frame(
   reference_date = as.Date("2024-01-01") + 0:4,
   pred_count = c(10, 15, 12, 18, 20),
   draw = 1,
-  output_type = "point"
+  output_type = "point",
+  nowcast = c(FALSE, FALSE, TRUE, TRUE, TRUE)
 )
 class(valid_df) <- c("baselinenowcast_df", "data.frame")
 

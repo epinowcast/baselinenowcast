@@ -481,13 +481,13 @@ obs_with_nowcast_draws_df <- nowcast_draws_df |>
   left_join(latest_data, by = "reference_date") |>
   left_join(initial_reports, by = "reference_date")
 head(obs_with_nowcast_draws_df)
-#>   pred_count reference_date draw output_type final_count initial_count
-#> 1        609     2021-04-06    1     samples         615           615
-#> 2        609     2021-04-06    2     samples         615           615
-#> 3        609     2021-04-06    3     samples         615           615
-#> 4        609     2021-04-06    4     samples         615           615
-#> 5        609     2021-04-06    5     samples         615           615
-#> 6        609     2021-04-06    6     samples         615           615
+#>   pred_count reference_date draw output_type nowcast final_count initial_count
+#> 1        609     2021-04-06    1     samples   FALSE         615           615
+#> 2        609     2021-04-06    2     samples   FALSE         615           615
+#> 3        609     2021-04-06    3     samples   FALSE         615           615
+#> 4        609     2021-04-06    4     samples   FALSE         615           615
+#> 5        609     2021-04-06    5     samples   FALSE         615           615
+#> 6        609     2021-04-06    6     samples   FALSE         615           615
 ```
 
 Click to expand code to create the plot of the probabilistic nowcast

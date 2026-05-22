@@ -295,6 +295,16 @@ The main nowcasting interface. Functions for creating and validating
 nowcast data frame objects containing point or probabilistic nowcast
 results.
 
+- [`as_forecast_point(`*`<baselinenowcast_df>`*`)`](https://baselinenowcast.epinowcast.org/reference/as_forecast_point.baselinenowcast_df.md)
+  :
+
+  Convert a `baselinenowcast_df` object to a `forecast_point` object
+
+- [`as_forecast_sample(`*`<baselinenowcast_df>`*`)`](https://baselinenowcast.epinowcast.org/reference/as_forecast_sample.baselinenowcast_df.md)
+  :
+
+  Convert a `baselinenowcast_df` object to a `forecast_sample` object
+
 - [`assert_baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/assert_baselinenowcast_df.md)
   :
 

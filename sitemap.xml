@@ -18,6 +18,8 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/as.data.frame.reporting_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/as.matrix.reporting_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/as_ChainLadder_triangle.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/as_forecast_point.baselinenowcast_df.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/as_forecast_sample.baselinenowcast_df.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.data.frame.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.matrix.html</loc></url>
@@ -64,6 +66,7 @@
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-handle_target_insufficient.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-infer_delays_unit.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-perform_allocation_process.html</loc></url>
+<url><loc>https://baselinenowcast.epinowcast.org/reference/dot-prepare_forecast_merge.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-rename_cols.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-safelydoesit.html</loc></url>
 <url><loc>https://baselinenowcast.epinowcast.org/reference/dot-split_df_by_cols.html</loc></url>

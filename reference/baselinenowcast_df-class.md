@@ -36,6 +36,11 @@ A `baselinenowcast_df` is a data.frame with the following columns:
   or whether the `pred_count` is a point estimate indicated by
   `"point"`.
 
+- nowcast:
+
+  Logical indicating whether the reference date was right-truncated and
+  so actually nowcast (`TRUE`), as opposed to fully observed (`FALSE`).
+
 See the corresponding
 [reporting_triangle](https://baselinenowcast.epinowcast.org/reference/reporting_triangle-class.md)
 and
@@ -45,6 +50,8 @@ function for more details on the required inputs to generate the object.
 ## See also
 
 Main nowcasting interface functions
+[`as_forecast_point.baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/as_forecast_point.baselinenowcast_df.md),
+[`as_forecast_sample.baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/as_forecast_sample.baselinenowcast_df.md),
 [`assert_baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/reference/assert_baselinenowcast_df.md),
 [`baselinenowcast()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.md),
 [`baselinenowcast.data.frame()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.data.frame.md),

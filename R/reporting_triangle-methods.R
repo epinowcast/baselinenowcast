@@ -112,10 +112,9 @@ as.matrix.reporting_triangle <- function(x, ...) {
 #' df <- as.data.frame(example_reporting_triangle)
 #' head(df)
 as.data.frame.reporting_triangle <- function(
-    x, row.names = NULL, optional = FALSE, ...) {
-  if (!is_reporting_triangle(x)) {
-    cli_abort(message = "x must have class 'reporting_triangle'")
-  }
+  x, row.names = NULL, optional = FALSE, ...
+) {
+  assert_rep_tri_class(x, arg_name = "x")
 
   reference_dates <- get_reference_dates(x)
   delays_unit <- get_delays_unit(x)

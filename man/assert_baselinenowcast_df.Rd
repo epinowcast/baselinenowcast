@@ -21,7 +21,8 @@ valid_df <- data.frame(
   reference_date = as.Date("2024-01-01") + 0:4,
   pred_count = c(10, 15, 12, 18, 20),
   draw = 1,
-  output_type = "point"
+  output_type = "point",
+  nowcast = c(FALSE, FALSE, TRUE, TRUE, TRUE)
 )
 class(valid_df) <- c("baselinenowcast_df", "data.frame")
 
@@ -30,6 +31,8 @@ assert_baselinenowcast_df(valid_df)
 }
 \seealso{
 Main nowcasting interface functions
+\code{\link{as_forecast_point.baselinenowcast_df}()},
+\code{\link{as_forecast_sample.baselinenowcast_df}()},
 \code{\link{baselinenowcast}()},
 \code{\link{baselinenowcast.data.frame}()},
 \code{\link{baselinenowcast.reporting_triangle}()},

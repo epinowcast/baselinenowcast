@@ -37,6 +37,7 @@ trunc_rep_tri
 Retrospective data generation functions
 \code{\link{apply_reporting_structure}()},
 \code{\link{apply_reporting_structures}()},
+\code{\link{truncate_to_date}()},
 \code{\link{truncate_to_rows}()}
 }
 \concept{generate_retrospective_data}

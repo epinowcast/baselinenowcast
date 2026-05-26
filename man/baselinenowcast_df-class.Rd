@@ -28,6 +28,9 @@ distribution. If \code{output_type = "point"}, this will be set to 1.}
 represents a probabilistic draw from the observation model indicated by
 \code{"samples"} or whether the \code{pred_count} is a point estimate indicated by
 \code{"point"}.}
+\item{nowcast}{Logical indicating whether the reference date was
+right-truncated and so actually nowcast (\code{TRUE}), as opposed to fully
+observed (\code{FALSE}).}
 }
 See the corresponding \link{reporting_triangle} and
 \code{\link[=baselinenowcast]{baselinenowcast()}} function
@@ -36,6 +39,8 @@ for more details on the required inputs to generate the object.
 
 \seealso{
 Main nowcasting interface functions
+\code{\link{as_forecast_point.baselinenowcast_df}()},
+\code{\link{as_forecast_sample.baselinenowcast_df}()},
 \code{\link{assert_baselinenowcast_df}()},
 \code{\link{baselinenowcast}()},
 \code{\link{baselinenowcast.data.frame}()},

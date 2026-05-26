@@ -31,9 +31,7 @@
 #' rep_tri_trunc90 <- truncate_to_quantile(rep_tri, p = 0.90)
 #' ncol(rep_tri_trunc90)
 truncate_to_quantile <- function(x, p = 0.99) {
-  if (!is_reporting_triangle(x)) {
-    cli_abort(message = "x must have class 'reporting_triangle'")
-  }
+  assert_rep_tri_class(x, arg_name = "x")
   assert_numeric(p, lower = 0, upper = 1, len = 1)
 
   # Get quantile delays for each reference date
@@ -88,9 +86,7 @@ truncate_to_quantile <- function(x, p = 0.99) {
 #' rt_short <- truncate_to_delay(example_downward_corr_rt, max_delay = 2)
 #' get_max_delay(rt_short) # Returns 2
 truncate_to_delay <- function(x, max_delay) {
-  if (!is_reporting_triangle(x)) {
-    cli_abort(message = "x must have class 'reporting_triangle'")
-  }
+  assert_rep_tri_class(x, arg_name = "x")
 
   current_max_delay <- get_max_delay(x)
 
@@ -224,4 +220,49 @@ truncate_to_row <- function(reporting_triangle,
   assert_integerish(t, lower = 0)
 
   return(.truncate_triangle_impl(reporting_triangle, t))
+}
+
+#' Truncate reporting triangle to a reference date
+#'
+#' Drops rows whose reference date is later than the cutoff `reference_date`,
+#'   returning the reporting triangle as it would have looked if observed up
+#'   to and including that date. This is a date-based wrapper around
+#'   [truncate_to_row()] that removes the need to compute the number of rows
+#'   to drop manually.
+#'
+#' @inheritParams estimate_delay
+#' @param reference_date A `Date` of length 1 giving the reference
+#'   cutoff. Rows with reference dates greater than this value are dropped.
+#'   Reports after this date are not removed.
+#' @returns A `reporting_triangle` object containing only rows with
+#'   reference dates less than or equal to `reference_date`. The class and
+#'   metadata are preserved.
+#' @importFrom checkmate assert_date
+#' @family generate_retrospective_data
+#' @export
+#' @examples
+#' ref_dates <- get_reference_dates(example_reporting_triangle)
+#' cutoff <- ref_dates[length(ref_dates) - 1]
+#' truncate_to_date(example_reporting_triangle, reference_date = cutoff)
+truncate_to_date <- function(reporting_triangle,
+                             reference_date,
+                             validate = TRUE) {
+  assert_reporting_triangle(reporting_triangle, validate)
+  assert_date(reference_date, len = 1, any.missing = FALSE)
+
+  ref_dates <- get_reference_dates(reporting_triangle)
+  if (reference_date < min(ref_dates)) {
+    cli_abort(
+      message = c(
+        "`reference_date` is before the earliest reference date.",
+        i = paste0(
+          "Earliest reference date is ", as.character(min(ref_dates)), "; ",
+          "`reference_date` is ", as.character(reference_date), "."
+        )
+      )
+    )
+  }
+
+  n_drop <- sum(ref_dates > reference_date)
+  return(.truncate_triangle_impl(reporting_triangle, n_drop))
 }

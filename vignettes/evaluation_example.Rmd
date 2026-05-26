@@ -1,0 +1,688 @@
+---
+title: "Example nowcast performance evaluation for model specification"
+description: "An example of how to evaluate nowcast performance under different model specifications"
+output:
+  bookdown::html_document2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{Example nowcast performance evaluation for model specification}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+In this vignette, we demonstrate how to evaluate the performance of your `baselinenowcast` nowcast across multiple nowcast dates.
+We'll use visual checks and out-of-sample scoring with proper scoring rules from the [`scoringutils`](https://epiforecasts.io/scoringutils/) package.
+We'll start by evaluating a single model specification, and then show how to compare multiple specifications to inform your modeling choices.
+Here we focus on optimizing the training volume specification.
+Before working through this vignette, we advise you to read both the Getting Started vignette and the NSSP nowcast vignette, both of which will demonstrate how to produce a nowcast for a single nowcast date.
+
+
+## Packages
+
+We use the `baselinenowcast` package, `dplyr` and `tidyr` for data-wrangling, `glue` for combining strings, `lubridate` for handling dates, and the `scoringutils` to evaluate out of sample nowcast performance.
+
+```{r setup2, message = FALSE, warning = FALSE, results = 'hide'}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(baselinenowcast)
+library(lubridate)
+library(tidyr)
+library(dplyr)
+library(glue)
+library(scoringutils)
+library(gganimate)
+```
+
+## Data
+
+For this example, we will use the NSSP data, `syn_nssp_df` which is a synthetic dataset containing the number of incident cases indexed by reference and report date, both indexed at the daily scale.
+The pathogen is not specified, but presumably this could represent the cases of a common respiratory syndrome such as influenza or COVID-19.
+The data spans a typical respiratory virus season from 2025-2026, with reference dates ranging from October 25th, 2025 to May 5th, 2026, with reports ranging from October 25th, 2025 to August 23rd, 2027.
+
+```{r}
+head(syn_nssp_df)
+```
+
+## Evaluating across a range of nowcast dates
+
+We'll start by specifying the range of nowcast dates that we want to produce retrospective nowcasts for.
+Since this data has no historical data before October 25th, 2025, we will produce nowcasts each week on Wednesday from December 10th, 2025 to April 1st, 2026.
+```{r}
+nowcast_dates <- seq(
+  from = ymd("2025-12-10"),
+  to = ymd("2026-04-01"), by = "week"
+)
+```
+
+#### Set the maximum delay
+
+The maximum delay should be specified based on both the delay distribution and your own knowledge of the data generating process (e.g. delays of more than a few weeks might be expected to be data entry errors).
+Here we will use a plot of the cumulative delay distribution to identify when the majority of our cases have been reported, noting that the lower our maximum delay is, the less historical data we will need to train the model.
+In our case, since we don't have many years of historical data, we might wish to choose to keep this relatively low.
+```{r}
+avg_delays <- syn_nssp_df |>
+  mutate(delay = as.integer(report_date - reference_date)) |>
+  group_by(delay) |>
+  summarise(pmf = sum(count) / sum(syn_nssp_df$count)) |>
+  mutate(cdf = cumsum(pmf))
+
+cdf_delay <- ggplot(avg_delays) +
+  geom_line(aes(x = delay, y = cdf)) +
+  geom_hline(aes(yintercept = 0.95), linetype = "dashed") +
+  theme_bw() +
+  xlab("Delay (days)") +
+  ylab("Cumulative Distribution")
+cdf_delay
+```
+
+Based on this plot, we will set our maximum delay to 25 days.
+
+### Specify a single model
+
+We'll start by evaluating a single `baselinenowcast` specification.
+With the maximum delay set to 25 days, we will specify the total number of reference dates used for training as 2.2 times the maximum delay using the `scale_factor` argument.
+We'll also specify that half of the training data be used for delay estimation with the `prop_delay` argument.
+
+Later in this vignette, we will demonstrate how to use quantitative nowcast performance to evaluate the performance of different training volume specifications.
+```{r}
+max_delay <- 25
+scale_factor <- 2.2
+prop_delay <- 0.5
+```
+
+### Looping over multiple nowcast dates
+
+First, we will write a function that runs the `baselinenowcast` workflow and returns quantile summaries along with the initial data and metadata about the model run (e.g., nowcast date and model specification variables).
+```{r}
+fit_model <- function(raw_data,
+                      nowcast_date,
+                      max_delay,
+                      scale_factor,
+                      prop_delay) {
+  # Remove all cases on/after the nowcast date
+  training_data <- filter(
+    raw_data,
+    report_date < nowcast_date,
+    reference_date < nowcast_date
+  )
+
+  # Save the initial reports used for comparison
+  initial_count_data <- training_data |>
+    group_by(reference_date) |>
+    summarise(initial_count = sum(count)) |>
+    filter(reference_date >= max(reference_date) - days(max_delay))
+
+  # Generate the nowcast
+  rep_tri_full <- as_reporting_triangle(training_data)
+  rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
+
+  # Generate draws and compute quantiles
+  nowcast_quantiles <- baselinenowcast(rep_tri,
+    scale_factor = scale_factor,
+    prop_delay = prop_delay,
+    draws = 1000
+  ) |>
+    group_by(reference_date) |>
+    summarise(
+      q_.50 = median(pred_count),
+      q_.25 = quantile(pred_count, 0.25),
+      q_.75 = quantile(pred_count, 0.75),
+      q_.05 = quantile(pred_count, 0.05),
+      q_.95 = quantile(pred_count, 0.95),
+      q_.025 = quantile(pred_count, 0.025),
+      q_.975 = quantile(pred_count, 0.975),
+      .groups = "drop"
+    ) |>
+    # Add metadata for this iteration of the loop
+    mutate(
+      nowcast_date = nowcast_date,
+      scale_factor = scale_factor,
+      prop_delay = prop_delay
+    ) |>
+    left_join(initial_count_data, by = "reference_date")
+
+  return(nowcast_quantiles)
+}
+```
+
+Next we will set up a for loop to retrospectively produce nowcasts using the data that would have been available at each of the retrospective nowcast dates.
+Note, running this loop will print out a number of informational messages at each iteration, informing you that the reporting triangle has been truncated to the maximum delay and telling you exactly what proportion of the training volume was used for delay estimation.
+```{r}
+# Create empty dataframe to store the nowcasts
+mult_nowcast_quantiles <- NULL
+
+for (i in seq_along(nowcast_dates)) {
+  # Fit model and get quantile summaries
+  quantiles_w_data <- fit_model(
+    raw_data = syn_nssp_df,
+    nowcast_date = nowcast_dates[i],
+    max_delay = max_delay,
+    scale_factor = scale_factor,
+    prop_delay = prop_delay
+  )
+
+  # Combine the nowcasts from each iteration
+  mult_nowcast_quantiles <- bind_rows(
+    mult_nowcast_quantiles,
+    quantiles_w_data
+  )
+}
+```
+
+Next, we'll join the evaluation data to our nowcasts.
+We'll only include reports that occurred within the maximum delay window to ensure fair comparison across all nowcast dates.
+
+```{r}
+eval_data <- syn_nssp_df |>
+  mutate(delay = as.integer(report_date - reference_date)) |>
+  filter(delay <= max_delay) |>
+  group_by(reference_date) |>
+  summarise(final_count = sum(count)) |>
+  ungroup()
+
+# Left join the evaluation data to the nowcasts
+mult_nowcast_quantiles_w_data <- left_join(
+  mult_nowcast_quantiles,
+  eval_data,
+  by = "reference_date"
+)
+```
+
+### Visual comparison of nowcasts
+
+We'll start by visualising the nowcasts compared to both the initial data available without nowcasting and the final data available retrospectively, using the dataframe containing the nowcast quantiles.
+To make a static image, we will start by showing a probabilistic nowcast (gray) every 4 weeks alongside the final data (red) and the initial data (pink).
+
+```{r}
+nowcast_dates_to_visualize <- seq(
+  from = ymd("2025-12-10"),
+  to = ymd("2026-04-01"), by = "4 weeks"
+)
+
+mult_nowcasts_filtered <- filter(
+  mult_nowcast_quantiles_w_data,
+  nowcast_date %in% nowcast_dates_to_visualize
+)
+
+p <- ggplot(mult_nowcasts_filtered) +
+  geom_line(
+    aes(
+      x = reference_date, y = initial_count,
+      group = nowcast_date,
+      linetype = "Data as of nowcast date"
+    ),
+    color = "pink"
+  ) +
+  geom_vline(aes(
+    xintercept = nowcast_date,
+    linetype = "Date of nowcast"
+  )) +
+  geom_line(aes(x = reference_date, y = `q_.50`, group = nowcast_date),
+    color = "gray"
+  ) +
+  geom_ribbon(aes(
+    x = reference_date, ymin = `q_.025`, ymax = `q_.975`,
+    group = nowcast_date
+  ), fill = "gray", alpha = 0.25) +
+  geom_ribbon(aes(
+    x = reference_date, ymin = `q_.25`, ymax = `q_.75`,
+    group = nowcast_date
+  ), fill = "gray", alpha = 0.25) +
+  geom_line(
+    aes(
+      x = reference_date, y = final_count,
+      group = nowcast_date,
+      linetype = "Final evaluation data"
+    ),
+    color = "red"
+  ) +
+  theme_bw() +
+  scale_linetype_manual(
+    name = "Observed data",
+    values = c(
+      "Final evaluation data" = "solid",
+      "Data as of nowcast date" = "solid",
+      "Date of nowcast" = "dashed"
+    ),
+    breaks = c(
+      "Final evaluation data",
+      "Data as of nowcast date",
+      "Date of nowcast"
+    ),
+    guide = guide_legend(
+      override.aes = list(
+        color = c(
+          "Final evaluation data" = "red",
+          "Data as of nowcast date" = "pink",
+          "Date of nowcast" = "black"
+        ),
+        linewidth = 1
+      )
+    )
+  ) +
+  scale_x_date(
+    date_breaks = "1 month",
+    date_labels = "%b %Y"
+  ) +
+  xlab("Reference date") +
+  ylab("Incident cases") +
+  ggtitle("Visual nowcast comparison")
+p
+```
+
+
+Optionally, we can make this into an animated figure, or a "flipbook" using `gganimate`.
+This can be saved as a GIF with the command `anim_save()`.
+```{r}
+p_anim <- ggplot(mult_nowcast_quantiles_w_data) +
+  # Final evaluation data — not grouped by nowcast_date so it stays fixed
+  geom_line(
+    aes(
+      x = reference_date, y = final_count,
+      linetype = "Final evaluation data"
+    ),
+    color = "red"
+  ) +
+  # Data as of nowcast date
+  geom_line(
+    aes(
+      x = reference_date, y = initial_count,
+      linetype = "Data as of nowcast date"
+    ),
+    color = "pink"
+  ) +
+  # Nowcast vertical line
+  geom_vline(
+    aes(
+      xintercept = as.numeric(nowcast_date),
+      linetype = "Date of nowcast"
+    ),
+    color = "black"
+  ) +
+  # Nowcast median + ribbons
+  geom_line(aes(x = reference_date, y = `q_.50`),
+    color = "gray"
+  ) +
+  geom_ribbon(aes(x = reference_date, ymin = `q_.025`, ymax = `q_.975`),
+    fill = "gray", alpha = 0.25
+  ) +
+  geom_ribbon(aes(x = reference_date, ymin = `q_.25`, ymax = `q_.75`),
+    fill = "gray", alpha = 0.25
+  ) +
+  theme_bw() +
+  scale_linetype_manual(
+    name = "Observed data",
+    values = c(
+      "Final evaluation data" = "solid",
+      "Data as of nowcast date" = "solid",
+      "Date of nowcast" = "dashed"
+    ),
+    breaks = c(
+      "Final evaluation data",
+      "Data as of nowcast date",
+      "Date of nowcast"
+    ),
+    guide = guide_legend(
+      override.aes = list(
+        color = c(
+          "Final evaluation data" = "red",
+          "Data as of nowcast date" = "pink",
+          "Date of nowcast" = "black"
+        ),
+        linewidth = 1
+      )
+    )
+  ) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y") +
+  xlab("Reference date") +
+  ylab("Incident cases") +
+  # gganimate: one frame per nowcast_date, label in title
+  labs(title = "Nowcast date: {frame_time}") +
+  transition_time(nowcast_date) +
+  ease_aes("linear")
+
+animate(p_anim,
+  nframes = n_distinct(mult_nowcast_quantiles_w_data$nowcast_date),
+  fps = 2,
+  width = 8,
+  height = 5,
+  units = "in",
+  res = 100,
+  renderer = magick_renderer()
+)
+
+anim_save("nowcast_flipbook.gif")
+```
+
+### Evaluation of nowcast performance using scoringutils
+
+To quantify nowcast performance, we can evaluate nowcasts using proper scoring rules from the `scoringutils` package.
+Before proceeding, we strongly recommend reading the package documentation for `scoringutils` and walking through the various vignettes, all of which contain examples of evaluating forecasts for similar epidemiological datasets.
+
+We will evaluate the quantiles using the weighted interval score (WIS), which is a proper scoring rule that approximates absolute error for probabilistic forecasts.
+Additionally, we will compute the interval coverage, which tells us how well the model is calibrated by calculating the proportion of observations that fall within each prediction interval.
+A perfectly well-calibrated forecast would have the exact same coverage as the nominal coverage (e.g., 90% of observations fall within the 90% prediction interval).
+
+Note: The `scoringutils` package also supports sample-based scoring using the continuous ranked probability score (CRPS) if you prefer to work with draws rather than quantiles.
+For this vignette, we focus on WIS as it provides interpretable decomposition into overprediction, underprediction, and dispersion components.
+
+We start by setting an evaluation window—the days for which we want to evaluate.
+Since all `max_delay` days are being nowcasted, we will evaluate all of them.
+However, you might only want to evaluate a subset of these (e.g., the last 2 weeks).
+
+```{r}
+eval_window <- max_delay
+```
+
+Next, we'll create a helper function to prepare our nowcast data for scoring with `scoringutils`.
+This converts our quantile format into the format expected by `scoringutils`.
+
+```{r}
+# Helper function to prepare nowcast data for scoring with scoringutils
+prepare_for_scoring <- function(quantiles_df, eval_window) {
+  # Filter to evaluation window
+  quantiles_to_score <- quantiles_df |>
+    filter(reference_date >= nowcast_date - days(eval_window))
+
+  # Convert quantiles from wide to long format
+  quantiles_long <- quantiles_to_score |>
+    pivot_longer(
+      cols = starts_with("q_"),
+      names_prefix = "q_",
+      names_to = "quantile_level",
+      values_to = "pred_count"
+    ) |>
+    mutate(quantile_level = as.numeric(quantile_level))
+
+  # Create scoringutils forecast object
+  su_quantiles <- as_forecast_quantile(
+    quantiles_long,
+    forecast_unit = c(
+      "nowcast_date",
+      "reference_date",
+      "scale_factor",
+      "prop_delay"
+    ),
+    observed = "final_count",
+    predicted = "pred_count",
+    quantile_level = "quantile_level"
+  )
+
+  return(su_quantiles)
+}
+```
+
+Now we'll use this helper function to prepare our data and compute scores.
+
+```{r}
+# Prepare data for scoring
+su_quantiles <- prepare_for_scoring(
+  quantiles_df = mult_nowcast_quantiles_w_data,
+  eval_window = eval_window
+)
+
+# Score the quantile-based forecasts
+scores_quantiles <- score(su_quantiles)
+
+head(scores_quantiles)
+```
+
+We now have a table of scores containing WIS and its components at every nowcast date and reference date.
+The WIS can be decomposed into three components:
+- **Overprediction**: penalty for predicting too high
+- **Underprediction**: penalty for predicting too low
+- **Dispersion**: penalty for prediction interval width
+
+To investigate these further, we can look at how nowcast performance varies across nowcast dates.
+We'll visualize this by first summarizing the scores by nowcast date using the `summarise_scores()` function, looking both at WIS and the 50th and 90th prediction intervals.
+
+
+```{r}
+scores_by_nowcast_date <- summarise_scores(scores_quantiles,
+  by = "nowcast_date"
+)
+ggplot(scores_by_nowcast_date) +
+  geom_line(aes(x = nowcast_date, y = wis)) +
+  geom_point(aes(x = nowcast_date, y = wis)) +
+  theme_bw() +
+  xlab("Nowcast date") +
+  ylab("Average WIS")
+
+ggplot(scores_by_nowcast_date) +
+  geom_line(aes(x = nowcast_date, y = interval_coverage_50),
+    color = "darkblue"
+  ) +
+  geom_point(aes(x = nowcast_date, y = interval_coverage_50),
+    color = "darkblue"
+  ) +
+  geom_hline(aes(yintercept = 0.50),
+    linetype = "dashed",
+    color = "darkblue"
+  ) +
+  geom_line(aes(x = nowcast_date, y = interval_coverage_90),
+    color = "maroon4"
+  ) +
+  geom_point(aes(x = nowcast_date, y = interval_coverage_90),
+    color = "maroon4"
+  ) +
+  geom_hline(aes(yintercept = 0.90),
+    linetype = "dashed",
+    color = "maroon4"
+  ) +
+  coord_cartesian(ylim = c(0, 1)) +
+  theme_bw() +
+  xlab("Nowcast date") +
+  ylab("Interval Coverage")
+```
+
+#### Computing average interval coverage
+
+We can also compute interval coverage across the whole time period using the same `summarise_scores()` function.
+```{r}
+scores_summary <- scores_quantiles |>
+  mutate(model = "baselinenowcast") |>
+  summarise_scores(by = "model") |>
+  select(model, interval_coverage_50, interval_coverage_90) |>
+  # nolint start
+  rename(
+    "Model" = model,
+    "50% coverage" = interval_coverage_50,
+    "90% coverage" = interval_coverage_90
+  ) |>
+  # nolint end
+  knitr::kable(digits = 3)
+scores_summary
+```
+
+## Choosing a model specification using quantitative performance evaluation
+
+So far, we have demonstrated how to visually and quantitatively evaluate a single nowcasting model, where we specified the training volume so that it was fairly close to the package defaults.
+However, the decision of how to specify the model should not be done arbitrarily-- instead, we can use the retrospective nowcast performance to compare how well different specifications would have done, which can be used to inform our current specification.
+In this example, we will just focus on varying the training volume specification, but the same process could be applied to many of the other options for specifying `baselinenowcast`, including but not limited to: accounting for weekday effects via stratification by weekday, sharing estimates across strata (e.g. letting the delay from all age groups be used to nowcast each individual age groups case counts), and changing the observation model.
+
+Here, we will test out using larger proportions of the training data for delay estimation  (via the `prop_delay` argument to `baselinenowcast()`) and we will test out using more or less training volume (via the `scale_factor` argument to `baselinenowcast()`).
+
+In this example, we are somewhat limited because we don't have that much training data, but you can expand these to vary more in your use-case. See `allocate_reference_times()` for more details on the constraints of the training volume.
+```{r}
+prop_delays <- c(0.5, 0.7)
+scale_factors <- c(2.2, 2.3)
+
+# Create empty dataframe to store the nowcasts
+mult_nowcast_quantiles <- NULL
+
+for (i in seq_along(nowcast_dates)) {
+  for (j in seq_along(prop_delays)) {
+    for (k in seq_along(scale_factors)) {
+      # Fit model and get quantile summaries
+      quantiles_w_data <- fit_model(
+        raw_data = syn_nssp_df,
+        nowcast_date = nowcast_dates[i],
+        max_delay = max_delay,
+        scale_factor = scale_factors[k],
+        prop_delay = prop_delays[j]
+      )
+
+      # Combine the nowcasts from each iteration
+      mult_nowcast_quantiles <- bind_rows(
+        mult_nowcast_quantiles,
+        quantiles_w_data
+      )
+    }
+  }
+}
+```
+
+Join the evaluation data (same as before).
+```{r}
+mult_nowcast_quantiles_w_data <- left_join(mult_nowcast_quantiles,
+  eval_data,
+  by = "reference_date"
+)
+```
+
+Convert to scoringutils format and score (same process as the single specification section).
+```{r}
+eval_window <- max_delay
+
+# Prepare data for scoring using our helper function
+su_quantiles <- prepare_for_scoring(
+  quantiles_df = mult_nowcast_quantiles_w_data,
+  eval_window = eval_window
+)
+
+# Score the forecasts
+scores_quantiles <- score(su_quantiles)
+
+head(scores_quantiles)
+```
+
+###  Summarise performance by model specification
+
+```{r}
+scores_summary <- scores_quantiles |>
+  mutate(model = "baselinenowcast") |>
+  summarise_scores(by = c("model", "prop_delay", "scale_factor")) |>
+  select(
+    model, prop_delay, scale_factor, wis, underprediction, overprediction,
+    dispersion, interval_coverage_50, interval_coverage_90
+  )
+
+scores_summary_table <- scores_summary |>
+  # nolint start
+  rename(
+    "Model" = model,
+    "Proportion for delay" = prop_delay,
+    "Scale factor" = scale_factor,
+    "50% coverage" = interval_coverage_50,
+    "90% coverage" = interval_coverage_90,
+    "WIS" = wis
+  ) |>
+  # nolint end
+  knitr::kable(digits = 3)
+scores_summary_table
+```
+Make a bar chart to visualize the scores, broken down by underprediction, overprediction, and dispersion.
+```{r}
+scores_summary |>
+  pivot_longer(cols = c("overprediction", "underprediction", "dispersion")) |>
+  mutate(
+    name = factor(name,
+      levels = c(
+        "overprediction",
+        "dispersion",
+        "underprediction"
+      )
+    ),
+    model_name = glue("pd:{prop_delay} sf:{scale_factor}")
+  ) |>
+  ggplot() +
+  geom_bar(aes(x = model_name, y = value, fill = name),
+    stat = "identity", position = "stack"
+  ) +
+  theme_bw() +
+  scale_fill_manual(
+    name = "WIS component",
+    values = c("maroon4", "blue4", "orange4")
+  ) +
+  theme(
+    axis.text.x = element_text(
+      vjust = 1,
+      hjust = 1,
+      angle = 45,
+      size = 11
+    )
+  ) +
+  xlab("Model specification") +
+  ylab("WIS")
+```
+Lastly, compare interval coverage for each specification.
+```{r}
+scores_summary |>
+  mutate(interval_coverage_90 = interval_coverage_90 - interval_coverage_50) |>
+  pivot_longer(cols = c("interval_coverage_90", "interval_coverage_50")) |>
+  mutate(
+    model_name = glue("pd:{prop_delay} sf:{scale_factor}"),
+    name = factor(name, levels = c(
+      "interval_coverage_90",
+      "interval_coverage_50"
+    ))
+  ) |>
+  ggplot() +
+  geom_bar(aes(x = model_name, y = value, alpha = name),
+    stat = "identity", position = "stack"
+  ) +
+  theme_bw() +
+  scale_alpha_manual(
+    name = "Interval coverage",
+    values = c(
+      interval_coverage_90 = 0.9,
+      interval_coverage_50 = 0.5
+    ),
+    labels = c(
+      interval_coverage_90 = "90%",
+      interval_coverage_50 = "50%"
+    )
+  ) +
+  geom_hline(aes(yintercept = 0.50), linetype = "dashed") +
+  geom_hline(aes(yintercept = 0.90), linetype = "dashed") +
+  theme(
+    axis.text.x = element_text(
+      vjust = 1,
+      hjust = 1,
+      angle = 45,
+      size = 11
+    )
+  ) +
+  xlab("Model specification") +
+  ylab("Interval coverage")
+```
+
+### Interpreting the results
+
+When comparing model specifications, consider the following:
+
+**1. Weighted Interval Score (WIS)**: Lower is better. Look for meaningful differences (e.g., >10% reduction) rather than small variations that may be due to randomness. The WIS provides an overall measure of forecast accuracy that balances sharpness and calibration.
+
+**2. WIS Components**:
+   - High **underprediction** suggests the nowcasts are systematically too low, which could lead to underestimating disease burden
+   - High **overprediction** suggests the nowcasts are systematically too high, which could lead to overestimating disease burden
+   - High **dispersion** suggests prediction intervals are too wide
+
+**3. Interval Coverage**:
+   - Should be close to nominal levels (50% and 90%)
+   - Consistently low coverage (e.g., 40% for 50% intervals) suggests overconfidence—intervals are too narrow
+   - Consistently high coverage (e.g., 95% for 90% intervals) suggests underconfidence—intervals are too wide
+   - Well-calibrated forecasts build trust and support better decision-making
+
+**Selecting a model specification**: In this example, you would select the specification that minimizes WIS while maintaining well-calibrated interval coverage. If specifications have similar WIS, prefer the one with better calibration or simpler parameterization (lower `scale_factor` requires less training data, which may be beneficial when historical data is limited).
+
+The retrospective evaluation approach demonstrated here can be applied to other `baselinenowcast` specifications beyond training volume, including weekday stratification, cross-stratum sharing, and observation model choices.

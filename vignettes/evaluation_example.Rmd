@@ -21,11 +21,13 @@ We'll use visual checks and out-of-sample scoring with proper scoring rules from
 For more resources on forecast evaluation, we recommend checking out the `scoringutils` documentation describing various [scoring rules](https://epiforecasts.io/scoringutils/articles/scoring-rules.html) used for evaluating point and probabilistic forecasts.
 We also recommend checking out materials from the [Nowcasting and Forecasting of Infectious Disease Dynamics (NFIDD)](https://nfidd.github.io/nfidd/sessions/forecast-evaluation.html) short course on forecast evaluation, which will walk through many of the principles alongside worked examples.
 Additionally, we evaluate the performance of `baselinenowcast` under different model specifications and compared to other nowcasting methods in our [publication](https://wellcomeopenresearch.org/articles/10-614).
+We'll start by evaluating a single model specification, and then show how to compare multiple specifications to inform your modelling choices, specifically focusing on evaluating the performance under different training volume specifications.
+Before working through this vignette, we advise you to read both the [Getting Started](baselinenowcast.html) and the [NSSP nowcast](nssp_nowcast.html) vignettes, both of which will demonstrate how to produce a nowcast for a single nowcast date.
 
 
 ## Packages
 
-We use the `baselinenowcast` package, `dplyr` and `tidyr` for data-wrangling, `glue` for combining strings, `lubridate` for handling dates, and the `scoringutils` to evaluate out of sample nowcast performance.
+We use the `baselinenowcast` package, `dplyr` and `tidyr` for data-wrangling, `glue` for combining strings, `lubridate` for handling dates, `purrr` for efficient iterating, and the `scoringutils` to evaluate out of sample nowcast performance.
 
 ```{r setup2, message = FALSE, warning = FALSE, results = 'hide'}
 knitr::opts_chunk$set(
@@ -38,6 +40,7 @@ library(lubridate)
 library(tidyr)
 library(dplyr)
 library(glue)
+library(purrr)
 library(scoringutils)
 library(gganimate)
 ```
@@ -67,6 +70,8 @@ nowcast_dates <- seq(
 
 The maximum delay should be specified based on both the delay distribution and your own knowledge of the data generating process (e.g. delays of more than a few weeks might be expected to be data entry errors).
 Here we will use a plot of the cumulative delay distribution to identify when the majority of our cases have been reported, noting that the lower our maximum delay is, the less historical data we will need to train the model.
+Because of right-truncation in recent counts, we expect to see in the recent reference dates only the shorter delays, and depending on the size of your data, this could bias the overall delay distribution.
+Alternatively, the `baselinenowcast` package provides a helper function to automatically determine an appropriate maximum delay based on a user-specified proportion of cases, see `?truncate_to_quantile` for more details.
 In our case, since we don't have many years of historical data, we might wish to choose to keep this relatively low.
 ```{r}
 avg_delays <- syn_nssp_df |>
@@ -77,6 +82,7 @@ avg_delays <- syn_nssp_df |>
 
 cdf_delay <- ggplot(avg_delays) +
   geom_line(aes(x = delay, y = cdf)) +
+  geom_vline(aes(xintercept = 25), linetype = "dashed") +
   geom_hline(aes(yintercept = 0.95), linetype = "dashed") +
   theme_bw() +
   xlab("Delay (days)") +
@@ -84,15 +90,13 @@ cdf_delay <- ggplot(avg_delays) +
 cdf_delay
 ```
 
-Based on this plot, we will set our maximum delay to 25 days.
+Because we observe that 95% of cases are reported within 25 days, we will set our maximum delay to 25 days.
 
 ### Specify a single model
 
 We'll start by evaluating a single `baselinenowcast` specification.
 With the maximum delay set to 25 days, we will specify the total number of reference dates used for training as 2.2 times the maximum delay using the `scale_factor` argument.
 We'll also specify that half of the training data be used for delay estimation with the `prop_delay` argument.
-
-Later in this vignette, we will demonstrate how to use quantitative nowcast performance to evaluate the performance of different training volume specifications.
 ```{r}
 max_delay <- 25
 scale_factor <- 2.2
@@ -101,81 +105,51 @@ prop_delay <- 0.5
 
 ### Looping over multiple nowcast dates
 
-First, we will write a function that runs the `baselinenowcast` workflow and returns quantile summaries along with the initial data and metadata about the model run (e.g., nowcast date and model specification variables).
+First, we will write a function that extracts the training data for each nowcast date, by excluding all cases indexed or reported before the nowcast date.
 ```{r}
-fit_model <- function(raw_data,
-                      nowcast_date,
-                      max_delay,
-                      scale_factor,
-                      prop_delay) {
-  # Remove all cases on/after the nowcast date
+get_training_data <- function(raw_data,
+                              nowcast_date,
+                              max_delay) {
   training_data <- filter(
     raw_data,
     report_date < nowcast_date,
     reference_date < nowcast_date
   )
-
-  # Save the initial reports used for comparison
-  initial_count_data <- training_data |>
-    group_by(reference_date) |>
-    summarise(initial_count = sum(count)) |>
-    filter(reference_date >= max(reference_date) - days(max_delay))
-
-  # Generate the nowcast
-  rep_tri_full <- as_reporting_triangle(training_data)
-  rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
-
-  # Generate draws and compute quantiles
-  nowcast_quantiles <- baselinenowcast(rep_tri,
-    scale_factor = scale_factor,
-    prop_delay = prop_delay,
-    draws = 1000
-  ) |>
-    group_by(reference_date) |>
-    summarise(
-      q_.50 = median(pred_count),
-      q_.25 = quantile(pred_count, 0.25),
-      q_.75 = quantile(pred_count, 0.75),
-      q_.05 = quantile(pred_count, 0.05),
-      q_.95 = quantile(pred_count, 0.95),
-      q_.025 = quantile(pred_count, 0.025),
-      q_.975 = quantile(pred_count, 0.975),
-      .groups = "drop"
-    ) |>
-    # Add metadata for this iteration of the loop
-    mutate(
-      nowcast_date = nowcast_date,
-      scale_factor = scale_factor,
-      prop_delay = prop_delay
-    ) |>
-    left_join(initial_count_data, by = "reference_date")
-
-  return(nowcast_quantiles)
+  return(training_data)
 }
 ```
 
+
 Next we will set up a for loop to retrospectively produce nowcasts using the data that would have been available at each of the retrospective nowcast dates.
 Note, running this loop will print out a number of informational messages at each iteration, informing you that the reporting triangle has been truncated to the maximum delay and telling you exactly what proportion of the training volume was used for delay estimation.
-```{r}
-# Create empty dataframe to store the nowcasts
-mult_nowcast_quantiles <- NULL
 
-for (i in seq_along(nowcast_dates)) {
-  # Fit model and get quantile summaries
-  quantiles_w_data <- fit_model(
-    raw_data = syn_nssp_df,
-    nowcast_date = nowcast_dates[i],
-    max_delay = max_delay,
-    scale_factor = scale_factor,
-    prop_delay = prop_delay
-  )
+```{r, message = FALSE}
+mult_nowcast_draws <- map_dfr(
+  setNames(nowcast_dates, nowcast_dates),
+  \(nowcast_date) {
+    training_data <- get_training_data(
+      raw_data = syn_nssp_df,
+      nowcast_date = nowcast_date
+    )
 
-  # Combine the nowcasts from each iteration
-  mult_nowcast_quantiles <- bind_rows(
-    mult_nowcast_quantiles,
-    quantiles_w_data
-  )
-}
+    initial_count_data <- training_data |>
+      group_by(reference_date) |>
+      summarise(initial_count = sum(count)) |>
+      filter(reference_date >= max(reference_date) - days(max_delay))
+
+    rep_tri_full <- as_reporting_triangle(training_data)
+    rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
+
+    baselinenowcast(rep_tri,
+      scale_factor = scale_factor,
+      prop_delay = prop_delay,
+      draws = 1000
+    ) |>
+      left_join(initial_count_data, by = "reference_date")
+  },
+  .id = "nowcast_date",
+  .progress = TRUE
+)
 ```
 
 Next, we'll join the evaluation data to our nowcasts.
@@ -190,8 +164,8 @@ eval_data <- syn_nssp_df |>
   ungroup()
 
 # Left join the evaluation data to the nowcasts
-mult_nowcast_quantiles_w_data <- left_join(
-  mult_nowcast_quantiles,
+mult_nowcast_draws_w_data <- left_join(
+  mult_nowcast_draws,
   eval_data,
   by = "reference_date"
 )

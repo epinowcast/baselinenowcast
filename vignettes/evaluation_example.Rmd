@@ -18,9 +18,9 @@ vignette: >
 
 In this vignette, we demonstrate how to evaluate the performance of your `baselinenowcast` nowcast across multiple nowcast dates.
 We'll use visual checks and out-of-sample scoring with proper scoring rules from the [`scoringutils`](https://epiforecasts.io/scoringutils/) package.
-We'll start by evaluating a single model specification, and then show how to compare multiple specifications to inform your modeling choices.
-Here we focus on optimizing the training volume specification.
-Before working through this vignette, we advise you to read both the Getting Started vignette and the NSSP nowcast vignette, both of which will demonstrate how to produce a nowcast for a single nowcast date.
+For more resources on forecast evaluation, we recommend checking out the `scoringutils` documentation describing various [scoring rules](https://epiforecasts.io/scoringutils/articles/scoring-rules.html) used for evaluating point and probabilistic forecasts.
+We also recommend checking out materials from the [Nowcasting and Forecasting of Infectious Disease Dynamics (NFIDD)](https://nfidd.github.io/nfidd/sessions/forecast-evaluation.html) short course on forecast evaluation, which will walk through many of the principles alongside worked examples.
+Additionally, we evaluate the performance of `baselinenowcast` under different model specifications and compared to other nowcasting methods in our [publication](https://wellcomeopenresearch.org/articles/10-614).
 
 
 ## Packages

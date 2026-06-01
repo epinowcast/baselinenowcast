@@ -21,7 +21,7 @@ We'll use visual checks and out-of-sample scoring with proper scoring rules from
 For more resources on forecast evaluation, we recommend checking out the `scoringutils` documentation describing various [scoring rules](https://epiforecasts.io/scoringutils/articles/scoring-rules.html) used for evaluating point and probabilistic forecasts.
 We also recommend checking out materials from the [Nowcasting and Forecasting of Infectious Disease Dynamics (NFIDD)](https://nfidd.github.io/nfidd/sessions/forecast-evaluation.html) short course on forecast evaluation, which walks through many of the principles of forecast evaluation alongside worked examples.
 Additionally, we evaluate the performance of `baselinenowcast` under different model specifications and compared to other nowcasting methods in our [publication](https://wellcomeopenresearch.org/articles/10-614).
-We'll start by evaluating a single model specification, and then show how to compare multiple specifications to inform your modelling choices, specifically focusing on evaluating the performance under different training volume specifications.
+We'll start by evaluating a single model specification, and then show how to compare multiple specifications to inform your modelling choices, specifically focusing on evaluating the performance under different training volume specifications (proportion of data used for delay estimation and the amount of total training volume used).
 Before working through this vignette, we advise you to read both the [Getting Started](baselinenowcast.html) and the [NSSP nowcast](nssp_nowcast.html) vignettes, both of which will demonstrate how to produce a nowcast for a single nowcast date.
 
 
@@ -62,7 +62,7 @@ We'll start by specifying the range of nowcast dates that we want to produce ret
 Since this data has no historical data before October 25th, 2025, we will produce nowcasts each week on Wednesday from December 10th, 2025 to April 1st, 2026.
 ```{r}
 nowcast_dates <- seq(
-  from = ymd("2025-12-10"),
+  from = ymd("2025-12-17"),
   to = ymd("2026-04-01"), by = "week"
 )
 ```
@@ -337,10 +337,8 @@ This summary tells us that the model is overall biased slightly downward (indica
 It slightly overcovers at 50% prediction intervals (meaning the prediction intervals are a bit too wide) but is very well-calibrated at 90% prediction intervals (89.99% of observations fall within the 90% prediction intervals).
 In terms of overall performance, the nowcasts are penalised more heavily for underprediction than overprediction (which corroborates the negative bias) and is most penalised for being over-dispersed (prediction intervals are too wide, as corroborated by the 50% interval coverage value).
 
-
-
 To investigate these further, we can look at how nowcast performance varies across nowcast dates.
-We'll visualize this by first summarizing the scores by nowcast date using the `summarise_scores()` function.
+We'll visualize this by first summarizing the scores by nowcast date, again using the `summarise_scores()` function.
 ```{r}
 scores_by_nowcast_date <- summarise_scores(scores_quantiles,
   by = "nowcast_date"
@@ -408,61 +406,76 @@ Here, we see relatively robust prediction interval coverage across the range of 
 
 ## Choosing a model specification using quantitative performance evaluation
 
-So far, we have demonstrated how to visually and quantitatively evaluate a single nowcasting model, where we specified the training volume so that it was fairly close to the package defaults.
-However, the decision of how to specify the model should not be done arbitrarily-- instead, we can use the retrospective nowcast performance to compare how well different specifications would have done, which can be used to inform our current specification.
-In this example, we will just focus on varying the training volume specification, but the same process could be applied to many of the other options for specifying `baselinenowcast`, including but not limited to: accounting for weekday effects via stratification by weekday, sharing estimates across strata (e.g. letting the delay from all age groups be used to nowcast each individual age groups case counts), and changing the observation model.
+The `baselinenowcast` package is set-up to use sensible defaults, which we evaluated in our [publication](https://wellcomeopenresearch.org/articles/10-614).
+In that work, we found that the package defaults, with a `scale_factor = 3` and a `prop_delay = 0.5`, performed well compared to a variety of different model specifications when applied to Germany's COVID-19 data.
+In general, we recommend customising the model specifications based on the context and the users needs for the nowcast in order to improve performance.
+For the dataset used in this vignette, we have visually and quantitatively evaluated a single nowcasting model specification across multiple retrospective nowcast dates.
+Next, we will expand this to look at the performance under a limited set of training volume specifications.
+The same process could be applied to many of the other options for specifying `baselinenowcast`, including but not limited to:
+- accounting for weekday effects via stratification by weekday
+- sharing estimates across strata (e.g. letting the delay from all age groups be used to nowcast each individual age groups case counts)
+- changing the observation model
 
 Here, we will test out using larger proportions of the training data for delay estimation  (via the `prop_delay` argument to `baselinenowcast()`) and we will test out using more or less training volume (via the `scale_factor` argument to `baselinenowcast()`).
 
-In this example, we are somewhat limited because we don't have that much training data, but you can expand these to vary more in your use-case. See `allocate_reference_times()` for more details on the constraints of the training volume.
-```{r}
+In this example, we are somewhat limited because we don't have a lot of training data, but you can expand these to vary more in your use-case. See `?allocate_reference_times()` for more details on the constraints of the training volume.
+We can use the `pmap_dfr` function from the `purrr` package to iterate through each combination of nowcast dates, proportion of data used for delay estimates, and scale factors on the maximum delay defining the amount of total reference dates to use for training.
+To save computation time, I will exclude the training volume specifications we already nowcasted and bind them to the output.
+```{r, message = FALSE}
 prop_delays <- c(0.5, 0.7)
 scale_factors <- c(2.2, 2.3)
 
-# Create empty dataframe to store the nowcasts
-mult_nowcast_quantiles <- NULL
+param_grid <- expand.grid(
+  nowcast_date = nowcast_dates,
+  prop_delay = prop_delays,
+  scale_factor = scale_factors,
+  stringsAsFactors = FALSE
+) |>
+  filter(!prop_delay == 0.5 && scale_factor = 2.2)
 
-for (i in seq_along(nowcast_dates)) {
-  for (j in seq_along(prop_delays)) {
-    for (k in seq_along(scale_factors)) {
-      # Fit model and get quantile summaries
-      quantiles_w_data <- fit_model(
-        raw_data = syn_nssp_df,
-        nowcast_date = nowcast_dates[i],
-        max_delay = max_delay,
-        scale_factor = scale_factors[k],
-        prop_delay = prop_delays[j]
-      )
+mult_nowcast_draws_ms <- pmap_dfr(param_grid, \(nowcast_date, prop_delay, scale_factor) {
+  training_data <- get_training_data(
+    raw_data = syn_nssp_df,
+    nowcast_date = as.Date(nowcast_date)
+  )
+  initial_count_data <- training_data |>
+    group_by(reference_date) |>
+    summarise(initial_count = sum(count)) |>
+    filter(reference_date >= max(reference_date) - days(max_delay))
 
-      # Combine the nowcasts from each iteration
-      mult_nowcast_quantiles <- bind_rows(
-        mult_nowcast_quantiles,
-        quantiles_w_data
-      )
-    }
-  }
-}
+  rep_tri_full <- as_reporting_triangle(training_data)
+  rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
+
+  baselinenowcast(rep_tri,
+    scale_factor = scale_factor,
+    prop_delay = prop_delay,
+    draws = 1000
+  ) |>
+    left_join(initial_count_data, by = "reference_date") |>
+    mutate(
+      nowcast_date = as.Date(nowcast_date),
+      prop_delay = prop_delay,
+      scale_factor = scale_factor
+    )
+}, .progress = TRUE)  |>
+  bind_rows(mult_nowcast_draws |>
+              mutate(prop_delay = prop_delay,
+                     scale_factor = scale_factor))
 ```
 
-Join the evaluation data (same as before).
-```{r}
-mult_nowcast_quantiles_w_data <- left_join(mult_nowcast_quantiles,
-  eval_data,
-  by = "reference_date"
-)
-```
 
-Convert to scoringutils format and score (same process as the single specification section).
+Use `as_forecast_sample()` to convert the nowcasts to a `scoringutils` forecast object, setting the forecast unit to include the variables of interest which are columns fo the `mult_nowcast_draws` (`prop_delay` and `scale_factor`).
 ```{r}
-eval_window <- max_delay
-
-# Prepare data for scoring using our helper function
-su_quantiles <- prepare_for_scoring(
-  quantiles_df = mult_nowcast_quantiles_w_data,
-  eval_window = eval_window
+su_draws <- as_forecast_sample(
+  mult_nowcast_draws_ms,
+  latest_obs = eval_data,
+  observed = "final_count",
+  forecast_unit = c("reference_date", "nowcast_date", "model",
+                    "prop_delay", "scale_factor")
 )
 
-# Score the forecasts
+su_quantiles <- as_forecast_quantile(su_draws)
+
 scores_quantiles <- score(su_quantiles)
 
 head(scores_quantiles)

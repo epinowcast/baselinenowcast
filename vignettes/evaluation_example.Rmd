@@ -19,7 +19,7 @@ vignette: >
 In this vignette, we demonstrate how to evaluate the performance of your `baselinenowcast` nowcast across multiple nowcast dates.
 We'll use visual checks and out-of-sample scoring with proper scoring rules from the [`scoringutils`](https://epiforecasts.io/scoringutils/) package.
 For more resources on forecast evaluation, we recommend checking out the `scoringutils` documentation describing various [scoring rules](https://epiforecasts.io/scoringutils/articles/scoring-rules.html) used for evaluating point and probabilistic forecasts.
-We also recommend checking out materials from the [Nowcasting and Forecasting of Infectious Disease Dynamics (NFIDD)](https://nfidd.github.io/nfidd/sessions/forecast-evaluation.html) short course on forecast evaluation, which will walk through many of the principles alongside worked examples.
+We also recommend checking out materials from the [Nowcasting and Forecasting of Infectious Disease Dynamics (NFIDD)](https://nfidd.github.io/nfidd/sessions/forecast-evaluation.html) short course on forecast evaluation, which walks through many of the principles of forecast evaluation alongside worked examples.
 Additionally, we evaluate the performance of `baselinenowcast` under different model specifications and compared to other nowcasting methods in our [publication](https://wellcomeopenresearch.org/articles/10-614).
 We'll start by evaluating a single model specification, and then show how to compare multiple specifications to inform your modelling choices, specifically focusing on evaluating the performance under different training volume specifications.
 Before working through this vignette, we advise you to read both the [Getting Started](baselinenowcast.html) and the [NSSP nowcast](nssp_nowcast.html) vignettes, both of which will demonstrate how to produce a nowcast for a single nowcast date.
@@ -27,7 +27,7 @@ Before working through this vignette, we advise you to read both the [Getting St
 
 ## Packages
 
-We use the `baselinenowcast` package, `dplyr` and `tidyr` for data-wrangling, `glue` for combining strings, `lubridate` for handling dates, `purrr` for efficient iterating, and the `scoringutils` to evaluate out of sample nowcast performance.
+We use the `baselinenowcast` package, `dplyr` and `tidyr` for data-wrangling, `glue` for combining strings, `lubridate` for handling dates, `purrr` for efficient iterating, `ggplot2` and `gganimate` for static and animated plotting (respectively), and the `scoringutils` to evaluate out of sample nowcast performance.
 
 ```{r setup2, message = FALSE, warning = FALSE, results = 'hide'}
 knitr::opts_chunk$set(
@@ -41,8 +41,9 @@ library(tidyr)
 library(dplyr)
 library(glue)
 library(purrr)
-library(scoringutils)
 library(gganimate)
+library(ggplot2)
+library(scoringutils)
 ```
 
 ## Data
@@ -152,8 +153,9 @@ mult_nowcast_draws <- map_dfr(
 )
 ```
 
-Next, we'll join the evaluation data to our nowcasts.
-We'll only include reports that occurred within the maximum delay window to ensure fair comparison across all nowcast dates.
+Next, we'll create the data to evaluate against using the latest observations.
+We'll only include reports that occurred within the maximum delay window to ensure a fair comparison across all nowcast dates, as including all reports would mean that earlier nowcast dates are compared against longer delays than more recent nowcast dates.
+See our [publication](https://wellcomeopenresearch.org/articles/10-614) and [Wolffram et al.](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1011394) for further details.
 
 ```{r}
 eval_data <- syn_nssp_df |>
@@ -162,170 +164,113 @@ eval_data <- syn_nssp_df |>
   group_by(reference_date) |>
   summarise(final_count = sum(count)) |>
   ungroup()
-
-# Left join the evaluation data to the nowcasts
-mult_nowcast_draws_w_data <- left_join(
-  mult_nowcast_draws,
-  eval_data,
-  by = "reference_date"
-)
 ```
+
+
 
 ### Visual comparison of nowcasts
 
-We'll start by visualising the nowcasts compared to both the initial data available without nowcasting and the final data available retrospectively, using the dataframe containing the nowcast quantiles.
-To make a static image, we will start by showing a probabilistic nowcast (gray) every 4 weeks alongside the final data (red) and the initial data (pink).
+To make a static image, we will start by visualising the nowcasts compared to both the initial data available without nowcasting and the final data available retrospectively, using the dataframe containing the nowcast quantiles.
 
+Compute quantiles for visualisation.
+```{r}
+mult_nowcasts <- mult_nowcast_draws |>
+  mutate(nowcast_date = as.Date(nowcast_date)) |>
+  group_by(reference_date, nowcast_date) |>
+  summarise(
+    median = median(pred_count),
+    q50th_lb = quantile(pred_count, 0.25),
+    q50th_ub = quantile(pred_count, 0.75),
+    q95th_lb = quantile(pred_count, 0.025),
+    q95th_ub = quantile(pred_count, 0.975)
+  ) |>
+  left_join(mult_nowcasts_filtered |>
+    select(nowcast_date, reference_date, initial_count) |>
+    distinct(), by = c("nowcast_date", "reference_date")) |>
+  left_join(eval_data, by = c("reference_date"))
+```
+
+We'll start by making a shared plotting function, which expects a dataframe with columns for the quantiled probabilistic nowcasts (gray), the final data (red), and the initial data (pink).
+```{r}
+plot_multiple_nowcasts <- function(data) {
+  p <- ggplot(data) +
+    geom_line(
+      aes(
+        x = reference_date, y = initial_count,
+        group = nowcast_date,
+        color = "Data as of nowcast date"
+      )
+    ) +
+    geom_vline(aes(
+      xintercept = nowcast_date,
+      color = "Date of nowcast"
+    ), linetype = "dashed") +
+    geom_line(aes(x = reference_date, y = median, group = nowcast_date),
+      color = "gray"
+    ) +
+    geom_ribbon(aes(
+      x = reference_date, ymin = q50th_lb, ymax = q50th_ub,
+      group = nowcast_date
+    ), fill = "gray", alpha = 0.25) +
+    geom_ribbon(aes(
+      x = reference_date, ymin = q95th_lb, ymax = q95th_ub,
+      group = nowcast_date
+    ), fill = "gray", alpha = 0.25) +
+    geom_line(
+      aes(
+        x = reference_date, y = final_count,
+        group = nowcast_date,
+        color = "Final evaluation data"
+      )
+    ) +
+    scale_color_manual(
+      name = "Observed data",
+      values = c(
+        "Final evaluation data" = "red",
+        "Data as of nowcast date" = "pink",
+        "Date of nowcast" = "black"
+      )
+    ) +
+    scale_x_date(
+      date_breaks = "1 month",
+      date_labels = "%b %Y"
+    ) +
+    theme_bw() +
+    xlab("Reference date") +
+    ylab("Incident cases") +
+    ggtitle("Visual nowcast comparison")
+  return(p)
+}
+```
+
+
+To make a static image, we will start by showing a probabilistic nowcast every 4 weeks alongside the final data (red) and the initial data (pink).
+First we will filter the nowcast dates to once every four weeks.
 ```{r}
 nowcast_dates_to_visualize <- seq(
   from = ymd("2025-12-10"),
   to = ymd("2026-04-01"), by = "4 weeks"
 )
 
-mult_nowcasts_filtered <- filter(
-  mult_nowcast_quantiles_w_data,
-  nowcast_date %in% nowcast_dates_to_visualize
-)
+mult_nowcasts_filtered <- mult_nowcasts |>
+  filter(nowcast_date %in% nowcast_dates_to_visualize)
 
-p <- ggplot(mult_nowcasts_filtered) +
-  geom_line(
-    aes(
-      x = reference_date, y = initial_count,
-      group = nowcast_date,
-      linetype = "Data as of nowcast date"
-    ),
-    color = "pink"
-  ) +
-  geom_vline(aes(
-    xintercept = nowcast_date,
-    linetype = "Date of nowcast"
-  )) +
-  geom_line(aes(x = reference_date, y = `q_.50`, group = nowcast_date),
-    color = "gray"
-  ) +
-  geom_ribbon(aes(
-    x = reference_date, ymin = `q_.025`, ymax = `q_.975`,
-    group = nowcast_date
-  ), fill = "gray", alpha = 0.25) +
-  geom_ribbon(aes(
-    x = reference_date, ymin = `q_.25`, ymax = `q_.75`,
-    group = nowcast_date
-  ), fill = "gray", alpha = 0.25) +
-  geom_line(
-    aes(
-      x = reference_date, y = final_count,
-      group = nowcast_date,
-      linetype = "Final evaluation data"
-    ),
-    color = "red"
-  ) +
-  theme_bw() +
-  scale_linetype_manual(
-    name = "Observed data",
-    values = c(
-      "Final evaluation data" = "solid",
-      "Data as of nowcast date" = "solid",
-      "Date of nowcast" = "dashed"
-    ),
-    breaks = c(
-      "Final evaluation data",
-      "Data as of nowcast date",
-      "Date of nowcast"
-    ),
-    guide = guide_legend(
-      override.aes = list(
-        color = c(
-          "Final evaluation data" = "red",
-          "Data as of nowcast date" = "pink",
-          "Date of nowcast" = "black"
-        ),
-        linewidth = 1
-      )
-    )
-  ) +
-  scale_x_date(
-    date_breaks = "1 month",
-    date_labels = "%b %Y"
-  ) +
-  xlab("Reference date") +
-  ylab("Incident cases") +
-  ggtitle("Visual nowcast comparison")
+p <- plot_multiple_nowcasts(data = mult_nowcasts_filtered)
 p
 ```
 
 
-Optionally, we can make this into an animated figure, or a "flipbook" using `gganimate`.
-This can be saved as a GIF with the command `anim_save()`.
+However, we might be interested in isolating the performance of each individual weekly nowcast.
+<!--- TODO: This doesn't work with a nowcast each week, and I am not sure why but need to troubleshoot --->
+To achieve this, we can make this into an animated figure, or a "flipbook" using `gganimate`, where each slide is one nowcast.
 ```{r}
-p_anim <- ggplot(mult_nowcast_quantiles_w_data) +
-  # Final evaluation data — not grouped by nowcast_date so it stays fixed
-  geom_line(
-    aes(
-      x = reference_date, y = final_count,
-      linetype = "Final evaluation data"
-    ),
-    color = "red"
-  ) +
-  # Data as of nowcast date
-  geom_line(
-    aes(
-      x = reference_date, y = initial_count,
-      linetype = "Data as of nowcast date"
-    ),
-    color = "pink"
-  ) +
-  # Nowcast vertical line
-  geom_vline(
-    aes(
-      xintercept = as.numeric(nowcast_date),
-      linetype = "Date of nowcast"
-    ),
-    color = "black"
-  ) +
-  # Nowcast median + ribbons
-  geom_line(aes(x = reference_date, y = `q_.50`),
-    color = "gray"
-  ) +
-  geom_ribbon(aes(x = reference_date, ymin = `q_.025`, ymax = `q_.975`),
-    fill = "gray", alpha = 0.25
-  ) +
-  geom_ribbon(aes(x = reference_date, ymin = `q_.25`, ymax = `q_.75`),
-    fill = "gray", alpha = 0.25
-  ) +
-  theme_bw() +
-  scale_linetype_manual(
-    name = "Observed data",
-    values = c(
-      "Final evaluation data" = "solid",
-      "Data as of nowcast date" = "solid",
-      "Date of nowcast" = "dashed"
-    ),
-    breaks = c(
-      "Final evaluation data",
-      "Data as of nowcast date",
-      "Date of nowcast"
-    ),
-    guide = guide_legend(
-      override.aes = list(
-        color = c(
-          "Final evaluation data" = "red",
-          "Data as of nowcast date" = "pink",
-          "Date of nowcast" = "black"
-        ),
-        linewidth = 1
-      )
-    )
-  ) +
-  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y") +
-  xlab("Reference date") +
-  ylab("Incident cases") +
-  # gganimate: one frame per nowcast_date, label in title
-  labs(title = "Nowcast date: {frame_time}") +
-  transition_time(nowcast_date) +
+p_anim <- p +
+  labs(title = "Nowcast date: {closest_state}") +
+  transition_states(nowcast_date, transition_length = 0, state_length = 1) +
   ease_aes("linear")
 
 animate(p_anim,
-  nframes = n_distinct(mult_nowcast_quantiles_w_data$nowcast_date),
+  nframes = n_distinct(mult_nowcasts$nowcast_date),
   fps = 2,
   width = 8,
   height = 5,
@@ -333,149 +278,133 @@ animate(p_anim,
   res = 100,
   renderer = magick_renderer()
 )
+```
 
-anim_save("nowcast_flipbook.gif")
+This can be saved as a GIF with the command `anim_save()`.
+```{r}
+anim_save("nowcast_flipbook.gif",
+  animation = p_anim
+)
 ```
 
 ### Evaluation of nowcast performance using scoringutils
 
+In addition to visually assessing nowcast performance, quantitative performance evaluation can help us rigorously test the performance of different models and assess the reliability and accuracy of the nowcasts produced.
 To quantify nowcast performance, we can evaluate nowcasts using proper scoring rules from the `scoringutils` package.
-Before proceeding, we strongly recommend reading the package documentation for `scoringutils` and walking through the various vignettes, all of which contain examples of evaluating forecasts for similar epidemiological datasets.
+Before proceeding, we strongly recommend reading the package documentation for `scoringutils` and walking through the vignette on [scoring rules](https://epiforecasts.io/scoringutils/articles/scoring-rules.html).
+We also recommend checking out materials from the [Nowcasting and Forecasting of Infectious Disease Dynamics (NFIDD)](https://nfidd.github.io/nfidd/sessions/forecast-evaluation.html) short course on forecast evaluation, which walks through many of the principles of quantitative forecast evaluation alongside worked examples.
 
-We will evaluate the quantiles using the weighted interval score (WIS), which is a proper scoring rule that approximates absolute error for probabilistic forecasts.
+In this vignette, we will evaluate the quantile-based nowcasts using the weighted interval score (WIS), which is a proper scoring rule that approximates the [continuous ranked probability score (CRPS)](https://epiforecasts.io/scoringutils/articles/scoring-rules.html#crps) which is a probabilistic scoring rule for sample-based forecasts that is a generation of the absolute error for probabilistic forecasts.
+
 Additionally, we will compute the interval coverage, which tells us how well the model is calibrated by calculating the proportion of observations that fall within each prediction interval.
 A perfectly well-calibrated forecast would have the exact same coverage as the nominal coverage (e.g., 90% of observations fall within the 90% prediction interval).
 
 Note: The `scoringutils` package also supports sample-based scoring using the continuous ranked probability score (CRPS) if you prefer to work with draws rather than quantiles.
-For this vignette, we focus on WIS as it provides interpretable decomposition into overprediction, underprediction, and dispersion components.
+For this vignette, we focus on WIS and its components:
+- **Overprediction**: penalty for predicting too high
+- **Underprediction**: penalty for predicting too low
+- **Dispersion**: penalty for prediction interval width
 
-We start by setting an evaluation window—the days for which we want to evaluate.
-Since all `max_delay` days are being nowcasted, we will evaluate all of them.
-However, you might only want to evaluate a subset of these (e.g., the last 2 weeks).
-
+We'll use the `as_forecast_sample()` function in `baselinenowcast`, which ingests a `baselinenowcast_df` object, the evaluation data (a dataframe of the total cases observed within the `max_delay` for each reference date), and the `forecast_unit`, the unit on which to score the nowcasts, and returns a `scoringutils` `forecast_sample` object.
+See `?as_forecast_sample` for more details.
+We'll then using the `scoringutils` `as_forecast_quantile()` function to convert from samples to quantiles.
 ```{r}
-eval_window <- max_delay
-```
-
-Next, we'll create a helper function to prepare our nowcast data for scoring with `scoringutils`.
-This converts our quantile format into the format expected by `scoringutils`.
-
-```{r}
-# Helper function to prepare nowcast data for scoring with scoringutils
-prepare_for_scoring <- function(quantiles_df, eval_window) {
-  # Filter to evaluation window
-  quantiles_to_score <- quantiles_df |>
-    filter(reference_date >= nowcast_date - days(eval_window))
-
-  # Convert quantiles from wide to long format
-  quantiles_long <- quantiles_to_score |>
-    pivot_longer(
-      cols = starts_with("q_"),
-      names_prefix = "q_",
-      names_to = "quantile_level",
-      values_to = "pred_count"
-    ) |>
-    mutate(quantile_level = as.numeric(quantile_level))
-
-  # Create scoringutils forecast object
-  su_quantiles <- as_forecast_quantile(
-    quantiles_long,
-    forecast_unit = c(
-      "nowcast_date",
-      "reference_date",
-      "scale_factor",
-      "prop_delay"
-    ),
-    observed = "final_count",
-    predicted = "pred_count",
-    quantile_level = "quantile_level"
-  )
-
-  return(su_quantiles)
-}
-```
-
-Now we'll use this helper function to prepare our data and compute scores.
-
-```{r}
-# Prepare data for scoring
-su_quantiles <- prepare_for_scoring(
-  quantiles_df = mult_nowcast_quantiles_w_data,
-  eval_window = eval_window
+su_draws <- as_forecast_sample(
+  mult_nowcast_draws,
+  latest_obs = eval_data,
+  observed = "final_count",
+  forecast_unit = c("reference_date", "nowcast_date", "model")
 )
 
-# Score the quantile-based forecasts
+su_quantiles <- as_forecast_quantile(su_draws)
+```
+
+Now we'll call the `scoringutils` `score()` function to score the quantile-based nowcasts.
+```{r}
 scores_quantiles <- score(su_quantiles)
 
 head(scores_quantiles)
 ```
 
-We now have a table of scores containing WIS and its components at every nowcast date and reference date.
-The WIS can be decomposed into three components:
-- **Overprediction**: penalty for predicting too high
-- **Underprediction**: penalty for predicting too low
-- **Dispersion**: penalty for prediction interval width
+We now have a table of scores of WIS and its components at every nowcast date and reference date.
+Let's first summarise the scores overall using the `summarise_scores()` function from `scoringutils`.
+```{r}
+scores_summary <- scores_quantiles |>
+  summarise_scores()
+head(scores_summary)
+```
+This summary tells us that the model is overall biased slightly downward (indicated by the negative bias).
+It slightly overcovers at 50% prediction intervals (meaning the prediction intervals are a bit too wide) but is very well-calibrated at 90% prediction intervals (89.99% of observations fall within the 90% prediction intervals).
+In terms of overall performance, the nowcasts are penalised more heavily for underprediction than overprediction (which corroborates the negative bias) and is most penalised for being over-dispersed (prediction intervals are too wide, as corroborated by the 50% interval coverage value).
+
+
 
 To investigate these further, we can look at how nowcast performance varies across nowcast dates.
-We'll visualize this by first summarizing the scores by nowcast date using the `summarise_scores()` function, looking both at WIS and the 50th and 90th prediction intervals.
-
-
+We'll visualize this by first summarizing the scores by nowcast date using the `summarise_scores()` function.
 ```{r}
 scores_by_nowcast_date <- summarise_scores(scores_quantiles,
   by = "nowcast_date"
-)
+) |> mutate(nowcast_date = as.Date(nowcast_date))
+
 ggplot(scores_by_nowcast_date) +
   geom_line(aes(x = nowcast_date, y = wis)) +
   geom_point(aes(x = nowcast_date, y = wis)) +
   theme_bw() +
+  scale_x_date(
+    date_breaks = "1 month",
+    date_labels = "%b %Y"
+  ) +
   xlab("Nowcast date") +
   ylab("Average WIS")
+```
 
-ggplot(scores_by_nowcast_date) +
-  geom_line(aes(x = nowcast_date, y = interval_coverage_50),
-    color = "darkblue"
-  ) +
-  geom_point(aes(x = nowcast_date, y = interval_coverage_50),
-    color = "darkblue"
-  ) +
+While this tells us how the nowcast performance varies over time, it can be a bit difficult to interpret on its own because WIS scales with the counts of the observations, thus, we expect higher WIS when case counts are higher.
+
+Another visual check we can do across nowcast dates is to look at the 50th and 90th prediction intervals by nowcast date compared to their nominal values (indicated by the dashed line), as ideally the model is equally well-calibrated across time and as counts increase and decrease.
+```{r}
+scores_long <- scores_by_nowcast_date |>
+  pivot_longer(
+    cols = starts_with("interval_coverage_"),
+    names_to = "interval",
+    names_prefix = "interval_coverage_",
+    values_to = "interval_coverage_value"
+  )
+
+ggplot(scores_long) +
+  geom_line(aes(
+    x = nowcast_date, y = interval_coverage_value,
+    color = interval
+  )) +
+  geom_point(aes(
+    x = nowcast_date, y = interval_coverage_value,
+    color = interval
+  )) +
   geom_hline(aes(yintercept = 0.50),
     linetype = "dashed",
     color = "darkblue"
-  ) +
-  geom_line(aes(x = nowcast_date, y = interval_coverage_90),
-    color = "maroon4"
-  ) +
-  geom_point(aes(x = nowcast_date, y = interval_coverage_90),
-    color = "maroon4"
   ) +
   geom_hline(aes(yintercept = 0.90),
     linetype = "dashed",
     color = "maroon4"
   ) +
+  scale_color_manual(
+    name = "Prediction interval (%)",
+    values = c(
+      "50" = "darkblue",
+      "90" = "maroon4"
+    )
+  ) +
   coord_cartesian(ylim = c(0, 1)) +
   theme_bw() +
+  scale_x_date(
+    date_breaks = "1 month",
+    date_labels = "%b %Y"
+  ) +
   xlab("Nowcast date") +
   ylab("Interval Coverage")
 ```
 
-#### Computing average interval coverage
-
-We can also compute interval coverage across the whole time period using the same `summarise_scores()` function.
-```{r}
-scores_summary <- scores_quantiles |>
-  mutate(model = "baselinenowcast") |>
-  summarise_scores(by = "model") |>
-  select(model, interval_coverage_50, interval_coverage_90) |>
-  # nolint start
-  rename(
-    "Model" = model,
-    "50% coverage" = interval_coverage_50,
-    "90% coverage" = interval_coverage_90
-  ) |>
-  # nolint end
-  knitr::kable(digits = 3)
-scores_summary
-```
+Here, we see relatively robust prediction interval coverage across the range of nowcast dates.
 
 ## Choosing a model specification using quantitative performance evaluation
 

@@ -133,7 +133,8 @@ mult_nowcast_draws <- map_dfr(
 
 # By default nowcast date is a character, convert to a Date
 mult_nowcast_draws <- mutate(mult_nowcast_draws,
-  nowcast_date = as.Date(nowcast_date))
+  nowcast_date = as.Date(nowcast_date)
+)
 ```
 
 Next, we'll create the data to evaluate the nowcasts against using the latest observations.
@@ -193,11 +194,13 @@ plot_multiple_nowcasts <- function(data) {
     geom_ribbon(aes(
       x = reference_date, ymin = q50th_lb, ymax = q50th_ub,
       group = nowcast_date,
-      fill = "50% PI"), alpha = 0.25) +
+      fill = "50% PI"
+    ), alpha = 0.25) +
     geom_ribbon(aes(
       x = reference_date, ymin = q95th_lb, ymax = q95th_ub,
       group = nowcast_date,
-      fill = "95% PI"), alpha = 0.25) +
+      fill = "95% PI"
+    ), alpha = 0.25) +
     geom_line(
       aes(
         x = reference_date, y = final_count,
@@ -213,7 +216,7 @@ plot_multiple_nowcasts <- function(data) {
         "Date of nowcast" = "black"
       )
     ) +
-     scale_fill_manual(
+    scale_fill_manual(
       name = "Prediction intervals",
       values = c(
         "95% PI" = "gray",
@@ -324,11 +327,11 @@ scores_summary <- scores_quantiles |>
 head(scores_summary)
 ```
 This summary tells us that the model is overall biased slightly downward (indicated by the negative bias).
-It slightly overcovers at 50% prediction intervals (meaning the prediction intervals are a bit too wide) but is very well-calibrated at 90% prediction intervals (89.99% of observations fall within the 90% prediction intervals).
+It slightly overcovers at 50% prediction intervals (meaning the prediction intervals are a bit too wide) but is very well-calibrated at 90% prediction intervals (89% of observations fall within the 90% prediction intervals).
 In terms of overall performance, the nowcasts are penalised more heavily for underprediction than overprediction (which corroborates the negative bias) and is most penalised for being over-dispersed (prediction intervals are too wide, as corroborated by the 50% interval coverage value).
 
-To investigate these further, we can look at how nowcast performance varies across nowcast dates.
-We'll visualize this by first summarizing the scores by nowcast date, again using the `summarise_scores()` function.
+To further investigate trends over time, we can look at how nowcast performance varies across nowcast dates.
+We'll visualize this by first summarizing the scores by nowcast date, again using the `summarise_scores()` function but this time summarising by `nowcast_date`.
 ```{r}
 scores_by_nowcast_date <- summarise_scores(scores_quantiles,
   by = "nowcast_date"
@@ -347,8 +350,9 @@ ggplot(scores_by_nowcast_date) +
 ```
 
 While this tells us how the nowcast performance varies over time, it can be a bit difficult to interpret on its own because WIS scales with the counts of the observations, thus, we expect higher WIS when case counts are higher.
+It's therefore not surprising that we see higher WIS values in March, as this is when case counts are highest.
 
-Another visual check we can do across nowcast dates is to look at the 50th and 90th prediction intervals by nowcast date compared to their nominal values (indicated by the dashed line), as ideally the model is equally well-calibrated across time and as counts increase and decrease.
+To better understand how the nowcasts perform over time, we can look at how well calibrated they are across nowcast dates, by looking at the 50th and 90th prediction intervals by nowcast date compared to their nominal values (indicated by the dashed horizontal line), as ideally the model is equally well-calibrated across time, even the magnitude of case counts changes.
 ```{r}
 scores_long <- scores_by_nowcast_date |>
   pivot_longer(
@@ -393,23 +397,25 @@ ggplot(scores_long) +
 ```
 
 Here, we see relatively robust prediction interval coverage across the range of nowcast dates.
+We can visually see that in February and March, more than 50% of observations fall within the 50% prediction interval, indicating this interval is slightly wider than would be ideal.
 
 ## Choosing a model specification using quantitative performance evaluation
 
-The `baselinenowcast` package is set-up to use sensible defaults, which we evaluated in our [publication](https://wellcomeopenresearch.org/articles/10-614).
-In that work, we found that the package defaults, with a `scale_factor = 3` and a `prop_delay = 0.5`, performed well compared to a variety of different model specifications when applied to Germany's COVID-19 data.
+The `baselinenowcast` package is set-up to use sensible defaults, which we evaluated in our [publication](https://wellcomeopenresearch.org/articles/10-614) using COVID-19 data from Germany and norovirus data from England.
+In that work, we found that the package defaults, with a `scale_factor = 3` and a `prop_delay = 0.5`, performed well compared to a variety of different model specifications.
+
 In general, we recommend customising the model specifications based on the context and the users needs for the nowcast in order to improve performance.
 For the dataset used in this vignette, we have visually and quantitatively evaluated a single nowcasting model specification across multiple retrospective nowcast dates.
-Next, we will expand this to look at the performance under a limited set of training volume specifications.
+Next, we will expand this to look at the performance under a limited set of additional training volume specifications.
 The same process could be applied to many of the other options for specifying `baselinenowcast`, including but not limited to:
 - accounting for weekday effects via stratification by weekday
 - sharing estimates across strata (e.g. letting the delay from all age groups be used to nowcast each individual age groups case counts)
 - changing the observation model
 
-Here, we will test out using larger proportions of the training data for delay estimation  (via the `prop_delay` argument to `baselinenowcast()`) and we will test out using more or less training volume (via the `scale_factor` argument to `baselinenowcast()`).
+Here, we will test out using larger proportions of the training data for delay estimation (via the `prop_delay` argument to `baselinenowcast()`) and we will test out using more or less training volume (via the `scale_factor` argument to `baselinenowcast()`).
 
-In this example, we are somewhat limited because we don't have a lot of training data, but you can expand these to vary more in your use-case. See `?allocate_reference_times()` for more details on the constraints of the training volume.
-We can use the `pmap_dfr` function from the `purrr` package to iterate through each combination of nowcast dates, proportion of data used for delay estimates, and scale factors on the maximum delay defining the amount of total reference dates to use for training.
+In this example, we are somewhat limited because we don't have a lot of historical data for training, but you can expand these to vary more in your use-case. See `?allocate_reference_times()` for more details on the constraints of the training volume requirements.
+We can use the `pmap_dfr` function from the `purrr` package to iterate through each combination of nowcast dates, proportion of data used for delay estimation, and the total number of reference dates used for training.
 To save computation time, I will exclude the training volume specifications we already nowcasted and bind them to the output.
 ```{r, message = FALSE}
 prop_delays <- c(0.5, 0.7)
@@ -421,7 +427,7 @@ param_grid <- expand.grid(
   scale_factor = scale_factors,
   stringsAsFactors = FALSE
 ) |>
-  filter(!prop_delay == 0.5 && scale_factor = 2.2)
+  filter(!(prop_delay == 0.5 & scale_factor == 2.2))
 
 mult_nowcast_draws_ms <- pmap_dfr(param_grid, \(nowcast_date, prop_delay, scale_factor) {
   training_data <- get_training_data(
@@ -447,21 +453,25 @@ mult_nowcast_draws_ms <- pmap_dfr(param_grid, \(nowcast_date, prop_delay, scale_
       prop_delay = prop_delay,
       scale_factor = scale_factor
     )
-}, .progress = TRUE)  |>
+}, .progress = TRUE) |>
   bind_rows(mult_nowcast_draws |>
-              mutate(prop_delay = prop_delay,
-                     scale_factor = scale_factor))
+    mutate(
+      prop_delay = prop_delay,
+      scale_factor = scale_factor
+    )) |>
+  mutate(nowcast_date = as.Date(nowcast_date))
 ```
 
-
-Use `as_forecast_sample()` to convert the nowcasts to a `scoringutils` forecast object, setting the forecast unit to include the variables of interest which are columns fo the `mult_nowcast_draws` (`prop_delay` and `scale_factor`).
+We next use the same workflow described above to convert the nowcasts to a `scoringutils` forecast object and then convert to quantiles and score. We set the forecast unit to include the variables of interest which are columns of the `mult_nowcast_draws` (`prop_delay` and `scale_factor`).
 ```{r}
 su_draws <- as_forecast_sample(
   mult_nowcast_draws_ms,
   latest_obs = eval_data,
   observed = "final_count",
-  forecast_unit = c("reference_date", "nowcast_date", "model",
-                    "prop_delay", "scale_factor")
+  forecast_unit = c(
+    "reference_date", "nowcast_date", "model",
+    "prop_delay", "scale_factor"
+  )
 )
 
 su_quantiles <- as_forecast_quantile(su_draws)
@@ -473,13 +483,15 @@ head(scores_quantiles)
 
 ###  Summarise performance by model specification
 
+We can summarise the performance across reference dates and nowcast dates for each model specification, in order to compare how each one perform overall.
 ```{r}
 scores_summary <- scores_quantiles |>
   mutate(model = "baselinenowcast") |>
   summarise_scores(by = c("model", "prop_delay", "scale_factor")) |>
   select(
     model, prop_delay, scale_factor, wis, underprediction, overprediction,
-    dispersion, interval_coverage_50, interval_coverage_90
+    dispersion, interval_coverage_50, interval_coverage_90, bias,
+    ae_median
   )
 
 scores_summary_table <- scores_summary |>
@@ -490,13 +502,16 @@ scores_summary_table <- scores_summary |>
     "Scale factor" = scale_factor,
     "50% coverage" = interval_coverage_50,
     "90% coverage" = interval_coverage_90,
-    "WIS" = wis
+    "WIS" = wis,
+    "Absolute Error (median)" = ae_median
   ) |>
   # nolint end
   knitr::kable(digits = 3)
 scores_summary_table
 ```
-Make a bar chart to visualize the scores, broken down by underprediction, overprediction, and dispersion.
+We can see from the summary table that the different training volume specifications all perform relatively similarly in terms of WIS.
+In terms of interval coverage, the smaller `prop_delay` of 0.5 is less over-covered (54% vs 58% coverage at 50% prediction intervals).
+To visualise differences in WIS, we can make a bar chart broken down by underprediction, overprediction, and dispersion.
 ```{r}
 scores_summary |>
   pivot_longer(cols = c("overprediction", "underprediction", "dispersion")) |>
@@ -530,7 +545,10 @@ scores_summary |>
   xlab("Model specification") +
   ylab("WIS")
 ```
-Lastly, compare interval coverage for each specification.
+
+This bar chart shows how similar the WIS scores are across the model specifications.
+Next we can compare the interval coverage visually, as this tells us about how well the model is calibrated under each specification.
+We want to choose a model specification whose interval coverage is as close to the nominal coverage as possible.
 ```{r}
 scores_summary |>
   mutate(interval_coverage_90 = interval_coverage_90 - interval_coverage_50) |>
@@ -571,24 +589,20 @@ scores_summary |>
   xlab("Model specification") +
   ylab("Interval coverage")
 ```
+From the interval coverage bar chart, it is clear that the `prop_delay = 0.7` model specifications over-cover compared to the `prop_delay = 0.5` specifications.
 
 ### Interpreting the results
 
-When comparing model specifications, consider the following:
+Based on this (somewhat limited) sweep of model specifications, we see that overall, the WIS is relatively similar across the different training volume specifications.
+However, when looking at interval coverage, we see improved interval coverage with `prop_delay = 0.5`.
 
-**1. Weighted Interval Score (WIS)**: Lower is better. Look for meaningful differences (e.g., >10% reduction) rather than small variations that may be due to randomness. The WIS provides an overall measure of forecast accuracy that balances sharpness and calibration.
+Since the WIS is slightly lower for a `scale_factor = 2.3` within the `prop_delay = 0.5` options, we might choose this specification to move forward, thereby minimising the WIS while maintaining well-calibrated interval coverage.
 
-**2. WIS Components**:
-   - High **underprediction** suggests the nowcasts are systematically too low, which could lead to underestimating disease burden
-   - High **overprediction** suggests the nowcasts are systematically too high, which could lead to overestimating disease burden
-   - High **dispersion** suggests prediction intervals are too wide
+# Summary
 
-**3. Interval Coverage**:
-   - Should be close to nominal levels (50% and 90%)
-   - Consistently low coverage (e.g., 40% for 50% intervals) suggests overconfidence—intervals are too narrow
-   - Consistently high coverage (e.g., 95% for 90% intervals) suggests underconfidence—intervals are too wide
-   - Well-calibrated forecasts build trust and support better decision-making
-
-**Selecting a model specification**: In this example, you would select the specification that minimizes WIS while maintaining well-calibrated interval coverage. If specifications have similar WIS, prefer the one with better calibration or simpler parameterization (lower `scale_factor` requires less training data, which may be beneficial when historical data is limited).
-
-The retrospective evaluation approach demonstrated here can be applied to other `baselinenowcast` specifications beyond training volume, including weekday stratification, cross-stratum sharing, and observation model choices.
+In this vignette, we used `baselinenowcast` to produce and evaluate retrospective nowcasts across a range of nowcast dates.
+We demonstrated how to visually assess nowcast performance across a range of nowcast dates, and we showed how to use the `scoringutils` package to perform quantitative nowcast evaluation.
+Lastly, we demonstrated in a limited example how to use quantitative nowcast evaluation to decide on a `baselinenowcast` model specification for this specific dataset.
+For a more comprehensive example evaluating the performance of `baselinenowcast` under different model specifications and compared to other nowcasting models, check out our [publication](https://wellcomeopenresearch.org/articles/10-614).
+For more resources on nowcast and forecast evaluation, we recommend checking out the [NFIDD course materials](https://nfidd.github.io/nfidd/sessions/forecast-evaluation.html) and the [`scoringutils` documentation](https://epiforecasts.io/scoringutils/).
+Here you will find worked examples evaluating epidemic forecasts using proper scoring rules.

@@ -136,6 +136,12 @@ mult_nowcast_draws <- map_dfr(
 mult_nowcast_draws <- mutate(mult_nowcast_draws,
   nowcast_date = as.Date(nowcast_date)
 )
+
+# Temporary fix to set dataframe as a baselinenowcast class
+class(mult_nowcast_draws) <- c(
+  "baselinenowcast_df",
+  class(mult_nowcast_draws)
+)
 ```
 
 Next, we'll create the data to evaluate the nowcasts against using the latest observations.
@@ -261,16 +267,7 @@ p_anim <- p_all_dates +
   transition_states(nowcast_date, transition_length = 0, state_length = 1) +
   ease_aes("linear")
 
-knitr::include_graphics("man/figures/nowcast_flipbook.gif")
-# animate(p_anim,
-#   nframes = n_distinct(mult_nowcasts$nowcast_date),
-#   fps = 2,
-#   width = 8,
-#   height = 5,
-#   units = "in",
-#   res = 100,
-#   renderer = magick_renderer()
-# )
+knitr::include_graphics("nowcast_flipbook.gif")
 ```
 
 This can be saved as a GIF with the command `anim_save()`.
@@ -307,6 +304,7 @@ su_draws <- as_forecast_sample(
   mult_nowcast_draws,
   latest_obs = eval_data,
   observed = "final_count",
+  model = "baselinenowcast",
   forecast_unit = c("reference_date", "nowcast_date", "model")
 )
 
@@ -473,6 +471,7 @@ su_draws <- as_forecast_sample(
   mult_nowcast_draws_ms,
   latest_obs = eval_data,
   observed = "final_count",
+  model = "baselinenowcast",
   forecast_unit = c(
     "reference_date", "nowcast_date", "model",
     "prop_delay", "scale_factor"

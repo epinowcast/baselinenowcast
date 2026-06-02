@@ -120,12 +120,13 @@ mult_nowcast_draws <- map_dfr(
     rep_tri_full <- as_reporting_triangle(training_data)
     rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
 
-    baselinenowcast(rep_tri,
+    nowcast_df <- baselinenowcast(rep_tri,
       scale_factor = scale_factor,
       prop_delay = prop_delay,
       draws = 1000
     ) |>
       left_join(initial_count_data, by = "reference_date")
+    return(nowcast_df)
   },
   .id = "nowcast_date",
   .progress = TRUE
@@ -159,7 +160,7 @@ To make a static image, we will start by visualising the nowcasts compared to bo
 First, we'll compute the 50th and 95th quantiles for visualisation.
 ```{r}
 mult_nowcasts <- mult_nowcast_draws |>
-  group_by(reference_date, nowcast_date) |>
+  group_by(reference_date, nowcast_date, initial_count) |>
   summarise(
     median = median(pred_count),
     q50th_lb = quantile(pred_count, 0.25),
@@ -167,10 +168,7 @@ mult_nowcasts <- mult_nowcast_draws |>
     q95th_lb = quantile(pred_count, 0.025),
     q95th_ub = quantile(pred_count, 0.975)
   ) |>
-  left_join(mult_nowcast_draws |>
-    select(nowcast_date, reference_date, initial_count) |>
-    distinct(), by = c("nowcast_date", "reference_date")) |>
-  left_join(eval_data, by = c("reference_date"))
+  left_join(eval_data, by = "reference_date")
 ```
 
 We'll start by making a shared plotting function, which expects a dataframe with columns for the quantiled probabilistic nowcasts (gray), the final data (red), and the initial data (pink).
@@ -244,8 +242,10 @@ nowcast_dates_to_visualize <- seq(
   to = ymd("2026-04-01"), by = "4 weeks"
 )
 
-mult_nowcasts_filtered <- mult_nowcasts |>
-  filter(nowcast_date %in% nowcast_dates_to_visualize)
+mult_nowcasts_filtered <- filter(
+  mult_nowcasts,
+  nowcast_date %in% nowcast_dates_to_visualize
+)
 
 p <- plot_multiple_nowcasts(data = mult_nowcasts_filtered)
 p
@@ -261,19 +261,20 @@ p_anim <- p_all_dates +
   transition_states(nowcast_date, transition_length = 0, state_length = 1) +
   ease_aes("linear")
 
-animate(p_anim,
-  nframes = n_distinct(mult_nowcasts$nowcast_date),
-  fps = 2,
-  width = 8,
-  height = 5,
-  units = "in",
-  res = 100,
-  renderer = magick_renderer()
-)
+knitr::include_graphics("man/figures/nowcast_flipbook.gif")
+# animate(p_anim,
+#   nframes = n_distinct(mult_nowcasts$nowcast_date),
+#   fps = 2,
+#   width = 8,
+#   height = 5,
+#   units = "in",
+#   res = 100,
+#   renderer = magick_renderer()
+# )
 ```
 
 This can be saved as a GIF with the command `anim_save()`.
-```{r, message = FALSE}
+```{r, message = FALSE, eval = !file.exists("man/figures/nowcast_flipbook.gif")}
 anim_save("nowcast_flipbook.gif",
   animation = p_anim
 )
@@ -322,8 +323,7 @@ head(scores_quantiles)
 We now have a table of scores at every nowcast date and reference date.
 Let's first summarise the scores overall using the `summarise_scores()` function from `scoringutils`.
 ```{r}
-scores_summary <- scores_quantiles |>
-  summarise_scores()
+scores_summary <- summarise_scores(scores_quantiles)
 head(scores_summary)
 ```
 This summary tells us that the model is overall biased slightly downward (indicated by the negative bias).
@@ -421,6 +421,12 @@ To save computation time, I will exclude the training volume specifications we a
 prop_delays <- c(0.5, 0.7)
 scale_factors <- c(2.2, 2.3)
 
+mult_nowcast_draws_w_metadata <- mutate(
+  mult_nowcast_draws,
+  prop_delay = prop_delay,
+  scale_factor = scale_factor
+)
+
 param_grid <- expand.grid(
   nowcast_date = nowcast_dates,
   prop_delay = prop_delays,
@@ -429,7 +435,9 @@ param_grid <- expand.grid(
 ) |>
   filter(!(prop_delay == 0.5 & scale_factor == 2.2))
 
-mult_nowcast_draws_ms <- pmap_dfr(param_grid, \(nowcast_date, prop_delay, scale_factor) {
+mult_nowcast_draws_ms <- pmap_dfr(param_grid, \(nowcast_date,
+  prop_delay,
+  scale_factor) {
   training_data <- get_training_data(
     raw_data = syn_nssp_df,
     nowcast_date = as.Date(nowcast_date)
@@ -442,7 +450,7 @@ mult_nowcast_draws_ms <- pmap_dfr(param_grid, \(nowcast_date, prop_delay, scale_
   rep_tri_full <- as_reporting_triangle(training_data)
   rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
 
-  baselinenowcast(rep_tri,
+  nowcast_df <- baselinenowcast(rep_tri,
     scale_factor = scale_factor,
     prop_delay = prop_delay,
     draws = 1000
@@ -453,12 +461,9 @@ mult_nowcast_draws_ms <- pmap_dfr(param_grid, \(nowcast_date, prop_delay, scale_
       prop_delay = prop_delay,
       scale_factor = scale_factor
     )
+  return(nowcast_df)
 }, .progress = TRUE) |>
-  bind_rows(mult_nowcast_draws |>
-    mutate(
-      prop_delay = prop_delay,
-      scale_factor = scale_factor
-    )) |>
+  bind_rows(mult_nowcast_draws_w_metadata) |>
   mutate(nowcast_date = as.Date(nowcast_date))
 ```
 

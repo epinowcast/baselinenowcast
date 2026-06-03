@@ -283,7 +283,8 @@ p_anim <- p_all_dates +
   labs(title = "Nowcast date: {closest_state}") +
   transition_states(nowcast_date, transition_length = 0, state_length = 1) +
   ease_aes("linear")
-knitr::include_graphics(file.path("..", "man", "figures", "nowcast_flipbook.gif"))
+knitr::include_graphics(file.path("..", "man", "figures",
+                                  "nowcast_flipbook.gif"))
 ```
 
 This can be saved as a GIF with the command `anim_save()`.

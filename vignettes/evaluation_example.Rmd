@@ -102,79 +102,96 @@ get_training_data <- function(raw_data,
 
 Next we will set up a for loop to retrospectively produce nowcasts at each of the specified nowcast dates.
 Note, running this loop will print out a number of informational messages at each iteration, informing you that the reporting triangle has been truncated to the maximum delay and telling you exactly what proportion of the training volume was used for delay estimation.
+Steps in this loop include:
+1. Creating the data to train the model using the data available as of each nowcast date.
+2. Generating the initial case report data, which represents the count of cases on each reference date reported as of the nowcast date. We expect this to be downward biased due to right-truncation in the most recent reference dates.
+3. Generating the data to evaluate the nowcast using the latest observations. We'll only include reports that occurred within the maximum delay window to ensure a fair comparison across all nowcast dates, as including all reports would mean that earlier nowcast dates are compared against longer delays than more recent nowcast dates. See our [publication](https://wellcomeopenresearch.org/articles/10-614) and [Wolffram et al.](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1011394) for further details.
+4. Creating a `reporting_triangle` object from the training data and truncating it to the specified `max_delay`
+5. Producing a `baselinenowcast_df` which contains draws of probabilistic nowcasts for each reference date.
+6. Converting the nowcast draws to a `scoringutils` forecast object using `as_forecast_sample()`.
+7. Converting the `scoringutils` `forecast_sample` object to `quantiles` using `as_forecast_quantile()`. This will by default generate the quantile levels corresponding to the median, 50% and 90% prediction intervals. To obtain other intervals, use the `probs` argument.
+8. Left joining the initial data for plotting.
 
+As a final step, we bind the nowcasts for each `nowcast_date` together, tracking it with the `nowcast_date` column which we convert to a Date.
 ```{r, message = FALSE}
-mult_nowcast_draws <- map_dfr(
+mult_nowcasts <- map_dfr(
   setNames(nowcast_dates, nowcast_dates),
   \(nowcast_date) {
+    # Create training data as of the nowcast date
     training_data <- get_training_data(
       raw_data = syn_nssp_df,
       nowcast_date = nowcast_date
     )
 
+    # Initial observed data
     initial_count_data <- training_data |>
       group_by(reference_date) |>
       summarise(initial_count = sum(count)) |>
       filter(reference_date >= max(reference_date) - days(max_delay))
 
+    # Data for evaluation
+    eval_data <- syn_nssp_df |>
+      mutate(delay = as.integer(report_date - reference_date)) |>
+      filter(delay <= max_delay, reference_date < nowcast_date) |>
+      group_by(reference_date) |>
+      summarise(final_count = sum(count)) |>
+      ungroup()
+
+    # Create reporting triangle object from training data
     rep_tri_full <- as_reporting_triangle(training_data)
     rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
 
+    # Generate a baselinenowcast_df
     nowcast_df <- baselinenowcast(rep_tri,
       scale_factor = scale_factor,
       prop_delay = prop_delay,
       draws = 1000
-    ) |>
+    )
+
+    # Convert to a scoringutils forecast object
+    su_draws <- nowcast_df |>
+      as_forecast_sample(
+        latest_obs = eval_data,
+        observed = "final_count",
+        model = "baselinenowcast"
+      )
+
+    # Convert samples to quantiles
+    su_quantiles <- su_draws |>
+      as_forecast_quantile() |>
       left_join(initial_count_data, by = "reference_date")
-    return(nowcast_df)
+    return(su_quantiles)
   },
   .id = "nowcast_date",
   .progress = TRUE
 )
 
 # By default nowcast date is a character, convert to a Date
-mult_nowcast_draws <- mutate(mult_nowcast_draws,
+mult_nowcasts <- mutate(mult_nowcasts,
   nowcast_date = as.Date(nowcast_date)
 )
-
-# Temporary fix to set dataframe as a baselinenowcast class
-class(mult_nowcast_draws) <- c(
-  "baselinenowcast_df",
-  class(mult_nowcast_draws)
-)
 ```
-
-Next, we'll create the data to evaluate the nowcasts against using the latest observations.
-We'll only include reports that occurred within the maximum delay window to ensure a fair comparison across all nowcast dates, as including all reports would mean that earlier nowcast dates are compared against longer delays than more recent nowcast dates.
-See our [publication](https://wellcomeopenresearch.org/articles/10-614) and [Wolffram et al.](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1011394) for further details.
-
-```{r}
-eval_data <- syn_nssp_df |>
-  mutate(delay = as.integer(report_date - reference_date)) |>
-  filter(delay <= max_delay) |>
-  group_by(reference_date) |>
-  summarise(final_count = sum(count)) |>
-  ungroup()
-```
-
 
 
 ### Visual comparison of nowcasts
 
 To make a static image, we will start by visualising the nowcasts compared to both the initial data available without nowcasting and the final data available retrospectively.
 
-First, we'll compute the 50th and 95th quantiles for visualisation.
+First, we'll need to pivot the quantiles from long to wide for plotting.
+We'll first convert to a `data.frame` and then use `pivot_wider` from `tidyr`.
+When we converted to quantiles using
 ```{r}
-mult_nowcasts <- mult_nowcast_draws |>
-  group_by(reference_date, nowcast_date, initial_count) |>
-  summarise(
-    median = median(pred_count),
-    q50th_lb = quantile(pred_count, 0.25),
-    q50th_ub = quantile(pred_count, 0.75),
-    q95th_lb = quantile(pred_count, 0.025),
-    q95th_ub = quantile(pred_count, 0.975)
-  ) |>
-  left_join(eval_data, by = "reference_date")
+mult_nowcasts_to_plot <- mult_nowcasts |>
+  as.data.frame() |>
+  pivot_wider(
+    id_cols = c(
+      "nowcast_date", "reference_date", "initial_count",
+      "observed", "model"
+    ),
+    names_from = quantile_level,
+    values_from = predicted,
+    names_prefix = "q_"
+  )
 ```
 
 We'll start by making a shared plotting function, which expects a dataframe with columns for the quantiled probabilistic nowcasts (gray), the final data (red), and the initial data (pink).
@@ -192,22 +209,22 @@ plot_multiple_nowcasts <- function(data) {
       xintercept = nowcast_date,
       color = "Date of nowcast"
     ), linetype = "dashed") +
-    geom_line(aes(x = reference_date, y = median, group = nowcast_date),
+    geom_line(aes(x = reference_date, y = `q_0.5`, group = nowcast_date),
       color = "gray"
     ) +
     geom_ribbon(aes(
-      x = reference_date, ymin = q50th_lb, ymax = q50th_ub,
+      x = reference_date, ymin = `q_0.25`, ymax = `q_0.75`,
       group = nowcast_date,
       fill = "50% PI"
     ), alpha = 0.25) +
     geom_ribbon(aes(
-      x = reference_date, ymin = q95th_lb, ymax = q95th_ub,
+      x = reference_date, ymin = `q_0.05`, ymax = `q_0.95`,
       group = nowcast_date,
-      fill = "95% PI"
+      fill = "90% PI"
     ), alpha = 0.25) +
     geom_line(
       aes(
-        x = reference_date, y = final_count,
+        x = reference_date, y = observed,
         group = nowcast_date,
         color = "Final evaluation data"
       )
@@ -223,7 +240,7 @@ plot_multiple_nowcasts <- function(data) {
     scale_fill_manual(
       name = "Prediction intervals",
       values = c(
-        "95% PI" = "gray",
+        "90% PI" = "gray",
         "50% PI" = "gray40"
       )
     ) +
@@ -249,7 +266,7 @@ nowcast_dates_to_visualize <- seq(
 )
 
 mult_nowcasts_filtered <- filter(
-  mult_nowcasts,
+  mult_nowcasts_to_plot,
   nowcast_date %in% nowcast_dates_to_visualize
 )
 
@@ -261,12 +278,11 @@ p
 However, we might be interested in visually comparing the performance of each individual weekly nowcast.
 To achieve this, we call the plotting function above for the dataframe with all the nowcast dates, and then we add the animation code to make this into a "flipbook" using `gganimate`, where each slide shows a single nowcast.
 ```{r}
-p_all_dates <- plot_multiple_nowcasts(data = mult_nowcasts)
+p_all_dates <- plot_multiple_nowcasts(data = mult_nowcasts_to_plot)
 p_anim <- p_all_dates +
   labs(title = "Nowcast date: {closest_state}") +
   transition_states(nowcast_date, transition_length = 0, state_length = 1) +
   ease_aes("linear")
-
 knitr::include_graphics("nowcast_flipbook.gif")
 ```
 
@@ -277,7 +293,7 @@ anim_save("nowcast_flipbook.gif",
 )
 ```
 
-### Evaluation of nowcast performance using scoringutils
+### Evaluation of nowcast performance using `scoringutils`
 
 In addition to visually assessing nowcast performance, quantitative performance evaluation can help us rigorously test the performance of different models and assess the reliability and accuracy of the nowcasts produced.
 To quantify nowcast performance, we can evaluate nowcasts using proper scoring rules using the [`scoringutils`](https://epiforecasts.io/scoringutils/) package.
@@ -296,24 +312,9 @@ For this vignette, we focus on WIS and its components:
 - **Underprediction**: penalty for predicting too low
 - **Dispersion**: penalty for prediction interval width
 
-To compute these metrics, we'll use the `as_forecast_sample()` function in `baselinenowcast`, which ingests a `baselinenowcast_df` object, the evaluation data (a dataframe of the final cases observed at each reference date), and the `forecast_unit` (the unit at which to score the nowcasts) and returns a `scoringutils` `forecast_sample` object.
-See `?as_forecast_sample` for more details.
-We'll then using the `scoringutils` `as_forecast_quantile()` function to convert from samples to quantiles.
+To compute these metrics, we'll call the `scoringutils` `score()` function to score the quantile-based nowcasts.
 ```{r}
-su_draws <- as_forecast_sample(
-  mult_nowcast_draws,
-  latest_obs = eval_data,
-  observed = "final_count",
-  model = "baselinenowcast",
-  forecast_unit = c("reference_date", "nowcast_date", "model")
-)
-
-su_quantiles <- as_forecast_quantile(su_draws)
-```
-
-Now we'll call the `scoringutils` `score()` function to score the quantile-based nowcasts.
-```{r}
-scores_quantiles <- score(su_quantiles)
+scores_quantiles <- score(mult_nowcasts)
 
 head(scores_quantiles)
 ```
@@ -414,13 +415,14 @@ Here, we will test out using larger proportions of the training data for delay e
 
 In this example, we are somewhat limited because we don't have a lot of historical data for training, but you can expand these to vary more in your use-case. See `?allocate_reference_times()` for more details on the constraints of the training volume requirements.
 We can use the `pmap_dfr` function from the `purrr` package to iterate through each combination of nowcast dates, proportion of data used for delay estimation, and the total number of reference dates used for training.
+In our loop, we will follow the same steps as described [above](evaluation_example.html/looping-over-multiple-nowcast-dates)
 To save computation time, I will exclude the training volume specifications we already nowcasted and bind them to the output.
 ```{r, message = FALSE}
 prop_delays <- c(0.5, 0.7)
 scale_factors <- c(2.2, 2.3)
 
-mult_nowcast_draws_w_metadata <- mutate(
-  mult_nowcast_draws,
+mult_nowcasts_w_metadata <- mutate(
+  mult_nowcasts,
   prop_delay = prop_delay,
   scale_factor = scale_factor
 )
@@ -433,54 +435,65 @@ param_grid <- expand.grid(
 ) |>
   filter(!(prop_delay == 0.5 & scale_factor == 2.2))
 
-mult_nowcast_draws_ms <- pmap_dfr(param_grid, \(nowcast_date,
+mult_nowcasts_ms <- pmap_dfr(param_grid, \(nowcast_date,
   prop_delay,
   scale_factor) {
+  # Create training data as of the nowcast date
   training_data <- get_training_data(
     raw_data = syn_nssp_df,
     nowcast_date = as.Date(nowcast_date)
   )
+  # Initial observed data
   initial_count_data <- training_data |>
     group_by(reference_date) |>
     summarise(initial_count = sum(count)) |>
     filter(reference_date >= max(reference_date) - days(max_delay))
 
+  # Data for evaluation
+  eval_data <- syn_nssp_df |>
+    mutate(delay = as.integer(report_date - reference_date)) |>
+    filter(delay <= max_delay, reference_date < nowcast_date) |>
+    group_by(reference_date) |>
+    summarise(final_count = sum(count)) |>
+    ungroup()
+
+  # Create reporting triangle object from training data
   rep_tri_full <- as_reporting_triangle(training_data)
   rep_tri <- truncate_to_delay(rep_tri_full, max_delay = max_delay)
 
+  # Generate a baselinenowcast_df
   nowcast_df <- baselinenowcast(rep_tri,
     scale_factor = scale_factor,
     prop_delay = prop_delay,
     draws = 1000
-  ) |>
+  )
+
+  # Convert to a scoringutils forecast object
+  su_draws <- nowcast_df |>
+    as_forecast_sample(
+      latest_obs = eval_data,
+      observed = "final_count",
+      model = "baselinenowcast"
+    )
+
+  # Convert samples to quantiles
+  su_quantiles <- su_draws |>
+    as_forecast_quantile() |>
     left_join(initial_count_data, by = "reference_date") |>
     mutate(
       nowcast_date = as.Date(nowcast_date),
       prop_delay = prop_delay,
       scale_factor = scale_factor
     )
-  return(nowcast_df)
+  return(su_quantiles)
 }, .progress = TRUE) |>
-  bind_rows(mult_nowcast_draws_w_metadata) |>
+  bind_rows(mult_nowcasts_w_metadata) |>
   mutate(nowcast_date = as.Date(nowcast_date))
 ```
 
-We next use the same workflow described above to convert the nowcasts to a `scoringutils` forecast object and then convert to quantiles and score. We set the forecast unit to include the variables of interest which are columns of the `mult_nowcast_draws` (`prop_delay` and `scale_factor`).
+We next score the quantiles for all the nowcast dates and training volume specifications.
 ```{r}
-su_draws <- as_forecast_sample(
-  mult_nowcast_draws_ms,
-  latest_obs = eval_data,
-  observed = "final_count",
-  model = "baselinenowcast",
-  forecast_unit = c(
-    "reference_date", "nowcast_date", "model",
-    "prop_delay", "scale_factor"
-  )
-)
-
-su_quantiles <- as_forecast_quantile(su_draws)
-
-scores_quantiles <- score(su_quantiles)
+scores_quantiles <- score(mult_nowcasts_ms)
 
 head(scores_quantiles)
 ```

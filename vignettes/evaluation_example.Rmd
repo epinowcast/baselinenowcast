@@ -149,12 +149,12 @@ mult_nowcasts <- map_dfr(
     )
 
     # Convert to a scoringutils forecast object
-    su_draws <- nowcast_df |>
-      as_forecast_sample(
-        latest_obs = eval_data,
-        observed = "final_count",
-        model = "baselinenowcast"
-      )
+    su_draws <- as_forecast_sample(
+      nowcast_df,
+      latest_obs = eval_data,
+      observed = "final_count",
+      model = "baselinenowcast"
+    )
 
     # Convert samples to quantiles
     su_quantiles <- su_draws |>
@@ -287,7 +287,7 @@ knitr::include_graphics("nowcast_flipbook.gif")
 ```
 
 This can be saved as a GIF with the command `anim_save()`.
-```{r, message = FALSE, eval = !file.exists("man/figures/nowcast_flipbook.gif")}
+```{r, message = FALSE, eval = !file.exists("nowcast_flipbook.gif")}
 anim_save("nowcast_flipbook.gif",
   animation = p_anim
 )
@@ -469,12 +469,12 @@ mult_nowcasts_ms <- pmap_dfr(param_grid, \(nowcast_date,
   )
 
   # Convert to a scoringutils forecast object
-  su_draws <- nowcast_df |>
-    as_forecast_sample(
-      latest_obs = eval_data,
-      observed = "final_count",
-      model = "baselinenowcast"
-    )
+  su_draws <- as_forecast_sample(
+    nowcast_df,
+    latest_obs = eval_data,
+    observed = "final_count",
+    model = "baselinenowcast"
+  )
 
   # Convert samples to quantiles
   su_quantiles <- su_draws |>

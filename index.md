@@ -159,7 +159,6 @@ specification. Contributions of any kind are welcome!
 
 [kaitejohnson](https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson),
 [seabbs](https://github.com/epinowcast/baselinenowcast/commits?author=seabbs),
-[github-merge-queue\[bot\]](https://github.com/epinowcast/baselinenowcast/commits?author=github-merge-queue%5Bbot%5D),
 [TimTaylor](https://github.com/epinowcast/baselinenowcast/commits?author=TimTaylor),
 [jamesmbaazam](https://github.com/epinowcast/baselinenowcast/commits?author=jamesmbaazam),
 [sbfnk](https://github.com/epinowcast/baselinenowcast/commits?author=sbfnk)
@@ -174,4 +173,5 @@ specification. Contributions of any kind are welcome!
 
 ### Issue Contributors
 
-[jbracher](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher)
+[jbracher](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher),
+[coderabbitai](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Acoderabbitai)

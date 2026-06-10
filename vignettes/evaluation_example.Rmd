@@ -165,7 +165,7 @@ As a final step, we bind the nowcasts for each `nowcast_date` together, tracking
 ```{r, message = FALSE}
 mult_nowcasts <- map_dfr(
   setNames(nowcast_dates, nowcast_dates),
-  \(d) run_single_nowcast(d,
+  partial(run_single_nowcast,
     prop_delay = prop_delay,
     scale_factor = scale_factor,
     data = syn_nssp_df,
@@ -463,7 +463,7 @@ param_grid <- expand.grid(
 mult_nowcasts_ms <- pmap_dfr(
   param_grid,
   \(nowcast_date, prop_delay, scale_factor) {
-    run_single_nowcast(nowcast_date, prop_delay, scale_factor,
+    nowcast <- run_single_nowcast(nowcast_date, prop_delay, scale_factor,
       data = syn_nssp_df,
       max_delay = max_delay
     ) |>
@@ -472,9 +472,11 @@ mult_nowcasts_ms <- pmap_dfr(
         prop_delay = prop_delay,
         scale_factor = scale_factor
       )
+    return(nowcast)
   },
   .progress = TRUE
-) |> bind_rows(mult_nowcasts_w_metadata)
+) |>
+  bind_rows(mult_nowcasts_w_metadata)
 ```
 
 We next score the quantiles for all the nowcast dates and training volume specifications.

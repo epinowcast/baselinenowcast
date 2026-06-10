@@ -114,7 +114,6 @@ Steps in the function include:
 8. Left joining the initial data for plotting.
 
 ```{r}
-
 run_single_nowcast <- function(nowcast_date, prop_delay, scale_factor,
                                data, max_delay) {
   nowcast_date <- as.Date(nowcast_date)
@@ -205,11 +204,11 @@ Our dataframe will contain only evaluation data for the days that we nowcasted (
 If we want to see the full set of final evaluation data, we need to make this from the original data.
 ```{r}
 eval_data_full <- syn_nssp_df |>
-    mutate(delay = as.integer(report_date - reference_date)) |>
-    filter(delay <= max_delay) |>
-    group_by(reference_date) |>
-    summarise(final_count = sum(count)) |>
-    ungroup()
+  mutate(delay = as.integer(report_date - reference_date)) |>
+  filter(delay <= max_delay) |>
+  group_by(reference_date) |>
+  summarise(final_count = sum(count)) |>
+  ungroup()
 
 plot_multiple_nowcasts <- function(data, eval_data_full) {
   p <- ggplot(data) +
@@ -237,7 +236,8 @@ plot_multiple_nowcasts <- function(data, eval_data_full) {
       group = nowcast_date,
       fill = "90% PI"
     ), alpha = 0.25) +
-    geom_line( data = eval_data_full,
+    geom_line(
+      data = eval_data_full,
       aes(
         x = reference_date, y = final_count,
         color = "Final evaluation data"
@@ -284,8 +284,10 @@ mult_nowcasts_filtered <- filter(
   nowcast_date %in% nowcast_dates_to_visualize
 )
 
-p <- plot_multiple_nowcasts(data = mult_nowcasts_filtered,
-                            eval_data_full = eval_data_full)
+p <- plot_multiple_nowcasts(
+  data = mult_nowcasts_filtered,
+  eval_data_full = eval_data_full
+)
 p
 ```
 
@@ -293,8 +295,10 @@ p
 However, we might be interested in visually comparing the performance of each individual weekly nowcast.
 To achieve this, we call the plotting function above for the dataframe with all the nowcast dates, and then we add the animation code to make this into a "flipbook" using `gganimate`, where each slide shows a single nowcast.
 ```{r}
-p_all_dates <- plot_multiple_nowcasts(data = mult_nowcasts_to_plot,
-                                      eval_data_full = eval_data_full)
+p_all_dates <- plot_multiple_nowcasts(
+  data = mult_nowcasts_to_plot,
+  eval_data_full = eval_data_full
+)
 p_anim <- p_all_dates +
   labs(title = "Nowcast date: {closest_state}") +
   transition_states(nowcast_date, transition_length = 0, state_length = 1) +
@@ -470,8 +474,7 @@ mult_nowcasts_ms <- pmap_dfr(
       )
   },
   .progress = TRUE
-) |> bind_rows(mult_nowcasts_w_metadata) |>
-
+) |> bind_rows(mult_nowcasts_w_metadata)
 ```
 
 We next score the quantiles for all the nowcast dates and training volume specifications.

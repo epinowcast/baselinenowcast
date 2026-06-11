@@ -319,11 +319,14 @@ anim_save("nowcast_flipbook.gif",
 ### Evaluation of nowcast performance using `scoringutils`
 
 In addition to visually assessing nowcast performance, quantitative performance evaluation can help us rigorously test the performance of different models and assess the reliability and accuracy of the nowcasts produced.
+In this vignette and elsewhere, we evaluate the predicted final case counts against the observed final case counts, similar to [Wolffram et al](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1011394) and [Johnson et al.](https://wellcomeopenresearch.org/articles/10-614).
+Another reasonable option would be to evaluare what was nowcasted against what was later observed.
 To quantify nowcast performance, we can evaluate nowcasts using proper scoring rules using the [`scoringutils`](https://epiforecasts.io/scoringutils/) package.
 Before proceeding, we strongly recommend reading the package documentation for `scoringutils` and walking through the vignette on [scoring rules](https://epiforecasts.io/scoringutils/articles/scoring-rules.html).
 We also recommend checking out materials from the [Nowcasting and Forecasting of Infectious Disease Dynamics (NFIDD)](https://nfidd.github.io/nfidd/sessions/forecast-evaluation.html) short course on forecast evaluation, which walks through many of the principles of quantitative forecast evaluation alongside worked examples.
 
 In this vignette, we will evaluate the quantile-based nowcasts using the weighted interval score (WIS), which is a proper scoring rule that approximates the [continuous ranked probability score (CRPS)](https://epiforecasts.io/scoringutils/articles/scoring-rules.html#crps) which is a probabilistic scoring rule for sample-based forecasts that is itself a generalisation of the absolute error for probabilistic forecasts.
+
 
 Additionally, we will compute the interval coverage, which tells us how well the model is calibrated by calculating the proportion of observations that fall within each prediction interval.
 A perfectly well-calibrated forecast would have the exact same interval coverage as the nominal coverage (e.g., 90% of observations fall within the 90% prediction interval).

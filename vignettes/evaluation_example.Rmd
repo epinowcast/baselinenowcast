@@ -107,34 +107,35 @@ run_single_nowcast <- function(nowcast_date, prop_delay, scale_factor,
                                data, max_delay) {
   nowcast_date <- as.Date(nowcast_date)
 
-  training_data <- filter(
+  training_data <- dplyr::filter(
     data,
     report_date < nowcast_date,
     reference_date < nowcast_date
   )
 
   initial_count_data <- training_data |>
-    group_by(reference_date) |>
-    summarise(initial_count = sum(count)) |>
-    filter(reference_date >= max(reference_date) - days(max_delay))
+    dplyr::group_by(reference_date) |>
+    dplyr::summarise(initial_count = sum(count)) |>
+    dplyr::filter(reference_date >=
+      max(reference_date) - lubridate::days(max_delay))
 
   eval_data <- data |>
-    mutate(delay = as.integer(report_date - reference_date)) |>
-    filter(delay <= max_delay, reference_date < nowcast_date) |>
-    group_by(reference_date) |>
-    summarise(final_count = sum(count)) |>
-    ungroup()
+    dplyr::mutate(delay = as.integer(report_date - reference_date)) |>
+    dplyr::filter(delay <= max_delay, reference_date < nowcast_date) |>
+    dplyr::group_by(reference_date) |>
+    dplyr::summarise(final_count = sum(count)) |>
+    dplyr::ungroup()
 
-  rep_tri <- as_reporting_triangle(training_data) |>
-    truncate_to_delay(max_delay = max_delay)
+  rep_tri <- baselinenowcast::as_reporting_triangle(training_data) |>
+    baselinenowcast::truncate_to_delay(max_delay = max_delay)
 
-  nowcast_df <- baselinenowcast(rep_tri,
+  nowcast_df <- baselinenowcast::baselinenowcast(rep_tri,
     scale_factor = scale_factor,
     prop_delay = prop_delay,
     draws = 1000
   )
 
-  su_draws <- as_forecast_sample(
+  su_draws <- scoringutils::as_forecast_sample(
     nowcast_df,
     latest_obs = eval_data,
     observed = "final_count",
@@ -142,8 +143,8 @@ run_single_nowcast <- function(nowcast_date, prop_delay, scale_factor,
   )
 
   su_quantiles <- su_draws |>
-    as_forecast_quantile() |>
-    left_join(initial_count_data, by = "reference_date")
+    scoringutils::as_forecast_quantile() |>
+    dplyr::left_join(initial_count_data, by = "reference_date")
 
   return(su_quantiles)
 }
@@ -168,7 +169,7 @@ mult_nowcasts <- map_dfr(
     scale_factor = scale_factor,
     syn_nssp_df = syn_nssp_df,
     max_delay = max_delay,
-    .library = "baselinenowcast"
+    .library = c("baselinenowcast", "dplyr", "scoringutils", "lubridate")
   ),
   .id = "nowcast_date",
   .progress = TRUE

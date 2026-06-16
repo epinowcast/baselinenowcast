@@ -3,11 +3,7 @@
 \docType{data}
 \name{syn_nssp_df}
 \alias{syn_nssp_df}
-\title{A synthetic dataset containing the number of incident cases indexed by
-reference date and report date. While data of this form could be from any
-source, this data is meant to represent the output of pre-processing the
-\link{syn_nssp_line_list} dataset, which is a synthetic patient-level line list
-data from the United State's National Syndromic Surveillance System (NSSP).}
+\title{Synthetic data containing daily case counts by reference and report date}
 \format{
 A data.frame with 3795 rows and 3 columns.
 \describe{
@@ -32,11 +28,12 @@ long format).
 syn_nssp_df
 }
 \description{
-A synthetic dataset containing the number of incident cases indexed by
-reference date and report date. While data of this form could be from any
-source, this data is meant to represent the output of pre-processing the
-\link{syn_nssp_line_list} dataset, which is a synthetic patient-level line list
-data from the United State's National Syndromic Surveillance System (NSSP).
+A synthetic dataset containing the number of incident cases
+indexed by reference date and report date. While data of this form could
+be from any source, this data is meant to represent the output of
+pre-processing the \link{syn_nssp_line_list} dataset, which is a synthetic
+patient-level line list data from the United States National Syndromic
+Surveillance System (NSSP).
 }
 \seealso{
 Example datasets

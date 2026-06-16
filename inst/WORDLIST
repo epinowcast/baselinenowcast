@@ -1,3 +1,4 @@
+Bosse
 CMD
 COVID
 CRPS
@@ -11,6 +12,7 @@ DiscreteUniform
 HH
 Karlsruhe
 Lifecycle
+NFIDD
 NSSP
 NegBin
 Nowcast
@@ -25,6 +27,7 @@ SamuelBrand
 TimTaylor
 Underprediction
 WIS
+Wolffram
 Xltd
 YYYY
 aes
@@ -36,25 +39,24 @@ booleans
 bw
 cdf
 cli
+coderabbitai
 color
 cumsum
 cutoff
-cynkra
 darkblue
 darkred
 df
 doi
-epiforecasts
 epinowcast
 epinowcast’
 eq
 etc
+evaluare
 flipbook
 frac
 geq
 ggplot
 ggtitle
-github
 gray
 hline
 idx
@@ -71,7 +73,6 @@ linetype
 linewidth
 mathbb
 mathbf
-modeling
 negbin
 nolint
 norovirus
@@ -81,6 +82,7 @@ nowcasting
 nowcasts
 num
 obs
+overcovers
 overprediction
 pct
 pid
@@ -88,6 +90,7 @@ pilessthand
 pmf
 pred
 prob
+quantiled
 rd
 sbfnk
 scoringutils
@@ -97,10 +100,9 @@ st
 swo
 th
 thetad
-ub
-underconfidence
-underprediction
 tibble
+ub
+underprediction
 wellcomeopenres
 xlab
 yintercept

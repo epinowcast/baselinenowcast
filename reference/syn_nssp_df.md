@@ -1,4 +1,4 @@
-# A synthetic dataset containing the number of incident cases indexed by reference date and report date. While data of this form could be from any source, this data is meant to represent the output of pre-processing the [syn_nssp_line_list](https://baselinenowcast.epinowcast.org/reference/syn_nssp_line_list.md) dataset, which is a synthetic patient-level line list data from the United State's National Syndromic Surveillance System (NSSP).
+# Synthetic data containing daily case counts by reference and report date
 
 A synthetic dataset containing the number of incident cases indexed by
 reference date and report date. While data of this form could be from
@@ -6,7 +6,7 @@ any source, this data is meant to represent the output of pre-processing
 the
 [syn_nssp_line_list](https://baselinenowcast.epinowcast.org/reference/syn_nssp_line_list.md)
 dataset, which is a synthetic patient-level line list data from the
-United State's National Syndromic Surveillance System (NSSP).
+United States National Syndromic Surveillance System (NSSP).
 
 ## Usage
 

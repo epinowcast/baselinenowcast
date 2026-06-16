@@ -450,20 +450,25 @@ delay_t
 ![](nssp_nowcast_files/figure-html/unnamed-chunk-13-2.png)
 
 Based on this figure, we can set the maximum delay to be 25 days as this
-is where 95% of the cases appear to have been reported. In general, we
-want to choose a maximum delay that will incorporate the vast majority
-of all observed reporting delays so that the estimates of the final
-counts account for all eventual cases reported. However, a longer
-maximum delay will mean that you will require more historical data for
-training the model, which must be considered if the amount of historical
-data is limited say in a novel outbreak situation. In order to produce a
-nowcast that we can evaluate against later observed data for this
-example, we will pretend that we are making a nowcast 30 days before the
-last reference date in the dataset, May 5th, 2026. In real-time, we
-would just use the latest reference date as our nowcast date, however,
-for evaluating the performance of the method we want to look back at the
-nowcast we would have made with the data we would have had at past time
-points. See the [Getting
+is where 95% of the cases appear to have been reported. Alternatively,
+the `baselinenowcast` package provides a helper function to
+automatically determine an appropriate maximum delay based on a
+user-specified proportion of cases, see
+[`?truncate_to_quantile`](https://baselinenowcast.epinowcast.org/reference/truncate_to_quantile.md)
+for more details. In general, we want to choose a maximum delay that
+will incorporate the vast majority of all observed reporting delays so
+that the estimates of the final counts account for all eventual cases
+reported. However, a longer maximum delay will mean that you will
+require more historical data for training the model, which must be
+considered if the amount of historical data is limited say in a novel
+outbreak situation. In order to produce a nowcast that we can evaluate
+against later observed data for this example, we will pretend that we
+are making a nowcast 30 days before the last reference date in the
+dataset, May 5th, 2026. In real-time, we would just use the latest
+reference date as our nowcast date, however, for evaluating the
+performance of the method we want to look back at the nowcast we would
+have made with the data we would have had at past time points. See the
+[Getting
 Started](https://baselinenowcast.epinowcast.org/articles/baselinenowcast.md)
 vignette for another example of evaluating our nowcast, and for a full
 quantitative evaluation of the method applied to different case studies,

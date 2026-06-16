@@ -604,9 +604,8 @@ number of choices in how to specify the model, such as:
 - how to stratify nowcasts e.g. by age group or weekday
 - whether to borrow estimates from across different strata
 
-In our
-[publication](https://wellcomeopenresearch.org/articles/10-614/v1) we
-show examples using the various model specifications to produce and
+In our [publication](https://wellcomeopenresearch.org/articles/10-614)
+we show examples using the various model specifications to produce and
 evaluate the performance of age-group specific nowcasts of COVID-19 in
 Germany and norovirus cases in England. Here’s a
 [link](https://github.com/epinowcast/baselinenowcast-paper) to the code

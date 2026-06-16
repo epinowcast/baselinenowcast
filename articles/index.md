@@ -7,6 +7,12 @@
 
   A quick start example demonstrating use of baselinenowcast
 
+- [Example nowcast performance evaluation for model
+  specification](https://baselinenowcast.epinowcast.org/articles/evaluation_example.md):
+
+  An example of how to evaluate nowcast performance under different
+  model specifications
+
 - [Mathematical methods for
   baselinenowcast](https://baselinenowcast.epinowcast.org/articles/model_definition.md):
 

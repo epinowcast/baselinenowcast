@@ -3,11 +3,12 @@ pkgdown: 2.2.0.9000
 pkgdown_sha: a6abe43ed48e58b1de42eba5e5541a5b6c46b46f
 articles:
   baselinenowcast: baselinenowcast.html
+  evaluation_example: evaluation_example.html
   model_definition: model_definition.html
   modular_workflow: modular_workflow.html
   nomenclature: nomenclature.html
   nssp_nowcast: nssp_nowcast.html
-last_built: 2026-06-08T08:52Z
+last_built: 2026-06-16T19:58Z
 urls:
   reference: https://baselinenowcast.epinowcast.org/reference
   article: https://baselinenowcast.epinowcast.org/articles

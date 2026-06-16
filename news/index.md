@@ -47,6 +47,10 @@
 - Modified NSSP nowcast vignette to do vectorised string matching
   instead of row-wise and to simplify the pre-processing to avoid a
   pivot to a wide form dataframe to speed-up performance.
+- Added a new vignette which provides an example of how to evaluate
+  visually and quantitatively a single nowcast model specification, as
+  well as how to use quantitative evaluation metrics to choose a model
+  specification.
 
 ## baselinenowcast 0.2.0
 

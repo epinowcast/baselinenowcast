@@ -100,6 +100,42 @@
     },
     {
       "@type": "SoftwareApplication",
+      "identifier": "magick",
+      "name": "magick",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=magick"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "gganimate",
+      "name": "gganimate",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=gganimate"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "scoringutils",
+      "name": "scoringutils",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=scoringutils"
+    },
+    {
+      "@type": "SoftwareApplication",
       "identifier": "ChainLadder",
       "name": "ChainLadder",
       "provider": {
@@ -217,6 +253,19 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=rmarkdown"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "scoringutils",
+      "name": "scoringutils",
+      "version": ">= 2.0.0",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=scoringutils"
     },
     {
       "@type": "SoftwareApplication",
@@ -359,7 +408,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "1446.182KB",
+  "fileSize": "1714.485KB",
   "citation": [
     {
       "@type": "ScholarlyArticle",

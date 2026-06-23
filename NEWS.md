@@ -1,3 +1,9 @@
+# baselinenowcast 0.2.2000
+
+## Package
+
+- Change the name of the package data from `germany_covid19_hosp` to `covid19_data` and extend the data through August 2022.
+
 # baselinenowcast 0.2.1000
 
 ## Package

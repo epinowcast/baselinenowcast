@@ -62,7 +62,7 @@ nowcast_date <- "2021-08-01"
 eval_date <- "2021-10-01"
 
 target_data <- filter(
-  germany_covid19_hosp,
+  covid19_data,
   location == "DE", age_group == "00+",
   report_date <= eval_date,
   reference_date <= nowcast_date

@@ -45,8 +45,8 @@ estimate_delay(example_reporting_triangle, n = 6)
 }
 
 Example datasets
+\code{\link{covid19_data}},
 \code{\link{example_downward_corr_rt}},
-\code{\link{germany_covid19_hosp}},
 \code{\link{syn_nssp_df}},
 \code{\link{syn_nssp_line_list}}
 }

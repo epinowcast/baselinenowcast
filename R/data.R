@@ -162,4 +162,4 @@
 #'   German COVID-19 Nowcast Hub from \url{https://github.com/KITmetricslab/hospitalization-nowcast-hub/blob/main/data-truth/COVID-19/COVID-19_hospitalizations_preprocessed.csv}. #nolint
 #'   It contains incident case counts by age group in Germany.
 #' @family example_data
-"germany_covid19_hosp"
+"covid19_data"

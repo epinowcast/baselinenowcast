@@ -54,8 +54,8 @@ argument for a description of how to remove negative values if desired.
 }
 
 Example datasets
+\code{\link{covid19_data}},
 \code{\link{example_reporting_triangle}},
-\code{\link{germany_covid19_hosp}},
 \code{\link{syn_nssp_df}},
 \code{\link{syn_nssp_line_list}}
 }

@@ -329,9 +329,9 @@ test_that("baselinenowcast works with custom ref_time_aggregator", {
     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
   ))
   set.seed(123)
-  result_default <- baselinenowcast(
+  result_default <- suppressWarnings(baselinenowcast(
     example_reporting_triangle
-  )
+  ))
   # Both return a data frame with the same structure
   expect_s3_class(result_2d_sum, "data.frame")
   expect_named(result_2d_sum, c(

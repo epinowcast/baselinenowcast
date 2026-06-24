@@ -33,3 +33,8 @@ covid19_data <- pivot_longer(
   )
 
 usethis::use_data(covid19_data, overwrite = TRUE)
+
+germany_covid19_hosp <- covid19_data |>
+  filter(report_date <= "2021-12-01")
+
+usethis::use_data(germany_covid19_hosp, overwrite = TRUE)

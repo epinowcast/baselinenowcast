@@ -764,21 +764,24 @@ test_that("baselinenowcast_test: ref_time_aggregator works correctly across all 
     expect_identical(
       sort(unique(stratum_default$reference_date)),
       sort(unique(stratum_7d$reference_date)),
-      label = paste0("reference dates match for age_group=", ag, ", location=", loc)
+      label = paste0("reference dates match for age_group=", ag, ",
+                     location=", loc)
     )
 
     # Each stratum should have the same draws in both results
     expect_identical(
       sort(unique(stratum_default$draw)),
       sort(unique(stratum_7d$draw)),
-      label = paste0("draw indices match for age_group=", ag, ", location=", loc)
+      label = paste0("draw indices match for age_group=", ag, ",
+                     location=", loc)
     )
 
     # Within each stratum, the 7d result should differ from the default
     # (the aggregator changes the pred_count values)
     expect_false(
       identical(stratum_default$pred_count, stratum_7d$pred_count),
-      label = paste0("pred_count differs for age_group=", ag, ", location=", loc)
+      label = paste0("pred_count differs for age_group=", ag, ",
+                     location=", loc)
     )
 
     # At the most recent reference date within each stratum, the 7-day

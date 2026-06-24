@@ -82,6 +82,16 @@ To be considered a Broad Acute Respiratory case, one or more of these codes must
 diagnoses_codes_defn <- c("A22.1", "A221", "A37", "A48.1", "A481", "B25.0", "B250", "B34.2", "B34.9", "B342", "B349", "B44.0", "B44.9", "B440", "B449", "B44.81", "B4481", "B97.2", "B97.4", "B972", "B974", "J00", "J01", "J02", "J03", "J04", "J05", "J06", "J09", "J10", "J11", "J12", "J13", "J14", "J15", "J16", "J17", "J18", "J20", "J21", "J22", "J39.8", "J398", "J40", "J47.9", "J479", "J80", "J85.1", "J851", "J95.821", "J95821", "J96.0", "J96.00", "J9600", "J96.01", "J9601", "J96.02", "J9602", "J96.2", "J960", "J962", "J96.20", "J9620", "J96.21", "J9621", "J9622", "J96.22", "J96.91", "J9691", "J98.8", "J988", "R05", "R06.03", "R0603", "R09.02", "R0902", "R09.2", "R092", "R43.0", "R43.1", "R43.2", "R430", "R431", "R432", "U07.1", "U07.2", "U071", "U072", "022.1", "0221", "034.0", "0340", "041.5", "0415", "041.81", "04181", "079.1", "079.2", "079.3", "079.6", "0791", "0792", "0793", "0796", "079.82", "079.89", "07982", "07989", "079.99", "07999", "117.3", "1173", "460", "461", "462", "463", "464", "465", "466", "461.", "461", "461.", "464.", "465.", "466.", "461", "464", "465", "466", "478.9", "4789", "480.", "482.", "483.", "484.", "487.", "488.", "480", "481", "482", "483", "484", "485", "486", "487", "488", "490", "494.1", "4941", "517.1", "5171", "518.51", "518.53", "51851", "51853", "518.6", "5186", "518.81", "518.82", "518.84", "51881", "51882", "51884", "519.8", "5198", "073.0", "0730", "781.1", "7811", "786.2", "7862", "799.02", "79902", "799.1", "7991", "033", "033.", "033", "780.60", "78060") # nolint
 ```
 
+## Set the time zone
+The field, `DischargeDiagnosisMDTUpdates` and `C_Visit_Date_Time` are composed of successive direct input from facilities, thus, the time zone of these updates may differ by facility.
+To standardise, we recommend specifying your local time zone as a variable and converting both of these time stamps to that time zone.
+This ensures that 1. Delays aren't being miscalculated due to different time zones being compared and 2. Cases and diagnoses are assigned to the correct date.
+
+We will specify the time zone here as "America/New_York".
+```{r}
+my_time_zone <- "America/New_York"
+```
+
 ## Expand the diagnosis code and their corresponding time stamps into a long dataframe
 
 The line-list data contains a single row for each patient, and columns for the diagnosis code (`DischargeDiagnosisUpdates`) and the time stamp of that encounter within the electronic health record (`DischargeDiagnosisMDTUpdates`).
@@ -107,14 +117,16 @@ We now have an expanded dataframe, which contains time stamps and diagnosis code
 
 The event number is no longer needed as each event is its own row.
 We can go ahead and remove the extraneous characters, format the time stamp as a date-time, and as a final step remove any empty time stamps or diagnosis code events, as these events didn't include any diagnosis code updates which is what we are interested in, and we already have the information we need on the patient's visit start date (`C_Visit_Date_Time`).
+We'll also use the time zone specified above to make sure that both the time stamp of the diagnoses code update and the time stamp of the patient's visit start date are in the same and correct time zone.
 ```{r}
 syn_nssp_clean <- syn_nssp_long |>
   mutate(
     time_stamp = as.POSIXct(
       str_remove_all(str_remove(time_stamp, ".*\\}"), "[|;]+"),
       format = "%Y-%m-%d %H:%M:%S",
-      tz = "UTC"
+      tz = my_time_zone
     ),
+    C_Visit_Date_Time = as.POSIXct(C_Visit_Date_time, tz = my_time_zone),
     diagnoses_codes = str_remove(diagnoses_codes, ".*\\}")
   ) |>
   filter(!is.na(time_stamp), nzchar(diagnoses_codes), diagnoses_codes != ";;|")

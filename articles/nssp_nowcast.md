@@ -140,7 +140,24 @@ Respiratory case, one or more of these codes must be reported.
 diagnoses_codes_defn <- c("A22.1", "A221", "A37", "A48.1", "A481", "B25.0", "B250", "B34.2", "B34.9", "B342", "B349", "B44.0", "B44.9", "B440", "B449", "B44.81", "B4481", "B97.2", "B97.4", "B972", "B974", "J00", "J01", "J02", "J03", "J04", "J05", "J06", "J09", "J10", "J11", "J12", "J13", "J14", "J15", "J16", "J17", "J18", "J20", "J21", "J22", "J39.8", "J398", "J40", "J47.9", "J479", "J80", "J85.1", "J851", "J95.821", "J95821", "J96.0", "J96.00", "J9600", "J96.01", "J9601", "J96.02", "J9602", "J96.2", "J960", "J962", "J96.20", "J9620", "J96.21", "J9621", "J9622", "J96.22", "J96.91", "J9691", "J98.8", "J988", "R05", "R06.03", "R0603", "R09.02", "R0902", "R09.2", "R092", "R43.0", "R43.1", "R43.2", "R430", "R431", "R432", "U07.1", "U07.2", "U071", "U072", "022.1", "0221", "034.0", "0340", "041.5", "0415", "041.81", "04181", "079.1", "079.2", "079.3", "079.6", "0791", "0792", "0793", "0796", "079.82", "079.89", "07982", "07989", "079.99", "07999", "117.3", "1173", "460", "461", "462", "463", "464", "465", "466", "461.", "461", "461.", "464.", "465.", "466.", "461", "464", "465", "466", "478.9", "4789", "480.", "482.", "483.", "484.", "487.", "488.", "480", "481", "482", "483", "484", "485", "486", "487", "488", "490", "494.1", "4941", "517.1", "5171", "518.51", "518.53", "51851", "51853", "518.6", "5186", "518.81", "518.82", "518.84", "51881", "51882", "51884", "519.8", "5198", "073.0", "0730", "781.1", "7811", "786.2", "7862", "799.02", "79902", "799.1", "7991", "033", "033.", "033", "780.60", "78060") # nolint
 ```
 
-### 2.3 Expand the diagnosis code and their corresponding time stamps into a long dataframe
+### 2.3 Set the time zone
+
+The field, `DischargeDiagnosisMDTUpdates` and `C_Visit_Date_Time` are
+composed of successive direct input from facilities, thus, the time zone
+of these updates may differ by facility. To standardise, we recommend
+specifying your local time zone as a variable and converting both of
+these time stamps to that time zone. This ensures that 1. Delays aren’t
+being miscalculated due to different time zones being compared and 2.
+Cases and diagnoses are assigned to the correct date.
+
+We will specify the time zone here as “America/New_York”.
+
+``` r
+
+my_time_zone <- "America/New_York" # nolint
+```
+
+### 2.4 Expand the diagnosis code and their corresponding time stamps into a long dataframe
 
 The line-list data contains a single row for each patient, and columns
 for the diagnosis code (`DischargeDiagnosisUpdates`) and the time stamp
@@ -179,7 +196,10 @@ as a date-time, and as a final step remove any empty time stamps or
 diagnosis code events, as these events didn’t include any diagnosis code
 updates which is what we are interested in, and we already have the
 information we need on the patient’s visit start date
-(`C_Visit_Date_Time`).
+(`C_Visit_Date_Time`). We’ll also use the time zone specified above to
+make sure that both the time stamp of the diagnoses code update and the
+time stamp of the patient’s visit start date are in the same and correct
+time zone.
 
 ``` r
 
@@ -188,8 +208,9 @@ syn_nssp_clean <- syn_nssp_long |>
     time_stamp = as.POSIXct(
       str_remove_all(str_remove(time_stamp, ".*\\}"), "[|;]+"),
       format = "%Y-%m-%d %H:%M:%S",
-      tz = "UTC"
+      tz = my_time_zone
     ),
+    C_Visit_Date_Time = as.POSIXct(C_Visit_Date_Time, tz = my_time_zone),
     diagnoses_codes = str_remove(diagnoses_codes, ".*\\}")
   ) |>
   filter(!is.na(time_stamp), nzchar(diagnoses_codes), diagnoses_codes != ";;|")
@@ -251,17 +272,17 @@ head(clean_line_list)
 #> # A tibble: 6 × 11
 #>   C_Processed_BioSense_ID  CCDDParsed HasBeenAdmitted C_Visit_Date_Time   c_race
 #>   <chr>                    <chr>                <dbl> <dttm>              <chr> 
-#> 1 2024.02.01.23959I_20476… ABNORMAL …               1 2024-02-01 13:30:00 White 
-#> 2 2024.02.01.23965V_65654… DIFFICULT…               1 2024-02-01 09:26:00 Black…
-#> 3 2024.02.01.24119E_H1020… COUGH FEV…               1 2024-02-01 13:25:00 White 
-#> 4 2024.02.01.24167I_06536… LETHARGY …               1 2024-02-01 11:15:00 White 
-#> 5 2024.02.01.6132E_226022… COVID LAS…               0 2024-02-01 13:36:00 White 
-#> 6 2024.02.01.6133I_249090… HIGH BLLO…               1 2024-02-01 11:04:00 Black…
+#> 1 2024.02.01.23959I_20476… ABNORMAL …               1 2024-02-01 08:30:00 White 
+#> 2 2024.02.01.23965V_65654… DIFFICULT…               1 2024-02-01 04:26:00 Black…
+#> 3 2024.02.01.24119E_H1020… COUGH FEV…               1 2024-02-01 08:25:00 White 
+#> 4 2024.02.01.24167I_06536… LETHARGY …               1 2024-02-01 06:15:00 White 
+#> 5 2024.02.01.6132E_226022… COVID LAS…               0 2024-02-01 08:36:00 White 
+#> 6 2024.02.01.6133I_249090… HIGH BLLO…               1 2024-02-01 06:04:00 Black…
 #> # ℹ 6 more variables: sex <chr>, time_stamp <dttm>, diagnoses_codes <chr>,
 #> #   arrival_to_update_delay <dbl>, reference_date <date>, report_date <date>
 ```
 
-### 2.4 Remove cases where the diagnoses code was reported before the visit start date by more than 24 hours
+### 2.5 Remove cases where the diagnoses code was reported before the visit start date by more than 24 hours
 
 Looking at this data, we can see that there is one case where there is a
 negative delay, which indicates that the time stamp of the diagnosis
@@ -312,7 +333,7 @@ ways of handling negative delays that might be plausible depending on
 the dataset include removing all negatives or setting all negative
 delays to 0-day delays, or using a different threshold for exclusion.
 
-### 2.5 Obtain counts of cases by reference date (visit date) and report date (time of first diagnosis)
+### 2.6 Obtain counts of cases by reference date (visit date) and report date (time of first diagnosis)
 
 For nowcasting, we want to compute the number of incident cases indexed
 by reference and report date, so we can aggregate by reference and
@@ -440,14 +461,14 @@ cdf_delay <- ggplot(avg_delays) +
 cdf_delay
 ```
 
-![](nssp_nowcast_files/figure-html/unnamed-chunk-13-1.png)
+![](nssp_nowcast_files/figure-html/unnamed-chunk-14-1.png)
 
 ``` r
 
 delay_t
 ```
 
-![](nssp_nowcast_files/figure-html/unnamed-chunk-13-2.png)
+![](nssp_nowcast_files/figure-html/unnamed-chunk-14-2.png)
 
 Based on this figure, we can set the maximum delay to be 25 days as this
 is where 95% of the cases appear to have been reported. Alternatively,
@@ -526,7 +547,7 @@ plot_inits <- ggplot(init_data) +
 plot_inits
 ```
 
-![](nssp_nowcast_files/figure-html/unnamed-chunk-18-1.png)
+![](nssp_nowcast_files/figure-html/unnamed-chunk-19-1.png)
 
 We can see that without nowcasting, the cases appear to be sharply
 declining at the most recent dates. We can’t tell from this data alone
@@ -890,7 +911,7 @@ plot_prob_nowcast <- ggplot(nowcast_data_recent) +
 plot_prob_nowcast
 ```
 
-![](nssp_nowcast_files/figure-html/unnamed-chunk-30-1.png)
+![](nssp_nowcast_files/figure-html/unnamed-chunk-31-1.png)
 
 ## 6 Summary
 

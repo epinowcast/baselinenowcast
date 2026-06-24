@@ -324,10 +324,10 @@ test_that("baselinenowcast point estimate works with just enough reference times
 
 test_that("baselinenowcast works with custom ref_time_aggregator", {
   set.seed(123)
-  result_2d_sum <- baselinenowcast(
+  result_2d_sum <- suppressWarnings(baselinenowcast(
     example_reporting_triangle,
     ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
-  )
+  ))
   set.seed(123)
   result_default <- baselinenowcast(
     example_reporting_triangle

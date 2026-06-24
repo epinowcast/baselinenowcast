@@ -2,7 +2,7 @@
 
 ## Package
 
-- Change the name of the package data from `germany_covid19_hosp` to `covid19_data` and extend the data through August 2022.
+- Add a deprecation tag to the package data `germany_covid19_hosp` and make new package data named `covid19_data` which extends through August 2022.
 
 # baselinenowcast 0.2.1000
 

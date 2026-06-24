@@ -321,3 +321,41 @@ test_that("baselinenowcast point estimate works with just enough reference times
   expect_false(anyNA(result$pred_count))
   expect_gt(nrow(result), 0)
 })
+
+test_that("baselinenowcast works with custom ref_time_aggregator", {
+  set.seed(123)
+  result_2d_sum <- baselinenowcast(
+    example_reporting_triangle,
+    ref_time_aggregator = function(x) zoo::rollsum(x, k = 2, align = "right")
+  )
+  set.seed(123)
+  result_default <- baselinenowcast(
+    example_reporting_triangle
+  )
+  # Both return a data frame with the same structure
+  expect_s3_class(result_2d_sum, "data.frame")
+  expect_named(result_2d_sum, c(
+    "pred_count", "reference_date", "draw",
+    "output_type",
+    "nowcast"
+  ))
+
+  # The aggregated result should differ numerically from the default
+  # (k=2 rolling sum applies to nowcast targets, changing pred_count values)
+  expect_false(
+    identical(result_default$pred_count, result_2d_sum$pred_count)
+  )
+
+  max_ref_date <- max(result_default$reference_date)
+  mean_default <- mean(
+    result_default$pred_count[result_default$reference_date == max_ref_date],
+    na.rm = TRUE
+  )
+  mean_2d <- mean(
+    result_2d_sum$pred_count[result_2d_sum$reference_date == max_ref_date],
+    na.rm = TRUE
+  )
+
+  # 2-day sum draws should be larger in expectation than 1-day
+  expect_gt(mean_2d, mean_default)
+})

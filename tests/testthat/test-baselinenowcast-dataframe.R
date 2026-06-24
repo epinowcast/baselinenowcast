@@ -695,3 +695,129 @@ test_that(paste0(
       theme_bw()
   }
 })
+
+test_that("baselinenowcast_test: ref_time_aggregator works correctly across all strata", { # nolint
+  set.seed(123)
+  result_default <- baselinenowcast_test(
+    data = covid_data,
+    strata_cols = c("age_group", "location")
+  )
+  set.seed(123)
+  result_7d_sum <- baselinenowcast_test(
+    data = covid_data,
+    strata_cols = c("age_group", "location"),
+    ref_time_aggregator = function(x) zoo::rollsum(x, k = 7, align = "right")
+  )
+
+  expect_s3_class(result_7d_sum, "data.frame")
+  expect_named(result_7d_sum, c(
+    "pred_count", "reference_date", "draw",
+    "output_type", "nowcast", "age_group",
+    "location"
+  ))
+
+  # The aggregated result should differ numerically from the default
+  # (k=7 rolling sum applies to nowcast targets, changing pred_count values)
+  expect_false(
+    identical(result_default$pred_count, result_7d_sum$pred_count)
+  )
+
+  max_ref_date <- max(result_default$reference_date)
+  mean_default <- mean(
+    result_default$pred_count[result_default$reference_date == max_ref_date],
+    na.rm = TRUE
+  )
+  mean_7d <- mean(
+    result_7d_sum$pred_count[result_7d_sum$reference_date == max_ref_date],
+    na.rm = TRUE
+  )
+
+  # 7-day sum draws should be larger in expectation than 1-day
+  expect_gt(mean_7d, mean_default)
+
+  # Per-stratum checks
+  strata <- unique(
+    result_default[, c("age_group", "location"), drop = FALSE]
+  )
+
+  # Every stratum in the default result should also appear in the 7d result
+  strata_7d <- unique(
+    result_7d_sum[, c("age_group", "location"), drop = FALSE]
+  )
+  expect_identical(
+    strata[order(strata$age_group, strata$location), ],
+    strata_7d[order(strata_7d$age_group, strata_7d$location), ]
+  )
+
+  for (i in seq_len(nrow(strata))) {
+    ag <- strata$age_group[i]
+    loc <- strata$location[i]
+
+    stratum_default <- result_default[
+      result_default$age_group == ag & result_default$location == loc,
+    ]
+    stratum_7d <- result_7d_sum[
+      result_7d_sum$age_group == ag & result_7d_sum$location == loc,
+    ]
+
+    # Each stratum should have the same reference dates in both results
+    expect_identical(
+      sort(unique(stratum_default$reference_date)),
+      sort(unique(stratum_7d$reference_date)),
+      label = paste0("reference dates match for age_group=", ag, ", location=", loc)
+    )
+
+    # Each stratum should have the same draws in both results
+    expect_identical(
+      sort(unique(stratum_default$draw)),
+      sort(unique(stratum_7d$draw)),
+      label = paste0("draw indices match for age_group=", ag, ", location=", loc)
+    )
+
+    # Within each stratum, the 7d result should differ from the default
+    # (the aggregator changes the pred_count values)
+    expect_false(
+      identical(stratum_default$pred_count, stratum_7d$pred_count),
+      label = paste0("pred_count differs for age_group=", ag, ", location=", loc)
+    )
+
+    # At the most recent reference date within each stratum, the 7-day
+    # rolling sum should yield larger draws in expectation than the default
+    max_date_stratum <- max(stratum_default$reference_date)
+    mean_default_stratum <- mean(
+      stratum_default$pred_count[
+        stratum_default$reference_date == max_date_stratum
+      ],
+      na.rm = TRUE
+    )
+    mean_7d_stratum <- mean(
+      stratum_7d$pred_count[
+        stratum_7d$reference_date == max_date_stratum
+      ],
+      na.rm = TRUE
+    )
+    expect_gt(
+      mean_7d_stratum, mean_default_stratum,
+      label = paste0(
+        "7d mean > default mean at max ref date for age_group=",
+        ag, ", location=", loc
+      )
+    )
+
+    # The first 6 reference dates within each stratum should produce NA
+    # pred_count for the 7d result (can't form a 7-element window)
+    sorted_dates <- sort(unique(stratum_7d$reference_date))
+    if (length(sorted_dates) >= 7) {
+      first_six_dates <- sorted_dates[1:6]
+      na_rows <- stratum_7d[
+        stratum_7d$reference_date %in% first_six_dates,
+      ]
+      expect_true(
+        all(is.na(na_rows$pred_count)),
+        label = paste0(
+          "first 6 ref dates are NA for age_group=", ag, ", location=", loc
+        )
+      )
+    }
+  }
+})

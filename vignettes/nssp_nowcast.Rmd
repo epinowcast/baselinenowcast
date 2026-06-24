@@ -89,7 +89,7 @@ This ensures that 1. Delays aren't being miscalculated due to different time zon
 
 We will specify the time zone here as "America/New_York".
 ```{r}
-my_time_zone <- "America/New_York"
+my_time_zone <- "America/New_York" # nolint
 ```
 
 ## Expand the diagnosis code and their corresponding time stamps into a long dataframe
@@ -126,7 +126,7 @@ syn_nssp_clean <- syn_nssp_long |>
       format = "%Y-%m-%d %H:%M:%S",
       tz = my_time_zone
     ),
-    C_Visit_Date_Time = as.POSIXct(C_Visit_Date_time, tz = my_time_zone),
+    C_Visit_Date_Time = as.POSIXct(C_Visit_Date_Time, tz = my_time_zone),
     diagnoses_codes = str_remove(diagnoses_codes, ".*\\}")
   ) |>
   filter(!is.na(time_stamp), nzchar(diagnoses_codes), diagnoses_codes != ";;|")

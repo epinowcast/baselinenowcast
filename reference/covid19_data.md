@@ -1,11 +1,12 @@
 # Incident COVID-19 hospitalisations indexed by the date of positive test (reference date) and report date from Germany in 2021 and 2022.
 
-**\[deprecated\]**
+Incident COVID-19 hospitalisations indexed by the date of positive test
+(reference date) and report date from Germany in 2021 and 2022.
 
 ## Usage
 
 ``` r
-germany_covid19_hosp
+covid19_data
 ```
 
 ## Format
@@ -49,8 +50,8 @@ COVID-19 Nowcast Hub from
 ## See also
 
 Example datasets
-[`covid19_data`](https://baselinenowcast.epinowcast.org/reference/covid19_data.md),
 [`example_downward_corr_rt`](https://baselinenowcast.epinowcast.org/reference/example_downward_corr_rt.md),
 [`example_reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/example_reporting_triangle.md),
+[`germany_covid19_hosp`](https://baselinenowcast.epinowcast.org/reference/germany_covid19_hosp.md),
 [`syn_nssp_df`](https://baselinenowcast.epinowcast.org/reference/syn_nssp_df.md),
 [`syn_nssp_line_list`](https://baselinenowcast.epinowcast.org/reference/syn_nssp_line_list.md)

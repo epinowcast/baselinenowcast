@@ -129,7 +129,7 @@ For <code>baselinenowcast</code>, see the <a href="https://github.com/epinowcast
 <span><span class="va">eval_date</span> <span class="op">&lt;-</span> <span class="st">"2021-10-01"</span></span>
 <span></span>
 <span><span class="va">target_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
-<span>  <span class="va">germany_covid19_hosp</span>,</span>
+<span>  <span class="va">covid19_data</span>,</span>
 <span>  <span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span>, <span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span>,</span>
 <span>  <span class="va">report_date</span> <span class="op">&lt;=</span> <span class="va">eval_date</span>,</span>
 <span>  <span class="va">reference_date</span> <span class="op">&lt;=</span> <span class="va">nowcast_date</span></span>

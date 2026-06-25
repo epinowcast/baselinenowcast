@@ -432,8 +432,9 @@ Example datasets included with the package.
 - [`example_reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/example_reporting_triangle.md)
   : Simple example reporting triangle for demonstrations
 - [`germany_covid19_hosp`](https://baselinenowcast.epinowcast.org/reference/germany_covid19_hosp.md)
-  : Incident COVID-19 hospitalisations indexed by the date of positive
-  test (reference date) and report date from Germany in 2021 and 2022.
+  **\[deprecated\]** : Incident COVID-19 hospitalisations indexed by the
+  date of positive test (reference date) and report date from Germany in
+  2021 and 2022.
 - [`syn_nssp_df`](https://baselinenowcast.epinowcast.org/reference/syn_nssp_df.md)
   : Synthetic data containing daily case counts by reference and report
   date

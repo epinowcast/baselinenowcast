@@ -131,7 +131,7 @@ For this quick start, we use daily level data from the <a href="https://github.c
 These data represent hospital admission counts by date of positive test and date of test report in Germany up to October 1, 2021.</p>
 <p>We will filter the data to just look at the national-level data, for all age groups.
 We will pretend that we are making a nowcast as of August 1, 2021, therefore we will exclude all reference dates and report dates from before that date.
-<code>germany_covid19_hosp</code> is provided as package data, see <code><a href="../reference/germany_covid19_hosp.html">?germany_covid19_hosp</a></code> for details.
+<code>covid19_data</code> is provided as package data, see <code><a href="../reference/covid19_data.html">?covid19_data</a></code> for details.
 In this example, we will focus on the cases for all of Germany (“DE”) summed across all age groups (“00+”).
 We’ll start by preparing the data for nowcasting and evaluation by removing all reference dates beyond the nowcast date and report dates beyond the date we will use to evaluate our nowcast performance.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -139,7 +139,7 @@ We’ll start by preparing the data for nowcasting and evaluation by removing al
 <span><span class="va">eval_date</span> <span class="op">&lt;-</span> <span class="st">"2021-10-01"</span></span>
 <span></span>
 <span><span class="va">target_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
-<span>  <span class="va">germany_covid19_hosp</span>,</span>
+<span>  <span class="va">covid19_data</span>,</span>
 <span>  <span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span>, <span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span>,</span>
 <span>  <span class="va">report_date</span> <span class="op">&lt;=</span> <span class="va">eval_date</span>,</span>
 <span>  <span class="va">reference_date</span> <span class="op">&lt;=</span> <span class="va">nowcast_date</span></span>

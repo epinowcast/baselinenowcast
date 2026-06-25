@@ -46,6 +46,7 @@ long format).
 ## See also
 
 Example datasets
+[`covid19_data`](https://baselinenowcast.epinowcast.org/reference/covid19_data.md),
 [`example_downward_corr_rt`](https://baselinenowcast.epinowcast.org/reference/example_downward_corr_rt.md),
 [`example_reporting_triangle`](https://baselinenowcast.epinowcast.org/reference/example_reporting_triangle.md),
 [`germany_covid19_hosp`](https://baselinenowcast.epinowcast.org/reference/germany_covid19_hosp.md),

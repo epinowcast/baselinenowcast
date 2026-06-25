@@ -73,9 +73,8 @@ and date of test report in Germany up to October 1, 2021.
 We will filter the data to just look at the national-level data, for all
 age groups. We will pretend that we are making a nowcast as of August 1,
 2021, therefore we will exclude all reference dates and report dates
-from before that date. `germany_covid19_hosp` is provided as package
-data, see
-[`?germany_covid19_hosp`](https://baselinenowcast.epinowcast.org/reference/germany_covid19_hosp.md)
+from before that date. `covid19_data` is provided as package data, see
+[`?covid19_data`](https://baselinenowcast.epinowcast.org/reference/covid19_data.md)
 for details. In this example, we will focus on the cases for all of
 Germany (“DE”) summed across all age groups (“00+”). We’ll start by
 preparing the data for nowcasting and evaluation by removing all
@@ -90,7 +89,7 @@ nowcast_date <- "2021-08-01"
 eval_date <- "2021-10-01"
 
 target_data <- filter(
-  germany_covid19_hosp,
+  covid19_data,
   location == "DE", age_group == "00+",
   report_date <= eval_date,
   reference_date <= nowcast_date

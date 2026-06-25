@@ -1,5 +1,19 @@
 # Changelog
 
+## baselinenowcast 0.2.2000
+
+### Package
+
+- Add a deprecation tag to the package data `germany_covid19_hosp` and
+  make new package data named `covid19_data` which extends through
+  August 2022.
+- Fixed argument passing in
+  [`baselinenowcast.reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/baselinenowcast.reporting_triangle.md)
+  and `baselinenowcast.data.frame` to
+  [`estimate_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md)
+  and
+  [`sample_nowcasts()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcasts.md).
+
 ## baselinenowcast 0.2.1000
 
 ### Package

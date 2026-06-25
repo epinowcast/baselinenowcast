@@ -188,7 +188,8 @@ baselinenowcast.reporting_triangle <- function(
       reporting_triangle = processed_data,
       n_history_delay = tv$n_history_delay,
       n_retrospective_nowcasts = tv$n_retrospective_nowcasts,
-      uncertainty_model = uncertainty_model
+      uncertainty_model = uncertainty_model,
+      ...
     )
   }
 
@@ -431,7 +432,8 @@ baselinenowcast.data.frame <- function(
         delay_pmf = shared_delay_pmf,
         uncertainty_params = shared_uncertainty_params,
         preprocess = preprocess,
-        validate = FALSE
+        validate = FALSE,
+        ...
       )
     }, # nolint end
     .id = "name"

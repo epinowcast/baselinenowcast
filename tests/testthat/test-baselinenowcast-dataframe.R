@@ -824,3 +824,40 @@ test_that("baselinenowcast_test: ref_time_aggregator works correctly across all 
     }
   }
 })
+
+test_that("baselinenowcast with ref time aggregator is same with both dataframe and reporting triangle method", { # nolint
+  skip_if_not_installed("dplyr")
+  set.seed(123)
+  covid_data_single_group <- covid_data |>
+    filter(
+      age_group == "00-04",
+      location == "DE"
+    )
+  rep_tri <- as_reporting_triangle(covid_data_single_group)
+  result_7d_sum_tri <- suppressWarnings(
+    baselinenowcast(
+      rep_tri,
+      ref_time_aggregator = function(x) zoo::rollsum(x, k = 7, align = "right")
+    )
+  )
+  set.seed(123)
+  result_7d_sum_df <- suppressWarnings(
+    baselinenowcast(
+      covid_data_single_group,
+      strata_cols = c("age_group", "location"),
+      ref_time_aggregator = function(x) zoo::rollsum(x, k = 7, align = "right")
+    )
+  )
+
+  # Results should be the same regardless of the method used
+  expect_equal(
+    mean(result_7d_sum_tri$pred_count, na.rm = TRUE),
+    mean(result_7d_sum_df$pred_count, na.rm = TRUE),
+    tol = 0.01
+  )
+  expect_equal(
+    sd(result_7d_sum_tri$pred_count, na.rm = TRUE),
+    sd(result_7d_sum_df$pred_count, na.rm = TRUE),
+    tol = 0.01
+  )
+})

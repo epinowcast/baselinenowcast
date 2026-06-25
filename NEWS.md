@@ -2,7 +2,7 @@
 
 ## Package
 
-- Fix bugs in `baselinenowcast.reporting_triangle()` and `baselinenowcast.data.frame` which failed to pass the additional arguments to `estimate_uncertainty()` and `sample_nowcasts()` through to their subsequent calls. This meant that specifying the `ref_time_aggregator` as something other than the default failed to work as expected.
+- Fixed argument passing in `baselinenowcast.reporting_triangle()` and `baselinenowcast.data.frame` to `estimate_uncertainty()` and `sample_nowcasts()`.
 
 # baselinenowcast 0.2.1000
 

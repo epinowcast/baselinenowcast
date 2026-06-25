@@ -206,7 +206,7 @@ make_delay_pmf <- function(length = 4, geometric = FALSE, prob = 0.3) {
 #' Create COVID test data
 #'
 #' Creates a standardized COVID-19 hospitalization test dataset from the
-#' germany_covid19_hosp package data. This is used across multiple test
+#' covid19_data package data. This is used across multiple test
 #' files to ensure consistency.
 #'
 #' @param age_groups Character vector of age groups to include
@@ -218,10 +218,10 @@ create_covid_test_data <- function(
   add_weekday = TRUE
 ) {
   # nolint start: object_usage_linter
-  covid_data <- germany_covid19_hosp[
-    germany_covid19_hosp$report_date <=
-      max(germany_covid19_hosp$reference_date) &
-      germany_covid19_hosp$age_group %in% age_groups,
+  covid_data <- covid19_data[
+    covid19_data$report_date <=
+      max(covid19_data$reference_date) &
+      covid19_data$age_group %in% age_groups,
   ]
   # nolint end
 

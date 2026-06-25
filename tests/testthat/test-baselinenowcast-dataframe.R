@@ -335,7 +335,7 @@ test_that(paste0(
     dplyr::filter(age_group == "60-79") |>
     dplyr::summarise(max_ref_date = max(reference_date)) |>
     dplyr::pull()
-  expect_identical(max_ref_date_60_792, lubridate::ymd("2021-12-01"))
+  expect_identical(max_ref_date_60_792, lubridate::ymd("2022-08-08"))
 })
 
 test_that(paste0(
@@ -622,9 +622,15 @@ test_that(paste0(
   # Separately filter by weekday and then combine
   wdays <- unique(covid_data_age_groups_wday$weekday_ref_date)
   bnc_df <- data.frame()
+  # restrict dates to ensure have sufficient data in all age groups and
+  covid_data_ags_wday_filtered <-
+    dplyr::filter(
+      covid_data_age_groups_wday,
+      report_date <= "2021-12-01"
+    )
   for (i in 1:7) {
     covid_data_single_wday <- dplyr::filter(
-      covid_data_age_groups_wday,
+      covid_data_ags_wday_filtered,
       weekday_ref_date == wdays[i]
     )
     bnc_df_i <- baselinenowcast_test(
@@ -640,7 +646,7 @@ test_that(paste0(
 
   # Compare to no strata sharing
   no_share_ag <- baselinenowcast_test(
-    covid_data_age_groups_wday,
+    covid_data_ags_wday_filtered,
     scale_factor = 3 / 7,
     strata_cols = c(
       "weekday_ref_date",
@@ -669,7 +675,7 @@ test_that(paste0(
     skip_if_not_installed("glue")
     library(ggplot2) # nolint
 
-    covid_data_summed <- covid_data_age_groups_wday |>
+    covid_data_summed <- covid_data_ags_wday_filtered |>
       dplyr::group_by(reference_date, age_group) |>
       dplyr::summarise(cases = sum(count)) |>
       dplyr::ungroup()

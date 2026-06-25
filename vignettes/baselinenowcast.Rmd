@@ -63,7 +63,7 @@ These data represent hospital admission counts by date of positive test and date
 
 We will filter the data to just look at the national-level data, for all age groups.
 We will pretend that we are making a nowcast as of August 1, 2021, therefore we will exclude all reference dates and report dates from before that date.
-`germany_covid19_hosp` is provided as package data, see `?germany_covid19_hosp` for details.
+`covid19_data` is provided as package data, see `?covid19_data` for details.
 In this example, we will focus on the cases for all of Germany ("DE") summed across all age groups ("00+").
 We'll start by preparing the data for nowcasting and evaluation by removing all reference dates beyond the nowcast date and report dates beyond the date we will use to evaluate our nowcast performance.
 
@@ -72,7 +72,7 @@ nowcast_date <- "2021-08-01"
 eval_date <- "2021-10-01"
 
 target_data <- filter(
-  germany_covid19_hosp,
+  covid19_data,
   location == "DE", age_group == "00+",
   report_date <= eval_date,
   reference_date <= nowcast_date

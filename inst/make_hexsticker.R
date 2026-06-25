@@ -13,7 +13,7 @@ nowcast_date <- "2021-08-01"
 eval_date <- "2021-10-01"
 
 # Load the Germany COVID-19 hospital data from the epinowcast package
-target_data <- germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
+target_data <- covid19_data[location == "DE"][age_group == "00+"] |>
   enw_filter_report_dates(latest_date = eval_date) |>
   enw_filter_reference_dates(
     latest_date = nowcast_date

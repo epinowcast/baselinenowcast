@@ -142,13 +142,15 @@ diagnoses_codes_defn <- c("A22.1", "A221", "A37", "A48.1", "A481", "B25.0", "B25
 
 ### 2.3 Set the time zone
 
-The field, `DischargeDiagnosisMDTUpdates` and `C_Visit_Date_Time` are
-composed of successive direct input from facilities, thus, the time zone
-of these updates may differ by facility. To standardise, we recommend
-specifying your local time zone as a variable and converting both of
-these time stamps to that time zone. This ensures that 1. Delays aren’t
-being miscalculated due to different time zones being compared and 2.
-Cases and diagnoses are assigned to the correct date.
+The fields, `DischargeDiagnosisMDTUpdates` and `C_Visit_Date_Time` are
+composed of direct input from the messages sent by facilities to NSSP,
+thus, these updates usually reflect the facility’s time zone choice
+(typically local time, but dependent on local implementation). To
+standardise, we recommend specifying your local time zone as a variable
+and converting both of these time stamps to that time zone. This ensures
+that 1. Delays aren’t being miscalculated due to different time zones
+being compared and 2. Cases and diagnoses are assigned to the correct
+date.
 
 We will specify the time zone here as “America/New_York”.
 

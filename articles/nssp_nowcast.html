@@ -184,7 +184,7 @@ To be considered a Broad Acute Respiratory case, one or more of these codes must
 <h3 id="set-the-time-zone">
 <span class="header-section-number">2.3</span> Set the time zone<a class="anchor" aria-label="anchor" href="#set-the-time-zone"></a>
 </h3>
-<p>The field, <code>DischargeDiagnosisMDTUpdates</code> and <code>C_Visit_Date_Time</code> are composed of successive direct input from facilities, thus, the time zone of these updates may differ by facility.
+<p>The fields, <code>DischargeDiagnosisMDTUpdates</code> and <code>C_Visit_Date_Time</code> are composed of direct input from the messages sent by facilities to NSSP, thus, these updates usually reflect the facility’s time zone choice (typically local time, but dependent on local implementation).
 To standardise, we recommend specifying your local time zone as a variable and converting both of these time stamps to that time zone.
 This ensures that 1. Delays aren’t being miscalculated due to different time zones being compared and 2. Cases and diagnoses are assigned to the correct date.</p>
 <p>We will specify the time zone here as “America/New_York”.</p>

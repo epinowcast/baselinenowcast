@@ -828,11 +828,11 @@ test_that("baselinenowcast_test: ref_time_aggregator works correctly across all 
 test_that("baselinenowcast with ref time aggregator is same with both dataframe and reporting triangle method", { # nolint
   skip_if_not_installed("dplyr")
   set.seed(123)
-  covid_data_single_group <- covid_data |>
-    filter(
-      age_group == "00-04",
-      location == "DE"
-    )
+  covid_data_single_group <- filter(
+    covid_data,
+    age_group == "00-04",
+    location == "DE"
+  )
   rep_tri <- as_reporting_triangle(covid_data_single_group)
   result_7d_sum_tri <- suppressWarnings(
     baselinenowcast(

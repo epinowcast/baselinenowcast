@@ -1,10 +1,16 @@
+# baselinenowcast 0.2.2000
+
+## Package
+
+- Fixed argument passing in `baselinenowcast.reporting_triangle()` and `baselinenowcast.data.frame` to `estimate_uncertainty()` and `sample_nowcasts()`.
+
 # baselinenowcast 0.2.1000
 
 ## Package
 
 - Add `as_forecast_sample()` and `as_forecast_point()` S3 methods for `baselinenowcast_df` objects, enabling direct conversion of probabilistic or point nowcasts to `scoringutils` forecast objects for scoring against the latest observed counts (#418). `baselinenowcast_df` objects now carry a logical `nowcast` column flagging the right-truncated reference dates that were actually nowcast (as opposed to fully observed), and the converters use it to score only those dates.
--  Place every internal check, assert, and validate function next to its consumer (class invariants in `R/reporting_triangle-class.R` and `R/baselinenowcast_df-class.R`; per-caller helpers in the file that calls them) and remove `R/validate.R`. Generalise `assert_rep_tri_class()` with an `arg_name` argument and use it to replace duplicated inline class checks in `truncate_to_quantile()`, `truncate_to_delay()`, and the reporting triangle getters and methods (#300).
--  Add converters between `reporting_triangle` and [reviser](https://CRAN.R-project.org/package=reviser) vintages formats via `as_reviser_vintages()` and `as_reporting_triangle.tbl_pubdate()`, enabling use of reviser's vintage analysis and state space nowcasting methods alongside baselinenowcast's nowcasting functionality (#429).
+- Place every internal check, assert, and validate function next to its consumer (class invariants in `R/reporting_triangle-class.R` and `R/baselinenowcast_df-class.R`; per-caller helpers in the file that calls them) and remove `R/validate.R`. Generalise `assert_rep_tri_class()` with an `arg_name` argument and use it to replace duplicated inline class checks in `truncate_to_quantile()`, `truncate_to_delay()`, and the reporting triangle getters and methods (#300).
+- Add converters between `reporting_triangle` and [reviser](https://CRAN.R-project.org/package=reviser) vintages formats via `as_reviser_vintages()` and `as_reporting_triangle.tbl_pubdate()`, enabling use of reviser's vintage analysis and state space nowcasting methods alongside baselinenowcast's nowcasting functionality (#429).
 - Add `truncate_to_date()`, a date-based wrapper around `truncate_to_row()` that drops rows with reference dates after a given cutoff (#447).
 
 ## Documentation

@@ -15,7 +15,7 @@ covid_url <- paste0(
 raw_data <- read_csv(covid_url) |>
   rename(value_81d = `value_>80d`)
 
-germany_covid19_hosp <- pivot_longer(
+covid19_data <- pivot_longer(
   raw_data,
   cols = starts_with("value_"),
   names_to = "delay",
@@ -29,8 +29,11 @@ germany_covid19_hosp <- pivot_longer(
   rename(reference_date = date) |>
   filter(
     location == "DE",
-    delay <= 40,
-    report_date <= "2021-12-01"
+    delay <= 40
   )
+
+usethis::use_data(covid19_data, overwrite = TRUE)
+
+germany_covid19_hosp <- filter(covid19_data, report_date <= "2021-12-01")
 
 usethis::use_data(germany_covid19_hosp, overwrite = TRUE)

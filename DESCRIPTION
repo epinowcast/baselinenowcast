@@ -64,6 +64,9 @@ Imports:
   purrr
 Suggests:
     bookdown,
+    magick,
+    gganimate,
+    scoringutils,
     ChainLadder,
     dplyr,
     tidyr,

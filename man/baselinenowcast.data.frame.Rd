@@ -147,11 +147,11 @@ reference and report dates across strata.
 \examples{
 # Filter data to exclude most recent report dates and limit to 75
 # reference dates
-max_ref_date <- max(germany_covid19_hosp$reference_date)
+max_ref_date <- max(covid19_data$reference_date)
 min_ref_date <- max_ref_date - 74
-covid_data_to_nowcast <- germany_covid19_hosp[
-  germany_covid19_hosp$report_date < max_ref_date &
-    germany_covid19_hosp$reference_date >= min_ref_date,
+covid_data_to_nowcast <- covid19_data[
+  covid19_data$report_date < max_ref_date &
+    covid19_data$reference_date >= min_ref_date,
 ]
 nowcasts_df <- baselinenowcast(covid_data_to_nowcast,
   max_delay = 25,

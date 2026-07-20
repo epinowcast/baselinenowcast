@@ -1,8 +1,11 @@
-#' A synthetic dataset containing the number of incident cases indexed by
-#'   reference date and report date. While data of this form could be from any
-#'   source, this data is meant to represent the output of pre-processing the
-#'   [syn_nssp_line_list] dataset, which is a synthetic patient-level line list
-#'   data from the United State's National Syndromic Surveillance System (NSSP).
+#' Synthetic data containing daily case counts by reference and report date
+#'
+#' @description A synthetic dataset containing the number of incident cases
+#'   indexed by reference date and report date. While data of this form could
+#'   be from any source, this data is meant to represent the output of
+#'   pre-processing the [syn_nssp_line_list] dataset, which is a synthetic
+#'   patient-level line list data from the United States National Syndromic
+#'   Surveillance System (NSSP).
 #'
 #' @format A data.frame with 3795 rows and 3 columns.
 #' \describe{
@@ -139,6 +142,34 @@
 
 #' Incident COVID-19 hospitalisations indexed by the date of positive test
 #'   (reference date) and report date from Germany in 2021 and 2022.
+#'
+#' @format A data.frame with 140,630 rows and 6 columns.
+#' \describe{
+#'   \item{reference_date}{Date of first positive COVID-19 test formatted
+#'    in ISO8601 standards as YYYY-MM-DD.}
+#'   \item{location}{Character string indicating the location of the case
+#'   counts}
+#'   \item{age_group}{Character string indicating the age group of the case
+#'   counts.}
+#'   \item{delay}{Integer specifying the delay, in days, between the reference
+#'   date and the report date}
+#'   \item{count}{Integer indicating the number of cases indexed by reference
+#'   and report date.}
+#'   \item{report_date}{Date of case report, formatted in ISO8601 standards as
+#'    YYYY-MM-DD.}
+#' }
+#' @source This data comes directly from the preprocessed data in the
+#'   German COVID-19 Nowcast Hub from \url{https://github.com/KITmetricslab/hospitalization-nowcast-hub/blob/main/data-truth/COVID-19/COVID-19_hospitalizations_preprocessed.csv}. #nolint
+#'   It contains incident case counts by age group in Germany.
+#' @family example_data
+#' @keywords internal
+"covid19_data"
+
+#' Incident COVID-19 hospitalisations indexed by the date of positive test
+#'   (reference date) and report date from Germany in 2021 and 2022.
+#'
+#' @description
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @format A data.frame with 140,630 rows and 6 columns.
 #' \describe{

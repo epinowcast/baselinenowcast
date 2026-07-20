@@ -26,6 +26,8 @@ navbar:
           href: articles/nomenclature.html
         - text: "A case study nowcasting applied to the U.S. National Syndromic Surveillance Program (NSSP) data"
           href: articles/nssp_nowcast.html
+        - text: "An example of how to evaluate nowcast performance under different model specifications"
+          href: articles/evaluation_example.html
 
 # Code folding configuration
 code:

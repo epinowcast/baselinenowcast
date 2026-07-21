@@ -80,7 +80,7 @@ test_that("estimate_delay validates input parameters correctly", {
     c(10, 5, 2, 1, 0, 0, 0, 0, 0, 0, 0, NA, 0, 0, NA, NA),
     nrow = 4, byrow = TRUE
   ))
-
+  n_rows <- nrow(reporting_triangle)
   cases <- list(
     list(
       args = list(reporting_triangle, n = 0),
@@ -88,7 +88,10 @@ test_that("estimate_delay validates input parameters correctly", {
     ),
     list(
       args = list(reporting_triangle, n = 10),
-      regex = "Reporting triangle has"
+      regex = paste0(
+        "Reporting triangle has ", n_rows,
+        " reference times but n = 10 was requested"
+      )
     ),
     list(
       args = list(ragged_rt, n = 2),

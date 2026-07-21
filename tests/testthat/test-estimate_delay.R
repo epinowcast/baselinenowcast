@@ -88,7 +88,7 @@ test_that("estimate_delay validates input parameters correctly", {
     ),
     list(
       args = list(reporting_triangle, n = 10),
-      regex = "Number of observations"
+      regex = "Reporting triangle has"
     ),
     list(
       args = list(ragged_rt, n = 2),

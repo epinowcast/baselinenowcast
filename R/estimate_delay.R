@@ -109,7 +109,7 @@ estimate_delay <- function(
     cli_abort(
       message = c(
         "!" = "Reporting triangle has {nrow(triangle)} reference times but n = {n} was requested.", # nolint
-        "i" = "Reduce {.arg n} to {nrow(triangle)} or supply more reference dates."
+        "i" = "Reduce {.arg n} to {nrow(triangle)} or supply more reference dates." # nolint
       )
     )
   }

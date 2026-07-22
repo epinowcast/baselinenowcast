@@ -108,9 +108,8 @@ estimate_delay <- function(
   if (nrow(triangle) < n) {
     cli_abort(
       message = c(
-        "Number of observations in input reporting triangle is insufficient",
-        "for the user specified number of historical observations to use",
-        "for delay estimaton."
+        "!" = "Reporting triangle has {nrow(triangle)} reference times but n = {n} was requested.", # nolint
+        "i" = "Reduce {.arg n} to {nrow(triangle)} or supply more reference dates." # nolint
       )
     )
   }

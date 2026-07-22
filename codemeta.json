@@ -519,7 +519,6 @@
     }
   ],
   "releaseNotes": "https://github.com/epinowcast/baselinenowcast/blob/main/NEWS.md",
-  "readme": "https://github.com/epinowcast/baselinenowcast/blob/main/README.md",
   "contIntegration": ["https://github.com/epinowcast/baselinenowcast/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/epinowcast/baselinenowcast"],
   "developmentStatus": "https://lifecycle.r-lib.org/articles/stages.html#stable"
 }

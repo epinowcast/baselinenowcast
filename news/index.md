@@ -13,6 +13,10 @@
   [`estimate_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md)
   and
   [`sample_nowcasts()`](https://baselinenowcast.epinowcast.org/reference/sample_nowcasts.md).
+- Added a more informative error message when the user specifies a
+  number of reference dates in
+  [`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md)
+  that is larger than the number of rows in the reporting triangle.
 
 ## baselinenowcast 0.2.1000
 

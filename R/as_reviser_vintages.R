@@ -35,7 +35,7 @@
 #'
 #' @seealso
 #' - [as_reporting_triangle.tbl_pubdate()] for converting back
-#' - [reviser package documentation](https://github.com/cynkra/reviser)
+#' - [reviser package documentation](https://github.com/ropensci/reviser)
 #'
 #' @family reporting_triangle
 #' @export

@@ -1,4 +1,4 @@
-# baselinenowcast 0.2.2000
+# baselinenowcast 0.2.2
 
 ## Package
 
@@ -6,7 +6,7 @@
 - Fixed argument passing in `baselinenowcast.reporting_triangle()` and `baselinenowcast.data.frame` to `estimate_uncertainty()` and `sample_nowcasts()`.
 - Added a more informative error message when the user specifies a number of reference dates in `estimate_delay()` that is larger than the number of rows in the reporting triangle.
 
-# baselinenowcast 0.2.1000
+# baselinenowcast 0.2.1 (GitHub-only release)
 
 ## Package
 

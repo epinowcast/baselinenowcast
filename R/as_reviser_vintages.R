@@ -11,7 +11,7 @@
 #'
 #' @param x A [reporting_triangle] object to convert.
 #' @param ... Additional arguments passed to [reviser::vintages_wide()].
-#'
+#' @importFrom cli cli_abort
 #' @return A tibble of class `tbl_pubdate` with a `time` column for the
 #'   reference dates and one column per publication date containing the
 #'   cumulative reported value as known on that publication date.
@@ -50,7 +50,7 @@
 #' print(vintages)
 as_reviser_vintages <- function(x, ...) {
   if (!requireNamespace("reviser", quietly = TRUE)) { # nolint: missing_package_linter
-    cli::cli_abort(
+    cli_abort(
       c(
         "Package {.pkg reviser} is required to convert to reviser vintages
         format.",
@@ -92,7 +92,7 @@ as_reviser_vintages <- function(x, ...) {
 #'
 #' @return A [reporting_triangle] object.
 #'   See [reporting_triangle-class] for details on the structure.
-#'
+#' @importFrom cli cli_abort
 #' @param delays_unit Character string specifying the temporal granularity of
 #'   the delays, one of `"days"`, `"weeks"`, `"months"`, or `"years"`. If
 #'   `NULL` (default), the unit is inferred from the smallest non-zero
@@ -138,7 +138,7 @@ as_reporting_triangle.tbl_pubdate <- function(data,
                                               delays_unit = NULL,
                                               ...) {
   if (!requireNamespace("reviser", quietly = TRUE)) { # nolint: missing_package_linter
-    cli::cli_abort(
+    cli_abort(
       c(
         "Package {.pkg reviser} is required to convert from reviser vintages
         format.",
@@ -189,13 +189,14 @@ as_reporting_triangle.tbl_pubdate <- function(data,
 #' @param report_dates Date vector of report dates.
 #' @param reference_dates Date vector of reference dates (same length as
 #'   `report_dates`).
+#' @importFrom cli cli_abort
 #' @returns A character string, one of `"days"` or `"weeks"`.
 #' @keywords internal
 .infer_delays_unit <- function(report_dates, reference_dates) {
   gaps <- as.integer(as.Date(report_dates) - as.Date(reference_dates))
   positive_gaps <- gaps[gaps > 0]
   if (length(positive_gaps) == 0L) {
-    cli::cli_abort(
+    cli_abort(
       c(
         "Cannot infer {.arg delays_unit}: no positive `report_date - reference_date` gaps.", # nolint
         "i" = "Pass {.arg delays_unit} explicitly." # nolint
@@ -204,7 +205,7 @@ as_reporting_triangle.tbl_pubdate <- function(data,
   }
   min_gap <- min(positive_gaps)
   if (any(positive_gaps %% min_gap != 0L)) {
-    cli::cli_abort(
+    cli_abort(
       c(
         "Cannot infer {.arg delays_unit}: `report_date - reference_date` gaps are not multiples of the smallest gap.", # nolint
         "i" = "Smallest gap (days): {.val {min_gap}}.", # nolint
@@ -218,7 +219,7 @@ as_reporting_triangle.tbl_pubdate <- function(data,
     NULL
   )
   if (is.null(unit)) {
-    cli::cli_abort(
+    cli_abort(
       c(
         "Cannot infer {.arg delays_unit} from a smallest gap of {min_gap} day{?s}.", # nolint
         "i" = "Pass {.arg delays_unit} explicitly (one of 'days', 'weeks', 'months', 'years')." # nolint

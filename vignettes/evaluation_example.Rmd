@@ -443,7 +443,7 @@ The same process could be applied to many of the other options for specifying `b
 Here, we will test out using larger proportions of the training data for delay estimation (via the `prop_delay` argument to `baselinenowcast()`) and we will test out using more or less training volume (via the `scale_factor` argument to `baselinenowcast()`).
 
 In this example, we are somewhat limited because we don't have a lot of historical data for training, but you can expand these to vary more in your use-case. See `?allocate_reference_times()` for more details on the constraints of the training volume requirements.
-We can use the `pmap_dfr` function from the `purrr` package to iterate through each combination of nowcast dates, proportion of data used for delay estimation, and the total number of reference dates used for training, using the same function we previously defined [above](evaluation_example.html/looping-over-multiple-nowcast-dates) `run_single_nowcast()`.
+We can use the `pmap_dfr` function from the `purrr` package to iterate through each combination of nowcast dates, proportion of data used for delay estimation, and the total number of reference dates used for training, using the same function we previously defined [above](#looping-over-multiple-nowcast-dates) `run_single_nowcast()`.
 To save computation time, I will exclude the training volume specifications we already nowcasted and bind them to the output.
 ```{r, message = FALSE}
 prop_delays <- c(0.5, 0.7)

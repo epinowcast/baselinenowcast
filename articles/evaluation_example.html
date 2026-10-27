@@ -34,7 +34,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">baselinenowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -253,7 +253,14 @@ We’ll run this loop by creating a function which performs the following steps 
 <span>  .id <span class="op">=</span> <span class="st">"nowcast_date"</span>,</span>
 <span>  .progress <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>nowcast_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">nowcast_date</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>nowcast_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">nowcast_date</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> Error in validating forecast object: Error in</span></span>
+<span><span class="co">#&gt;   assert_forecast.forecast_quantile(forecast = out, verbose = FALSE) :</span></span>
+<span><span class="co">#&gt;   Assertion on '"quantile_level"' failed: Must be a subset of the empty set,</span></span>
+<span><span class="co">#&gt;   i.e. also empty. .</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Run `assert_forecast()` (`?scoringutils::assert_forecast()`) to confirm. To</span></span>
+<span><span class="co">#&gt;   get rid of this warning entirely, call `as.data.table()` on the forecast</span></span>
+<span><span class="co">#&gt;   object.</span></span></code></pre></div>
 </div>
 <div class="section level4" number="0.3.3">
 <h4 id="visual-comparison-of-nowcasts">

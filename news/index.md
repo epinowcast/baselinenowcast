@@ -1,6 +1,6 @@
 # Changelog
 
-## baselinenowcast 0.2.2000
+## baselinenowcast 0.2.2
 
 ### Package
 
@@ -18,7 +18,7 @@
   [`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md)
   that is larger than the number of rows in the reporting triangle.
 
-## baselinenowcast 0.2.1000
+## baselinenowcast 0.2.1 (GitHub-only release)
 
 ### Package
 

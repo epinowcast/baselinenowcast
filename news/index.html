@@ -13,7 +13,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">baselinenowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,25 +54,25 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.2000" id="baselinenowcast-022000">baselinenowcast 0.2.2000<a class="anchor" aria-label="anchor" href="#baselinenowcast-022000"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.2" id="baselinenowcast-022">baselinenowcast 0.2.2<a class="anchor" aria-label="anchor" href="#baselinenowcast-022"></a></h2>
 <div class="section level3">
-<h3 id="package-0-2-2000">Package<a class="anchor" aria-label="anchor" href="#package-0-2-2000"></a></h3>
+<h3 id="package-0-2-2">Package<a class="anchor" aria-label="anchor" href="#package-0-2-2"></a></h3>
 <ul><li>Add a deprecation tag to the package data <code>germany_covid19_hosp</code> and make new package data named <code>covid19_data</code> which extends through August 2022.</li>
 <li>Fixed argument passing in <code><a href="../reference/baselinenowcast.reporting_triangle.html">baselinenowcast.reporting_triangle()</a></code> and <code>baselinenowcast.data.frame</code> to <code><a href="../reference/estimate_uncertainty.html">estimate_uncertainty()</a></code> and <code><a href="../reference/sample_nowcasts.html">sample_nowcasts()</a></code>.</li>
 <li>Added a more informative error message when the user specifies a number of reference dates in <code><a href="../reference/estimate_delay.html">estimate_delay()</a></code> that is larger than the number of rows in the reporting triangle.</li>
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.1000" id="baselinenowcast-021000">baselinenowcast 0.2.1000<a class="anchor" aria-label="anchor" href="#baselinenowcast-021000"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.1" id="baselinenowcast-021-github-only-release">baselinenowcast 0.2.1 (GitHub-only release)<a class="anchor" aria-label="anchor" href="#baselinenowcast-021-github-only-release"></a></h2>
 <div class="section level3">
-<h3 id="package-0-2-1000">Package<a class="anchor" aria-label="anchor" href="#package-0-2-1000"></a></h3>
+<h3 id="package-0-2-1">Package<a class="anchor" aria-label="anchor" href="#package-0-2-1"></a></h3>
 <ul><li>Add <code><a href="https://epiforecasts.io/scoringutils/reference/as_forecast_sample.html" class="external-link">as_forecast_sample()</a></code> and <code><a href="https://epiforecasts.io/scoringutils/reference/as_forecast_point.html" class="external-link">as_forecast_point()</a></code> S3 methods for <code>baselinenowcast_df</code> objects, enabling direct conversion of probabilistic or point nowcasts to <code>scoringutils</code> forecast objects for scoring against the latest observed counts (<a href="https://github.com/epinowcast/baselinenowcast/issues/418" class="external-link">#418</a>). <code>baselinenowcast_df</code> objects now carry a logical <code>nowcast</code> column flagging the right-truncated reference dates that were actually nowcast (as opposed to fully observed), and the converters use it to score only those dates.</li>
 <li>Place every internal check, assert, and validate function next to its consumer (class invariants in <code>R/reporting_triangle-class.R</code> and <code>R/baselinenowcast_df-class.R</code>; per-caller helpers in the file that calls them) and remove <code>R/validate.R</code>. Generalise <code>assert_rep_tri_class()</code> with an <code>arg_name</code> argument and use it to replace duplicated inline class checks in <code><a href="../reference/truncate_to_quantile.html">truncate_to_quantile()</a></code>, <code><a href="../reference/truncate_to_delay.html">truncate_to_delay()</a></code>, and the reporting triangle getters and methods (<a href="https://github.com/epinowcast/baselinenowcast/issues/300" class="external-link">#300</a>).</li>
 <li>Add converters between <code>reporting_triangle</code> and <a href="https://CRAN.R-project.org/package=reviser" class="external-link">reviser</a> vintages formats via <code><a href="../reference/as_reviser_vintages.html">as_reviser_vintages()</a></code> and <code><a href="../reference/as_reporting_triangle.tbl_pubdate.html">as_reporting_triangle.tbl_pubdate()</a></code>, enabling use of reviser’s vintage analysis and state space nowcasting methods alongside baselinenowcast’s nowcasting functionality (<a href="https://github.com/epinowcast/baselinenowcast/issues/429" class="external-link">#429</a>).</li>
 <li>Add <code><a href="../reference/truncate_to_date.html">truncate_to_date()</a></code>, a date-based wrapper around <code><a href="../reference/truncate_to_row.html">truncate_to_row()</a></code> that drops rows with reference dates after a given cutoff (<a href="https://github.com/epinowcast/baselinenowcast/issues/447" class="external-link">#447</a>).</li>
 </ul></div>
 <div class="section level3">
-<h3 id="documentation-0-2-1000">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-1000"></a></h3>
+<h3 id="documentation-0-2-1">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-1"></a></h3>
 <ul><li>Modified NSSP nowcast vignette to do vectorised string matching instead of row-wise and to simplify the pre-processing to avoid a pivot to a wide form dataframe to speed-up performance.</li>
 <li>Added a new vignette which provides an example of how to evaluate visually and quantitatively a single nowcast model specification, as well as how to use quantitative evaluation metrics to choose a model specification.</li>
 </ul></div>

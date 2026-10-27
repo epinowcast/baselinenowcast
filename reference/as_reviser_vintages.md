@@ -58,7 +58,7 @@ object, use
 - [`as_reporting_triangle.tbl_pubdate()`](https://baselinenowcast.epinowcast.org/reference/as_reporting_triangle.tbl_pubdate.md)
   for converting back
 
-- [reviser package documentation](https://github.com/cynkra/reviser)
+- [reviser package documentation](https://github.com/ropensci/reviser)
 
 Reporting triangle construction and validation
 [`[.reporting_triangle()`](https://baselinenowcast.epinowcast.org/reference/sub-.reporting_triangle.md),
@@ -103,6 +103,7 @@ rep_tri <- as_reporting_triangle(data = data_as_of_df)
 vintages <- as_reviser_vintages(rep_tri)
 print(vintages)
 #> # Vintages data (publication date format):
+#> # Format:                                  wide
 #> # Time periods:                            159
 #> # Vintages:                                159
 #>    time       `2025-10-25` `2025-10-26` `2025-10-27` `2025-10-28`

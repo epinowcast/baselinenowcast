@@ -250,6 +250,13 @@ mult_nowcasts <- map_dfr(
   .progress = TRUE
 ) |>
   mutate(nowcast_date = as.Date(nowcast_date))
+#> Warning: ! Error in validating forecast object: Error in
+#>   assert_forecast.forecast_quantile(forecast = out, verbose = FALSE) :
+#>   Assertion on '"quantile_level"' failed: Must be a subset of the empty set,
+#>   i.e. also empty. .
+#> ℹ Run `assert_forecast()` (`?scoringutils::assert_forecast()`) to confirm. To
+#>   get rid of this warning entirely, call `as.data.table()` on the forecast
+#>   object.
 ```
 
 #### 0.3.3 Visual comparison of nowcasts

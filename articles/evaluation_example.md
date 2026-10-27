@@ -668,10 +668,9 @@ constraints of the training volume requirements. We can use the
 combination of nowcast dates, proportion of data used for delay
 estimation, and the total number of reference dates used for training,
 using the same function we previously defined
-[above](https://baselinenowcast.epinowcast.org/articles/evaluation_example.html/looping-over-multiple-nowcast-dates)
-`run_single_nowcast()`. To save computation time, I will exclude the
-training volume specifications we already nowcasted and bind them to the
-output.
+[above](#looping-over-multiple-nowcast-dates) `run_single_nowcast()`. To
+save computation time, I will exclude the training volume specifications
+we already nowcasted and bind them to the output.
 
 ``` r
 

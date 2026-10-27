@@ -57,7 +57,7 @@ print(vintages)
 \seealso{
 \itemize{
 \item \code{\link[=as_reporting_triangle.tbl_pubdate]{as_reporting_triangle.tbl_pubdate()}} for converting back
-\item \href{https://github.com/cynkra/reviser}{reviser package documentation}
+\item \href{https://github.com/ropensci/reviser}{reviser package documentation}
 }
 
 Reporting triangle construction and validation

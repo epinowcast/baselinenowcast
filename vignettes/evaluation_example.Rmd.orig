@@ -194,9 +194,8 @@ mult_nowcasts <- map_dfr(
 
 To make a static image, we will start by visualising the nowcasts compared to both the initial data available without nowcasting and the final data available retrospectively.
 
-First, we'll need to pivot the quantiles from long to wide for plotting.
+First, when we converted to quantiles using `as_forecast_quantile()`, the output is in long format with one row per quantile level, so for plotting we pivot it to wide format.
 We'll first convert to a `data.frame` and then use `pivot_wider` from `tidyr`.
-When we converted to quantiles using
 ```{r}
 mult_nowcasts_to_plot <- mult_nowcasts |>
   as.data.frame() |>

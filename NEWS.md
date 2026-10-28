@@ -5,6 +5,11 @@
 - Add a deprecation tag to the package data `germany_covid19_hosp` and make new package data named `covid19_data` which extends through August 2022.
 - Fixed argument passing in `baselinenowcast.reporting_triangle()` and `baselinenowcast.data.frame` to `estimate_uncertainty()` and `sample_nowcasts()`.
 - Added a more informative error message when the user specifies a number of reference dates in `estimate_delay()` that is larger than the number of rows in the reporting triangle.
+- Reduced test run time for CRAN by using 10 draws instead of the default 1000 in the slow `ref_time_aggregator` tests, skipping those tests on CRAN with `skip_on_cran()`, and setting a seed in a stochastic test that could fail intermittently (#488).
+
+## Documentation
+
+- Precompute the evaluation example vignette from `vignettes/evaluation_example.Rmd.orig` (via `vignettes/precompile.R`) to reduce vignette build time on CRAN, with a GitHub Actions workflow to re-render it (#488).
 
 # baselinenowcast 0.2.1 (GitHub-only release)
 

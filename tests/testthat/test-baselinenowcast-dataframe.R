@@ -12,7 +12,7 @@ test_that(paste0(
   "baselinenowcast.data.frame returns the expected structure ",
   "with and without strata sharing"
 ), {
-  set.seed(42)
+  withr::local_seed(42)
   nowcasts_df <- baselinenowcast_test(
     data = covid_data,
     strata_cols = c("age_group", "location")

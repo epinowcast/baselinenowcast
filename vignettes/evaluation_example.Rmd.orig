@@ -21,7 +21,7 @@ vignette: >
 # Edit evaluation_example.Rmd.orig (not the .Rmd) and then re-knit by running
 # vignettes/precompile.R from within the vignettes directory.
 knitr::opts_chunk$set(
-  fig.path = "evaluation_example-"
+  fig.path = "evaluation_example/"
 )
 ```
 

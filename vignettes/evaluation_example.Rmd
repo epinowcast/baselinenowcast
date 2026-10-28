@@ -312,7 +312,7 @@ p <- plot_multiple_nowcasts(
 p
 ```
 
-![plot of chunk nowcasts-every-4-weeks](evaluation_example-nowcasts-every-4-weeks-1.png)
+![plot of chunk nowcasts-every-4-weeks](evaluation_example/nowcasts-every-4-weeks-1.png)
 
 
 However, we might be interested in visually comparing the performance of each individual weekly nowcast.
@@ -434,7 +434,7 @@ ggplot(scores_by_nowcast_date) +
   ylab("Average WIS")
 ```
 
-![plot of chunk wis-by-nowcast-date](evaluation_example-wis-by-nowcast-date-1.png)
+![plot of chunk wis-by-nowcast-date](evaluation_example/wis-by-nowcast-date-1.png)
 
 While this tells us how the nowcast performance varies over time, it can be a bit difficult to interpret on its own because WIS scales with the counts of the observations, thus, we expect higher WIS when case counts are higher.
 It's therefore not surprising that we see higher WIS values in March, as this is when case counts are highest.
@@ -487,7 +487,7 @@ ggplot(scores_long) +
   ylab("Interval Coverage")
 ```
 
-![plot of chunk coverage-by-nowcast-date](evaluation_example-coverage-by-nowcast-date-1.png)
+![plot of chunk coverage-by-nowcast-date](evaluation_example/coverage-by-nowcast-date-1.png)
 
 Here, we see relatively robust prediction interval coverage across the range of nowcast dates.
 We can visually see that in February and March, more than 50% of observations fall within the 50% prediction interval, indicating this interval is slightly wider than would be ideal.
@@ -658,7 +658,7 @@ scores_summary |>
   ylab("WIS")
 ```
 
-![plot of chunk wis-components-by-spec](evaluation_example-wis-components-by-spec-1.png)
+![plot of chunk wis-components-by-spec](evaluation_example/wis-components-by-spec-1.png)
 
 This bar chart shows how similar the WIS scores are across the model specifications.
 Next we can compare the interval coverage visually, as this tells us about how well the model is calibrated under each specification.
@@ -705,7 +705,7 @@ scores_summary |>
   ylab("Interval coverage")
 ```
 
-![plot of chunk coverage-by-spec](evaluation_example-coverage-by-spec-1.png)
+![plot of chunk coverage-by-spec](evaluation_example/coverage-by-spec-1.png)
 From the interval coverage bar chart, it is clear that the `prop_delay = 0.7` model specifications over-cover compared to the `prop_delay = 0.5` specifications.
 
 ### Interpreting the results

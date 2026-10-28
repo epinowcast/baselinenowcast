@@ -327,13 +327,10 @@ p_anim <- p_all_dates +
   labs(title = "Nowcast date: {closest_state}") +
   transition_states(nowcast_date, transition_length = 0, state_length = 1) +
   ease_aes("linear")
-knitr::include_graphics(file.path(
-  "..", "man", "figures",
-  "nowcast_flipbook.gif"
-))
+p_anim
 ```
 
-![plot of chunk nowcast-flipbook](../man/figures/nowcast_flipbook.gif)
+![plot of chunk nowcast-flipbook](evaluation_example/nowcast-flipbook-1.gif)
 
 This can be saved as a GIF with the command `anim_save()`.
 
@@ -377,23 +374,23 @@ head(scores_quantiles)
 #> 2:   2025-12-24     2025-11-30 baselinenowcast           660  0.00
 #> 3:   2025-12-24     2025-12-01 baselinenowcast           634 17.00
 #> 4:   2025-12-24     2025-12-02 baselinenowcast           588  0.14
-#> 5:   2025-12-24     2025-12-03 baselinenowcast           565 18.36
-#> 6:   2025-12-24     2025-12-04 baselinenowcast           507  1.18
+#> 5:   2025-12-24     2025-12-03 baselinenowcast           565 18.16
+#> 6:   2025-12-24     2025-12-04 baselinenowcast           507  1.08
 #>    overprediction underprediction dispersion  bias interval_coverage_50
 #>             <num>           <num>      <num> <num>               <lgcl>
-#> 1:            0.0               0       0.00   0.0                 TRUE
-#> 2:            0.0               0       0.00   0.0                 TRUE
-#> 3:            0.0              17       0.00  -1.0                FALSE
-#> 4:            0.0               0       0.14   0.0                 TRUE
-#> 5:            0.0              18       0.36  -1.0                FALSE
-#> 6:            0.2               0       0.98   0.5                 TRUE
+#> 1:            0.0             0.0       0.00   0.0                 TRUE
+#> 2:            0.0             0.0       0.00   0.0                 TRUE
+#> 3:            0.0            17.0       0.00  -1.0                FALSE
+#> 4:            0.0             0.0       0.14   0.0                 TRUE
+#> 5:            0.0            17.8       0.36  -1.0                FALSE
+#> 6:            0.2             0.0       0.88   0.5                 TRUE
 #>    interval_coverage_90 ae_median
 #>                  <lgcl>     <num>
 #> 1:                 TRUE         0
 #> 2:                 TRUE         0
 #> 3:                FALSE        17
 #> 4:                 TRUE         0
-#> 5:                FALSE        22
+#> 5:                FALSE        21
 #> 6:                 TRUE         1
 ```
 
@@ -403,15 +400,15 @@ Let's first summarise the scores overall using the `summarise_scores()` function
 ``` r
 scores_summary <- summarise_scores(scores_quantiles)
 head(scores_summary)
-#>              model     wis overprediction underprediction dispersion
-#>             <char>   <num>          <num>           <num>      <num>
-#> 1: baselinenowcast 15.3828       2.951573        5.685973   6.745253
-#>           bias interval_coverage_50 interval_coverage_90 ae_median
-#>          <num>                <num>                <num>     <num>
-#> 1: -0.08693333            0.5253333            0.8853333  24.02667
+#>              model      wis overprediction underprediction dispersion    bias
+#>             <char>    <num>          <num>           <num>      <num>   <num>
+#> 1: baselinenowcast 15.42962       2.969493        5.671627   6.788496 -0.0848
+#>    interval_coverage_50 interval_coverage_90 ae_median
+#>                   <num>                <num>     <num>
+#> 1:            0.5386667            0.8826667     24.14
 ```
 This summary tells us that the model is overall biased slightly downward (indicated by the negative bias).
-It slightly overcovers at 50% prediction intervals (meaning the prediction intervals are a bit too wide) but is very well-calibrated at 90% prediction intervals (89% of observations fall within the 90% prediction intervals).
+It slightly overcovers at 50% prediction intervals (meaning the prediction intervals are a bit too wide) but is very well-calibrated at 90% prediction intervals (88% of observations fall within the 90% prediction intervals).
 In terms of overall performance, the nowcasts are penalised more heavily for underprediction than overprediction (which corroborates the negative bias) and is most penalised for being over-dispersed (prediction intervals are too wide, as corroborated by the 50% interval coverage value).
 
 To further investigate trends over time, we can look at how nowcast performance varies across nowcast dates.
@@ -564,12 +561,12 @@ head(scores_quantiles)
 #> 6:     2025-12-04 baselinenowcast           507   2025-12-24        0.7
 #>    scale_factor   wis overprediction underprediction dispersion  bias
 #>           <num> <num>          <num>           <num>      <num> <num>
-#> 1:          2.2  0.12            0.0             0.0       0.12   0.0
-#> 2:          2.2  0.30            0.0             0.0       0.30   0.0
-#> 3:          2.2 10.00            0.0             9.4       0.60  -0.9
-#> 4:          2.2  1.70            0.4             0.0       1.30   0.5
-#> 5:          2.2 10.78            0.0             9.2       1.58  -0.9
-#> 6:          2.2  1.88            0.2             0.0       1.68   0.5
+#> 1:          2.2  0.26            0.0             0.0       0.26   0.0
+#> 2:          2.2  0.28            0.0             0.0       0.28   0.0
+#> 3:          2.2 10.04            0.0             9.4       0.64  -0.9
+#> 4:          2.2  1.64            0.4             0.0       1.24   0.5
+#> 5:          2.2 11.04            0.0             9.6       1.44  -0.9
+#> 6:          2.2  1.92            0.2             0.0       1.72   0.5
 #>    interval_coverage_50 interval_coverage_90 ae_median
 #>                  <lgcl>               <lgcl>     <num>
 #> 1:                 TRUE                 TRUE         0
@@ -614,10 +611,10 @@ scores_summary_table
 
 |Model           | Proportion for delay| Scale factor|    WIS| underprediction| overprediction| dispersion| 50% coverage| 90% coverage|   bias| Absolute Error (median)|
 |:---------------|--------------------:|------------:|------:|---------------:|--------------:|----------:|------------:|------------:|------:|-----------------------:|
-|baselinenowcast |                  0.7|          2.2| 15.155|           5.792|          2.579|      6.784|        0.576|        0.928| -0.119|                  23.591|
-|baselinenowcast |                  0.5|          2.3| 15.077|           5.399|          2.870|      6.808|        0.536|        0.901| -0.066|                  23.620|
-|baselinenowcast |                  0.7|          2.3| 14.962|           5.676|          2.556|      6.730|        0.584|        0.939| -0.123|                  23.144|
-|baselinenowcast |                  0.5|          2.2| 15.383|           5.686|          2.952|      6.745|        0.525|        0.885| -0.087|                  24.027|
+|baselinenowcast |                  0.7|          2.2| 15.049|           5.675|          2.564|      6.810|        0.587|        0.944| -0.124|                  23.343|
+|baselinenowcast |                  0.5|          2.3| 15.136|           5.483|          2.837|      6.815|        0.533|        0.904| -0.065|                  23.615|
+|baselinenowcast |                  0.7|          2.3| 14.972|           5.624|          2.573|      6.775|        0.581|        0.941| -0.123|                  23.177|
+|baselinenowcast |                  0.5|          2.2| 15.430|           5.672|          2.969|      6.788|        0.539|        0.883| -0.085|                  24.140|
 
 
 We can see from the summary table that the different training volume specifications all perform relatively similarly in terms of WIS.

@@ -303,7 +303,7 @@ p
 
 However, we might be interested in visually comparing the performance of each individual weekly nowcast.
 To achieve this, we call the plotting function above for the dataframe with all the nowcast dates, and then we add the animation code to make this into a "flipbook" using `gganimate`, where each slide shows a single nowcast.
-```{r nowcast-flipbook}
+```{r nowcast-flipbook, fig.width = 480 / 72, fig.height = 480 / 72}
 p_all_dates <- plot_multiple_nowcasts(
   data = mult_nowcasts_to_plot,
   eval_data_full = eval_data_full
@@ -312,14 +312,11 @@ p_anim <- p_all_dates +
   labs(title = "Nowcast date: {closest_state}") +
   transition_states(nowcast_date, transition_length = 0, state_length = 1) +
   ease_aes("linear")
-knitr::include_graphics(file.path(
-  "..", "man", "figures",
-  "nowcast_flipbook.gif"
-))
+p_anim
 ```
 
 This can be saved as a GIF with the command `anim_save()`.
-```{r, message = FALSE, eval = !file.exists(file.path("..", "man", "figures", "nowcast_flipbook.gif"))}
+```{r, eval = FALSE}
 anim_save("nowcast_flipbook.gif",
   animation = p_anim
 )
@@ -361,7 +358,7 @@ scores_summary <- summarise_scores(scores_quantiles)
 head(scores_summary)
 ```
 This summary tells us that the model is overall biased slightly downward (indicated by the negative bias).
-It slightly overcovers at 50% prediction intervals (meaning the prediction intervals are a bit too wide) but is very well-calibrated at 90% prediction intervals (89% of observations fall within the 90% prediction intervals).
+It slightly overcovers at 50% prediction intervals (meaning the prediction intervals are a bit too wide) but is very well-calibrated at 90% prediction intervals (88% of observations fall within the 90% prediction intervals).
 In terms of overall performance, the nowcasts are penalised more heavily for underprediction than overprediction (which corroborates the negative bias) and is most penalised for being over-dispersed (prediction intervals are too wide, as corroborated by the 50% interval coverage value).
 
 To further investigate trends over time, we can look at how nowcast performance varies across nowcast dates.

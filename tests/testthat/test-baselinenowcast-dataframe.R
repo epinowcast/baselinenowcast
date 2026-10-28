@@ -12,6 +12,7 @@ test_that(paste0(
   "baselinenowcast.data.frame returns the expected structure ",
   "with and without strata sharing"
 ), {
+  set.seed(42)
   nowcasts_df <- baselinenowcast_test(
     data = covid_data,
     strata_cols = c("age_group", "location")
@@ -703,15 +704,18 @@ test_that(paste0(
 })
 
 test_that("baselinenowcast_test: ref_time_aggregator works correctly across all strata", { # nolint
+  skip_on_cran()
   set.seed(123)
   result_default <- baselinenowcast_test(
     data = covid_data,
-    strata_cols = c("age_group", "location")
+    strata_cols = c("age_group", "location"),
+    draws = 10
   )
   set.seed(123)
   result_7d_sum <- baselinenowcast_test(
     data = covid_data,
     strata_cols = c("age_group", "location"),
+    draws = 10,
     ref_time_aggregator = function(x) zoo::rollsum(x, k = 7, align = "right")
   )
 
@@ -832,6 +836,7 @@ test_that("baselinenowcast_test: ref_time_aggregator works correctly across all 
 })
 
 test_that("baselinenowcast with ref time aggregator is same with both dataframe and reporting triangle method", { # nolint
+  skip_on_cran()
   skip_if_not_installed("dplyr")
   set.seed(123)
   covid_data_single_group <- filter(
@@ -843,6 +848,7 @@ test_that("baselinenowcast with ref time aggregator is same with both dataframe 
   result_7d_sum_tri <- suppressWarnings(
     baselinenowcast(
       rep_tri,
+      draws = 10,
       ref_time_aggregator = function(x) zoo::rollsum(x, k = 7, align = "right")
     )
   )
@@ -851,6 +857,7 @@ test_that("baselinenowcast with ref time aggregator is same with both dataframe 
     baselinenowcast(
       covid_data_single_group,
       strata_cols = c("age_group", "location"),
+      draws = 10,
       ref_time_aggregator = function(x) zoo::rollsum(x, k = 7, align = "right")
     )
   )

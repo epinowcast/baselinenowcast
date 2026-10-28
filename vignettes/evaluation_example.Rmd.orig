@@ -53,6 +53,9 @@ library(purrr)
 library(gganimate)
 library(ggplot2)
 library(scoringutils)
+
+# Set a seed so that the probabilistic nowcasts are reproducible
+set.seed(123)
 ```
 
 ## Data
@@ -358,7 +361,7 @@ scores_summary <- summarise_scores(scores_quantiles)
 head(scores_summary)
 ```
 This summary tells us that the model is overall biased slightly downward (indicated by the negative bias).
-It slightly overcovers at 50% prediction intervals (meaning the prediction intervals are a bit too wide) but is very well-calibrated at 90% prediction intervals (88% of observations fall within the 90% prediction intervals).
+It slightly overcovers at 50% prediction intervals (meaning the prediction intervals are a bit too wide) but is very well-calibrated at 90% prediction intervals (89% of observations fall within the 90% prediction intervals).
 In terms of overall performance, the nowcasts are penalised more heavily for underprediction than overprediction (which corroborates the negative bias) and is most penalised for being over-dispersed (prediction intervals are too wide, as corroborated by the 50% interval coverage value).
 
 To further investigate trends over time, we can look at how nowcast performance varies across nowcast dates.

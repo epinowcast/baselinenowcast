@@ -7,13 +7,9 @@ output:
     code_folding: show
 pkgdown:
   as_is: true
-bibliography: library.bib
+bibliography: ../library.bib
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 link-citations: true
-vignette: >
-  %\VignetteIndexEntry{Example nowcast performance evaluation for model specification}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 

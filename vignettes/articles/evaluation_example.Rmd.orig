@@ -7,19 +7,15 @@ output:
     code_folding: show
 pkgdown:
   as_is: true
-bibliography: library.bib
+bibliography: ../library.bib
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 link-citations: true
-vignette: >
-  %\VignetteIndexEntry{Example nowcast performance evaluation for model specification}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
-# This vignette is precomputed to reduce build time on CRAN.
+# This article is precomputed to reduce the pkgdown site build time.
 # Edit evaluation_example.Rmd.orig (not the .Rmd) and then re-knit by running
-# vignettes/precompile.R from within the vignettes directory.
+# precompile.R from within the vignettes/articles directory.
 knitr::opts_chunk$set(
   fig.path = "evaluation_example/",
   fig.width = 8,

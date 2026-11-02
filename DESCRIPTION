@@ -64,8 +64,6 @@ Imports:
   purrr
 Suggests:
     bookdown,
-    magick,
-    gganimate,
     scoringutils,
     ChainLadder,
     dplyr,
@@ -91,4 +89,4 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 Config/Needs/hexsticker: hexSticker, sysfonts, ggplot2
-Config/Needs/website: r-lib/pkgdown, epinowcast/enwtheme
+Config/Needs/website: r-lib/pkgdown, epinowcast/enwtheme, gganimate, magick

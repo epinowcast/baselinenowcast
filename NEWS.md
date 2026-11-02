@@ -9,7 +9,7 @@
 
 ## Documentation
 
-- Precompute the evaluation example vignette from `vignettes/evaluation_example.Rmd.orig` (via `vignettes/precompile.R`) to reduce vignette build time on CRAN, with a GitHub Actions workflow to re-render it (#488).
+- Moved the evaluation example vignette to a website-only pkgdown article in `vignettes/articles/` so that it is no longer built on CRAN. The article is precomputed from `vignettes/articles/evaluation_example.Rmd.orig` (via `vignettes/articles/precompile.R`) to keep the site build fast, with a GitHub Actions workflow to re-render it (#488).
 
 # baselinenowcast 0.2.1 (GitHub-only release)
 

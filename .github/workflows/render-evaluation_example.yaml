@@ -1,8 +1,10 @@
 name: render-evaluation_example
 
-# The evaluation_example vignette is slow to run, so it is precomputed from
-# vignettes/evaluation_example.Rmd.orig into vignettes/evaluation_example.Rmd.
-# This workflow re-knits it and opens a PR with the updated output.
+# The evaluation_example article is slow to run, so it is precomputed from
+# vignettes/articles/evaluation_example.Rmd.orig into
+# vignettes/articles/evaluation_example.Rmd, which pkgdown renders as a
+# website-only article. This workflow re-knits it and opens a PR with the
+# updated output.
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
@@ -14,7 +16,7 @@ on:
     branches:
       - main
     paths:
-      - "vignettes/evaluation_example.Rmd.orig"
+      - "vignettes/articles/evaluation_example.Rmd.orig"
   schedule:
     - cron: "0 0 1 * *"
 
@@ -39,32 +41,33 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::knitr, any::purrr, local::.
+          needs: website
 
-      - name: Render vignette
+      - name: Render article
         run: |
-          setwd("vignettes")
+          setwd("vignettes/articles")
           knitr::knit(
             "evaluation_example.Rmd.orig",
             "evaluation_example.Rmd"
           )
         shell: Rscript {0}
 
-      - name: Upload vignette as an artifact
+      - name: Upload article as an artifact
         uses: actions/upload-artifact@v4
         with:
-          name: vignettes
-          path: vignettes
+          name: articles
+          path: vignettes/articles
 
       - name: Create Pull Request
         if: github.ref == 'refs/heads/main'
         uses: peter-evans/create-pull-request@v7
         with:
-          commit-message: "Automatic evaluation_example vignette update"
-          title: "Update evaluation_example vignette"
-          body: "This is an automated pull request to update the precomputed evaluation_example vignette."
+          commit-message: "Automatic evaluation_example article update"
+          title: "Update evaluation_example article"
+          body: "This is an automated pull request to update the precomputed evaluation_example article."
           branch: "update-evaluation_example-${{ github.run_number }}"
           labels: "documentation"
           reviewers: kaitejohnson
           add-paths: |
-            vignettes
+            vignettes/articles
           token: ${{ secrets.GITHUB_TOKEN }}

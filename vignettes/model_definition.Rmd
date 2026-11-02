@@ -135,7 +135,8 @@ $$
 \hat{x}_{t,d} = \hat{\pi}_d \times \hat{x}_t.
 $$
 
-The `apply_delay()` function ingests a reporting triangle and a delay PMF and returns a point nowcast matrix by "filling in" the missing elements of the reporting triangle. The generation of a point nowcast is described in the schematic below (Figure \@ref(fig:pt-nowcast)), demonstrating how the missing elements of the reporting triangle are estimated and can then be used to generate a point estimate of the final counts at each reference time.
+The `apply_delay()` function ingests a reporting triangle and a delay PMF and returns a point nowcast matrix by "filling in" the missing elements of the reporting triangle.
+The generation of a point nowcast is described in the schematic below (Figure \@ref(fig:pt-nowcast)), demonstrating how the missing elements of the reporting triangle are estimated and can then be used to generate a point estimate of the final counts at each reference time.
 
 ```{r pt-nowcast, echo = FALSE, fig.cap = 'Visual description of the generation of a point nowcast matrix from a reporting triangle and delay PMF. '}
 knitr::include_graphics(file.path("..", "man", "figures", "point_nowcast.png"))
@@ -153,7 +154,8 @@ This can be achieved in a stepwise manner using the functions `truncate_to_rows(
 
 ### Generation of retrospective point nowcast matrices
 
-For each of the $M$ vintage reporting triangles, i.e., $s^* = t^*-1,, ..., t^*-M$, we apply the method described above to estimate a delay distribution and generate a point nowcast matrix using the function `estimate_and_apply_delays()`. To indicate the data version on which it is based, its entries are denoted by:
+For each of the $M$ vintage reporting triangles, i.e., $s^* = t^*-1,, ..., t^*-M$, we apply the method described above to estimate a delay distribution and generate a point nowcast matrix using the function `estimate_and_apply_delays()`.
+To indicate the data version on which it is based, its entries are denoted by:
 
 $$
 \hat{x}_{t, d}(s^*)
@@ -176,7 +178,7 @@ Only the second term has some associated uncertainty, while the first is already
 Assuming a negative binomial observation model, if all observations were complete, we would then estimate the overdispersion parameter $\phi_j$ of a negative binomial distribution
 
 $$
-X_{s^* - j, > j} \sim \text{NegBin}[\hat{x}_{s^* - j, > j}(s^*), \phi_j] (\#eq:negbin)
+X_{s^* - j, > j} \sim \text{NegBin}[\hat{x}_{s^* - j, > j}(s^*), \phi_j], (\#eq:negbin)
 $$
 
 with independence assumed across the different $s^*$. This, however, is not directly feasible as again some of the $x_{s^* - j, > j}$ are not yet observed at time $t^*$. We could discard these instances, but this would considerably reduce our number of available observations. We therefore use partial observations as available at time $t^*$ and assume
@@ -203,7 +205,9 @@ Predictive distributions for $X_{t^*}, \dots, X_{t^* - D + 1}$ are obtained by g
 
 $$
 X_{t, > t^* - t} \sim \text{NegBin}(\hat{x}_{t, > t^* - t}, \phi_{t^* - t}).
-$$ This is described in the schematic Figure \@ref(fig:predicted-prob-nowcasts) which depicts sampling from the observation model with a mean given by the sum of the predicted components in the point nowcast matrix (the shaded elements in the bottom right).
+$$
+
+This is described in the schematic Figure \@ref(fig:predicted-prob-nowcasts) which depicts sampling from the observation model with a mean given by the sum of the predicted components in the point nowcast matrix (the shaded elements in the bottom right).
 
 ```{r predicted-prob-nowcasts, echo = FALSE, fig.cap = 'Visual description of the generation of predicted probabilistic nowcasts generated via sampling from the observation model with the estimated uncertainty parameters and a mean given by the sum of the predicted components at each reference time.'}
 knitr::include_graphics(file.path(

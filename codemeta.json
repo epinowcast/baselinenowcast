@@ -14,7 +14,7 @@
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.6.1 (2026-06-24)",
+  "runtimePlatform": "R version 4.6.2 (2026-10-29)",
   "provider": {
     "@id": "https://cran.r-project.org",
     "@type": "Organization",
@@ -97,30 +97,6 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=bookdown"
-    },
-    {
-      "@type": "SoftwareApplication",
-      "identifier": "magick",
-      "name": "magick",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=magick"
-    },
-    {
-      "@type": "SoftwareApplication",
-      "identifier": "gganimate",
-      "name": "gganimate",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=gganimate"
     },
     {
       "@type": "SoftwareApplication",
@@ -408,7 +384,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "1784.891KB",
+  "fileSize": "1554.037KB",
   "citation": [
     {
       "@type": "ScholarlyArticle",

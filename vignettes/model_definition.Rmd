@@ -181,7 +181,9 @@ $$
 X_{s^* - j, > j} \sim \text{NegBin}[\hat{x}_{s^* - j, > j}(s^*), \phi_j], (\#eq:negbin)
 $$
 
-with independence assumed across the different $s^*$. This, however, is not directly feasible as again some of the $x_{s^* - j, > j}$ are not yet observed at time $t^*$. We could discard these instances, but this would considerably reduce our number of available observations. We therefore use partial observations as available at time $t^*$ and assume $$
+with independence assumed across the different $s^*$. This, however, is not directly feasible as again some of the $x_{s^* - j, > j}$ are not yet observed at time $t^*$. We could discard these instances, but this would considerably reduce our number of available observations. We therefore use partial observations as available at time $t^*$ and assume
+
+$$
 \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \sim \text{NegBin}\left[\sum_{d = j + 1}^{\min(D, t^* - s^*)} \hat{x}_{s^* - j, d}, \phi_j \right]. (\#eq:negbin2)
 $$
 
@@ -204,6 +206,7 @@ Predictive distributions for $X_{t^*}, \dots, X_{t^* - D + 1}$ are obtained by g
 $$
 X_{t, > t^* - t} \sim \text{NegBin}(\hat{x}_{t, > t^* - t}, \phi_{t^* - t}).
 $$
+
 This is described in the schematic Figure \@ref(fig:predicted-prob-nowcasts) which depicts sampling from the observation model with a mean given by the sum of the predicted components in the point nowcast matrix (the shaded elements in the bottom right).
 
 ```{r predicted-prob-nowcasts, echo = FALSE, fig.cap = 'Visual description of the generation of predicted probabilistic nowcasts generated via sampling from the observation model with the estimated uncertainty parameters and a mean given by the sum of the predicted components at each reference time.'}
@@ -241,7 +244,9 @@ $$
 X_t \sim \text{DiscreteUniform}(0, 1, 2, \dots).
 $$
 
-For notational simplicity and readability for the following, we substitute $N = X_{t}$, $Y = X_{t, \geq d}$ and $p = \sum_{d = 0}^D \pi_d$ and are thus looking for $\mathbb{E}(N | Y = y)$ if $Y \sim \text{Bin}(N, p)$ with a discrete uniform prior on $N$. This expectation can be written out as: $$
+For notational simplicity and readability for the following, we substitute $N = X_{t}$, $Y = X_{t, \geq d}$ and $p = \sum_{d = 0}^D \pi_d$ and are thus looking for $\mathbb{E}(N | Y = y)$ if $Y \sim \text{Bin}(N, p)$ with a discrete uniform prior on $N$. This expectation can be written out as:
+
+$$
 \mathbb{E}(N \ | \ Y = y) = \sum_{n=0}^{\infty}\text{Pr}(N = n | Y = y) \times n (\#eq:expectation)
 $$
 

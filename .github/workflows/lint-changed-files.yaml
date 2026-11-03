@@ -27,7 +27,7 @@ jobs:
             any::lintr
             any::purrr
             any::cyclocomp
-          needs: check
+          needs: check, website
 
       - name: Add lintr options
         run: |

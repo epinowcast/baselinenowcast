@@ -18,7 +18,6 @@ repos:
     hooks:
     -   id: check-added-large-files
         args: ['--maxkb=200']
-        exclude: '^vignettes/articles/.*\.gif$'
     -   id: end-of-file-fixer
         exclude: '\.Rd'
 -   repo: local

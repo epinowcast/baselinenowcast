@@ -15,7 +15,6 @@
 ^codemeta\.json$
 ^inst/make_hexsticker\.R$
 ^inst/scripts$
-^vignettes/precompile\.R$
 ^vignettes/chunks$
 ^doc$
 ^Meta$
@@ -29,4 +28,4 @@
 ^\.claude$
 ^\.profiling$
 ^profile_original\.html$
-^vignettes/.*\.Rmd\.orig$
+^vignettes/articles$

@@ -25,9 +25,9 @@
 
 ### Documentation
 
-- Moved the evaluation example vignette to a website-only pkgdown
+- Moved the evaluation example vignette to a website-only `pkgdown`
   article in `vignettes/articles/` so that it is no longer built on
-  CRAN. The article is rendered when the pkgdown site is built in CI
+  CRAN. The article is rendered when the `pkgdown` site is built in CI
   ([\#488](https://github.com/epinowcast/baselinenowcast/issues/488)).
 
 ## baselinenowcast 0.2.1 (GitHub-only release)

@@ -277,9 +277,11 @@ is not directly feasible as again some of the \\x\_{s^\* - j, \> j}\\
 are not yet observed at time \\t^\*\\. We could discard these instances,
 but this would considerably reduce our number of available observations.
 We therefore use partial observations as available at time \\t^\*\\ and
-assume \\ \left(\sum\_{d = j + 1}^{\min(D, t^\* - s^\*)} X\_{s^\* - j,
-d} \right) \sim \text{NegBin}\left\[\sum\_{d = j + 1}^{\min(D, t^\* -
-s^\*)} \hat{x}\_{s^\* - j, d}, \phi_j \right\]. (\\eq:negbin2) \\
+assume
+
+\\ \left(\sum\_{d = j + 1}^{\min(D, t^\* - s^\*)} X\_{s^\* - j, d}
+\right) \sim \text{NegBin}\left\[\sum\_{d = j + 1}^{\min(D, t^\* -
+s^\*)} \hat{x}\_{s^\* - j, d}, \phi_j \right\]. \tag{7} \\
 
 We quantify the uncertainty at the target quantity level, which is
 assumed, by default, to be the final count at each reference time,
@@ -293,9 +295,9 @@ equation [(6)](#eq:negbin) holds in combination with \\ \left(\sum\_{d =
 j + 1}^{\min(D, t^\* - s^\*)} X\_{s^\* - j, d} \right) \\ \| \\
 X\_{s^\* - j, \> j} \sim \text{Bin}\left\[X\_{s^\* - j, \> j},
 \left(\sum\_{d = j + 1}^{\min(D, t^\* - s^\*)} \pi\_{d}\right) /
-\pi\_{\> j} \right\], \\ we thus obtain [(**??**)](#eq:negbin2).
-Estimated dispersion parameters \\\hat{\phi}\_0, \dots, \hat{\phi}\_D\\
-are obtained by maximum likelihood estimation. The
+\pi\_{\> j} \right\], \\ we thus obtain [(7)](#eq:negbin2). Estimated
+dispersion parameters \\\hat{\phi}\_0, \dots, \hat{\phi}\_D\\ are
+obtained by maximum likelihood estimation. The
 [`estimate_uncertainty()`](https://baselinenowcast.epinowcast.org/reference/estimate_uncertainty.md)
 function ingests the truncated reporting triangles, retrospective
 reporting triangles, and the retrospective point nowcasts and returns a
@@ -322,7 +324,9 @@ negative binomial, with the estimated dispersion parameters and a mean
 given by predicted component of the point nowcasts. Specifically, we set
 
 \\ X\_{t, \> t^\* - t} \sim \text{NegBin}(\hat{x}\_{t, \> t^\* - t},
-\phi\_{t^\* - t}). \\ This is described in the schematic Figure
+\phi\_{t^\* - t}). \\
+
+This is described in the schematic Figure
 [4](#fig:predicted-prob-nowcasts) which depicts sampling from the
 observation model with a mean given by the sum of the predicted
 components in the point nowcast matrix (the shaded elements in the
@@ -382,9 +386,10 @@ For notational simplicity and readability for the following, we
 substitute \\N = X\_{t}\\, \\Y = X\_{t, \geq d}\\ and \\p = \sum\_{d =
 0}^D \pi_d\\ and are thus looking for \\\mathbb{E}(N \| Y = y)\\ if \\Y
 \sim \text{Bin}(N, p)\\ with a discrete uniform prior on \\N\\. This
-expectation can be written out as: \\ \mathbb{E}(N \\ \| \\ Y = y) =
-\sum\_{n=0}^{\infty}\text{Pr}(N = n \| Y = y) \times n
-(\\eq:expectation) \\
+expectation can be written out as:
+
+\\ \mathbb{E}(N \\ \| \\ Y = y) = \sum\_{n=0}^{\infty}\text{Pr}(N = n \|
+Y = y) \times n \tag{8} \\
 
 Applying Bayes Theorem we have \\ \text{Pr}(N = n \\ \|\\ Y = y) =
 \frac{\text{Pr}(Y = y \\ \| \\ N = n) \times
@@ -398,8 +403,8 @@ p^y(1-p)^{n-y} \\ we get \\ \text{Pr}(N = n \\ \|\\ Y = y) =
 \frac{\binom{n}{y} p^y(1-p)^{n-y}}{\sum\_{i=1}^\infty
 \binom{1}{y}p^y(1-p)^{i-y}} \\
 
-Plugging this into [(**??**)](#eq:expectation) we get the following
-(omitting terms for \\n\<y\\, which are 0):
+Plugging this into [(8)](#eq:expectation) we get the following (omitting
+terms for \\n\<y\\, which are 0):
 
 \\ \mathbb{E}(N \\ \|\\ Y = y) = \sum\_{n=y}^{\infty}n
 \frac{\binom{n}{y} p^y(1-p)^{n-y}}{\sum\_{i=y}^\infty

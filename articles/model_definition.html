@@ -339,13 +339,14 @@ To indicate the data version on which it is based, its entries are denoted by:</
 <p><span class="math display" id="eq:negbin">\[
 X_{s^* - j, &gt; j} \sim \text{NegBin}[\hat{x}_{s^* - j, &gt; j}(s^*), \phi_j], \tag{6}
 \]</span></p>
-<p>with independence assumed across the different <span class="math inline">\(s^*\)</span>. This, however, is not directly feasible as again some of the <span class="math inline">\(x_{s^* - j, &gt; j}\)</span> are not yet observed at time <span class="math inline">\(t^*\)</span>. We could discard these instances, but this would considerably reduce our number of available observations. We therefore use partial observations as available at time <span class="math inline">\(t^*\)</span> and assume <span class="math display">\[
-\left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \sim \text{NegBin}\left[\sum_{d = j + 1}^{\min(D, t^* - s^*)} \hat{x}_{s^* - j, d}, \phi_j \right]. (\#eq:negbin2)
+<p>with independence assumed across the different <span class="math inline">\(s^*\)</span>. This, however, is not directly feasible as again some of the <span class="math inline">\(x_{s^* - j, &gt; j}\)</span> are not yet observed at time <span class="math inline">\(t^*\)</span>. We could discard these instances, but this would considerably reduce our number of available observations. We therefore use partial observations as available at time <span class="math inline">\(t^*\)</span> and assume</p>
+<p><span class="math display" id="eq:negbin2">\[
+\left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \sim \text{NegBin}\left[\sum_{d = j + 1}^{\min(D, t^* - s^*)} \hat{x}_{s^* - j, d}, \phi_j \right]. \tag{7}
 \]</span></p>
 <p>We quantify the uncertainty at the target quantity level, which is assumed, by default, to be the final count at each reference time, summed across reporting delays.</p>
 <p>Here, the use of a constant dispersion parameter <span class="math inline">\(\phi_j\)</span> despite some of the values in the fitting procedure being yet incomplete is justified by the fact that the negative binomial distribution is closed to binomial subsampling, with the overdispersion parameter preserved. If equation <a href="#eq:negbin">(6)</a> holds in combination with <span class="math display">\[
 \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \ | \ X_{s^* - j, &gt; j} \sim \text{Bin}\left[X_{s^* - j, &gt; j}, \left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} \pi_{d}\right) / \pi_{&gt; j} \right],
-\]</span> we thus obtain <a href="#eq:negbin2">(<strong>??</strong>)</a>. Estimated dispersion parameters <span class="math inline">\(\hat{\phi}_0, \dots, \hat{\phi}_D\)</span> are obtained by maximum likelihood estimation. The <code><a href="../reference/estimate_uncertainty.html">estimate_uncertainty()</a></code> function ingests the truncated reporting triangles, retrospective reporting triangles, and the retrospective point nowcasts and returns a set of uncertainty parameters corresponding to the specified observation model. The uncertainty quantification procedure is described schematically in Figure <a href="#fig:uncertainty-quantification">3</a>.</p>
+\]</span> we thus obtain <a href="#eq:negbin2">(7)</a>. Estimated dispersion parameters <span class="math inline">\(\hat{\phi}_0, \dots, \hat{\phi}_D\)</span> are obtained by maximum likelihood estimation. The <code><a href="../reference/estimate_uncertainty.html">estimate_uncertainty()</a></code> function ingests the truncated reporting triangles, retrospective reporting triangles, and the retrospective point nowcasts and returns a set of uncertainty parameters corresponding to the specified observation model. The uncertainty quantification procedure is described schematically in Figure <a href="#fig:uncertainty-quantification">3</a>.</p>
 <div class="figure">
 <span style="display:block;" id="fig:uncertainty-quantification"></span>
 <img src="../reference/figures/uq.png" alt="Visual description of the uncertainty quantification method, which generates retrospective point nowcasts and compares those estimates to what was later observed as of the nowcast time."><p class="caption">
@@ -363,8 +364,8 @@ Figure 3: Visual description of the uncertainty quantification method, which gen
 <p>Predictive distributions for <span class="math inline">\(X_{t^*}, \dots, X_{t^* - D + 1}\)</span> are obtained by generating draws from the observation model, in this case a negative binomial, with the estimated dispersion parameters and a mean given by predicted component of the point nowcasts. Specifically, we set</p>
 <p><span class="math display">\[
 X_{t, &gt; t^* - t} \sim \text{NegBin}(\hat{x}_{t, &gt; t^* - t}, \phi_{t^* - t}).
-\]</span>
-This is described in the schematic Figure <a href="#fig:predicted-prob-nowcasts">4</a> which depicts sampling from the observation model with a mean given by the sum of the predicted components in the point nowcast matrix (the shaded elements in the bottom right).</p>
+\]</span></p>
+<p>This is described in the schematic Figure <a href="#fig:predicted-prob-nowcasts">4</a> which depicts sampling from the observation model with a mean given by the sum of the predicted components in the point nowcast matrix (the shaded elements in the bottom right).</p>
 <div class="figure">
 <span style="display:block;" id="fig:predicted-prob-nowcasts"></span>
 <img src="../reference/figures/pred_prob_nowcasts.png" alt="Visual description of the generation of predicted probabilistic nowcasts generated via sampling from the observation model with the estimated uncertainty parameters and a mean given by the sum of the predicted components at each reference time."><p class="caption">
@@ -399,8 +400,9 @@ X_{t, \leq d} \ \mid X_t \sim \text{Bin}\left(X_t, \sum_{d = 0}^d \pi_t\right).
 <p><span class="math display">\[
 X_t \sim \text{DiscreteUniform}(0, 1, 2, \dots).
 \]</span></p>
-<p>For notational simplicity and readability for the following, we substitute <span class="math inline">\(N = X_{t}\)</span>, <span class="math inline">\(Y = X_{t, \geq d}\)</span> and <span class="math inline">\(p = \sum_{d = 0}^D \pi_d\)</span> and are thus looking for <span class="math inline">\(\mathbb{E}(N | Y = y)\)</span> if <span class="math inline">\(Y \sim \text{Bin}(N, p)\)</span> with a discrete uniform prior on <span class="math inline">\(N\)</span>. This expectation can be written out as: <span class="math display">\[
-\mathbb{E}(N \ | \ Y = y) = \sum_{n=0}^{\infty}\text{Pr}(N = n | Y = y) \times n (\#eq:expectation)
+<p>For notational simplicity and readability for the following, we substitute <span class="math inline">\(N = X_{t}\)</span>, <span class="math inline">\(Y = X_{t, \geq d}\)</span> and <span class="math inline">\(p = \sum_{d = 0}^D \pi_d\)</span> and are thus looking for <span class="math inline">\(\mathbb{E}(N | Y = y)\)</span> if <span class="math inline">\(Y \sim \text{Bin}(N, p)\)</span> with a discrete uniform prior on <span class="math inline">\(N\)</span>. This expectation can be written out as:</p>
+<p><span class="math display" id="eq:expectation">\[
+\mathbb{E}(N \ | \ Y = y) = \sum_{n=0}^{\infty}\text{Pr}(N = n | Y = y) \times n \tag{8}
 \]</span></p>
 <p>Applying Bayes Theorem we have <span class="math display">\[
 \text{Pr}(N = n \ |\ Y = y)  = \frac{\text{Pr}(Y = y \ | \ N = n) \times \text{Pr}(N=n)}{\sum_{i=0}^{\infty}\text{Pr}( Y = y \ |\ N= i) \times \text{Pr}(N = i)}.
@@ -411,7 +413,7 @@ X_t \sim \text{DiscreteUniform}(0, 1, 2, \dots).
 \]</span> we get <span class="math display">\[
 \text{Pr}(N = n \ |\ Y = y) = \frac{\binom{n}{y} p^y(1-p)^{n-y}}{\sum_{i=1}^\infty \binom{1}{y}p^y(1-p)^{i-y}}
 \]</span></p>
-<p>Plugging this into <a href="#eq:expectation">(<strong>??</strong>)</a> we get the following (omitting terms for <span class="math inline">\(n&lt;y\)</span>, which are 0):</p>
+<p>Plugging this into <a href="#eq:expectation">(8)</a> we get the following (omitting terms for <span class="math inline">\(n&lt;y\)</span>, which are 0):</p>
 <p><span class="math display">\[
 \mathbb{E}(N \ |\ Y = y) = \sum_{n=y}^{\infty}n \frac{\binom{n}{y} p^y(1-p)^{n-y}}{\sum_{i=y}^\infty \binom{i}{y}p^y(1-p)^{i-y}}
 \]</span></p>

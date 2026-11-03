@@ -60,6 +60,11 @@
 <ul><li>Add a deprecation tag to the package data <code>germany_covid19_hosp</code> and make new package data named <code>covid19_data</code> which extends through August 2022.</li>
 <li>Fixed argument passing in <code><a href="../reference/baselinenowcast.reporting_triangle.html">baselinenowcast.reporting_triangle()</a></code> and <code>baselinenowcast.data.frame</code> to <code><a href="../reference/estimate_uncertainty.html">estimate_uncertainty()</a></code> and <code><a href="../reference/sample_nowcasts.html">sample_nowcasts()</a></code>.</li>
 <li>Added a more informative error message when the user specifies a number of reference dates in <code><a href="../reference/estimate_delay.html">estimate_delay()</a></code> that is larger than the number of rows in the reporting triangle.</li>
+<li>Reduced test run time for CRAN by using 10 draws instead of the default 1000 in the slow <code>ref_time_aggregator</code> tests, skipping those tests on CRAN with <code>skip_on_cran()</code>, and setting a seed in a stochastic test that could fail intermittently (<a href="https://github.com/epinowcast/baselinenowcast/issues/488" class="external-link">#488</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-2-2">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-2"></a></h3>
+<ul><li>Moved the evaluation example vignette to a website-only pkgdown article in <code>vignettes/articles/</code> so that it is no longer built on CRAN. The article is rendered when the pkgdown site is built in CI (<a href="https://github.com/epinowcast/baselinenowcast/issues/488" class="external-link">#488</a>).</li>
 </ul></div>
 </div>
     <div class="section level2">

@@ -52,6 +52,9 @@ library(purrr)
 library(gganimate)
 library(ggplot2)
 library(scoringutils)
+
+# Set a seed so that the probabilistic nowcasts are reproducible
+set.seed(123)
 ```
 
 ### 0.2 Data
@@ -84,7 +87,7 @@ head(syn_nssp_df)
 We’ll start by specifying the range of nowcast dates that we want to
 produce retrospective nowcasts for. Since this data has no historical
 data before October 25th, 2025, we will produce nowcasts each week on
-Wednesday from December 10th, 2025 to April 1st, 2026.
+Wednesday from December 24th, 2025 to April 1st, 2026.
 
 ``` r
 
@@ -132,13 +135,12 @@ prop_delay <- 0.5
 
 First, we will write a function that extracts the training data that
 would have been available as of each nowcast date, by excluding all
-cases indexed or reported before the nowcast date.
+cases indexed or reported on or after the nowcast date.
 
 ``` r
 
 get_training_data <- function(raw_data,
-                              nowcast_date,
-                              max_delay) {
+                              nowcast_date) {
   training_data <- filter(
     raw_data,
     report_date < nowcast_date,
@@ -155,31 +157,38 @@ and looping over it with the
 [`map_dfr()`](https://purrr.tidyverse.org/reference/map_dfr.html)
 function from `purrr`.
 
-Steps in the function include: 1. Creating the data to train the model
-using the data available as of each nowcast date. 2. Generating the
-initial case report data, which represents the count of cases on each
-reference date reported as of the nowcast date. We expect this to be
-downward biased due to right-truncation in the most recent reference
-dates. 3. Generating the data to evaluate the nowcast using the latest
-observations. We’ll only include reports that occurred within the
-maximum delay window to ensure a fair comparison across all nowcast
-dates, as including all reports would mean that earlier nowcast dates
-are compared against longer delays than more recent nowcast dates. See
-our [publication](https://wellcomeopenresearch.org/articles/10-614) and
-[Wolffram et
-al.](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1011394)
-for further details. 4. Creating a `reporting_triangle` object from the
-training data and truncating it to the specified `max_delay` 5.
-Producing a `baselinenowcast_df` which contains draws of probabilistic
-nowcasts for each reference date. 6. Converting the nowcast draws to a
-`scoringutils` forecast object using
-[`as_forecast_sample()`](https://epiforecasts.io/scoringutils/reference/as_forecast_sample.html).
-7. Converting the `scoringutils` `forecast_sample` object to `quantiles`
-using
-[`as_forecast_quantile()`](https://epiforecasts.io/scoringutils/reference/as_forecast_quantile.html).
-This will by default generate the quantile levels corresponding to the
-median, 50% and 90% prediction intervals. To obtain other intervals, use
-the `probs` argument. 8. Left joining the initial data for plotting.
+Steps in the function include:
+
+1.  Creating the data to train the model using the data available as of
+    each nowcast date.
+2.  Generating the initial case report data, which represents the count
+    of cases on each reference date reported as of the nowcast date. We
+    expect this to be downward biased due to right-truncation in the
+    most recent reference dates.
+3.  Generating the data to evaluate the nowcast using the latest
+    observations. We’ll only include reports that occurred within the
+    maximum delay window to ensure a fair comparison across all nowcast
+    dates, as including all reports would mean that earlier nowcast
+    dates are compared against longer delays than more recent nowcast
+    dates. See our
+    [publication](https://wellcomeopenresearch.org/articles/10-614) and
+    [Wolffram et
+    al.](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1011394)
+    for further details.
+4.  Creating a `reporting_triangle` object from the training data and
+    truncating it to the specified `max_delay`
+5.  Producing a `baselinenowcast_df` which contains draws of
+    probabilistic nowcasts for each reference date.
+6.  Converting the nowcast draws to a `scoringutils` forecast object
+    using
+    [`as_forecast_sample()`](https://epiforecasts.io/scoringutils/reference/as_forecast_sample.html).
+7.  Converting the `scoringutils` `forecast_sample` object to
+    `quantiles` using
+    [`as_forecast_quantile()`](https://epiforecasts.io/scoringutils/reference/as_forecast_quantile.html).
+    This will by default generate the quantile levels corresponding to
+    the median, 50% and 90% prediction intervals. To obtain other
+    intervals, use the `probs` argument.
+8.  Left joining the initial data for plotting.
 
 ``` r
 
@@ -265,9 +274,11 @@ To make a static image, we will start by visualising the nowcasts
 compared to both the initial data available without nowcasting and the
 final data available retrospectively.
 
-First, we’ll need to pivot the quantiles from long to wide for plotting.
-We’ll first convert to a `data.frame` and then use `pivot_wider` from
-`tidyr`. When we converted to quantiles using
+First, when we converted to quantiles using
+[`as_forecast_quantile()`](https://epiforecasts.io/scoringutils/reference/as_forecast_quantile.html),
+the output is in long format with one row per quantile level, so for
+plotting we pivot it to wide format. We’ll first convert to a
+`data.frame` and then use `pivot_wider` from `tidyr`.
 
 ``` r
 
@@ -368,7 +379,7 @@ every 4 weeks alongside the final data (red) and the initial data
 ``` r
 
 nowcast_dates_to_visualize <- seq(
-  from = ymd("2025-12-10"),
+  from = ymd("2026-01-07"),
   to = ymd("2026-04-01"), by = "4 weeks"
 )
 
@@ -384,7 +395,9 @@ p <- plot_multiple_nowcasts(
 p
 ```
 
-![](evaluation_example_files/figure-html/unnamed-chunk-9-1.png)
+![Probabilistic nowcasts every four weeks compared with the data
+available at each nowcast date and the final evaluation
+data](evaluation_example_files/figure-html/nowcasts-every-4-weeks-1.png)
 
 However, we might be interested in visually comparing the performance of
 each individual weekly nowcast. To achieve this, we call the plotting
@@ -402,13 +415,12 @@ p_anim <- p_all_dates +
   labs(title = "Nowcast date: {closest_state}") +
   transition_states(nowcast_date, transition_length = 0, state_length = 1) +
   ease_aes("linear")
-knitr::include_graphics(file.path(
-  "..", "man", "figures",
-  "nowcast_flipbook.gif"
-))
+p_anim
 ```
 
-![](../reference/figures/nowcast_flipbook.gif)
+![Animated flipbook showing the probabilistic nowcast for each weekly
+nowcast
+date](evaluation_example_files/figure-html/nowcast-flipbook-1.gif)
 
 This can be saved as a GIF with the command
 [`anim_save()`](https://gganimate.com/reference/anim_save.html).
@@ -430,7 +442,7 @@ final case counts against the observed final case counts, similar to
 [Wolffram et
 al](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1011394)
 and [Johnson et al.](https://wellcomeopenresearch.org/articles/10-614).
-Another reasonable option would be to evaluare what was nowcasted
+Another reasonable option would be to evaluate what was nowcasted
 against what was later observed. To quantify nowcast performance, we can
 evaluate nowcasts using proper scoring rules using the
 [`scoringutils`](https://epiforecasts.io/scoringutils/) package. Before
@@ -461,10 +473,11 @@ prediction interval). We’ll also look at bias and absolute error.
 
 Note: The `scoringutils` package also supports sample-based scoring
 using the CRPS directly if you prefer to work with draws rather than
-quantiles. For this vignette, we focus on WIS and its components: -
-**Overprediction**: penalty for predicting too high -
-**Underprediction**: penalty for predicting too low - **Dispersion**:
-penalty for prediction interval width
+quantiles. For this vignette, we focus on WIS and its components:
+
+- **Overprediction**: penalty for predicting too high
+- **Underprediction**: penalty for predicting too low
+- **Dispersion**: penalty for prediction interval width
 
 To compute these metrics, we’ll call the `scoringutils`
 [`score()`](https://epiforecasts.io/scoringutils/reference/score.html)
@@ -481,24 +494,24 @@ head(scores_quantiles)
 #> 2:   2025-12-24     2025-11-30 baselinenowcast           660  0.00
 #> 3:   2025-12-24     2025-12-01 baselinenowcast           634 17.00
 #> 4:   2025-12-24     2025-12-02 baselinenowcast           588  0.04
-#> 5:   2025-12-24     2025-12-03 baselinenowcast           565 18.36
-#> 6:   2025-12-24     2025-12-04 baselinenowcast           507  1.08
+#> 5:   2025-12-24     2025-12-03 baselinenowcast           565 18.16
+#> 6:   2025-12-24     2025-12-04 baselinenowcast           507  1.38
 #>    overprediction underprediction dispersion  bias interval_coverage_50
 #>             <num>           <num>      <num> <num>               <lgcl>
-#> 1:            0.0               0       0.00   0.0                 TRUE
-#> 2:            0.0               0       0.00   0.0                 TRUE
-#> 3:            0.0              17       0.00  -1.0                FALSE
-#> 4:            0.0               0       0.04   0.0                 TRUE
-#> 5:            0.0              18       0.36  -1.0                FALSE
-#> 6:            0.2               0       0.88   0.5                 TRUE
+#> 1:            0.0             0.0       0.00   0.0                 TRUE
+#> 2:            0.0             0.0       0.00   0.0                 TRUE
+#> 3:            0.0            17.0       0.00  -1.0                FALSE
+#> 4:            0.0             0.0       0.04   0.0                 TRUE
+#> 5:            0.0            17.8       0.36  -1.0                FALSE
+#> 6:            0.4             0.0       0.98   0.5                 TRUE
 #>    interval_coverage_90 ae_median
 #>                  <lgcl>     <num>
 #> 1:                 TRUE         0
 #> 2:                 TRUE         0
 #> 3:                FALSE        17
 #> 4:                 TRUE         0
-#> 5:                FALSE        22
-#> 6:                 TRUE         1
+#> 5:                FALSE        21
+#> 6:                 TRUE         2
 ```
 
 We now have a table of scores at every nowcast date and reference date.
@@ -510,12 +523,12 @@ function from `scoringutils`.
 
 scores_summary <- summarise_scores(scores_quantiles)
 head(scores_summary)
-#>              model      wis overprediction underprediction dispersion    bias
-#>             <char>    <num>          <num>           <num>      <num>   <num>
-#> 1: baselinenowcast 15.39165        2.91296        5.702027   6.776664 -0.0904
-#>    interval_coverage_50 interval_coverage_90 ae_median
-#>                   <num>                <num>     <num>
-#> 1:            0.5306667            0.8906667  23.93467
+#>              model      wis overprediction underprediction dispersion
+#>             <char>    <num>          <num>           <num>      <num>
+#> 1: baselinenowcast 15.39026       2.897707        5.729707   6.762851
+#>           bias interval_coverage_50 interval_coverage_90 ae_median
+#>          <num>                <num>                <num>     <num>
+#> 1: -0.08053333            0.5466667            0.8906667  24.05067
 ```
 
 This summary tells us that the model is overall biased slightly downward
@@ -553,7 +566,8 @@ ggplot(scores_by_nowcast_date) +
   ylab("Average WIS")
 ```
 
-![](evaluation_example_files/figure-html/unnamed-chunk-14-1.png)
+![Average weighted interval score by nowcast
+date](evaluation_example_files/figure-html/wis-by-nowcast-date-1.png)
 
 While this tells us how the nowcast performance varies over time, it can
 be a bit difficult to interpret on its own because WIS scales with the
@@ -565,7 +579,7 @@ scoring, which would alleviate the impact of the magnitude of cases and
 approximately evaluate on the predicted growth rate rather than the
 predicted counts. This can be easily performed on the nowcast quantiles
 using the `scoringutils` function
-`transform_forecast(fun == log_shift, offset = 1, append = FALSE)`, see
+`transform_forecasts(fun = log_shift, offset = 1, append = FALSE)`, see
 [`scoringutils`
 documentation](https://epiforecasts.io/scoringutils/reference/transform_forecasts.html)
 for implementation details. For more information on the implications of
@@ -623,7 +637,8 @@ ggplot(scores_long) +
   ylab("Interval Coverage")
 ```
 
-![](evaluation_example_files/figure-html/unnamed-chunk-15-1.png)
+![50% and 90% interval coverage by nowcast date compared with nominal
+coverage](evaluation_example_files/figure-html/coverage-by-nowcast-date-1.png)
 
 Here, we see relatively robust prediction interval coverage across the
 range of nowcast dates. We can visually see that in February and March,
@@ -647,11 +662,12 @@ quantitatively evaluated a single nowcasting model specification across
 multiple retrospective nowcast dates. Next, we will expand this to look
 at the performance under a limited set of additional training volume
 specifications. The same process could be applied to many of the other
-options for specifying `baselinenowcast`, including but not limited
-to: - accounting for weekday effects via stratification by weekday -
-sharing estimates across strata (e.g. letting the delay from all age
-groups be used to nowcast each individual age groups case counts) -
-changing the observation model
+options for specifying `baselinenowcast`, including but not limited to:
+
+- accounting for weekday effects via stratification by weekday
+- sharing estimates across strata (e.g. letting the delay from all age
+  groups be used to nowcast each individual age groups case counts)
+- changing the observation model
 
 Here, we will test out using larger proportions of the training data for
 delay estimation (via the `prop_delay` argument to
@@ -669,8 +685,8 @@ combination of nowcast dates, proportion of data used for delay
 estimation, and the total number of reference dates used for training,
 using the same function we previously defined
 [above](#looping-over-multiple-nowcast-dates) `run_single_nowcast()`. To
-save computation time, I will exclude the training volume specifications
-we already nowcasted and bind them to the output.
+save computation time, we will exclude the training volume
+specifications we already nowcasted and bind them to the output.
 
 ``` r
 
@@ -728,12 +744,12 @@ head(scores_quantiles)
 #> 6:     2025-12-04 baselinenowcast           507   2025-12-24        0.7
 #>    scale_factor    wis overprediction underprediction dispersion  bias
 #>           <num>  <num>          <num>           <num>      <num> <num>
-#> 1:          2.2  0.120            0.0             0.0      0.120   0.0
-#> 2:          2.2  0.220            0.0             0.0      0.220   0.0
-#> 3:          2.2 10.061            0.0             9.4      0.661  -0.9
-#> 4:          2.2  1.640            0.4             0.0      1.240   0.5
-#> 5:          2.2 11.040            0.0             9.6      1.440  -0.9
-#> 6:          2.2  1.680            0.2             0.0      1.480   0.5
+#> 1:          2.2  0.141            0.0             0.0      0.141   0.0
+#> 2:          2.2  0.280            0.0             0.0      0.280   0.0
+#> 3:          2.2 10.020            0.0             9.4      0.620  -0.9
+#> 4:          2.2  1.660            0.4             0.0      1.260   0.5
+#> 5:          2.2 11.061            0.0             9.6      1.461  -0.9
+#> 6:          2.2  2.020            0.2             0.0      1.820   0.5
 #>    interval_coverage_50 interval_coverage_90 ae_median
 #>                  <lgcl>               <lgcl>     <num>
 #> 1:                 TRUE                 TRUE         0
@@ -779,10 +795,10 @@ scores_summary_table
 
 | Model | Proportion for delay | Scale factor | WIS | underprediction | overprediction | dispersion | 50% coverage | 90% coverage | bias | Absolute Error (median) |
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| baselinenowcast | 0.7 | 2.2 | 15.108 | 5.724 | 2.576 | 6.808 | 0.589 | 0.939 | -0.129 | 23.392 |
-| baselinenowcast | 0.5 | 2.3 | 15.043 | 5.414 | 2.828 | 6.801 | 0.547 | 0.915 | -0.075 | 23.463 |
-| baselinenowcast | 0.7 | 2.3 | 15.033 | 5.664 | 2.609 | 6.760 | 0.587 | 0.936 | -0.121 | 23.373 |
-| baselinenowcast | 0.5 | 2.2 | 15.392 | 5.702 | 2.913 | 6.777 | 0.531 | 0.891 | -0.090 | 23.935 |
+| baselinenowcast | 0.7 | 2.2 | 15.083 | 5.721 | 2.571 | 6.791 | 0.576 | 0.928 | -0.124 | 23.332 |
+| baselinenowcast | 0.5 | 2.3 | 15.073 | 5.390 | 2.858 | 6.826 | 0.544 | 0.901 | -0.065 | 23.559 |
+| baselinenowcast | 0.7 | 2.3 | 14.977 | 5.653 | 2.571 | 6.753 | 0.579 | 0.939 | -0.124 | 23.189 |
+| baselinenowcast | 0.5 | 2.2 | 15.390 | 5.730 | 2.898 | 6.763 | 0.547 | 0.891 | -0.081 | 24.051 |
 
 We can see from the summary table that the different training volume
 specifications all perform relatively similarly in terms of WIS. In
@@ -826,7 +842,9 @@ scores_summary |>
   ylab("WIS")
 ```
 
-![](evaluation_example_files/figure-html/unnamed-chunk-19-1.png)
+![Weighted interval score broken down into overprediction, dispersion
+and underprediction for each model
+specification](evaluation_example_files/figure-html/wis-components-by-spec-1.png)
 
 This bar chart shows how similar the WIS scores are across the model
 specifications. Next we can compare the interval coverage visually, as
@@ -876,10 +894,11 @@ scores_summary |>
   ylab("Interval coverage")
 ```
 
-![](evaluation_example_files/figure-html/unnamed-chunk-20-1.png) From
-the interval coverage bar chart, it is clear that the `prop_delay = 0.7`
-model specifications over-cover compared to the `prop_delay = 0.5`
-specifications.
+![50% and 90% interval coverage for each model
+specification](evaluation_example_files/figure-html/coverage-by-spec-1.png)
+From the interval coverage bar chart, it is clear that the
+`prop_delay = 0.7` model specifications over-cover compared to the
+`prop_delay = 0.5` specifications.
 
 #### 0.4.2 Interpreting the results
 

@@ -17,6 +17,18 @@
   number of reference dates in
   [`estimate_delay()`](https://baselinenowcast.epinowcast.org/reference/estimate_delay.md)
   that is larger than the number of rows in the reporting triangle.
+- Reduced test run time for CRAN by using 10 draws instead of the
+  default 1000 in the slow `ref_time_aggregator` tests, skipping those
+  tests on CRAN with `skip_on_cran()`, and setting a seed in a
+  stochastic test that could fail intermittently
+  ([\#488](https://github.com/epinowcast/baselinenowcast/issues/488)).
+
+### Documentation
+
+- Moved the evaluation example vignette to a website-only pkgdown
+  article in `vignettes/articles/` so that it is no longer built on
+  CRAN. The article is rendered when the pkgdown site is built in CI
+  ([\#488](https://github.com/epinowcast/baselinenowcast/issues/488)).
 
 ## baselinenowcast 0.2.1 (GitHub-only release)
 

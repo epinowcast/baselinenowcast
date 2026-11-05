@@ -188,3 +188,48 @@ test_that("sample_predictions errors if delay agrgegator returns a matrix", {
     regexp = "Got 4 columns from `delay_aggregator`"
   )
 })
+
+test_that("sample_predictions: works with normal and Skellam samplers", {
+  for (sampler in list(sample_normal, sample_skellam_robust)) {
+    set.seed(123)
+    result <- sample_predictions(
+      point_nowcast_matrix,
+      reporting_triangle,
+      dispersion,
+      draws = 10,
+      uncertainty_sampler = sampler
+    )
+    expect_nowcast_draws(result, n_draws = 10, n_dates = 4)
+    expect_true(all(is.finite(result$pred_count)))
+  }
+})
+
+test_that("sample_predictions: normal and Skellam samplers can produce downward corrections", { # nolint
+  # Predicted (missing) cells are negative, e.g. from a delay PMF with
+  # negative entries
+  point_nowcast_neg <- matrix(
+    c(
+      100, 50, 30, 20,
+      90, 45, 25, -6,
+      80, 40, -8, -4,
+      70, -5, -3, -2
+    ),
+    nrow = 4,
+    byrow = TRUE
+  )
+  rep_tri_neg <- apply_reporting_structure(
+    make_test_triangle(data = point_nowcast_neg)
+  )
+  for (sampler in list(sample_normal, sample_skellam_robust)) {
+    set.seed(123)
+    result <- sample_predictions(
+      point_nowcast_neg,
+      rep_tri_neg,
+      uncertainty_params = c(4, 4, 4),
+      draws = 20,
+      uncertainty_sampler = sampler
+    )
+    is_last <- result$reference_date == max(result$reference_date)
+    expect_true(any(result$pred_count[is_last] < 0))
+  }
+})

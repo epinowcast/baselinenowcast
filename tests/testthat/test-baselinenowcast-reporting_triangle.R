@@ -219,8 +219,9 @@ test_that(
     triangle <- example_downward_corr_rt
 
     # Test that baselinenowcast() completes with preprocess = NULL
-    # Using output_type = "point" since uncertainty estimation
-    # does not support negative predictions from negative PMF
+    # Using output_type = "point" since the default negative binomial
+    # uncertainty model does not support negative predictions from negative
+    # PMF (see below for observation models that do)
     result <- expect_no_error(
       suppressWarnings(
         baselinenowcast(
@@ -267,6 +268,79 @@ test_that(
         )
       ),
       regexp = "Negative values detected in observations for uncertainty estimation" # nolint
+    )
+  }
+)
+
+test_that(
+  "baselinenowcast with preprocess = NULL produces probabilistic nowcasts with normal and Skellam models", # nolint
+  {
+    triangle <- example_downward_corr_rt
+    models <- list(
+      normal = list(
+        uncertainty_model = fit_by_horizon_with(fit_normal),
+        uncertainty_sampler = sample_normal
+      ),
+      skellam = list(
+        uncertainty_model = fit_by_horizon_with(fit_skellam),
+        uncertainty_sampler = sample_skellam_robust
+      )
+    )
+    observed <- rowSums(triangle, na.rm = TRUE)
+    for (model in models) {
+      set.seed(123)
+      result <- baselinenowcast(
+        data = triangle,
+        scale_factor = 2,
+        preprocess = NULL,
+        draws = 100,
+        uncertainty_model = model$uncertainty_model,
+        uncertainty_sampler = model$uncertainty_sampler
+      )
+      expect_blnc_structure(
+        result,
+        c("reference_date", "pred_count", "draw", "output_type"),
+        output_type = "samples"
+      )
+      expect_false(anyNA(result$pred_count))
+      expect_nowcast_draws(result, n_draws = 100, n_dates = nrow(triangle))
+
+      # The incomplete reference time with an expected net downward
+      # correction (missing delay 2) has draws below the count already
+      # observed
+      ref_date_neg <- get_reference_dates(triangle)[7]
+      expect_true(any(
+        result$pred_count[result$reference_date == ref_date_neg] <
+          observed[7]
+      ))
+    }
+  }
+)
+
+test_that(
+  "baselinenowcast with Skellam model errors informatively without robust sampling", # nolint
+  {
+    expect_error(
+      baselinenowcast(
+        data = example_downward_corr_rt,
+        scale_factor = 2,
+        preprocess = NULL,
+        draws = 10,
+        uncertainty_params = c(1, 1, 1),
+        uncertainty_sampler = sample_skellam
+      ),
+      regexp = "robust = TRUE"
+    )
+    # Robust sampling widens the variance instead
+    expect_no_error(
+      baselinenowcast(
+        data = example_downward_corr_rt,
+        scale_factor = 2,
+        preprocess = NULL,
+        draws = 10,
+        uncertainty_params = c(1, 1, 1),
+        uncertainty_sampler = sample_skellam_robust
+      )
     )
   }
 )

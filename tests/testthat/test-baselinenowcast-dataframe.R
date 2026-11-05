@@ -136,6 +136,47 @@ test_that(paste0(
 })
 
 test_that(paste0(
+  "baselinenowcast.data.frame works with normal and Skellam observation ",
+  "models, with and without strata sharing"
+), {
+  models <- list(
+    normal = list(
+      uncertainty_model = fit_by_horizon_with(fit_normal),
+      uncertainty_sampler = sample_normal
+    ),
+    skellam = list(
+      uncertainty_model = fit_by_horizon_with(fit_skellam),
+      uncertainty_sampler = sample_skellam_robust
+    )
+  )
+  for (model in models) {
+    withr::local_seed(42)
+    single_nowcast_df <- baselinenowcast_test(
+      covid_data_single_strata_wday,
+      uncertainty_model = model$uncertainty_model,
+      uncertainty_sampler = model$uncertainty_sampler
+    )
+    expect_blnc_structure(
+      single_nowcast_df,
+      expected_cols,
+      "samples"
+    )
+    expect_true(all(is.finite(single_nowcast_df$pred_count)))
+  }
+
+  withr::local_seed(42)
+  shared_nowcast_df <- baselinenowcast_test(
+    covid_data_age_groups_wday,
+    strata_cols = c("age_group", "location"),
+    strata_sharing = "uncertainty",
+    uncertainty_model = models$skellam$uncertainty_model,
+    uncertainty_sampler = models$skellam$uncertainty_sampler
+  )
+  expect_blnc_structure(shared_nowcast_df, expected_cols_nu, "samples")
+  expect_true(all(is.finite(shared_nowcast_df$pred_count)))
+})
+
+test_that(paste0(
   "baselinenowcast errors if multiple strata are passed in and this ",
   "is not specified by nowcast unit"
 ), {

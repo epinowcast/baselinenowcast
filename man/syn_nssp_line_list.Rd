@@ -48,6 +48,7 @@ Example datasets
 \code{\link{example_downward_corr_rt}},
 \code{\link{example_reporting_triangle}},
 \code{\link{germany_covid19_hosp}},
+\code{\link{nhsn_mt_flu_df}},
 \code{\link{syn_nssp_df}}
 }
 \concept{example_data}

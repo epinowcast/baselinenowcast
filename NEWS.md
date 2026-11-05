@@ -2,13 +2,13 @@
 
 ## Package
 
-- Add normal and Skellam observation models that support negative values, so that probabilistic nowcasts can retain downward revisions in the reporting triangle (with `preprocess = NULL`). `fit_normal()` and `fit_skellam()` estimate the variance at each horizon (for use with `fit_by_horizon()`), and `sample_normal()` and `sample_skellam()` generate draws. `sample_skellam()` has a `robust` argument which widens the variance where it is too small for a prediction instead of raising an error. Adapted from the [nowcastNHSN](https://github.com/CDCgov/nowcastNHSN) package.
-- The error messages from `fit_nb()` for negative observations or predictions now point to the observation models that support negative values.
+- Add normal and Skellam observation models that support negative values, so that probabilistic nowcasts can retain downward revisions in the reporting triangle (with `preprocess = NULL`). `fit_normal()` and `fit_skellam()` estimate the variance at each horizon (for use with `fit_by_horizon()`), and `sample_normal()` and `sample_skellam()` generate draws. `sample_skellam()` has a `robust` argument which widens the variance where it is too small for a prediction instead of raising an error. Adapted from the [nowcastNHSN](https://github.com/CDCgov/nowcastNHSN) package (#369).
+- The error messages from `fit_nb()` for negative observations or predictions now point to the observation models that support negative values (#369).
 
 ## Documentation
 
-- Added the `nhsn_mt_flu_df` dataset of weekly influenza hospital admissions in Montana reported to NHSN, which contains downward revisions.
-- Added a website-only article demonstrating nowcasting with downward revisions using the new observation models, and a description of the models to the mathematical model vignette.
+- Added the `nhsn_mt_flu_df` dataset of weekly influenza hospital admissions in Montana reported to NHSN, which contains downward revisions (#369).
+- Added a website-only article demonstrating nowcasting with downward revisions using the new observation models, and a description of the models to the mathematical model vignette (#369).
 
 # baselinenowcast 0.2.2
 

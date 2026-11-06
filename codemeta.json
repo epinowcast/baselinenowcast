@@ -100,18 +100,6 @@
     },
     {
       "@type": "SoftwareApplication",
-      "identifier": "scoringutils",
-      "name": "scoringutils",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=scoringutils"
-    },
-    {
-      "@type": "SoftwareApplication",
       "identifier": "ChainLadder",
       "name": "ChainLadder",
       "provider": {
@@ -384,7 +372,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "1554.037KB",
+  "fileSize": "1554.023KB",
   "citation": [
     {
       "@type": "ScholarlyArticle",

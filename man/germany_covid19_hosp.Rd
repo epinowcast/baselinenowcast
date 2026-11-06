@@ -38,6 +38,7 @@ Example datasets
 \code{\link{covid19_data}},
 \code{\link{example_downward_corr_rt}},
 \code{\link{example_reporting_triangle}},
+\code{\link{nhsn_mt_flu_df}},
 \code{\link{syn_nssp_df}},
 \code{\link{syn_nssp_line_list}}
 }

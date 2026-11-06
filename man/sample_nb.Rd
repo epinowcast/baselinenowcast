@@ -29,9 +29,11 @@ sampled_preds
 \seealso{
 Probabilistic nowcast generation functions
 \code{\link{combine_obs_with_pred}()},
+\code{\link{sample_normal}()},
 \code{\link{sample_nowcast}()},
 \code{\link{sample_nowcasts}()},
 \code{\link{sample_prediction}()},
-\code{\link{sample_predictions}()}
+\code{\link{sample_predictions}()},
+\code{\link{sample_skellam}()}
 }
 \concept{generate_probabilistic_nowcasts}

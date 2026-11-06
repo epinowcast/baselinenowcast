@@ -140,6 +140,56 @@
 #' delay_processed
 "example_downward_corr_rt"
 
+#' Weekly influenza hospital admissions in Montana with downward revisions
+#'
+#' @description Weekly confirmed influenza hospital admissions in Montana,
+#'   United States, reported to the National Healthcare Safety Network (NHSN)
+#'   during the 2024-2025 season, indexed by reference week and report week.
+#'   Montana has a small population, so counts are low and previously reported
+#'   counts are sometimes revised downwards. These downward revisions appear as
+#'   negative values in `count`.
+#'
+#'   For an example of how to nowcast this data while retaining the downward
+#'   revisions, see the
+#'   [downward revisions article](https://baselinenowcast.epinowcast.org/articles/nhsn_downward_revisions.html). # nolint
+#'
+#' @format A data.frame with 952 rows and 3 columns.
+#' \describe{
+#'   \item{reference_date}{Date of the Saturday ending the week of hospital
+#'   admission, formatted as YYYY-MM-DD. Ranges from 2024-11-16 to
+#'   2025-08-30.}
+#'   \item{report_date}{Date of the Saturday ending the week of the NHSN
+#'   release in which the counts were reported, formatted as YYYY-MM-DD.
+#'   Counts are first reported in the week after the reference week.}
+#'   \item{count}{Change in the number of admissions for the reference week
+#'   between the release on `report_date` and the previous release. Negative
+#'   values are downward revisions.}
+#' }
+#' @details
+#' Counts were derived from the cumulative counts in each weekly release of
+#'   the preliminary NHSN Hospital Respiratory Data (the
+#'   `confirmed_admissions_flu_ew_prelim` signal), as archived by the Delphi
+#'   Epidata API, by taking the difference between successive releases for
+#'   each reference week. The archive starts with the release in the week
+#'   ending 2024-11-23, so only reference weeks with complete release
+#'   histories are included. See `data-raw/nhsn_mt_flu.R` in the package
+#'   source for the code used to create the dataset.
+#' @source NHSN Hospital Respiratory Data, accessed via the Delphi Epidata API
+#'   (\url{https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/nhsn.html}). # nolint
+#' @family example_data
+#' @examples
+#' # Downward revisions
+#' nhsn_mt_flu_df[nhsn_mt_flu_df$count < 0, ]
+#'
+#' # Reporting triangle retaining the downward revisions
+#' rep_tri <- as_reporting_triangle(
+#'   nhsn_mt_flu_df[nhsn_mt_flu_df$report_date <= "2025-04-05", ],
+#'   delays_unit = "weeks"
+#' ) |>
+#'   truncate_to_delay(max_delay = 8)
+#' rep_tri
+"nhsn_mt_flu_df"
+
 #' Incident COVID-19 hospitalisations indexed by the date of positive test
 #'   (reference date) and report date from Germany in 2021 and 2022.
 #'

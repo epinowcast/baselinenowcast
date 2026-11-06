@@ -1,0 +1,483 @@
+# Baseline nowcast
+
+## Summary
+
+Nowcasting right-truncated epidemiological data is critical for timely
+public health decision-making, as reporting delays can create misleading
+impressions of declining trends in recent data. This package provides
+nowcasting methods based on using empirical delay distributions and
+uncertainty from past performance. It is also designed to be used as a
+baseline method for developers of new nowcasting methods. For more
+details on the performance of the method(s) in this package applied to
+case studies of COVID-19 and norovirus, see our recent paper Johnson
+(2025)
+[doi:10.12688/wellcomeopenres.25027.2](https://doi.org/10.12688/wellcomeopenres.25027.2).
+The package supports standard data frame inputs with reference date,
+report date, and count columns, as well as the direct use of reporting
+triangles, and is compatible with ‘epinowcast’ objects. Alongside an
+opinionated default workflow, it has a low-level pipe-friendly modular
+interface, allowing context-specific workflows. It can accommodate a
+wide spectrum of reporting schedules, including mixed patterns of
+reference and reporting (daily-weekly, weekly-daily). It also supports
+sharing delay distributions and uncertainty estimates between strata, as
+well as custom uncertainty models and delay estimation methods.
+
+## Installation
+
+Installing the package
+
+You can install the latest released version using:
+
+``` r
+
+install.packages("baselinenowcast")
+```
+
+Alternatively, you can install the latest GitHub release from our
+r-universe repository:
+
+``` r
+
+install.packages("baselinenowcast", repos = "https://epinowcast.r-universe.dev")
+```
+
+To install the development version from GitHub, use the [`pak`
+package](https://pak.r-lib.org/):
+
+``` r
+
+pak::pak(file.path("epinowcast", "baselinenowcast"))
+```
+
+Another option for installation is using the [`remotes`
+package](https://CRAN.R-project.org/package=remotes):
+
+``` r
+
+remotes::install_github(file.path("epinowcast", "baselinenowcast"))
+```
+
+## Resources
+
+We provide a range of other documentation, case studies, and community
+spaces to ask (and answer!) questions:
+
+Organisation Website
+
+Our [organisation website](https://www.epinowcast.org/) includes links
+to other resources, [guest posts](https://www.epinowcast.org/blog.html),
+and [seminar schedule](https://www.epinowcast.org/seminars.html) for
+both upcoming and past recordings.
+
+Community Forum
+
+Our [community forum](https://community.epinowcast.org/) has areas for
+[question and answer](https://community.epinowcast.org/c/interface/15)
+and [considering new methods and
+tools](https://community.epinowcast.org/c/projects/11), among others. If
+you are generally interested in real-time analysis of infectious
+disease, you may find this useful even if you do not use
+`baselinenowcast`.
+
+## Contributing
+
+We welcome contributions and new contributors! We particularly
+appreciate help on [identifying and identified
+issues](https://github.com/epinowcast/baselinenowcast/issues). Please
+check and add to the issues, and/or add a [pull
+request](https://github.com/epinowcast/baselinenowcast/pulls) and see
+our [contributing
+guide](https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md)
+for more information.
+
+### How to make a bug report or feature request
+
+Please briefly describe your problem and what output you expect in an
+[issue](https://github.com/epinowcast/baselinenowcast/issues). See our
+[contributing
+guide](https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md)
+for more information.
+
+### Code of Conduct
+
+Please note that the `baselinenowcast` project is released with a
+[Contributor Code of
+Conduct](https://github.com/epinowcast/.github/blob/main/CODE_OF_CONDUCT.md).
+By contributing to this project, you agree to abide by its terms.
+
+## Citation
+
+If you use `baselinenowcast` in your work, please consider citing it
+with `citation("baselinenowcast")` (or
+`print(citation("baselinenowcast"), bibtex = TRUE)`):
+
+``` R
+To cite baselinenowcast in publications please use the following.
+
+  Johnson KE, Tang M, Tyszka E, Nemcova B, Wolffram D, Ergas R, Reich
+  NG, Funk S, Mellor J, Bracher J, Abbott S (2025). "Baseline
+  nowcasting methods for handling delays in epidemiological data."
+  _Wellcome Open Research_. doi:10.12688/wellcomeopenres.25027.1
+  <https://doi.org/10.12688/wellcomeopenres.25027.1>.
+  <https://wellcomeopenresearch.org/articles/10-614>.
+
+A BibTeX entry for LaTeX users is
+
+  @Article{,
+    title = {Baseline nowcasting methods for handling delays in epidemiological data},
+    author = {Kaitlyn E. Johnson and Maria Tang and Emily Tyszka and Barbora Nemcova and Daniel Wolffram and Rosa Ergas and Nicholas G. Reich and Sebastian Funk and Jonathon Mellor and Johannes Bracher and Sam Abbott},
+    year = {2025},
+    journal = {Wellcome Open Research},
+    doi = {10.12688/wellcomeopenres.25027.1},
+    url = {https://wellcomeopenresearch.org/articles/10-614},
+  }
+
+  Johnson KE, Tyszka E, Bracher J, Funk S, Abbott S (2025).
+  _baselinenowcast: Methods for baseline nowcasting right-truncated
+  epidemiological data_.
+  <https://github.com/epinowcast/baselinenowcast/>.
+
+A BibTeX entry for LaTeX users is
+
+  @Manual{,
+    license = {MIT},
+    title = {baselinenowcast: Methods for baseline nowcasting right-truncated epidemiological data},
+    author = {Kaitlyn E. Johnson and Emily Tyszka and Johannes Bracher and Sebastian Funk and Sam Abbott},
+    year = {2025},
+    url = {https://github.com/epinowcast/baselinenowcast/},
+  }
+```
+
+## Contributors
+
+All contributions to this project are gratefully acknowledged using the
+[`allcontributors` package](https://github.com/ropensci/allcontributors)
+following the [allcontributors](https://allcontributors.org)
+specification. Contributions of any kind are welcome!
+
+### Code
+
+[kaitejohnson](https://github.com/epinowcast/baselinenowcast/commits?author=kaitejohnson),
+[seabbs](https://github.com/epinowcast/baselinenowcast/commits?author=seabbs),
+[TimTaylor](https://github.com/epinowcast/baselinenowcast/commits?author=TimTaylor),
+[jamesmbaazam](https://github.com/epinowcast/baselinenowcast/commits?author=jamesmbaazam),
+[sbfnk](https://github.com/epinowcast/baselinenowcast/commits?author=sbfnk)
+
+### Issue Authors
+
+[jonathonmellor](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Ajonathonmellor),
+[swo](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Aswo),
+[jcblemai](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Ajcblemai),
+[lauraajones2](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3Alauraajones2),
+[SamuelBrand1](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+author%3ASamuelBrand1)
+
+### Issue Contributors
+
+[jbracher](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Ajbracher),
+[coderabbitai](https://github.com/epinowcast/baselinenowcast/issues?q=is%3Aissue+commenter%3Acoderabbitai)
+
+# Package index
+
+## High-level interface
+
+Functions most users will interact with for typical nowcasting
+workflows.
+
+### Reporting triangle data structures
+
+Functions for creating, converting, and validating reporting triangle
+objects from matrices or data frames.
+
+- [`as.data.frame(`*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/as.data.frame.reporting_triangle.md)
+  : Convert reporting_triangle to data.frame
+
+- [`as.matrix(`*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/as.matrix.reporting_triangle.md)
+  : Convert reporting_triangle to plain matrix
+
+- [`as_ChainLadder_triangle()`](https://baselinenowcast.epinowcast.org/dev/reference/as_ChainLadder_triangle.md)
+  : Convert reporting_triangle to ChainLadder triangle format
+
+- [`as_reporting_triangle()`](https://baselinenowcast.epinowcast.org/dev/reference/as_reporting_triangle.md)
+  :
+
+  Create a `reporting_triangle` object
+
+- [`as_reporting_triangle(`*`<data.frame>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/as_reporting_triangle.data.frame.md)
+  :
+
+  Create a `reporting_triangle` object from a data.frame
+
+- [`as_reporting_triangle(`*`<matrix>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/as_reporting_triangle.matrix.md)
+  :
+
+  Create a `reporting_triangle` from a matrix
+
+- [`as_reporting_triangle(`*`<tbl_pubdate>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/as_reporting_triangle.tbl_pubdate.md)
+  : Convert reviser vintages to reporting_triangle format
+
+- [`as_reporting_triangle(`*`<triangle>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/as_reporting_triangle.triangle.md)
+  : Convert ChainLadder triangle to reporting_triangle format
+
+- [`as_reviser_vintages()`](https://baselinenowcast.epinowcast.org/dev/reference/as_reviser_vintages.md)
+  : Convert reporting_triangle to reviser vintages format
+
+- [`assert_reporting_triangle()`](https://baselinenowcast.epinowcast.org/dev/reference/assert_reporting_triangle.md)
+  :
+
+  Assert validity of `reporting_triangle` objects
+
+- [`get_delays_from_dates()`](https://baselinenowcast.epinowcast.org/dev/reference/get_delays_from_dates.md)
+  : Compute delays between report dates and reference dates
+
+- [`get_delays_unit()`](https://baselinenowcast.epinowcast.org/dev/reference/get_delays_unit.md)
+  : Get delays unit from a reporting triangle
+
+- [`get_max_delay()`](https://baselinenowcast.epinowcast.org/dev/reference/get_max_delay.md)
+  : Get maximum delay from reporting_triangle
+
+- [`get_mean_delay()`](https://baselinenowcast.epinowcast.org/dev/reference/get_mean_delay.md)
+  : Get mean delay for each row of reporting_triangle
+
+- [`get_quantile_delay()`](https://baselinenowcast.epinowcast.org/dev/reference/get_quantile_delay.md)
+  : Get quantile delay for each row of reporting_triangle
+
+- [`get_reference_dates()`](https://baselinenowcast.epinowcast.org/dev/reference/get_reference_dates.md)
+  : Get reference dates from reporting_triangle
+
+- [`get_report_dates()`](https://baselinenowcast.epinowcast.org/dev/reference/get_report_dates.md)
+  : Compute report dates from reference dates and delays
+
+- [`get_reporting_structure()`](https://baselinenowcast.epinowcast.org/dev/reference/get_reporting_structure.md)
+  : Get reporting structure from a reporting triangle
+
+- [`head(`*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/head.reporting_triangle.md)
+  : Get first rows of a reporting_triangle
+
+- [`is_reporting_triangle()`](https://baselinenowcast.epinowcast.org/dev/reference/is_reporting_triangle.md)
+  : Check if an object is a reporting_triangle
+
+- [`new_reporting_triangle()`](https://baselinenowcast.epinowcast.org/dev/reference/new_reporting_triangle.md)
+  :
+
+  Class constructor for `reporting_triangle` objects
+
+- [`print(`*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/print.reporting_triangle.md)
+  : Print a reporting_triangle object
+
+- [`reporting_triangle-class`](https://baselinenowcast.epinowcast.org/dev/reference/reporting_triangle-class.md)
+  [`reporting_triangle`](https://baselinenowcast.epinowcast.org/dev/reference/reporting_triangle-class.md)
+  : Reporting Triangle Object
+
+- [`` `[`( ``*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/sub-.reporting_triangle.md)
+  : Subset reporting_triangle objects
+
+- [`` `[<-`( ``*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/subset-.reporting_triangle.md)
+  : Subset assignment for reporting_triangle objects
+
+- [`summary(`*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/summary.reporting_triangle.md)
+  : Summarize a reporting_triangle object
+
+- [`tail(`*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/tail.reporting_triangle.md)
+  : Get last rows of a reporting_triangle
+
+- [`truncate_to_delay()`](https://baselinenowcast.epinowcast.org/dev/reference/truncate_to_delay.md)
+  : Truncate reporting triangle to a specific maximum delay
+
+- [`truncate_to_quantile()`](https://baselinenowcast.epinowcast.org/dev/reference/truncate_to_quantile.md)
+  : Truncate reporting_triangle to quantile-based maximum delay
+
+- [`validate_reporting_triangle()`](https://baselinenowcast.epinowcast.org/dev/reference/validate_reporting_triangle.md)
+  : Validate a reporting_triangle object
+
+### Nowcast data frames
+
+The main nowcasting interface. Functions for creating and validating
+nowcast data frame objects containing point or probabilistic nowcast
+results.
+
+- [`as_forecast_point(`*`<baselinenowcast_df>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/as_forecast_point.baselinenowcast_df.md)
+  :
+
+  Convert a `baselinenowcast_df` object to a `forecast_point` object
+
+- [`as_forecast_sample(`*`<baselinenowcast_df>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/as_forecast_sample.baselinenowcast_df.md)
+  :
+
+  Convert a `baselinenowcast_df` object to a `forecast_sample` object
+
+- [`assert_baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/dev/reference/assert_baselinenowcast_df.md)
+  :
+
+  Assert validity of `baselinenowcast_df` objects
+
+- [`baselinenowcast()`](https://baselinenowcast.epinowcast.org/dev/reference/baselinenowcast.md)
+  : Generate a nowcast
+
+- [`baselinenowcast(`*`<data.frame>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/baselinenowcast.data.frame.md)
+  : Create a dataframe of nowcast results from a dataframe of cases
+  indexed by reference date and report date
+
+- [`baselinenowcast(`*`<reporting_triangle>`*`)`](https://baselinenowcast.epinowcast.org/dev/reference/baselinenowcast.reporting_triangle.md)
+  : Create a dataframe of nowcast results from a single reporting
+  triangle
+
+- [`baselinenowcast_df-class`](https://baselinenowcast.epinowcast.org/dev/reference/baselinenowcast_df-class.md)
+  [`baselinenowcast_df`](https://baselinenowcast.epinowcast.org/dev/reference/baselinenowcast_df-class.md)
+  : Nowcast Data.frame Object
+
+- [`new_baselinenowcast_df()`](https://baselinenowcast.epinowcast.org/dev/reference/new_baselinenowcast_df.md)
+  : Combine data from a nowcast dataframe, strata, and reference dates
+
+### Workflow wrappers
+
+High-level wrapper functions that combine multiple steps for end-to-end
+nowcasting workflows.
+
+- [`allocate_reference_times()`](https://baselinenowcast.epinowcast.org/dev/reference/allocate_reference_times.md)
+  : Allocate training volume based on combination of defaults and
+  user-specified values for training volume for delay and uncertainty
+  estimation.
+- [`estimate_and_apply_delay()`](https://baselinenowcast.epinowcast.org/dev/reference/estimate_and_apply_delay.md)
+  : Estimate and apply delay from a reporting triangle
+- [`estimate_and_apply_delays()`](https://baselinenowcast.epinowcast.org/dev/reference/estimate_and_apply_delays.md)
+  : Estimate and apply delays to generate retrospective nowcasts
+- [`estimate_and_apply_uncertainty()`](https://baselinenowcast.epinowcast.org/dev/reference/estimate_and_apply_uncertainty.md)
+  : Estimate and apply uncertainty to a point nowcast matrix
+- [`estimate_uncertainty_retro()`](https://baselinenowcast.epinowcast.org/dev/reference/estimate_uncertainty_retro.md)
+  : Estimate uncertainty parameters using retrospective nowcasts
+
+## Lower-level components
+
+Modular functions for building custom nowcasting workflows and advanced
+use cases.
+
+### Estimate delay distributions
+
+Functions for estimating empirical delay distributions from reporting
+triangles.
+
+- [`estimate_delay()`](https://baselinenowcast.epinowcast.org/dev/reference/estimate_delay.md)
+  : Estimate a delay distribution from a reporting triangle
+- [`preprocess_negative_values()`](https://baselinenowcast.epinowcast.org/dev/reference/preprocess_negative_values.md)
+  : Preprocess negative values in the reporting triangle
+
+### Generate retrospective data
+
+Functions for creating retrospective reporting triangles by truncating
+and generating incomplete data structures for validation and uncertainty
+estimation.
+
+- [`apply_reporting_structure()`](https://baselinenowcast.epinowcast.org/dev/reference/apply_reporting_structure.md)
+  : Apply reporting structure to generate a single retrospective
+  reporting triangle
+- [`apply_reporting_structures()`](https://baselinenowcast.epinowcast.org/dev/reference/apply_reporting_structures.md)
+  : Apply reporting structures to generate retrospective reporting
+  triangles
+- [`truncate_to_date()`](https://baselinenowcast.epinowcast.org/dev/reference/truncate_to_date.md)
+  : Truncate reporting triangle to a reference date
+- [`truncate_to_row()`](https://baselinenowcast.epinowcast.org/dev/reference/truncate_to_row.md)
+  : Truncate reporting triangle by removing a specified number of the
+  last rows
+- [`truncate_to_rows()`](https://baselinenowcast.epinowcast.org/dev/reference/truncate_to_rows.md)
+  : Truncate reporting triangle by removing bottom rows
+
+### Generate point nowcasts
+
+Functions for applying delay distributions to incomplete reporting data
+to generate point nowcast estimates.
+
+- [`apply_delay()`](https://baselinenowcast.epinowcast.org/dev/reference/apply_delay.md)
+  : Apply the delay to generate a point nowcast
+
+### Estimate observation error
+
+Functions for estimating observation error parameters from retrospective
+nowcast performance to quantify uncertainty.
+
+- [`estimate_uncertainty()`](https://baselinenowcast.epinowcast.org/dev/reference/estimate_uncertainty.md)
+  : Estimate uncertainty parameters
+- [`fit_by_horizon()`](https://baselinenowcast.epinowcast.org/dev/reference/fit_by_horizon.md)
+  : Helper function that fits its each column of the matrix (horizon) to
+  an observation model.
+- [`fit_nb()`](https://baselinenowcast.epinowcast.org/dev/reference/fit_nb.md)
+  : Fit a negative binomial to a vector of observations and expectations
+
+### Generate probabilistic nowcasts
+
+Functions for generating probabilistic nowcasts by combining point
+estimates with uncertainty quantification from observation error models.
+
+- [`combine_obs_with_pred()`](https://baselinenowcast.epinowcast.org/dev/reference/combine_obs_with_pred.md)
+  : Combine observed data with a single prediction draw
+- [`sample_nb()`](https://baselinenowcast.epinowcast.org/dev/reference/sample_nb.md)
+  : Sample from negative binomial model given a set of predictions
+- [`sample_nowcast()`](https://baselinenowcast.epinowcast.org/dev/reference/sample_nowcast.md)
+  : Generate a single draw of a nowcast combining observed and predicted
+  values
+- [`sample_nowcasts()`](https://baselinenowcast.epinowcast.org/dev/reference/sample_nowcasts.md)
+  : Generate multiple draws of a nowcast combining observed and
+  predicted values
+- [`sample_prediction()`](https://baselinenowcast.epinowcast.org/dev/reference/sample_prediction.md)
+  : Get a draw of only the predicted elements of the nowcast vector
+- [`sample_predictions()`](https://baselinenowcast.epinowcast.org/dev/reference/sample_predictions.md)
+  : Get a dataframe of multiple draws of only the predicted elements of
+  the nowcast vector
+
+## Data
+
+Example datasets included with the package.
+
+- [`example_downward_corr_rt`](https://baselinenowcast.epinowcast.org/dev/reference/example_downward_corr_rt.md)
+  : Example reporting triangle with downward corrections
+- [`example_reporting_triangle`](https://baselinenowcast.epinowcast.org/dev/reference/example_reporting_triangle.md)
+  : Simple example reporting triangle for demonstrations
+- [`germany_covid19_hosp`](https://baselinenowcast.epinowcast.org/dev/reference/germany_covid19_hosp.md)
+  **\[deprecated\]** : Incident COVID-19 hospitalisations indexed by the
+  date of positive test (reference date) and report date from Germany in
+  2021 and 2022.
+- [`syn_nssp_df`](https://baselinenowcast.epinowcast.org/dev/reference/syn_nssp_df.md)
+  : Synthetic data containing daily case counts by reference and report
+  date
+- [`syn_nssp_line_list`](https://baselinenowcast.epinowcast.org/dev/reference/syn_nssp_line_list.md)
+  : A synthetic dataset resembling line-list (each row is a patient)
+  data from the United States' National Syndromic Surveillance System
+  (NSSP) accessed via the Essence platform. All entries are synthetic,
+  formatted to look as close to the real raw data as possible.
+
+# Articles
+
+### All vignettes
+
+- [Getting Started with
+  baselinenowcast](https://baselinenowcast.epinowcast.org/dev/articles/baselinenowcast.md):
+
+  A quick start example demonstrating use of baselinenowcast
+
+- [Example nowcast performance evaluation for model
+  specification](https://baselinenowcast.epinowcast.org/dev/articles/evaluation_example.md):
+
+  An example of how to evaluate nowcast performance under different
+  model specifications
+
+- [Mathematical methods for
+  baselinenowcast](https://baselinenowcast.epinowcast.org/dev/articles/model_definition.md):
+
+  Description of mathematical methods used in the package
+
+- [Modular workflow
+  demonstration](https://baselinenowcast.epinowcast.org/dev/articles/modular_workflow.md):
+
+  An example walking through the low-level function interface for
+  specifying a nowcast model
+
+- [Nowcasting
+  nomenclature](https://baselinenowcast.epinowcast.org/dev/articles/nomenclature.md):
+
+  Description of different nowcasting components and corresponding
+  abbreviations
+
+- [Nowcasting syndromic surveillance system data: a case study applied
+  to the U.S. National Syndromic Surveillance Program (NSSP)
+  data](https://baselinenowcast.epinowcast.org/dev/articles/nssp_nowcast.md):
+
+  A nowcasting example applied to data from NSSP

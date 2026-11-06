@@ -1,3 +1,9 @@
+# baselinenowcast (development version)
+
+## Documentation
+
+- fix typo in `estimate_delay()` documentation.
+
 # baselinenowcast 0.2.2
 
 ## Package

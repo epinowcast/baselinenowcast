@@ -438,7 +438,9 @@ fit_by_horizon <- function(obs,
 #'   binomial. This code was adapted from code written (under an MIT license)
 #'   by the Karlsruhe Institute of Technology RESPINOW German Hospitalization
 #'   Nowcasting Hub.
-#'   Modified from: \url{https://github.com/KITmetricslab/RESPINOW-Hub/blob/7fab4dce7b559c3076ab643cf22048cb5fb84cc2/code/baseline/functions.R#L404} #nolint
+# nolint start: line_length_linter.
+#'   Modified from: \url{https://github.com/KITmetricslab/RESPINOW-Hub/blob/7fab4dce7b559c3076ab643cf22048cb5fb84cc2/code/baseline/functions.R#L404}
+# nolint end
 #' @importFrom stats dnbinom optimize
 #' @param x Vector of observed values.
 #' @param mu Vector of expected values.

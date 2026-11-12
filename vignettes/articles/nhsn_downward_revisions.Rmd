@@ -1,6 +1,6 @@
 ---
-title: "Nowcasting with downward revisions: NHSN influenza admissions in Montana"
-description: "An example of using observation models that support negative values to nowcast data with downward revisions"
+title: "Nowcasting with downward revisions: counts and percentages"
+description: "Normal and Skellam observation models for Montana influenza admissions and ED-visit percentages with downward revisions"
 output:
   bookdown::html_document2:
     fig_caption: yes
@@ -26,16 +26,22 @@ Surveillance data are not only revised upwards as delayed reports arrive.
 Reports can also be revised downwards, for example when duplicate records are removed or when a facility corrects a previously submitted count.
 When the data are stored as incident counts indexed by reference and report date, a downward revision appears as a negative count in the reporting triangle.
 
-By default, `baselinenowcast()` handles negative values in two ways:
+Preprocessing and uncertainty estimation are separate choices.
+By default, `baselinenowcast()` first applies `preprocess_negative_values()`, which redistributes negative increments to earlier delays to obtain non-negative integer counts.
+It then quantifies uncertainty using retrospective nowcast errors and a negative binomial observation model (`fit_nb()` and `sample_nb()`).
+This model supports non-negative integer additions, so the sampled final count cannot fall below the count already observed after preprocessing.
 
-1. It preprocesses the reporting triangle with `preprocess_negative_values()`, which removes negative values by redistributing them to earlier delays while preserving the total count.
-2. It quantifies uncertainty with a negative binomial observation model (`fit_nb()` and `sample_nb()`), which only supports non-negative counts.
+If corrections are occasional and small, and the target is an integer count, redistributing them and using the default negative binomial model may be adequate.
+If corrections occur systematically or their timing matters, retaining them allows the estimated delay pattern and uncertainty to reflect downward revisions.
+Their frequency alone does not determine which observation model will perform best; retrospective evaluation is useful for either approach.
 
-This means that, by default, the nowcasts cannot represent a net downward revision in the counts still to be reported.
-In this vignette, we show how to retain downward revisions by setting `preprocess = NULL` and using one of two observation models that support negative values:
+To retain downward revisions, set `preprocess = NULL` and choose an observation model that supports negative values:
 
-- a rounded normal model, `fit_normal()` with `sample_normal()`, and
-- a Skellam model, `fit_skellam()` with `sample_skellam()`. The Skellam distribution is the distribution of the difference between two independent Poisson random variables, so it takes integer values that can be negative.
+- **Normal:** `fit_normal()` with `sample_normal()` supports continuous measurements such as percentages. For counts, `sample_normal(..., rounded = TRUE)` provides an integer-valued approximation; it can be useful when the continuous approximation is reasonable, for example at larger counts.
+- **Skellam:** `fit_skellam()` with `sample_skellam()` models integer increments as the difference of two independent Poisson random variables. It supports both additions and removals, with a constraint linking its mean and variance.
+
+We first compare the default model, a rounded normal, and a Skellam model for NHSN influenza admission counts in Montana.
+We then use a continuous normal for [NSSP influenza ED-visit percentages](#percentage-data), where rounding would discard fractional changes.
 
 These observation models were adapted from the [nowcastNHSN](https://github.com/CDCgov/nowcastNHSN) package, which uses `baselinenowcast` to nowcast hospital admissions reported to the United States National Healthcare Safety Network (NHSN).
 See the [mathematical model vignette](model_definition.html#alternative-observation-models) for their definitions.
@@ -138,11 +144,20 @@ baselinenowcast(
 )
 ```
 
-Instead, we pass an observation model that supports negative values.
-The `uncertainty_model` argument takes a function of the matrices of past observations (`obs`) and predictions (`pred`), which we create by passing the fitting function to `fit_by_horizon()`.
-The `uncertainty_sampler` argument takes a function of the predictions (`pred`) and the estimated uncertainty parameters (`uncertainty_params`).
+Because we want to account for potential downward revisions in the nowcast, we pass an observation model that supports negative values.
+We first use a normal model as a simple approximation for these counts, rounding the sampled increments to retain integer values.
+We then compare a Skellam model, which models integer additions and removals directly.
+
+The `uncertainty_model` argument takes a function of the matrices of past observations (`obs`) and predictions (`pred`).
+We create this function by passing the desired fitting function to the `fit_model` argument of `fit_by_horizon()`.
+Instead of the default `uncertainty_sampler = sample_nb`, we pass a function of predictions (`pred`) and estimated uncertainty parameters (`uncertainty_params`) that calls `sample_normal()` with `rounded = TRUE`.
+The default `rounded = FALSE` is intended for continuous measurements.
 
 ```{r}
+sample_normal_rounded <- function(pred, uncertainty_params) {
+  return(sample_normal(pred, uncertainty_params, rounded = TRUE))
+}
+
 nowcast_normal <- baselinenowcast(
   rep_tri,
   scale_factor = scale_factor,
@@ -151,12 +166,13 @@ nowcast_normal <- baselinenowcast(
   uncertainty_model = function(obs, pred) {
     return(fit_by_horizon(obs, pred, fit_model = fit_normal))
   },
-  uncertainty_sampler = sample_normal
+  uncertainty_sampler = sample_normal_rounded
 )
 ```
 
 The Skellam distribution requires the variance to be greater than the absolute value of the mean, so that both of the underlying Poisson rates are positive.
-The variance is estimated from past nowcasts, so this can be violated when the current prediction is larger than past predictions.
+The variance is estimated from past nowcast errors and can be too small relative to the absolute value of a current prediction.
+For example, during a sharp rise after a quiet period, the predicted number still to be reported can exceed the variance estimated from the earlier, smaller nowcast errors.
 By default `sample_skellam()` errors in this case, and setting `robust = TRUE` instead widens the variance to the smallest valid value.
 
 ```{r}
@@ -177,8 +193,9 @@ nowcast_skellam <- baselinenowcast(
 ### Negative total counts {#negative-total-counts}
 
 Because the normal and Skellam models allow the yet-to-be-reported counts to be negative, a draw can occasionally result in a total count below zero.
-Negative total admissions are not plausible, so we set them to zero after generating the nowcast.
-This only changes the draws with a negative total; the downward revisions themselves are retained.
+Negative total admissions are not plausible, so we explicitly set them to zero after combining the sampled increments with observations.
+We bound the final totals, rather than the increments, so downward revisions are retained.
+This is an application-specific choice; `baselinenowcast()` does not impose these bounds.
 
 ```{r}
 summary(nowcast_skellam$pred_count)
@@ -189,12 +206,14 @@ nowcast_skellam <- mutate(nowcast_skellam, pred_count = pmax(pred_count, 0))
 summary(nowcast_skellam$pred_count)
 ```
 
-This changes the distribution of the nowcast, so we recommend evaluating whether it improves performance on your data.
+Clamping introduces probability mass at zero and generally increases the mean relative to the unbounded draws.
+It changes the predictive distribution, so we recommend evaluating its effect on your data.
 
 ### Comparing the nowcasts
 
 We compare the nowcasts to the counts that were eventually reported within the maximum delay of 8 weeks, and to the counts that were available as of the nowcast date.
-As the central estimate, we show the point nowcast, which is the mean of each observation model.
+As the central estimate, we show the point nowcast before rounding or clamping.
+It supplies the mean parameter of the underlying observation model and can differ from the mean of the transformed draws.
 The normal and Skellam nowcasts share the same point nowcast, because both use the reporting triangle without preprocessing.
 The point nowcast for the negative binomial model differs slightly, because preprocessing changes the estimated delay distribution.
 
@@ -247,7 +266,7 @@ nowcast_summary <- nowcasts |>
   left_join(initial_data, by = "reference_date")
 ```
 
-```{r single-nowcast, fig.height = 8, fig.cap = "Nowcasts of weekly influenza admissions in Montana as of April 5th, 2025, for the reference weeks that were still being reported. Lines show the point nowcast and ribbons show the 90% prediction intervals. Points show the counts eventually reported within 8 weeks and crosses show the counts available as of the nowcast date. The y-axis is on the log(y + 1) scale and differs between panels."}
+```{r single-nowcast, fig.height = 8, fig.cap = "Nowcasts of weekly influenza admissions in Montana as of April 5th, 2025, for the reference weeks that were still being reported. Lines show the point nowcast before rounding or clamping, and ribbons show the 5th to 95th percentiles of the bounded draws. Points show counts eventually reported within 8 weeks and crosses show counts available as of the nowcast date. All panels share the same log(y + 1) axis."}
 ggplot(nowcast_summary, aes(x = reference_date)) +
   geom_ribbon(aes(ymin = q5, ymax = q95), fill = "steelblue", alpha = 0.3) +
   geom_line(aes(y = point_nowcast), colour = "steelblue") +
@@ -257,7 +276,7 @@ ggplot(nowcast_summary, aes(x = reference_date)) +
     transform = "log1p",
     breaks = c(0, 5, 25, 50, 100, 200)
   ) +
-  facet_wrap(~model, ncol = 1, scales = "free_y") +
+  facet_wrap(~model, ncol = 1) +
   xlab("Reference week") +
   ylab("Admissions") +
   theme_bw()
@@ -265,8 +284,9 @@ ggplot(nowcast_summary, aes(x = reference_date)) +
 
 The prediction intervals from the normal and Skellam models are wider than those from the negative binomial model, and extend below the counts already reported, reflecting the possibility of downward revisions.
 For the most recent week, the intervals reach zero.
-This is because the errors in past nowcasts at a horizon of one week were large, including both large upward and downward revisions, and the normal and Skellam models describe the total yet-to-be-reported counts symmetrically about the point nowcast.
-In contrast, the negative binomial distribution is right-skewed for the most recent week, so most of its draws are below the point nowcast.
+This reflects large retrospective errors at a horizon of one week, including upward and downward revisions.
+The normal distribution is symmetric before clamping, whereas the Skellam need not be: its skewness depends on the two Poisson rates.
+In contrast, the negative binomial model cannot produce final counts below those already observed after preprocessing; its right skew can also place much of its probability below its mean.
 
 ## Evaluating across nowcast dates
 
@@ -288,7 +308,7 @@ uncertainty_models <- list(
     uncertainty_model = function(obs, pred) {
       return(fit_by_horizon(obs, pred, fit_model = fit_normal))
     },
-    uncertainty_sampler = sample_normal
+    uncertainty_sampler = sample_normal_rounded
   ),
   Skellam = list(
     preprocess = NULL,
@@ -350,23 +370,28 @@ forecasts <- suppressMessages(
   )
 ```
 
-The logarithm is not defined for the negative total counts that the normal and Skellam models can occasionally generate, so before transforming we set any negative draws to zero, as we did for the single nowcast date (see [Negative total counts](#negative-total-counts)).
+Before scoring, we set negative final draws to zero, as we did for the single nowcast date (see [Negative total counts](#negative-total-counts)).
+This also puts all values in the domain of $\log(y + 1)$.
 This does not change the negative binomial nowcasts, which are never negative.
+We use the same bounded predictions for all scores and coverage estimates.
 
 ```{r}
-forecasts_log <- forecasts |>
+forecasts_bounded <- forecasts |>
   as.data.frame() |>
   mutate(predicted = pmax(predicted, 0)) |>
   as_forecast_sample(
     forecast_unit = c("model", "nowcast_date", "reference_date")
-  ) |>
-  transform_forecasts(fun = log_shift, offset = 1, append = FALSE)
+  )
+
+forecasts_log <- transform_forecasts(
+  forecasts_bounded, fun = log_shift, offset = 1, append = FALSE
+)
 
 scores <- forecasts_log |>
   score(metrics = get_metrics(forecasts_log, select = c("crps", "bias"))) |>
   summarise_scores(by = "model")
 
-coverage <- forecasts |>
+coverage <- forecasts_bounded |>
   as_forecast_quantile(probs = c(0.05, 0.25, 0.5, 0.75, 0.95)) |>
   get_coverage(by = "model") |>
   filter(interval_range %in% c(50, 90)) |>
@@ -380,11 +405,13 @@ coverage <- forecasts |>
 left_join(scores, coverage, by = "model")
 ```
 
-The interval coverage is unaffected by the log transform, because the transform preserves the order of the draws.
+After bounding, interval coverage is unaffected by the strictly increasing log transform, so we calculate coverage on the bounded counts directly.
 
-Over these nowcast dates, the negative binomial model has the lowest CRPS, because its prediction intervals are narrow, and its 50% prediction intervals have close to the intended coverage.
-However, its 90% prediction intervals contain the eventually reported counts much less often than intended, so it underestimates the chance of large revisions.
-The normal and Skellam models have 90% prediction intervals with coverage closer to the intended level, but their 50% prediction intervals are too wide. They also show less tendency to overpredict the eventually reported counts (bias closer to zero), as they can represent downward revisions.
+Over these nowcast dates, the negative binomial workflow has the lowest log-scale CRPS and its 50% prediction intervals cover approximately 57% of observations.
+However, its 90% intervals cover only about 64%, so it underestimates the chance of large revisions.
+The normal and Skellam workflows have 90% interval coverage of approximately 87% and 84%, respectively, closer to the intended level.
+Their 50% intervals cover about 78% and 77%, indicating that these central intervals are too wide.
+They also show less tendency to overpredict (bias closer to zero) in this comparison, in which downward revisions have been retained.
 Neither observation model is best on all measures here.
 Which trade-off is preferable depends on how the nowcasts are used, and we recommend evaluating the observation models on your own data before choosing one.
 
@@ -392,15 +419,82 @@ Which trade-off is preferable depends on how the nowcasts are used, and we recom
 
 ### Choosing between the observation models
 
-The rounded normal and the Skellam models both describe the total yet-to-be-reported counts with a mean given by the point nowcast and a variance estimated from past nowcast errors at each horizon.
-They differ mainly for low counts, where the Skellam is an integer-valued distribution with a lower bound on its variance:
-
-- The Skellam model is suited to low counts where downward revisions are common.
-- The rounded normal model is suited to larger counts where downward revisions are rare.
-- If downward revisions are rare and small, preprocessing them with `preprocess_negative_values()` and using the default negative binomial model may be sufficient.
+The normal and Skellam models use the point prediction for the mean of the yet-to-be-reported component and estimate a variance from past nowcast errors at each horizon.
+Choose a continuous normal for non-integer measurements, or consider a rounded normal as an approximation for counts.
+The Skellam provides integer-valued additions and removals directly but requires its variance to exceed the absolute mean with the implementation used here.
+These differences matter especially at low counts, where rounding, skewness, and the variance constraint can have a substantial effect.
+The preprocessing choice and the treatment of final totals also affect performance; the comparison above evaluates these complete workflows, rather than isolating only the observation distributions.
 
 ### Robust sampling from the Skellam model
 
 As shown above, `sample_skellam()` errors if the variance is not greater than the absolute value of the prediction.
 This can be a useful signal that the variance estimated from past nowcasts is not appropriate for the current prediction, so `robust = FALSE` is the default.
 Setting `robust = TRUE` widens the variance only where needed and preserves the mean.
+
+## Non-integer surveillance data: NSSP ED-visit percentages {#percentage-data}
+
+The `nssp_mt_flu_pct_df` dataset contains changes to the percentage of Montana ED visits with an influenza diagnosis, using the unsmoothed NSSP signal archived by [Delphi](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/nssp.html).
+For each reference week, the first increment is the initially published percentage and subsequent increments are differences between successive releases, measured in **percentage points**.
+Their sum reconstructs the published percentage; the `count` column is a numeric input field here, not an integer case count.
+Both dates are Saturdays ending their respective reference and publication weeks, rather than exact publication dates.
+
+Percentages can be revised downwards when either the number of influenza visits or the total number of ED visits changes.
+Rounding would discard small changes, and neither the negative binomial nor Skellam is appropriate for these non-integer increments.
+We use the default continuous normal sampler and disable preprocessing with `preprocess = NULL` to retain fractional values as well as downward revisions.
+
+```{r}
+nssp_mt_flu_pct_df |>
+  filter(count < 0) |>
+  head()
+
+pct_rep_tri <- nssp_mt_flu_pct_df |>
+  filter(report_date <= nowcast_date) |>
+  as_reporting_triangle(delays_unit = "weeks") |>
+  truncate_to_delay(max_delay = max_delay)
+
+nowcast_pct <- baselinenowcast(
+  pct_rep_tri,
+  scale_factor = scale_factor,
+  preprocess = NULL,
+  draws = 1000,
+  uncertainty_model = function(obs, pred) {
+    return(fit_by_horizon(obs, pred, fit_model = fit_normal))
+  },
+  uncertainty_sampler = sample_normal
+)
+
+# Bound final percentages after combining the sampled changes and observations.
+nowcast_pct <- nowcast_pct |>
+  mutate(pred_count = pmin(pmax(pred_count, 0), 100))
+
+pct_final <- nssp_mt_flu_pct_df |>
+  filter(report_date - reference_date <= 7 * max_delay) |>
+  group_by(reference_date) |>
+  summarise(final_pct = sum(count))
+
+pct_summary <- nowcast_pct |>
+  filter(nowcast) |>
+  group_by(reference_date) |>
+  summarise(
+    median = median(pred_count),
+    q5 = quantile(pred_count, 0.05),
+    q95 = quantile(pred_count, 0.95),
+    .groups = "drop"
+  ) |>
+  left_join(pct_final, by = "reference_date")
+```
+
+```{r percentage-nowcast, fig.cap = "Nowcast of Montana influenza ED-visit percentages as of April 5th, 2025. The line is the median and the ribbon spans the 5th to 95th percentiles after bounding final percentages to [0, 100]. Points show the percentages eventually reported within 8 weeks."}
+ggplot(pct_summary, aes(x = reference_date)) +
+  geom_ribbon(aes(ymin = q5, ymax = q95), fill = "steelblue", alpha = 0.3) +
+  geom_line(aes(y = median), colour = "steelblue") +
+  geom_point(aes(y = final_pct)) +
+  xlab("Reference week") +
+  ylab("ED visits with influenza (%)") +
+  theme_bw()
+```
+
+The continuous draws retain fractional percentages while allowing totals to fall below the percentage already reported.
+The normal distribution is unbounded, so we have explicitly limited final percentages to $[0, 100]$ for this example.
+This changes the predictive distribution, including its mean and interval endpoints; it does not make the fitted normal model a bounded distribution.
+As with admissions, evaluate these choices retrospectively before using them for your surveillance target.

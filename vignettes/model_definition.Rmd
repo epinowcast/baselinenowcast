@@ -199,15 +199,27 @@ knitr::include_graphics(file.path("..", "man", "figures", "uq.png"))
 
 ### Alternative observation models {#alternative-observation-models}
 
-The negative binomial observation model requires the yet-to-be-observed counts to be non-negative. When reported counts can be revised downwards, for example due to the removal of duplicate reports, the reporting triangle can contain negative values. By default, these are removed before estimation by redistributing them to earlier delays with `preprocess_negative_values()`. To instead retain downward revisions (by setting `preprocess = NULL`), the package provides two observation models that support negative values, adapted from the [nowcastNHSN](https://github.com/CDCgov/nowcastNHSN) package. Both replace \@ref(eq:negbin2) with a distribution described by its mean and a variance $\sigma^2_j$ for each horizon $j$.
+The negative binomial observation model requires the yet-to-be-observed counts to be non-negative integers. When reported counts can be revised downwards, for example due to the removal of duplicate reports, the reporting triangle can contain negative values. By default, these are removed before estimation by redistributing them to earlier delays with `preprocess_negative_values()`. To instead retain downward revisions (by setting `preprocess = NULL`), the package provides two observation models that support negative values, adapted from the [nowcastNHSN](https://github.com/CDCgov/nowcastNHSN) package. The normal model also supports non-integer surveillance measurements such as percentages. Both replace \@ref(eq:negbin2) with a distribution described by its mean and a variance $\sigma^2_j$ for each horizon $j$.
 
-For a rounded normal observation model (`fit_normal()` and `sample_normal()`), we assume
+For a continuous normal observation model (`fit_normal()` and the default `sample_normal(..., rounded = FALSE)`), we assume
 
 $$
-\left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \sim \text{round}\left(\text{Normal}\left[\sum_{d = j + 1}^{\min(D, t^* - s^*)} \hat{x}_{s^* - j, d}, \sigma^2_j \right]\right),
+\left(\sum_{d = j + 1}^{\min(D, t^* - s^*)} X_{s^* - j, d} \right) \sim \text{Normal}\left[\sum_{d = j + 1}^{\min(D, t^* - s^*)} \hat{x}_{s^* - j, d}, \sigma^2_j \right],
 $$
 
-where the maximum likelihood estimate of $\sigma^2_j$ (ignoring the rounding) is the mean squared error of the retrospective point nowcasts at horizon $j$.
+where the maximum likelihood estimate of $\sigma^2_j$ is the mean squared error of the retrospective point nowcasts at horizon $j$.
+For integer counts, `sample_normal(..., rounded = TRUE)` rounds continuous draws to the nearest integer.
+The variance estimator still uses the continuous normal likelihood; it does not fit a rounded-normal likelihood.
+Rounding can change the mean and variance of the resulting distribution.
+To request rounded draws in `baselinenowcast()`, supply a two-argument sampler:
+
+```{r, eval = FALSE}
+uncertainty_sampler <- function(pred, uncertainty_params) {
+  return(sample_normal(pred, uncertainty_params, rounded = TRUE))
+}
+```
+
+For non-integer reporting triangles, use `preprocess = NULL` to preserve fractional values and retain the default unrounded sampler.
 
 For a Skellam observation model (`fit_skellam()` and `sample_skellam()`), we assume the yet-to-be-observed counts are the difference of two independent Poisson random variables, $Y_1 - Y_2$ with $Y_k \sim \text{Poisson}(\lambda_k)$, which can take any integer value. We write the Skellam distribution in terms of its mean $\mu = \lambda_1 - \lambda_2$ and variance $\sigma^2 = \lambda_1 + \lambda_2$, so that
 
@@ -223,7 +235,7 @@ $$
 
 The variance $\sigma^2_j$ is estimated by maximum likelihood, subject to the constraint $\sigma^2_j > |\mu|$ for all of the means used in the estimation, so that both Poisson rates are positive. When generating probabilistic nowcasts, a prediction can have an absolute value larger than the estimated variance. `sample_skellam()` errors in this case by default, or, with `robust = TRUE`, increases the variance to just above the absolute value of the prediction.
 
-Unlike the negative binomial, neither distribution is closed under binomial subsampling, so using the same variance for partially and fully observed sums is an approximation. Both distributions can also generate total counts below zero. See the [downward revisions article](https://baselinenowcast.epinowcast.org/articles/nhsn_downward_revisions.html) for a worked example.
+Unlike the negative binomial, neither distribution is closed under binomial subsampling, so using the same variance for partially and fully observed sums is an approximation. Both distributions can also generate final totals outside the target's plausible range. Application-specific bounds, such as zero for counts or $[0, 100]$ for percentages, can be applied explicitly after combining sampled increments with observations. Clamping changes the predictive distribution and generally changes its mean. See the [downward revisions article](https://baselinenowcast.epinowcast.org/articles/nhsn_downward_revisions.html) for worked examples with counts and percentages.
 
 ## Probabilistic nowcast generation
 

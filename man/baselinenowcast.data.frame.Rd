@@ -64,14 +64,23 @@ apply uncertainty using the same error model. Default is
 \code{pred} the matrix of predictions that fits each column (horizon)
 to a negative binomial observation model by default. The user can
 specify a different fitting model by replacing the
-\code{fit_model} argument in \code{fit_by_horizon}.}
+\code{fit_model} argument in \code{fit_by_horizon}, e.g.
+\code{function(obs, pred) fit_by_horizon(obs, pred, fit_model = fit_skellam)}.
+See \code{\link[=fit_nb]{fit_nb()}}, \code{\link[=fit_normal]{fit_normal()}} and \code{\link[=fit_skellam]{fit_skellam()}} for the available
+fitting models. Only \code{\link[=fit_normal]{fit_normal()}} and \code{\link[=fit_skellam]{fit_skellam()}} support negative
+values, e.g. from downward corrections retained with
+\code{preprocess = NULL}.}
 
 \item{uncertainty_sampler}{Function that ingests a vector or matrix of
 predictions and a vector of uncertainty parameters and generates draws
 from the observation model. Default is \code{sample_nb} which expects
 arguments \code{pred} for the vector of predictions and uncertainty parameters
 for the corresponding vector of uncertainty parameters, and draws from a
-negative binomial for each element of the vector.}
+negative binomial for each element of the vector. Alternatives are
+\code{\link[=sample_normal]{sample_normal()}} and \code{\link[=sample_skellam]{sample_skellam()}}, which can generate negative
+values (e.g. downward corrections) and should be paired with
+uncertainty parameters estimated with \code{\link[=fit_normal]{fit_normal()}} and
+\code{\link[=fit_skellam]{fit_skellam()}}, respectively.}
 
 \item{max_delay}{Maximum delay (in units of \code{delays_unit}) to include in the
 nowcast. If NULL (default), all delays in the data are used. If specified,
@@ -102,7 +111,11 @@ estimation, or NULL to skip preprocessing. Default is
 redistributing them to earlier delays. Set to NULL if you want to preserve
 negative values. Custom preprocess functions must accept a \code{validate}
 parameter (defaults to TRUE) to enable validation optimisation in internal
-function chains.}
+function chains. If negative values are preserved and
+\code{output_type = "samples"}, an \code{uncertainty_model} and
+\code{uncertainty_sampler} that support negative values are required, e.g.
+\code{\link[=fit_skellam]{fit_skellam()}} with \code{\link[=sample_skellam]{sample_skellam()}} or \code{\link[=fit_normal]{fit_normal()}} with
+\code{\link[=sample_normal]{sample_normal()}}.}
 
 \item{...}{Additional arguments passed to
 \code{\link[=estimate_uncertainty]{estimate_uncertainty()}}

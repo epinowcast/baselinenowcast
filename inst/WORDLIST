@@ -1,4 +1,5 @@
 Bosse
+CDCgov
 CMD
 COVID
 CRPS
@@ -9,10 +10,12 @@ Codecov
 DD
 DataFrame
 DiscreteUniform
+Epidata
 HH
 Karlsruhe
 Lifecycle
 NFIDD
+NHSN
 NSSP
 NegBin
 Nowcast
@@ -22,8 +25,10 @@ Obs
 Overprediction
 PMF
 PMFs
+Poisson
 RESPINOW
 SamuelBrand
+Skellam
 TimTaylor
 Underprediction
 WIS
@@ -77,12 +82,14 @@ negbin
 nolint
 norovirus
 nowcast
+nowcastNHSN
 nowcasted
 nowcasting
 nowcasts
 num
 obs
 overcovers
+overpredict
 overprediction
 pct
 pid
@@ -103,6 +110,8 @@ thetad
 tibble
 ub
 underprediction
+unrounded
+unsmoothed
 wellcomeopenres
 xlab
 yintercept

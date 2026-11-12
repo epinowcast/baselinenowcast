@@ -97,7 +97,11 @@ baselinenowcast <- function(data,
 #'   redistributing them to earlier delays. Set to NULL if you want to preserve
 #'   negative values. Custom preprocess functions must accept a `validate`
 #'   parameter (defaults to TRUE) to enable validation optimisation in internal
-#'   function chains.
+#'   function chains. If negative values are preserved and
+#'   `output_type = "samples"`, an `uncertainty_model` and
+#'   `uncertainty_sampler` that support negative values are required, e.g.
+#'   [fit_skellam()] with [sample_skellam()] or [fit_normal()] with
+#'   [sample_normal()].
 #' @param ... Additional arguments passed to
 #'    [estimate_uncertainty()]
 #'    and [sample_nowcast()].
@@ -119,6 +123,22 @@ baselinenowcast <- function(data,
 #'   tail(n = 40)
 #' nowcast_df <- baselinenowcast(rep_tri, draws = 100)
 #' nowcast_df
+#'
+#' # Retain downward corrections (negative values) and use a Skellam
+#' # observation model, which supports negative values
+#' nowcast_skellam <- baselinenowcast(
+#'   example_downward_corr_rt,
+#'   scale_factor = 2,
+#'   preprocess = NULL,
+#'   draws = 100,
+#'   uncertainty_model = function(obs, pred) {
+#'     fit_by_horizon(obs, pred, fit_model = fit_skellam)
+#'   },
+#'   uncertainty_sampler = function(pred, uncertainty_params) {
+#'     sample_skellam(pred, uncertainty_params, robust = TRUE)
+#'   }
+#' )
+#' nowcast_skellam
 baselinenowcast.reporting_triangle <- function(
   data,
   scale_factor = 3,

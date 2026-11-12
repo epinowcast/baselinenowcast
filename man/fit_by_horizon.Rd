@@ -13,7 +13,10 @@ fit_by_horizon(obs, pred, fit_model = fit_nb)
 \item{pred}{Matrix or vector of predictions.}
 
 \item{fit_model}{Function that ingests observations and expectations
-and returns uncertainty parameters, default is \code{fit_nb}.}
+and returns uncertainty parameters, default is \code{fit_nb}. Available
+options are \code{\link[=fit_nb]{fit_nb()}} (negative binomial), \code{\link[=fit_normal]{fit_normal()}} (normal) and
+\code{\link[=fit_skellam]{fit_skellam()}} (Skellam). The latter two support negative observations
+and expectations, e.g. arising from downward corrections.}
 }
 \value{
 Vector of uncertainty parameters of the same length as the number
@@ -48,6 +51,8 @@ disp
 \seealso{
 Observation error estimation functions
 \code{\link{estimate_uncertainty}()},
-\code{\link{fit_nb}()}
+\code{\link{fit_nb}()},
+\code{\link{fit_normal}()},
+\code{\link{fit_skellam}()}
 }
 \concept{estimate_observation_error}

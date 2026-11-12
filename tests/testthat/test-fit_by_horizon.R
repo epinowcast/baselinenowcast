@@ -225,3 +225,45 @@ test_that("fit_by_horizon: default function parameter works", {
   expect_true(all(is.finite(result)))
   expect_true(all(result > 0))
 })
+
+test_that("fit_by_horizon: works with fit_normal and fit_skellam", {
+  for (fit_model in list(fit_normal, fit_skellam)) {
+    result <- fit_by_horizon(
+      fit_model = fit_model,
+      obs = obs_matrix,
+      pred = pred_matrix
+    )
+    expect_type(result, "double")
+    expect_length(result, ncol(obs_matrix))
+    expect_true(all(is.finite(result)))
+    expect_true(all(result > 0))
+  }
+
+  # Normal variance is the per-column mean squared error
+  expect_equal(
+    fit_by_horizon(obs_matrix, pred_matrix, fit_model = fit_normal),
+    colMeans((obs_matrix - pred_matrix)^2),
+    tolerance = 1e-12
+  )
+})
+
+test_that("fit_by_horizon: fit_normal and fit_skellam support negative values", { # nolint
+  obs_neg <- obs_matrix
+  obs_neg[, 3] <- -obs_neg[, 3]
+  pred_neg <- pred_matrix
+  pred_neg[, 3] <- -pred_neg[, 3]
+
+  expect_error(
+    fit_by_horizon(obs_neg, pred_neg, fit_model = fit_nb),
+    regexp = "Negative values detected"
+  )
+  for (fit_model in list(fit_normal, fit_skellam)) {
+    result <- fit_by_horizon(obs_neg, pred_neg, fit_model = fit_model)
+    expect_length(result, ncol(obs_neg))
+    expect_true(all(is.finite(result)))
+    expect_true(all(result > 0))
+  }
+  # Skellam variance must exceed the largest absolute expectation
+  skellam_result <- fit_by_horizon(obs_neg, pred_neg, fit_model = fit_skellam)
+  expect_gt(skellam_result[3], max(abs(pred_neg[, 3])))
+})

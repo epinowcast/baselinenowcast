@@ -22,7 +22,12 @@
 #'     `pred` the matrix of predictions that fits each column (horizon)
 #'     to a negative binomial observation model by default. The user can
 #'     specify a different fitting model by replacing the
-#'     `fit_model` argument in `fit_by_horizon`.
+#'     `fit_model` argument in `fit_by_horizon`, e.g.
+#'     `function(obs, pred) fit_by_horizon(obs, pred, fit_model = fit_skellam)`.
+#'     See [fit_nb()], [fit_normal()] and [fit_skellam()] for the available
+#'     fitting models. Only [fit_normal()] and [fit_skellam()] support negative
+#'     values, e.g. from downward corrections retained with
+#'     `preprocess = NULL`.
 #' @param ref_time_aggregator Function that operates along the rows (reference
 #'    times) of the retrospective point nowcast matrix before it has been
 #'    aggregated across columns (delays). Default is `identity`
@@ -260,7 +265,10 @@ estimate_uncertainty <- function(
 #' @param obs Matrix or vector of observations.
 #' @param pred Matrix or vector of predictions.
 #' @param fit_model Function that ingests observations and expectations
-#'    and returns uncertainty parameters, default is `fit_nb`.
+#'    and returns uncertainty parameters, default is `fit_nb`. Available
+#'    options are [fit_nb()] (negative binomial), [fit_normal()] (normal) and
+#'    [fit_skellam()] (Skellam). The latter two support negative observations
+#'    and expectations, e.g. arising from downward corrections.
 #'
 #' @returns Vector of uncertainty parameters of the same length as the number
 #'    of columns in the `obs` matrix.
@@ -454,7 +462,8 @@ fit_nb <- function(x, mu) {
     cli_abort(c(
       "Negative values detected in observations for uncertainty estimation",
       x = "fit_nb() requires non-negative integer observations",
-      i = "Consider using preprocess_negative_values() on the reporting triangle if appropriate" # nolint: line_length_linter
+      i = "Consider using preprocess_negative_values() on the reporting triangle if appropriate", # nolint: line_length_linter
+      i = "Alternatively, to model downward corrections, use an observation model that supports negative values, such as fit_normal() or fit_skellam()" # nolint: line_length_linter
     ))
   }
 
@@ -463,7 +472,8 @@ fit_nb <- function(x, mu) {
     cli_abort(c(
       "Negative values detected in predictions for uncertainty estimation",
       x = "fit_nb() requires non-negative predictions",
-      i = "This may indicate an issue with the delay estimation or preprocessing" # nolint: line_length_linter
+      i = "This may indicate an issue with the delay estimation or preprocessing", # nolint: line_length_linter
+      i = "If the delay PMF has negative entries from downward corrections, use an observation model that supports negative values, such as fit_normal() or fit_skellam()" # nolint: line_length_linter
     ))
   }
 
@@ -477,4 +487,233 @@ fit_nb <- function(x, mu) {
   }
   opt <- suppressWarnings(optimize(nllik, c(0.1, 1000)))
   return(opt$minimum)
+}
+
+#' Fit a normal observation model to a vector of observations and expectations
+#'
+#' @description
+#' Takes in a vector of observations and a vector of expectations and returns
+#'   the maximum likelihood estimate of the variance of a normal distribution
+#'   with mean fixed at the expectations, i.e. the mean squared error
+#'   \eqn{\hat{\sigma}^2 = \frac{1}{n}\sum_i (x_i - \mu_i)^2}.
+#'
+#'   Unlike [fit_nb()], this supports non-integer and negative observations
+#'   and expectations,
+#'   so it can be used to quantify uncertainty when the reporting triangle
+#'   contains downward revisions (i.e. negative values) that have not been
+#'   removed with [preprocess_negative_values()]. Pair it with
+#'   [sample_normal()] when generating probabilistic nowcasts. The sampler
+#'   returns continuous draws by default; set `rounded = TRUE` for an
+#'   integer-valued approximation for count data. The variance estimate is
+#'   always based on the continuous normal likelihood, not a rounded-normal
+#'   likelihood. Rounding and any subsequent clamping can change the mean
+#'   and variance of the generated draws.
+#'
+#'   Adapted from code written (under an Apache 2.0 license) in the
+#'   CDCgov/nowcastNHSN package.
+#'   Modified from: \url{https://github.com/CDCgov/nowcastNHSN/blob/3eba887604fab1194343ae6ebaf29e6590d1248b/R/fit_methods.R} #nolint
+#' @param x Vector of observed values.
+#' @param mu Vector of expected values.
+#' @returns The maximum likelihood estimate of the variance, or `NA` if there
+#'   are no pairs of non-missing observations and expectations.
+#' @family estimate_observation_error
+#' @export
+#' @examples
+#' obs <- c(4.2, -2, 10.4)
+#' pred <- c(3.1, -0.5, 11)
+#' var_est <- fit_normal(obs, pred)
+#' var_est
+#'
+#' # Use as the observation model for each horizon
+#' normal_model <- function(obs, pred) {
+#'   fit_by_horizon(obs, pred, fit_model = fit_normal)
+#' }
+#' normal_model(
+#'   obs = matrix(c(5.2, -1, 8.4, 4, 2, 0), nrow = 3),
+#'   pred = matrix(c(4.2, 0.7, 7.3, 5.2, 3.5, 0.4), nrow = 3)
+#' )
+fit_normal <- function(x, mu) {
+  if (length(x) == 0) {
+    return(NA)
+  }
+
+  # Remove pairs with a missing observation or expectation
+  valid <- !is.na(x) & !is.na(mu)
+  x <- x[valid]
+  mu <- mu[valid]
+  if (length(x) == 0) {
+    return(NA)
+  }
+
+  # MLE of the variance with a fixed mean is the mean squared error
+  variance <- mean((x - mu)^2)
+  return(variance)
+}
+
+#' Fit a Skellam observation model to a vector of observations and expectations
+#'
+#' @description
+#' Takes in a vector of observations and a vector of expectations and
+#'   estimates the variance of a Skellam distribution with mean fixed at the
+#'   expectations. A Skellam random variable is the difference of two
+#'   independent Poisson random variables,
+#'   \eqn{X = Y_1 - Y_2}, \eqn{Y_k \sim \mathrm{Poisson}(\lambda_k)}, so it
+#'   takes integer values that can be negative.
+#'
+#'   With the mean fixed at \eqn{\mu = \lambda_1 - \lambda_2}, the variance
+#'   \eqn{\sigma^2 = \lambda_1 + \lambda_2} is shared across observations,
+#'   giving \eqn{\lambda_1 = (\mu + \sigma^2)/2} and
+#'   \eqn{\lambda_2 = (\sigma^2 - \mu)/2}. Both rates must be positive, so the
+#'   estimate satisfies \eqn{\sigma^2 > \max_i |\mu_i|}.
+#'
+#'   Unlike [fit_nb()], this supports negative observations and expectations,
+#'   so it can be used to quantify uncertainty when the reporting triangle
+#'   contains downward revisions (i.e. negative values) that have not been
+#'   removed with [preprocess_negative_values()]. Pair it with
+#'   [sample_skellam()] when generating probabilistic nowcasts. The Skellam
+#'   is most suitable for low counts where downward revisions are common.
+#'
+#'   Adapted from code written (under an Apache 2.0 license) in the
+#'   CDCgov/nowcastNHSN package.
+#'   Modified from: \url{https://github.com/CDCgov/nowcastNHSN/blob/3eba887604fab1194343ae6ebaf29e6590d1248b/R/fit_methods.R} #nolint
+#' @inheritParams fit_normal
+#' @param method Character string indicating the estimation method. Either
+#'   `"mle"` (default) for maximum likelihood estimation or `"mom"` for the
+#'   method of moments estimate (the mean squared error, equivalent to
+#'   [fit_normal()]).
+#' @importFrom stats optimize
+#' @importFrom checkmate assert_integerish
+#' @importFrom cli cli_abort
+#' @importFrom rlang arg_match
+#' @returns The estimate of the variance, or `NA` if there are no pairs of
+#'   non-missing observations and expectations.
+#' @family estimate_observation_error
+#' @export
+#' @examples
+#' obs <- c(4, -2, 10, 3)
+#' pred <- c(3.1, -0.5, 11, 2.4)
+#' var_est <- fit_skellam(obs, pred)
+#' var_est
+#'
+#' # Method of moments estimate
+#' fit_skellam(obs, pred, method = "mom")
+#'
+#' # Use as the observation model for each horizon
+#' skellam_model <- function(obs, pred) {
+#'   fit_by_horizon(obs, pred, fit_model = fit_skellam)
+#' }
+#' skellam_model(
+#'   obs = matrix(c(5, -1, 8, 4, 2, 0), nrow = 3),
+#'   pred = matrix(c(4.2, 0.7, 7.3, 5.2, 3.5, 0.4), nrow = 3)
+#' )
+fit_skellam <- function(x, mu, method = c("mle", "mom")) {
+  method <- arg_match(method)
+  if (length(x) == 0) {
+    return(NA)
+  }
+
+  # Check that all observations are integers
+  assert_integerish(x)
+
+  # Remove pairs with a missing observation or expectation
+  valid <- !is.na(x) & !is.na(mu)
+  x <- x[valid]
+  mu <- mu[valid]
+  if (length(x) == 0) {
+    return(NA)
+  }
+
+  mom_est <- mean((x - mu)^2)
+  if (method == "mom") {
+    return(mom_est)
+  }
+
+  # Both Poisson rates must be positive, which requires variance > max(|mu|)
+  min_variance <- max(abs(mu)) + 0.01
+  nllik <- function(sigma2) {
+    lambda1 <- (mu + sigma2) / 2
+    lambda2 <- (sigma2 - mu) / 2
+    if (any(lambda1 <= 0) || any(lambda2 <= 0)) {
+      return(Inf)
+    }
+    nll <- -sum(.dskellam_log(x, lambda1, lambda2), na.rm = TRUE)
+    if (!is.finite(nll)) {
+      return(Inf)
+    }
+    return(nll)
+  }
+
+  upper_bound <- max(mom_est * 10, min_variance * 100)
+  opt <- suppressWarnings(
+    optimize(nllik, c(min_variance, upper_bound))
+  )
+
+  if (!is.finite(opt$objective)) {
+    cli_abort(c(
+      "Skellam maximum likelihood estimation failed to converge.",
+      x = "The objective function returned {.val {opt$objective}} at the minimum.", # nolint: line_length_linter
+      i = "Try using {.code method = \"mom\"} for a method of moments estimate." # nolint: line_length_linter
+    ))
+  }
+  return(opt$minimum)
+}
+
+#' Log probability mass function of the Skellam distribution
+#'
+#' @description
+#' Computes
+#'   \eqn{\log p(x) = -(\lambda_1 + \lambda_2) +
+#'   \frac{x}{2}\log(\lambda_1/\lambda_2) + \log I_{|x|}(2\sqrt{\lambda_1
+#'   \lambda_2})}, where \eqn{I_\nu} is the modified Bessel function of the
+#'   first kind, computed on the log scale with `.log_bessel_i()`.
+#'
+#' @param x Vector of integer values.
+#' @param lambda1 Vector of rates of the positive Poisson component.
+#' @param lambda2 Vector of rates of the negative Poisson component.
+#' @returns Vector of log probabilities.
+#' @keywords internal
+.dskellam_log <- function(x, lambda1, lambda2) {
+  z <- 2 * sqrt(lambda1 * lambda2)
+  log_pmf <- -(lambda1 + lambda2) +
+    (x / 2) * log(lambda1 / lambda2) +
+    .log_bessel_i(z, nu = abs(x))
+  return(log_pmf)
+}
+
+#' Log of the modified Bessel function of the first kind
+#'
+#' @description
+#' Computes \eqn{\log I_\nu(z)} using the exponentially scaled
+#'   [besselI()]. Where this underflows to zero, which happens when \eqn{\nu}
+#'   is large relative to \eqn{z} (e.g. a large count with a small expected
+#'   value) or when \eqn{z > 10^5}, the uniform asymptotic expansion is used
+#'   instead,
+#'   \deqn{\log I_\nu(z) \approx r + \nu \log\frac{z}{\nu + r} -
+#'   \frac{1}{2}\log(2\pi r) + \log\left(1 + \frac{3 - 5\nu^2/r^2}{24 r}
+#'   \right),}
+#'   with \eqn{r = \sqrt{\nu^2 + z^2}}.
+#'
+#' @param z Vector of non-negative arguments.
+#' @param nu Vector of non-negative orders.
+#' @returns Vector of \eqn{\log I_\nu(z)}.
+#' @keywords internal
+.log_bessel_i <- function(z, nu) {
+  n <- max(length(z), length(nu))
+  z <- rep_len(z, n)
+  nu <- rep_len(nu, n)
+  # besselI() warns when precision is lost and returns 0 on underflow, which
+  # is handled by the asymptotic expansion below
+  log_bessel <- suppressWarnings(
+    log(besselI(z, nu = nu, expon.scaled = TRUE)) + z
+  )
+  use_approx <- !is.finite(log_bessel) & z > 0
+  if (any(use_approx)) {
+    z_a <- z[use_approx]
+    nu_a <- nu[use_approx]
+    r <- sqrt(nu_a^2 + z_a^2)
+    log_bessel[use_approx] <- r + nu_a * log(z_a / (nu_a + r)) -
+      0.5 * log(2 * pi * r) +
+      log1p((3 - 5 * nu_a^2 / r^2) / (24 * r))
+  }
+  return(log_bessel)
 }

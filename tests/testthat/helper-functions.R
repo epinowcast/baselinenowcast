@@ -1,7 +1,8 @@
 # Helper Functions for baselinenowcast Tests
 #
 # This file contains helper functions used across test files including:
-# - Partial functions with good defaults (e.g., baselinenowcast_test)
+# - Partial functions with good defaults (e.g., baselinenowcast_test,
+#   fit_by_horizon_with, sample_skellam_robust)
 # - Data manipulation helpers (e.g., summarise_final_day_mean)
 # - Comparison helpers (e.g., expect_estimates_differ)
 # - Test data creation functions (e.g., make_simple_triangle,
@@ -47,6 +48,45 @@ baselinenowcast_test <- function(data, max_delay = 40, draws = 100, ...) {
     ...
   ))
   # nolint end
+}
+
+#' Uncertainty model that fits each horizon with a given fitting function
+#'
+#' Partial of `fit_by_horizon()` for passing alternative observation models
+#' (e.g. `fit_normal()`, `fit_skellam()`) as `uncertainty_model`.
+#'
+#' @param fit_model Function with arguments `x` and `mu`.
+#' @param ... Additional arguments passed to `fit_model`.
+#' @return Function with arguments `obs` and `pred`.
+#' @keywords internal
+fit_by_horizon_with <- function(fit_model, ...) {
+  return(function(obs, pred) {
+    return(fit_by_horizon(
+      obs,
+      pred,
+      fit_model = function(x, mu) fit_model(x, mu, ...)
+    ))
+  })
+}
+
+#' Skellam sampler that widens invalid variances rather than erroring
+#'
+#' @param pred Vector or matrix of predictions.
+#' @param uncertainty_params Vector of variances.
+#' @return Draws from `sample_skellam()` with `robust = TRUE`.
+#' @keywords internal
+sample_skellam_robust <- function(pred, uncertainty_params) {
+  return(sample_skellam(pred, uncertainty_params, robust = TRUE))
+}
+
+#' Sample rounded normal draws for count examples
+#'
+#' @param pred Vector or matrix of predictions.
+#' @param uncertainty_params Vector of variances.
+#' @return Rounded draws from `sample_normal()`.
+#' @keywords internal
+sample_normal_rounded <- function(pred, uncertainty_params) {
+  return(sample_normal(pred, uncertainty_params, rounded = TRUE))
 }
 
 # Data Manipulation Helpers ------------------------------------------------

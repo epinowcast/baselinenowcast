@@ -11,6 +11,9 @@
 - Added the `nhsn_mt_flu_df` dataset of weekly influenza hospital admissions in Montana reported to NHSN, which contains downward revisions (#369).
 - Added `nssp_mt_flu_pct_df`, a fixed archive of percentage-point revisions to influenza ED-visit percentages in Montana, with a reproducible extraction script (#500).
 - Added a website-only article demonstrating nowcasting with downward revisions using the new observation models for integer counts and continuous percentages, and a description of the models to the mathematical model vignette. The examples explain model selection and apply bounds explicitly to final totals (#369, #500).
+- Added a website-only article demonstrating nowcasting with downward revisions using the new observation models, and a description of the models to the mathematical model vignette (#369).
+- fix typo in `estimate_delay()` documentation (#502)
+
 
 # baselinenowcast 0.2.2
 

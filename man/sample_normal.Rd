@@ -2,27 +2,36 @@
 % Please edit documentation in R/sample_distrib.R
 \name{sample_normal}
 \alias{sample_normal}
-\title{Sample from a rounded normal model given a set of predictions}
+\title{Sample from a normal model given a set of predictions}
 \usage{
-sample_normal(pred, uncertainty_params)
+sample_normal(pred, uncertainty_params, rounded = FALSE)
 }
 \arguments{
 \item{pred}{Vector of predictions.}
 
 \item{uncertainty_params}{Vector of uncertainty parameters, here the
 variances of the normal distribution.}
+
+\item{rounded}{Logical indicating whether to round draws to the nearest
+integer. Default is \code{FALSE}, which returns continuous draws.}
 }
 \value{
 \code{sampled_pred} Object of the same dimensions as \code{pred} representing
-a single draw from the rounded normal distribution
+a single draw from the normal distribution, optionally rounded,
 with the specified \verb{uncertainty params}.
 }
 \description{
 Draws from a normal distribution with mean \code{pred} and variance
-\code{uncertainty_params}, rounded to the nearest integer. Unlike
-\code{\link[=sample_nb]{sample_nb()}}, draws can be negative, so this sampler can represent
-downward corrections. Use with uncertainty parameters estimated with
-\code{\link[=fit_normal]{fit_normal()}}.
+\code{uncertainty_params}. By default, draws are continuous, suitable for
+non-integer measurements such as percentages. Set \code{rounded = TRUE} to
+round draws to the nearest integer for count data. Unlike \code{\link[=sample_nb]{sample_nb()}},
+draws can be negative, so this sampler can represent downward corrections.
+Use with uncertainty parameters estimated with \code{\link[=fit_normal]{fit_normal()}}.
+
+To use rounding as the \code{uncertainty_sampler} in \code{\link[=baselinenowcast]{baselinenowcast()}} or
+\code{\link[=sample_nowcasts]{sample_nowcasts()}}, pass a two-argument function, e.g.
+\code{function(pred, uncertainty_params) sample_normal(pred, uncertainty_params, rounded = TRUE)}. For non-integer reporting triangles,
+use \code{preprocess = NULL} in \code{\link[=baselinenowcast]{baselinenowcast()}} to retain fractional values.
 
 Adapted from code written (under an Apache 2.0 license) in the
 CDCgov/nowcastNHSN package.
@@ -34,6 +43,9 @@ sampled_preds <- sample_normal(pred,
   uncertainty_params = c(4, 9)
 )
 sampled_preds
+
+# Rounded draws for count data
+sample_normal(pred, uncertainty_params = c(4, 9), rounded = TRUE)
 }
 \seealso{
 Probabilistic nowcast generation functions

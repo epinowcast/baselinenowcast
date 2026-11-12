@@ -42,6 +42,7 @@ Example datasets
 \code{\link{example_reporting_triangle}},
 \code{\link{germany_covid19_hosp}},
 \code{\link{nhsn_mt_flu_df}},
+\code{\link{nssp_mt_flu_pct_df}},
 \code{\link{syn_nssp_line_list}}
 }
 \concept{example_data}

@@ -49,6 +49,7 @@ Example datasets
 \code{\link{example_downward_corr_rt}},
 \code{\link{germany_covid19_hosp}},
 \code{\link{nhsn_mt_flu_df}},
+\code{\link{nssp_mt_flu_pct_df}},
 \code{\link{syn_nssp_df}},
 \code{\link{syn_nssp_line_list}}
 }

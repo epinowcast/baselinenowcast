@@ -2,20 +2,19 @@
 % Please edit documentation in R/sample_distrib.R
 \name{.check_sampler_inputs}
 \alias{.check_sampler_inputs}
-\title{Check the inputs to a sampler that takes variances as parameters}
+\title{Check numeric sampler inputs and compatible parameter lengths}
 \usage{
 .check_sampler_inputs(pred, uncertainty_params)
 }
 \arguments{
 \item{pred}{Vector of predictions.}
 
-\item{uncertainty_params}{Vector of uncertainty parameters, here the
-variances of the normal distribution.}
+\item{uncertainty_params}{Vector of uncertainty parameters.}
 }
 \value{
 NULL, invisibly
 }
 \description{
-Check the inputs to a sampler that takes variances as parameters
+Check numeric sampler inputs and compatible parameter lengths
 }
 \keyword{internal}

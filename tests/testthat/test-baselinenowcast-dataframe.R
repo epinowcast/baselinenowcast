@@ -142,7 +142,7 @@ test_that(paste0(
   models <- list(
     normal = list(
       uncertainty_model = fit_by_horizon_with(fit_normal),
-      uncertainty_sampler = sample_normal
+      uncertainty_sampler = sample_normal_rounded
     ),
     skellam = list(
       uncertainty_model = fit_by_horizon_with(fit_skellam),

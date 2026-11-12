@@ -6,10 +6,16 @@ test_that("sample_normal() returns numeric vector matching length of `pred`", {
   expect_length(out, length(pred))
 })
 
-test_that("sample_normal() returns integer-valued draws", {
+test_that("sample_normal() draws a continuous normal unless rounding is requested", { # nolint
+  pred <- c(5.3, 10.7, -2.2)
   set.seed(123)
-  out <- sample_normal(c(5.3, 10.7, -2.2), uncertainty_params = 4)
-  expect_identical(out, round(out))
+  expected <- rnorm(length(pred), mean = pred, sd = 2)
+  set.seed(123)
+  expect_identical(sample_normal(pred, 4), expected)
+  set.seed(123)
+  expect_identical(sample_normal(pred, 4, rounded = FALSE), expected)
+  set.seed(123)
+  expect_identical(sample_normal(pred, 4, rounded = TRUE), round(expected))
 })
 
 test_that("sample_normal() returns mean and variance close to parameters", {
@@ -24,8 +30,11 @@ test_that("sample_normal() returns mean and variance close to parameters", {
 })
 
 test_that("sample_normal() returns `pred` when the variance is zero", {
-  pred <- c(5, 10, -3)
+  pred <- c(5.2, 10.7, -3.4)
   expect_identical(sample_normal(pred, uncertainty_params = 0), pred)
+  expect_identical(
+    sample_normal(pred, uncertainty_params = 0, rounded = TRUE), round(pred)
+  )
 })
 
 test_that("sample_normal() can sample negative values", {
@@ -45,11 +54,13 @@ test_that("sample_normal() is reproducible under set.seed", {
 
 test_that("sample_normal() handles scalar vs vector uncertainty_params", {
   pred <- c(5, 10, 20)
-  set.seed(2024)
-  scalar_out <- sample_normal(pred, uncertainty_params = 4)
-  set.seed(2024)
-  vector_out <- sample_normal(pred, uncertainty_params = rep(4, 3))
-  expect_identical(scalar_out, vector_out)
+  for (rounded in c(FALSE, TRUE)) {
+    set.seed(2024)
+    scalar_out <- sample_normal(pred, 4, rounded = rounded)
+    set.seed(2024)
+    vector_out <- sample_normal(pred, rep(4, 3), rounded = rounded)
+    expect_identical(scalar_out, vector_out)
+  }
 })
 
 test_that("sample_normal() preserves matrix shape and dimnames when `pred` is a matrix", { # nolint
@@ -58,10 +69,18 @@ test_that("sample_normal() preserves matrix shape and dimnames when `pred` is a 
     nrow = 2, ncol = 2,
     dimnames = list(c("r1", "r2"), c("c1", "c2"))
   )
-  out <- sample_normal(pred, uncertainty_params = 4)
-  expect_true(is.matrix(out))
-  expect_identical(dim(out), dim(pred))
-  expect_identical(dimnames(out), dimnames(pred))
+  for (rounded in c(FALSE, TRUE)) {
+    out <- sample_normal(pred, uncertainty_params = 4, rounded = rounded)
+    expect_true(is.matrix(out))
+    expect_identical(dim(out), dim(pred))
+    expect_identical(dimnames(out), dimnames(pred))
+  }
+})
+
+test_that("sample_normal() rejects invalid rounding flags", {
+  for (rounded in list(NA, NULL, 1, "TRUE", c(TRUE, FALSE))) {
+    expect_error(sample_normal(1, 1, rounded = rounded), "rounded")
+  }
 })
 
 test_that("sample_normal() errors on invalid input", {

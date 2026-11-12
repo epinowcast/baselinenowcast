@@ -279,7 +279,7 @@ test_that(
     models <- list(
       normal = list(
         uncertainty_model = fit_by_horizon_with(fit_normal),
-        uncertainty_sampler = sample_normal
+        uncertainty_sampler = sample_normal_rounded
       ),
       skellam = list(
         uncertainty_model = fit_by_horizon_with(fit_skellam),
@@ -303,6 +303,7 @@ test_that(
         output_type = "samples"
       )
       expect_false(anyNA(result$pred_count))
+      expect_identical(result$pred_count, round(result$pred_count))
       expect_nowcast_draws(result, n_draws = 100, n_dates = nrow(triangle))
 
       # The incomplete reference time with an expected net downward

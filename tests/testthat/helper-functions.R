@@ -79,6 +79,16 @@ sample_skellam_robust <- function(pred, uncertainty_params) {
   return(sample_skellam(pred, uncertainty_params, robust = TRUE))
 }
 
+#' Sample rounded normal draws for count examples
+#'
+#' @param pred Vector or matrix of predictions.
+#' @param uncertainty_params Vector of variances.
+#' @return Rounded draws from `sample_normal()`.
+#' @keywords internal
+sample_normal_rounded <- function(pred, uncertainty_params) {
+  return(sample_normal(pred, uncertainty_params, rounded = TRUE))
+}
+
 # Data Manipulation Helpers ------------------------------------------------
 
 #' Summarise mean for final day

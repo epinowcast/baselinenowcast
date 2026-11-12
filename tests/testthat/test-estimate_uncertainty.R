@@ -683,6 +683,13 @@ test_that("fit_normal returns the mean squared error", {
   x_neg <- c(-1, -2, -3)
   mu_neg <- c(0, -1, 1)
   expect_identical(fit_normal(x_neg, mu_neg), mean((x_neg - mu_neg)^2))
+
+  x_fractional <- c(0.05, -0.02, 1.35)
+  mu_fractional <- c(0.03, -0.01, 1.4)
+  expect_identical(
+    fit_normal(x_fractional, mu_fractional),
+    mean((x_fractional - mu_fractional)^2)
+  )
 })
 
 test_that("fit_normal handles empty and missing inputs", {

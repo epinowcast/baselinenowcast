@@ -16,40 +16,31 @@
 #' )
 #' sampled_preds
 sample_nb <- function(pred, uncertainty_params) {
-  if (!is.numeric(pred)) {
-    cli_abort("`pred` must be numeric (vector or matrix).")
-  }
-  if (!is.numeric(uncertainty_params)) {
-    cli_abort("`uncertainty_params` must be numeric (scalar or vector).")
-  }
-  n <- length(pred)
-  if (!(length(uncertainty_params) %in% c(1L, n))) {
-    cli_abort("`uncertainty_params` must have length 1 or match length(pred).")
-  }
-  if (!is.null(pred)) {
-    sampled_pred <- rnbinom(
-      n = length(pred),
-      size = uncertainty_params,
-      mu = as.numeric(pred)
-    )
-    if (is.matrix(pred)) {
-      dim(sampled_pred) <- dim(pred)
-      dimnames(sampled_pred) <- dimnames(pred)
-    }
-  } else {
-    sampled_pred <- NULL
-  }
+  .check_sampler_inputs(pred, uncertainty_params)
+  sampled_pred <- rnbinom(
+    n = length(pred),
+    size = uncertainty_params,
+    mu = as.numeric(pred)
+  )
+  sampled_pred <- .match_pred_dims(sampled_pred, pred)
   return(sampled_pred)
 }
 
-#' Sample from a rounded normal model given a set of predictions
+#' Sample from a normal model given a set of predictions
 #'
 #' @description
 #' Draws from a normal distribution with mean `pred` and variance
-#'   `uncertainty_params`, rounded to the nearest integer. Unlike
-#'   [sample_nb()], draws can be negative, so this sampler can represent
-#'   downward corrections. Use with uncertainty parameters estimated with
-#'   [fit_normal()].
+#'   `uncertainty_params`. By default, draws are continuous, suitable for
+#'   non-integer measurements such as percentages. Set `rounded = TRUE` to
+#'   round draws to the nearest integer for count data. Unlike [sample_nb()],
+#'   draws can be negative, so this sampler can represent downward corrections.
+#'   Use with uncertainty parameters estimated with [fit_normal()].
+#'
+#'   To use rounding as the `uncertainty_sampler` in [baselinenowcast()] or
+#'   [sample_nowcasts()], pass a two-argument function, e.g.
+#'   `function(pred, uncertainty_params) sample_normal(pred,
+#'   uncertainty_params, rounded = TRUE)`. For non-integer reporting triangles,
+#'   use `preprocess = NULL` in [baselinenowcast()] to retain fractional values.
 #'
 #'   Adapted from code written (under an Apache 2.0 license) in the
 #'   CDCgov/nowcastNHSN package.
@@ -58,12 +49,15 @@ sample_nb <- function(pred, uncertainty_params) {
 #' @param pred Vector of predictions.
 #' @param uncertainty_params Vector of uncertainty parameters, here the
 #'   variances of the normal distribution.
+#' @param rounded Logical indicating whether to round draws to the nearest
+#'   integer. Default is `FALSE`, which returns continuous draws.
 #' @family generate_probabilistic_nowcasts
 #' @importFrom stats rnorm
 #' @importFrom cli cli_abort
+#' @importFrom checkmate assert_flag
 #' @export
 #' @returns `sampled_pred` Object of the same dimensions as `pred` representing
-#'    a single draw from the rounded normal distribution
+#'    a single draw from the normal distribution, optionally rounded,
 #'    with the specified `uncertainty params`.
 #' @examples
 #' pred <- c(3.2, -1.4)
@@ -71,13 +65,21 @@ sample_nb <- function(pred, uncertainty_params) {
 #'   uncertainty_params = c(4, 9)
 #' )
 #' sampled_preds
-sample_normal <- function(pred, uncertainty_params) {
+#'
+#' # Rounded draws for count data
+#' sample_normal(pred, uncertainty_params = c(4, 9), rounded = TRUE)
+sample_normal <- function(pred, uncertainty_params, rounded = FALSE) {
   .check_sampler_inputs(pred, uncertainty_params)
-  sampled_pred <- round(rnorm(
+  .check_sampler_variances(uncertainty_params)
+  assert_flag(rounded)
+  sampled_pred <- rnorm(
     n = length(pred),
     mean = as.numeric(pred),
     sd = sqrt(uncertainty_params)
-  ))
+  )
+  if (rounded) {
+    sampled_pred <- round(sampled_pred)
+  }
   sampled_pred <- .match_pred_dims(sampled_pred, pred)
   return(sampled_pred)
 }
@@ -133,6 +135,7 @@ sample_normal <- function(pred, uncertainty_params) {
 #' sample_skellam(pred, uncertainty_params = 2, robust = TRUE)
 sample_skellam <- function(pred, uncertainty_params, robust = FALSE) {
   .check_sampler_inputs(pred, uncertainty_params)
+  .check_sampler_variances(uncertainty_params)
   assert_flag(robust)
   pred_vec <- as.numeric(pred)
   variance <- rep_len(uncertainty_params, length(pred_vec))
@@ -161,9 +164,9 @@ sample_skellam <- function(pred, uncertainty_params, robust = FALSE) {
   return(sampled_pred)
 }
 
-#' Check the inputs to a sampler that takes variances as parameters
+#' Check numeric sampler inputs and compatible parameter lengths
 #'
-#' @inheritParams sample_normal
+#' @inheritParams sample_nb
 #' @returns NULL, invisibly
 #' @keywords internal
 .check_sampler_inputs <- function(pred, uncertainty_params) {
@@ -177,6 +180,15 @@ sample_skellam <- function(pred, uncertainty_params, robust = FALSE) {
   if (!(length(uncertainty_params) %in% c(1L, n))) {
     cli_abort("`uncertainty_params` must have length 1 or match length(pred).")
   }
+  return(invisible(NULL))
+}
+
+#' Check variance parameters for normal and Skellam samplers
+#'
+#' @inheritParams sample_normal
+#' @returns NULL, invisibly
+#' @keywords internal
+.check_sampler_variances <- function(uncertainty_params) {
   if (anyNA(uncertainty_params) || any(uncertainty_params < 0)) {
     cli_abort(
       "`uncertainty_params` must be non-negative variances without NAs."

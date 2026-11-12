@@ -495,13 +495,17 @@ fit_nb <- function(x, mu) {
 #'   with mean fixed at the expectations, i.e. the mean squared error
 #'   \eqn{\hat{\sigma}^2 = \frac{1}{n}\sum_i (x_i - \mu_i)^2}.
 #'
-#'   Unlike [fit_nb()], this supports negative observations and expectations,
+#'   Unlike [fit_nb()], this supports non-integer and negative observations
+#'   and expectations,
 #'   so it can be used to quantify uncertainty when the reporting triangle
 #'   contains downward revisions (i.e. negative values) that have not been
 #'   removed with [preprocess_negative_values()]. Pair it with
-#'   [sample_normal()] when generating probabilistic nowcasts. A rounded
-#'   normal is most suitable when counts are large and downward revisions are
-#'   rare.
+#'   [sample_normal()] when generating probabilistic nowcasts. The sampler
+#'   returns continuous draws by default; set `rounded = TRUE` for an
+#'   integer-valued approximation for count data. The variance estimate is
+#'   always based on the continuous normal likelihood, not a rounded-normal
+#'   likelihood. Rounding and any subsequent clamping can change the mean
+#'   and variance of the generated draws.
 #'
 #'   Adapted from code written (under an Apache 2.0 license) in the
 #'   CDCgov/nowcastNHSN package.
@@ -513,7 +517,7 @@ fit_nb <- function(x, mu) {
 #' @family estimate_observation_error
 #' @export
 #' @examples
-#' obs <- c(4, -2, 10)
+#' obs <- c(4.2, -2, 10.4)
 #' pred <- c(3.1, -0.5, 11)
 #' var_est <- fit_normal(obs, pred)
 #' var_est
@@ -523,7 +527,7 @@ fit_nb <- function(x, mu) {
 #'   fit_by_horizon(obs, pred, fit_model = fit_normal)
 #' }
 #' normal_model(
-#'   obs = matrix(c(5, -1, 8, 4, 2, 0), nrow = 3),
+#'   obs = matrix(c(5.2, -1, 8.4, 4, 2, 0), nrow = 3),
 #'   pred = matrix(c(4.2, 0.7, 7.3, 5.2, 3.5, 0.4), nrow = 3)
 #' )
 fit_normal <- function(x, mu) {

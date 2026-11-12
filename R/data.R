@@ -190,6 +190,42 @@
 #' rep_tri
 "nhsn_mt_flu_df"
 
+#' Weekly revisions to influenza ED-visit percentages in Montana
+#'
+#' @description Percentages of emergency department (ED) visits with an
+#'   influenza discharge diagnosis in Montana, reported by the National
+#'   Syndromic Surveillance Program (NSSP) during the 2024-2025 season.
+#'   Successive published percentages are differenced into percentage-point
+#'   increments. Negative increments represent downward revisions, which can
+#'   arise from changes to the number of influenza visits or total ED visits.
+#'
+#' @format A data.frame with 1,283 rows and 3 columns.
+#' \describe{
+#'   \item{reference_date}{Saturday ending the week of ED visits.}
+#'   \item{report_date}{Saturday ending the week of publication. This is a
+#'     weekly index derived from the archive issue week, not the exact
+#'     publication date.}
+#'   \item{count}{Numeric change in the published percentage, in percentage
+#'     points, including the initial report. Summing successive increments
+#'     for a reference week reconstructs its published percentage.}
+#' }
+#' @details The unsmoothed `pct_ed_visits_influenza` signal is extracted for
+#'   reference weeks 202444-202535 and issue weeks 202445-202545. The first
+#'   reference week ends on 2024-11-02 and the last on 2025-08-30. The dataset
+#'   retains fractional increments and downward revisions. Use
+#'   `preprocess = NULL` and a continuous observation model such as
+#'   [fit_normal()] with [sample_normal()] when nowcasting these data.
+#'   The `count` column contains percentage-point increments, not case counts
+#'   or percentages to be averaged across report dates. See
+#'   `data-raw/nssp_mt_flu_pct.R` for extraction and reconstruction checks.
+#' @source NSSP ED-visit percentages, accessed via the Delphi Epidata API
+#'   (\url{https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/nssp.html}). # nolint
+#' @family example_data
+#' @examples
+#' # Downward revisions in percentage points
+#' nssp_mt_flu_pct_df[nssp_mt_flu_pct_df$count < 0, ]
+"nssp_mt_flu_pct_df"
+
 #' Incident COVID-19 hospitalisations indexed by the date of positive test
 #'   (reference date) and report date from Germany in 2021 and 2022.
 #'

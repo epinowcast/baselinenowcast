@@ -28,6 +28,8 @@ navbar:
           href: articles/nssp_nowcast.html
         - text: "An example of how to evaluate nowcast performance under different model specifications"
           href: articles/evaluation_example.html
+        - text: "Nowcasting with downward revisions: counts and percentages"
+          href: articles/nhsn_downward_revisions.html
 
 # Code folding configuration
 code:

@@ -12,7 +12,11 @@
 #'    from the observation model. Default is `sample_nb` which expects
 #'    arguments `pred` for the vector of predictions and uncertainty parameters
 #'    for the corresponding vector of uncertainty parameters, and draws from a
-#'    negative binomial for each element of the vector.
+#'    negative binomial for each element of the vector. Alternatives are
+#'    [sample_normal()] and [sample_skellam()], which can generate negative
+#'    values (e.g. downward corrections) and should be paired with
+#'    uncertainty parameters estimated with [fit_normal()] and
+#'    [fit_skellam()], respectively.
 #' @inheritParams estimate_delay
 #' @inheritParams estimate_uncertainty
 #' @returns Matrix of predicted draws at each reference date, for all reference

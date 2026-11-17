@@ -74,3 +74,17 @@ test_that("sample_nb() errors on invalid input", {
     regexp = "`uncertainty_params` must have length 1 or match length"
   )
 })
+
+test_that("sample_nb() retains negative-binomial parameter semantics", {
+  # Dispersion is not a variance: retain rnbinom()'s handling of its
+  # Poisson limit, boundary values, and missing parameters.
+  pred <- c(5, 10, 20)
+  size <- c(Inf, 0, NA_real_)
+  set.seed(42)
+  expected <- suppressWarnings(rnbinom(length(pred), size = size, mu = pred))
+  set.seed(42)
+  actual <- suppressWarnings(sample_nb(pred, size))
+  expect_identical(actual, expected)
+  expect_true(is.nan(actual[2]))
+  expect_true(is.na(actual[3]))
+})

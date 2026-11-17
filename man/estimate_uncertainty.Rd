@@ -36,7 +36,12 @@ apply uncertainty using the same error model. Default is
 \code{pred} the matrix of predictions that fits each column (horizon)
 to a negative binomial observation model by default. The user can
 specify a different fitting model by replacing the
-\code{fit_model} argument in \code{fit_by_horizon}.}
+\code{fit_model} argument in \code{fit_by_horizon}, e.g.
+\code{function(obs, pred) fit_by_horizon(obs, pred, fit_model = fit_skellam)}.
+See \code{\link[=fit_nb]{fit_nb()}}, \code{\link[=fit_normal]{fit_normal()}} and \code{\link[=fit_skellam]{fit_skellam()}} for the available
+fitting models. Only \code{\link[=fit_normal]{fit_normal()}} and \code{\link[=fit_skellam]{fit_skellam()}} support negative
+values, e.g. from downward corrections retained with
+\code{preprocess = NULL}.}
 
 \item{ref_time_aggregator}{Function that operates along the rows (reference
 times) of the retrospective point nowcast matrix before it has been
@@ -95,6 +100,8 @@ if (requireNamespace("zoo", quietly = TRUE)) {
 \seealso{
 Observation error estimation functions
 \code{\link{fit_by_horizon}()},
-\code{\link{fit_nb}()}
+\code{\link{fit_nb}()},
+\code{\link{fit_normal}()},
+\code{\link{fit_skellam}()}
 }
 \concept{estimate_observation_error}

@@ -662,6 +662,207 @@ test_that("fit_nb returns NA for zero-length input", {
   expect_identical(fit_nb(numeric(0), numeric(0)), NA)
 })
 
+test_that("fit_nb error for negative values suggests alternative models", {
+  expect_error(
+    fit_nb(c(10, -5), c(12, 8)),
+    regexp = "fit_normal\\(\\) or fit_skellam\\(\\)" # nolint
+  )
+})
+
+test_that("fit_normal returns zero when observations equal expectations", {
+  x <- c(5, 10, 15)
+  expect_identical(fit_normal(x, x), 0)
+})
+
+test_that("fit_normal returns the mean squared error", {
+  x <- c(1, 2, 3)
+  mu <- c(0, 0, 0)
+  expect_identical(fit_normal(x, mu), mean((x - mu)^2))
+
+  # Negative observations and expectations are supported
+  x_neg <- c(-1, -2, -3)
+  mu_neg <- c(0, -1, 1)
+  expect_identical(fit_normal(x_neg, mu_neg), mean((x_neg - mu_neg)^2))
+
+  x_fractional <- c(0.05, -0.02, 1.35)
+  mu_fractional <- c(0.03, -0.01, 1.4)
+  expect_identical(
+    fit_normal(x_fractional, mu_fractional),
+    mean((x_fractional - mu_fractional)^2)
+  )
+})
+
+test_that("fit_normal handles empty and missing inputs", {
+  expect_identical(fit_normal(numeric(0), numeric(0)), NA)
+  expect_identical(fit_normal(c(NA, NA), c(1, 2)), NA)
+
+  # Pairs with a missing value are dropped
+  expect_identical(fit_normal(c(1, NA, 3), c(0, 0, 0)), mean(c(1, 9)))
+  expect_identical(fit_normal(c(1, 2, 3), c(0, NA, 0)), mean(c(1, 9)))
+})
+
+test_that(".dskellam_log matches the closed form of the Skellam PMF", {
+  x <- 1
+  lambda1 <- 3
+  lambda2 <- 2
+  expected <- log(
+    exp(-(lambda1 + lambda2)) * (lambda1 / lambda2)^(x / 2) *
+      besselI(2 * sqrt(lambda1 * lambda2), nu = abs(x))
+  )
+  expect_equal(.dskellam_log(x, lambda1, lambda2), expected, tolerance = 1e-10)
+})
+
+test_that(".dskellam_log returns finite log probabilities and is vectorised", {
+  out <- .dskellam_log(c(-2, 0, 2), 3, 5)
+  expect_length(out, 3)
+  expect_true(all(is.finite(out)))
+  expect_true(all(out <= 0))
+
+  # Probabilities over a wide support sum to approximately one
+  support <- -50:50
+  expect_equal(sum(exp(.dskellam_log(support, 4, 2))), 1, tolerance = 1e-8)
+})
+
+test_that(".log_bessel_i matches besselI where it does not underflow", {
+  z <- c(0.5, 2, 10, 100, 1000)
+  nu <- c(0, 1, 3, 10, 50)
+  expect_equal(
+    .log_bessel_i(z, nu),
+    log(besselI(z, nu = nu, expon.scaled = TRUE)) + z,
+    tolerance = 1e-10
+  )
+})
+
+test_that(".log_bessel_i is finite and accurate where besselI underflows", {
+  # Large order relative to the argument (e.g. a large residual)
+  out <- .log_bessel_i(4.7, 693)
+  expect_true(is.finite(out))
+  # Argument larger than besselI supports
+  out_large_z <- .log_bessel_i(2e5, 5)
+  expect_true(is.finite(out_large_z))
+  # The asymptotic expansion is accurate near the switch over
+  expect_equal(
+    .log_bessel_i(9e4, 5),
+    log(besselI(9e4, nu = 5, expon.scaled = TRUE)) + 9e4,
+    tolerance = 1e-8
+  )
+  expect_silent(.log_bessel_i(c(4.7, 2), c(693, 1)))
+})
+
+test_that("fit_skellam converges with large counts and outliers", {
+  # A single large residual underflows besselI(), which previously made the
+  # likelihood infinite for every candidate variance
+  x <- c(693, 5, 12, 0, 3)
+  mu <- c(10.4, 4.2, 9.8, 1.2, 2.5)
+  result <- expect_no_error(fit_skellam(x, mu))
+  expect_true(is.finite(result))
+  expect_gt(result, max(abs(mu)))
+
+  # Large counts
+  set.seed(42)
+  x_large <- rpois(200, 60000) - rpois(200, 50000)
+  result_large <- fit_skellam(x_large, rep(10000, 200))
+  expect_equal(result_large, 110000, tolerance = 0.05)
+})
+
+test_that("fit_skellam recovers the variance of simulated data", {
+  set.seed(42)
+  n <- 1000
+  x <- rpois(n, 3) - rpois(n, 1)
+  mu <- rep(2, n)
+  expect_equal(fit_skellam(x, mu), 4, tolerance = 0.05)
+  expect_equal(fit_skellam(x, mu, method = "mom"), 4, tolerance = 0.05)
+})
+
+test_that("fit_skellam method of moments matches fit_normal", {
+  x <- c(-2L, 1L, 3L, 0L, -1L)
+  mu <- c(-1.5, 0.8, 2.5, 0.2, -0.5)
+  expect_identical(fit_skellam(x, mu, method = "mom"), fit_normal(x, mu))
+})
+
+test_that("fit_skellam returns a variance greater than max(|mu|)", {
+  x <- c(10, 12, 8)
+  mu <- c(9, 11, 7)
+  result <- fit_skellam(x, mu)
+  expect_gt(result, max(abs(mu)))
+
+  # The fitted variance gives valid Poisson rates for the expectations
+  expect_true(all((mu + result) / 2 > 0))
+  expect_true(all((result - mu) / 2 > 0))
+})
+
+test_that("fit_skellam handles all negative observations", {
+  result <- fit_skellam(c(-3, -5, -1, -4), c(-2, -4, -2, -3))
+  expect_true(is.finite(result))
+  expect_gt(result, 0)
+})
+
+test_that("fit_skellam handles empty and missing inputs", {
+  expect_identical(fit_skellam(numeric(0), numeric(0)), NA)
+  expect_identical(fit_skellam(c(NA, NA), c(1, 2)), NA)
+  expect_identical(
+    fit_skellam(c(1, NA, 3), c(0, 0, 0), method = "mom"),
+    mean(c(1, 9))
+  )
+})
+
+test_that("fit_skellam rejects invalid inputs", {
+  expect_error(fit_skellam(c(1.5, 2), c(1, 2)), regexp = "integerish")
+  expect_error(fit_skellam(c(1, 2), c(1, 2), method = "bayes"),
+    regexp = "method"
+  )
+})
+
+test_that("estimate_uncertainty works with normal and Skellam models", {
+  for (fit_model in list(fit_normal, fit_skellam)) {
+    result <- estimate_uncertainty(
+      point_nowcast_matrices = valid_nowcasts,
+      truncated_reporting_triangles = valid_trunc_rts,
+      retro_reporting_triangles = valid_rts,
+      uncertainty_model = fit_by_horizon_with(fit_model)
+    )
+    expect_type(result, "double")
+    expect_length(result, ncol(valid_nowcasts[[1]]) - 1)
+    expect_true(all(is.finite(result)))
+    expect_true(all(result >= 0))
+  }
+})
+
+test_that("estimate_uncertainty supports downward corrections with normal and Skellam models", { # nolint
+  # Negative counts at delay 2 from downward corrections
+  test_triangle_neg <- test_triangle
+  test_triangle_neg[, 3] <- -test_triangle_neg[, 3]
+  nowcast1_neg <- nowcast1
+  nowcast1_neg[, 3] <- -nowcast1_neg[, 3]
+  nowcast2_neg <- nowcast2
+  nowcast2_neg[, 3] <- -nowcast2_neg[, 3]
+  trunc_rts_neg <- list(
+    make_test_triangle(data = test_triangle_neg[1:5, ]),
+    make_test_triangle(data = test_triangle_neg[1:4, ])
+  )
+  neg_args <- list(
+    point_nowcast_matrices = list(nowcast1_neg, nowcast2_neg),
+    truncated_reporting_triangles = trunc_rts_neg,
+    retro_reporting_triangles = apply_reporting_structures(trunc_rts_neg)
+  )
+
+  expect_error(
+    do.call(estimate_uncertainty, neg_args),
+    regexp = "Negative values detected"
+  )
+
+  for (fit_model in list(fit_normal, fit_skellam)) {
+    args <- c(
+      neg_args,
+      list(uncertainty_model = fit_by_horizon_with(fit_model))
+    )
+    result <- do.call(estimate_uncertainty, args)
+    expect_length(result, ncol(nowcast1_neg) - 1)
+    expect_true(all(is.finite(result)))
+    expect_true(all(result >= 0))
+  }
+})
+
 test_that("estimate_uncertainty rejects malformed inputs", {
   nowcasts_with_na <- valid_nowcasts
   nowcasts_with_na[[1]][1, 1] <- NA

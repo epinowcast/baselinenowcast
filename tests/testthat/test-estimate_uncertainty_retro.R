@@ -275,3 +275,49 @@ test_that(
     )
   }
 )
+
+test_that(
+  "estimate_uncertainty_retro passes normal and Skellam models through to estimate_uncertainty", # nolint
+  {
+    triangle <- make_retro_test_triangle()
+    for (fit_model in list(fit_normal, fit_skellam)) {
+      result <- estimate_uncertainty_retro(
+        triangle,
+        n_history_delay = 5,
+        n_retrospective_nowcasts = 2,
+        uncertainty_model = fit_by_horizon_with(fit_model)
+      )
+      expect_valid_retro_uncertainty(
+        result,
+        expected_length = n_incomplete_rows(triangle)
+      )
+    }
+  }
+)
+
+test_that(
+  "estimate_uncertainty_retro supports downward corrections with normal and Skellam models", # nolint
+  {
+    triangle <- example_downward_corr_rt
+    expect_error(
+      estimate_uncertainty_retro(
+        triangle,
+        n_history_delay = 5,
+        n_retrospective_nowcasts = 2
+      ),
+      regexp = "Negative values detected"
+    )
+    for (fit_model in list(fit_normal, fit_skellam)) {
+      result <- estimate_uncertainty_retro(
+        triangle,
+        n_history_delay = 5,
+        n_retrospective_nowcasts = 2,
+        uncertainty_model = fit_by_horizon_with(fit_model)
+      )
+      expect_valid_retro_uncertainty(
+        result,
+        expected_length = n_incomplete_rows(triangle)
+      )
+    }
+  }
+)

@@ -38,6 +38,9 @@ To retain downward revisions, set `preprocess = NULL` and choose an observation 
 - **Normal:** `fit_normal()` with `sample_normal()` supports continuous measurements such as rates or percentages. For counts, `sample_normal(..., rounded = TRUE)` provides an integer-valued approximation; this can be useful when the continuous approximation is reasonable, for example at larger counts.
 - **Skellam:** `fit_skellam()` with `sample_skellam()` models integer increments as the difference of two independent Poisson random variables. It supports both additions and removals, with a constraint linking its mean and variance.
 
+These observation models were adapted from the [nowcastNHSN](https://github.com/CDCgov/nowcastNHSN) package, which uses `baselinenowcast` to nowcast hospital admissions reported to the United States National Healthcare Safety Network (NHSN).
+See the [mathematical model vignette](model_definition.html#alternative-observation-models) for their definitions.
+
 We use two examples of downward revisions in surveillance data: NHSN influenza admission counts in Montana and NSSP influenza ED-visit percentages.
 In the first example, we compare the default model, a rounded normal, and a Skellam model for NHSN influenza admission counts in Montana.
 In the second example, we use a continuous normal for [NSSP influenza ED-visit percentages](#percentage-data), where rounding would discard fractional changes.

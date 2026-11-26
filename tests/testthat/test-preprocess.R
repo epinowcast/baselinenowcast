@@ -105,3 +105,41 @@ test_that("preprocess_negative_values returns a reporting_triangle with integer 
   expect_true(is.matrix(result_mat))
   expect_true(checkmate::check_integerish(result_mat))
 })
+
+test_that("preprocess_negative_values retains decimals when there are no negative values", { # nolint: line_length_linter
+  triangle_dec_mat <- matrix(c(
+    10.5, 5.25, 2.1, 1.7,
+    8.3, 4.4, 2.9, NA,
+    6.6, 3.2, NA, NA,
+    7.9, NA, NA, NA
+  ), nrow = 4, byrow = TRUE)
+  triangle_dec <- as_reporting_triangle(triangle_dec_mat)
+
+  result <- preprocess_negative_values(triangle_dec)
+  result_mat <- as_plain_matrix(result)
+
+  expect_identical(result_mat, triangle_dec_mat)
+})
+
+test_that("preprocess_negative_values retains decimals when redistributing negative values", { # nolint: line_length_linter
+  triangle_dec_neg_mat <- matrix(c(
+    10.5, 5.25, -2.5, 3.5,
+    8.3, -3.1, 4.4, NA,
+    6.6, 3.2, NA, NA,
+    7.9, NA, NA, NA
+  ), nrow = 4, byrow = TRUE)
+  triangle_dec_neg <- as_reporting_triangle(triangle_dec_neg_mat)
+
+  expected_mat <- matrix(c(
+    10.5, 2.75, 0, 3.5,
+    5.2, 0, 4.4, NA,
+    6.6, 3.2, NA, NA,
+    7.9, NA, NA, NA
+  ), nrow = 4, byrow = TRUE)
+
+  result <- suppressMessages(preprocess_negative_values(triangle_dec_neg))
+  result_mat <- as_plain_matrix(result)
+
+  expect_equal(result_mat, expected_mat, tolerance = 1e-10)
+  expect_false(checkmate::test_integerish(result_mat))
+})

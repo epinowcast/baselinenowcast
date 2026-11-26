@@ -27,6 +27,9 @@ amount is subtracted from the count at the next earlier delay (moving from
 right to left in each row). This process continues until either the
 negative value is fully absorbed or the first delay is reached.
 
+Values are not rounded, so non-integer reporting triangles (e.g.
+percentages or rates) retain their fractional values.
+
 This code was adapted from code written (under an MIT license)
 by the Karlsruhe Institute of Technology RESPINOW
 German Hospitalization Nowcasting Hub.

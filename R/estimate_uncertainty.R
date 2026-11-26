@@ -434,6 +434,7 @@ fit_by_horizon <- function(obs,
 #'   Modified from: \url{https://github.com/KITmetricslab/RESPINOW-Hub/blob/7fab4dce7b559c3076ab643cf22048cb5fb84cc2/code/baseline/functions.R#L404}
 # nolint end
 #' @importFrom stats dnbinom optimize
+#' @importFrom checkmate check_integerish
 #' @param x Vector of observed values.
 #' @param mu Vector of expected values.
 #' @returns the maximum likelihood estimate of the dispersion
@@ -468,7 +469,12 @@ fit_nb <- function(x, mu) {
   }
 
   # Check that all observations are integers
-  assert_integerish(x)
+  if (!isTRUE(check_integerish(x))) {
+    cli_abort(c(
+      "Non-integer values detected in observations for uncertainty estimation",
+      x = "fit_nb() requires non-negative integer (count) observations"
+    ))
+  }
   nllik <- function(size) {
     nll <- -sum(dnbinom(x = x, mu = mu, size = size, log = TRUE),
       na.rm = TRUE

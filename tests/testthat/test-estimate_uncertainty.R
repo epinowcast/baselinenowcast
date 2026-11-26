@@ -634,6 +634,16 @@ test_that("fit_nb rejects negative predicted values with clear error", {
   )
 })
 
+test_that("fit_nb rejects non-integer observed values with clear error", {
+  x_decimal <- c(10.5, 15, 5.2, 20)
+  mu <- c(12, 14, 8, 18)
+
+  expect_error(
+    fit_nb(x_decimal, mu),
+    regexp = "Non-integer values detected in observations"
+  )
+})
+
 test_that("fit_nb works with valid non-negative inputs", {
   # Create valid test data
   x <- c(10, 15, 8, 20, 12)

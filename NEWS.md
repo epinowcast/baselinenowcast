@@ -1,5 +1,10 @@
 # baselinenowcast (development version)
 
+## Package
+
+- Fixed a bug in `preprocess_negative_values()` where the first few entries of the reporting triangle were unintentionally truncated to integers. Non-integer reporting triangles now retain their fractional values after preprocessing (#505).
+- `fit_nb()` now gives an informative error when observations are non-integer.
+
 ## Documentation
 
 - fix typo in `estimate_delay()` documentation.

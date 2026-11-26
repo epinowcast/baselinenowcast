@@ -11,6 +11,9 @@
 #' right to left in each row). This process continues until either the
 #' negative value is fully absorbed or the first delay is reached.
 #'
+#' Values are not rounded, so non-integer reporting triangles (e.g.
+#' percentages or rates) retain their fractional values.
+#'
 #' This code was adapted from code written (under an MIT license)
 #' by the Karlsruhe Institute of Technology RESPINOW
 #' German Hospitalization Nowcasting Hub.
@@ -60,7 +63,7 @@ preprocess_negative_values <- function(reporting_triangle, validate = TRUE) {
     )
   }
 
-  integer_cols <- seq_len(ncol(triangle_mat))
+  delay_cols <- seq_len(ncol(triangle_mat))
   pos_triangle <- triangle_mat
   pos_triangle[is.na(pos_triangle)] <- 0 # Set NAs to 0 temporarily
   for (i in seq_len(nrow(triangle_mat))) {
@@ -69,7 +72,7 @@ preprocess_negative_values <- function(reporting_triangle, validate = TRUE) {
     # Loop over the columns starting from the last column back to max delay
     # column, and if there is a negative value, we add this to the
     # next day and set that one as 0.
-    for (j in rev(integer_cols)) {
+    for (j in rev(delay_cols)) {
       value <- row_i[[j]]
       if (!is.na(value)) {
         # Either adds 0 or the previous days negative value
@@ -85,10 +88,6 @@ preprocess_negative_values <- function(reporting_triangle, validate = TRUE) {
       }
     }
   }
-  for (col in integer_cols) {
-    pos_triangle[[col]] <- as.integer(pos_triangle[[col]])
-  }
-
   # Return values that were NA back to NA
   pos_triangle[is.na(triangle_mat)] <- NA
 
